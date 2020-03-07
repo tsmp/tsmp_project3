@@ -60,7 +60,7 @@
     <OutDir>$(SolutionDir)\output\binaries_$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\output\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\Components\DX9SDK\Include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\xrCore\;$(SolutionDir)\Components\DX9SDK\Include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\Components\DX9SDK\Lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
@@ -113,6 +113,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>CompileAsCpp</CompileAs>
       <ShowIncludes>false</ShowIncludes>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
