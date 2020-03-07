@@ -154,13 +154,16 @@ IC	void	xr_delete	(T* &ptr)
 		ptr = NULL;
 	}
 }
+
 template <class T>
-IC	void	xr_delete	(T* const &ptr)
+IC	void	xr_delete(T* const& ptr)
 {
-	if (ptr) 
+	if (ptr)
 	{
-		xr_special_free<is_polymorphic<T>::result,T>(ptr);
-		const_cast<T*&>(ptr) = NULL;
+		T*& hacked_ptr = const_cast<T*&>(ptr);
+		xr_special_free<std::is_polymorphic_v<T>, T>()(hacked_ptr);
+
+		hacked_ptr = nullptr;
 	}
 }
 
