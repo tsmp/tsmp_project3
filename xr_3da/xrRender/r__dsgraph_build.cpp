@@ -136,7 +136,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(IRender_Visual *pVisual, Fve
 
 	// the most common node
 	SPass&						pass	= *sh->passes.front	();
-	mapMatrix_T&				map		= mapMatrix			[sh->flags.iPriority/2];
+	mapMatrixVS&				map		= mapMatrix			[sh->flags.iPriority/2];
 #ifdef USE_RESOURCE_DEBUGGER
 	mapMatrixVS::TNode*			Nvs		= map.insert		(pass.vs);
 	mapMatrixPS::TNode*			Nps		= Nvs->val.insert	(pass.ps);
@@ -242,7 +242,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(IRender_Visual *pVisual)
 
 	counter_S					++;
 	SPass&						pass	= *sh->passes.front	();
-	mapNormal_T&				map		= mapNormal			[sh->flags.iPriority/2];
+	mapNormalVS&				map		= mapNormal			[sh->flags.iPriority/2];
 #ifdef USE_RESOURCE_DEBUGGER
 	mapNormalVS::TNode*			Nvs		= map.insert		(pass.vs);
 	mapNormalPS::TNode*			Nps		= Nvs->val.insert	(pass.ps);

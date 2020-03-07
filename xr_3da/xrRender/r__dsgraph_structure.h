@@ -34,8 +34,8 @@ public:
 	bool														pmask_wmark			;
 public:
 	// Dynamic scene graph
-	R_dsgraph::mapNormal_T										mapNormal	[2]		;	// 2==(priority/2)
-	R_dsgraph::mapMatrix_T										mapMatrix	[2]		;
+	R_dsgraph::mapNormalVS										mapNormal	[2]		;	// 2==(priority/2)
+	R_dsgraph::mapMatrixVS										mapMatrix	[2]		;
 	R_dsgraph::mapSorted_T										mapSorted;
 	R_dsgraph::mapHUD_T											mapHUD;
 	R_dsgraph::mapLOD_T											mapLOD;
