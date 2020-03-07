@@ -59,6 +59,8 @@
     <OutDir>$(SolutionDir)\output\binaries_$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\output\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)\Components\DX9SDK\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\Components\DX9SDK\Lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <OutDir>x:\binaries\</OutDir>
