@@ -12,6 +12,7 @@
 #include "UsableScriptObject.h"
 #include "script_binder.h"
 #include "Hit.h"
+#include "game_object_space.h"
 
 class CPhysicsShell;
 class CSE_Abstract;
@@ -40,9 +41,6 @@ class CSpaceRestrictor;
 class CAttachableItem;
 class animation_movement_controller;
 class CBlend;
-namespace GameObject {
-	enum ECallbackType;
-};
 
 template <typename _return_type>
 class CScriptCallbackEx;
