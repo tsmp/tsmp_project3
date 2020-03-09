@@ -9708,18 +9708,4 @@
       <Filter>UI\Tutorial</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="graph_abstract.h">
-      <Filter>AI\ANavigation\GraphAbstract</Filter>
-    </CustomBuild>
-    <CustomBuild Include="graph_abstract_inline.h">
-      <Filter>AI\ANavigation\GraphAbstract</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Explosive.h">
-      <Filter>Core\Client\Objects\items &amp; weapons\Explosives</Filter>
-    </CustomBuild>
-    <CustomBuild Include="dRayMotions.h">
-      <Filter>Physics\Colliders\RayMotions-Collider</Filter>
-    </CustomBuild>
-  </ItemGroup>
 </Project>
