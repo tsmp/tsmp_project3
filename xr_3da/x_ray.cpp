@@ -21,6 +21,8 @@
 #include "Text_Console.h"
 #include <process.h>
 
+#include "..\TSMP2_Build_Config.h"
+
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= NULL;
 BOOL	g_bIntroFinished			= FALSE;

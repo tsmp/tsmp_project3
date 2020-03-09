@@ -10,6 +10,8 @@
 #include "HW.h"
 #include "xr_IOconsole.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 #ifndef _EDITOR
 	void	fill_vid_mode_list			(CHW* _hw);
 	void	free_vid_mode_list			();

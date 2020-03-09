@@ -1,0 +1,2 @@
+
+#define DEDICATED_SERVER

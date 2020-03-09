@@ -13,6 +13,8 @@
 #	include "CustomHUD.h"
 #endif
 
+#include "..\TSMP2_Build_Config.h"
+
 #ifdef _EDITOR
 	bool g_dedicated_server	= false;
 #endif
