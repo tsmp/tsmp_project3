@@ -53,8 +53,9 @@ public:
     { 
 		if ((0!=hf) && (0!=count)){
 			const u32 mb_sz = 0x1000000;
+			int req_size;
 			u8* ptr 		= (u8*)_ptr;
-			for (int req_size = count; req_size>mb_sz; req_size-=mb_sz, ptr+=mb_sz){
+			for (req_size = count; req_size>mb_sz; req_size-=mb_sz, ptr+=mb_sz){
 				size_t W = fwrite(ptr,mb_sz,1,hf);
 				R_ASSERT3(W==1,"Can't write mem block to file. Disk maybe full.",_sys_errlist[errno]);
 			}

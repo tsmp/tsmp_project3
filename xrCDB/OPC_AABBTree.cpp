@@ -165,7 +165,8 @@ bool AABBTreeNode::Subdivide(AABBTreeBuilder* builder)
 	{
 		// Compute the means
 		Point Means(0.0f, 0.0f, 0.0f);
-		for(udword i=0;i<mNbPrimitives;i++)
+		udword i;
+		for(i=0;i<mNbPrimitives;i++)
 		{
 			udword Index = mNodePrimitives[i];
 			Means.x+=builder->GetSplittingValue(Index, 0);
