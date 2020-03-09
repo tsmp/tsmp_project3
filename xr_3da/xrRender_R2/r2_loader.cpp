@@ -269,12 +269,13 @@ void CRender::LoadSectors(IReader* fs)
 	R_ASSERT(0==size%sizeof(b_portal));
 	u32 count = size/sizeof(b_portal);
 	Portals.resize	(count);
-	for (u32 c=0; c<count; c++)
+	u32 i,c;
+	for (c=0; c<count; c++)
 		Portals[c]	= xr_new<CPortal> ();
 
 	// load sectors
 	IReader* S = fs->open_chunk(fsL_SECTORS);
-	for (u32 i=0; ; i++)
+	for (i=0; ; i++)
 	{
 		IReader* P = S->open_chunk(i);
 		if (0==P) break;

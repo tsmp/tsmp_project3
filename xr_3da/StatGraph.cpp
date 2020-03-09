@@ -90,12 +90,13 @@ void CStatGraph::RenderBack	()
     // grid
 //    float grid_offs_x		= float(rb.x-lt.x)/float(grid.x+1);
 //    float grid_offs_y		= float(rb.y-lt.y)/float(grid.y+1);
-    for (int g_x=1; g_x<=grid.x; g_x++)
+	int g_y, g_x;
+    for (g_x=1; g_x<=grid.x; g_x++)
 	{
 	    pv->set				(int(lt.x + g_x*grid_step.x*elem_factor),lt.y,grid_color); pv++; 	
 	    pv->set				(int(lt.x + g_x*grid_step.x*elem_factor),rb.y,grid_color); pv++; 	
 	}
-	for (int g_y=1; g_y<=Num_H_LinesDwn; g_y++)
+	for (g_y=1; g_y<=Num_H_LinesDwn; g_y++)
 	{
 		pv->set				(lt.x,int(base_y+g_y*grid_step.y*elem_factor),grid_color); pv++;
 		pv->set				(rb.x,int(base_y+g_y*grid_step.y*elem_factor),grid_color); pv++;

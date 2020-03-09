@@ -145,9 +145,9 @@ void CDrawUtilities::UpdateGrid(int number_of_cell, float square_size, int subdi
 
 	FVF::L left,right;
 	left.p.y = right.p.y = 0;
-
+	int i;
 	for(int thin=0; thin<2; thin++){
-		for(int i=-m_GridCounts[0]; i<=m_GridCounts[0]; i++){
+		for(i=-m_GridCounts[0]; i<=m_GridCounts[0]; i++){
 			if( (!!thin) != !!(i%m_GridSubDiv[0]) ){
 				left.p.z = -m_GridCounts[1]*m_GridStep.y;
 				right.p.z = m_GridCounts[1]*m_GridStep.y;
@@ -189,7 +189,8 @@ void CDrawUtilities::OnDeviceCreate()
 	m_WireSpherePart.CreateFromData	(D3DPT_LINELIST,	DU_SPHERE_PART_NUMLINES,D3DFVF_XYZ|D3DFVF_DIFFUSE,du_sphere_part_vertices,	DU_SPHERE_PART_NUMVERTEX,	du_sphere_part_lines,	DU_SPHERE_PART_NUMLINES*2);
     m_WireCylinder.CreateFromData	(D3DPT_LINELIST,	DU_CYLINDER_NUMLINES,	D3DFVF_XYZ|D3DFVF_DIFFUSE,du_cylinder_vertices,	DU_CYLINDER_NUMVERTEX,		du_cylinder_lines,		DU_CYLINDER_NUMLINES*2);
 
-	for(int i=0;i<LINE_DIVISION;i++){                                
+	int i;
+	for(i=0;i<LINE_DIVISION;i++){                                
 		float angle = M_PI * 2.f * (i / (float)LINE_DIVISION);
         float _sa=_sin(angle), _ca=_cos(angle);
 		circledef1[i].x = _ca;

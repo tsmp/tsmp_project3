@@ -675,7 +675,8 @@ void CInventory::Update()
 
 void CInventory::UpdateDropTasks()
 {
-	for(u32 i=0; i<m_slots.size(); ++i)	
+	u32 i;
+	for(i=0; i<m_slots.size(); ++i)	
 	{
 		if(m_slots[i].m_pIItem)
 			UpdateDropItem		(m_slots[i].m_pIItem);

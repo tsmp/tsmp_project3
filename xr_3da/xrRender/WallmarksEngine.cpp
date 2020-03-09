@@ -140,8 +140,8 @@ void CWallmarksEngine::RecurseTri(u32 t, Fmatrix &mView, CWallmarksEngine::stati
 		V0.set				((*P)[0],0,(1+UV.x)*.5f,(1-UV.y)*.5f);
 		mView.transform_tiny(UV, (*P)[1]);
 		V1.set				((*P)[1],0,(1+UV.x)*.5f,(1-UV.y)*.5f);
-
-		for (u32 i=2; i<P->size(); i++)
+		u32 i;
+		for (i=2; i<P->size(); i++)
 		{
 			mView.transform_tiny(UV, (*P)[i]);
 			V2.set				((*P)[i],0,(1+UV.x)*.5f,(1-UV.y)*.5f);

@@ -121,12 +121,12 @@ void ConvertVertices(u32 dwTypeDest, void *pDest, u32 dwTypeSrc, void *pSource, 
 	{	// !DEST & SRC
 		tmPosSrc++;						// skip it
 	}
-
+	u32 i;
 	// ---------------------- "Texture coords" property
 	u32 dwTDest = ((dwTypeDest&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT);
 	u32 dwTSrc  = ((dwTypeSrc &D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT);
 	if (dwTDest<=dwTSrc) {
-		for (u32 i=0; i<dwTDest; i++) {
+		for (i=0; i<dwTDest; i++) {
 			TransferMask[tmPos++]=tmPosSrc++;
 			TransferMask[tmPos++]=tmPosSrc++;
 		}
@@ -134,9 +134,10 @@ void ConvertVertices(u32 dwTypeDest, void *pDest, u32 dwTypeSrc, void *pSource, 
 		if (dwTSrc==0) {
 			FATAL	("Source vertex format doesn't has texture coords at all");
 		}
+
 		// Copy real TC
 		u32 dwStage0TC = tmPosSrc;
-		for (u32 i=0; i<dwTSrc; i++) {
+		for (i=0; i<dwTSrc; i++) {
 			TransferMask[tmPos++]=tmPosSrc++;
 			TransferMask[tmPos++]=tmPosSrc++;
 		}
