@@ -164,7 +164,8 @@ void CInput::KeyUpdate	( )
 		if ( hr != S_OK ) return;
 	}
 
-	for (u32 i = 0; i < dwElements; i++)
+	u32 i;
+	for (i = 0; i < dwElements; i++)
 	{
 		key					= od[i].dwOfs;
 		KBState[key]		= od[i].dwData & 0x80;

@@ -52,8 +52,9 @@ IC	void CVertexPathBuilder::update_successors(CGraphVertex &tpNeighbour)
 TEMPLATE_SPECIALIZATION
 IC	void CVertexPathBuilder::get_node_path	(xr_vector<_index_type> &path, CGraphVertex *best)
 {
+	u32 i;
 	CGraphVertex			*t1 = best, *t2 = best->back();
-	for (u32 i=1; t2; t1 = t2, t2 = t2->back(), ++i) ;
+	for (i=1; t2; t1 = t2, t2 = t2->back(), ++i) ;
 
 	path.resize				(i);
 

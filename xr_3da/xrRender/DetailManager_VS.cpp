@@ -46,7 +46,9 @@ void CDetailManager::hw_Load	()
 	// Pre-process objects
 	u32			dwVerts		= 0;
 	u32			dwIndices	= 0;
-	for (u32 o=0; o<objects.size(); o++)
+	u32 o;
+	
+	for (o=0; o<objects.size(); o++)
 	{
 		CDetail& D	=	*objects[o];
 		dwVerts		+=	D.number_vertices*hw_BatchSize;
