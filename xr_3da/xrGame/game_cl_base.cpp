@@ -189,21 +189,12 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 	{
 	case GAME_EVENT_PLAYER_CONNECTED:
 		{
-
-#ifdef BATTLEYE
-			if ( g_pGameLevel && Level().battleye_system.GetTestClient() )
-			{
-				bool res_battleye = Level().battleye_system.LoadClient();
-				VERIFY( res_battleye );
-			}
-#endif // BATTLEYE
-
 			string64 PlayerName;
 			P.r_stringZ(PlayerName);
 			
 			sprintf_s(Text, "%s%s %s%s",Color_Teams[0],PlayerName,Color_Main,*st.translate("mp_connected"));
 			CommonMessageOut(Text);
-			//---------------------------------------
+
 			Msg("%s connected", PlayerName);
 		}break;
 	case GAME_EVENT_PLAYER_DISCONNECTED:

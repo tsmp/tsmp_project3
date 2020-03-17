@@ -10,7 +10,6 @@ protected:
 		flNetConPublicServer			= 2,
 		flNetConSpectatorOn				= 8,
 		flNetConBattlEyeOn				= 16,
-//=		flNetConBattlEyeAutoUpdate		= 32,
 	};
 	enum{
 		fl_empty						= (1<<0),

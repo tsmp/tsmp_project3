@@ -4,7 +4,6 @@
 
 #include "xrGameSpy_ServerBrowser.h"
 #include "gamespy/qr2/qr2regkeys.h"
-#include "../battleye.h"
 
 #define GAMETYPE_NAME_KEY						100
 #define	DEDICATED_KEY							101
@@ -22,9 +21,7 @@ static unsigned char Fields_Of_Interest[] =
 		GAMEVER_KEY,
 		PASSWORD_KEY,
 		G_USER_PASSWORD_KEY,
-#ifdef BATTLEYE
 		G_BATTLEYE_KEY,
-#endif // BATTLEYE
 		DEDICATED_KEY,
 		GAMETYPE_NAME_KEY
 };

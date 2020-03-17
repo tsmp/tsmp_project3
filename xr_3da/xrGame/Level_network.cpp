@@ -129,52 +129,45 @@ void CLevel::ClientSend()
 		if ( !net_HasBandwidth() ) return;
 	};
 
-#ifdef BATTLEYE
-	battleye_system.UpdateClient();
-#endif // BATTLEYE
+	NET_Packet P;
+	u32 start = 0;
 
-	NET_Packet				P;
-	u32						start	= 0;
-	//----------- for E3 -----------------------------
-//	if () 
+	if (CurrentControlEntity())
 	{
-//		if (!(Game().local_player) || Game().local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) return;
-		if (CurrentControlEntity()) 
+		CObject* pObj = CurrentControlEntity();
+
+		if (!pObj->getDestroy() && pObj->net_Relevant())
 		{
-			CObject* pObj = CurrentControlEntity();
-			if (!pObj->getDestroy() && pObj->net_Relevant())
-			{				
-				P.w_begin		(M_CL_UPDATE);
-				
+			P.w_begin(M_CL_UPDATE);
 
-				P.w_u16			(u16(pObj->ID())	);
-				P.w_u32			(0);	//reserved place for client's ping
+			P.w_u16(u16(pObj->ID()));
+			P.w_u32(0);	//reserved place for client's ping
 
-				pObj->net_Export			(P);
+			pObj->net_Export(P);
 
-				if (P.B.count>9)				
+			if (P.B.count > 9)
+			{
+				if (OnServer())
 				{
-					if (OnServer())
+					if (net_IsSyncronised() && IsDemoSave())
 					{
-						if (net_IsSyncronised() && IsDemoSave()) 
-						{
-							DemoCS.Enter();
-							Demo_StoreData(P.B.data, P.B.count, DATA_CLIENT_PACKET);
-							DemoCS.Leave();
-						}						
+						DemoCS.Enter();
+						Demo_StoreData(P.B.data, P.B.count, DATA_CLIENT_PACKET);
+						DemoCS.Leave();
 					}
-					else
-						Send	(P, net_flags(FALSE));
-				}				
-			}			
-		}		
-	};
+				}
+				else
+					Send(P, net_flags(FALSE));
+			}
+		}
+	}
+
 	if (OnClient()) 
 	{
 		Flush_Send_Buffer();
 		return;
 	}
-	//-------------------------------------------------
+
 	while (1)
 	{
 		P.w_begin						(M_UPDATE);

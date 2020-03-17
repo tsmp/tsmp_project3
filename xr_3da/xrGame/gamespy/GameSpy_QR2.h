@@ -1,12 +1,10 @@
 #pragma once
 
 #include "GameSpy_FuncDefs.h"
-#include "..\battleye.h"
 
 class CGameSpy_QR2
 {
 private:
-//	string16	m_SecretKey;
 
 	HMODULE	m_hGameSpyDLL;
 
@@ -16,7 +14,6 @@ public:
 	CGameSpy_QR2(HMODULE hGameSpyDLL);
 	~CGameSpy_QR2();
 
-//	bool	Init		(u32 PortID, int Public, void* instance);
 	bool	Init		(int PortID, int Public, void* instance);
 	void	Think		(void* qrec);
 	void	ShutDown	(void* qrec);
