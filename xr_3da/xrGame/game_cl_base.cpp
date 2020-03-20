@@ -11,7 +11,7 @@
 #include "UI/UIMessagesWindow.h"
 #include "string_table.h"
 #include "game_cl_base_weapon_usage_statistic.h"
-
+#include "../xr_ioconsole.h"
 #include "game_sv_mp_vote_flags.h"
 
 game_cl_GameState::game_cl_GameState()
@@ -196,6 +196,9 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			CommonMessageOut(Text);
 
 			Msg("%s connected", PlayerName);
+
+			if(g_dedicated_server)
+				Console->Execute("sv_listplayers");
 		}break;
 	case GAME_EVENT_PLAYER_DISCONNECTED:
 		{
