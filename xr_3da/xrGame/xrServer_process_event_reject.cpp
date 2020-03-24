@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "xrserver.h"
 #include "xrserver_objects.h"
+#include "..\..\TSMP2_Build_Config.h"
 
 bool xrServer::Process_event_reject	(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, 
 	const u16 id_entity, bool send_message)
@@ -28,6 +29,11 @@ bool xrServer::Process_event_reject	(NET_Packet& P, const ClientID sender, const
 
 		return false;
 	}
+
+#ifdef MP_LOGGING
+    Msg("--- SV: Process reject: parent[%d][%s], item[%d][%s]", id_parent, e_parent->name_replace(), id_entity,
+        e_entity->name());
+#endif // MP_LOGGING
         
     xr_vector<u16>& C = e_parent->children;
     xr_vector<u16>::iterator c = std::find(C.begin(), C.end(), id_entity);

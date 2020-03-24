@@ -41,23 +41,30 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 	case GE_TRADE_BUY:
 	case GE_OWNERSHIP_TAKE:
 		{
-			P.r_u16		(id);
-			CObject* O	= Level().Objects.net_Find	(id);
-			if (!O)
+			P.r_u16(id);
+			CObject* Obj = Level().Objects.net_Find(id);
+
+			if (!Obj)
 			{
 				Msg("! Error: No object to take/buy [%d]", id);
 				break;
 			}
 
-			CFoodItem* pFood = smart_cast<CFoodItem*>(O);
+			CGameObject* _GO = smart_cast<CGameObject*>(Obj);
+			if (!IsGameTypeSingle() && !g_Alive())
+			{
+				Msg("! WARNING: dead player [%d][%s] can't take items [%d][%s]", ID(), Name(), _GO->ID(),
+					_GO->cNameSect().c_str());
+				break;
+			}
+
+			CFoodItem* pFood = smart_cast<CFoodItem*>(Obj);
 			if(pFood)
 				pFood->m_eItemPlace = eItemPlaceRuck;
-
-			CGameObject* _GO = smart_cast<CGameObject*>(O);
-			
+						
 			if( inventory().CanTakeItem(smart_cast<CInventoryItem*>(_GO)) )
 			{
-				O->H_SetParent(smart_cast<CObject*>(this));
+				Obj->H_SetParent(smart_cast<CObject*>(this));
 
 				inventory().Take(_GO, false, true);
 
@@ -75,42 +82,74 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 				{
 					if(pGameSP->MainInputReceiver() == pGameSP->InventoryMenu)
 					{
-						pGameSP->InventoryMenu->AddItemToBag(smart_cast<CInventoryItem*>(O));
+						pGameSP->InventoryMenu->AddItemToBag(smart_cast<CInventoryItem*>(Obj));
 					}
 				}
 				
-				SelectBestWeapon(O);
+				SelectBestWeapon(Obj);
 			} 
 			else 
 			{
-				NET_Packet P;
-				u_EventGen(P,GE_OWNERSHIP_REJECT,ID());
-				P.w_u16(u16(O->ID()));
-				u_EventSend(P);
+				if (IsGameTypeSingle())
+				{
+					NET_Packet P2;
+					u_EventGen(P2, GE_OWNERSHIP_REJECT, ID());
+					P2.w_u16(u16(Obj->ID()));
+					u_EventSend(P2);
+				}
+				else
+				{
+					Msg("! ERROR: Actor [%d][%s]  tries to drop on take [%d][%s]", ID(), Name(), _GO->ID(),
+						_GO->cNameSect().c_str());
+				}
 			}
 		}
 		break;
 	case GE_TRADE_SELL:
 	case GE_OWNERSHIP_REJECT:
 		{
-			P.r_u16		(id);
-			CObject* O	= Level().Objects.net_Find	(id);
-			if (!O)
+			P.r_u16	(id);
+			CObject* Obj = Level().Objects.net_Find	(id);
+			
+			if (!Obj)
 			{
 				Msg("! Error: No object to reject/sell [%d]", id);
 				break;
 			}
+			
 			bool just_before_destroy	= !P.r_eof() && P.r_u8();
-			O->SetTmpPreDestroy				(just_before_destroy);
-			if (inventory().DropItem(smart_cast<CGameObject*>(O)) && !O->getDestroy()) 
-			{
-				O->H_SetParent(0,just_before_destroy);
-//.				feel_touch_deny(O,2000);
-				Level().m_feel_deny.feel_touch_deny(O, 1000);
+			Obj->SetTmpPreDestroy				(just_before_destroy);
+			
+			CGameObject* GO = smart_cast<CGameObject*>(Obj);
 
+#ifdef MP_LOGGING
+			string64 act;
+			xr_strcpy(act, (type == GE_TRADE_SELL) ? "sells" : "rejects");
+			Msg("--- Actor [%d][%s]  %s  [%d][%s]", ID(), Name(), act, GO->ID(), GO->cNameSect().c_str());
+#endif // MP_LOGGING
+
+			if (!GO->H_Parent())
+			{
+				Msg("! ERROR: Actor [%d][%s] tries to reject item [%d][%s] that has no parent", ID(), Name(), GO->ID(),
+					GO->cNameSect().c_str());
+				break;
 			}
 
-			SelectBestWeapon(O);
+			if (GO->H_Parent()->ID() != ID())
+			{
+				CActor* real_parent = smart_cast<CActor*>(GO->H_Parent());
+				Msg("! ERROR: Actor [%d][%s] tries to drop not own item [%d][%s], his parent is [%d][%s]", ID(), Name(),
+					GO->ID(), GO->cNameSect().c_str(), real_parent->ID(), real_parent->Name());
+				break;
+			}
+
+			if (inventory().DropItem(smart_cast<CGameObject*>(Obj)) && !Obj->getDestroy()) 
+			{
+				Obj->H_SetParent(0,just_before_destroy);
+				Level().m_feel_deny.feel_touch_deny(Obj, 1000);
+			}
+
+			SelectBestWeapon(Obj);
 
 			if (Level().CurrentViewEntity() == this && HUD().GetUI() && HUD().GetUI()->UIGame())
 				HUD().GetUI()->UIGame()->ReInitShownUI();
@@ -124,6 +163,12 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 			P.r_u32		(flags);
 			s32 ZoomRndSeed = P.r_s32();
 			s32 ShotRndSeed = P.r_s32();
+
+			if (!IsGameTypeSingle() && !g_Alive())
+			{
+				Msg("! WARNING: dead player tries to rize inventory action");
+				break;
+			}
 									
 			if (flags & CMD_START)
 			{
@@ -143,34 +188,55 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 	case GEG_PLAYER_ITEM_EAT:
 	case GEG_PLAYER_ACTIVATEARTEFACT:
 		{
-			P.r_u16		(id);
-			CObject* O	= Level().Objects.net_Find	(id);
-			if(!O)		break;
-			if (O->getDestroy()) 
+			P.r_u16	(id);
+			CObject* Obj = Level().Objects.net_Find	(id);
+			
+			if (!Obj)
+			{
+				Msg( "! ERROR: GEG_PLAYER_ITEM_USE: Object not found. object_id = [%d]", id);
+				break;
+			}
+
+			if (!IsGameTypeSingle() && !g_Alive())
+			{
+				Msg("! WARNING: dead player [%d][%s] can't use items [%d][%s]", ID(), Name(), Obj->ID(),
+					Obj->cNameSect().c_str());
+				break;
+			}
+
+			if (Obj->getDestroy()) 
 			{
 #ifdef DEBUG
 				Msg("! something to destroyed object - %s[%d]0x%X", *O->cName(), id, smart_cast<CInventoryItem*>(O));
 #endif
 				break;
 			}
+
 			switch (type)
 			{
 			case GEG_PLAYER_ITEM2SLOT:	 
-				inventory().Slot(smart_cast<CInventoryItem*>(O)); 
+				inventory().Slot(smart_cast<CInventoryItem*>(Obj)); 
 				break;
 			case GEG_PLAYER_ITEM2BELT:	 
-				inventory().Belt(smart_cast<CInventoryItem*>(O)); 
+				inventory().Belt(smart_cast<CInventoryItem*>(Obj)); 
 				break;
 			case GEG_PLAYER_ITEM2RUCK:	 
-				inventory().Ruck(smart_cast<CInventoryItem*>(O)); 
+				inventory().Ruck(smart_cast<CInventoryItem*>(Obj)); 
 				break;
-			case GEG_PLAYER_ITEM_EAT:	 
-				inventory().Eat(smart_cast<CInventoryItem*>(O)); 
+			case GEG_PLAYER_ITEM_EAT:
+				inventory().Eat(smart_cast<CInventoryItem*>(Obj));
 				break;
 			case GEG_PLAYER_ACTIVATEARTEFACT:
 				{
-					CArtefact* pArtefact		= smart_cast<CArtefact*>(O);
-					pArtefact->ActivateArtefact	();
+					CArtefact* pArtefact = smart_cast<CArtefact*>(Obj);
+
+					if (!pArtefact)
+					{
+						Msg("! ERROR: GEG_PLAYER_ACTIVATEARTEFACT: Artefact not found. artefact_id = [%d], Player[%s]", id,this->Name());
+						break;
+					}
+
+					pArtefact->ActivateArtefact();
 				}break;
 			}
 		}break;

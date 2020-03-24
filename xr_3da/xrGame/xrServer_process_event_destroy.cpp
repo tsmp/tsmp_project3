@@ -7,6 +7,7 @@
 #include "game_cl_base.h"
 #include "ai_space.h"
 #include "alife_object_registry.h"
+#include "..\..\TSMP2_Build_Config.h"
 
 xr_string xrServer::ent_name_safe(u16 eid)
 {
@@ -25,9 +26,6 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 	u32								MODE = net_flags(TRUE,TRUE);
 	// Parse message
 	u16								id_dest	= ID;
-#ifdef DEBUG
-	Msg								("sv destroy object %s [%d]", ent_name_safe(id_dest).c_str(), Device.dwFrame);
-#endif
 
 	CSE_Abstract*					e_dest = game->get_entity_from_eid	(id_dest);	// кто должен быть уничтожен
 	if (!e_dest) 
@@ -43,8 +41,11 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 	R_ASSERT						(c_from);
 	R_ASSERT						(c_dest==c_from || GetServerClient()==c_from);
 	u16								parent_id = e_dest->ID_Parent;
+		
+#ifdef MP_LOGGING
+	Msg("--- SV: Process destroy: parent [%d] item [%d][%s]", parent_id, id_dest, e_dest->name());
+#endif //#ifdef MP_LOGGING
 
-	//---------------------------------------------
 	NET_Packet	P2, *pEventPack = pEPack;
 	P2.w_begin	(M_EVENT_PACK);
 	//---------------------------------------------
