@@ -207,7 +207,7 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 			if (Obj->getDestroy()) 
 			{
 #ifdef DEBUG
-				Msg("! something to destroyed object - %s[%d]0x%X", *O->cName(), id, smart_cast<CInventoryItem*>(O));
+				Msg("! something to destroyed object - %s[%d]0x%X", *Obj->cName(), id, smart_cast<CInventoryItem*>(Obj));
 #endif
 				break;
 			}

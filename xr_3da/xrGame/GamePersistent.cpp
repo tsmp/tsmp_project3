@@ -364,6 +364,7 @@ void CGamePersistent::OnFrame	()
 				Actor()->Cameras().Update		(C);
 				Actor()->Cameras().ApplyDevice	(VIEWPORT_NEAR);
 
+				/*
 				// ? from cop
 				if (psActorFlags.test(AF_NO_CLIP))
 				{
@@ -395,6 +396,7 @@ void CGamePersistent::OnFrame	()
 						}
 					}
 	}
+	*/
 				}
 			}
 		}
