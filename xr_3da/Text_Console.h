@@ -1,3 +1,5 @@
+// CTextConsole, used on dedicated server instead of CConsole
+
 #pragma once
 #include "XR_IOConsole.h"
 #include "IGame_Level.h"
@@ -5,31 +7,32 @@
 class ENGINE_API CTextConsole :
 	public CConsole
 {
-	typedef CConsole inherited ;
-private:
-	HWND*	m_pMainWnd;
-
-	HWND	m_hConsoleWnd;
-	void	CreateConsoleWnd	();
-	
-	HWND	m_hLogWnd;	
-	void	CreateLogWnd		();
-
-	bool	m_bScrollLog;
-	u32		m_dwStartLine;
-	void	DrawLog(HDC hDC, RECT* pRect);
+	using inherited = CConsole;
 
 private:
-	HFONT	m_hLogWndFont;
-	HFONT	m_hPrevFont;
-	HBRUSH	m_hBackGroundBrush;
+	HWND* m_pMainWnd;
 
-	HDC		m_hDC_LogWnd;
-	HDC		m_hDC_LogWnd_BackBuffer;
+	HWND m_hConsoleWnd;
+	void CreateConsoleWnd();
+
+	HWND m_hLogWnd;
+	void CreateLogWnd();
+
+	bool m_bScrollLog;
+	u32	m_dwStartLine;
+	void DrawLog(HDC hDC, RECT* pRect);
+
+private:
+	HFONT m_hLogWndFont;
+	HFONT m_hPrevFont;
+	HBRUSH m_hBackGroundBrush;
+
+	HDC m_hDC_LogWnd;
+	HDC m_hDC_LogWnd_BackBuffer;
 	HBITMAP m_hBB_BM, m_hOld_BM;
 
-	bool	m_bNeedUpdate;
-	u32		m_dwLastUpdateTime;
+	bool m_bNeedUpdate;
+	u32	m_dwLastUpdateTime;
 
 	CServerInfo server_info;
 
@@ -37,16 +40,13 @@ public:
 	CTextConsole();
 	virtual ~CTextConsole();
 
-	virtual	void	Initialize	();
-	virtual	void	Destroy		();
+	virtual	void Initialize();
+	virtual	void Destroy();
 
-	void	AddString	(LPCSTR string);
-	void	OnPaint		();
+	void OnPaint();
 
-	virtual void	OnRender			(void);
-	virtual void	OnFrame				(void);
+	virtual void OnRender(void);
+	virtual void OnFrame(void);
 
-	virtual void	IR_OnKeyboardPress		(int dik);
+	virtual void IR_OnKeyboardPress(int dik);
 };
-
-//extern ENGINE_API CTextConsole* TextConsole;
