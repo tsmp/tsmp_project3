@@ -17,10 +17,27 @@
 #pragma warning(disable:4995)
 #pragma warning(pop)
 
-#define LDIST .05f
+constexpr auto LDIST = .05f;
 
 ENGINE_API CConsole* Console = nullptr;
 const char* ioc_prompt = ">>> ";
+
+static char RusSymbols[] = { 'ô','è','ñ','â','ó','à','ï','ð','ø','î','ë','ä','ü','ò','ù','ç',
+'é','ê','û','å','ã','ì','ö','÷','í','ÿ','õ','ú','æ', 'ý','á','þ','.' };
+
+static char RusSymbolsBig[] = { 'Ô','È','Ñ','Â','Ó','À','Ï','Ð','Ø','Î','Ë','Ä','Ü','Ò','Ù','Ç',
+'É','Ê','Û','Å','Ã','Ì','Ö','×','Í','ß','Õ','Ú','Æ', 'Ý','Á','Þ',',' };
+
+static char EngSymbols[] = { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p',
+'q','r','s','t','u','v','w','x','y','z' ,'[',']' ,';', '\'',',','.','/' };
+
+static char EngSymbolsBig[] = { 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P',
+'Q','R','S','T','U','V','W','X','Y','Z' ,'{','}' ,':', '"','<','>','?' };
+
+static u32 DIKS[] = { DIK_A, DIK_B, DIK_C, DIK_D, DIK_E, DIK_F, DIK_G, DIK_H, DIK_I,
+DIK_J, DIK_K, DIK_L, DIK_M, DIK_N, DIK_O, DIK_P, DIK_Q, DIK_R, DIK_S, DIK_T, DIK_U, DIK_V,
+DIK_W, DIK_X, DIK_Y, DIK_Z, DIK_LBRACKET, DIK_RBRACKET, DIK_SEMICOLON, DIK_APOSTROPHE,
+DIK_COMMA, DIK_PERIOD, DIK_SLASH };
 
 void CConsole::AddCommand(IConsole_Command* C)
 {
@@ -45,7 +62,10 @@ void CConsole::Initialize()
 {
 	scroll_delta = cmd_delta = old_cmd_delta = 0;
 	editor[0] = 0;
+	
 	bShift = false;
+	bCtrl = false;
+
 	RecordCommands = false;
 	cur_time = 0;
 	fAccel = 1.0f;
@@ -53,6 +73,7 @@ void CConsole::Initialize()
 	rep_time = 0;
 	pFont = nullptr;
 	last_mm_timer = 0;
+	bRussian = false;
 
 	// Commands
 	extern void CCC_Register();
@@ -284,6 +305,13 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 	case DIK_LSHIFT:
 	case DIK_RSHIFT:
 		bShift = true;
+
+		if (bCtrl)
+		{
+			bRussian = !bRussian;
+			Msg("- Input language: %s", bRussian?"Rus":"Eng");
+		}
+
 		break;
 	case DIK_1:
 		if (bShift) strcat(editor, "!");
@@ -325,57 +353,19 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 		if (bShift) strcat(editor, ")");
 		else		strcat(editor, "0");
 		break;
-	case DIK_A:	strcat(editor, "a");	break;
-	case DIK_B:	strcat(editor, "b");	break;
-	case DIK_C:	strcat(editor, "c");	break;
-	case DIK_D:	strcat(editor, "d");	break;
-	case DIK_E:	strcat(editor, "e");	break;
-	case DIK_F:	strcat(editor, "f");	break;
-	case DIK_G:	strcat(editor, "g");	break;
-	case DIK_H:	strcat(editor, "h");	break;
-	case DIK_I:	strcat(editor, "i");	break;
-	case DIK_J:	strcat(editor, "j");	break;
-	case DIK_K:	strcat(editor, "k");	break;
-	case DIK_L:	strcat(editor, "l");	break;
-	case DIK_M:	strcat(editor, "m");	break;
-	case DIK_N:	strcat(editor, "n");	break;
-	case DIK_O:	strcat(editor, "o");	break;
-	case DIK_P:	strcat(editor, "p");	break;
-	case DIK_Q:	strcat(editor, "q");	break;
-	case DIK_R:	strcat(editor, "r");	break;
-	case DIK_S:	strcat(editor, "s");	break;
-	case DIK_T:	strcat(editor, "t");	break;
-	case DIK_U:	strcat(editor, "u");	break;
-	case DIK_V:	strcat(editor, "v");	break;
-	case DIK_W:	strcat(editor, "w");	break;
-	case DIK_X:	strcat(editor, "x");	break;
-	case DIK_Y:	strcat(editor, "y");	break;
-	case DIK_Z:	strcat(editor, "z");	break;
+	
 	case DIK_SPACE:		strcat(editor, " "); break;
+
+	case DIK_LCONTROL:
+	case DIK_RCONTROL:
+		bCtrl = true;
+		break;
+
 	case DIK_BACKSLASH:
 		if (bShift) strcat(editor, "|");
 		else		strcat(editor, "\\");
 		break;
-	case DIK_LBRACKET:
-		if (bShift) strcat(editor, "{");
-		else		strcat(editor, "[");
-		break;
-	case DIK_RBRACKET:
-		if (bShift) strcat(editor, "}");
-		else		strcat(editor, "]");
-		break;
-	case DIK_APOSTROPHE:
-		if (bShift) strcat(editor, "\"");
-		else		strcat(editor, "'");
-		break;
-	case DIK_COMMA:
-		if (bShift) strcat(editor, "<");
-		else		strcat(editor, ",");
-		break;
-	case DIK_PERIOD:
-		if (bShift) strcat(editor, ">");
-		else		strcat(editor, ".");
-		break;
+
 	case DIK_EQUALS:
 		if (bShift) strcat(editor, "+");
 		else		strcat(editor, "=");
@@ -393,7 +383,9 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 		else		strcat(editor, "/");
 		break;
 	case DIK_RETURN:
+		strcpy(command,editor);
 		ExecuteCommand();
+		editor[0] = '\0';
 		break;
 	case DIK_INSERT:
 		if (OpenClipboard(0))
@@ -420,6 +412,28 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 		}
 		break;
 	default:
+		{
+			int num = -1;
+			
+			for (int i = 0; i < sizeof(RusSymbols); i++)
+			{
+				if (dik == DIKS[i])
+					num = i;
+			}
+			
+			if (num != -1)
+			{
+				char ch[2];
+				ch[1] = '\0';
+
+				if (bRussian)
+					ch[0] = bShift ? RusSymbolsBig[num] : RusSymbols[num];
+				else
+					ch[0] = bShift ? EngSymbolsBig[num] : EngSymbols[num];
+				
+				strcat(editor, ch);
+			}
+		}
 		break;
 	}
 	u32	clip = MAX_LEN - 8;
@@ -447,6 +461,11 @@ void CConsole::IR_OnKeyboardRelease(int dik)
 	case DIK_RSHIFT:
 		bShift = false;
 		break;
+
+	case DIK_LCONTROL:
+	case DIK_RCONTROL:
+		bCtrl = false;
+		break;
 	}
 }
 
@@ -473,52 +492,52 @@ void CConsole::ExecuteCommand()
 	cmd_delta = 0;
 	old_cmd_delta = 0;
 
-	len = xr_strlen(editor);
+	len = xr_strlen(command);
 
 	for (i = 0; i < len; i++)
 	{
-		if ((editor[i] == '\n') || (editor[i] == '\t')) editor[i] = ' ';
+		if ((command[i] == '\n') || (command[i] == '\t')) command[i] = ' ';
 	}
 
 	j = 0;
 
 	for (i = 0; i < len; i++)
 	{
-		switch (editor[i])
+		switch (command[i])
 		{
 		case ' ':
-			if (editor[i + 1] == ' ') continue;
+			if (command[i + 1] == ' ') continue;
 			if (i == len - 1) goto outloop;
 			break;
 		}
-		converted[j++] = editor[i];
+		converted[j++] = command[i];
 	}
 outloop:
 	converted[j] = 0;
 
 	if (converted[0] == ' ')
-		strcpy_s(editor, &(converted[1]));
+		strcpy_s(command, &(converted[1]));
 	else
-		strcpy_s(editor, converted);
+		strcpy_s(command, converted);
 
-	if (editor[0] == 0)
+	if (command[0] == 0)
 		return;
 
 	if (RecordCommands)
 		Log("~", editor);
 
 	// split into cmd/params
-	editor[j++] = ' ';
-	editor[len = j] = 0;
+	command[j++] = ' ';
+	command[len = j] = 0;
 
 	for (i = 0; i < len; i++)
 	{
-		if (editor[i] != ' ')
-			first_word[i] = editor[i];
+		if (command[i] != ' ')
+			first_word[i] = command[i];
 		else
 		{
 			// last 'word' - exit
-			strcpy_s(last_word, editor + i + 1);
+			strcpy_s(last_word, command + i + 1);
 			break;
 		}
 	}
@@ -559,7 +578,7 @@ outloop:
 	else
 		Log("! Unknown command: ", first_word);
 
-	editor[0] = 0;
+	command[0] = 0;
 }
 
 void CConsole::Show()
@@ -628,7 +647,7 @@ void CConsole::SelectCommand()
 
 void CConsole::Execute(LPCSTR cmd)
 {
-	strncpy(editor, cmd, MAX_LEN - 1); editor[MAX_LEN - 1] = 0;
+	strncpy(command, cmd, MAX_LEN - 1); command[MAX_LEN - 1] = 0;
 	RecordCommands = false;
 	ExecuteCommand();
 	RecordCommands = true;
@@ -641,7 +660,7 @@ void CConsole::ExecuteScript(LPCSTR N)
 	Execute(cmd);
 }
 
-BOOL CConsole::GetBool(LPCSTR cmd, BOOL& val)
+bool CConsole::GetBool(LPCSTR cmd, bool& val)
 {
 	vecCMD_IT I = Commands.find(cmd);
 
@@ -652,7 +671,7 @@ BOOL CConsole::GetBool(LPCSTR cmd, BOOL& val)
 
 		if (cf)
 		{
-			val = cf->GetValue();
+			val = !!cf->GetValue();
 		}
 		else
 		{
@@ -660,6 +679,7 @@ BOOL CConsole::GetBool(LPCSTR cmd, BOOL& val)
 			val = !!cf->GetValue();
 		}
 	}
+
 	return val;
 }
 

@@ -38,21 +38,24 @@ private:
 	int	old_cmd_delta;
 	
 	char* editor_last;
-	BOOL bShift;
+	bool bShift;
+	bool bCtrl;
 	
-	BOOL bRepeat;
-	BOOL RecordCommands;
+	bool bRepeat;
+	bool RecordCommands;
 protected:
 	int	scroll_delta;
 	char editor[MAX_LEN];
-	BOOL bCursor;
+	char command[MAX_LEN];
+	bool bCursor;
+	bool bRussian;
 
 	CGameFont* pFont;
 public:
 	virtual ~CConsole(){};
 
 	string64 ConfigFile;
-	BOOL bVisible;
+	bool bVisible;
 	vecCMD Commands;
 
 	void AddCommand(IConsole_Command*);
@@ -62,13 +65,12 @@ public:
 	void Show();
 	void Hide();
 
-	void Save();
 	void Execute(LPCSTR cmd);
 	void ExecuteScript(LPCSTR name);
 	void ExecuteCommand();
 
 	// get
-	BOOL GetBool(LPCSTR cmd, BOOL &val);
+	bool GetBool(LPCSTR cmd, bool &val);
 	float GetFloat(LPCSTR cmd, float& val, float& min, float& max);
 	char* GetString(LPCSTR cmd);
 	int	GetInteger(LPCSTR cmd, int& val, int& min, int& max);
