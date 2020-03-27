@@ -806,9 +806,6 @@
     <ClCompile Include="Text_Console.cpp">
       <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
     </ClCompile>
-    <ClCompile Include="Text_Console_WndProc.cpp">
-      <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
-    </ClCompile>
     <ClCompile Include="D3DUtils.cpp">
       <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>

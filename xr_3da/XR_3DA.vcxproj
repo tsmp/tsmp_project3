@@ -743,7 +743,6 @@
     </ClCompile>
     <ClCompile Include="TextureDescrManager.cpp" />
     <ClCompile Include="Text_Console.cpp" />
-    <ClCompile Include="Text_Console_WndProc.cpp" />
     <ClCompile Include="thunderbolt.cpp" />
     <ClCompile Include="tntQAVI.cpp" />
     <ClCompile Include="tss_def.cpp" />

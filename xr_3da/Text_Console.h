@@ -10,19 +10,10 @@ class ENGINE_API CTextConsole :
 	using inherited = CConsole;
 
 private:
-	HWND* m_pMainWnd;
+	HWND hMainWnd;
+	HWND hConsoleWnd;
+	HWND hLogWnd;
 
-	HWND m_hConsoleWnd;
-	void CreateConsoleWnd();
-
-	HWND m_hLogWnd;
-	void CreateLogWnd();
-
-	bool m_bScrollLog;
-	u32	m_dwStartLine;
-	void DrawLog(HDC hDC, RECT* pRect);
-
-private:
 	HFONT m_hLogWndFont;
 	HFONT m_hPrevFont;
 	HBRUSH m_hBackGroundBrush;
@@ -35,6 +26,14 @@ private:
 	u32	m_dwLastUpdateTime;
 
 	CServerInfo server_info;
+	bool m_bScrollLog;
+	u32	m_dwStartLine;
+	u32 m_last_time;
+
+private:
+	void CreateConsoleWnd();
+	void CreateLogWnd();
+	void DrawLog(HDC hDC, RECT* pRect);
 
 public:
 	CTextConsole();
@@ -45,8 +44,8 @@ public:
 
 	void OnPaint();
 
-	virtual void OnRender(void);
-	virtual void OnFrame(void);
+	virtual void OnRender() {};
+	virtual void OnFrame();
 
 	virtual void IR_OnKeyboardPress(int dik);
 };
