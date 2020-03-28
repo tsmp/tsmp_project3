@@ -2,10 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XR_IOCONSOLE_H__ADEEFD61_7731_11D3_83D8_00C02610C34E__INCLUDED_)
-#define AFX_XR_IOCONSOLE_H__ADEEFD61_7731_11D3_83D8_00C02610C34E__INCLUDED_
 #pragma once
-
 #include "iinputreceiver.h"
 
 //refs
@@ -19,77 +16,103 @@ class ENGINE_API CConsole  :
 {
 public:
 	//t-defs
-	struct str_pred : public std::binary_function<char*, char*, bool> {	
+	struct str_pred : public std::binary_function<char*, char*, bool> 
+	{	
 		IC bool operator()(const char* x, const char* y) const
-		{	return xr_strcmp(x,y)<0;	}
+		{	
+			return xr_strcmp(x,y)<0;
+		}
 	};
-	typedef xr_map<LPCSTR,IConsole_Command*,str_pred>	vecCMD;
-	typedef vecCMD::iterator						vecCMD_IT;
-	enum			{ MAX_LEN = 1024 };
+	
+	using vecCMD = xr_map<LPCSTR,IConsole_Command*,str_pred>;
+	using vecCMD_IT = vecCMD::iterator;
+	
+	enum { MAX_LEN = 1024 };
 private:
-	u32				last_mm_timer;
-	float			cur_time;
-	float			rep_time;
-	float			fAccel;
+	u32 last_mm_timer;
+	float cur_time;
+	float rep_time;
+	float fAccel;
 	
-	int				cmd_delta;
-	int				old_cmd_delta;
+	int	cmd_delta;
+	int	old_cmd_delta;
 	
-	char			*editor_last;
-	BOOL			bShift;
+	char* editor_last;
+	bool bShift;
+	bool bCtrl;
 	
-	BOOL			bRepeat;
-	BOOL			RecordCommands;
+	bool bRepeat;
+	bool RecordCommands;
 protected:
-	int				scroll_delta;
-	char			editor[MAX_LEN];
-	BOOL			bCursor;
+	int	scroll_delta;
+	char editor[MAX_LEN];
+	char command[MAX_LEN];
+	bool bCursor;
+	bool bRussian;
 
-	CGameFont		*pFont;
+	CGameFont* pFont;
+
+	enum class Console_mark // (int)=char
+	{
+		no_mark = ' ',
+		mark0 = '~',	// €рко желтый
+		mark1 = '!',	// €рко красный, ошибка
+		mark2 = '@',	// €рко синий, консоль
+		mark3 = '#',	// сине-зеленый
+		mark4 = '$',	// розовый
+		mark5 = '%',	// тускло-белый
+		mark6 = '^',	// тускло-зеленый
+		mark7 = '&',	// тускло-желтый
+		mark8 = '*',	// серый
+		mark9 = '-',	// зеленый, ок
+		mark10 = '+',	// темновато-голубовато-зеленый
+		mark11 = '=',	// ооочень тускло-желтый
+		mark12 = '/'	// розовато-синий
+	};
+
+	bool is_mark(Console_mark type);
+	u32 get_mark_color(Console_mark type);
+
 public:
 	virtual ~CConsole(){};
-	string64		ConfigFile;
-	BOOL			bVisible;
-	vecCMD			Commands;
 
-	void			AddCommand			(IConsole_Command*);
-	void			RemoveCommand		(IConsole_Command*);
-	void			Reset				();
+	string64 ConfigFile;
+	bool bVisible;
+	vecCMD Commands;
 
-	void			Show				();
-	void			Hide				();
+	void AddCommand(IConsole_Command*);
+	void RemoveCommand(IConsole_Command*);
+	void Reset();
 
-	void			Save				();
-	void			Execute				(LPCSTR cmd);
-	void			ExecuteScript		(LPCSTR name);
-	void			ExecuteCommand		();
+	void Show();
+	void Hide();
+
+	void Execute(LPCSTR cmd);
+	void ExecuteScript(LPCSTR name);
+	void ExecuteCommand();
 
 	// get
-	BOOL			GetBool				(LPCSTR cmd, BOOL &val);
-	float			GetFloat			(LPCSTR cmd, float& val, float& min, float& max);
-	char *			GetString			(LPCSTR cmd);
-	int				GetInteger			(LPCSTR cmd, int& val, int& min, int& max);
-	char *			GetToken			(LPCSTR cmd);
-	xr_token*		GetXRToken			(LPCSTR cmd);
-//	char *			GetNextValue		(LPCSTR cmd);
-//	char *			GetPrevValue		(LPCSTR cmd);
+	bool GetBool(LPCSTR cmd, bool &val);
+	float GetFloat(LPCSTR cmd, float& val, float& min, float& max);
+	char* GetString(LPCSTR cmd);
+	int	GetInteger(LPCSTR cmd, int& val, int& min, int& max);
+	char* GetToken(LPCSTR cmd);
+	xr_token* GetXRToken(LPCSTR cmd);
 
-	void			SelectCommand		();
+	void SelectCommand();
 
 	// keyboard
-	void			OnPressKey			(int dik, BOOL bHold=false);
-	virtual void	IR_OnKeyboardPress		(int dik);
-	virtual void	IR_OnKeyboardHold		(int dik);
-	virtual void	IR_OnKeyboardRelease	(int dik);
+	void OnPressKey(int dik, BOOL bHold=false);
+	virtual void IR_OnKeyboardPress(int dik);
+	virtual void IR_OnKeyboardHold(int dik);
+	virtual void IR_OnKeyboardRelease(int dik);
 
 	// render & onmove
-	virtual void	OnRender			(void);
-	virtual void	OnFrame				(void);
+	virtual void OnRender();
+	virtual void OnFrame();
 
-	virtual	void	Initialize	();
-	virtual void	Destroy		();
+	virtual	void Initialize();
+	virtual void Destroy();
 };
 
 ENGINE_API extern CConsole* Console;
-
-#endif // !defined(AFX_XR_IOCONSOLE_H__ADEEFD61_7731_11D3_83D8_00C02610C34E__INCLUDED_)

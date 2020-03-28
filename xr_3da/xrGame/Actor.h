@@ -710,6 +710,8 @@ public:
 	virtual void				OnNextWeaponSlot				();
 	virtual void				OnPrevWeaponSlot				();
 
+	void NoClipFly(int cmd);
+
 public:
 	
 	virtual	void				on_weapon_shot_start			(CWeapon *weapon);

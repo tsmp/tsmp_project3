@@ -75,12 +75,12 @@ xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str &session_name)
 	strncpy(tMapName, *session_name, strchr(SName, '/') - SName);
 	MapName._set(tMapName);// = (session_name);
 	
-
 	m_iReportToMasterServer = game->get_option_i		(*session_name,"public",0);
 	m_iMaxPlayers	= game->get_option_i		(*session_name,"maxplayers",32);
-//	m_bCheckCDKey = game->get_option_i		(*session_name,"cdkey",0) != 0;
-	m_bCheckCDKey = game->get_option_i		(*session_name,"public",0) != 0;
-	//--------------------------------------------//
+
+	if (0 != strstr(Core.Params, "-check_cd_key"))
+		m_bCheckCDKey = true;
+		
 	if (game->Type() != GAME_SINGLE) 
 	{
 		//----- Check for Backend Services ---
@@ -138,17 +138,14 @@ int				xrGameSpyServer::GetPlayersCount()
 	return NumPlayers - 1;
 };
 
-bool			xrGameSpyServer::NeedToCheckClient_GameSpy_CDKey	(IClient* CL)
+bool xrGameSpyServer::NeedToCheckClient_GameSpy_CDKey(IClient* CL)
 {
 	if (!m_bCDKey_Initialized || (CL == GetServerClient() && g_dedicated_server))
-	{
-		return false;
-	};
+		return false;	
 
 	SendChallengeString_2_Client(CL);
-
 	return true;
-};
+}
 
 void			xrGameSpyServer::OnCL_Disconnected	(IClient* _CL)
 {

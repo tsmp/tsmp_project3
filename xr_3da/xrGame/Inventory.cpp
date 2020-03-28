@@ -9,13 +9,16 @@
 #include "eatable_item.h"
 #include "script_engine.h"
 #include "xrmessages.h"
-//#include "game_cl_base.h"
 #include "xr_level_controller.h"
 #include "level.h"
 #include "ai_space.h"
 #include "entitycondition.h"
 #include "game_base_space.h"
 #include "clsid_game.h"
+#include "game_object_space.h"
+#include "script_callback_ex.h"
+#include "script_game_object.h"
+#include "..\..\TSMP2_Build_Config.h"
 
 using namespace InventoryUtilities;
 
@@ -250,23 +253,24 @@ bool CInventory::Slot(PIItem pIItem, bool bNotActivate)
 	VERIFY(pIItem);
 //	Msg("To Slot %s[%d]", *pIItem->object().cName(), pIItem->object().ID());
 	
+	if (!IsGameTypeSingle())
+	{
+		u16 real_parent = pIItem->object().H_Parent() ? pIItem->object().H_Parent()->ID() : u16(-1);
+		if (GetOwner()->object_id() != real_parent)
+		{
+			Msg("! WARNING: CL: actor [%d][%s] tries to place to slot not own item [%s], that has parent [%d]",
+				GetOwner()->object_id(),GetOwner()->Name(), pIItem->Name(), real_parent);
+			return false;
+		}
+	}
+
 	if(!CanPutInSlot(pIItem)) 
 	{
-#if 0//def _DEBUG
-		Msg("there is item %s[%d,%x] in slot %d[%d,%x]", 
-				*m_slots[pIItem->GetSlot()].m_pIItem->object().cName(), 
-				m_slots[pIItem->GetSlot()].m_pIItem->object().ID(), 
-				m_slots[pIItem->GetSlot()].m_pIItem, 
-				pIItem->GetSlot(), 
-				pIItem->object().ID(),
-				pIItem);
-#endif
 		if(m_slots[pIItem->GetSlot()].m_pIItem == pIItem && !bNotActivate )
 			Activate(pIItem->GetSlot());
 
 		return false;
 	}
-
 
 	m_slots[pIItem->GetSlot()].m_pIItem = pIItem;
 
@@ -884,27 +888,77 @@ CInventoryItem *CInventory::get_object_by_id(ALife::_OBJECT_ID tObjectID)
 	return		(0);
 }
 
-//скушать предмет 
-#include "game_object_space.h"
-#include "script_callback_ex.h"
-#include "script_game_object.h"
 bool CInventory::Eat(PIItem pIItem)
 {
-	R_ASSERT(pIItem->m_pCurrentInventory==this);
-	//устанаовить съедобна ли вещь
-	CEatableItem* pItemToEat = smart_cast<CEatableItem*>(pIItem);
-	R_ASSERT				(pItemToEat);
+	if (!pIItem)
+	{
+		Msg("! ERROR: try to eat something, but pIItem is nullptr");
+		return false;
+	}
 
-	CEntityAlive *entity_alive = smart_cast<CEntityAlive*>(m_pOwner);
-	R_ASSERT				(entity_alive);
+	//устанаовить съедобна ли вещь
+	CEatableItem* pItemToEat = smart_cast<CEatableItem*>(pIItem);	
+	if (!pItemToEat)
+	{		
+		Msg("! WARNING: Attempt to eat not eatable item [%s][%d] ",pIItem->object().cNameSect(), pIItem->object().ID());
+		return false;
+	}
+
+	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(m_pOwner);
+	if (!entity_alive)
+	{
+		Msg("! WARNING: cant cast inventory owner[%s] to CEntityAlive and eat item[%s][%d]",
+			m_pOwner->Name(), pIItem->object().cNameSect(), pIItem->object().ID());
+		return false;
+	}
+
+	CInventoryOwner* IO = smart_cast<CInventoryOwner*>(entity_alive);
+	if (!IO)
+	{
+		Msg("! ERROR: cant cast entity_alive to InventoryOwner to eat item");
+		return false;
+	}
+
+	CInventory* pInventory = pItemToEat->m_pCurrentInventory;
+	if (!pInventory)
+	{
+		Msg("! ERROR: cant get inventory from item to eat");
+		return false;
+	}
+
+	if (pInventory != this)
+	{
+		Msg("! ERROR: cant eat item because this inventory[%s][%d] doesnt correspond items[%s][%d] owner[%d]"
+			,m_pOwner->Name(),m_pOwner->object_id(),pIItem->object().cNameSect(),pIItem->object().ID(),pInventory->m_pOwner->Name(), pInventory->m_pOwner->object_id());
+		return false;
+	}
+
+	if (pInventory != IO->m_inventory)
+	{
+		Msg("! ERROR: inventory doesnt correspond on eat item");
+		return false;
+	}
 	
-	pItemToEat->UseBy		(entity_alive);
+	if (pItemToEat->object().H_Parent()->ID() != entity_alive->ID())
+	{
+		Msg("! ERROR: parent ids doesnt correspond on eat item");
+		return false;
+	}
+
+	pItemToEat->UseBy(entity_alive);
 
 	if(IsGameTypeSingle() && Actor()->m_inventory == this)
 		Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject*>(pIItem))->lua_game_object());
 
+#ifdef MP_LOGGING
+	Msg("--- Actor [%d] use or eat [%d][%s]", entity_alive->ID(), pItemToEat->object().ID(),
+		pItemToEat->object().cNameSect().c_str());
+#endif // MP_LOGGING
+
 	if(pItemToEat->Empty() && entity_alive->Local())
 	{
+		Msg("! WARNING: item to eat is empty and local");
+
 		NET_Packet					P;
 		CGameObject::u_EventGen		(P,GE_OWNERSHIP_REJECT,entity_alive->ID());
 		P.w_u16						(pIItem->object().ID());
@@ -913,23 +967,28 @@ bool CInventory::Eat(PIItem pIItem)
 		CGameObject::u_EventGen		(P,GE_DESTROY,pIItem->object().ID());
 		CGameObject::u_EventSend	(P);
 
-		return		false;
+		return false;
 	}
-	return			true;
+	return true;
 }
 
 bool CInventory::InSlot(PIItem pIItem) const
 {
-	if(pIItem->GetSlot() < m_slots.size() && 
-		m_slots[pIItem->GetSlot()].m_pIItem == pIItem)
+	if(pIItem->GetSlot() < m_slots.size() 
+		&& m_slots[pIItem->GetSlot()].m_pIItem == pIItem)
 		return true;
+
 	return false;
 }
+
 bool CInventory::InBelt(PIItem pIItem) const
 {
-	if(Get(pIItem->object().ID(), false)) return true;
+	if(Get(pIItem->object().ID(), false)) 
+		return true;
+
 	return false;
 }
+
 bool CInventory::InRuck(PIItem pIItem) const
 {
 	if(Get(pIItem->object().ID(), true)) return true;

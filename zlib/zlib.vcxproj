@@ -42,8 +42,8 @@
     <_ProjectFileVersion>16.0.29511.113</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>x:\libraries\</OutDir>
-    <IntDir>x:\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\output\libraries_$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\output\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)\output\libraries_$(Configuration)\</OutDir>

@@ -25,9 +25,9 @@ float get_console_float(CConsole* c, LPCSTR cmd)
 
 bool get_console_bool(CConsole* c, LPCSTR cmd)
 {
-	BOOL val;
+	bool val;
 	val = c->GetBool (cmd, val);
-	return !!val;
+	return val;
 }
 
 #pragma optimize("s",on)

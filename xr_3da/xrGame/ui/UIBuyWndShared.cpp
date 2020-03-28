@@ -92,8 +92,15 @@ const u32	CItemMgr::GetItemsCount	() const
 	return m_items.size();
 }
 
-const shared_str&	CItemMgr::GetItemName		(u32 Idx) const
+const shared_str& CItemMgr::GetItemName(u32 Idx) const
 {
-	R_ASSERT(Idx<m_items.size());
+	//R_ASSERT(Idx<m_items.size());
+
+	if (Idx >= m_items.size())
+	{
+		Msg("! ERROR: cant get item index, invalid value [%u], max value [%u]",Idx,m_items.size());
+		return (m_items.begin() + 1)->first;
+	}
+
 	return (m_items.begin()+Idx)->first;
 }

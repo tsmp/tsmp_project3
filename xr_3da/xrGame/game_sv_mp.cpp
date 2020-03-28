@@ -137,12 +137,13 @@ void game_sv_mp::OnRoundStart()
 
 	//send "RoundStarted" Message To Allclients
 	NET_Packet			P;
-//	P.w_begin			(M_GAMEMESSAGE);
 	GenerateGameMessage (P);
 	P.w_u32				(GAME_EVENT_ROUND_STARTED);
 	u_EventSend(P);
 
 	signal_Syncronize();
+
+	Console->Execute("sv_status");
 }
 
 void game_sv_mp::OnRoundEnd()

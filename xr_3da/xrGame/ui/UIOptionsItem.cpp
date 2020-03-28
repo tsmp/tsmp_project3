@@ -65,9 +65,9 @@ void CUIOptionsItem::SaveOptFloatValue(float val)
 
 bool CUIOptionsItem::GetOptBoolValue()
 {
-	BOOL val;
+	bool val;
 	Console->GetBool(m_entry.c_str(), val);
-	return val ? true : false;
+	return val;
 }
 
 void CUIOptionsItem::SaveOptBoolValue(bool val)

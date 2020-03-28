@@ -4680,9 +4680,6 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="xr_Client_BattlEye.h">
-      <Filter>Core\Client</Filter>
-    </ClInclude>
     <ClInclude Include="CameraFirstEye.h">
       <Filter>Core\Client\Cameras</Filter>
     </ClInclude>
@@ -5546,15 +5543,6 @@
     </ClInclude>
     <ClInclude Include="RegistryFuncs.h">
       <Filter>Core\Common\Registry</Filter>
-    </ClInclude>
-    <ClInclude Include="battleye.h">
-      <Filter>Core\Server</Filter>
-    </ClInclude>
-    <ClInclude Include="battleye_system.h">
-      <Filter>Core\Server</Filter>
-    </ClInclude>
-    <ClInclude Include="xr_Server_BattlEye.h">
-      <Filter>Core\Server</Filter>
     </ClInclude>
     <ClInclude Include="xrServer.h">
       <Filter>Core\Server</Filter>
@@ -7790,9 +7778,6 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="xr_Client_BattlEye.cpp">
-      <Filter>Core\Client</Filter>
-    </ClCompile>
     <ClCompile Include="CameraFirstEye.cpp">
       <Filter>Core\Client\Cameras</Filter>
     </ClCompile>
@@ -8653,12 +8638,6 @@
     </ClCompile>
     <ClCompile Include="RegistryFuncs.cpp">
       <Filter>Core\Common\Registry</Filter>
-    </ClCompile>
-    <ClCompile Include="battleye_system.cpp">
-      <Filter>Core\Server</Filter>
-    </ClCompile>
-    <ClCompile Include="xr_Server_BattlEye.cpp">
-      <Filter>Core\Server</Filter>
     </ClCompile>
     <ClCompile Include="xrServer.cpp">
       <Filter>Core\Server</Filter>

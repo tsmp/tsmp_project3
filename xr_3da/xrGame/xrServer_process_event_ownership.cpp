@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "xrserver.h"
 #include "xrserver_objects.h"
+#include "xrServer_Objects_ALife_Monsters.h"
+#include "..\..\TSMP2_Build_Config.h"
 
 void ReplaceOwnershipHeader	(NET_Packet& P)
 {
@@ -11,22 +13,35 @@ void ReplaceOwnershipHeader	(NET_Packet& P)
 
 void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u32 time, u16 ID, BOOL bForced)
 {
-	u32 MODE			= net_flags(TRUE,TRUE, FALSE, TRUE);
+	u32 MODE = net_flags(TRUE,TRUE, FALSE, TRUE);
 
-	u16					id_parent=ID,id_entity;
-	P.r_u16				(id_entity);
-	CSE_Abstract*		e_parent	= game->get_entity_from_eid	(id_parent);
-	CSE_Abstract*		e_entity	= game->get_entity_from_eid	(id_entity);
+	u16	id_parent=ID,id_entity;
+	P.r_u16 (id_entity);
+	CSE_Abstract* e_parent = game->get_entity_from_eid	(id_parent);
+	CSE_Abstract* e_entity = game->get_entity_from_eid	(id_entity);
 
-	#ifdef DEBUG
-	Msg("sv ownership id_parent %s id_entity %s [%d]",ent_name_safe(id_parent).c_str(), ent_name_safe(id_entity).c_str(), Device.dwFrame);
-	#endif
+#ifdef MP_LOGGING
+    Msg("--- SV: Process ownership take: parent [%d][%s], item [%d][%s]", id_parent,
+        e_parent ? e_parent->name_replace() : "null_parent", id_entity, e_entity ? e_entity->name() : "null_entity");
+#endif // MP_LOGGING
 
-	if(!e_entity)		return;
-	R_ASSERT			(/*e_entity &&*/ e_parent);
+    if (!e_parent)
+    {
+        Msg("! ERROR on ownership: parent not found. parent_id = [%d], entity_id = [%d], frame = [%d].", id_parent,
+            id_entity, Device.dwFrame);
+        return;
+    }
+
+    if (!e_entity)
+    {
+        Msg("! ERROR on ownership: entity not found. parent_id = [%d], entity_id = [%d], frame = [%d].",
+            id_parent, id_entity, Device.dwFrame);
+        return;
+    }
+
 	if (0xffff != e_entity->ID_Parent)
 	{
-		Msg("sv !ownership (entity already has parent) new_parent %s id_parent %s id_entity %s [%d]",ent_name_safe(e_entity->ID_Parent).c_str(), ent_name_safe(id_parent).c_str(), ent_name_safe(id_entity).c_str(), Device.dwFrame);
+		Msg("! WARNING: ownership: (entity already has parent) new_parent %s id_parent %s id_entity %s [%d]",ent_name_safe(e_entity->ID_Parent).c_str(), ent_name_safe(id_parent).c_str(), ent_name_safe(id_entity).c_str(), Device.dwFrame);
 		return;
 	}
 
@@ -34,29 +49,35 @@ void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u32 time,
 	xrClientData*		c_entity		= e_entity->owner;
 	xrClientData*		c_from			= ID_to_client	(sender);
 
-	if ( (GetServerClient() != c_from) && (c_parent != c_from) )
+	if ((GetServerClient() != c_from) && (c_parent != c_from) )
 	{
 		// trust only ServerClient or new_ownerClient
 		return;
 	}
 
-	// Game allows ownership of entity
-	if (game->OnTouch	(id_parent,id_entity, bForced))
-	{
+    CSE_ALifeCreatureAbstract* alife_entity = smart_cast<CSE_ALifeCreatureAbstract*>(e_parent);
 
-		// Perform migration if needed
-		if (c_parent != c_entity)		PerformMigration(e_entity,c_entity,c_parent);
+    if (alife_entity && !alife_entity->g_Alive() && game->Type() != GAME_SINGLE)
+    {
+        Msg("! WARNING: dead player [%d] tries to take item [%d]", id_parent, id_entity);
+        return;
+    }
 
-		// Rebuild parentness
-		e_entity->ID_Parent			= id_parent;
-		e_parent->children.push_back(id_entity);
+    // Game allows ownership of entity
+    if (game->OnTouch(id_parent, id_entity, bForced))
+    {
+        // Perform migration if needed
+        if (c_parent != c_entity)
+            PerformMigration(e_entity, c_entity, c_parent);
 
-		if (bForced)
-		{
-			ReplaceOwnershipHeader(P);
-		}
-		// Signal to everyone (including sender)
-		SendBroadcast		(BroadcastCID,P,MODE);
-	}
+        // Rebuild parentness
+        e_entity->ID_Parent = id_parent;
+        e_parent->children.push_back(id_entity);
 
+        if (bForced)
+            ReplaceOwnershipHeader(P);
+        
+        // Signal to everyone (including sender)
+        SendBroadcast(BroadcastCID, P, MODE);
+    }
 }

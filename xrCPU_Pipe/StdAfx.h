@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\\stdafx.h"
+#include "..\xr_3da\stdafx.h"
 
 #pragma warning(disable:4995)
 #include <xmmintrin.h>

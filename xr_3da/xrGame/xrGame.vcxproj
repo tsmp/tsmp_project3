@@ -100,8 +100,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">x:\binaries\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">x:\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\output\binaries_$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\output\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
     <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">*.idb%3b*.obj%3b*.ilk%3b*.pdb%3b*.tlb%3b*.tli%3b*.tlh%3b*.tmp%3b*.rsp%3b*.bat%3b$(TargetPath)</ExtensionsToDeleteOnClean>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
@@ -122,8 +122,8 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|Win32'">x:\binaries\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|Win32'">x:\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|Win32'">false</LinkIncremental>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">X:\include\dx9sdk\include;X:\include;$(IncludePath)</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">X:\libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\xr_3da\xrrender;$(SolutionDir)\xrcore;$(SolutionDir)\components\dx9sdk\include;$(SolutionDir)\components;$(SolutionDir)\components\eax\include;$(SolutionDir)\xropenal\include\al;$(SolutionDir)\components\luabind;$(SolutionDir)\xrlua\src;$(SolutionDir)\components\loki;$(SolutionDir)\components\libogg\include;$(SolutionDir)\components\libvorbis\include;$(SolutionDir)\components\libtheora\include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\Components\DX9SDK\Lib;$(SolutionDir)\output\libraries_$(Configuration)\;$(LibraryPath)</LibraryPath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\components\libtheora\include;$(SolutionDir)\components\libvorbis\include;$(SolutionDir)\components\loki;$(SolutionDir)\xrLua\src;$(SolutionDir)\components\luabind;$(SolutionDir)\xrOpenAL\include\AL;$(SolutionDir)\components\eax\Include;$(SolutionDir)\components;$(SolutionDir)\components\dx9sdk\include;$(SolutionDir)\xrCore;$(IncludePath)</IncludePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\components\dx9sdk\lib;$(SolutionDir)\output\libraries_$(Configuration)\;$(LibraryPath)</LibraryPath>
     <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ExecutablePath)</ExecutablePath>
@@ -147,7 +147,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <SmallerTypeCheck>true</SmallerTypeCheck>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -184,7 +184,7 @@
       </MapFileName>
       <MapExports>false</MapExports>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>x:\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)\output\libraries_$(Configuration)\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
@@ -249,13 +249,13 @@
       <TypeLibraryName>x:\xrGame.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>true</OmitFramePointers>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <OmitFramePointers>false</OmitFramePointers>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;XRGAME_EXPORTS;dSINGLE;MSVC;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -299,8 +299,8 @@
       </MapFileName>
       <SubSystem>NotSet</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ImportLibrary>$(SolutionDir)\output\libraries_$(Configuration)\$(ProjectName).lib</ImportLibrary>
     </Link>
@@ -1277,7 +1277,6 @@
     <ClInclude Include="ai_space_inline.h" />
     <ClInclude Include="pch_script.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="xr_Client_BattlEye.h" />
     <ClInclude Include="CameraFirstEye.h" />
     <ClInclude Include="cameralook.h" />
     <ClInclude Include="ActorEffector.h" />
@@ -1570,9 +1569,6 @@
     <ClInclude Include="associative_vector_compare_predicate.h" />
     <ClInclude Include="associative_vector_compare_predicate_inline.h" />
     <ClInclude Include="RegistryFuncs.h" />
-    <ClInclude Include="battleye.h" />
-    <ClInclude Include="battleye_system.h" />
-    <ClInclude Include="xr_Server_BattlEye.h" />
     <ClInclude Include="xrServer.h" />
     <ClInclude Include="xrServer_Space.h" />
     <ClInclude Include="DrawUtils.h" />
@@ -4202,7 +4198,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Priquel|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="xr_Client_BattlEye.cpp" />
     <ClCompile Include="CameraFirstEye.cpp" />
     <ClCompile Include="cameralook.cpp" />
     <ClCompile Include="ActorEffector.cpp" />
@@ -5583,8 +5578,6 @@
     <ClCompile Include="smart_cast_stats.cpp" />
     <ClCompile Include="string_table.cpp" />
     <ClCompile Include="RegistryFuncs.cpp" />
-    <ClCompile Include="battleye_system.cpp" />
-    <ClCompile Include="xr_Server_BattlEye.cpp" />
     <ClCompile Include="xrServer.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -6755,6 +6748,9 @@
     <ProjectReference Include="..\..\xrCore\xrCore.vcxproj">
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\xrCPU_Pipe\xrCPU_Pipe.vcxproj">
+      <Project>{ca0649dd-d089-423a-981c-46b57a884eb9}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\xrLua\xrLua.vcxproj">
       <Project>{9ace5473-6d68-4b96-ac42-b39eaba0fe1f}</Project>

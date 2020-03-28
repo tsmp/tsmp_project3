@@ -21,6 +21,8 @@
 #include "Text_Console.h"
 #include <process.h>
 
+#include "..\TSMP2_Build_Config.h"
+
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= NULL;
 BOOL	g_bIntroFinished			= FALSE;
@@ -602,7 +604,10 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	g_dedicated_server			= true;
 #endif // DEDICATED_SERVER
 
-	SetThreadAffinityMask		(GetCurrentThread(),1);
+	//SetThreadAffinityMask		(GetCurrentThread(),1);
+
+	if (!strstr(lpCmdLine, "-priority") == NULL)
+		SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);	
 
 	// Title window
 	logoWindow					= CreateDialog(GetModuleHandle(NULL),	MAKEINTRESOURCE(IDD_STARTUP), 0, logDlgProc );

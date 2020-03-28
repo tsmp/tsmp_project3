@@ -322,17 +322,11 @@ void CLevel::ClientReceive()
 					Game().m_WeaponUsageStatistic->OnUpdateRespond(P);
 			}break;
 		case M_BATTLEYE:
-			{
-#ifdef BATTLEYE
-			battleye_system.ReadPacketClient( P );
-#endif // BATTLEYE
-			}break;
+			break;
 		}
 
 		net_msg_Release();
 	}	
-
-//	if (!g_bDebugEvents) ProcessGameSpawns();
 }
 
 void				CLevel::OnMessage				(void* data, u32 size)

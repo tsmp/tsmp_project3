@@ -16,6 +16,8 @@
 #include "x_ray.h"
 #include "render.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 ENGINE_API CRenderDevice Device;
 ENGINE_API BOOL g_bRendering = FALSE; 
 
