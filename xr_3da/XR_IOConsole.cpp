@@ -13,9 +13,7 @@
 #include "xr_trims.h"
 #include "CustomHUD.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#pragma warning(pop)
+static u32 const default_font_color = color_rgba(250, 250, 250, 250);
 
 constexpr auto LDIST = .05f;
 
@@ -66,7 +64,7 @@ void CConsole::Initialize()
 	bShift = false;
 	bCtrl = false;
 
-	RecordCommands = false;
+	RecordCommands = true;
 	cur_time = 0;
 	fAccel = 1.0f;
 	bVisible = false;
@@ -214,32 +212,13 @@ void CConsole::OnRender()
 		if (!ls)
 			continue;
 
-		switch (ls[0])
-		{
-		case '~':
-			pFont->SetColor(color_rgba(255, 255, 0, 255));
-			out_font(pFont, &ls[2], ypos);
-			break;
-		case '!':
-			pFont->SetColor(color_rgba(255, 0, 0, 255));
-			out_font(pFont, &ls[2], ypos);
-			break;
-		case '*':
-			pFont->SetColor(color_rgba(128, 128, 128, 255));
-			out_font(pFont, &ls[2], ypos);
-			break;
-		case '-':
-			pFont->SetColor(color_rgba(0, 255, 0, 255));
-			out_font(pFont, &ls[2], ypos);
-			break;
-		case '#':
-			pFont->SetColor(color_rgba(0, 222, 205, 145));
-			out_font(pFont, &ls[2], ypos);
-			break;
-		default:
-			pFont->SetColor(color_rgba(255, 255, 255, 255));
-			out_font(pFont, ls, ypos);
-		}
+		Console_mark cm = (Console_mark)ls[0];
+		pFont->SetColor(get_mark_color(cm));
+
+		u8 b = (is_mark(cm)) ? 2 : 0;
+		LPCSTR pOut = ls + b;
+
+		out_font(pFont, pOut, ypos);		
 	}
 
 	pFont->OnRender();
@@ -524,7 +503,7 @@ outloop:
 		return;
 
 	if (RecordCommands)
-		Log("~", editor);
+		Log("@", command);
 
 	// split into cmd/params
 	command[j++] = ' ';
@@ -621,7 +600,7 @@ void CConsole::SelectCommand()
 		if (0 == *(*LogFile)[p])
 			continue;
 
-		if ((*LogFile)[p][0] == '~')
+		if ((*LogFile)[p][0] == '@')
 		{
 			k--;
 
@@ -640,9 +619,7 @@ void CConsole::SelectCommand()
 
 	}
 	else
-	{
-		old_cmd_delta = cmd_delta;
-	}
+		old_cmd_delta = cmd_delta;	
 }
 
 void CConsole::Execute(LPCSTR cmd)
@@ -670,9 +647,7 @@ bool CConsole::GetBool(LPCSTR cmd, bool& val)
 		CCC_Mask* cf = dynamic_cast<CCC_Mask*>(C);
 
 		if (cf)
-		{
-			val = !!cf->GetValue();
-		}
+			val = !!cf->GetValue();		
 		else
 		{
 			CCC_Integer* cf = dynamic_cast<CCC_Integer*>(C);
@@ -723,8 +698,10 @@ int CConsole::GetInteger(LPCSTR cmd, int& val, int& min, int& max)
 			min = 0;
 			max = 1;
 		}
+
 		return val;
 	}
+
 	return val;
 }
 
@@ -740,7 +717,7 @@ char* CConsole::GetString(LPCSTR cmd)
 		return stat;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 char* CConsole::GetToken(LPCSTR cmd)
@@ -760,4 +737,54 @@ xr_token* CConsole::GetXRToken(LPCSTR cmd)
 	}
 
 	return NULL;
+}
+
+u32 CConsole::get_mark_color(Console_mark type)
+{
+	u32 color = default_font_color;
+
+	switch (type)
+	{
+		case Console_mark::mark0: color = color_rgba(255, 255, 0, 255); break;
+		case Console_mark::mark1: color = color_rgba(255, 0, 0, 255); break;
+		case Console_mark::mark2: color = color_rgba(100, 100, 255, 255); break;
+		case Console_mark::mark3: color = color_rgba(0, 222, 205, 155); break;
+		case Console_mark::mark4: color = color_rgba(255, 0, 255, 255); break;
+		case Console_mark::mark5: color = color_rgba(155, 55, 170, 155); break;
+		case Console_mark::mark6: color = color_rgba(25, 200, 50, 255); break;
+		case Console_mark::mark7: color = color_rgba(255, 255, 0, 255); break;
+		case Console_mark::mark8: color = color_rgba(128, 128, 128, 255); break;
+		case Console_mark::mark9: color = color_rgba(0, 255, 0, 255); break;
+		case Console_mark::mark10: color = color_rgba(55, 155, 140, 255); break;
+		case Console_mark::mark11: color = color_rgba(205, 205, 105, 255); break;
+		case Console_mark::mark12: color = color_rgba(128, 128, 250, 255); break;
+		case Console_mark::no_mark:
+		default: break;
+	}
+
+	return color;
+}
+
+bool CConsole::is_mark(Console_mark type)
+{
+	switch (type)
+	{
+		case Console_mark::mark0:
+		case Console_mark::mark1:
+		case Console_mark::mark2:
+		case Console_mark::mark3:
+		case Console_mark::mark4:
+		case Console_mark::mark5:
+		case Console_mark::mark6:
+		case Console_mark::mark7:
+		case Console_mark::mark8:
+		case Console_mark::mark9:
+		case Console_mark::mark10:
+		case Console_mark::mark11:
+		case Console_mark::mark12:
+			return true;
+			break;			
+	}
+
+	return false;
 }

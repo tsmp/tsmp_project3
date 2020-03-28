@@ -51,6 +51,28 @@ protected:
 	bool bRussian;
 
 	CGameFont* pFont;
+
+	enum class Console_mark // (int)=char
+	{
+		no_mark = ' ',
+		mark0 = '~',	// €рко желтый
+		mark1 = '!',	// €рко красный, ошибка
+		mark2 = '@',	// €рко синий, консоль
+		mark3 = '#',	// сине-зеленый
+		mark4 = '$',	// розовый
+		mark5 = '%',	// тускло-белый
+		mark6 = '^',	// тускло-зеленый
+		mark7 = '&',	// тускло-желтый
+		mark8 = '*',	// серый
+		mark9 = '-',	// зеленый, ок
+		mark10 = '+',	// темновато-голубовато-зеленый
+		mark11 = '=',	// ооочень тускло-желтый
+		mark12 = '/'	// розовато-синий
+	};
+
+	bool is_mark(Console_mark type);
+	u32 get_mark_color(Console_mark type);
+
 public:
 	virtual ~CConsole(){};
 

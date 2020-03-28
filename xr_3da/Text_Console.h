@@ -48,4 +48,6 @@ public:
 	virtual void OnFrame();
 
 	virtual void IR_OnKeyboardPress(int dik);
+	virtual void IR_OnKeyboardHold(int dik);
+	virtual void IR_OnKeyboardRelease(int dik);
 };

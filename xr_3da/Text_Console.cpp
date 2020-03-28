@@ -33,7 +33,7 @@ CTextConsole::CTextConsole()
 	hLogWnd = nullptr;
 	m_hLogWndFont = nullptr;
 
-	m_bScrollLog = true;
+	m_bScrollLog = false;
 	m_dwStartLine = 0;
 
 	m_bNeedUpdate = false;
@@ -290,37 +290,16 @@ void CTextConsole::DrawLog(HDC hDC, RECT* pRect)
 			break;
 
 		LPCSTR Str = *(*LogFile)[i];
-		LPCSTR pOut = Str;
 
 		if (!Str)
 			continue;
 
-		switch (Str[0])
-		{
-			case '~':
-				SetTextColor(hDC, RGB(0, 0, 255));
-				pOut = Str + 2;
-				break;
-			case '!':
-				SetTextColor(hDC, RGB(255, 0, 0));
-				pOut = Str + 2;
-				break;
-			case '*':
-				SetTextColor(hDC, RGB(128, 128, 128));
-				pOut = Str + 2;
-				break;
-			case '-':
-				SetTextColor(hDC, RGB(0, 255, 0));
-				pOut = Str + 2;
-				break;
-			case '#':
-				SetTextColor(hDC, RGB(222, 205, 145));
-				pOut = Str + 2;
-				break;
-			default:
-				SetTextColor(hDC, RGB(255, 255, 255));
-				break;
-		}
+		Console_mark cm = (Console_mark)Str[0];
+		COLORREF c2 = (COLORREF)bgr2rgb(get_mark_color(cm));
+		SetTextColor(hDC, c2);
+		
+		u8 b = (is_mark(cm)) ? 2 : 0;
+		LPCSTR pOut = Str + b;
 
 		BOOL res = TextOut(hDC, 10, YPos, pOut, xr_strlen(pOut));
 		R_ASSERT(res);
@@ -349,14 +328,29 @@ void CTextConsole::DrawLog(HDC hDC, RECT* pRect)
 }
 
 void CTextConsole::IR_OnKeyboardPress(int dik)
-{
-	m_bNeedUpdate = true;
+{	
+	m_bScrollLog = true;
 	CConsole::IR_OnKeyboardPress(dik);
+}
+
+void CTextConsole::IR_OnKeyboardHold(int dik)
+{
+	m_bScrollLog = true;
+	CConsole::IR_OnKeyboardHold(dik);
+}
+
+void CTextConsole::IR_OnKeyboardRelease(int dik)
+{
+	m_bScrollLog = false;
+	CConsole::IR_OnKeyboardRelease(dik);
 }
 
 void CTextConsole::OnFrame()
 {
 	inherited::OnFrame();
+
+	if (m_bScrollLog)
+		m_bNeedUpdate = true;
 
 	if (!m_bNeedUpdate && (m_dwLastUpdateTime + 1000 / g_svTextConsoleUpdateRate) > Device.dwTimeGlobal)
 		return;
