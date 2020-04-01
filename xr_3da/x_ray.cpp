@@ -18,7 +18,7 @@
 #include "LightAnimLibrary.h"
 #include "ispatial.h"
 #include "CopyProtection.h"
-#include "Text_Console.h"
+#include "DedicatedSrvConsole.h"
 #include <process.h>
 
 #include "..\TSMP2_Build_Config.h"
@@ -144,7 +144,7 @@ void InitConsole	()
 {
 #ifdef DEDICATED_SERVER
 	{
-		Console						= xr_new<CTextConsole>	();		
+		Console						= xr_new<CDedicatedSrvConsole>	();		
 	}
 #else
 	//	else

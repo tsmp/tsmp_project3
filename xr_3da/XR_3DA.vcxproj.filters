@@ -420,9 +420,6 @@
     <ClInclude Include="r_constants_cache.h">
       <Filter>Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
     </ClInclude>
-    <ClInclude Include="Text_Console.h">
-      <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
-    </ClInclude>
     <ClInclude Include="D3DUtils.h">
       <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
@@ -503,6 +500,9 @@
     </ClInclude>
     <ClInclude Include="perlin.h">
       <Filter>Engine\Noise</Filter>
+    </ClInclude>
+    <ClInclude Include="DedicatedSrvConsole.h">
+      <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -803,9 +803,6 @@
     <ClCompile Include="r_constants_cache.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
     </ClCompile>
-    <ClCompile Include="Text_Console.cpp">
-      <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
-    </ClCompile>
     <ClCompile Include="D3DUtils.cpp">
       <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
@@ -874,6 +871,9 @@
     </ClCompile>
     <ClCompile Include="perlin.cpp">
       <Filter>Engine\Noise</Filter>
+    </ClCompile>
+    <ClCompile Include="DedicatedSrvConsole.cpp">
+      <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

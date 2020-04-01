@@ -1,10 +1,10 @@
-// CTextConsole, used on dedicated server instead of CConsole
+// CDedicatedSrvConsole, used on dedicated server instead of CConsole
 
 #pragma once
 #include "XR_IOConsole.h"
 #include "IGame_Level.h"
 
-class ENGINE_API CTextConsole :
+class ENGINE_API CDedicatedSrvConsole :
 	public CConsole
 {
 	using inherited = CConsole;
@@ -36,8 +36,8 @@ private:
 	void DrawLog(HDC hDC, RECT* pRect);
 
 public:
-	CTextConsole();
-	virtual ~CTextConsole();
+	CDedicatedSrvConsole();
+	virtual ~CDedicatedSrvConsole();
 
 	virtual	void Initialize();
 	virtual	void Destroy();

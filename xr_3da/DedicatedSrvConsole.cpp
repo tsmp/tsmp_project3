@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Text_Console.h"
+#include "DedicatedSrvConsole.h"
 
 extern const char* ioc_prompt;
 int g_svTextConsoleUpdateRate = 1;
@@ -13,8 +13,8 @@ LRESULT CALLBACK TextConsole_LogWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 	case WM_PAINT:
 	{
-		CTextConsole* pTextConsole = (CTextConsole*)Console;
-		pTextConsole->OnPaint();
+		CDedicatedSrvConsole* pConsole = (CDedicatedSrvConsole*)Console;
+		pConsole->OnPaint();
 		return (LRESULT)0; // Say we handled it.
 	}
 	break;
@@ -26,7 +26,7 @@ LRESULT CALLBACK TextConsole_LogWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-CTextConsole::CTextConsole()
+CDedicatedSrvConsole::CDedicatedSrvConsole()
 {
 	hMainWnd = nullptr;
 	hConsoleWnd = nullptr;
@@ -41,12 +41,12 @@ CTextConsole::CTextConsole()
 	m_last_time = Device.dwTimeGlobal;
 }
 
-CTextConsole::~CTextConsole()
+CDedicatedSrvConsole::~CDedicatedSrvConsole()
 {
 	hMainWnd = nullptr;
 }
 
-void CTextConsole::CreateConsoleWnd()
+void CDedicatedSrvConsole::CreateConsoleWnd()
 {
 	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(0);
 
@@ -95,7 +95,7 @@ void CTextConsole::CreateConsoleWnd()
 	R_ASSERT2(hConsoleWnd, "Unable to Create TextConsole Window!");
 }
 
-void CTextConsole::CreateLogWnd()
+void CDedicatedSrvConsole::CreateLogWnd()
 {
 	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(0);
 
@@ -187,7 +187,7 @@ void CTextConsole::CreateLogWnd()
 	m_hBackGroundBrush = GetStockBrush(BLACK_BRUSH);
 }
 
-void CTextConsole::Initialize()
+void CDedicatedSrvConsole::Initialize()
 {
 	CConsole::Initialize();
 
@@ -203,7 +203,7 @@ void CTextConsole::Initialize()
 	m_last_time = Device.dwTimeGlobal;
 }
 
-void CTextConsole::Destroy()
+void CDedicatedSrvConsole::Destroy()
 {
 	CConsole::Destroy();
 
@@ -223,7 +223,7 @@ void CTextConsole::Destroy()
 	DestroyWindow(hConsoleWnd);
 }
 
-void CTextConsole::OnPaint()
+void CDedicatedSrvConsole::OnPaint()
 {
 	RECT rect;
 	PAINTSTRUCT pstruct;
@@ -257,7 +257,7 @@ void CTextConsole::OnPaint()
 	EndPaint(hLogWnd, &pstruct);
 }
 
-void CTextConsole::DrawLog(HDC hDC, RECT* pRect)
+void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT* pRect)
 {
 	TEXTMETRIC tm;
 	GetTextMetrics(hDC, &tm);
@@ -327,25 +327,25 @@ void CTextConsole::DrawLog(HDC hDC, RECT* pRect)
 	}
 }
 
-void CTextConsole::IR_OnKeyboardPress(int dik)
+void CDedicatedSrvConsole::IR_OnKeyboardPress(int dik)
 {	
 	m_bScrollLog = true;
 	CConsole::IR_OnKeyboardPress(dik);
 }
 
-void CTextConsole::IR_OnKeyboardHold(int dik)
+void CDedicatedSrvConsole::IR_OnKeyboardHold(int dik)
 {
 	m_bScrollLog = true;
 	CConsole::IR_OnKeyboardHold(dik);
 }
 
-void CTextConsole::IR_OnKeyboardRelease(int dik)
+void CDedicatedSrvConsole::IR_OnKeyboardRelease(int dik)
 {
 	m_bScrollLog = false;
 	CConsole::IR_OnKeyboardRelease(dik);
 }
 
-void CTextConsole::OnFrame()
+void CDedicatedSrvConsole::OnFrame()
 {
 	inherited::OnFrame();
 
