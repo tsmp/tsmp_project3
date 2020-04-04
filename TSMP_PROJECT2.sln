@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dedicated", "dedicated", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rd party", "3rd party", "{2BFC806B-CE92-4EA4-8FE8-5F2EA54BA348}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XR_3DA", "xr_3da\XR_3DA.vcxproj", "{2578C6D8-660D-48AE-9322-7422F8664F06}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrEngine", "xrEngine\xrEngine.vcxproj", "{2578C6D8-660D-48AE-9322-7422F8664F06}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrCPU_Pipe", "xrCPU_Pipe\xrCPU_Pipe.vcxproj", "{CA0649DD-D089-423A-981C-46B57A884EB9}"
 EndProject
@@ -27,9 +27,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrCore", "xrCore\xrCore.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrCDB", "xrCDB\xrCDB.vcxproj", "{A19B1DF2-82EC-4364-8BDF-85D13A1C89B5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrRender_R1", "xr_3da\xrRender_R1\xrRender_R1.vcxproj", "{57A498C9-A741-4DDF-8EFC-BFB9EB6B00E2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrRender_R1", "xrEngine\xrRender_R1\xrRender_R1.vcxproj", "{57A498C9-A741-4DDF-8EFC-BFB9EB6B00E2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrRender_R2", "xr_3da\xrRender_R2\xrRender_R2.vcxproj", "{963BA4E5-499A-454D-B002-1D5ECE0527A6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrRender_R2", "xrEngine\xrRender_R2\xrRender_R2.vcxproj", "{963BA4E5-499A-454D-B002-1D5ECE0527A6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrXMLParser", "xrXMLParser\xrXMLParser.vcxproj", "{94A1C366-3D19-48E6-8170-4ADC2E70DF98}"
 EndProject
