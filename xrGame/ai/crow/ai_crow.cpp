@@ -11,7 +11,7 @@
 #include "ai_crow.h"
 #include "../../hudmanager.h"
 #include "../../level.h"
-#include "../../../skeletonanimated.h"
+#include "../skeletonanimated.h"
 
 void CAI_Crow::SAnim::Load	(CKinematicsAnimated* visual, LPCSTR prefix)
 {

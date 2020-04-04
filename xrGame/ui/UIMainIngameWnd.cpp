@@ -27,7 +27,7 @@
 
 #include "../date_time.h"
 #include "../xrServer_Objects_ALife_Monsters.h"
-#include "../../LightAnimLibrary.h"
+#include "../LightAnimLibrary.h"
 
 #include "UIInventoryUtilities.h"
 

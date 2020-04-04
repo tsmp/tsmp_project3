@@ -1,6 +1,6 @@
 #pragma once
 #include "control_combase.h"
-#include "../../../SkeletonAnimated.h"
+#include "../SkeletonAnimated.h"
 
 struct SControlMeleeJumpData : public ControlCom::IComData {
 	MotionID		anim_ls;
