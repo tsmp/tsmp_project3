@@ -13,10 +13,10 @@ public		:
 	typedef char	TInfo	[256];
 	typedef char	TStatus	[256];
 protected	:
-	LPCSTR			cName;
-	bool			bEnabled;
-	bool			bLowerCaseArgs;
-	bool			bEmptyArgsHandled;
+	LPCSTR cName;
+	bool bEnabled;
+	bool bLowerCaseArgs;
+	bool bEmptyArgsHandled;
 
 	IC	bool		EQ(LPCSTR S1, LPCSTR S2) { return xr_strcmp(S1,S2)==0; }
 public		:

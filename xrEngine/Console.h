@@ -9,10 +9,9 @@
 class ENGINE_API CGameFont;
 class ENGINE_API IConsole_Command;
 
-class ENGINE_API CConsole  :
-	public IInputReceiver,
-	public pureRender,
-	public pureFrame
+class ENGINE_API CConsole : public IInputReceiver,
+							public pureRender,
+							public pureFrame
 {
 public:
 	//t-defs

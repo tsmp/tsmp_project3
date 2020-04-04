@@ -41,7 +41,7 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
 #include "MainMenu.h"
-#include "..\XR_IOConsole.h"
+#include "..\Console.h"
 
 #include <functional>
 

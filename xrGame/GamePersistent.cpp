@@ -1,7 +1,7 @@
 #include "pch_script.h"
 #include "gamepersistent.h"
 #include "../fmesh.h"
-#include "../xr_ioconsole.h"
+#include "../Console.h"
 #include "gamemtllib.h"
 #include "../skeletoncustom.h"
 #include "profiler.h"

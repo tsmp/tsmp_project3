@@ -1,7 +1,7 @@
 // CDedicatedSrvConsole, used on dedicated server instead of CConsole
 
 #pragma once
-#include "XR_IOConsole.h"
+#include "Console.h"
 #include "IGame_Level.h"
 
 class ENGINE_API CDedicatedSrvConsole :

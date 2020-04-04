@@ -2,7 +2,7 @@
 #include "MainMenu.h"
 #include "UI/UIDialogWnd.h"
 #include "ui/UIMessageBoxEx.h"
-#include "../xr_IOConsole.h"
+#include "../Console.h"
 #include "../IGame_Level.h"
 #include "../CameraManager.h"
 #include "xr_Level_controller.h"

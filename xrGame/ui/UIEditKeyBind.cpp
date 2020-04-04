@@ -174,7 +174,7 @@ void CUIEditKeyBind::SaveValue()
 	m_bChanged			= false;
 }
 
-#include "../xr_ioconsole.h"
+#include "../Console.h"
 
 void CUIEditKeyBind::BindAction2Key()
 {

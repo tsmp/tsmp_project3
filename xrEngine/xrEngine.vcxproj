@@ -586,8 +586,8 @@
     <ClInclude Include="xr_effgamma.h" />
     <ClInclude Include="xr_efflensflare.h" />
     <ClInclude Include="xr_input.h" />
-    <ClInclude Include="XR_IOConsole.h" />
-    <ClInclude Include="xr_ioc_cmd.h" />
+    <ClInclude Include="Console.h" />
+    <ClInclude Include="Console_commands.h" />
     <ClInclude Include="xr_object.h" />
     <ClInclude Include="xr_object_list.h" />
     <ClInclude Include="x_ray.h" />
@@ -761,8 +761,8 @@
     <ClCompile Include="xr_effgamma.cpp" />
     <ClCompile Include="xr_efflensflare.cpp" />
     <ClCompile Include="Xr_input.cpp" />
-    <ClCompile Include="XR_IOConsole.cpp" />
-    <ClCompile Include="xr_ioc_cmd.cpp" />
+    <ClCompile Include="Console.cpp" />
+    <ClCompile Include="Console_commands.cpp" />
     <ClCompile Include="xr_object.cpp" />
     <ClCompile Include="xr_object_list.cpp" />
     <ClCompile Include="x_ray.cpp" />

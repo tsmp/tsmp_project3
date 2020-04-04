@@ -8,7 +8,7 @@
 #include "../x_ray.h"
 #include "../device.h"
 #include "../IGame_Persistent.h"
-#include "../xr_ioconsole.h"
+#include "../Console.h"
 #include "MainMenu.h"
 
 BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )

@@ -11,7 +11,7 @@
 #include "ai_space.h"
 #include "../IGame_Persistent.h"
 
-#include "../XR_IOConsole.h"
+#include "../Console.h"
 //#include "script_engine.h"
 #include "ui/UIInventoryUtilities.h"
 

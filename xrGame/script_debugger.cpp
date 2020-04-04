@@ -2,7 +2,7 @@
 #include "script_debugger.h"
 #include "script_lua_helper.h"
 #include "mslotutils.h"
-// #include "../XR_IOConsole.h"
+// #include "../Console.h"
 
 //CScriptDebugger* CScriptDebugger::m_pDebugger = NULL;
 

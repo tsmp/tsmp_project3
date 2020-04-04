@@ -113,8 +113,8 @@ float		ps_r2_slight_fade			= 1.f;				// 1.f
 float		ps_r2_gloss_factor			= 1.0f;
 //- Mad Max
 #ifndef _EDITOR
-#include	"..\xr_ioconsole.h"
-#include	"..\xr_ioc_cmd.h"
+#include	"..\Console.h"
+#include	"..\Console_commands.h"
 
 //-----------------------------------------------------------------------
 class CCC_tf_Aniso		: public CCC_Integer

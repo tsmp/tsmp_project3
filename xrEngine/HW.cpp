@@ -8,7 +8,7 @@
 #include <d3dx9.h>
 #pragma warning(default:4995)
 #include "HW.h"
-#include "xr_IOconsole.h"
+#include "Console.h"
 
 #include "..\TSMP2_Build_Config.h"
 

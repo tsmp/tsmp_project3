@@ -8,7 +8,7 @@
 
 #include "gamefont.h"
 #include "fDemoRecord.h"
-#include "xr_ioconsole.h"
+#include "Console.h"
 #include "xr_input.h"
 #include "xr_object.h"
 #include "render.h"

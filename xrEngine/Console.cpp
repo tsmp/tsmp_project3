@@ -1,14 +1,12 @@
-// XR_IOConsole.cpp: implementation of the CConsole class.
-//
-//////////////////////////////////////////////////////////////////////
+// Console.cpp: implementation of the CConsole class.
 
 #include "stdafx.h"
 #include "igame_level.h"
 #include "igame_persistent.h"
 #include "x_ray.h"
-#include "xr_ioconsole.h"
+#include "Console.h"
 #include "xr_input.h"
-#include "xr_ioc_cmd.h"
+#include "Console_commands.h"
 #include "GameFont.h"
 #include "xr_trims.h"
 #include "CustomHUD.h"

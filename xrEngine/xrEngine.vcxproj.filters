@@ -471,10 +471,10 @@
     <ClInclude Include="xrXRC.h">
       <Filter>Engine\Collision Core</Filter>
     </ClInclude>
-    <ClInclude Include="xr_ioc_cmd.h">
+    <ClInclude Include="Console_commands.h">
       <Filter>Engine\Console</Filter>
     </ClInclude>
-    <ClInclude Include="XR_IOConsole.h">
+    <ClInclude Include="Console.h">
       <Filter>Engine\Console</Filter>
     </ClInclude>
     <ClInclude Include="Engine.h">
@@ -842,10 +842,10 @@
     <ClCompile Include="xrXRC.cpp">
       <Filter>Engine\Collision Core</Filter>
     </ClCompile>
-    <ClCompile Include="xr_ioc_cmd.cpp">
+    <ClCompile Include="Console_commands.cpp">
       <Filter>Engine\Console</Filter>
     </ClCompile>
-    <ClCompile Include="XR_IOConsole.cpp">
+    <ClCompile Include="Console.cpp">
       <Filter>Engine\Console</Filter>
     </ClCompile>
     <ClCompile Include="Engine.cpp">

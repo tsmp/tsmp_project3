@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "igame_level.h"
 #include "fdemoplay.h"
-#include "xr_ioconsole.h"
+#include "Console.h"
 #include "motion.h"
 #include "Render.h"
 #include "CameraManager.h"

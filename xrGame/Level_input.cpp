@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <dinput.h>
 #include "HUDmanager.h"
-#include "../xr_ioconsole.h"
+#include "../Console.h"
 #include "entity_alive.h"
 #include "game_sv_single.h"
 #include "alife_simulator.h"
