@@ -742,10 +742,10 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 {
 	__try 
 	{
-#ifdef DEDICATED_SERVER
+#if defined (DEDICATED_SERVER) || defined (USE_DEDICATED_DEBUG_SYSTEM)
 		Debug._initialize	(true);
-#else // DEDICATED_SERVER
-		Debug._initialize	(false);
+#else // DEDICATED_SERVER		
+		Debug._initialize(false);
 #endif // DEDICATED_SERVER
 
 		WinMain_impl		(hInstance,hPrevInstance,lpCmdLine,nCmdShow);

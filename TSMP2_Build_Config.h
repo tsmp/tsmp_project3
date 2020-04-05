@@ -1,3 +1,4 @@
 
 //#define DEDICATED_SERVER
 #define MP_LOGGING
+#define USE_DEDICATED_DEBUG_SYSTEM
