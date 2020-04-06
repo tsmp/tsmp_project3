@@ -590,6 +590,7 @@ void game_sv_GameState::UpdateClientPing(xrClientData* client)
 	u16 actualPing = u16(client->stats.getPing());
 
 	bool bNeedToUpdate = !client->ps->lastPingUpdateTime // first update
+		|| !actualPing
 		|| actualPing != client->ps->ping 
 		|| client == m_server->GetServerClient();
 
@@ -600,7 +601,7 @@ void game_sv_GameState::UpdateClientPing(xrClientData* client)
 	}
 	else
 	{
-		if ((client->ps->lastPingUpdateTime + 10000) < Level().timeServer())
+		if ((client->ps->lastPingUpdateTime + 25000) < Level().timeServer())
 		{
 			Msg("! WARNING client [%s] crashed? Server time [%u], last ping [%u], update time [%u]"
 				, client->ps->getName()
