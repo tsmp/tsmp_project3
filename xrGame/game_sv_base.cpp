@@ -15,163 +15,195 @@
 
 #include "debug_renderer.h"
 
-ENGINE_API	bool g_dedicated_server;
+ENGINE_API bool g_dedicated_server;
 
-#define			MAPROT_LIST_NAME		"maprot_list.ltx"
-string_path		MAPROT_LIST		= "";
-BOOL	net_sv_control_hit	= FALSE		;
-BOOL	g_bCollectStatisticData = FALSE;
+#define MAPROT_LIST_NAME "maprot_list.ltx"
+string_path MAPROT_LIST = "";
+BOOL net_sv_control_hit = FALSE;
+BOOL g_bCollectStatisticData = FALSE;
 
-//-----------------------------------------------------------------
-u32		g_sv_base_dwRPointFreezeTime	= 0;
-int		g_sv_base_iVotingEnabled		= 0x00ff;
-//-----------------------------------------------------------------
+u32 g_sv_base_dwRPointFreezeTime = 0;
+int g_sv_base_iVotingEnabled = 0x00ff;
 
-xr_token	round_end_result_str[]=
+xr_token round_end_result_str[] =
 {
-	{ "Finish",					eRoundEnd_Finish			},
-	{ "Game restarted",			eRoundEnd_GameRestarted		},
-	{ "Game restarted fast",	eRoundEnd_GameRestartedFast	},
-	{ "Time limit",				eRoundEnd_TimeLimit			},
-	{ "Frag limit",				eRoundEnd_FragLimit			},
-	{ "Artefact limit",			eRoundEnd_ArtrefactLimit	},
-	{ "Unknown",				eRoundEnd_Force				},
-	{ 0,						0							}
+		{"Finish", eRoundEnd_Finish},
+		{"Game restarted", eRoundEnd_GameRestarted},
+		{"Game restarted fast", eRoundEnd_GameRestartedFast},
+		{"Time limit", eRoundEnd_TimeLimit},
+		{"Frag limit", eRoundEnd_FragLimit},
+		{"Artefact limit", eRoundEnd_ArtrefactLimit},
+		{"Unknown", eRoundEnd_Force},
+		{0, 0}
 };
 
 // Main
-game_PlayerState*	game_sv_GameState::get_it					(u32 it)
+game_PlayerState *game_sv_GameState::get_it(u32 it)
 {
-	xrClientData*	C	= (xrClientData*)m_server->client_Get			(it);
-	if (0==C)			return 0;
-	else				return C->ps;
+	xrClientData *C = (xrClientData *)m_server->client_Get(it);
+
+	if (C)
+		return C->ps;
+
+	return nullptr;
 }
 
-game_PlayerState*	game_sv_GameState::get_id					(ClientID id)							
+game_PlayerState *game_sv_GameState::get_id(ClientID id)
 {
-	xrClientData*	C	= (xrClientData*)m_server->ID_to_client	(id);
-	if (0==C)			return NULL;
-	else				return C->ps;
+	xrClientData *C = (xrClientData *)m_server->ID_to_client(id);
+	
+	if (C)
+		return C->ps;
+
+	return nullptr;
 }
 
-ClientID				game_sv_GameState::get_it_2_id				(u32 it)
+ClientID game_sv_GameState::get_it_2_id(u32 it)
 {
-	xrClientData*	C	= (xrClientData*)m_server->client_Get		(it);
-	if (0==C){
-		ClientID clientID;clientID.set(0);
-		return clientID;
-	}
-	else				return C->ID;
+	xrClientData *C = (xrClientData *)m_server->client_Get(it);
+
+	if (C)
+		return C->ID;
+
+	ClientID clientID;
+	clientID.set(0);
+	return clientID;
 }
 
-LPCSTR				game_sv_GameState::get_name_it				(u32 it)
+LPCSTR game_sv_GameState::get_name_it(u32 it)
 {
-	xrClientData*	C	= (xrClientData*)m_server->client_Get		(it);
-	if (0==C)			return 0;
-	else				return *C->name;
+	xrClientData *C = (xrClientData *)m_server->client_Get(it);
+
+	if (C)
+		return *C->name;
+
+	return nullptr;
 }
 
-LPCSTR				game_sv_GameState::get_name_id				(ClientID id)							
+LPCSTR game_sv_GameState::get_name_id(ClientID id)
 {
-	xrClientData*	C	= (xrClientData*)m_server->ID_to_client	(id);
-	if (0==C)			return 0;
-	else				return *C->name;
+	xrClientData *C = (xrClientData *)m_server->ID_to_client(id);
+
+	if (C)
+		return *C->name;
+
+	return nullptr;
 }
 
-LPCSTR				game_sv_GameState::get_player_name_id				(ClientID id)								
+LPCSTR game_sv_GameState::get_player_name_id(ClientID id)
 {
-	xrClientData* xrCData	=	m_server->ID_to_client(id);
-	if(xrCData)
+	xrClientData *xrCData = m_server->ID_to_client(id);
+
+	if (xrCData)
 		return xrCData->name.c_str();
-	else 
-		return "unknown";
+
+	return "unknown";
 }
 
-u32					game_sv_GameState::get_players_count		()
+u32 game_sv_GameState::get_players_count()
 {
-	return				m_server->client_Count();
+	return m_server->client_Count();
 }
 
-u16					game_sv_GameState::get_id_2_eid				(ClientID id)
+u16 game_sv_GameState::get_id_2_eid(ClientID id)
 {
-	xrClientData*	C	= (xrClientData*)m_server->ID_to_client	(id);
-	if (0==C)			return 0xffff;
-	CSE_Abstract*	E	= C->owner;
-	if (0==E)			return 0xffff;
+	xrClientData *C = (xrClientData *)m_server->ID_to_client(id);
+	
+	if (!C)
+		return 0xffff;
+	
+	CSE_Abstract *E = C->owner;
+	
+	if (!E)
+		return 0xffff;
+	
 	return E->ID;
 }
 
-game_PlayerState*	game_sv_GameState::get_eid (u16 id) //if exist
+game_PlayerState *game_sv_GameState::get_eid(u16 id) //if exist
 {
-	CSE_Abstract* entity = get_entity_from_eid(id);
+	CSE_Abstract *entity = get_entity_from_eid(id);
 
-	if (entity)
+	if (entity && entity->owner && entity->owner->ps && entity->owner->ps->GameID == id)
+		return entity->owner->ps;
+
+	u32 cnt = get_players_count();
+
+	for (u32 it = 0; it < cnt; ++it)
 	{
-		if (entity->owner)
-		{
-			if(entity->owner->ps)
-			{
-				if (entity->owner->ps->GameID == id)
-					return entity->owner->ps;
-			}
-		}
+		game_PlayerState *ps = get_it(it);
+
+		if (!ps)
+			continue;
+
+		if (ps->HasOldID(id))
+			return ps;
 	}
-	//-------------------------------------------------
-	u32		cnt		= get_players_count	();
-	for		(u32 it=0; it<cnt; ++it)	
-	{
-		game_PlayerState*	ps	=	get_it	(it);
-		if (!ps) continue;
-		if (ps->HasOldID(id)) return ps;
-	};
-	//-------------------------------------------------
-	return NULL;
+
+	return nullptr;
 }
 
-void* game_sv_GameState::get_client (u16 id) //if exist
+void *game_sv_GameState::get_client(u16 id) //if exist
 {
-	CSE_Abstract* entity = get_entity_from_eid(id);
+	CSE_Abstract *entity = get_entity_from_eid(id);
+
 	if (entity && entity->owner && entity->owner->ps && entity->owner->ps->GameID == id)
 		return entity->owner;
-	//-------------------------------------------------
-	u32		cnt		= get_players_count	();
-	for		(u32 it=0; it<cnt; ++it)	
+
+	u32 cnt = get_players_count();
+
+	for (u32 it = 0; it < cnt; ++it)
 	{
-		xrClientData*	C	= (xrClientData*)m_server->client_Get		(it);
-		if (!C || !C->ps) continue;
-//		game_PlayerState*	ps	=	get_it	(it);
-		if (C->ps->HasOldID(id)) return C;
-	};
-	//-------------------------------------------------
-	return NULL;
+		xrClientData *C = (xrClientData *)m_server->client_Get(it);
+
+		if (!C || !C->ps)
+			continue;
+
+		if (C->ps->HasOldID(id))
+			return C;
+	}
+
+	return nullptr;
 }
 
-CSE_Abstract*		game_sv_GameState::get_entity_from_eid		(u16 id)
+CSE_Abstract *game_sv_GameState::get_entity_from_eid(u16 id)
 {
-	return				m_server->ID_to_entity(id);
+	return m_server->ID_to_entity(id);
 }
 
 // Utilities
-u32					game_sv_GameState::get_alive_count			(u32 team)
+u32 game_sv_GameState::get_alive_count(u32 team)
 {
-	u32		cnt		= get_players_count	();
-	u32		alive	= 0;
-	for		(u32 it=0; it<cnt; ++it)	
+	u32 cnt = get_players_count();
+	u32 alive = 0;
+
+	for (u32 it = 0; it < cnt; ++it)
 	{
-		game_PlayerState*	ps	=	get_it	(it);
-		if (!ps) continue;
-		if (u32(ps->team) == team)	alive	+=	(ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))?0:1;
+		game_PlayerState *ps = get_it(it);
+
+		if (!ps)
+			continue;
+
+		if (u32(ps->team) == team)
+			alive += (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) ? 0 : 1;
 	}
+
 	return alive;
 }
 
-xr_vector<u16>*		game_sv_GameState::get_children				(ClientID id)
+xr_vector<u16> *game_sv_GameState::get_children(ClientID id)
 {
-	xrClientData*	C	= (xrClientData*)m_server->ID_to_client	(id);
-	if (0==C)			return 0;
-	CSE_Abstract* E	= C->owner;
-	if (0==E)			return 0;
-	return	&(E->children);
+	xrClientData *C = (xrClientData *)m_server->ID_to_client(id);
+
+	if (!C)
+		return nullptr;
+
+	CSE_Abstract *E = C->owner;
+
+	if (E)
+		return &(E->children);
+
+	return nullptr;
 }
 
 s32					game_sv_GameState::get_option_i				(LPCSTR lst, LPCSTR name, s32 def)
@@ -522,29 +554,30 @@ CSE_Abstract*		game_sv_GameState::spawn_begin				(LPCSTR N)
 	return A;
 }
 
-CSE_Abstract*		game_sv_GameState::spawn_end				(CSE_Abstract* E, ClientID id)
+CSE_Abstract *game_sv_GameState::spawn_end(CSE_Abstract *E, ClientID id)
 {
-	NET_Packet						P;
-	u16								skip_header;
-	E->Spawn_Write					(P,TRUE);
-	P.r_begin						(skip_header);
-	CSE_Abstract* N = m_server->Process_spawn	(P,id);
-	F_entity_Destroy				(E);
+	NET_Packet P;
+	u16 skip_header;
+
+	E->Spawn_Write(P, TRUE);
+	P.r_begin(skip_header);
+	CSE_Abstract *N = m_server->Process_spawn(P, id);
+	F_entity_Destroy(E);
 
 	return N;
 }
 
-void game_sv_GameState::GenerateGameMessage (NET_Packet &P)
-{ 
-	P.w_begin(M_GAMEMESSAGE); 
-};
-
-void game_sv_GameState::u_EventGen(NET_Packet& P, u16 type, u16 dest)
+void game_sv_GameState::GenerateGameMessage(NET_Packet &P)
 {
-	P.w_begin	(M_EVENT);
-	P.w_u32		(Level().timeServer());//Device.TimerAsync());
-	P.w_u16		(type);
-	P.w_u16		(dest);
+	P.w_begin(M_GAMEMESSAGE);
+}
+
+void game_sv_GameState::u_EventGen(NET_Packet &P, u16 type, u16 dest)
+{
+	P.w_begin(M_EVENT);
+	P.w_u32(Level().timeServer()); //Device.TimerAsync());
+	P.w_u16(type);
+	P.w_u16(dest);
 }
 
 void game_sv_GameState::u_EventSend(NET_Packet& P, u32 dwFlags)
@@ -552,20 +585,48 @@ void game_sv_GameState::u_EventSend(NET_Packet& P, u32 dwFlags)
 	m_server->SendBroadcast(BroadcastCID,P,dwFlags);
 }
 
-void game_sv_GameState::Update		()
+void game_sv_GameState::UpdateClientPing(xrClientData* client)
 {
-	for (u32 it=0; it<m_server->client_Count(); ++it) {
-		xrClientData*	C			= (xrClientData*)	m_server->client_Get(it);
-		C->ps->ping					= u16(C->stats.getPing());
-	}
-	
-	if (!g_dedicated_server)
+	u16 actualPing = u16(client->stats.getPing());
+
+	bool bNeedToUpdate = !client->ps->lastPingUpdateTime // first update
+		|| actualPing != client->ps->ping 
+		|| client == m_server->GetServerClient();
+
+	if (bNeedToUpdate)
 	{
-		if (Level().game) {
-			CScriptProcess				*script_process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame);
-			if (script_process)
-				script_process->update	();
+		client->ps->ping = actualPing;
+		client->ps->lastPingUpdateTime = Level().timeServer();
+	}
+	else
+	{
+		if ((client->ps->lastPingUpdateTime + 10000) < Level().timeServer())
+		{
+			Msg("! WARNING client [%s] crashed? Server time [%u], last ping [%u], update time [%u]"
+				, client->ps->getName()
+				, Level().timeServer()
+				, client->ps->ping
+				, client->ps->lastPingUpdateTime);
+
+			client->ps->lastPingUpdateTime = Level().timeServer() + 60000;
 		}
+	}
+}
+
+void game_sv_GameState::Update()
+{
+	for (u32 it = 0; it < m_server->client_Count(); ++it)
+	{
+		xrClientData* C = (xrClientData*)m_server->client_Get(it);
+		UpdateClientPing(C);
+	}
+
+	if (!g_dedicated_server && Level().game)
+	{
+		CScriptProcess *script_process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame);
+
+		if (script_process)
+			script_process->update();
 	}
 }
 

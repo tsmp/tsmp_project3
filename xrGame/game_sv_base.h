@@ -17,6 +17,7 @@ enum ERoundEnd_Result
 	eRoundEnd_Force			= u32(-1)
 };
 
+class xrClientData;
 class CSE_Abstract;
 class xrServer;
 // [OLES] Policy:
@@ -42,6 +43,7 @@ protected:
 	virtual		void				ConsoleCommands_Create	();
 	virtual		void				ConsoleCommands_Clear	();
 
+
 	DEF_DEQUE(MAP_ROTATION_LIST,	xr_string);
 	bool							m_bMapRotation;
 	bool							m_bMapNeedRotation;
@@ -49,6 +51,9 @@ protected:
 	bool							m_bFastRestart;
 
 	MAP_ROTATION_LIST				m_pMapRotation_List;
+
+private:
+	void UpdateClientPing(xrClientData* client); 
 
 public:
 #define		TEAM_COUNT 4

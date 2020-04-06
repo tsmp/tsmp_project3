@@ -293,7 +293,8 @@ shared_str	CLevel::name		() const
 
 void CLevel::GetLevelInfo( CServerInfo* si )
 {
-	Server->GetServerInfo( si );
+	if(Server)
+		Server->GetServerInfo( si );
 }
 
 

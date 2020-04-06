@@ -742,7 +742,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 {
 	__try 
 	{
-#if defined (DEDICATED_SERVER) || defined (USE_DEDICATED_DEBUG_SYSTEM)
+#if defined (DEDICATED_SERVER) || defined (SAVE_ERROR_REPORTS)
 		Debug._initialize	(true);
 #else // DEDICATED_SERVER		
 		Debug._initialize(false);

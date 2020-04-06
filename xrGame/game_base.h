@@ -34,76 +34,78 @@ struct Bonus_Money_Struct {
 	Bonus_Money_Struct() {Money = 0; Reason = 0; Kills=0;}
 };
 
-struct	game_PlayerState 
+struct game_PlayerState
 {
-	string64	name;
-	u8			team;
-	
-	s16			m_iRivalKills;
-	s16			m_iSelfKills;
-	s16			m_iTeamKills;
-	s16			m_iKillsInRowCurr;
-	s16			m_iKillsInRowMax;
-	s16			m_iDeaths;
-	s32			money_for_round;	
+	string64 name;
+	u8 team;
 
-	float		experience_Real;
-	float		experience_New;
-	float		experience_D;
-	u8			rank;
-	u8			af_count;
-	u16			flags__;
+	s16 m_iRivalKills;
+	s16 m_iSelfKills;
+	s16 m_iTeamKills;
+	s16 m_iKillsInRowCurr;
+	s16 m_iKillsInRowMax;
+	s16 m_iDeaths;
+	s32 money_for_round;
 
-	u16			ping;
+	float experience_Real;
+	float experience_New;
+	float experience_D;
+	u8 rank;
+	u8 af_count;
+	u16 flags__;
 
-	u16			GameID;
+	u16 ping;
+	u32 lastPingUpdateTime;
 
-	u16			lasthitter;
-	u16			lasthitweapon;
-	s8			skin;
-	u32			RespawnTime;
-	u32			DeathTime;
-	s16			money_delta;
-	u8			m_bCurrentVoteAgreed;
-	DEF_DEQUE	(OLD_GAME_ID, u16);
-	OLD_GAME_ID	mOldIDs;
-	s32			money_added;
-	DEF_VECTOR	(MONEY_BONUS, Bonus_Money_Struct);
-	MONEY_BONUS	m_aBonusMoney;
-	bool		m_bPayForSpawn;
-	u32			m_online_time;
+	u16 GameID;
+
+	u16 lasthitter;
+	u16 lasthitweapon;
+	s8 skin;
+	u32 RespawnTime;
+	u32 DeathTime;
+	s16 money_delta;
+	u8 m_bCurrentVoteAgreed;
+	DEF_DEQUE(OLD_GAME_ID, u16);
+	OLD_GAME_ID mOldIDs;
+	s32 money_added;
+	DEF_VECTOR(MONEY_BONUS, Bonus_Money_Struct);
+	MONEY_BONUS m_aBonusMoney;
+	bool m_bPayForSpawn;
+	u32 m_online_time;
+
 public:
-					game_PlayerState		();
-					~game_PlayerState		();
-	virtual void	clear					();
-			bool	testFlag				(u16 f) const;
-			void	setFlag					(u16 f);
-			void	resetFlag				(u16 f);
-			LPCSTR	getName					(){return name;}
-			void	setName					(LPCSTR s){strcpy(name,s);}
-			void	SetGameID				(u16 NewID);
-			bool	HasOldID				(u16 ID);
-			bool	IsSkip					() const {return testFlag(GAME_PLAYER_FLAG_SKIP);}
-			
-			s16		frags					() const {return m_iRivalKills - m_iSelfKills - m_iTeamKills;} 
+	game_PlayerState();
+	~game_PlayerState();
+	virtual void clear();
+	bool testFlag(u16 f) const;
+	void setFlag(u16 f);
+	void resetFlag(u16 f);
+	LPCSTR getName() { return name; }
+	void setName(LPCSTR s) { strcpy(name, s); }
+	void SetGameID(u16 NewID);
+	bool HasOldID(u16 ID);
+	bool IsSkip() const { return testFlag(GAME_PLAYER_FLAG_SKIP); }
+
+	s16 frags() const { return m_iRivalKills - m_iSelfKills - m_iTeamKills; }
 
 #ifndef AI_COMPILER
-	virtual void	net_Export				(NET_Packet& P, BOOL Full = FALSE);
-	virtual void	net_Import				(NET_Packet& P);
+	virtual void net_Export(NET_Packet &P, BOOL Full = FALSE);
+	virtual void net_Import(NET_Packet &P);
 #endif
-	//---------------------------------------
-	
+
 	DEF_VECTOR(PLAYER_ITEMS_LIST, u16);
 
-	PLAYER_ITEMS_LIST	pItemList;
+	PLAYER_ITEMS_LIST pItemList;
 
 	DEF_VECTOR(SPAWN_POINTS_LIST, s16);
 
-	SPAWN_POINTS_LIST	pSpawnPointsList;
-	s16					m_s16LastSRoint;
+	SPAWN_POINTS_LIST pSpawnPointsList;
+	s16 m_s16LastSRoint;
 
-	s32					LastBuyAcount;
-	bool				m_bClearRun;
+	s32 LastBuyAcount;
+	bool m_bClearRun;
+	
 	DECLARE_SCRIPT_REGISTER_FUNCTION_STRUCT
 };
 
