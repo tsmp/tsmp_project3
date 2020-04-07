@@ -601,6 +601,12 @@ void game_sv_GameState::UpdateClientPing(xrClientData* client)
 	}
 	else
 	{
+		// после 30 сек бездействия клиент отключается, если 25 сек не обновляется пинг - то он скорее всего вылетел
+		// если игрок зайдет повторно, у него сохранится в статистике последнее время обновления пинга, в таком случае
+		// не выводим ничего 
+		if ((client->ps->lastPingUpdateTime + 40000) < Level().timeServer())
+			return;
+
 		if ((client->ps->lastPingUpdateTime + 25000) < Level().timeServer())
 		{
 			Msg("! WARNING client [%s] crashed? Server time [%u], last ping [%u], update time [%u]"
@@ -609,7 +615,7 @@ void game_sv_GameState::UpdateClientPing(xrClientData* client)
 				, client->ps->ping
 				, client->ps->lastPingUpdateTime);
 
-			client->ps->lastPingUpdateTime = Level().timeServer() + 60000;
+			client->ps->lastPingUpdateTime = Level().timeServer() + 10000;
 		}
 	}
 }
