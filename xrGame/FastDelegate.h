@@ -83,7 +83,7 @@
 
 // Compiler identification. It's not easy to identify Visual C++ because
 // many vendors fraudulently define Microsoft's identifiers.
-#if defined(_MSC_VER) && !defined(__MWERKS__) && !defined(__VECTOR_C) && !defined(__ICL) && !defined(__BORLANDC__)
+#if defined(_MSC_VER) && !defined(__MWERKS__) && !defined(__VECTOR_C) && !defined(__ICL)
 #define FASTDLGT_ISMSVC
 
 #if (_MSC_VER <1300) // Many workarounds are required for VC6.

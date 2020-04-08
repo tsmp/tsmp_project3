@@ -4,10 +4,6 @@
 
 #include "WaveForm.H"
 
-#ifdef __BORLANDC__            
-#	include "ElTree.hpp"
-#endif
-//---------------------------------------------------------------------------
 enum EPropType{
 	PROP_UNDEF		= -1,
 	PROP_CAPTION	= 0x1000,
@@ -224,9 +220,7 @@ public:
     IC PropValueVec&	Values			(){return values;}
     IC PropValue*		GetFrontValue	(){VERIFY(!values.empty()); return values.front(); };
     IC EPropType		Type			(){return type;}
-#ifdef __BORLANDC__    
-	IC TElTreeItem*		Item			(){return (TElTreeItem*)item;}
-#endif
+
 	IC LPCSTR			Key				(){return key.c_str();}
     IC void				Enable			(BOOL val){m_Flags.set(flDisabled,!val);}
     IC BOOL				Enabled			(){return !m_Flags.is(flDisabled);}

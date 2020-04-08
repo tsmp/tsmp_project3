@@ -13,35 +13,25 @@
 
 extern bool shared_str_initialized;
 
-#ifdef __BORLANDC__
-    #	include "d3d9.h"
-    #	include "d3dx9.h"
-    #	include "D3DX_Wrapper.h"
-    #	pragma comment(lib,"EToolsB.lib")
-    #	define DEBUG_INVOKE	DebugBreak()
-        static BOOL			bException	= TRUE;
-    #   define USE_BUG_TRAP
-#else
+
     #   define USE_BUG_TRAP
     #	define DEBUG_INVOKE	__asm int 3
         static BOOL			bException	= FALSE;
-#endif
+
 
 #ifndef _M_AMD64
-#	ifndef __BORLANDC__
+
 #		pragma comment(lib,"dxerr9.lib")
-#	endif
+
 #endif
 
 #include <dbghelp.h>						// MiniDump flags
 
 #ifdef USE_BUG_TRAP
 #	include "../bugtrap/bugtrap.h"						// for BugTrap functionality
-    #ifndef __BORLANDC__
-        #	pragma comment(lib,"BugTrap.lib")		// Link to ANSI DLL
-    #else
-        #	pragma comment(lib,"BugTrapB.lib")		// Link to ANSI DLL
-    #endif
+
+#	pragma comment(lib,"BugTrap.lib")		// Link to ANSI DLL
+
 #endif // USE_BUG_TRAP
 
 #include <new.h>							// for _set_new_mode

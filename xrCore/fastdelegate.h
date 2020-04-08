@@ -86,7 +86,7 @@
 
 // Compiler identification. It's not easy to identify Visual C++ because
 // many vendors fraudulently define Microsoft's identifiers.
-#if defined(_MSC_VER) && !defined(__MWERKS__) && !defined(__VECTOR_C) && !defined(__ICL) && !defined(__BORLANDC__)
+#if defined(_MSC_VER) && !defined(__MWERKS__) && !defined(__VECTOR_C) && !defined(__ICL)
 #define FASTDLGT_ISMSVC
 
 #if (_MSC_VER <1300) // Many workarounds are required for VC6.
@@ -2109,13 +2109,6 @@ template <class X, class Y, class Param1, class Param2, class Param3, class Para
 FastDelegate8<Param1, Param2, Param3, Param4, Param5, Param6, Param7, Param8, FASTDLGT_RETTYPE> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) const) { 
 	return FastDelegate8<Param1, Param2, Param3, Param4, Param5, Param6, Param7, Param8, FASTDLGT_RETTYPE>(x, func);
 }
-
-#ifdef __BORLANDC__
-template <typename A,typename B>
-	A bind(B b) 	{A a; a.bind(b); 	return a;}
-template <typename A,typename B,typename C>
-	A bind(B b,C c) {A a; a.bind(b,c); 	return a;}
-#endif
 
 // clean up after ourselves...
 #undef FASTDLGT_RETTYPE

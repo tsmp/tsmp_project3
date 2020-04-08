@@ -9,23 +9,17 @@
  
 #include "dxerr9.h"
 
-#ifdef __BORLANDC__
-	#include "d3d9.h"
-	#include "d3dx9.h"
-	#include "D3DX_Wrapper.h"
-	#pragma comment		(lib,"EToolsB.lib")
-	static BOOL			bException	= TRUE;
-#else
+
 	static BOOL			bException	= FALSE;
-#endif
+
 
 #ifdef _M_AMD64
 #define DEBUG_INVOKE	DebugBreak	()
 #else
 #define DEBUG_INVOKE	__asm		{ int 3 }
-#ifndef __BORLANDC__
+
 	#pragma comment			(lib,"dxerr9.lib")
-#endif
+
 #endif
 
 XRCORE_API	xrDebug		Debug;
