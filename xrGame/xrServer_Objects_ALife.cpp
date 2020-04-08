@@ -14,9 +14,9 @@
 #include "object_broker.h"
 #include "restriction_space.h"
 
-#ifndef AI_COMPILER
+
 #	include "character_info.h"
-#endif
+
 
 #ifndef XRGAME_EXPORTS
 #	include "bone.h"
@@ -117,7 +117,7 @@ struct SFillPropData{
 			spawn_story_names.insert(spawn_story_names.begin(),xr_rtoken("NO SPAWN STORY ID",ALife::_SPAWN_STORY_ID(-1)));
 		}
 
-#ifndef AI_COMPILER
+
 		//character profiles indexes
 		VERIFY					(character_profiles.empty());
 		for(int i = 0; i<=CCharacterInfo::GetMaxIndex(); i++)
@@ -126,7 +126,7 @@ struct SFillPropData{
 		}
 
 		std::sort(character_profiles.begin(), character_profiles.end(), SortStringsByAlphabetPred);
-#endif
+
 		
         // destroy ini
 #ifndef XRGAME_EXPORTS

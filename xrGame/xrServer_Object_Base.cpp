@@ -18,9 +18,8 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-#ifndef AI_COMPILER
+
 #	include "object_factory.h"
-#endif
 
 #ifndef XRSE_FACTORY_EXPORTS
 #	include "xrEProps.h"
@@ -129,9 +128,7 @@ CSE_Abstract::CSE_Abstract					(LPCSTR caSection)
 		}
 	}
 
-#ifndef AI_COMPILER
 	m_script_clsid				= object_factory().script_clsid(m_tClassID);
-#endif
 }
 
 CSE_Abstract::~CSE_Abstract					()

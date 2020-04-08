@@ -12,22 +12,15 @@
 
 LPCSTR LEVEL_GRAPH_NAME = "level.ai";
 
-#ifdef AI_COMPILER
-CLevelGraph::CLevelGraph		(LPCSTR filename)
-#else
+
 CLevelGraph::CLevelGraph		()
-#endif
 {
-#ifndef AI_COMPILER
 #ifdef DEBUG
 	sh_debug.create				("debug\\ai_nodes","$null");
 #endif
 	string_path					file_name;
 	FS.update_path				(file_name,"$level$",LEVEL_GRAPH_NAME);
-#else
-	string256					file_name;
-	strconcat					(file_name,filename,LEVEL_GRAPH_NAME);
-#endif
+
 	m_reader					= FS.r_open	(file_name);
 
 	// m_header & data
@@ -77,9 +70,8 @@ u32	CLevelGraph::vertex		(const Fvector &position) const
 u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 {
 	START_PROFILE("Level_Graph::find vertex")
-#ifndef AI_COMPILER
+
 	Device.Statistic->AI_Node.Begin	();
-#endif
 
 	u32						id;
 
@@ -87,9 +79,8 @@ u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 		// so, our position is inside the level graph bounding box
 		if (valid_vertex_id(current_node_id) && inside(vertex(current_node_id),position)) {
 			// so, our node corresponds to the position
-#ifndef AI_COMPILER
+
 			Device.Statistic->AI_Node.End();
-#endif
 			return				(current_node_id);
 		}
 
@@ -126,10 +117,10 @@ u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 					}
 				}
 			}
-			if (ok) {
-#ifndef AI_COMPILER
+
+			if (ok) 
+			{
 				Device.Statistic->AI_Node.End();
-#endif
 				return			(_vertex_id);
 			}
 		}
@@ -140,9 +131,9 @@ u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 		// performing very slow full search
 		id					= vertex(position);
 		VERIFY				(valid_vertex_id(id));
-#ifndef AI_COMPILER
+
 		Device.Statistic->AI_Node.End();
-#endif
+
 		return				(id);
 	}
 
@@ -172,9 +163,8 @@ u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 		}
 	}
 
-#ifndef AI_COMPILER
 	Device.Statistic->AI_Node.End();
-#endif
+
 	return					(best_vertex_id);
 
 	STOP_PROFILE

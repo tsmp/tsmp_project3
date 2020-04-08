@@ -26,11 +26,6 @@
 
 #include "../device.h"
 
-#ifdef PRIQUEL
-#	define USE_SMART_HITS
-#	define USE_IK
-#endif // PRIQUEL
-
 void  NodynamicsCollide(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
 	dBodyID body1=dGeomGetBody(c.geom.g1);

@@ -28,9 +28,7 @@ private:
 
 private:
 	CGameGraph							*m_game_graph;
-#ifndef PRIQUEL
 	CGameLevelCrossTable				*m_cross_table;
-#endif // PRIQUEL
 	CLevelGraph							*m_level_graph;
 	CGraphEngine						*m_graph_engine;
 	CEF_Storage							*m_ef_storage;
@@ -46,11 +44,6 @@ private:
 			void						patrol_path_storage		(IReader &stream);
 			void						set_alife				(CALifeSimulator *alife_simulator);
 
-#ifdef PRIQUEL
-private:
-			void						game_graph				(CGameGraph *game_graph);
-#endif // PRIQUEL
-
 public:
 										CAI_Space				();
 	virtual								~CAI_Space				();
@@ -59,13 +52,10 @@ public:
 	IC		CGameGraph					*get_game_graph			() const;
 	IC		CLevelGraph					&level_graph			() const;
 	IC		const CLevelGraph			*get_level_graph		() const;
-#ifdef PRIQUEL
-			const CGameLevelCrossTable	&cross_table			() const;
-			const CGameLevelCrossTable	*get_cross_table		() const;
-#else // PRIQUEL
+
 	IC		const CGameLevelCrossTable	&cross_table			() const;
 	IC		const CGameLevelCrossTable	*get_cross_table		() const;
-#endif // PRIQUEL
+
 	IC		const CPatrolPathStorage	&patrol_paths			() const;
 	IC		CEF_Storage					&ef_storage				() const;
 	IC		CGraphEngine				&graph_engine			() const;

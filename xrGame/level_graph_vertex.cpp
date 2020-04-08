@@ -10,9 +10,9 @@
 #include "level_graph.h"
 #include "game_level_cross_table.h"
 
-#ifndef AI_COMPILER
+
 #	include "ai_space.h"
-#endif
+
 
 float CLevelGraph::distance(const Fvector &position, const CLevelGraph::CVertex *vertex) const
 {
