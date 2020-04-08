@@ -12,7 +12,6 @@
 #define NET_TAG_COMPRESSED              0xC1
 #define NET_TAG_NONCOMPRESSED           0xC0
 
-#define NET_USE_LZO_COMPRESSION         1
 #define NET_USE_COMPRESSION_CRC         1
 
 #define NET_LOG_PACKETS                 0

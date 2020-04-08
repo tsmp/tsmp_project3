@@ -22,22 +22,17 @@
 
 #	include <boost/crc.hpp>
 
-#	if NET_USE_LZO_COMPRESSION
+
 #		define	ENCODE	rtc9_compress
 #		define	DECODE	rtc9_decompress
-#	else // NET_USE_LZO_COMPRESSION
-#		include "../xrCore/ppmd_compressor.h"
-#		define	ENCODE	ppmd_compress
-#		define	DECODE	ppmd_decompress
-#	endif // NET_USE_LZO_COMPRESSION
+
 
 #endif // NET_USE_COMPRESSION
 
 
 
 #if 1//def DEBUG
-//static FILE*    OriginalTrafficDump     = NULL;
-//static FILE*    CompressedTrafficDump   = NULL;
+
 static FILE*    RawTrafficDump          = NULL;
 static FILE*    CompressionDump         = NULL;
 #endif // DEBUG
@@ -310,11 +305,8 @@ u16 NET_Compressor::compressed_size	(const u32 &count)
 {
 #if NET_USE_COMPRESSION
 
-    #if NET_USE_LZO_COMPRESSION
-		u32			result = rtc_csize(count) + 1;
-    #else // NET_USE_LZO_COMPRESSION
-		u32			result = 64 + (count/8 + 1)*10;
-    #endif // NET_USE_LZO_COMPRESSION
+		u32	result = rtc_csize(count) + 1;
+
 
 	R_ASSERT(result <= u32(u16(-1)));
 
@@ -396,11 +388,8 @@ u16 NET_Compressor::Compress(BYTE* dest, const u32 &dest_size, BYTE* src, const 
         Msg( "#compress %u->%u  %02X (%08X)", count, compressed_size, *dest, *((u32*)(src+1)) );
         #endif
         #if NET_DUMP_COMPRESSION
-        #if NET_USE_LZO_COMPRESSION
         static const char*  compressor_name = "LZO";
-        #else
-        static const char*  compressor_name = "PPMd";
-        #endif
+
 
 		if( !CompressionDump )
 		    CompressionDump = fopen( "net-compression.log", "w+b" );
