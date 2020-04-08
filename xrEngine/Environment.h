@@ -253,16 +253,6 @@ public:
 
 	void					OnDeviceCreate		();
 	void					OnDeviceDestroy		();
-
-	// editor-related
-#ifdef _EDITOR
-public:
-	float					ed_from_time		;
-	float					ed_to_time			;
-public:
-    void					ED_Reload			();
-    float					GetGameTime			(){return fGameTime;}
-#endif
 };
 
 ENGINE_API extern Flags32	psEnvFlags;

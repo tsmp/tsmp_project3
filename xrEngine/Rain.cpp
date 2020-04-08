@@ -5,14 +5,12 @@
 #include "igame_persistent.h"
 #include "environment.h"
 
-#ifdef _EDITOR
-    #include "ui_toolscustom.h"
-#else
+
     #include "render.h"
 	#include "igame_level.h"
 	#include "xr_area.h"
 	#include "xr_object.h"
-#endif
+
 
 static const int	max_desired_items	= 2500;
 static const float	source_radius		= 12.5f;
@@ -90,14 +88,12 @@ void	CEffect_Rain::Born		(Item& dest, float radius)
 BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
 {
 	BOOL bRes 			= TRUE;
-#ifdef _EDITOR
-    Tools->RayPick		(s,d,range);
-#else
+
 	collide::rq_result	RQ;
 	CObject* E 			= g_pGameLevel->CurrentViewEntity();
 	bRes 				= g_pGameLevel->ObjectSpace.RayPick( s,d,range,tgt,RQ,E);	
     if (bRes) range 	= RQ.range;
-#endif
+
     return bRes;
 }
 
@@ -117,17 +113,17 @@ void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 
 void	CEffect_Rain::OnFrame	()
 {
-#ifndef _EDITOR
+
 	if (!g_pGameLevel)			return;
-#endif
+
 	// Parse states
 	float	factor				= g_pGamePersistent->Environment().CurrentEnv.rain_density;
 	float	hemi_factor			= 1.f;
-#ifndef _EDITOR
+
 	CObject* E 					= g_pGameLevel->CurrentViewEntity();
 	if (E&&E->renderable_ROS())
 		hemi_factor				= 1.f-2.0f*(0.3f-_min(_min(1.f,E->renderable_ROS()->get_luminocity_hemi()),0.3f));
-#endif
+
 
 	switch (state)
 	{
@@ -158,9 +154,9 @@ void	CEffect_Rain::OnFrame	()
 //#include "xr_input.h"
 void	CEffect_Rain::Render	()
 {
-#ifndef _EDITOR
+
 	if (!g_pGameLevel)			return;
-#endif
+
 	float	factor				= g_pGamePersistent->Environment().CurrentEnv.rain_density;
 	if (factor<EPS_L)			return;
 

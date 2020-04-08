@@ -12,13 +12,9 @@
 
 #include "..\TSMP2_Build_Config.h"
 
-#ifndef _EDITOR
 	void	fill_vid_mode_list			(CHW* _hw);
 	void	free_vid_mode_list			();
-#else
-	void	fill_vid_mode_list			(CHW* _hw)	{};
-	void	free_vid_mode_list			()			{};
-#endif
+
 
 	void	free_vid_mode_list			();
 
@@ -36,7 +32,6 @@ void CHW::Reset		(HWND hwnd)
 	_RELEASE			(pBaseZB);
 	_RELEASE			(pBaseRT);
 
-#ifndef _EDITOR
 #ifndef DEDICATED_SERVER
 	BOOL	bWindowed		= !psDeviceFlags.is	(rsFullscreen);
 #else
@@ -50,7 +45,7 @@ void CHW::Reset		(HWND hwnd)
 	DevPP.PresentationInterval	= D3DPRESENT_INTERVAL_IMMEDIATE;
 	if( !bWindowed )		DevPP.FullScreen_RefreshRateInHz	= selectRefresh	(DevPP.BackBufferWidth,DevPP.BackBufferHeight,Caps.fTarget);
 	else					DevPP.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;
-#endif
+
 
 	while	(TRUE)	{
 		HRESULT _hr							= HW.pDevice->Reset	(&DevPP);
@@ -63,9 +58,8 @@ void CHW::Reset		(HWND hwnd)
 #ifdef DEBUG
 	R_CHK				(pDevice->CreateStateBlock			(D3DSBT_ALL,&dwDebugSB));
 #endif
-#ifndef _EDITOR
+
 	updateWindowProps	(hwnd);
-#endif
 }
 
 xr_token*				vid_mode_token = NULL;
@@ -135,17 +129,12 @@ void	CHW::DestroyDevice	()
 	_SHOW_REF				("refCount:dwDebugSB",dwDebugSB);
 	_RELEASE				(dwDebugSB);
 #endif
-#ifdef _EDITOR
-	_RELEASE				(HW.pDevice);
-#else
+
 	_SHOW_REF				("DeviceREF:",HW.pDevice);
 	_RELEASE				(HW.pDevice);
-#endif    
+    
 	DestroyD3D				();
-	
-#ifndef _EDITOR
 	free_vid_mode_list		();
-#endif
 }
 void	CHW::selectResolution	(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 {
@@ -160,7 +149,7 @@ void	CHW::selectResolution	(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 		dwHeight	= psCurrentVidMode[1];
 	}else //check
 	{
-#ifndef _EDITOR
+
 		string64					buff;
 		sprintf_s					(buff,sizeof(buff),"%dx%d",psCurrentVidMode[0],psCurrentVidMode[1]);
 		
@@ -172,7 +161,6 @@ void	CHW::selectResolution	(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 
 		dwWidth						= psCurrentVidMode[0];
 		dwHeight					= psCurrentVidMode[1];
-#endif
 	}
 #endif
 
@@ -277,12 +265,11 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 	D3DPRESENT_PARAMETERS&	P	= DevPP;
     ZeroMemory				( &P, sizeof(P) );
 
-#ifndef _EDITOR
+
 	selectResolution	(P.BackBufferWidth, P.BackBufferHeight, bWindowed);
-#endif
+
 // Back buffer
-//.	P.BackBufferWidth		= dwWidth;
-//. P.BackBufferHeight		= dwHeight;
+
 	P.BackBufferFormat		= fTarget;
 	P.BackBufferCount		= 1;
 
@@ -357,10 +344,9 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 	u32	memory									= pDevice->GetAvailableTextureMem	();
 	Msg		("*     Texture memory: %d M",		memory/(1024*1024));
 	Msg		("*          DDI-level: %2.1f",		float(D3DXGetDriverLevel(pDevice))/100.f);
-#ifndef _EDITOR
+
 	updateWindowProps							(m_hWnd);
 	fill_vid_mode_list							(this);
-#endif
 }
 
 u32	CHW::selectPresentInterval	()
@@ -500,7 +486,6 @@ struct _uniq_mode
 	bool operator() (LPCSTR _other) {return !stricmp(_val,_other);}
 };
 
-#ifndef _EDITOR
 void free_vid_mode_list()
 {
 	for( int i=0; vid_mode_token[i].name; i++ )
@@ -554,5 +539,3 @@ void	fill_vid_mode_list			(CHW* _hw)
 #endif // DEBUG
 	}
 }
-#endif
-

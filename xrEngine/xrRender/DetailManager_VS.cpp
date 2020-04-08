@@ -3,13 +3,10 @@
 
 #include "detailmanager.h"
 
-#ifdef _EDITOR
-#	include "igame_persistent.h"
-#	include "environment.h"
-#else
+
 #	include "..\igame_persistent.h"
 #	include "..\environment.h"
-#endif
+
 
 const int			quant	= 16384;
 const int			c_hdr	= 10;

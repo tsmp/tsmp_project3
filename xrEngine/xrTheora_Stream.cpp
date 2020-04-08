@@ -1,10 +1,6 @@
 #include "stdafx.h"
 #include "xrtheora_stream.h"
 
-#ifdef _EDITOR
-//#	pragma comment(lib,	"x:\\oggB.lib")
-//#	pragma comment(lib,	"x:\\theoraB.lib") 
-#endif
 
 CTheoraStream::CTheoraStream()                        
 {
@@ -213,11 +209,9 @@ BOOL CTheoraStream::Load(const char* fname)
 {
 	VERIFY				(0==source);
 	// open source
-#ifdef _EDITOR
-	source				= FS.r_open(0,fname);
-#else
+
 	source				= FS.rs_open(0,fname);
-#endif
+
 	VERIFY				(source);
 
 	// parse headers

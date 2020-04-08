@@ -233,25 +233,6 @@ public:
 	void			    LoadData		(IReader& F);
     void			    ResetData		();
     void			    CopyData		(CBone* bone);
-    
-#ifdef _EDITOR
-	void			    ShapeScale		(const Fvector& amount);
-	void			    ShapeRotate		(const Fvector& amount);
-	void			    ShapeMove		(const Fvector& amount);
-	void			    BindRotate		(const Fvector& amount);
-	void			    BindMove		(const Fvector& amount);
-	void			    BoneMove		(const Fvector& amount);
-	void			    BoneRotate		(const Fvector& axis, float angle);
-
-	bool 			    Pick			(float& dist, const Fvector& S, const Fvector& D, const Fmatrix& parent);
-
-    void			    Select			(BOOL flag)	{ flags.set(flSelected,flag); }
-    bool			    Selected		(){return flags.is(flSelected);}
-
-    void			    ClampByLimits	();
-
-    bool 			    ExportOGF		(IWriter& F);
-#endif
 };
 
 #endif

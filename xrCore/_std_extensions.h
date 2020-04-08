@@ -5,9 +5,6 @@
 #ifndef DEBUG
 #undef  BREAK_AT_STRCMP
 #endif
-#ifdef  _EDITOR
-#undef  BREAK_AT_STRCMP
-#endif
 
 #ifdef abs
 #undef abs
@@ -27,37 +24,6 @@
 
 #ifdef max
 #undef max
-#endif
-
-#ifdef  _EDITOR
-IC void strcpy_s(char* strDestination,   size_t sizeInBytes,   const char *strSource)
-{
-	strcpy(strDestination, strSource);
-}
-
-IC void strcpy_s(char* strDestination,   const char *strSource)
-{
-	strcpy(strDestination, strSource);
-}
-
-IC void _strlwr_s(char* strDestination, size_t sizeInBytes)
-{
-    strlwr(strDestination);
-}
-
-IC void strcat_s(char* strDestination,   size_t sizeInBytes,   const char *strSource)
-{
-	strcat(strDestination, strSource);
-}
-
-IC int sprintf_s(char* dest, size_t sizeOfBuffer, const char* format, ...)
-{
-	va_list 	mark;
-	va_start	(mark, format );
-	int sz		= _vsnprintf(dest, sizeOfBuffer, format, mark );
-    dest		[sizeOfBuffer-1]=0;
-    va_end		(mark);
-}
 #endif
 
 // token type definition
@@ -165,7 +131,6 @@ IC s64		_max	(s64 x, s64 y)	{ return x - ((x - y) & ((x - y) >> (sizeof(s64) * 8
 
 IC u32							xr_strlen				( const char* S );
 
-#ifndef  _EDITOR
 // string management
 IC LPCSTR						strconcat				( int dest_sz, char* dest, const char* S1, const char* S2)
 {
@@ -240,28 +205,6 @@ IC LPCSTR						strconcat				( int dest_sz, char* dest, const char* S1, const cha
 	//.	return strcat(strcat(strcat(strcat(strcat(strcpy(dest,S1),S2),S3),S4),S5),S6);
 }
 
-#else
-
-IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const char* S2)
-{	return strcat(strcpy(dest,S1),S2); }
-
-// dest = S1+S2+S3
-IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const char* S2, const char* S3)
-{	return strcat(strcat(strcpy(dest,S1),S2),S3); }
-
-// dest = S1+S2+S3+S4
-IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const char* S2, const char* S3, const char* S4)
-{	return strcat(strcat(strcat(strcpy(dest,S1),S2),S3),S4); }
-
-// dest = S1+S2+S3+S4+S5
-IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5)
-{	return strcat(strcat(strcat(strcat(strcpy(dest,S1),S2),S3),S4),S5); }
-
-// dest = S1+S2+S3+S4+S5+S6
-IC char*						strconcat				( int dest_sz,  char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5, const char* S6)
-{	return strcat(strcat(strcat(strcat(strcat(strcpy(dest,S1),S2),S3),S4),S5),S6); }
-
-#endif
 // return pointer to ".ext"
 IC char*						strext					( const char* S )
 {	return (char*) strrchr(S,'.');	}

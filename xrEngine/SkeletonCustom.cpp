@@ -5,9 +5,9 @@
 #include 	"SkeletonCustom.h"
 #include	"SkeletonX.h"
 #include	"fmesh.h"
-#ifndef _EDITOR
+
     #include	"Render.h"
-#endif
+
 int			psSkeletonUpdate	= 32;
 xrCriticalSection	UCalc_Mutex
 #ifdef PROFILE_CRITICAL_SECTIONS
@@ -211,25 +211,18 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 		{
 			string_path		lod_name;
 			LD->r_string	(lod_name, sizeof(lod_name));
-//.         strconcat		(sizeof(name_load),name_load, short_name, ":lod:", lod_name.c_str());
             m_lod 			= ::Render->model_CreateChild(lod_name, NULL);
             VERIFY3(m_lod,"Cant create LOD model for", N);
-//.			VERIFY2			(m_lod->Type==MT_HIERRARHY || m_lod->Type==MT_PROGRESSIVE || m_lod->Type==MT_NORMAL,lod_name.c_str());
-/*
-			strconcat		(name_load, short_name, ":lod:1");
-            m_lod 			= ::Render->model_CreateChild(name_load,LD);
-			VERIFY			(m_lod->Type==MT_SKELETON_GEOMDEF_PM || m_lod->Type==MT_SKELETON_GEOMDEF_ST);
-*/
         }
         LD->close	();
     }
 
-#ifndef _EDITOR    
+  
 	// User data
 	IReader* UD 	= data->open_chunk(OGF_S_USERDATA);
     pUserData		= UD?xr_new<CInifile>(UD,FS.get_path("$game_config$")->m_Path):0;
     if (UD)			UD->close();
-#endif
+
 
 	// Globals
 	bone_map_N		= xr_new<accel>		();

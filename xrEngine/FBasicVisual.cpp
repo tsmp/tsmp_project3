@@ -5,9 +5,9 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#ifndef _EDITOR
+
     #include "render.h"
-#endif    
+  
 #include "fbasicvisual.h"
 #include "fmesh.h"
 
@@ -65,12 +65,6 @@ void IRender_Visual::Load		(const char* N, IReader *data, u32 )
 		data->r_stringZ	(fnS,sizeof(fnS));
 		shader.create	(fnS,fnT);
 	}
-
-    // desc
-#ifdef _EDITOR
-    if (data->find_chunk(OGF_S_DESC)) 
-	    desc.Load		(*data);
-#endif
 }
 
 #define PCOPY(a)	a = pFrom->a
@@ -79,9 +73,7 @@ void	IRender_Visual::Copy(IRender_Visual *pFrom)
 	PCOPY(Type);
 	PCOPY(shader);
 	PCOPY(vis);
-#ifdef _EDITOR
-	PCOPY(desc);
-#endif
+
 #ifdef DEBUG
 	PCOPY(dbg_name);
 #endif

@@ -3,10 +3,6 @@
 
 #pragma once
 
-#ifdef _EDITOR
-	#include "..\editors\ECore\stdafx.h"
-#else
-
 #include "../xrCore/xrCore.h"
 
 #ifdef _DEBUG
@@ -74,5 +70,4 @@ extern ENGINE_API CInifile *pGameIni;
 #endif
 #define LUABIND_DONT_COPY_STRINGS
 
-#endif // !M_BORLAND
 #endif // !defined STDAFX_3DA

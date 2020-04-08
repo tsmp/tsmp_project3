@@ -10,12 +10,9 @@
 #include "detailformat.h"
 #include "detailmodel.h"
 
-#ifdef _EDITOR
-	#include	"ESceneClassList.h"
-	const int	dm_max_decompress	= 14;
-#else
+
 	const int	dm_max_decompress	= 7;
-#endif
+
 const int		dm_size				= 24;								//!
 const int 		dm_cache1_count		= 4;								// 
 const int 		dm_cache1_line		= dm_size*2/dm_cache1_count;		//! dm_size*2 must be div dm_cache1_count
@@ -99,9 +96,9 @@ public:
 	DetailVec						objects;
 	vis_list						m_visibles	[3];	// 0=still, 1=Wave1, 2=Wave2
 
-#ifndef _EDITOR    
+
 	xrXRC							xrc;
-#endif    
+ 
 	CacheSlot1 						cache_level1[dm_cache1_line][dm_cache1_line];
 	Slot*							cache		[dm_cache_line][dm_cache_line];	// grid-cache itself
 	svector<Slot*,dm_cache_size>	cache_task;									// non-unpacked slots
@@ -114,9 +111,7 @@ public:
 	void							UpdateVisibleM	();
 	void							UpdateVisibleS	();
 public:
-#ifdef _EDITOR
-	virtual ObjectList* 			GetSnapList		()=0;
-#endif
+
 
 	IC bool							UseVS			()		{ return HW.Caps.geometry_major >= 1; }
 

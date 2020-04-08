@@ -112,7 +112,7 @@ float		ps_r2_slight_fade			= 1.f;				// 1.f
 //- Mad Max
 float		ps_r2_gloss_factor			= 1.0f;
 //- Mad Max
-#ifndef _EDITOR
+
 #include	"..\Console.h"
 #include	"..\Console_commands.h"
 
@@ -394,5 +394,3 @@ void	xrRender_apply_tf		()
 	Console->Execute	("r2_tf_mipbias");
 #endif
 }
-
-#endif

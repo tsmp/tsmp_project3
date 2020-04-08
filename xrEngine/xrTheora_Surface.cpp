@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "xrtheora_surface.h"
 #include "xrtheora_stream.h"
-#ifndef _EDITOR
+
 #	include "xrTheora_Surface_mmx.h"
-#endif
+
 
 CTheoraSurface::CTheoraSurface()
 {
@@ -147,9 +147,9 @@ u32	CTheoraSurface::Height(bool bRealSize)
 
 }
 
-#ifndef _EDITOR
+
 	#define MMX_TV_YUV2ARGB
-#endif
+
 
 #undef MMX_TV_YUV2ARGB
 

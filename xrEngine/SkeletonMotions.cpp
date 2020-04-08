@@ -50,27 +50,17 @@ BOOL motions_value::load		(LPCSTR N, IReader *data, vecBones* bones)
 				MP->r_stringZ	(buf,sizeof(buf));
 				u16 m_idx 		= u16			(MP->r_u32());
 				*b_it			= find_bone_id	(bones,buf); 
-#ifdef _EDITOR
-				if (*b_it==BI_NONE){
-					bRes		= false;
-					Msg			("!Can't find bone: '%s'",buf);
-				}
-#else
+
 				VERIFY3			(*b_it!=BI_NONE,"Can't find bone:",buf);
-#endif
+
 				if (bRes)		rm_bones[m_idx] = u16(*b_it);
 			}
 			part_bone_cnt		= u16(part_bone_cnt + (u16)PART.bones.size());
 		}
 
-#ifdef _EDITOR
-		if (part_bone_cnt!=(u16)bones->size()){
-			bRes = false;
-			Msg("!Different bone count [Object: '%d' <-> Motions: '%d']",bones->size(),part_bone_cnt);
-		}
-#else
+
 		VERIFY3(part_bone_cnt==(u16)bones->size(),"Different bone count '%s'",N);
-#endif
+
 		if (bRes)
 		{
 			// motion defs (cycle&fx)
@@ -302,17 +292,3 @@ void motion_marks::Load(IReader* R)
 		item.second			= R->r_float();
 	}
 }
-#ifdef _EDITOR
-void motion_marks::Save(IWriter* W)
-{
-	W->w_string			(name.c_str());
-	u32 cnt				= intervals.size();
-    W->w_u32			(cnt);
-	for(u32 i=0; i<cnt; ++i)
-	{
-		interval& item		= intervals[i];
-		W->w_float			(item.first);
-		W->w_float			(item.second);
-	}
-}
-#endif

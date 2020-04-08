@@ -3,17 +3,17 @@
 #pragma once
 
 #include "Environment.h"
-#ifndef _EDITOR
+
 	#include "IGame_ObjectPool.h"
-#endif
+
 
 class IMainMenu;
 class ENGINE_API CPS_Instance;
 //-----------------------------------------------------------------------------------------------------------
 class ENGINE_API IGame_Persistent	: 
-#ifndef _EDITOR
+
 	public DLL_Pure,
-#endif
+
 	public pureAppStart, 
 	public pureAppEnd,
 	public pureAppActivate, 
@@ -60,9 +60,9 @@ public:
 	virtual void					Start				(LPCSTR op);
 	virtual void					Disconnect			();
 
-#ifndef _EDITOR
+
 	IGame_ObjectPool				ObjectPool;
-#endif
+
 	IMainMenu*						m_pMainMenu;	
 
 	CEnvironment*					pEnvironment;
@@ -85,28 +85,20 @@ public:
 	virtual void					UpdateGameType		() {};
 
 	virtual void					RegisterModel		(IRender_Visual* V)
-#ifndef _EDITOR
+
      = 0;
-#else
-	{}
-#endif
-	virtual	float					MtlTransparent		(u32 mtl_idx)
-#ifndef _EDITOR
-	= 0;
-#else
-	{return 1.f;}
-#endif
+
+	virtual	float					MtlTransparent		(u32 mtl_idx)= 0;
+
 
 	IGame_Persistent				();
 	virtual ~IGame_Persistent		();
 
 			u32						GameType			() {return m_game_params.m_e_game_type;};
 	virtual void					Statistics			(CGameFont* F)
-#ifndef _EDITOR
+
      = 0;
-#else
-	{}
-#endif
+
 	virtual	void					LoadTitle			(LPCSTR str){}
 	virtual bool					CanBePaused			()		{ return true;}
 };

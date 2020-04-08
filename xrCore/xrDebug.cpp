@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#ifndef _EDITOR
 
 #include "xrdebug.h"
 #include "resource.h"
@@ -314,6 +313,5 @@ LONG WINAPI UnhandledFilter	( struct _EXCEPTION_POINTERS *pExceptionInfo )
         ::SetUnhandledExceptionFilter	( UnhandledFilter );	// exception handler to all "unhandled" exceptions
     }
 
-#endif
 
 #endif

@@ -86,19 +86,6 @@ void CTextureDescrMngr::LoadLTX()
 				}
 			}
 		}//"specification"
-#ifdef _EDITOR
-		if (ini.section_exist("types"))
-		{
-			CInifile::Sect& 	data = ini.r_section("types");
-			for (CInifile::SectCIt I=data.Data.begin(); I!=data.Data.end(); I++)	
-			{
-				CInifile::Item& item	= *I;
-
-				texture_desc& desc		= m_texture_details[item.first];
-				desc.m_type				= (u16)atoi(item.second.c_str());
-			}
-		}//"types"
-#endif
 	}//file-exist
 }
 
@@ -124,17 +111,14 @@ void CTextureDescrMngr::LoadTHM()
 		tp.Clear			();
 		tp.Load				(*F);
 		FS.r_close			(F);
-#ifdef _EDITOR
-		texture_desc& desc		= m_texture_details[fn];
-                desc.m_type                     = tp.type;
-#endif
+
 		if (STextureParams::ttImage		== tp.fmt ||
 			STextureParams::ttTerrain	== tp.fmt ||
 			STextureParams::ttNormalMap	== tp.fmt	)
 		{
-#ifndef _EDITOR
+
 		texture_desc& desc		 = m_texture_details[fn];
-#endif
+
 
 			if( tp.detail_name.size() &&
 				tp.flags.is_any(STextureParams::flDiffuseDetail|STextureParams::flBumpDetail) )
@@ -270,45 +254,3 @@ BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, LPCSTR& res
 	}
 	return FALSE;
 }
-/*
-	// Load detail textures association
-	string256		fname;		
-	FS.update_path	(fname,"$game_textures$","textures.ltx");
-	LPCSTR	Iname	= fname;
-	if (FS.exist(Iname))
-	{
-		xr_delete		(m_description);
-		m_description	= xr_new<CInifile>	(Iname);
-		CInifile&	ini	= *m_description;
-		if (ini.section_exist("association"))
-		{
-			CInifile::Sect& 	data = ini.r_section("association");
-			for (CInifile::SectIt I=data.begin(); I!=data.end(); I++)	
-			{
-				texture_detail			D;
-				string256				T;
-				float					s;
-
-				CInifile::Item& item	= *I;
-				sscanf					(*item.second,"%[^,],%f",T,&s);
-
-				//
-				D.T				= xr_strdup				(T);
-				D.cs			= xr_new<cl_dt_scaler>	(s);
-				LPSTR N			= xr_strdup				(*item.first);
-				m_td.insert		(mk_pair(N,D));
-			}
-		}
-	}
-*/
-#ifdef _EDITOR
-u32 CTextureDescrMngr::GetTextureType(const shared_str& tex_name) const
-{
-	map_TD::const_iterator I = m_texture_details.find	(tex_name);
-	if (I!=m_texture_details.end())
-	{
-		return I->second.m_type;
-	}
-	return u32(-1);
-}
-#endif

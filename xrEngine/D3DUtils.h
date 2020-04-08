@@ -5,15 +5,10 @@
 #ifndef D3DUtilsH
 #define D3DUtilsH
 #include "DrawUtils.h"
-//----------------------------------------------------
 
-#ifdef _EDITOR
-#	define DU_DRAW_DIP	Device.DIP
-#	define DU_DRAW_DP	Device.DP
-#else
+
 #	define DU_DRAW_DIP	RCache.dbg_DIP
 #	define DU_DRAW_DP	RCache.dbg_DP
-#endif
 
 struct SPrimitiveBuffer{
     ref_geom				pGeom;

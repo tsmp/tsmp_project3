@@ -90,7 +90,7 @@ void CGameMtlLibrary::Load()
         OBJ->close		();
     }
 
-#ifndef _EDITOR
+
 	material_count		= (u32)materials.size();
     material_pairs_rt.resize(material_count*material_count,0);
     for (GameMtlPairIt p_it=material_pairs.begin(); material_pairs.end() != p_it; ++p_it){
@@ -100,16 +100,7 @@ void CGameMtlLibrary::Load()
 	    material_pairs_rt[idx0]=S;
 	    material_pairs_rt[idx1]=S;
     }
-#endif
 
-/*
-	for (GameMtlPairIt p_it=material_pairs.begin(); material_pairs.end() != p_it; ++p_it){
-		SGameMtlPair* S	= *p_it;
-		for (int k=0; k<S->StepSounds.size(); k++){
-			Msg("%40s - 0x%x", S->StepSounds[k].handle->file_name(), S->StepSounds[k].g_type);
-		}
-	}
-*/
 	FS.r_close		(F);
 }
 

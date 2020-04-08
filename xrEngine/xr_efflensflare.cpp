@@ -8,13 +8,10 @@
 #include "SkeletonCustom.h"
 #include "cl_intersect.h"
 
-#ifdef _EDITOR
-    #include "ui_toolscustom.h"
-    #include "ui_main.h"
-#else
+
 	#include "xr_object.h"
 	#include "igame_level.h"
-#endif
+
 
 #define FAR_DIST g_pGamePersistent->Environment().CurrentEnv.far_plane
 
@@ -135,11 +132,11 @@ CLensFlare::CLensFlare()
     m_State						= lfsNone;
     m_StateBlend				= 0.f;
 
-#ifndef _EDITOR
+
 	m_ray_cache.verts[0].set	(0,0,0);
 	m_ray_cache.verts[1].set	(0,0,0);
 	m_ray_cache.verts[2].set	(0,0,0);
-#endif
+
 
 	OnDeviceCreate				();	
 }
@@ -150,7 +147,6 @@ CLensFlare::~CLensFlare()
 	OnDeviceDestroy				();
 }
 
-#ifndef _EDITOR
 struct STranspParam		{
 	Fvector				P;
 	Fvector				D;
@@ -183,7 +179,6 @@ IC BOOL material_callback(collide::rq_result& result, LPVOID params)
 	fp->vis			*=vis;
 	return (fp->vis>fp->vis_threshold); 
 }
-#endif
 
 IC void	blend_lerp	(float& cur, float tgt, float speed, float dt)
 {
@@ -198,9 +193,9 @@ IC void	blend_lerp	(float& cur, float tgt, float speed, float dt)
 void CLensFlare::OnFrame(int id)
 {
 	if (dwFrame==Device.dwFrame)return;
-#ifndef _EDITOR
+
 	if (!g_pGameLevel)			return;
-#endif
+
 	dwFrame			= Device.dwFrame;
 
 	vSunDir.mul		(g_pGamePersistent->Environment().CurrentEnv.sun_dir,-1);
@@ -277,13 +272,6 @@ void CLensFlare::OnFrame(int id)
 	vecX.normalize();
 	vecY.crossproduct(vecX, vecDir);
 
-#ifdef _EDITOR
-	float dist = UI->ZFar();
-    if (Tools->RayPick(Device.m_Camera.GetPosition(),vSunDir,dist))
-		fBlend = fBlend - BLEND_DEC_SPEED * Device.fTimeDelta;
-	else
-		fBlend = fBlend + BLEND_INC_SPEED * Device.fTimeDelta;
-#else
 	CObject*	o_main		= g_pGameLevel->CurrentViewEntity();
 	STranspParam TP			(this,Device.vCameraPosition,vSunDir,1000.f,EPS_L);
 	collide::ray_defs RD	(TP.P,TP.D,TP.f,CDB::OPT_CULL,collide::rqtBoth);
@@ -303,7 +291,6 @@ void CLensFlare::OnFrame(int id)
 	}
 	blend_lerp(fBlend,TP.vis,BLEND_DEC_SPEED,Device.fTimeDelta);
 
-#endif
 	clamp( fBlend, 0.0f, 1.0f );
 
 	// gradient
