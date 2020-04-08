@@ -16,12 +16,12 @@
 #	include "script_debugger.h"
 #endif
 
-#ifndef XRSE_FACTORY_EXPORTS
+
 #	ifdef DEBUG
 #		include "ai_debug.h"
 		extern Flags32 psAI_Flags;
 #	endif
-#endif
+
 
 extern void export_classes(lua_State *L);
 
@@ -242,9 +242,9 @@ void CScriptEngine::process_file_if_exists	(LPCSTR file_name, bool warn_if_not_e
 		FS.update_path		(S,"$game_scripts$",strconcat(sizeof(S1),S1,file_name,".script"));
 		if (!warn_if_not_exist && !FS.exist(S)) {
 #ifdef DEBUG
-#	ifndef XRSE_FACTORY_EXPORTS
+
 			if (psAI_Flags.test(aiNilObjectAccess))
-#	endif
+
 			{
 				print_stack			();
 				Msg					("* trying to access variable %s, which doesn't exist, or to load script %s, which doesn't exist too",file_name,S1);
