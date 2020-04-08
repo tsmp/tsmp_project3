@@ -72,11 +72,6 @@
     #endif
 #endif
 
-#ifdef XRCORE_STATIC
-#	define NO_FS_SCAN
-#endif
-
-
 // inline control - redefine to use compiler's heuristics ONLY
 // it seems "IC" is misused in many places which cause code-bloat
 // ...and VC7.1 really don't miss opportunities for inline :)
@@ -137,15 +132,13 @@
 #pragma warning (disable : 4100 )		// unreferenced formal parameter
 
 // Our headers
-#ifdef XRCORE_STATIC
-#	define XRCORE_API
-#else
+
 #	ifdef XRCORE_EXPORTS
 #		define XRCORE_API __declspec(dllexport)
 #	else
 #		define XRCORE_API __declspec(dllimport)
 #	endif
-#endif
+
 
 #include "xrDebug.h"
 #include "vector.h"

@@ -32,13 +32,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 {
 	strcpy_s					(ApplicationName,_ApplicationName);
 	if (0==init_counter) {
-#ifdef XRCORE_STATIC	
-		_clear87	();
-		_control87	( _PC_53,   MCW_PC );
-		_control87	( _RC_CHOP, MCW_RC );
-		_control87	( _RC_NEAR, MCW_RC );
-		_control87	( _MCW_EM,  MCW_EM );
-#endif
+
 		// Init COM so we can use CoCreateInstance
 //		HRESULT co_res = 
 			CoInitializeEx (NULL, COINIT_MULTITHREADED);
@@ -146,9 +140,6 @@ void xrCore::_destroy		()
 	}
 }
 
-#ifndef XRCORE_STATIC
-
-
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
 {
 	switch (ul_reason_for_call)
@@ -161,7 +152,6 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvRese
 			_control87		( _RC_NEAR, MCW_RC );
 			_control87		( _MCW_EM,  MCW_EM );
 		}
-//.		LogFile.reserve		(256);
 		break;
 	case DLL_THREAD_ATTACH:
 		CoInitializeEx	(NULL, COINIT_MULTITHREADED);
@@ -177,4 +167,3 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvRese
 	}
     return TRUE;
 }
-#endif // XRCORE_STATIC

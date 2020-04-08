@@ -83,9 +83,7 @@ void xrDebug::backend(const char* reason, const char* expression, const char *ar
 	dlgFile				= file;
 	sprintf				(dlgLine,"%d",line);
 	INT_PTR res			= -1;
-#ifdef XRCORE_STATIC
-	MessageBox			(NULL,tmp,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
-#else
+
 	res	= DialogBox
 		(
 		GetModuleHandle(MODULE_NAME),
@@ -93,7 +91,7 @@ void xrDebug::backend(const char* reason, const char* expression, const char *ar
 		NULL,
 		DialogProc 
 		);
-#endif
+
 	switch (res) 
 	{
 	case -1:
