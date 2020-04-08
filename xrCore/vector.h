@@ -15,13 +15,8 @@
 #undef FLT_MIN
 #endif
 
-// Select platform
-#ifdef	_MSC_VER
-#define	M_VISUAL
-#endif
-
 // Constants
-#ifdef M_VISUAL
+
 const	float		EPS_S		= 0.0000001f;
 const	float		EPS			= 0.0000100f;
 const	float		EPS_L		= 0.0010000f;
@@ -38,7 +33,6 @@ const	float		PI_DIV_3	= 1.0471975511965977461542144610932f;
 const	float		PI_DIV_4	= 0.7853981633974483096156608458199f;
 const	float		PI_DIV_6	= 0.5235987755982988730771072305466f;
 const	float		PI_DIV_8	= 0.3926990816987241548078304229099f;
-#endif
 
 // Define types and namespaces (CPU & FPU)
 #include	"_types.h"
