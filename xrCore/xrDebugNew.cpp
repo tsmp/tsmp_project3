@@ -656,32 +656,6 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 }
 #endif
 
-//////////////////////////////////////////////////////////////////////
-#ifdef M_BORLAND
-	namespace std{
-		extern new_handler _RTLENTRY _EXPFUNC set_new_handler( new_handler new_p );
-	};
-
-	static void __cdecl def_new_handler() 
-    {
-		FATAL		("Out of memory.");
-    }
-
-    void	xrDebug::_initialize		(const bool &dedicated)
-    {
-		handler							= 0;
-		m_on_dialog						= 0;
-        std::set_new_handler			(def_new_handler);	// exception-handler for 'out of memory' condition
-//		::SetUnhandledExceptionFilter	(UnhandledFilter);	// exception handler to all "unhandled" exceptions
-    }
-#else
-
-/*
-typedef int		(__cdecl * _PNH)( size_t );
-_CRTIMP int		__cdecl _set_new_mode( int );
-_CRTIMP _PNH	__cdecl _set_new_handler( _PNH );
-*/
-
 #ifndef USE_BUG_TRAP
 	void _terminate		()
 	{
@@ -895,4 +869,3 @@ _CRTIMP _PNH	__cdecl _set_new_handler( _PNH );
 		std::terminate		();
 #endif // 0
 	}
-#endif

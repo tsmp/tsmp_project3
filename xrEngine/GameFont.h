@@ -5,9 +5,7 @@
 #include "MbHelpers.h"
 
 class ENGINE_API CGameFont
-#ifndef M_BORLAND
 	: public pureRender
-#endif
 {
 public:
 	enum EAligment{
