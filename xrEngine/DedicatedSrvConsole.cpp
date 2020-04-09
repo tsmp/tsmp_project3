@@ -31,14 +31,13 @@ CDedicatedSrvConsole::CDedicatedSrvConsole()
 	hMainWnd = nullptr;
 	hConsoleWnd = nullptr;
 	hLogWnd = nullptr;
-	m_hLogWndFont = nullptr;
+	hLogWndFont = nullptr;
 
-	m_bScrollLog = false;
-	m_dwStartLine = 0;
+	bScrollLog = false;
+	bNeedUpdate = false;
 
-	m_bNeedUpdate = false;
-	m_dwLastUpdateTime = 0;
-	m_last_time = Device.dwTimeGlobal;
+	LastUpdateTime = 0;
+	LastStatisticsUpdate = 0;
 }
 
 CDedicatedSrvConsole::~CDedicatedSrvConsole()
@@ -167,24 +166,24 @@ void CDedicatedSrvConsole::CreateLogWnd()
 	else
 		lf.lfPitchAndFamily = VARIABLE_PITCH | FF_SWISS;
 
-	m_hLogWndFont = CreateFontIndirect(&lf);
-	R_ASSERT2(m_hLogWndFont, "Unable to Create Font for Log Window");
+	hLogWndFont = CreateFontIndirect(&lf);
+	R_ASSERT2(hLogWndFont, "Unable to Create Font for Log Window");
 
-	m_hDC_LogWnd = GetDC(hLogWnd); // DC - Device Context
-	R_ASSERT2(m_hDC_LogWnd, "Unable to Get DC for Log Window!");
+	hdcLogWnd = GetDC(hLogWnd); // DC - Device Context
+	R_ASSERT2(hdcLogWnd, "Unable to Get DC for Log Window!");
 
-	m_hDC_LogWnd_BackBuffer = CreateCompatibleDC(m_hDC_LogWnd);
-	R_ASSERT2(m_hDC_LogWnd_BackBuffer, "Unable to Create Compatible DC for Log Window!");
+	hdcBackBuffer = CreateCompatibleDC(hdcLogWnd);
+	R_ASSERT2(hdcBackBuffer, "Unable to Create Compatible DC for Log Window!");
 
-	m_hBB_BM = CreateCompatibleBitmap(m_hDC_LogWnd, lWidth, lHeight);
-	R_ASSERT2(m_hBB_BM, "Unable to Create Compatible Bitmap for Log Window!");
+	hBitmap = CreateCompatibleBitmap(hdcLogWnd, lWidth, lHeight);
+	R_ASSERT2(hBitmap, "Unable to Create Compatible Bitmap for Log Window!");
 
-	m_hOld_BM = (HBITMAP)SelectObject(m_hDC_LogWnd_BackBuffer, m_hBB_BM);
-	m_hPrevFont = (HFONT)SelectObject(m_hDC_LogWnd_BackBuffer, m_hLogWndFont);
+	hOldBitmap = (HBITMAP)SelectObject(hdcBackBuffer, hBitmap);
+	hPrevFont = (HFONT)SelectObject(hdcBackBuffer, hLogWndFont);
 
-	SetBkColor(m_hDC_LogWnd_BackBuffer, RGB(0, 0, 0));
+	SetBkColor(hdcBackBuffer, RGB(0, 0, 0));
 
-	m_hBackGroundBrush = GetStockBrush(BLACK_BRUSH);
+	hBackGroundBrush = GetStockBrush(BLACK_BRUSH);
 }
 
 void CDedicatedSrvConsole::Initialize()
@@ -200,24 +199,24 @@ void CDedicatedSrvConsole::Initialize()
 	UpdateWindow(hConsoleWnd);
 
 	server_info.ResetData();
-	m_last_time = Device.dwTimeGlobal;
+	LastStatisticsUpdate = Device.dwTimeGlobal;
 }
 
 void CDedicatedSrvConsole::Destroy()
 {
 	CConsole::Destroy();
 
-	SelectObject(m_hDC_LogWnd_BackBuffer, m_hPrevFont);
-	SelectObject(m_hDC_LogWnd_BackBuffer, m_hOld_BM);
+	SelectObject(hdcBackBuffer, hPrevFont);
+	SelectObject(hdcBackBuffer, hOldBitmap);
 
-	if (m_hBB_BM) DeleteObject(m_hBB_BM);
-	if (m_hOld_BM) DeleteObject(m_hOld_BM);
-	if (m_hLogWndFont) DeleteObject(m_hLogWndFont);
-	if (m_hPrevFont) DeleteObject(m_hPrevFont);
-	if (m_hBackGroundBrush) DeleteObject(m_hBackGroundBrush);
+	if (hBitmap) DeleteObject(hBitmap);
+	if (hOldBitmap) DeleteObject(hOldBitmap);
+	if (hLogWndFont) DeleteObject(hLogWndFont);
+	if (hPrevFont) DeleteObject(hPrevFont);
+	if (hBackGroundBrush) DeleteObject(hBackGroundBrush);
 
-	ReleaseDC(hLogWnd, m_hDC_LogWnd_BackBuffer);
-	ReleaseDC(hLogWnd, m_hDC_LogWnd);
+	ReleaseDC(hLogWnd, hdcBackBuffer);
+	ReleaseDC(hLogWnd, hdcLogWnd);
 
 	DestroyWindow(hLogWnd);
 	DestroyWindow(hConsoleWnd);
@@ -230,13 +229,13 @@ void CDedicatedSrvConsole::OnPaint()
 
 	BeginPaint(hLogWnd, &pstruct);
 
-	if (m_bNeedUpdate)
+	if (bNeedUpdate)
 	{
-		m_dwLastUpdateTime = Device.dwTimeGlobal;
-		m_bNeedUpdate = false;
+		LastUpdateTime = Device.dwTimeGlobal;
+		bNeedUpdate = false;
 
 		GetClientRect(hLogWnd, &rect);
-		DrawLog(m_hDC_LogWnd_BackBuffer, &rect);
+		DrawLog(hdcBackBuffer, &rect);
 	}
 	else
 		rect = pstruct.rcPaint;
@@ -244,12 +243,12 @@ void CDedicatedSrvConsole::OnPaint()
 	// BitBlt выполняет передачу битовых блоков данных о цвете, соответствующих прямоугольнику 
 	// пикселей из заданного исходного контекста устройства в целевой контекст устройства
 	
-	BitBlt(m_hDC_LogWnd
+	BitBlt(hdcLogWnd
 		, rect.left
 		, rect.top
 		, rect.right - rect.left
 		, rect.bottom - rect.top
-		, m_hDC_LogWnd_BackBuffer
+		, hdcBackBuffer
 		, rect.left
 		, rect.top,
 		SRCCOPY);
@@ -265,7 +264,7 @@ void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT* pRect)
 	RECT wRC = *pRect;
 	GetClientRect(hLogWnd, &wRC);
 
-	FillRect(hDC, &wRC, m_hBackGroundBrush);
+	FillRect(hDC, &wRC, hBackGroundBrush);
 
 	INT Height = wRC.bottom - wRC.top;
 	wRC = *pRect;
@@ -282,7 +281,14 @@ void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT* pRect)
 
 	int YPos = Height - tm.tmHeight - tm.tmHeight;
 
-	for (int i = LogFile->size() - 1 - scroll_delta; i >= 0; i--)
+	static int last_log_size;
+
+	if (scroll_delta)
+		scroll_delta += (LogFile->size() - last_log_size);
+
+	int startPos = LogFile->size() - 1 - scroll_delta;
+
+	for (int i = startPos ; i >= 0; i--)
 	{
 		YPos -= tm.tmHeight;
 
@@ -305,10 +311,12 @@ void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT* pRect)
 		R_ASSERT(res);
 	}
 
+	last_log_size = LogFile->size();
+
 	// update statistic every 0,8 sec
-	if (g_pGameLevel && (Device.dwTimeGlobal - m_last_time > 800))
+	if (g_pGameLevel && (Device.dwTimeGlobal - LastStatisticsUpdate > 800))
 	{
-		m_last_time = Device.dwTimeGlobal;
+		LastStatisticsUpdate = Device.dwTimeGlobal;
 
 		server_info.ResetData();
 		g_pGameLevel->GetLevelInfo(&server_info);
@@ -329,19 +337,19 @@ void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT* pRect)
 
 void CDedicatedSrvConsole::IR_OnKeyboardPress(int dik)
 {	
-	m_bScrollLog = true;
+	bScrollLog = true;
 	CConsole::IR_OnKeyboardPress(dik);
 }
 
 void CDedicatedSrvConsole::IR_OnKeyboardHold(int dik)
 {
-	m_bScrollLog = true;
+	bScrollLog = true;
 	CConsole::IR_OnKeyboardHold(dik);
 }
 
 void CDedicatedSrvConsole::IR_OnKeyboardRelease(int dik)
 {
-	m_bScrollLog = false;
+	bScrollLog = false;
 	CConsole::IR_OnKeyboardRelease(dik);
 }
 
@@ -349,13 +357,13 @@ void CDedicatedSrvConsole::OnFrame()
 {
 	inherited::OnFrame();
 
-	if (m_bScrollLog)
-		m_bNeedUpdate = true;
+	if (bScrollLog)
+		bNeedUpdate = true;
 
-	if (!m_bNeedUpdate && (m_dwLastUpdateTime + 1000 / g_svTextConsoleUpdateRate) > Device.dwTimeGlobal)
+	if (!bNeedUpdate && (LastUpdateTime + 1000 / g_svTextConsoleUpdateRate) > Device.dwTimeGlobal)
 		return;
 
 	InvalidateRect(hConsoleWnd, NULL, FALSE);
 	SetCursor(LoadCursor(NULL, IDC_ARROW));
-	m_bNeedUpdate = true;
+	bNeedUpdate = true;
 }

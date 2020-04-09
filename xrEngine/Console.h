@@ -101,7 +101,7 @@ public:
 	void SelectCommand();
 
 	// keyboard
-	void OnPressKey(int dik, BOOL bHold=false);
+	void OnPressKey(int dik, BOOL bHold = false);
 	virtual void IR_OnKeyboardPress(int dik);
 	virtual void IR_OnKeyboardHold(int dik);
 	virtual void IR_OnKeyboardRelease(int dik);

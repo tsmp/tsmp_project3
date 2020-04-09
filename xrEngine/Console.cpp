@@ -362,6 +362,7 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 	case DIK_RETURN:
 		strcpy(command,editor);
 		ExecuteCommand();
+		scroll_delta = 0;
 		editor[0] = '\0';
 		break;
 	case DIK_INSERT:
@@ -465,7 +466,7 @@ void CConsole::ExecuteCommand()
 	char converted[MAX_LEN];
 	int	i, j, len;
 
-	scroll_delta = 0;
+	//scroll_delta = 0;
 	cmd_delta = 0;
 	old_cmd_delta = 0;
 

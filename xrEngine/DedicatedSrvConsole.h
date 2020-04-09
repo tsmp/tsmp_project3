@@ -4,7 +4,7 @@
 #include "Console.h"
 #include "IGame_Level.h"
 
-class ENGINE_API CDedicatedSrvConsole :
+class ENGINE_API CDedicatedSrvConsole final :
 	public CConsole
 {
 	using inherited = CConsole;
@@ -14,21 +14,23 @@ private:
 	HWND hConsoleWnd;
 	HWND hLogWnd;
 
-	HFONT m_hLogWndFont;
-	HFONT m_hPrevFont;
-	HBRUSH m_hBackGroundBrush;
+	HFONT hLogWndFont;
+	HFONT hPrevFont;
+	HBRUSH hBackGroundBrush;
 
-	HDC m_hDC_LogWnd;
-	HDC m_hDC_LogWnd_BackBuffer;
-	HBITMAP m_hBB_BM, m_hOld_BM;
+	HDC hdcLogWnd;
+	HDC hdcBackBuffer;
 
-	bool m_bNeedUpdate;
-	u32	m_dwLastUpdateTime;
+	HBITMAP hBitmap;
+	HBITMAP hOldBitmap;
+
+	bool bNeedUpdate;
+	u32	LastUpdateTime;
 
 	CServerInfo server_info;
-	bool m_bScrollLog;
-	u32	m_dwStartLine;
-	u32 m_last_time;
+	bool bScrollLog;
+	
+	u32 LastStatisticsUpdate;
 
 private:
 	void CreateConsoleWnd();
