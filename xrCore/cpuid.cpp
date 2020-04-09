@@ -20,9 +20,9 @@ int _cpuid (_processor_info *pinfo)
 
 #else
 
-#ifdef	M_VISUAL
+
 #include "mmintrin.h"
-#endif
+
 
 // These are the bit flags that get set on calling cpuid
 // with register eax set to 1
@@ -48,13 +48,6 @@ int IsCPUID()
     return 1;
 }
 
-
-/***
-* int _os_support(int feature,...)
-*   - Checks if OS Supports the capablity or not
-****************************************************************/
-
-#ifdef M_VISUAL
 void _os_support(int feature, int& res)
 {
 
@@ -97,22 +90,6 @@ void _os_support(int feature, int& res)
 	_mm_empty	();
 	res |= feature;
 }
-#endif
-
-#ifdef M_BORLAND
-// borland doesn't understand MMX/3DNow!/SSE/SSE2 asm opcodes
-void _os_support(int feature, int& res)
-{
-	res |= feature;
-}
-#endif
-
-
-/***
-*
-* void map_mname(int, int, const char *, char *) maps family and model to processor name
-*
-****************************************************/
 
 void map_mname( int family, int model, const char * v_name, char *m_name)
 {

@@ -34,11 +34,9 @@ XRCORE_API DUMMY_STUFF	*g_temporary_stuff = 0;
 
 CLocatorAPI*		xr_FS = NULL;
 
-#ifdef _EDITOR
-#	define FSLTX	"fs.ltx"
-#else
+
 #	define FSLTX	"fsgame.ltx"
-#endif
+
 
 struct _open_file
 {
@@ -1193,9 +1191,7 @@ IWriter* CLocatorAPI::w_open	(LPCSTR path, LPCSTR _fname)
 	xr_strlwr(fname);//,".$");
 	if (path&&path[0]) update_path(fname,path,fname);
     CFileWriter* W 	= xr_new<CFileWriter>(fname,false); 
-#ifdef _EDITOR
-	if (!W->valid()) xr_delete(W);
-#endif    
+ 
 	return W;
 }
 
@@ -1206,9 +1202,7 @@ IWriter* CLocatorAPI::w_open_ex	(LPCSTR path, LPCSTR _fname)
 	xr_strlwr(fname);//,".$");
 	if (path&&path[0]) update_path(fname,path,fname);
 	CFileWriter* W 	= xr_new<CFileWriter>(fname,true); 
-#ifdef _EDITOR
-	if (!W->valid()) xr_delete(W);
-#endif    
+
 	return W;
 }
 

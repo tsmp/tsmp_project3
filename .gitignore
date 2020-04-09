@@ -4,6 +4,7 @@ output
 
 ipch/
 .vs/
+.vscode/
 x64/
 obj/
 bin/

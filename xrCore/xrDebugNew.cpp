@@ -13,35 +13,25 @@
 
 extern bool shared_str_initialized;
 
-#ifdef __BORLANDC__
-    #	include "d3d9.h"
-    #	include "d3dx9.h"
-    #	include "D3DX_Wrapper.h"
-    #	pragma comment(lib,"EToolsB.lib")
-    #	define DEBUG_INVOKE	DebugBreak()
-        static BOOL			bException	= TRUE;
-    #   define USE_BUG_TRAP
-#else
+
     #   define USE_BUG_TRAP
     #	define DEBUG_INVOKE	__asm int 3
         static BOOL			bException	= FALSE;
-#endif
+
 
 #ifndef _M_AMD64
-#	ifndef __BORLANDC__
+
 #		pragma comment(lib,"dxerr9.lib")
-#	endif
+
 #endif
 
 #include <dbghelp.h>						// MiniDump flags
 
 #ifdef USE_BUG_TRAP
 #	include "../bugtrap/bugtrap.h"						// for BugTrap functionality
-    #ifndef __BORLANDC__
-        #	pragma comment(lib,"BugTrap.lib")		// Link to ANSI DLL
-    #else
-        #	pragma comment(lib,"BugTrapB.lib")		// Link to ANSI DLL
-    #endif
+
+#	pragma comment(lib,"BugTrap.lib")		// Link to ANSI DLL
+
 #endif // USE_BUG_TRAP
 
 #include <new.h>							// for _set_new_mode
@@ -243,9 +233,6 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	if (get_on_dialog())
 		get_on_dialog()	(true);
 
-#ifdef XRCORE_STATIC
-	MessageBox			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
-#else
 #	ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		int					result = 
 			MessageBox(
@@ -277,7 +264,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 #		endif // USE_BUG_TRAP
 		DEBUG_INVOKE;
 #	endif // USE_OWN_ERROR_MESSAGE_WINDOW
-#endif
+
 
 	if (get_on_dialog())
 		get_on_dialog()	(false);
@@ -354,11 +341,9 @@ void __cdecl xrDebug::fatal(const char *file, int line, const char *function, co
 int out_of_memory_handler	(size_t size)
 {
 	Memory.mem_compact		();
-#ifndef _EDITOR
+
 	u32						crt_heap		= mem_usage_impl((HANDLE)_get_heap_handle(),0,0);
-#else // _EDITOR
-	u32						crt_heap		= 0;
-#endif // _EDITOR
+
 	u32						process_heap	= mem_usage_impl(GetProcessHeap(),0,0);
 	int						eco_strings		= (int)g_pStringContainer->stat_economy			();
 	int						eco_smem		= (int)g_pSharedMemoryContainer->stat_economy	();
@@ -430,9 +415,9 @@ please Submit Bug or save report and email it manually (button More...).\
 //		MiniDumpFilterMemory |
 //		MiniDumpScanMemory |
 //		MiniDumpWithUnloadedModules |
-#ifndef _EDITOR
+
 		MiniDumpWithIndirectlyReferencedMemory |
-#endif // _EDITOR
+
 //		MiniDumpFilterModulePaths |
 //		MiniDumpWithProcessThreadData |
 //		MiniDumpWithPrivateReadWriteMemory |
@@ -666,32 +651,6 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 }
 #endif
 
-//////////////////////////////////////////////////////////////////////
-#ifdef M_BORLAND
-	namespace std{
-		extern new_handler _RTLENTRY _EXPFUNC set_new_handler( new_handler new_p );
-	};
-
-	static void __cdecl def_new_handler() 
-    {
-		FATAL		("Out of memory.");
-    }
-
-    void	xrDebug::_initialize		(const bool &dedicated)
-    {
-		handler							= 0;
-		m_on_dialog						= 0;
-        std::set_new_handler			(def_new_handler);	// exception-handler for 'out of memory' condition
-//		::SetUnhandledExceptionFilter	(UnhandledFilter);	// exception handler to all "unhandled" exceptions
-    }
-#else
-
-/*
-typedef int		(__cdecl * _PNH)( size_t );
-_CRTIMP int		__cdecl _set_new_mode( int );
-_CRTIMP _PNH	__cdecl _set_new_handler( _PNH );
-*/
-
 #ifndef USE_BUG_TRAP
 	void _terminate		()
 	{
@@ -712,11 +671,9 @@ _CRTIMP _PNH	__cdecl _set_new_handler( _PNH );
 			__FILE__,
 			__LINE__,
 	#endif
-	#ifndef _EDITOR
+
 			__FUNCTION__,
-	#else // _EDITOR
-			"",
-	#endif // _EDITOR
+
 			assertion_info
 		);
 		
@@ -905,4 +862,3 @@ _CRTIMP _PNH	__cdecl _set_new_handler( _PNH );
 		std::terminate		();
 #endif // 0
 	}
-#endif

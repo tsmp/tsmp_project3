@@ -74,7 +74,7 @@ void	xrMemory::_initialize	(BOOL bDebug)
 		mem_fill32	= xrMemFill32_x86;
 	}
 
-#ifndef M_BORLAND
+
 	if (!strstr(Core.Params,"-pure_alloc")) {
 		// initialize POOLs
 		u32	element		= mem_pools_ebase;
@@ -85,7 +85,6 @@ void	xrMemory::_initialize	(BOOL bDebug)
 			element		+=	mem_pools_ebase;
 		}
 	}
-#endif // M_BORLAND
 
 #ifdef DEBUG_MEMORY_MANAGER
 	if (0==strstr(Core.Params,"-memo"))	mem_initialized				= TRUE;
@@ -122,11 +121,11 @@ void	xrMemory::_destroy()
 	xr_delete					(g_pSharedMemoryContainer);
 	xr_delete					(g_pStringContainer);
 
-#ifndef M_BORLAND
+
 #	ifdef DEBUG_MEMORY_MANAGER
 		if (debug_mode)				dbg_dump_leaks	();
 #	endif // DEBUG_MEMORY_MANAGER
-#endif // M_BORLAND
+
 
 	mem_initialized				= FALSE;
 #ifdef DEBUG_MEMORY_MANAGER

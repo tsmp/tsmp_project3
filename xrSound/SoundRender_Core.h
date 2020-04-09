@@ -35,9 +35,9 @@ public:
 	sound_event*						Handler;
 protected:
 	// Collider
-#ifndef _EDITOR
+
 	CDB::COLLIDER						geom_DB;
-#endif
+
 	CDB::MODEL*							geom_SOM;
 	CDB::MODEL*							geom_MODEL;
 	CDB::MODEL*							geom_ENV;
@@ -98,14 +98,6 @@ public:
 	void								i_eax_listener_set		(CSound_environment* E);
 	void								i_eax_listener_get		(CSound_environment* E);
 
-#ifdef _EDITOR
-	virtual SoundEnvironment_LIB*		get_env_library			()																{ return s_environment; }
-	virtual void						refresh_env_library		();
-	virtual void						set_user_env			(CSound_environment* E);
-	virtual void						refresh_sources			();
-    virtual void						set_environment			(u32 id, CSound_environment** dst_env);
-    virtual void						set_environment_size	(CSound_environment* src_env, CSound_environment** dst_env);
-#endif
 public:
 	CSoundRender_Source*				i_create_source			( LPCSTR name				);
 	void								i_destroy_source		( CSoundRender_Source*  S	);

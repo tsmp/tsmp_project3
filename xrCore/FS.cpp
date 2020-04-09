@@ -13,10 +13,6 @@
 typedef void DUMMY_STUFF (const void*,const u32&,void*);
 XRCORE_API DUMMY_STUFF	*g_dummy_stuff = 0;
 
-#ifdef M_BORLAND
-#	define O_SEQUENTIAL 0
-#endif // M_BORLAND
-
 #ifdef DEBUG
 	XRCORE_API	u32								g_file_mapped_memory = 0;
 	u32								g_file_mapped_count	= 0;
@@ -90,25 +86,19 @@ void*  FileDownload(LPCSTR fn, u32* pdwSize)
 	u32		size;
 	void*	buf;
 
-#ifdef _EDITOR
-	hFile	= _open(fn,O_RDONLY|O_BINARY|O_SEQUENTIAL);
-#else
+
 	hFile	= _open(fn,O_RDONLY|O_BINARY|O_SEQUENTIAL,_S_IREAD);
-#endif
+
 	if (hFile<=0)	{
 		Sleep	(1);
-#ifdef _EDITOR
-		hFile	= _open(fn,O_RDONLY|O_BINARY|O_SEQUENTIAL);
-#else
+
 		hFile	= _open(fn,O_RDONLY|O_BINARY|O_SEQUENTIAL,_S_IREAD);
-#endif
+
 	}
 	R_ASSERT2(hFile>0,fn);
-#ifdef _EDITOR
-	size	= filelength(hFile);
-#else
+
 	size	= _filelength(hFile);
-#endif
+
 
 	buf		= Memory.mem_alloc	(size
 #ifdef DEBUG_MEMORY_NAME

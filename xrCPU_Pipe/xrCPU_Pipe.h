@@ -11,12 +11,10 @@ struct	ENGINE_API	CKey;
 struct	ENGINE_API	CKeyQR;
 struct	ENGINE_API	CKeyQT;
 
-#ifdef _EDITOR
-#define MATRIX		Fmatrix
-#else
+
 template<class T>	struct _matrix;
 #define MATRIX		_matrix<float>
-#endif
+
 
 // Skinning processor specific functions
 // NOTE: Destination memory is uncacheble write-combining (AGP), so avoid non-linear writes
