@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../TSMP2_Build_Config.h"
+
 #pragma warning(disable:4995)
 #include "../xrEngine/stdafx.h"
 #pragma warning(default:4995)

@@ -1,3 +1,4 @@
+#pragma once
 
 #define DEDICATED_SERVER // Выделенный сервер
 //#define MP_LOGGING // Вывод в лог внутренних событий сервера
