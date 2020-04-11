@@ -144,6 +144,9 @@ void	CActor::PickupModeUpdate_COD	()
 		
 	if (!g_Alive() || eacFirstEye != cam_active) 
 	{
+#ifdef ALIFE_MP
+		if(HUD().GetUI())
+#endif
 		HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(NULL);
 		return;
 	};

@@ -43,7 +43,13 @@ CGameObject::CGameObject		()
 	m_bCrPr_Activated			= false;
 	m_dwCrPr_ActivationStep		= 0;
 	m_spawn_time				= 0;
-	m_ai_location				= !g_dedicated_server ? xr_new<CAI_ObjectLocation>() : 0;
+
+#ifdef ALIFE_MP
+	m_ai_location				= xr_new<CAI_ObjectLocation>();
+#else
+	m_ai_location = !g_dedicated_server ? xr_new<CAI_ObjectLocation>() : 0;
+#endif
+	
 	m_server_flags.one			();
 
 	m_callbacks					= xr_new<CALLBACK_MAP>();
