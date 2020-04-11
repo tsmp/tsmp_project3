@@ -1585,6 +1585,11 @@ void CActor::SetActorVisibility(u16 who, float value)
 
 void CActor::UpdateMotionIcon(u32 mstate_rl)
 {
+#ifdef ALIFE_MP
+	if (!HUD().GetUI())
+		return;
+#endif
+
 	CUIMotionIcon		&motion_icon=HUD().GetUI()->UIMainIngameWnd->MotionIcon();
 	if(mstate_rl&mcClimb)
 	{

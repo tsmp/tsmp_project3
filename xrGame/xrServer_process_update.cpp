@@ -4,6 +4,10 @@
 
 int	g_Dump_Update_Read = 0;
 
+#ifdef ALIFE_MP
+std::vector<std::string> NotUpdatingObjects;
+#endif
+
 void xrServer::Process_update(NET_Packet& P, ClientID sender)
 {
 	xrClientData* CL		= ID_to_client(sender);
@@ -34,7 +38,24 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
 			if ((P.r_tell()-_pos) != size)	{
 				string16	tmp;
 				CLSID2TEXT	(E->m_tClassID,tmp);
-				Debug.fatal	(DEBUG_INFO,"Beer from the creator of '%s'",tmp);
+				
+#ifdef ALIFE_MP
+
+				std::string str = tmp;
+				bool Found = false;
+
+				for (std::string It : NotUpdatingObjects)
+					if (It == str)
+						Found = true;
+
+				if (!Found)
+				{
+					Msg("! Beer from the creator of '%s'", tmp);
+					NotUpdatingObjects.push_back(str);
+				}
+#else
+				Debug.fatal(DEBUG_INFO, "Beer from the creator of '%s'", tmp);
+#endif				
 			}
 		}
 		else
