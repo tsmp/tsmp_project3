@@ -40,7 +40,12 @@ void CSE_ALifeObject::spawn_supplies		(LPCSTR ini_string)
 		float					p;
 		for (u32 k = 0, j; ini.r_line("spawn",k,&N,&V); k++) {
 			VERIFY				(xr_strlen(N));
-	
+
+#ifdef ALIFE_MP
+			if (!strcmp(N, "device_torch") || !strcmp(N, "wpn_bm16"))
+				continue;
+#endif
+
 			float f_cond						= 1.0f;
 			bool bScope							= false;
 			bool bSilencer						= false;
