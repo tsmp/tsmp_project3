@@ -302,6 +302,11 @@ struct CRemoveOfflinePredicate {
 
 void CSoundMemoryManager::update()
 {
+#ifdef  ALIFE_MP
+#pragma todo("TSMP!: –азобратьс€ на досуге что же тут происходит")
+	return;
+#endif
+
 	START_PROFILE("Memory Manager/sounds::update")
 
 	clear_delayed_objects		();

@@ -191,6 +191,11 @@ struct CRemoveOfflinePredicate {
 
 void CHitMemoryManager::update()
 {
+#ifdef  ALIFE_MP
+#pragma todo("TSMP!: –азобратьс€ на досуге что же тут происходит")
+	return;
+#endif
+
 	START_PROFILE("Memory Manager/hits::update")
 
 	clear_delayed_objects		();
