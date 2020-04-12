@@ -35,6 +35,23 @@ void CALifeSurgeManager::spawn_new_spawns			()
 		CSE_ALifeDynamicObject	*object, *spawn = smart_cast<CSE_ALifeDynamicObject*>(&spawns().spawns().vertex(*I)->data()->object());
 		VERIFY3					(spawn,spawns().spawns().vertex(*I)->data()->object().name(),spawns().spawns().vertex(*I)->data()->object().name_replace());
 
+#ifdef ALIFE_MP
+
+		// актор оказывается непонятно где, хмм
+		if (!strcmp(spawn->s_name.c_str(), "actor"))
+		{
+			if (spawn->o_Position.x > 1000000
+				|| spawn->o_Position.y > 1000000
+				|| spawn->o_Position.z > 1000000)
+			{
+				spawn->o_Position.x = 0.f;
+				spawn->o_Position.y = 0.f;
+				spawn->o_Position.z = 0.f;
+			}
+		}
+#endif
+
+
 #ifdef DEBUG
 		CTimer					timer;
 		timer.Start				();
