@@ -241,7 +241,13 @@ protected:
 
 public:
 	IC		CMovementManager		&movement				() const;
+
+
 	IC		CSoundPlayer			&sound					() const;
+#ifdef ALIFE_MP
+	IC		CSoundPlayer* sound(void *v) const;
+#endif
+
 	IC		CSound_UserDataVisitor	*sound_user_data_visitor() const;
 
 protected:

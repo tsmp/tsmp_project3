@@ -389,7 +389,12 @@ void CCustomMonster::net_update::lerp(CCustomMonster::net_update& A, CCustomMons
 
 void CCustomMonster::update_sound_player()
 {
+#ifdef ALIFE_MP
+	if(sound(nullptr))
+		sound(nullptr)->update(client_update_fdelta());
+#else
 	sound().update	(client_update_fdelta());
+#endif
 }
 
 void CCustomMonster::UpdateCL	()
