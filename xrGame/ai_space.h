@@ -38,14 +38,13 @@ private:
 	CPatrolPathStorage					*m_patrol_path_storage;
 
 private:
-			
+			void						load(LPCSTR level_name);
 			void						unload					(bool reload = false);
 			void						patrol_path_storage_raw	(IReader &stream);
 			void						patrol_path_storage		(IReader &stream);
 			void						set_alife				(CALifeSimulator *alife_simulator);
 
 public:
-	void						load(LPCSTR level_name);
 										CAI_Space				();
 	virtual								~CAI_Space				();
 			void						init					();
