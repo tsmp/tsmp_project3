@@ -1667,12 +1667,17 @@ void CSE_ALifeMonsterBase::UPDATE_Read	(NET_Packet	&tNetPacket)
 {
 	inherited1::UPDATE_Read		(tNetPacket);
 	inherited2::UPDATE_Read		(tNetPacket);
+
+	if (tNetPacket.r_pos != tNetPacket.B.count)
+		tNetPacket.r_u32(State);
 }
 
 void CSE_ALifeMonsterBase::UPDATE_Write	(NET_Packet	&tNetPacket)
 {
 	inherited1::UPDATE_Write		(tNetPacket);
 	inherited2::UPDATE_Write		(tNetPacket);
+
+	tNetPacket.w_u32(State);
 }
 
 void CSE_ALifeMonsterBase::load(NET_Packet &tNetPacket)

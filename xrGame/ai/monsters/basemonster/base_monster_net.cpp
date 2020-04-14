@@ -8,6 +8,9 @@
 #include "../../../hit.h"
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
+
+#include "../control_animation_base.h"
+
 void CBaseMonster::net_Save			(NET_Packet& P)
 {
 	inherited::net_Save(P);
@@ -55,6 +58,7 @@ void CBaseMonster::net_Export(NET_Packet& P)
 		P.w					(&f1,						sizeof(f1));
 	}
 
+	P.w_u32(anim().m_tAction);
 }
 
 void CBaseMonster::net_Import(NET_Packet& P)
@@ -102,6 +106,11 @@ void CBaseMonster::net_Import(NET_Packet& P)
 		P.r					(&f1,						sizeof(f1));
 	}
 
+	u32 tmp;
+	P.r_u32(tmp);
+
+	if (tmp != anim().m_tAction)
+		set_action((EAction)tmp);
 
 	setVisible				(TRUE);
 	setEnabled				(TRUE);

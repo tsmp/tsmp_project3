@@ -226,7 +226,7 @@ shared_str CMapLocation::LevelName()
 	{
 		CSE_Abstract* E = ai().alife().objects().object(m_objectID,true);
 		if(!E){
-			Msg("- Critical: SMapLocation binded to non-existent object id=%d",m_objectID);
+			//Msg("- Critical: SMapLocation binded to non-existent object id=%d",m_objectID);
 			return "ERROR";
 		}
 		
