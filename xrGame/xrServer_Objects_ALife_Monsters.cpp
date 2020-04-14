@@ -1668,8 +1668,10 @@ void CSE_ALifeMonsterBase::UPDATE_Read	(NET_Packet	&tNetPacket)
 	inherited1::UPDATE_Read		(tNetPacket);
 	inherited2::UPDATE_Read		(tNetPacket);
 
+#ifdef ALIFE_MP
 	if (tNetPacket.r_pos != tNetPacket.B.count)
 		tNetPacket.r_u32(State);
+#endif
 }
 
 void CSE_ALifeMonsterBase::UPDATE_Write	(NET_Packet	&tNetPacket)
@@ -1677,7 +1679,9 @@ void CSE_ALifeMonsterBase::UPDATE_Write	(NET_Packet	&tNetPacket)
 	inherited1::UPDATE_Write		(tNetPacket);
 	inherited2::UPDATE_Write		(tNetPacket);
 
+#ifdef ALIFE_MP
 	tNetPacket.w_u32(State);
+#endif
 }
 
 void CSE_ALifeMonsterBase::load(NET_Packet &tNetPacket)

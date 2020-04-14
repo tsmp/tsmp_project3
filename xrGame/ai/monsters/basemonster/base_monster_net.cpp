@@ -9,7 +9,9 @@
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
 
+#ifdef ALIFE_MP
 #include "../control_animation_base.h"
+#endif
 
 void CBaseMonster::net_Save			(NET_Packet& P)
 {
@@ -58,7 +60,9 @@ void CBaseMonster::net_Export(NET_Packet& P)
 		P.w					(&f1,						sizeof(f1));
 	}
 
+#ifdef ALIFE_MP
 	P.w_u32(anim().m_tAction);
+#endif
 }
 
 void CBaseMonster::net_Import(NET_Packet& P)
@@ -106,11 +110,13 @@ void CBaseMonster::net_Import(NET_Packet& P)
 		P.r					(&f1,						sizeof(f1));
 	}
 
+#ifdef ALIFE_MP
 	u32 tmp;
 	P.r_u32(tmp);
 
 	if (tmp != anim().m_tAction)
 		set_action((EAction)tmp);
+#endif
 
 	setVisible				(TRUE);
 	setEnabled				(TRUE);

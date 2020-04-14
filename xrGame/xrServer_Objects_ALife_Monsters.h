@@ -382,7 +382,10 @@ add_to_type_list(CSE_ALifeMonsterZombie)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_PHSkeleton)
 	u16								m_spec_object_id;
+
+#ifdef ALIFE_MP
 u32 State;
+#endif
 
 									CSE_ALifeMonsterBase	(LPCSTR caSection);				// constructor for variable initialization
 	virtual							~CSE_ALifeMonsterBase	();
