@@ -300,16 +300,6 @@ void CPHWorld::Step()
 	dJointGroupEmpty(ContactGroup);//this is to be called after PhDataUpdate!!!-the order is critical!!!
 	ContactFeedBacks.empty();
 	ContactEffectors.empty();
-
-
-
-	if(physics_step_time_callback) 
-	{
-		physics_step_time_callback(start_time,start_time+u32(fixed_step*1000));	
-		start_time += u32(fixed_step*1000);
-	};
-
-
 }
 
 void CPHWorld::StepTouch()
