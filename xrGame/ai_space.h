@@ -38,7 +38,7 @@ private:
 	CPatrolPathStorage					*m_patrol_path_storage;
 
 private:
-			void						load					(LPCSTR level_name);
+			void						load(LPCSTR level_name);
 			void						unload					(bool reload = false);
 			void						patrol_path_storage_raw	(IReader &stream);
 			void						patrol_path_storage		(IReader &stream);

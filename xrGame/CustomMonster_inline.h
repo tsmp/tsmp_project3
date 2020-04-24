@@ -50,6 +50,13 @@ IC	CSoundPlayer &CCustomMonster::sound			() const
 	return			(*m_sound_player);
 }
 
+#ifdef ALIFE_MP
+IC	CSoundPlayer* CCustomMonster::sound(void *v) const
+{
+	return m_sound_player;
+}
+#endif
+
 IC	CSound_UserDataVisitor *CCustomMonster::sound_user_data_visitor	() const
 {
 	VERIFY			(m_sound_user_data_visitor);

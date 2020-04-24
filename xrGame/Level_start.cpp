@@ -11,6 +11,8 @@
 #include "../Console.h"
 #include "MainMenu.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 {
 	net_start_result_total				= TRUE;
@@ -104,8 +106,11 @@ bool CLevel::net_start1				()
 		else
 			Server					= xr_new<xrGameSpyServer>();
 		
-//		if (!strstr(*m_caServerOptions,"/alife")) 
-		if (xr_strcmp(p.m_alife,"alife"))
+#ifdef ALIFE_MP
+		if (xr_strcmp(p.m_game_type,"single"))
+#else
+		if (xr_strcmp(p.m_alife, "alife"))
+#endif
 		{
 			string64			l_name = "";
 			const char* SOpts = *m_caServerOptions;

@@ -110,24 +110,21 @@ void CBaseMonster::UpdateCL()
 {
 	inherited::UpdateCL();
 	
-	if (g_Alive()) {
-		CStepManager::update				();
-	}
+	if (g_Alive()) 
+		CStepManager::update();	
 
 	control().update_frame();
-
 	m_pPhysics_support->in_UpdateCL();
 }
 
 void CBaseMonster::shedule_Update(u32 dt)
 {
-	inherited::shedule_Update	(dt);
-	control().update_schedule	();
+	inherited::shedule_Update(dt);
 
-	Morale.update_schedule		(dt);
+	control().update_schedule();
+	Morale.update_schedule(dt);
 
-	m_anomaly_detector->update_schedule();
-	
+	m_anomaly_detector->update_schedule();	
 	m_pPhysics_support->in_shedule_Update(dt);
 
 #ifdef DEBUG	
@@ -135,44 +132,35 @@ void CBaseMonster::shedule_Update(u32 dt)
 #endif
 }
 
-
-//////////////////////////////////////////////////////////////////////
-// Other functions
-//////////////////////////////////////////////////////////////////////
-
-
 void CBaseMonster::Die(CObject* who)
 {
-	if (StateMan) StateMan->critical_finalize();
+	if (StateMan)
+		StateMan->critical_finalize();
 
 	inherited::Die(who);
 
 	if (is_special_killer(who))
-		sound().play			(MonsterSound::eMonsterSoundDieInAnomaly);
+		sound().play(MonsterSound::eMonsterSoundDieInAnomaly);
 	else
-		sound().play			(MonsterSound::eMonsterSoundDie);
+		sound().play(MonsterSound::eMonsterSoundDie);
 
-	monster_squad().remove_member	((u8)g_Team(),(u8)g_Squad(),(u8)g_Group(),this);
-	
-	if (m_controlled)			m_controlled->on_die();
+	monster_squad().remove_member((u8)g_Team(), (u8)g_Squad(), (u8)g_Group(), this);
+
+	if (m_controlled)
+		m_controlled->on_die();
 }
 
-
-//void CBaseMonster::Hit(float P,Fvector &dir,CObject*who,s16 element,Fvector p_in_object_space,float impulse, ALife::EHitType hit_type)
-void	CBaseMonster::Hit							(SHit* pHDS)
+void CBaseMonster::Hit(SHit* pHDS)
 {
-	if (ignore_collision_hit && (pHDS->hit_type == ALife::eHitTypeStrike)) return;
+	if (ignore_collision_hit && (pHDS->hit_type == ALife::eHitTypeStrike))
+		return;
 	
 	if (invulnerable())
 		return;
 
-	if (g_Alive())
-		if (!critically_wounded()) 
+	if (g_Alive() && !critically_wounded()) 
 			update_critical_wounded(pHDS->boneID,pHDS->power);
 	
-
-
-//	inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
 	inherited::Hit(pHDS);
 }
 
@@ -181,7 +169,7 @@ void CBaseMonster::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector 
 	m_pPhysics_support->in_Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
 }
 
-CPHDestroyable*	CBaseMonster::	ph_destroyable	()
+CPHDestroyable* CBaseMonster::ph_destroyable()
 {
 	return smart_cast<CPHDestroyable*>(character_physics_support());
 }
@@ -206,23 +194,23 @@ float CBaseMonster::evaluate(const CItemManager *manager, const CGameObject *obj
 	return (0.f);
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 void CBaseMonster::ChangeTeam(int team, int squad, int group)
 {
-	if ((team == g_Team()) && (squad == g_Squad()) && (group == g_Group())) return;
+	if ((team == g_Team()) && (squad == g_Squad()) && (group == g_Group()))
+		return;
 
 #ifdef DEBUG
-	if (!g_Alive()) {
+	if (!g_Alive())
+	{
 		ai().script_engine().print_stack	();
 		VERIFY2								(g_Alive(),"you are trying to change team of a dead entity");
 	}
 #endif // DEBUG
 
 	// remove from current team
-	monster_squad().remove_member	((u8)g_Team(),(u8)g_Squad(),(u8)g_Group(),this);
-	inherited::ChangeTeam			(team,squad,group);
-	monster_squad().register_member	((u8)g_Team(),(u8)g_Squad(),(u8)g_Group(), this);
+	monster_squad().remove_member((u8)g_Team(), (u8)g_Squad(), (u8)g_Group(), this);
+	inherited::ChangeTeam(team, squad, group);
+	monster_squad().register_member((u8)g_Team(), (u8)g_Squad(), (u8)g_Group(), this);
 }
 
 
@@ -233,11 +221,10 @@ void CBaseMonster::SetTurnAnimation(bool turn_left)
 
 void CBaseMonster::set_state_sound(u32 type, bool once)
 {
-	if (once) {
-	
+	if (once)
 		sound().play(type);
-	
-	} else {
+	else
+	{
 
 		// handle situation, when monster want to play attack sound for the first time
 		if ((type == MonsterSound::eMonsterSoundAggressive) && 

@@ -24,6 +24,8 @@
 #include "profiler.h"
 #include "agent_enemy_manager.h"
 
+#include "../TSMP2_Build_Config.h"
+
 CMemoryManager::CMemoryManager		(CEntityAlive *entity_alive, CSound_UserDataVisitor *visitor)
 {
 	VERIFY				(entity_alive);
@@ -121,6 +123,11 @@ void CMemoryManager::update_enemies	(const bool &registered_in_combat)
 
 void CMemoryManager::update			(float time_delta)
 {
+#ifdef  ALIFE_MP
+#pragma todo("TSMP!: –азобратьс€ на досуге что же тут происходит")
+	return;
+#endif
+
 	START_PROFILE("Memory Manager")
 
 	visual().update		(time_delta);
@@ -158,6 +165,11 @@ void CMemoryManager::enable			(const CObject *object, bool enable)
 template <typename T>
 void CMemoryManager::update			(const xr_vector<T> &objects, bool add_enemies)
 {
+#ifdef  ALIFE_MP
+#pragma todo("TSMP!: –азобратьс€ на досуге что же тут происходит")
+	return;
+#endif
+
 	squad_mask_type					mask = m_stalker ? m_stalker->agent_manager().member().mask(m_stalker) : 0;
 	xr_vector<T>::const_iterator	I = objects.begin();
 	xr_vector<T>::const_iterator	E = objects.end();
@@ -299,6 +311,12 @@ Fvector CMemoryManager::memory_position	(const CObject *object) const
 
 void CMemoryManager::remove_links	(CObject *object)
 {
+#ifdef  ALIFE_MP
+#pragma todo("TSMP!: –азобратьс€ на досуге что же тут происходит")
+	return;
+#endif
+
+
 	if (m_object->g_Alive()) {
 		visual().remove_links	(object);
 		sound().remove_links	(object);

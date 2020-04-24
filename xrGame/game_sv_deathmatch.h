@@ -5,11 +5,21 @@
 #include "../../xrNetServer/client_id.h"
 #include "Hit.h"
 #include "../pure_relcase.h"
+#include "../TSMP2_Build_Config.h"
+
+#ifdef ALIFE_MP
+#include "alife_simulator.h"
+#endif
 
 class	game_sv_Deathmatch			: public game_sv_mp,private pure_relcase
 {
 	typedef game_sv_mp inherited;
 protected:
+
+#ifdef ALIFE_MP
+	CALifeSimulator* m_alife_simulator;
+#endif
+
 	struct		RPointData
 	{
 		u32		PointID;
@@ -96,6 +106,23 @@ protected:
 				void	__stdcall	net_Relcase				(CObject* O);
 
 public:
+
+#ifdef ALIFE_MP
+	virtual		bool				custom_sls_default() { return !!m_alife_simulator; };
+
+	IC xrServer& server() const
+	{
+		VERIFY(m_server);
+		return (*m_server);
+	}
+
+	IC			CALifeSimulator& alife() const
+	{
+		VERIFY(m_alife_simulator);
+		return						(*m_alife_simulator);
+	}
+#endif
+
 									game_sv_Deathmatch		();
 				virtual				~game_sv_Deathmatch		();
 	virtual		void				Create					(shared_str &options);

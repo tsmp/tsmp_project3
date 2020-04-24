@@ -16,6 +16,8 @@
 #include "game_cl_base.h"
 #include "Level.h"
 
+#include "../TSMP2_Build_Config.h"
+
 #define PICKUP_INFO_COLOR 0xFFDDDDDD
 //AAAAAA
 
@@ -144,6 +146,9 @@ void	CActor::PickupModeUpdate_COD	()
 		
 	if (!g_Alive() || eacFirstEye != cam_active) 
 	{
+#ifdef ALIFE_MP
+		if(HUD().GetUI())
+#endif
 		HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(NULL);
 		return;
 	};

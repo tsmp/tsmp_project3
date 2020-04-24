@@ -13,6 +13,8 @@
 #include "space_restriction_bridge.h"
 #include "object_broker.h"
 
+#include "../TSMP2_Build_Config.h"
+
 const u32 time_to_delete = 300000;
 
 struct CSpaceRestrictionManager::CClientRestriction {
@@ -141,7 +143,14 @@ void CSpaceRestrictionManager::restrict							(ALife::_OBJECT_ID id, shared_str 
 void CSpaceRestrictionManager::unrestrict						(ALife::_OBJECT_ID id)
 {
 	CLIENT_RESTRICTIONS::iterator				I = m_clients->find(id);
+
+#ifdef ALIFE_MP
+	if (I == m_clients->end())
+		return;
+#endif
+
 	VERIFY										(I != m_clients->end());
+
 	m_clients->erase							(I);
 	collect_garbage								();
 }

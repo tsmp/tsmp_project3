@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "../TSMP2_Build_Config.h"
+
 IC	const CObjectFactory &object_factory()
 {
 	if (!g_object_factory) {
@@ -81,11 +83,18 @@ IC	void CObjectFactory::add	(CObjectItemAbstract *item)
 	const_iterator		I;
 
 	I					= std::find_if(clsids().begin(),clsids().end(),CObjectItemPredicateCLSID(item->clsid()));
+
+#ifndef ALIFE_MP
 	VERIFY				(I == clsids().end());
-	
+#endif
+
 #ifndef NO_XR_GAME
 	I					= std::find_if(clsids().begin(),clsids().end(),CObjectItemPredicateScript(item->script_clsid()));
+
+#ifndef ALIFE_MP
 	VERIFY				(I == clsids().end());
+#endif
+
 #endif
 	
 	m_actual			= false;

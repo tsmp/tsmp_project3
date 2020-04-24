@@ -10,6 +10,8 @@
 
 #include "../../detail_path_manager_space.h"
 
+#include "../TSMP2_Build_Config.h"
+
 void CControlDirection::reinit()
 {	
 	inherited::reinit			();
@@ -31,6 +33,11 @@ void CControlDirection::reinit()
 
 void CControlDirection::update_frame()
 {
+#ifdef ALIFE_MP
+	if (!ai().get_level_graph())
+		return;
+#endif
+
 	pitch_correction			();	
 
 	SRotationEventData			event_data;
