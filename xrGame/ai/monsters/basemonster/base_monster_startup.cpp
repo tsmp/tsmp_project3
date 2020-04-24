@@ -27,6 +27,8 @@
 #include "../../../inventory_item.h"
 #include "../../../xrServer_Objects_ALife.h"
 
+#include "../TSMP2_Build_Config.h"
+
 void CBaseMonster::Load(LPCSTR section)
 {
 	// load parameters from ".ltx" file
@@ -176,7 +178,17 @@ BOOL CBaseMonster::net_Spawn (CSE_Abstract* DC)
 												//поэтому в основной версии на всякий случай пусть будет здесь, 
 												//но для animation movement controllr он должен быть в конце чтобы знать что он создался на споне
 
-	R_ASSERT2								(ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)),"There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
+#ifndef ALIFE_MP
+	R_ASSERT2(ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)),"There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
+#else
+	if (!ai().get_level_graph())	
+		Msg("- Net spawn monster on client");	
+	else
+	{
+		if(ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)))
+			Msg("- Net spawn monster on server");
+	}
+#endif
 
 	monster_squad().register_member			((u8)g_Team(),(u8)g_Squad(),(u8)g_Group(), this);
 

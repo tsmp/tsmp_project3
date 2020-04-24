@@ -24,6 +24,7 @@
 #include "actorcondition.h"
 #include "UIGameCustom.h"
 #include "game_cl_base_weapon_usage_statistic.h"
+#include "../TSMP2_Build_Config.h"
 
 // breakpoints
 #include "../xr_input.h"
@@ -1585,6 +1586,11 @@ void CActor::SetActorVisibility(u16 who, float value)
 
 void CActor::UpdateMotionIcon(u32 mstate_rl)
 {
+#ifdef ALIFE_MP
+	if (!HUD().GetUI())
+		return;
+#endif
+
 	CUIMotionIcon		&motion_icon=HUD().GetUI()->UIMainIngameWnd->MotionIcon();
 	if(mstate_rl&mcClimb)
 	{

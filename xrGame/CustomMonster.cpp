@@ -47,6 +47,8 @@
 #include "alife_object_registry.h"
 #include "client_spawn_manager.h"
 
+#include "../TSMP2_Build_Config.h"
+
 #ifdef DEBUG
 #	include "debug_renderer.h"
 #endif
@@ -389,7 +391,12 @@ void CCustomMonster::net_update::lerp(CCustomMonster::net_update& A, CCustomMons
 
 void CCustomMonster::update_sound_player()
 {
+#ifdef ALIFE_MP
+	if(sound(nullptr))
+		sound(nullptr)->update(client_update_fdelta());
+#else
 	sound().update	(client_update_fdelta());
+#endif
 }
 
 void CCustomMonster::UpdateCL	()

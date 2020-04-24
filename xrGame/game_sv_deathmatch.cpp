@@ -48,6 +48,10 @@ u32					game_sv_Deathmatch::GetAnomaliesTime		() {return g_sv_dm_dwAnomalySetLen
 game_sv_Deathmatch::game_sv_Deathmatch()
 :pure_relcase(&game_sv_Deathmatch::net_Relcase)
 {
+#ifdef ALIFE_MP
+	m_alife_simulator = nullptr;
+#endif
+
 	m_type = GAME_DEATHMATCH;
 	
 	m_dwLastAnomalySetID	= 1001;
@@ -73,6 +77,10 @@ game_sv_Deathmatch::game_sv_Deathmatch()
 
 game_sv_Deathmatch::~game_sv_Deathmatch()
 {
+#ifdef ALIFE_MP
+	delete_data(m_alife_simulator);
+#endif
+
 	if (!m_AnomalySetsList.empty())
 	{
 		for (u32 i=0; i<m_AnomalySetsList.size(); i++)
@@ -108,6 +116,11 @@ void	game_sv_Deathmatch::Create					(shared_str& options)
 	m_AnomalySetsList.clear();
 	m_AnomalySetID.clear();	
 	LoadAnomalySets();
+
+#ifdef ALIFE_MP
+	if (strstr(*options, "/alife"))
+		m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
+#endif
 }
 
 void game_sv_Deathmatch::OnRoundStart()

@@ -117,7 +117,6 @@ public:
 	void						ReculcInterpolationSteps();
 	u32							GetNumCrSteps			() const	{return m_dwNumSteps; };
 	void						SetNumCrSteps			( u32 NumSteps );
-	static void 				PhisStepsCallback		( u32 Time0, u32 Time1 );
 	bool						In_NetCorrectionPrediction	() {return m_bIn_CrPr;};
 
 	virtual void				OnMessage				(void* data, u32 size);
@@ -249,9 +248,6 @@ public:
 	virtual void				IR_OnMouseWheel			( int direction);
 	virtual void				IR_OnActivate			(void);
 	
-			int					get_RPID				(LPCSTR name);
-
-
 	// Game
 	void						InitializeClientGame	(NET_Packet& P);
 	void						ClientReceive			();

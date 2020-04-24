@@ -12,6 +12,8 @@
 #include "../skeletonanimated.h"
 #include "associative_vector.h"
 
+#include "../TSMP2_Build_Config.h"
+
 namespace MonsterSpace {
 	struct SBoneRotation;
 };
@@ -241,7 +243,13 @@ protected:
 
 public:
 	IC		CMovementManager		&movement				() const;
+
+
 	IC		CSoundPlayer			&sound					() const;
+#ifdef ALIFE_MP
+	IC		CSoundPlayer* sound(void *v) const;
+#endif
+
 	IC		CSound_UserDataVisitor	*sound_user_data_visitor() const;
 
 protected:

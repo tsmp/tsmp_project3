@@ -28,6 +28,8 @@
 #include "client_spawn_manager.h"
 #include "memory_manager.h"
 
+#include "../TSMP2_Build_Config.h"
+
 #ifndef MASTER_GOLD
 #	include "clsid_game.h"
 #	include "ai_debug.h"
@@ -523,6 +525,14 @@ struct CVisibleObjectPredicateEx {
 
 void CVisualMemoryManager::remove_links	(CObject *object)
 {
+#ifdef ALIFE_MP
+
+#pragma todo("TSMP!: –азобратьс€ на досуге что же тут происходит")
+
+	if (!m_objects)
+		return;
+#endif
+
 	{
 		VERIFY						(m_objects);
 		VISIBLES::iterator			I = std::find_if(m_objects->begin(),m_objects->end(),CVisibleObjectPredicateEx(object));
@@ -562,6 +572,14 @@ void CVisualMemoryManager::update				(float time_delta)
 		return;
 
 	m_last_update_time					= Device.dwTimeGlobal;
+
+#ifdef ALIFE_MP
+
+#pragma todo("TSMP!: –азобратьс€ на досуге что же тут происходит")
+
+	if (!m_objects)
+		return;
+#endif
 
 	squad_mask_type						mask = this->mask();
 	VERIFY								(m_objects);
