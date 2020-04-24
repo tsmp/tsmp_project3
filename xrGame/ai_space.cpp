@@ -19,6 +19,8 @@
 #include "patrol_path_storage.h"
 #include "alife_simulator.h"
 
+#include "../TSMP2_Build_Config.h"
+
 ENGINE_API	bool g_dedicated_server;
 
 CAI_Space *g_ai_space = 0;

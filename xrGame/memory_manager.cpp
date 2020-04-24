@@ -24,6 +24,8 @@
 #include "profiler.h"
 #include "agent_enemy_manager.h"
 
+#include "../TSMP2_Build_Config.h"
+
 CMemoryManager::CMemoryManager		(CEntityAlive *entity_alive, CSound_UserDataVisitor *visitor)
 {
 	VERIFY				(entity_alive);

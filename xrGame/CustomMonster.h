@@ -12,6 +12,8 @@
 #include "../skeletonanimated.h"
 #include "associative_vector.h"
 
+#include "../TSMP2_Build_Config.h"
+
 namespace MonsterSpace {
 	struct SBoneRotation;
 };

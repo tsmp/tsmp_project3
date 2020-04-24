@@ -21,6 +21,8 @@
 #include "xrserver.h"
 #include "alife_human_brain.h"
 
+#include "../TSMP2_Build_Config.h"
+
 using namespace ALife;
 
 CALifeSurgeManager::~CALifeSurgeManager	()

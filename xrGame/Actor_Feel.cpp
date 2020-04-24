@@ -16,6 +16,8 @@
 #include "game_cl_base.h"
 #include "Level.h"
 
+#include "../TSMP2_Build_Config.h"
+
 #define PICKUP_INFO_COLOR 0xFFDDDDDD
 //AAAAAA
 

@@ -18,6 +18,7 @@
 #	include "character_info.h"
 #	include "specific_character.h"
 
+#include "../TSMP2_Build_Config.h"
 
 #ifdef XRGAME_EXPORTS
 #	include "ef_storage.h"

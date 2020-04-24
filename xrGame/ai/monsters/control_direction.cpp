@@ -10,6 +10,8 @@
 
 #include "../../detail_path_manager_space.h"
 
+#include "../TSMP2_Build_Config.h"
+
 void CControlDirection::reinit()
 {	
 	inherited::reinit			();

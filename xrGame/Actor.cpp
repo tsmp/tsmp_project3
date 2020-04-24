@@ -24,6 +24,7 @@
 #include "actorcondition.h"
 #include "UIGameCustom.h"
 #include "game_cl_base_weapon_usage_statistic.h"
+#include "../TSMP2_Build_Config.h"
 
 // breakpoints
 #include "../xr_input.h"

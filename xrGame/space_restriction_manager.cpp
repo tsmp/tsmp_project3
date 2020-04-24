@@ -13,6 +13,8 @@
 #include "space_restriction_bridge.h"
 #include "object_broker.h"
 
+#include "../TSMP2_Build_Config.h"
+
 const u32 time_to_delete = 300000;
 
 struct CSpaceRestrictionManager::CClientRestriction {

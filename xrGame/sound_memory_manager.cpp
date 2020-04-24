@@ -25,6 +25,8 @@
 #include "memory_manager.h"
 #include "../IGame_Persistent.h"
 
+#include "../TSMP2_Build_Config.h"
+
 #ifndef MASTER_GOLD
 #	include "clsid_game.h"
 #	include "ai_debug.h"

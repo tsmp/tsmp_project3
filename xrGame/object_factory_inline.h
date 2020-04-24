@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "../TSMP2_Build_Config.h"
+
 IC	const CObjectFactory &object_factory()
 {
 	if (!g_object_factory) {

@@ -47,6 +47,8 @@
 #include "alife_object_registry.h"
 #include "client_spawn_manager.h"
 
+#include "../TSMP2_Build_Config.h"
+
 #ifdef DEBUG
 #	include "debug_renderer.h"
 #endif

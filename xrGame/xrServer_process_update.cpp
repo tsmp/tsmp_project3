@@ -4,6 +4,8 @@
 
 int	g_Dump_Update_Read = 0;
 
+#include "../TSMP2_Build_Config.h"
+
 #ifdef ALIFE_MP
 std::vector<std::string> NotUpdatingObjects;
 #endif

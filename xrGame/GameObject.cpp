@@ -29,6 +29,8 @@
 #include "animation_movement_controller.h"
 #include "game_object_space.h"
 
+#include "../TSMP2_Build_Config.h"
+
 #ifdef DEBUG
 #	include "debug_renderer.h"
 #	include "PHDebug.h"

@@ -15,6 +15,8 @@
 #include "mainmenu.h"
 #include "object_factory.h"
 
+#include "../TSMP2_Build_Config.h"
+
 LPCSTR alife_section = "alife";
 
 extern void destroy_lua_wpn_params	();

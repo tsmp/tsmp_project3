@@ -9,6 +9,8 @@
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
 
+#include "../TSMP2_Build_Config.h"
+
 #ifdef ALIFE_MP
 #include "../control_animation_base.h"
 #endif

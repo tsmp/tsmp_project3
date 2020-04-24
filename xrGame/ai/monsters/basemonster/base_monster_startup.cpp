@@ -27,6 +27,8 @@
 #include "../../../inventory_item.h"
 #include "../../../xrServer_Objects_ALife.h"
 
+#include "../TSMP2_Build_Config.h"
+
 void CBaseMonster::Load(LPCSTR section)
 {
 	// load parameters from ".ltx" file

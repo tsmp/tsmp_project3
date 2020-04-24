@@ -14,6 +14,8 @@
 #include "character_info_defs.h"
 #include "associative_vector.h"
 
+#include "../TSMP2_Build_Config.h"
+
 class CALifeMonsterBrain;
 class CALifeHumanBrain;
 class CALifeOnlineOfflineGroupBrain;
