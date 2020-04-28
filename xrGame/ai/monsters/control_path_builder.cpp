@@ -264,7 +264,11 @@ void CControlPathBuilder::make_inactual()
 
 bool CControlPathBuilder::can_use_distributed_compuations (u32 option) const
 {	
+#ifndef ALIFE_MP
 	if (Actor()->memory().visual().visible_right_now(inherited_com::m_object)) return false;
+#else
+#pragma todo("TSMP!: –азобратьс€ на досуге что же тут происходит")
+#endif
 	return inherited::can_use_distributed_compuations(option);
 }
 

@@ -1580,6 +1580,11 @@ void CActor::AnimTorsoPlayCallBack(CBlend* B)
 
 void CActor::SetActorVisibility(u16 who, float value)
 {
+#ifdef ALIFE_MP
+	if (!HUD().GetUI())
+		return;
+#endif
+
 	CUIMotionIcon		&motion_icon	= HUD().GetUI()->UIMainIngameWnd->MotionIcon();
 	motion_icon.SetActorVisibility		(who, value);
 }

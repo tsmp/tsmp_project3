@@ -95,7 +95,11 @@ CLevel::CLevel() : IPureClient(Device.GetTimerGlobal())
 
 	m_seniority_hierarchy_holder = xr_new<CSeniorityHierarchyHolder>();
 
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#else
+	if(true)
+#endif
 	{
 		m_level_sound_manager = xr_new<CLevelSoundManager>();
 		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
