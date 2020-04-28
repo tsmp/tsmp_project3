@@ -78,6 +78,10 @@ extern	int		g_sv_Pending_Wait_Time;
 extern	int		g_sv_Client_Reconnect_Time;
 		int		g_dwEventDelay			= 0	;
 
+extern int fz_downloader_enabled;
+extern std::string fz_downloader_mod_name;
+extern std::string fz_downloader_reconnect_ip;
+
 void XRNETSERVER_API DumpNetCompressorStats	(bool brief);
 BOOL XRNETSERVER_API g_net_compressor_enabled;
 BOOL XRNETSERVER_API g_net_compressor_gather_stats;
@@ -1145,6 +1149,44 @@ public:
 	virtual void	Info	(TInfo& I){strcpy(I,"valid arguments is [info info_full on off]"); }
 };
 
+class CCC_fz_reconnect_ip : public IConsole_Command
+{
+public:
+	CCC_fz_reconnect_ip(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!xr_strlen(args_))
+		{
+			Msg("- fz_downloader_reconnect_ip %s", fz_downloader_reconnect_ip.c_str());
+			return;
+		}
+
+		fz_downloader_reconnect_ip = args_;
+	}
+
+	virtual void Info(TInfo& I) { strcpy(I, "Set reconnect IP for clients who use downloader"); }
+};
+
+class CCC_fz_mod_name : public IConsole_Command
+{
+public:
+	CCC_fz_mod_name(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!xr_strlen(args_))
+		{
+			Msg("- fz_downloader_mod_name %s",fz_downloader_mod_name.c_str());
+			return;
+		}
+		
+		fz_downloader_mod_name = args_;
+	}
+
+	virtual void Info(TInfo& I) { strcpy(I, "Set mod name for downloader"); }
+};
+
 void register_mp_console_commands()
 {
 	CMD1(CCC_Restart,				"g_restart"				);
@@ -1298,4 +1340,8 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer,	"net_compressor_gather_stats"	,	(int*)&g_net_compressor_gather_stats,0,1);
 	CMD1(CCC_MpStatistics,	"sv_dump_online_statistics");
 	CMD4(CCC_SV_Integer,	"sv_dump_online_statistics_period"	,	(int*)&g_sv_mp_iDumpStatsPeriod	,	0,60); //min
+
+	CMD4(CCC_Integer, "fz_downloader_enabled", (int*)&fz_downloader_enabled, 0, 1);
+	CMD1(CCC_fz_reconnect_ip, "fz_downloader_reconnect_ip");
+	CMD1(CCC_fz_mod_name, "fz_downloader_mod_name");
 }

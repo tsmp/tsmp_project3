@@ -2293,6 +2293,9 @@
     <Filter Include="UI\Tutorial">
       <UniqueIdentifier>{e1e8426a-2878-4445-988a-dd79284a49a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Server\fz">
+      <UniqueIdentifier>{8c8553aa-2828-42fb-9f05-2fcf52a134e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -9685,6 +9688,9 @@
     </ClCompile>
     <ClCompile Include="ui\UIGameTutorialVideoItem.cpp">
       <Filter>UI\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="fz\fz_downloader.cpp">
+      <Filter>Core\Server\fz</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

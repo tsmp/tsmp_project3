@@ -53,8 +53,12 @@ xrServer::xrServer():IPureServer(Device.GetTimerGlobal(), g_dedicated_server)
 	m_aDelayedPackets.clear();
 }
 
+extern void UnloadSysmsgsDLL();
+
 xrServer::~xrServer()
 {
+	UnloadSysmsgsDLL();
+
 	while (net_Players.size())
 	{
 		client_Destroy(net_Players[0]);
