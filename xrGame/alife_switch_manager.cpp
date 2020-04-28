@@ -202,6 +202,10 @@ void CALifeSwitchManager::try_switch_online	(CSE_ALifeDynamicObject	*I)
 
 void CALifeSwitchManager::try_switch_offline(CSE_ALifeDynamicObject	*I)
 {
+#ifdef ALIFE_MP
+	return; // никакого оффлайна!!!
+#endif
+
 	START_PROFILE("ALife/switch/try_switch_offline")
 	// checking if the object is not attached
 	if (0xffff != I->ID_Parent) {

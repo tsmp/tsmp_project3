@@ -45,6 +45,11 @@ void CSE_ALifeDynamicObject::on_before_register		()
 
 void CSE_ALifeDynamicObject::on_unregister()
 {
+#ifdef ALIFE_MP
+
+	auto map = &Level().MapManager();
+	if(map)
+#endif
 	Level().MapManager().RemoveMapLocationByObjectID(ID);
 }
 

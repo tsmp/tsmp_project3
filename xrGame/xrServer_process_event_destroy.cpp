@@ -9,6 +9,11 @@
 #include "alife_object_registry.h"
 #include "..\..\TSMP2_Build_Config.h"
 
+#ifdef ALIFE_MP
+#include "game_sv_deathmatch.h"
+#include "game_base_space.h"
+#endif
+
 xr_string xrServer::ent_name_safe(u16 eid)
 {
 	string1024						buff;
@@ -88,11 +93,39 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 	}
 
 	// Everything OK, so perform entity-destroy
-	if (e_dest->m_bALifeControl && ai().get_alife()) {
-		game_sv_Single				*_game = smart_cast<game_sv_Single*>(game);
-		VERIFY						(_game);
-		if (ai().alife().objects().object(id_dest,true))
-			_game->alife().release	(e_dest,false);
+	if (e_dest->m_bALifeControl && ai().get_alife()) 
+	{
+#ifdef ALIFE_MP
+
+#pragma todo("TSMP!: Прописать тут все режимы!!!")
+
+		if (game->Type() == GAME_SINGLE)
+		{
+			game_sv_Single* _game = smart_cast<game_sv_Single*>(game);
+
+			VERIFY(_game);
+
+			if (ai().alife().objects().object(id_dest, true))
+				_game->alife().release(e_dest, false);
+		}
+		else
+		{
+			game_sv_Deathmatch* _game = smart_cast<game_sv_Deathmatch*>(game);
+
+			VERIFY(_game);
+
+			if (ai().alife().objects().object(id_dest, true))
+				_game->alife().release(e_dest, false);
+		}
+#else
+		game_sv_Single* _game = smart_cast<game_sv_Single*>(game);
+
+		VERIFY(_game);
+
+		if (ai().alife().objects().object(id_dest, true))
+			_game->alife().release(e_dest, false);
+
+#endif
 	}
 
 	if (game)
