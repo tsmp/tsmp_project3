@@ -17,6 +17,8 @@
 #include "game_graph.h"
 #include "xrServer.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 void CSE_ALifeDynamicObject::on_spawn				()
 {
 #ifdef DEBUG

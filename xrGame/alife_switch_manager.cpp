@@ -17,6 +17,8 @@
 #include "ai_space.h"
 #include "level_graph.h"
 
+#include "..\..\..\TSMP2_Build_Config.h"
+
 #ifdef DEBUG
 #	include "level.h"
 #endif // DEBUG

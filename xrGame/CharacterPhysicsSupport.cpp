@@ -24,6 +24,8 @@
 #	include "PHDebug.h"
 #endif // DEBUG
 
+#include "..\TSMP2_Build_Config.h"
+
 #include "../device.h"
 
 void  NodynamicsCollide(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)

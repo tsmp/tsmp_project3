@@ -21,6 +21,8 @@
 #include "ui\UIBuyWndShared.h"
 #include "../Console.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 #define UNBUYABLESLOT		20
 
 //-----------------------------------------------------------------

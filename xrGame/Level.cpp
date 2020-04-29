@@ -44,6 +44,8 @@
 
 #include <functional>
 
+#include "..\TSMP2_Build_Config.h"
+
 #ifdef DEBUG
 #include "level_debug.h"
 #include "ai/stalker/ai_stalker.h"

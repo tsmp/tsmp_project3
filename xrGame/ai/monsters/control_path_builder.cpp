@@ -13,6 +13,8 @@
 #include "../../Actor_Memory.h"
 #include "../../visual_memory_manager.h"
 
+#include "..\..\..\TSMP2_Build_Config.h"
+
 #ifdef DEBUG
 extern bool show_restrictions(CRestrictedObject *object);
 #endif

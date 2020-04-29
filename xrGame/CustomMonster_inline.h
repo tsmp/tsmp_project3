@@ -1,5 +1,7 @@
 #pragma once
 
+#include "..\TSMP2_Build_Config.h"
+
 IC	bool CCustomMonster::angle_lerp_bounds(float &a, float b, float c, float d)
 {
 	if (c*d >= angle_difference(a,b)) {

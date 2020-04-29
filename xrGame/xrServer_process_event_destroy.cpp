@@ -7,6 +7,7 @@
 #include "game_cl_base.h"
 #include "ai_space.h"
 #include "alife_object_registry.h"
+
 #include "..\..\TSMP2_Build_Config.h"
 
 #ifdef ALIFE_MP

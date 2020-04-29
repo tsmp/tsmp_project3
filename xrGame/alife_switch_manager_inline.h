@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "..\TSMP2_Build_Config.h"
+
 IC	CALifeSwitchManager::CALifeSwitchManager		(xrServer *server, LPCSTR section) :
 	inherited		(server,section)
 {

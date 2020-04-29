@@ -5,6 +5,7 @@
 #include "../../xrNetServer/client_id.h"
 #include "Hit.h"
 #include "../pure_relcase.h"
+
 #include "../TSMP2_Build_Config.h"
 
 #ifdef ALIFE_MP
