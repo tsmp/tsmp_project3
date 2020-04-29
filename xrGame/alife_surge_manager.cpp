@@ -46,9 +46,9 @@ void CALifeSurgeManager::spawn_new_spawns			()
 				|| spawn->o_Position.y > 1000000
 				|| spawn->o_Position.z > 1000000)
 			{
-				spawn->o_Position.x = 0.f;
-				spawn->o_Position.y = 0.f;
-				spawn->o_Position.z = 0.f;
+				spawn->o_Position.x = 1.f;
+				spawn->o_Position.y = 1.f;
+				spawn->o_Position.z = 1.f;
 			}
 		}
 #endif

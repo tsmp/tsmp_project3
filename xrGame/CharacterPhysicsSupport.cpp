@@ -201,7 +201,21 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 	
 	CPHSkeleton::Spawn(e);
 	movement()->EnableCharacter();
+
+#ifdef ALIFE_MP // костыль чтобы не улетали объекты непонятно куда...
+	if (m_EntityAlife.Position().x > 1000000
+		|| m_EntityAlife.Position().y > 1000000
+		|| m_EntityAlife.Position().z > 1000000)
+	{
+		m_EntityAlife.Position().x = 1;
+		m_EntityAlife.Position().y = 1;
+		m_EntityAlife.Position().z = 1;
+	}
+#endif
+
 	movement()->SetPosition(m_EntityAlife.Position());
+
+
 	movement()->SetVelocity	(0,0,0);
 	if(m_eType!=etActor)
 	{

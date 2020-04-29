@@ -209,6 +209,9 @@ void	CActor::PickupModeUpdate_COD	()
 				pNearestItem = NULL;
 	}
 
+#ifdef ALIFE_MP
+	if(HUD().GetUI())
+#endif
 	HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
 
 	if (pNearestItem && m_bPickupMode)

@@ -13,7 +13,13 @@ IC	CALifeSwitchManager::CALifeSwitchManager		(xrServer *server, LPCSTR section) 
 {
 	m_switch_distance	= pSettings->r_float(section,"switch_distance");
 	m_switch_factor		= pSettings->r_float(section,"switch_factor");
-	set_switch_distance	(m_switch_distance);
+	
+#ifdef ALIFE_MP
+	set_switch_distance(2000000.F);
+#else
+	set_switch_distance(m_switch_distance);
+#endif
+
 	seed				(u32(CPU::QPC() & 0xffffffff));
 }
 
