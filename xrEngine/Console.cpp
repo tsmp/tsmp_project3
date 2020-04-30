@@ -11,6 +11,8 @@
 #include "xr_trims.h"
 #include "CustomHUD.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 static u32 const default_font_color = color_rgba(250, 250, 250, 250);
 
 constexpr auto LDIST = .05f;
@@ -162,8 +164,9 @@ void CConsole::OnRender()
 		(g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()))
 		bGame = true;
 
-	if (g_dedicated_server)
+#ifdef DEDICATED_SERVER
 		bGame = false;
+#endif
 
 	VERIFY(HW.pDevice);
 
@@ -580,8 +583,10 @@ void CConsole::Hide()
 	if (!bVisible)
 		return;
 
-	if (g_pGamePersistent && g_dedicated_server)
+#ifdef DEDICATED_SERVER
+	if (g_pGamePersistent)
 		return;
+#endif
 
 	bVisible = false;
 	Device.seqFrame.Remove(this);

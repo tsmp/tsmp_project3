@@ -103,8 +103,9 @@ BOOL IGame_Level::Load			(u32 dwNum)
 	// Done
 	FS.r_close					( LL_Stream );
 	bReady						= true;
-	if (!g_dedicated_server)	IR_Capture();
+		
 #ifndef DEDICATED_SERVER
+	IR_Capture();
 	Device.seqRender.Add		(this);
 #endif
 
@@ -113,31 +114,19 @@ BOOL IGame_Level::Load			(u32 dwNum)
 	return TRUE;
 }
 
-int		psNET_DedicatedSleep	= 5;
-void	IGame_Level::OnRender		( ) 
+int	psNET_DedicatedSleep = 5;
+
+void IGame_Level::OnRender()
 {
 #ifndef DEDICATED_SERVER
-//	if (_abs(Device.fTimeDelta)<EPS_S) return;
-
 	// Level render, only when no client output required
-	if (!g_dedicated_server)	{
-		Render->Calculate			();
-		Render->Render				();
-	} else {
-		Sleep						(psNET_DedicatedSleep);
-	}
-
-	// Font
-//	pApp->pFontSystem->SetSizeI(0.023f);
-//	pApp->pFontSystem->OnRender	();
+	Render->Calculate();
+	Render->Render();
 #endif
 }
 
-void	IGame_Level::OnFrame		( ) 
+void IGame_Level::OnFrame()
 {
-	// Log				("- level:on-frame: ",u32(Device.dwFrame));
-//	if (_abs(Device.fTimeDelta)<EPS_S) return;
-
 	// Update all objects
 	VERIFY						(bReady);
 	Objects.Update				( false );

@@ -40,28 +40,23 @@ IGame_Persistent::~IGame_Persistent	()
 	xr_delete						(pEnvironment);
 }
 
-void IGame_Persistent::OnAppActivate		()
+void IGame_Persistent::OnAppActivate() {}
+void IGame_Persistent::OnAppDeactivate() {}
+
+void IGame_Persistent::OnAppStart()
 {
+#ifndef DEDICATED_SERVER	
+	Environment().load();
+#endif
 }
 
-void IGame_Persistent::OnAppDeactivate		()
+void IGame_Persistent::OnAppEnd()
 {
+	Environment().unload();
+	OnGameEnd();
+
+	DEL_INSTANCE(g_hud);
 }
-
-void IGame_Persistent::OnAppStart	()
-{
-	if(!g_dedicated_server)
-		Environment().load				();
-}
-
-void IGame_Persistent::OnAppEnd		()
-{
-	Environment().unload				();
-	OnGameEnd						();
-
-	DEL_INSTANCE					(g_hud);  
-}
-
 
 void IGame_Persistent::PreStart		(LPCSTR op)
 {

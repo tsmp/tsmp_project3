@@ -133,44 +133,50 @@ void CStats::Show()
 	}
 
 	// calc FPS & TPS
-	if (Device.fTimeDelta>EPS_S) {
+	if (Device.fTimeDelta>EPS_S) 
+	{
 		float fps  = 1.f/Device.fTimeDelta;
-		//if (Engine.External.tune_enabled)	vtune.update	(fps);
 		float fOne = 0.3f;
 		float fInv = 1.f-fOne;
 		fFPS = fInv*fFPS + fOne*fps;
 
-		if (RenderTOTAL.result>EPS_S) {
+		if (RenderTOTAL.result>EPS_S) 
+		{
 			fTPS = fInv*fTPS + fOne*float(RCache.stat.polys)/(RenderTOTAL.result*1000.f);
 			fRFPS= fInv*fRFPS+ fOne*1000.f/RenderTOTAL.result;
 		}
 	}
-	{
-		float mem_count		= float	(Memory.stat_calls);
-		if (mem_count>fMem_calls)	fMem_calls	=	mem_count;
-		else						fMem_calls	=	.9f*fMem_calls + .1f*mem_count;
-		Memory.stat_calls	= 0		;
-	}
+	
+	float mem_count = float(Memory.stat_calls);
 
-	////////////////////////////////////////////////
-	if (g_dedicated_server) return;
-	////////////////////////////////////////////////
+	if (mem_count > fMem_calls)	
+		fMem_calls = mem_count;
+	else
+		fMem_calls = .9f * fMem_calls + .1f * mem_count;
+
+	Memory.stat_calls = 0;	
+
+#ifndef DEDICATED_SERVER
+
 	int frm = 2000;
-	div_t ddd = div(Device.dwFrame,frm);
-	if( ddd.rem < frm/2.0f ){
-		pFont->SetColor	(0xFFFFFFFF	);
-		pFont->OutSet	(0,0);
-		pFont->OutNext	(*eval_line_1);
-		pFont->OutNext	(*eval_line_2);
-		pFont->OutNext	(*eval_line_3);
-		pFont->OnRender	();
+	div_t ddd = div(Device.dwFrame, frm);
+
+	if (ddd.rem < frm / 2.0f)
+	{
+		pFont->SetColor(0xFFFFFFFF);
+		pFont->OutSet(0, 0);
+		pFont->OutNext(*eval_line_1);
+		pFont->OutNext(*eval_line_2);
+		pFont->OutNext(*eval_line_3);
+		pFont->OnRender();
 	}
 
 	CGameFont& F = *pFont;
-	float		f_base_size	= 0.01f;
-				F.SetHeightI	(f_base_size);
+	float f_base_size = 0.01f;
+	F.SetHeightI(f_base_size);
 
-	if (vtune.enabled())	{
+	if (vtune.enabled())	
+	{
 		float sz		= pFont->GetHeight();
 		pFont->SetHeightI(0.02f);
 		pFont->SetColor	(0xFFFF0000	);
@@ -317,6 +323,7 @@ void CStats::Show()
 		_draw_cam_pos					(pFont);
 		pFont->OnRender					();
 	};
+
 #ifdef DEBUG
 	//////////////////////////////////////////////////////////////////////////
 	// PERF ALERT
@@ -419,6 +426,8 @@ void CStats::Show()
 	}
 	dwSND_Played = dwSND_Allocated = 0;
 	Particles_starting = Particles_active = Particles_destroy = 0;
+
+#endif // DEDICATED_SERVER
 }
 
 void	_LogCallback				(LPCSTR string)

@@ -164,24 +164,27 @@ void InitConsole	()
 	}
 }
 
-void InitInput		()
+void InitInput()
 {
-	BOOL bCaptureInput			= !strstr(Core.Params,"-i");
-	if(g_dedicated_server)
-		bCaptureInput			= FALSE;
+	BOOL bCaptureInput = !strstr(Core.Params, "-i");
 
-	pInput						= xr_new<CInput>		(bCaptureInput);
+#ifdef DEDICATED_SERVER	
+	bCaptureInput = FALSE;
+#endif
+
+	pInput = xr_new<CInput>(bCaptureInput);
 }
-void destroyInput	()
+
+void destroyInput()
 {
-	xr_delete					( pInput		);
+	xr_delete(pInput);
 }
-void InitSound		()
+
+void InitSound()
 {
-	CSound_manager_interface::_create					(u64(Device.m_hWnd));
-//	Msg				("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//	ref_sound*	x	= 
+	CSound_manager_interface::_create(u64(Device.m_hWnd));
 }
+
 void destroySound	()
 {
 	CSound_manager_interface::_destroy				( );
@@ -970,21 +973,24 @@ void CApplication::destroy_loading_shaders()
 
 u32 calc_progress_color(u32, u32, int, int);
 
-void CApplication::LoadDraw		()
+void CApplication::LoadDraw()
 {
-	if(g_appLoaded)				return;
-	Device.dwFrame				+= 1;
+	if(g_appLoaded)
+		return;
 
+	Device.dwFrame += 1;
 
-	if(!Device.Begin () )		return;
+	if (!Device.Begin())
+		return;
 
-	if	(g_dedicated_server)
-		Console->OnRender			();
-	else
-		load_draw_internal			();
+#ifdef DEDICATED_SERVER
+	Console->OnRender();
+#else
+	load_draw_internal();
+#endif
 
-	Device.End					();
-	CheckCopyProtection			();
+	Device.End();
+	CheckCopyProtection();
 }
 
 void CApplication::LoadTitleInt(LPCSTR str)
