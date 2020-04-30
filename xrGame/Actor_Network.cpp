@@ -42,6 +42,8 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 #ifdef DEBUG
 #	include "debug_renderer.h"
 #endif
@@ -56,8 +58,10 @@ CActor *Actor()
 {
 	VERIFY(g_actor);
 
+#ifndef ALIFE_MP
 	if (GameID() != GAME_SINGLE)
 		VERIFY(g_actor == Level().CurrentControlEntity());
+#endif
 
 	return (g_actor);
 }

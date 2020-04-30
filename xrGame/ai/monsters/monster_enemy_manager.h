@@ -1,6 +1,8 @@
 #pragma once
 #include "ai_monster_defs.h"
 
+#include "..\..\..\TSMP2_Build_Config.h"
+
 class CBaseMonster;
 
 class CMonsterEnemyManager {
@@ -43,7 +45,12 @@ public:
 	void				unforce_enemy				();
 
 	const CEntityAlive *get_enemy					() {return enemy;}
-	EDangerType			get_danger_type				() {return danger_type;}
+
+#ifdef MONSTERS_ATTACK_ALWAYS
+	EDangerType			get_danger_type() { return eWeak; }
+#else
+	EDangerType			get_danger_type() { return danger_type; }
+#endif
 	const Fvector		&get_enemy_position			() {return position;}
 	u32					get_enemy_vertex			() {return vertex;}
 	TTime				get_enemy_time_last_seen	() {return time_last_seen;}

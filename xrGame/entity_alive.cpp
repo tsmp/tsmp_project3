@@ -21,6 +21,8 @@
 #include "material_manager.h"
 #include "game_base_space.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 #define SMALL_ENTITY_RADIUS		0.6f
 #define BLOOD_MARKS_SECT		"bloody_marks"
 
@@ -508,8 +510,12 @@ ALife::ERelationType CEntityAlive::tfGetRelationType	(const CEntityAlive *tpEnti
 
 bool CEntityAlive::is_relation_enemy(const CEntityAlive *tpEntityAlive) const
 {
-	return ((tfGetRelationType(tpEntityAlive) == ALife::eRelationTypeEnemy) ||  
+#ifdef MONSTERS_ALWAYS_ENEMIES
+	return true;
+#else
+	return ((tfGetRelationType(tpEntityAlive) == ALife::eRelationTypeEnemy) ||
 		(tfGetRelationType(tpEntityAlive) == ALife::eRelationTypeWorstEnemy));
+#endif
 }
 
 void CEntityAlive::StartBloodDrops			(CWound* pWound)
