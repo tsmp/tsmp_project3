@@ -169,6 +169,8 @@
 #	include "actor_mp_client.h"
 #endif // NO_XR_GAME
 
+#include "..\TSMP2_Build_Config.h"
+
 ENGINE_API	bool g_dedicated_server;
 
 #ifndef NO_XR_GAME
@@ -375,8 +377,11 @@ void CObjectFactory::register_classes	()
 	// because we do not have scripts
 	// and script functionality is not
 	// needed here
+
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
 		return;
+#endif
 
 	ADD(CElectricBall			,CSE_ALifeItemArtefact			,TEXT2CLSID("SCRPTART")			,"artefact_s");
 	ADD(CTorch					,CSE_ALifeItemTorch				,TEXT2CLSID("TORCH_S")			,"device_torch_s");
