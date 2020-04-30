@@ -69,30 +69,36 @@ const CHitObject *CHitMemoryManager::hit					(const CEntityAlive *object) const
 	return					(0);
 }
 
-void CHitMemoryManager::add					(const CEntityAlive *entity_alive)
+void CHitMemoryManager::add(const CEntityAlive* entity_alive)
 {
-	add						(0,Fvector().set(0,0,1),entity_alive,0);
+	add(0, Fvector().set(0, 0, 1), entity_alive, 0);
 }
 
-void CHitMemoryManager::Load				(LPCSTR section)
+void CHitMemoryManager::Load(LPCSTR section) {}
+
+void CHitMemoryManager::reinit()
 {
+#ifdef ALIFE_MP
+	if (!m_hits)
+		m_hits = xr_new<HITS>();
+	else
+		m_hits->clear();
+#else
+	m_hits = 0;
+#endif // ALIFE_MP
+	
+	m_last_hit_object_id = ALife::_OBJECT_ID(-1);
 }
 
-void CHitMemoryManager::reinit				()
-{
-	m_hits					= 0;
-	m_last_hit_object_id	= ALife::_OBJECT_ID(-1);
-}
-
-void CHitMemoryManager::reload				(LPCSTR section)
+void CHitMemoryManager::reload(LPCSTR section)
 {
 #ifdef USE_SELECTED_HIT
-	xr_delete				(m_selected_hit);
+	xr_delete(m_selected_hit);
 #endif
-	m_max_hit_count			= READ_IF_EXISTS(pSettings,r_s32,section,"DynamicHitCount",1);
+	m_max_hit_count = READ_IF_EXISTS(pSettings, r_s32, section, "DynamicHitCount", 1);
 }
 
-void CHitMemoryManager::add					(float amount, const Fvector &vLocalDir, const CObject *who, s16 element)
+void CHitMemoryManager::add(float amount, const Fvector& vLocalDir, const CObject* who, s16 element)
 {
 #ifndef MASTER_GOLD
 	if (who && (who->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
@@ -183,28 +189,24 @@ void CHitMemoryManager::add					(const CHitObject &_hit_object)
 	}
 }
 
-struct CRemoveOfflinePredicate {
-	bool		operator()						(const CHitObject &object) const
+struct CRemoveOfflinePredicate
+{
+	bool operator() (const CHitObject& object) const
 	{
-		VERIFY	(object.m_object);
+		VERIFY(object.m_object);
 		return	(!!object.m_object->getDestroy() || object.m_object->H_Parent());
 	}
 };
 
 void CHitMemoryManager::update()
 {
-#ifdef  ALIFE_MP
-#pragma todo("TSMP!: –азобратьс€ на досуге что же тут происходит")
-	return;
-#endif
-
 	START_PROFILE("Memory Manager/hits::update")
+		 
+	clear_delayed_objects();
 
-	clear_delayed_objects		();
-
-	VERIFY						(m_hits);
-	m_hits->erase				(
-		std::remove_if(	
+	VERIFY(m_hits);
+	m_hits->erase(
+		std::remove_if(
 			m_hits->begin(),
 			m_hits->end(),
 			CRemoveOfflinePredicate()
@@ -213,34 +215,44 @@ void CHitMemoryManager::update()
 	);
 
 #ifdef USE_SELECTED_HIT
-	xr_delete					(m_selected_hit);
-	u32							level_time = 0;
-	HITS::const_iterator		I = m_hits->begin();
-	HITS::const_iterator		E = m_hits->end();
-	for ( ; I != E; ++I) {
-		if ((*I).m_level_time > level_time) {
-			xr_delete			(m_selected_hit);
-			m_selected_hit		= xr_new<CHitObject>(*I);
-			level_time			= (*I).m_level_time;
+	xr_delete(m_selected_hit);
+	u32	level_time = 0;
+	HITS::const_iterator I = m_hits->begin();
+	HITS::const_iterator E = m_hits->end();
+
+	for (; I != E; ++I) 
+	{
+		if ((*I).m_level_time > level_time) 
+		{
+			xr_delete(m_selected_hit);
+			m_selected_hit = xr_new<CHitObject>(*I);
+			level_time = (*I).m_level_time;
 		}
 	}
 #endif
 	STOP_PROFILE
 }
 
-void CHitMemoryManager::enable			(const CObject *object, bool enable)
+void CHitMemoryManager::enable(const CObject* object, bool enable)
 {
-	HITS::iterator				J = std::find(m_hits->begin(),m_hits->end(),object_id(object));
+	HITS::iterator J = std::find(m_hits->begin(), m_hits->end(), object_id(object));
+
 	if (J == m_hits->end())
 		return;
 
-	(*J).m_enabled				= enable;
+	(*J).m_enabled = enable;
 }
 
-void CHitMemoryManager::remove_links	(CObject *object)
+void CHitMemoryManager::remove_links(CObject *object)
 {
-	VERIFY				(m_hits);
-	HITS::iterator		I = std::find_if(m_hits->begin(),m_hits->end(),CHitObjectPredicate(object));
+#ifdef ALIFE_MP
+	if (!m_hits)
+		return;
+#endif // ALIFE_MP
+
+	VERIFY(m_hits);
+	HITS::iterator I = std::find_if(m_hits->begin(), m_hits->end(), CHitObjectPredicate(object));
+	
 	if (I != m_hits->end())
 		m_hits->erase	(I);
 
@@ -254,7 +266,7 @@ void CHitMemoryManager::remove_links	(CObject *object)
 	if (m_selected_hit->m_object->ID() != object->ID())
 		return;
 
-	xr_delete			(m_selected_hit);
+	xr_delete(m_selected_hit);
 #endif
 }
 

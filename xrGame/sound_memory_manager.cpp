@@ -56,13 +56,23 @@ void CSoundMemoryManager::Load					(LPCSTR section)
 
 void CSoundMemoryManager::reinit				()
 {
-	m_sounds				= 0;
-	m_priorities.clear		();
-	m_last_sound_time		= 0;
-	m_sound_threshold		= m_min_sound_threshold;
-	VERIFY					(_valid(m_sound_threshold));
+#ifdef ALIFE_MP
+
+	if (!m_sounds)
+		m_sounds = xr_new<SOUNDS>();
+	else
+		m_sounds->clear();
+
+#else
+	m_sounds = 0;
+#endif // ALIFE_MP
+
+	m_priorities.clear();
+	m_last_sound_time = 0;
+	m_sound_threshold = m_min_sound_threshold;
+	VERIFY(_valid(m_sound_threshold));
 #ifdef USE_SELECTED_SOUND
-	xr_delete				(m_selected_sound);
+	xr_delete(m_selected_sound);
 #endif
 }
 
@@ -285,37 +295,35 @@ void CSoundMemoryManager::add			(const CObject *object, int sound_type, const Fv
 #endif
 		add						(sound_object);
 	}
-	else {
+	else 
+	{
 		(*J).fill				(game_object,self,ESoundTypes(sound_type),sound_power,(!m_stalker ? (*J).m_squad_mask.get() : ((*J).m_squad_mask.get() | m_stalker->agent_manager().member().mask(m_stalker))));
 		if (!game_object)
 			(*J).m_object_params.m_position = position;
 	}
 }
 
-struct CRemoveOfflinePredicate {
-	bool		operator()						(const CSoundObject &object) const
+struct CRemoveOfflinePredicate 
+{
+	bool operator()	(const CSoundObject &object) const
 	{
 		if (!object.m_object)
-			return	(false);
+			return false;
 
-		return		(!!object.m_object->H_Parent());
+		return !!object.m_object->H_Parent();
 	}
 };
 
 void CSoundMemoryManager::update()
 {
-#ifdef  ALIFE_MP
-#pragma todo("TSMP!: –азобратьс€ на досуге что же тут происходит")
-	return;
-#endif
-
 	START_PROFILE("Memory Manager/sounds::update")
 
-	clear_delayed_objects		();
+	clear_delayed_objects();
 
-	VERIFY						(m_sounds);
-	m_sounds->erase				(
-		std::remove_if(	
+	VERIFY(m_sounds);
+	
+	m_sounds->erase(
+		std::remove_if(
 			m_sounds->begin(),
 			m_sounds->end(),
 			CRemoveOfflinePredicate()
@@ -324,15 +332,19 @@ void CSoundMemoryManager::update()
 	);
 
 #ifdef USE_SELECTED_SOUND
-	xr_delete					(m_selected_sound);
-	u32							priority = u32(-1);
+	xr_delete(m_selected_sound);
+	u32	priority = u32(-1);
 	xr_vector<CSoundObject>::const_iterator	I = m_sounds->begin();
 	xr_vector<CSoundObject>::const_iterator	E = m_sounds->end();
-	for ( ; I != E; ++I) {
-		u32						cur_priority = this->priority(*I);
-		if (cur_priority < priority) {
-			m_selected_sound	= xr_new<CSoundObject>(*I);
-			priority			= cur_priority;
+
+	for (; I != E; ++I) 
+	{
+		u32	cur_priority = this->priority(*I);
+
+		if (cur_priority < priority) 
+		{
+			m_selected_sound = xr_new<CSoundObject>(*I);
+			priority = cur_priority;
 		}
 	}
 #endif
@@ -340,32 +352,37 @@ void CSoundMemoryManager::update()
 	STOP_PROFILE
 }
 
-struct CSoundObjectPredicate {
-	const CObject *m_object;
+struct CSoundObjectPredicate
+{
+	const CObject* m_object;
 
-				CSoundObjectPredicate	(const CObject *object) :
-					m_object		(object)
-	{
-	}
+	CSoundObjectPredicate(const CObject* object) : m_object(object) {}
 
-	bool		operator()			(const MemorySpace::CSoundObject &sound_object) const
+	bool operator()	(const MemorySpace::CSoundObject& sound_object) const
 	{
 		if (!m_object)
-			return			(!sound_object.m_object);
+			return !sound_object.m_object;
 
 		if (!sound_object.m_object)
-			return			(false);
+			return false;
 
-		return				(m_object->ID() == sound_object.m_object->ID());
+		return (m_object->ID() == sound_object.m_object->ID());
 	}
 };
 
-void CSoundMemoryManager::remove_links	(CObject *object)
+void CSoundMemoryManager::remove_links(CObject *object)
 {
-	VERIFY					(m_sounds);
-	SOUNDS::iterator		I = std::find_if(m_sounds->begin(),m_sounds->end(),CSoundObjectPredicate(object));
+#ifdef ALIFE_MP
+	if (!m_sounds)
+		return;
+
+#endif // ALIFE_MP
+
+	VERIFY(m_sounds);
+	SOUNDS::iterator I = std::find_if(m_sounds->begin(),m_sounds->end(),CSoundObjectPredicate(object));
+
 	if (I != m_sounds->end())
-		m_sounds->erase		(I);
+		m_sounds->erase(I);
 
 #ifdef USE_SELECTED_SOUND
 	if (!m_selected_sound)
@@ -377,7 +394,7 @@ void CSoundMemoryManager::remove_links	(CObject *object)
 	if (m_selected_sound->m_object->ID() != object->ID())
 		return;
 
-	xr_delete				(m_selected_sound);
+	xr_delete(m_selected_sound);
 #endif
 }
 

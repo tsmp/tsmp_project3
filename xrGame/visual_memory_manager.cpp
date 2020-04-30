@@ -122,23 +122,28 @@ CVisualMemoryManager::~CVisualMemoryManager		()
 
 void CVisualMemoryManager::reinit					()
 {
+#ifdef ALIFE_MP
+	if (!m_objects)
+		m_objects = xr_new<VISIBLES>();
+	else
+		m_objects->clear();
+#else
 	if (!m_client)
-		m_objects						= 0;
-	else {
-		VERIFY							(m_objects);
-		m_objects->clear				();
+		m_objects = 0;
+	else 
+	{
+		VERIFY(m_objects);
+		m_objects->clear();
 	}
+#endif // ALIFE_MP
 
-	m_visible_objects.clear				();
-//	m_visible_objects.reserve			(100);
-
-	m_not_yet_visible_objects.clear		();
-//	m_not_yet_visible_objects.reserve	(100);
+	m_visible_objects.clear();
+	m_not_yet_visible_objects.clear();
 
 	if (m_object)
-		m_object->feel_vision_clear		();
+		m_object->feel_vision_clear();
 
-	m_last_update_time					= u32(-1);
+	m_last_update_time = u32(-1);
 }
 
 void CVisualMemoryManager::reload				(LPCSTR section)
