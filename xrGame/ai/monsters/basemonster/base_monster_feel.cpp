@@ -28,6 +28,12 @@
 #include "../../../ActorEffector.h"
 #include "../CameraBase.h"
 
+#include "..\..\..\..\TSMP2_Build_Config.h"
+
+#ifdef ALIFE_MP
+extern ENGINE_API	bool g_dedicated_server;
+#endif
+
 void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power)
 {
 	if (!g_Alive())		return;
@@ -106,7 +112,14 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		HS.Write_Packet(l_P);
 		u_EventSend	(l_P);
 		
-		if (pEntityNC == Actor()) {
+		if (pEntityNC == Actor()) 
+		{
+#ifdef ALIFE_MP
+			if (g_dedicated_server)
+				return;
+#endif
+
+
 			START_PROFILE("BaseMonster/Animation/HitEntity");
 			SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("monster_claws", false);
 			s->m_endTime = Device.fTimeGlobal+3.0f;// 3sec

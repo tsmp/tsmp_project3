@@ -56,14 +56,22 @@ CActor *g_actor = nullptr;
 
 CActor *Actor()
 {
+#ifdef ALIFE_MP
+
+	if (g_actor)
+		return g_actor;
+
+	return (CActor*)Level().CurrentControlEntity();
+
+#else
 	VERIFY(g_actor);
 
-#ifndef ALIFE_MP
+
 	if (GameID() != GAME_SINGLE)
 		VERIFY(g_actor == Level().CurrentControlEntity());
-#endif
 
 	return (g_actor);
+#endif
 }
 
 void CActor::ConvState(u32 mstate_rl, string128 *buf)

@@ -8,13 +8,15 @@
 
 #pragma once
 
-IC	CHitMemoryManager::CHitMemoryManager							(CCustomMonster *object, CAI_Stalker *stalker)
+IC	CHitMemoryManager::CHitMemoryManager(CCustomMonster* object, CAI_Stalker* stalker)
 {
-	VERIFY			(object);
-	m_object		= object;
-	m_stalker		= stalker;
+	m_hits = 0;
+
+	VERIFY(object);
+	m_object = object;
+	m_stalker = stalker;
 #ifdef USE_SELECTED_HIT
-	m_selected_hit	= 0;
+	m_selected_hit = 0;
 #endif
 }
 

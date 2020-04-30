@@ -313,6 +313,10 @@ void CCustomMonster::shedule_Update	( u32 DT )
 #endif // DEBUG
 		else
 			Exec_Visibility					();
+
+#ifdef ALIFE_MP
+		if (!Remote())
+#endif // ALIFE_MP		
 		memory().update						(dt);
 	}
 	inherited::shedule_Update	(DT);
