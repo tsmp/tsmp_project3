@@ -271,6 +271,10 @@ void CActor::NewPdaContact		(CInventoryOwner* pInvOwner)
 
 void CActor::LostPdaContact		(CInventoryOwner* pInvOwner)
 {
+#ifdef ALIFE_MP
+	return;
+#endif
+
 	CGameObject* GO = smart_cast<CGameObject*>(pInvOwner);
 	if (GO){
 
