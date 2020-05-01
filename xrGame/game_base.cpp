@@ -5,6 +5,8 @@
 #include "level.h"
 #include "xrMessages.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 u64		g_qwStartGameTime		= 12*60*60*1000;
 float	g_fTimeFactor			= pSettings->r_float("alife","time_factor");
 u64		g_qwEStartGameTime		= 12*60*60*1000;
@@ -170,7 +172,9 @@ game_GameState::game_GameState()
 
 CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 {
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 	{
 		string_path		S;
 		FS.update_path	(S,"$game_config$","script.ltx");
