@@ -159,12 +159,21 @@ BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
 	m_game_death_time		= 0;
 	m_killer_id				= ALife::_OBJECT_ID(-1);
 
+	
+		
+
 	CSE_Abstract				*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeCreatureAbstract	*E	= smart_cast<CSE_ALifeCreatureAbstract*>(e);
 
 	// Initialize variables
-	if (E) {
-		SetfHealth			(E->fHealth);
+	if (E) 
+	{
+		if (!stricmp(E->name_replace(), "level_prefix_actor"))
+		
+			SetfHealth(1.0f);
+		else
+			SetfHealth(E->fHealth);		
+
 		VERIFY				((E->m_killer_id == ALife::_OBJECT_ID(-1)) || !g_Alive());
 		m_killer_id			= E->m_killer_id;
 		if (m_killer_id == ID())
