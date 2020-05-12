@@ -156,8 +156,10 @@ public:
 
 	virtual void		SelectAnimation			( const Fvector& _view, const Fvector& _move, float speed ) = 0;
 
+#ifdef ALIFE_MP
 	virtual bool						NeedToDestroyObject()  const;
 	virtual ALife::_TIME_ID				TimePassedAfterDeath() const;
+#endif
 
 	// debug
 #ifdef DEBUG
