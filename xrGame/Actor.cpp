@@ -860,6 +860,7 @@ float CActor::currentFOV()
 
 void CActor::UpdateCL	()
 {
+#ifndef  ALIFE_MP
 	if(m_feel_touch_characters>0)
 	{
 		for(xr_vector<CObject*>::iterator it = feel_touch.begin(); it != feel_touch.end(); it++)
@@ -871,6 +872,9 @@ void CActor::UpdateCL	()
 			}
 		}
 	}
+#else
+#pragma todo("TSMP!: –азобратьс€ на досуге что же тут происходит")
+#endif // ! ALIFE_MP
 	if(m_holder)
 		m_holder->UpdateEx( currentFOV() );
 

@@ -17,6 +17,8 @@
 #include "agent_manager_planner.h"
 #include "profiler.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 CAgentManager::CAgentManager			()
 {
 	init_scheduler				();
@@ -76,6 +78,10 @@ void CAgentManager::remove_components	()
 
 void CAgentManager::remove_links		(CObject *object)
 {
+#ifdef ALIFE_MP
+#pragma todo("TSMP!: –азобратьс€ на досуге что же тут происходит")
+	return;
+#endif
 	corpse().remove_links		(object);
 	enemy().remove_links		(object);
 	explosive().remove_links	(object);

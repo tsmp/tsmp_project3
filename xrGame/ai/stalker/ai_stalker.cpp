@@ -60,6 +60,8 @@
 #include "../../agent_member_manager.h"
 #include "../../location_manager.h"
 
+#include "..\..\..\TSMP2_Build_Config.h"
+
 #ifdef DEBUG
 #	include "../../alife_simulator.h"
 #	include "../../alife_object_registry.h"
@@ -367,13 +369,17 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	if (ai().game_graph().valid_vertex_id(tpHuman->m_tNextGraphID) && movement().restrictions().accessible(ai().game_graph().vertex(tpHuman->m_tNextGraphID)->level_point()))
 		movement().set_game_dest_vertex	(tpHuman->m_tNextGraphID);
 
-	R_ASSERT2					(
-		ai().get_game_graph() && 
-		ai().get_level_graph() && 
-		ai().get_cross_table() && 
-		(ai().level_graph().level_id() != u32(-1)),
-		"There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!"
-	);
+#ifndef ALIFE_MP
+	R_ASSERT2(ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)), "There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
+#else
+	if (!ai().get_level_graph())
+		Msg("- Net spawn stalker on client");
+	else
+	{
+		if (ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)))
+			Msg("- Net spawn stalker on server");
+	}
+#endif
 
 	setEnabled						(TRUE);
 

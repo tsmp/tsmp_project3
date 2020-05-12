@@ -18,6 +18,8 @@
 #include "monster_community.h"
 #include "ai_space.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 #define BODY_REMOVE_TIME		600000
 
 //////////////////////////////////////////////////////////////////////
@@ -157,10 +159,7 @@ BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
 {
 	m_level_death_time		= 0;
 	m_game_death_time		= 0;
-	m_killer_id				= ALife::_OBJECT_ID(-1);
-
-	
-		
+	m_killer_id				= ALife::_OBJECT_ID(-1);		
 
 	CSE_Abstract				*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeCreatureAbstract	*E	= smart_cast<CSE_ALifeCreatureAbstract*>(e);
@@ -168,11 +167,14 @@ BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
 	// Initialize variables
 	if (E) 
 	{
-		if (!stricmp(E->name_replace(), "level_prefix_actor"))
-		
+#ifdef ALIFE_MP
+		if (!stricmp(E->name_replace(), "level_prefix_actor"))		
 			SetfHealth(1.0f);
 		else
-			SetfHealth(E->fHealth);		
+			SetfHealth(E->fHealth);
+#else
+		SetfHealth(E->fHealth);
+#endif
 
 		VERIFY				((E->m_killer_id == ALife::_OBJECT_ID(-1)) || !g_Alive());
 		m_killer_id			= E->m_killer_id;
@@ -207,7 +209,12 @@ BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
 		}
 	}
 
-	if (g_Alive() && IsGameTypeSingle()) {
+#ifndef ALIFE_MP
+	if (g_Alive() && IsGameTypeSingle())
+#else
+	if (g_Alive())
+#endif
+	{
 		m_registered_member		= true;
 		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).register_member(this);
 		++Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).m_dwAliveCount;
