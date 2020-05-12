@@ -156,6 +156,9 @@ public:
 
 	virtual void		SelectAnimation			( const Fvector& _view, const Fvector& _move, float speed ) = 0;
 
+	virtual bool						NeedToDestroyObject()  const;
+	virtual ALife::_TIME_ID				TimePassedAfterDeath() const;
+
 	// debug
 #ifdef DEBUG
 	virtual void		OnRender				( );

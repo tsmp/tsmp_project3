@@ -383,6 +383,33 @@ void CCustomMonster::shedule_Update	( u32 DT )
 	}
 }
 
+#ifdef ALIFE_MP
+
+extern int g_iCorpseRemove;
+
+bool CCustomMonster::NeedToDestroyObject() const
+{
+	if (g_Alive()) 
+		return false;
+
+	if (g_iCorpseRemove == -1)
+		return false;
+
+	if (g_iCorpseRemove == 0) 
+		return true;
+
+	return (TimePassedAfterDeath() > m_dwBodyRemoveTime);
+}
+
+ALife::_TIME_ID	CCustomMonster::TimePassedAfterDeath() const
+{
+	if (!g_Alive())
+		return Level().timeServer() - GetLevelDeathTime();
+	else
+		return 0;
+}
+#endif
+
 void CCustomMonster::net_update::lerp(CCustomMonster::net_update& A, CCustomMonster::net_update& B, float f)
 {
 	// 
