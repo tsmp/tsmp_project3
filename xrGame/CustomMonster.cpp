@@ -89,6 +89,7 @@ CCustomMonster::CCustomMonster()
 	m_sound_player				= 0;
 	m_already_dead				= false;
 	m_invulnerable				= false;
+	interpolationStartTime = 0;
 }
 
 CCustomMonster::~CCustomMonster	()
@@ -295,7 +296,7 @@ void CCustomMonster::shedule_Update	( u32 DT )
 	VERIFY				(_valid(Position()));
 	u32	dwTimeCL		= Level().timeServer()-NET_Latency;
 	VERIFY				(!NET.empty());
-	while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL)) NET.pop_front();
+	//while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL)) NET.pop_front();
 
 	float dt			= float(DT)/1000.f;
 	// *** general stuff
@@ -459,55 +460,91 @@ void CCustomMonster::UpdateCL	()
 		STOP_PROFILE
 	}
 
-	START_PROFILE("CustomMonster/client_update/network extrapolation")
-	if (NET.empty()) {
-		update_animation_movement_controller	();
-		return;
-	}
-
-	m_dwCurrentTime		= Device.dwTimeGlobal;
-
-	// distinguish interpolation/extrapolation
-	u32	dwTime			= Level().timeServer()-NET_Latency;
-	net_update&	N		= NET.back();
-	if ((dwTime > N.dwTimeStamp) || (NET.size() < 2)) {
-		// BAD.	extrapolation
-		NET_Last		= N;
-	}
-	else {
-		// OK.	interpolation
-		NET_WasExtrapolating		= FALSE;
-		// Search 2 keyframes for interpolation
-		int select		= -1;
-		for (u32 id=0; id<NET.size()-1; ++id)
-		{
-			if ((NET[id].dwTimeStamp<=dwTime)&&(dwTime<=NET[id+1].dwTimeStamp))	select=id;
+	// оставим пока как было для сервера
+	if (OnServer())
+	{
+		//START_PROFILE("CustomMonster/client_update/network extrapolation")
+		if (NET.empty()) {
+			update_animation_movement_controller();
+			return;
 		}
-		if (select>=0)
-		{
-			// Interpolate state
-			net_update&	A			= NET[select+0];
-			net_update&	B			= NET[select+1];
-			u32	d1					= dwTime-A.dwTimeStamp;
-			u32	d2					= B.dwTimeStamp - A.dwTimeStamp;
-//			VERIFY					(d2);
-			float					factor = d2 ? (float(d1)/float(d2)) : 1.f;
-			Fvector					l_tOldPosition = Position();
-			NET_Last.lerp			(A,B,factor);
-			if (Local()) {
-				NET_Last.p_pos		= l_tOldPosition;
-			}
-			else {
-				if (!bfScriptAnimation())
-					SelectAnimation	(XFORM().k,movement().detail().direction(),movement().speed());
-			}
 
-			// Signal, that last time we used interpolation
-			NET_WasInterpolating	= TRUE;
-			NET_Time				= dwTime;
+		m_dwCurrentTime = Device.dwTimeGlobal;
+
+		// distinguish interpolation/extrapolation
+		u32	dwTime = Level().timeServer() - NET_Latency;
+		net_update& N = NET.back();
+		if ((dwTime > N.dwTimeStamp) || (NET.size() < 2)) {
+			// BAD.	extrapolation
+			NET_Last = N;
+			Msg("extra");
+		}
+		else {
+			Msg("inter");
+			// OK.	interpolation
+			NET_WasExtrapolating = FALSE;
+			// Search 2 keyframes for interpolation
+			int select = -1;
+			for (u32 id = 0; id < NET.size() - 1; ++id)
+			{
+				if ((NET[id].dwTimeStamp <= dwTime) && (dwTime <= NET[id + 1].dwTimeStamp))	select = id;
+			}
+			if (select >= 0)
+			{
+				// Interpolate state
+				net_update& A = NET[select + 0];
+				net_update& B = NET[select + 1];
+				u32	d1 = dwTime - A.dwTimeStamp;
+				u32	d2 = B.dwTimeStamp - A.dwTimeStamp;
+				//			VERIFY					(d2);
+				float					factor = d2 ? (float(d1) / float(d2)) : 1.f;
+				Fvector					l_tOldPosition = Position();
+				NET_Last.lerp(A, B, factor);
+				if (Local()) {
+					NET_Last.p_pos = l_tOldPosition;
+				}
+				else {
+					if (!bfScriptAnimation())
+						SelectAnimation(XFORM().k, movement().detail().direction(), movement().speed());
+				}
+
+				// Signal, that last time we used interpolation
+				NET_WasInterpolating = TRUE;
+				NET_Time = dwTime;
+			}
 		}
 	}
-	STOP_PROFILE
+	else
+	{
+		if (OnClient() && NET.empty())
+			return;
+
+		if (NET.size() < 2)
+		{
+			Msg("! not interpolating");
+			NET_Last = NET.back();
+		}
+		else
+		{
+			u32 updatePacketTimeDelta = NET[1].dwTimeStamp - NET[0].dwTimeStamp;
+			u32 elapsedSinceInterpolationBegin = Device.dwTimeGlobal - interpolationStartTime;
+
+			float factor = (float)elapsedSinceInterpolationBegin / (float)updatePacketTimeDelta;
+
+			if (elapsedSinceInterpolationBegin >= updatePacketTimeDelta)
+			{
+				interpolationStartTime = Device.dwTimeGlobal;
+				NET.pop_front();
+			}
+			else
+				NET_Last.lerp(NET[0], NET[1], factor);
+		}
+	}
+
+
+
+
+	//STOP_PROFILE
 
 	if (Local() && g_Alive()) {
 #pragma todo("Dima to All : this is FAKE, network is not supported here!")

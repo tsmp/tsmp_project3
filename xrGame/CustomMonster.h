@@ -62,6 +62,7 @@ protected:
 
 private:
 	xr_vector<CLASS_ID>	m_killer_clsids;
+	u32 interpolationStartTime;
 
 public:
 	// Eyes

@@ -102,11 +102,19 @@ void CBaseMonster::net_Import(NET_Packet &P)
 	P.r(&l_game_vertex_id, sizeof(l_game_vertex_id));
 	P.r(&l_game_vertex_id, sizeof(l_game_vertex_id));
 
-	if (NET.empty() || (NET.back().dwTimeStamp < N.dwTimeStamp))
-	{
-		NET.push_back(N);
-		NET_WasInterpolating = TRUE;
-	}
+	//if (NET.empty() || (NET.back().dwTimeStamp < N.dwTimeStamp))
+	//{
+	//	NET.push_back(N);
+	//	NET_WasInterpolating = TRUE;
+	//}
+
+	if (!NET.empty() && N.dwTimeStamp < NET.back().dwTimeStamp)
+		return;
+
+	if (NET.size() > 3)
+		NET.pop_back();
+
+	NET.push_back(N);
 
 	float f1 = 0;
 
