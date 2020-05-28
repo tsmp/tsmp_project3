@@ -1191,16 +1191,26 @@ void CSE_ALifeHelicopter::STATE_Write		(NET_Packet	&tNetPacket)
     tNetPacket.w_stringZ			(engine_sound);
 }
 
-void CSE_ALifeHelicopter::UPDATE_Read		(NET_Packet	&tNetPacket)
+void CSE_ALifeHelicopter::UPDATE_Read(NET_Packet &tNetPacket)
 {
-	inherited1::UPDATE_Read		(tNetPacket);
-	inherited3::UPDATE_Read		(tNetPacket);
+#ifndef ALIFE_MP
+	// пустые заглушки
+	//inherited1::UPDATE_Read		(tNetPacket);
+	//inherited3::UPDATE_Read		(tNetPacket);
+#else
+	tNetPacket.r_matrix(matrix);
+#endif
 }
 
-void CSE_ALifeHelicopter::UPDATE_Write		(NET_Packet	&tNetPacket)
+void CSE_ALifeHelicopter::UPDATE_Write(NET_Packet &tNetPacket)
 {
-	inherited1::UPDATE_Write		(tNetPacket);
-	inherited3::UPDATE_Write		(tNetPacket);
+#ifndef ALIFE_MP
+	// пустые заглушки
+	//inherited1::UPDATE_Write		(tNetPacket);
+	//inherited3::UPDATE_Write		(tNetPacket);
+#else
+	tNetPacket.w_matrix(matrix);
+#endif
 }
 
 void CSE_ALifeHelicopter::load		(NET_Packet &tNetPacket)

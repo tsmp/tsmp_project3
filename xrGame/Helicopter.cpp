@@ -246,6 +246,16 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract*	DC)
 	return TRUE;
 }
 
+void CHelicopter::net_Export(NET_Packet& P)
+{
+	P.w_matrix(XFORM());
+}
+
+void CHelicopter::net_Import(NET_Packet& P)
+{
+	P.r_matrix(XFORM());
+}
+
 void CHelicopter::net_Destroy()
 {
 	inherited::net_Destroy				();
@@ -399,13 +409,29 @@ void CHelicopter::UpdateCL()
 	else
 		PPhysicsShell()->SetTransform(XFORM());
 
+#ifdef ALIFE_MP
+	if (OnServer())
+	{
+		m_movement.Update();
+		m_stepRemains += Device.fTimeDelta;
+
+		while (m_stepRemains > STEP) 
+		{
+			MoveStep();
+			m_stepRemains -= STEP;
+		}
+	}
+#else
 	m_movement.Update();
 
-	m_stepRemains+=Device.fTimeDelta;
-	while(m_stepRemains>STEP){
+	m_stepRemains += Device.fTimeDelta;
+
+	while (m_stepRemains > STEP) 
+	{
 		MoveStep();
-		m_stepRemains-=STEP;
+		m_stepRemains -= STEP;
 	}
+#endif
 
 #ifdef DEBUG
 	if(bDebug){
@@ -420,8 +446,6 @@ void CHelicopter::UpdateCL()
 
 	if(m_engineSound._feedback())
 		m_engineSound.set_position(XFORM().c);
-	
-
 
 	m_enemy.Update();
 	//weapon

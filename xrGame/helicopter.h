@@ -14,6 +14,8 @@
 #include "PHDestroyable.h"
 #include "Explosive.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 class CScriptGameObject;
 class CLAItem;
 class CHelicopterMovManager;
@@ -268,8 +270,15 @@ public:
 
 	virtual BOOL					net_Spawn			(CSE_Abstract*		DC);
 	virtual void					net_Destroy			();
+
+#ifndef ALIFE_MP
 	virtual void					net_Export			(NET_Packet &P){};
 	virtual void					net_Import			(NET_Packet &P){};
+#else
+	virtual void net_Export(NET_Packet& P);
+	virtual void net_Import(NET_Packet& P);
+#endif
+
 	virtual void					net_Relcase			(CObject* O );
 	virtual void					save				(NET_Packet &output_packet);
 	virtual void					load				(IReader &input_packet);

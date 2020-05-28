@@ -13,6 +13,8 @@
 #include "alife_space.h"
 #include "game_graph_space.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 #pragma warning(push)
 #pragma warning(disable:4005)
 
@@ -449,6 +451,10 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeHelicopter,CSE_ALifeDynamicObjectVisual,CS
 	virtual bool					used_ai_locations			() const;
 	virtual CSE_Motion*	__stdcall	motion						();
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
+
+#ifdef ALIFE_MP
+	Fmatrix matrix;
+#endif
 
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeHelicopter)
