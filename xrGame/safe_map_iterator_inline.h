@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "..\TSMP2_Build_Config.h"
 
 #define TEMPLATE_SPEZIALIZATION \
 	template <\
@@ -55,8 +56,13 @@ TEMPLATE_SPEZIALIZATION
 IC	void CSSafeMapIterator::remove				(const _key_type &id, bool no_assert)
 {
 	_iterator				I = m_objects.find(id);
-	if (I == m_objects.end()) {
+	if (I == m_objects.end()) 
+	{
+#ifdef ALIFE_MP
+		Msg("! ERROR: cant remove object from registry, not found! ");
+#else
 		THROW2				(no_assert,"Specified object hasn't been found in the registry!");
+#endif
 		return;
 	}
 

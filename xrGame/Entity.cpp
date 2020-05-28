@@ -20,7 +20,7 @@
 
 #include "..\TSMP2_Build_Config.h"
 
-#define BODY_REMOVE_TIME		600000
+#define BODY_REMOVE_TIME		30000
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -77,6 +77,7 @@ void CEntity::Die(CObject* who)
 	set_ready_to_save	();
 	SetfHealth			(-1.f);
 
+#ifndef ALIFE_MP
 	if(IsGameTypeSingle())
 	{
 		VERIFY				(m_registered_member);
@@ -84,6 +85,11 @@ void CEntity::Die(CObject* who)
 	m_registered_member	= false;
 	if (IsGameTypeSingle())
 		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
+#else
+	VERIFY(m_registered_member);
+	m_registered_member = false;
+	Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
+#endif
 }
 
 //обновление состояния

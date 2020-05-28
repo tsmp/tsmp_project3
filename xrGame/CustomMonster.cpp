@@ -477,10 +477,8 @@ void CCustomMonster::UpdateCL	()
 		if ((dwTime > N.dwTimeStamp) || (NET.size() < 2)) {
 			// BAD.	extrapolation
 			NET_Last = N;
-			Msg("extra");
 		}
 		else {
-			Msg("inter");
 			// OK.	interpolation
 			NET_WasExtrapolating = FALSE;
 			// Search 2 keyframes for interpolation
