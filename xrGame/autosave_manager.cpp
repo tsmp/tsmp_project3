@@ -14,6 +14,8 @@
 #include "xrMessages.h"
 #include "hudmanager.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 extern LPCSTR alife_section;
 
 CAutosaveManager::CAutosaveManager			()
@@ -55,6 +57,11 @@ void CAutosaveManager::shedule_Update		(u32 dt)
 
 	if (!ai().get_alife())
 		return;
+
+#ifdef ALIFE_MP
+	if (!IsGameTypeSingle())
+		return;
+#endif
 
 	if (last_autosave_time() + autosave_interval() >= Device.dwTimeGlobal)
 		return;
