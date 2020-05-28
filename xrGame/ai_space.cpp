@@ -130,8 +130,10 @@ void CAI_Space::load				(LPCSTR level_name)
 
 void CAI_Space::unload				(bool reload)
 {
+#ifndef ALIFE_MP
 	if (g_dedicated_server)
 		return;
+#endif
 
 	script_engine().unload	();
 	xr_delete				(m_graph_engine);

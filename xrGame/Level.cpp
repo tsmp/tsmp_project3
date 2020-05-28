@@ -202,7 +202,9 @@ CLevel::~CLevel()
 	xr_delete(m_debug_renderer);
 #endif
 
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 
 	xr_delete(game);
@@ -499,7 +501,9 @@ void CLevel::OnFrame()
 
 	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), GetGameTimeFactor());
 
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 		ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->update();
 
 	m_ph_commander->update();
@@ -520,7 +524,10 @@ void CLevel::OnFrame()
 	}
 
 	// deffer LUA-GC-STEP
+
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 	{
 		if (g_mt_config.test(mtLUA_GC))
 			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CLevel::script_gc));

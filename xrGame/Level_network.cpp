@@ -14,6 +14,8 @@
 #include "client_spawn_manager.h"
 #include "seniority_hierarchy_holder.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 ENGINE_API bool g_dedicated_server;
 
 const int max_objects_size			= 2*1024;
@@ -59,7 +61,9 @@ void CLevel::remove_objects	()
 	psDeviceFlags.set			(rsDisableObjectsAsCrows, b_stored);
 	g_b_ClearGameCaptions		= true;
 
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 		ai().script_engine().collect_all_garbage	();
 
 	stalker_animation_data_storage().clear		();
@@ -113,7 +117,9 @@ void CLevel::net_Stop		()
 		xr_delete				(Server);
 	}
 
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 		ai().script_engine().collect_all_garbage	();
 
 #ifdef DEBUG

@@ -14,6 +14,8 @@
 #include "level_sounds.h"
 #include "GamePersistent.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 ENGINE_API	bool g_dedicated_server;
 
 BOOL CLevel::Load_GameSpecific_Before()
@@ -89,7 +91,10 @@ BOOL CLevel::Load_GameSpecific_After()
 		}
 	}	
 
-	if (!g_dedicated_server) {
+#ifndef ALIFE_MP
+	if (!g_dedicated_server) 
+#endif
+	{
 		// loading scripts
 		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 

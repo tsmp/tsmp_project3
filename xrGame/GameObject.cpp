@@ -90,7 +90,10 @@ void CGameObject::Load(LPCSTR section)
 void CGameObject::reinit	()
 {
 	m_visual_callback.clear	();
+
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
         ai_location().reinit	();
 
 	// clear callbacks	
@@ -283,30 +286,40 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 
 	// Net params
 	setLocal						(E->s_flags.is(M_SPAWN_OBJECT_LOCAL));
-	if (Level().IsDemoPlay() && OnClient())
+
+	if (Level().IsDemoPlay() && OnClient())	
+		setLocal(FALSE);	
+
+	setReady(TRUE);
+	g_pGameLevel->Objects.net_Register(this);
+	m_server_flags.one();
+
+	if (O) 
 	{
-		setLocal(FALSE);
-	};
+		m_server_flags = O->m_flags;
 
-	setReady						(TRUE);
-	g_pGameLevel->Objects.net_Register	(this);
-
-	m_server_flags.one				();
-	if (O) {
-		m_server_flags					= O->m_flags;
 		if (O->m_flags.is(CSE_ALifeObject::flVisibleForAI))
-			spatial.type				|= STYPE_VISIBLEFORAI;
+			spatial.type |= STYPE_VISIBLEFORAI;
 		else
-			spatial.type				= (spatial.type | STYPE_VISIBLEFORAI) ^ STYPE_VISIBLEFORAI;
+			spatial.type = (spatial.type | STYPE_VISIBLEFORAI) ^ STYPE_VISIBLEFORAI;
 	}
 
-	reload						(*cNameSect());
+	reload(*cNameSect());
+
+#ifndef ALIFE_MP
 	if(!g_dedicated_server)
-		CScriptBinder::reload	(*cNameSect());
-	
-	reinit						();
+		CScriptBinder::reload(*cNameSect());
+
+	reinit();
+
 	if(!g_dedicated_server)
-		CScriptBinder::reinit	();
+		CScriptBinder::reinit();
+#else
+		CScriptBinder::reload(*cNameSect());
+		reinit();
+		CScriptBinder::reinit();
+#endif
+
 #ifdef DEBUG
 	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&stricmp(PH_DBG_ObjectTrack(),*cName())==0)
 	{
@@ -818,7 +831,9 @@ void CGameObject::shedule_Update	(u32 dt)
 	// Msg							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
 	inherited::shedule_Update	(dt);
 	
+#ifndef ALIFE_MP
 	if(!g_dedicated_server)
+#endif
 		CScriptBinder::shedule_Update(dt);
 }
 
@@ -881,7 +896,10 @@ u32	CGameObject::ef_detector_type		() const
 void CGameObject::net_Relcase			(CObject* O)
 {
 	inherited::net_Relcase		(O);
+
+#ifndef ALIFE_MP
 	if(!g_dedicated_server)
+#endif
 		CScriptBinder::net_Relcase	(O);
 }
 

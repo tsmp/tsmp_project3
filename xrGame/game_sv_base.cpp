@@ -15,6 +15,8 @@
 
 #include "debug_renderer.h"
 
+#include "..\TSMP2_Build_Config.h"
+
 ENGINE_API bool g_dedicated_server;
 
 #define MAPROT_LIST_NAME "maprot_list.ltx"
@@ -412,7 +414,9 @@ void game_sv_GameState::Create					(shared_str &options)
 		FS.r_close	(F);
 	}
 
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 	{
 		// loading scripts
 		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
@@ -628,12 +632,17 @@ void game_sv_GameState::Update()
 		UpdateClientPing(C);
 	}
 
-	if (!g_dedicated_server && Level().game)
+#ifndef ALIFE_MP
+	if (!g_dedicated_server)
+#endif
 	{
-		CScriptProcess *script_process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame);
+		if (Level().game)
+		{
+			CScriptProcess* script_process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame);
 
-		if (script_process)
-			script_process->update();
+			if (script_process)
+				script_process->update();
+		}
 	}
 }
 
@@ -654,8 +663,11 @@ game_sv_GameState::game_sv_GameState()
 
 game_sv_GameState::~game_sv_GameState()
 {
+#ifndef ALIFE_MP 
 	if (!g_dedicated_server)
+#endif
 		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
+
 	xr_delete(m_event_queue);
 
 	SaveMapList();
