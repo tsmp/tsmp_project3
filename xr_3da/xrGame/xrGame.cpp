@@ -16,16 +16,12 @@
 #pragma comment(lib,"xr_3da.lib")
 
 #ifdef NDEBUG
-
-/*
-namespace std {
-	void terminate()
-	{
-		abort();
-	}
-}
-*/
-
+//namespace std {
+//	void terminate()
+//	{
+//		abort();
+//	}
+//}
 #endif // #ifdef NDEBUG
 
 extern "C" {
@@ -45,6 +41,8 @@ extern "C" {
 		xr_delete			(O);
 	}
 };
+
+
 
 extern void CCC_RegisterCommands();
 

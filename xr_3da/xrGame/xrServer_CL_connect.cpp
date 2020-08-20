@@ -118,6 +118,8 @@ void xrServer::Check_GameSpy_CDKey_Success			(IClient* CL)
 
 BOOL	g_SV_Disable_Auth_Check = FALSE;
 
+BOOL sv_debug_msg=FALSE;
+
 bool xrServer::NeedToCheckClient_BuildVersion		(IClient* CL)	
 {
 //#ifdef DEBUG
@@ -134,23 +136,30 @@ bool xrServer::NeedToCheckClient_BuildVersion		(IClient* CL)
 //#endif
 };
 
-void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
+void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
 {
 	u16 Type;
-	P.r_begin( Type );
-	u64 _our		=	FS.auth_get();
-	u64 _him		=	P.r_u64();
+	P.r_begin(Type);
+	u64 _our = FS.auth_get();
+	u64 _him = P.r_u64();
+
+	u64 _our_new = 1189233227;
+
+	if (0 != strstr(Core.Params, "-debug"))
+	{
+		Msg("OnBuildVersionRespond");
+		Msg("_our = %d", _our);
+		Msg("_him = %d", _him);
+}
+
+
 
 #ifdef DEBUG
 	Msg("_our = %d", _our);
 	Msg("_him = %d", _him);
 #endif // DEBUG
 
-	if ( _our != _him )
-	{
-		SendConnectResult( CL, 0, 0, "Data verification failed. Cheater? [3]" );
-	}
-	else
+	if (( _our_new == _him )||(_our == _him))
 	{				
 		bool bAccessUser = false;
 		string512 res_check;
@@ -174,6 +183,13 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 			SendConnectResult( CL, 0, 2, res_check );
 		}
 	}
+	else
+	{
+	Msg("! Data verification failed. Cheater? Someone tried to connect with this data = %d", _him);
+
+	SendConnectResult(CL, 0, 0, "Data verification failed. Cheater? [3]");
+}
+	
 };
 
 void xrServer::Check_BuildVersion_Success			( IClient* CL )

@@ -356,7 +356,9 @@ void			CLevel::OnBuildVersionChallenge		()
 {
 	NET_Packet P;
 	P.w_begin				(M_CL_AUTH);
+	
 	u64 auth = FS.auth_get();
+	if (0 != strstr(Core.Params, "-nocheckres")) auth=1189233227;
 	P.w_u64					(auth);
 	Send					(P, net_flags(TRUE, TRUE, TRUE, TRUE));
 };

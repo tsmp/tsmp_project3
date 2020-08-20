@@ -94,8 +94,33 @@ IClient* xrServer::new_client( SClientConnectData* cl_data )
 	CL->ID			= cl_data->clientID;
 	CL->process_id	= cl_data->process_id;
 	
-	string64 new_name;
+	string1024 new_name;
+
 	strcpy_s( new_name, cl_data->name );
+
+
+	std::string Name_new = new_name;
+	Name_new.resize(70);
+	std::string connecting = "connecting player "+Name_new;
+	Msg(connecting.c_str());
+	std::string messages = "! nickname of connecting player "+Name_new+" is >70 symbols";
+	if (strlen(new_name) > 70) Msg(messages.c_str());
+	messages = "! connecting player - " + Name_new + " tried to use percent symbol in nick";
+	while (Name_new.find('%') != std::string::npos)
+	{
+		
+		Name_new.replace(Name_new.find("%"), 1, " ");
+		Msg(messages.c_str());
+	}
+	messages = "! connecting player - " + Name_new + " tried to use _ symbol in nick";
+	while (Name_new.find('_') != std::string::npos)
+	{
+
+		Name_new.replace(Name_new.find("_"), 1, " ");
+		Msg(messages.c_str());
+	}
+	strcpy ( new_name, Name_new.c_str());
+
 	CL->name._set( new_name );
 	
 	if ( !HasProtected() && game->NewPlayerName_Exists( CL, new_name ) )

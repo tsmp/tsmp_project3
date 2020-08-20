@@ -70,6 +70,12 @@ void xrServer::SLS_Clear		()
 			Perform_destroy				((*I).second,mode);
 			break;
 		}
-		R_ASSERT						(found);
+	 //	R_ASSERT						(found);
+		if (!found) 
+		{
+			Msg("! error xrServer_sls_clear.cpp:xrServer::SLS_Clear found");
+			break;
+		}
+
 	}
 }

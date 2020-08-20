@@ -61,6 +61,7 @@ lp_tv_uchar tv_yuv2argb(
 {
 	tv_sshort_tables ttl;
 
+#ifndef _WIN64
 	__asm{
 		push  ebx
 		// helper constants
@@ -103,6 +104,8 @@ _tb_loop:
 		pop   ebx
 	}
 
+#endif
+
 	lp_tv_uchar line1 = argb_plane;
 	lp_tv_uchar line2 = line1 + 4 * argb_width;
 
@@ -119,6 +122,8 @@ _tb_loop:
 	for( nTempY = 0 ; nTempY < argb_height ; nTempY += 2 ){
 		for( nTempX = 0 ; nTempX < argb_width ; nTempX += 4 ){
 			nTempX_ = nTempX >> 1;
+
+#ifndef _WIN64
 			__asm{
 				push ebx       ;
 
@@ -258,6 +263,7 @@ _tb_loop:
 				// we are the champions
 				pop  ebx       ;
 			}
+#endif
 
 			line1 += 16;
 			line2 += 16;
@@ -273,10 +279,12 @@ _tb_loop:
 		line2 = line1 + 4 * argb_width;
 	}
 
+#ifndef _WIN64
 	__asm{
 		sfence        ;
 		emms        ;
 	}
+#endif
 
 	return argb_plane;
 } // tv_yuv2argb

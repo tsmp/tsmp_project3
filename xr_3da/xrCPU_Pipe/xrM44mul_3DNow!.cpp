@@ -20,6 +20,7 @@
 
 void	__stdcall	xrM44_Mul_3DNow	(_matrix<float>* D, _matrix<float>* M1, _matrix<float>* M2)
 {
+#ifndef _WIN64
     __asm
     {
         femms
@@ -214,4 +215,5 @@ void	__stdcall	xrM44_Mul_3DNow	(_matrix<float>* D, _matrix<float>* M1, _matrix<f
 
         femms
     }
+#endif
 }

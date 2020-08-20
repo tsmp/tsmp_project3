@@ -40,8 +40,11 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	{
 	case GE_GAME_EVENT:
 		{
+					if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_GAME_EVENT");
 			u16		game_event_type;
 			P.r_u16(game_event_type);
+		
+
 			game->AddDelayedEvent(P,game_event_type,timestamp,sender);
 		}break;
 	case GE_INFO_TRANSFER:
@@ -57,16 +60,19 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GEG_PLAYER_ITEM2RUCK:
 	case GE_GRENADE_EXPLODE:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_GRENADE_EXPLODE");
 		SendBroadcast			(BroadcastCID,P,MODE);
 		}break;
 	case GE_INV_ACTION:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_INV_ACTION");
 			xrClientData* CL		= ID_to_client(sender);
 			if (CL)	CL->net_Ready	= TRUE;
 			if (SV_Client) SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
 		}break;
 	case GE_RESPAWN:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_RESPAWN");
 			CSE_Abstract*		E	= receiver;
 			if (E) 
 			{
@@ -82,11 +88,13 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GE_TRADE_BUY:
 	case GE_OWNERSHIP_TAKE:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_OWNERSHIP_TAKE");
 			Process_event_ownership	(P,sender,timestamp,destination);
 			VERIFY					(verify_entities());
 		}break;
 	case GE_OWNERSHIP_TAKE_MP_FORCED:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_OWNERSHIP_TAKE_MP_FORCED");
 			Process_event_ownership	(P,sender,timestamp,destination,TRUE);
 			VERIFY					(verify_entities());
 		}break;
@@ -94,17 +102,20 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GE_OWNERSHIP_REJECT:
 	case GE_LAUNCH_ROCKET:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_LAUNCH_ROCKET");
 			Process_event_reject	(P,sender,timestamp,destination,P.r_u16());
 			VERIFY					(verify_entities());
 		}break;
 	case GE_DESTROY:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_DESTROY");
 			Process_event_destroy	(P,sender,timestamp,destination, NULL);
 			VERIFY					(verify_entities());
 		}
 		break;
 	case GE_TRANSFER_AMMO:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_TRANSFER_AMMO");
 			u16					id_entity;
 			P.r_u16				(id_entity);
 			CSE_Abstract*		e_parent	= receiver;	// кто забирает (для своих нужд)
@@ -126,6 +137,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GE_HIT:
 	case GE_HIT_STATISTIC:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_HIT_STATISTIC");
 			P.r_pos -=2;
 			if (type == GE_HIT_STATISTIC) 
 			{
@@ -135,6 +147,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 			game->AddDelayedEvent(P,GAME_EVENT_ON_HIT, 0, ClientID() );
 		} break;
 	case GE_ASSIGN_KILLER: {
+		if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_ASSIGN_KILLER");
 		u16							id_src;
 		P.r_u16						(id_src);
 		
@@ -153,6 +166,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	}
 	case GE_CHANGE_VISUAL:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_CHANGE_VISUAL");
 			CSE_Visual* visual		= smart_cast<CSE_Visual*>(receiver); VERIFY(visual);
 			string256 tmp;
 			P.r_stringZ				(tmp);
@@ -160,6 +174,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		}break;
 	case GE_DIE:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_DIE");
 			// Parse message
 			u16					id_dest		=	destination, id_src;
 			P.r_u16				(id_src);
@@ -224,11 +239,13 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GE_ADDON_ATTACH:
 	case GE_ADDON_DETACH:
 	case GE_CHANGE_POS:
-		{			
+		{	
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_CHANGE_POS");
 			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
 		}break;
 	case GEG_PLAYER_WEAPON_HIDE_STATE:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GEG_PLAYER_WEAPON_HIDE_STATE");
 			SendTo		(SV_Client->ID, P, net_flags(TRUE, TRUE));
 
 #	ifdef SLOW_VERIFY_ENTITIES
@@ -238,6 +255,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GEG_PLAYER_ACTIVATE_SLOT:
 	case GEG_PLAYER_ITEM_EAT:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GEG_PLAYER_ITEM_EAT");
 			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
 #	ifdef SLOW_VERIFY_ENTITIES
 			VERIFY					(verify_entities());
@@ -245,26 +263,32 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		}break;	
 	case GEG_PLAYER_ITEM_SELL:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GEG_PLAYER_ITEM_SELL");
 			game->OnPlayer_Sell_Item(sender, P);
 		}break;
 	case GE_TELEPORT_OBJECT:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_TELEPORT_OBJECT");
 			game->teleport_object	(P,destination);
 		}break;
 	case GE_ADD_RESTRICTION:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_ADD_RESTRICTION");
 			game->add_restriction	(P,destination);
 		}break;
 	case GE_REMOVE_RESTRICTION:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_REMOVE_RESTRICTION");
 			game->remove_restriction(P,destination);
 		}break;
 	case GE_REMOVE_ALL_RESTRICTIONS:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_REMOVE_ALL_RESTRICTIONS");
 			game->remove_all_restrictions(P,destination);
 		}break;
 	case GE_MONEY:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("event:GE_MONEY");
 			CSE_Abstract				*e_dest = receiver;
 			CSE_ALifeTraderAbstract*	pTa = smart_cast<CSE_ALifeTraderAbstract*>(e_dest);
 			pTa->m_dwMoney				= P.r_u32();

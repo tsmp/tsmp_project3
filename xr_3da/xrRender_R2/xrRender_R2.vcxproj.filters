@@ -2,52 +2,52 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{2e436c76-8c0a-406a-af95-ccb574ab1b47}</UniqueIdentifier>
+      <UniqueIdentifier>{695e3a83-6fda-4289-b992-4c0a43158b20}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core">
-      <UniqueIdentifier>{0eec18a7-1567-452f-897d-ab84b0964c34}</UniqueIdentifier>
+      <UniqueIdentifier>{06265cf7-10c8-47fa-83c8-6421f958a346}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\memory">
-      <UniqueIdentifier>{b0a5f2fd-7fd8-4991-9ff2-f75b0b1c27bd}</UniqueIdentifier>
+      <UniqueIdentifier>{8ad2cadf-e6b7-40a7-8a4d-46798df2a9bb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Details">
-      <UniqueIdentifier>{edb00fe4-4145-4723-81c6-0d86c604f08c}</UniqueIdentifier>
+      <UniqueIdentifier>{331b0db0-c214-4463-bd0e-db9d297fb20a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Stripifier">
-      <UniqueIdentifier>{c9d67d3f-ef17-4ee6-9ab9-996182f6da33}</UniqueIdentifier>
+      <UniqueIdentifier>{eed0a633-fc73-4835-adb7-fef0a7d2eff5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Lights">
-      <UniqueIdentifier>{1c6c0c59-bd46-4fb2-97f5-af028295703d}</UniqueIdentifier>
+      <UniqueIdentifier>{098a4a4f-af85-4291-8b06-3b697da976f3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Glows">
-      <UniqueIdentifier>{955b1af2-32d0-4a49-8ec5-f71ad7e55f69}</UniqueIdentifier>
+      <UniqueIdentifier>{cf9846c9-75bf-48a9-94be-6f9fbbbdc596}</UniqueIdentifier>
     </Filter>
     <Filter Include="Wallmarks">
-      <UniqueIdentifier>{a8f7a071-3688-478e-9537-f5907c5f271a}</UniqueIdentifier>
+      <UniqueIdentifier>{15fda1e0-4b3d-4b18-bfb6-1e7094b5bae0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shading templates">
-      <UniqueIdentifier>{7398b037-6ce0-420a-951b-8c6af77516c9}</UniqueIdentifier>
+      <UniqueIdentifier>{abf709a8-af74-458d-ac3f-1388569e3379}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shading templates\R1">
-      <UniqueIdentifier>{a8f8ca2e-bb3f-4358-b10b-23eed79337f3}</UniqueIdentifier>
+      <UniqueIdentifier>{3a4296d4-066a-4508-adae-1fa90cedc99d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Models">
-      <UniqueIdentifier>{b383ac61-ff9e-442d-8da7-cdde38e2fab4}</UniqueIdentifier>
+      <UniqueIdentifier>{367a8201-819c-43b7-a7a6-6d993df5a880}</UniqueIdentifier>
     </Filter>
     <Filter Include="Models\Visuals">
-      <UniqueIdentifier>{0638b932-e0db-4f4d-82b5-8d27e6eaf0e4}</UniqueIdentifier>
+      <UniqueIdentifier>{1d518eff-f03d-472b-a7a1-de441fbfbd4e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Visibility">
-      <UniqueIdentifier>{73a3d64a-79d7-471e-9ac1-ec514da0ecea}</UniqueIdentifier>
+      <UniqueIdentifier>{42d2e651-8034-4d3c-bfd2-ab6bcf2473ea}</UniqueIdentifier>
     </Filter>
     <Filter Include="Visibility\Sector/Portal">
-      <UniqueIdentifier>{7bcc56f8-3c54-4d61-8d60-7601aae2eacf}</UniqueIdentifier>
+      <UniqueIdentifier>{db11c211-288a-495b-a7a9-a6e18e3fa26c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Visibility\HOM Occlusion">
-      <UniqueIdentifier>{c9e02cca-7774-491a-818a-81bc1f65d0a2}</UniqueIdentifier>
+      <UniqueIdentifier>{8a2ac9e5-a254-4ed1-bbaf-e7e0ca8815fb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core_Target">
-      <UniqueIdentifier>{da7a672b-2600-4fbd-bab1-fe64b4b43aaf}</UniqueIdentifier>
+      <UniqueIdentifier>{4618bb84-9a0e-4527-ac86-7d30804745e6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -541,6 +541,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="todo.txt" />
+    <None Include="todo.txt" />
   </ItemGroup>
 </Project>

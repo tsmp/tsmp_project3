@@ -316,7 +316,12 @@ u16 NET_Compressor::compressed_size	(const u32 &count)
 		u32			result = 64 + (count/8 + 1)*10;
     #endif // NET_USE_LZO_COMPRESSION
 
+		if (!(result <= u32(u16(-1))))
+		{
+			Msg("! error result <= u32(u16(-1))");
+		}
 	R_ASSERT(result <= u32(u16(-1)));
+
 
 	return ((u16)result);
 	

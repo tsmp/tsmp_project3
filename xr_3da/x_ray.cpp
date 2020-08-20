@@ -21,8 +21,6 @@
 #include "Text_Console.h"
 #include <process.h>
 
-#include "..\TSMP2_Build_Config.h"
-
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= NULL;
 BOOL	g_bIntroFinished			= FALSE;
@@ -51,16 +49,12 @@ static int start_month	= 1;	// January
 static int start_year	= 1999;	// 1999
 
 #ifdef NDEBUG
-
-/*
-namespace std {
-	void terminate()
-	{
-		abort();
-	}
-}
-*/
-
+//namespace std {
+//	void terminate()
+//	{
+//		abort();
+//	}
+//}
 #endif // #ifdef NDEBUG
 
 void compute_build_id	()
@@ -154,7 +148,7 @@ void InitConsole	()
 #endif
 	Console->Initialize			( );
 
-	strcpy_s						(Console->ConfigFile,"user.ltx");
+	strcpy_s						(Console->ConfigFile,"tsmp_user.ltx");
 	if (strstr(Core.Params,"-ltx ")) {
 		string64				c_name;
 		sscanf					(strstr(Core.Params,"-ltx ")+5,"%[^ ] ",c_name);
@@ -485,8 +479,9 @@ BOOL IsOutOfVirtualMemory()
 {
 #define VIRT_ERROR_SIZE 256
 #define VIRT_MESSAGE_SIZE 512
-
+#ifndef _WIN64
 	SECUROM_MARKER_HIGH_SECURITY_ON(1)
+#endif
 
 	MEMORYSTATUSEX statex;
 	DWORD dwPageFileInMB = 0;
@@ -518,7 +513,11 @@ BOOL IsOutOfVirtualMemory()
 
 	MessageBox( NULL , pszMessage , pszError , MB_OK | MB_ICONHAND );
 
+#ifdef _WIN64
+	//SECUROM_MARKER_HIGH_SECURITY_OFF(1)
+#else
 	SECUROM_MARKER_HIGH_SECURITY_OFF(1)
+#endif
 
 	return 1;
 }
@@ -607,7 +606,12 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	SetThreadAffinityMask		(GetCurrentThread(),1);
 
 	// Title window
+#ifdef _WIN54
 	logoWindow					= CreateDialog(GetModuleHandle(NULL),	MAKEINTRESOURCE(IDD_STARTUP), 0, logDlgProc );
+#else
+	logoWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_STARTUP), 0, (DLGPROC)logDlgProc);
+#endif
+	
 	SetWindowPos				(
 		logoWindow,
 #ifndef DEBUG
@@ -1175,7 +1179,7 @@ void doBenchmark(LPCSTR name)
 
 		Engine.External.Initialize	( );
 
-		strcpy_s						(Console->ConfigFile,"user.ltx");
+		strcpy_s						(Console->ConfigFile,"tsmp_user.ltx");
 		if (strstr(Core.Params,"-ltx ")) {
 			string64				c_name;
 			sscanf					(strstr(Core.Params,"-ltx ")+5,"%[^ ] ",c_name);

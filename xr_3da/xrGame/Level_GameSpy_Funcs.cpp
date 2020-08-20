@@ -8,6 +8,10 @@
 #include "../igame_persistent.h"
 void						CLevel::OnGameSpyChallenge			(NET_Packet* P)
 {
+
+
+
+
 	Msg("xrGS::CDKey::Level : Responding on Challenge");
 
 	u8	Reauth = P->r_u8();
@@ -16,10 +20,14 @@ void						CLevel::OnGameSpyChallenge			(NET_Packet* P)
 	
 	//--------------------------------------------------------------------
 	string128 ResponseStr="";
+
+
+
 	CGameSpy_GCD_Client GCD;
 	GCD.CreateRespond(ResponseStr, ChallengeStr, Reauth);
 	//--------- Send Respond ---------------------------------------------
 	NET_Packet newP;
+	
 
 	newP.w_begin	(M_GAMESPY_CDKEY_VALIDATION_CHALLENGE_RESPOND);
 	newP.w_stringZ(ResponseStr);

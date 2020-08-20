@@ -15,8 +15,6 @@
 
 #include "xr_object.h"
 
-#include "..\TSMP2_Build_Config.h"
-
 xr_token							snd_freq_token							[ ]={
 	{ "22khz",						sf_22K										},
 	{ "44khz",						sf_44K										},
@@ -645,5 +643,7 @@ if(strstr(Core.Params,"designer"))
 
 	extern int g_svDedicateServerUpdateReate;
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
+
+	
 };
  

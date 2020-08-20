@@ -48,7 +48,15 @@ protected:
 	bool			m_bVotingActive;
 	bool			m_bVotingReal;
 	u32				m_uVoteStartTime;	
+	u32				m_uTimer1StartTime;
+	bool			m_uTimer1Started;
+	u32				m_uTimer2StartTime;
+	bool			m_uTimer2Started;
 	shared_str		m_pVoteCommand;
+	bool			m_WeaponDisablerState[100];
+
+	std::string		m_WeaponDisablerItems[100];
+	int				m_WeaponDisablerItemsCount;
 	
 	virtual		void				LoadRanks				();
 	virtual		void				Player_AddExperience	(game_PlayerState* ps, float Exp);
@@ -71,6 +79,8 @@ protected:
 				bool				GetPosAngleFromActor	(ClientID id, Fvector& Pos, Fvector &Angle);				
 				void				AllowDeadBodyRemove		(ClientID id, u16 GameID);
 				void				SpawnWeapon4Actor		(u16 actorId,  LPCSTR N, u8 Addons );
+				void				Tsmp_weapon_disabler	(LPCSTR DATA);
+				bool				Tsmp_is_map_registered  (std::string MapName, std::string GameTypeStr);
 				void				SpawnWeaponForActor		(u16 actorId,  LPCSTR N, bool isScope, bool isGrenadeLauncher, bool isSilencer);
 
 	virtual		void				Player_AddMoney			(game_PlayerState* ps, s32 MoneyAmount);
@@ -107,9 +117,12 @@ public:
 	virtual		bool				IsVotingActive			()	{ return m_bVotingActive; };
 	virtual		void				SetVotingActive			( bool Active )	{ m_bVotingActive = Active; };
 	virtual		void				UpdateVote				();
+//	virtual		void				StartTimer();
+//	virtual		void				UpdateTimer();
 	virtual		void				OnVoteYes				(ClientID sender);
 	virtual		void				OnVoteNo				(ClientID sender);
 	virtual		void				OnVoteStop				();
+	virtual		void				OnVoteSuccess			();
 	virtual		void				OnPlayerChangeName		(NET_Packet& P, ClientID sender);
 	virtual		void				OnPlayerSpeechMessage	(NET_Packet& P, ClientID sender);
 	virtual		void				OnPlayerGameMenu		(NET_Packet& P, ClientID sender);
@@ -147,6 +160,7 @@ protected:
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
+
 
 add_to_type_list(game_sv_mp)
 #undef script_type_list

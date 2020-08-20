@@ -721,6 +721,9 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 	u16 KilledID = P.r_u16();
 	u16 KillerID = P.r_u16();
 	u16	WeaponID = P.r_u16();
+
+
+
 	SPECIAL_KILL_TYPE SpecialKill = SPECIAL_KILL_TYPE(P.r_u8());
 	//-----------------------------------------------------------
 	CObject* pOKiller = Level().Objects.net_Find(KillerID);

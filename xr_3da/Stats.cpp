@@ -7,8 +7,6 @@
 #include "render.h"
 #include "xr_object.h"
 
-#include "..\TSMP2_Build_Config.h"
-
 int		g_ErrorLineCount	= 15;
 Flags32 g_stats_flags		= {0};
 

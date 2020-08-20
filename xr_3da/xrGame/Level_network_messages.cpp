@@ -182,6 +182,9 @@ void CLevel::ClientReceive()
 		case M_SV_CONFIG_FINISHED:
 			game_configured			= TRUE;
 			Msg("- Game configuring : Finished ");
+
+
+
 			break;		
 		case M_MIGRATE_DEACTIVATE:	// TO:   Changing server, just deactivate
 			{

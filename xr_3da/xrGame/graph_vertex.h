@@ -34,7 +34,11 @@ private:
 	size_t								*m_edge_count;
 
 public:
-	IC									CVertex				(const _data_type &data, const _vertex_id_type &vertex_id, size_t *edge_count);
+	#ifdef _WIN64
+	IC									CVertex(const _data_type &data, const _vertex_id_type &vertex_id, unsigned int *const edge_count);
+#else
+	IC									CVertex(const _data_type &data, const _vertex_id_type &vertex_id, size_t *edge_count);
+#endif
 	IC									~CVertex			();
 	IC		bool						operator==			(const CVertex &obj) const;
 	IC		void						add_edge			(CVertex *vertex, const _edge_weight_type &edge_weight);

@@ -890,7 +890,23 @@ CInventoryItem *CInventory::get_object_by_id(ALife::_OBJECT_ID tObjectID)
 #include "script_game_object.h"
 bool CInventory::Eat(PIItem pIItem)
 {
-	R_ASSERT(pIItem->m_pCurrentInventory==this);
+	
+//	if (pIItem->m_pCurrentInventory == this) Msg("pIItem->m_pCurrentInventory==this верно");
+//	else Msg("pIItem->m_pCurrentInventory==this неверно");
+
+	
+	if (!(pIItem->m_pCurrentInventory == this))	
+	{
+		Msg("! attempt to eat invalid item , ignoring");
+
+		return false;
+	}
+		
+  // R_ASSERT(pIItem->m_pCurrentInventory==this);
+
+	
+
+
 	//устанаовить съедобна ли вещь
 	CEatableItem* pItemToEat = smart_cast<CEatableItem*>(pIItem);
 	R_ASSERT				(pItemToEat);

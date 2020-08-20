@@ -109,8 +109,17 @@ static const __int64 _msgn_		=	0x8000000080000000;
 //;   © by Oles™	©
 //;   © by ManOwaR™
 //;******************************************************************************
-__declspec(naked)	void alt_acos(void)
-{	__asm {
+#ifdef _WIN64
+ void alt_acos(void)
+#else
+__declspec (naked) void alt_acos(void)
+#endif
+
+
+
+{	
+#ifndef _WIN64
+	__asm {
 // ------------------------------------------------------------------
 	movq		mm3,QWORD PTR [a_c7]		;	mm3 = 0.0 | c7
 	movq		mm2,QWORD PTR [a_pi_div_2]	;	mm2 = 0.0 | PI_DIV_2
@@ -127,7 +136,9 @@ __declspec(naked)	void alt_acos(void)
 	movq		mm0,mm2						;	mm0 = ?.? | PI_DIV_2 - (((c7*x2+c5)*x2+c3)*x2+c1)*x
 	ret
 // ------------------------------------------------------------------
-}}
+}
+#endif
+}
 //;******************************************************************************
 //; SINCOSMAC - sin/cos simultaneous computation
 //; Input:    mm0 - angle in radians
@@ -138,8 +149,14 @@ __declspec(naked)	void alt_acos(void)
 //;           Ultimately, this routine needs higher precision and a more
 //;           efficient implementation (less inter-register bank traffic).
 //;******************************************************************************
-__declspec (naked) void SINCOSMAC ()
+#ifdef _WIN64
+ void SINCOSMAC()
+#else
+__declspec (naked) void SINCOSMAC()
+#endif
+
 {
+#ifndef _WIN64
     __asm {
         push        ebx
         movd        eax,mm0
@@ -219,6 +236,7 @@ ending:
         nop
         ret
     }
+#endif
 }
 //;******************************************************************************
 //; Routine:  a_acos
@@ -247,8 +265,14 @@ ending:
 //;   single precision ulps.
 //;
 //;******************************************************************************
-__declspec (naked) void a_acos ()
+#ifdef _WIN64
+ void a_acos()
+#else
+__declspec (naked) void a_acos()
+#endif
+
 {
+#ifndef _WIN64
     __asm
     {
         movd        mm6, [sgn]  //; mask for sign bit
@@ -311,6 +335,7 @@ __declspec (naked) void a_acos ()
         por         mm0, mm3    //; mux together results
         ret
     }
+#endif
 }
 //;******************************************************************************
 //; Routine:  a_asin
@@ -335,6 +360,13 @@ __declspec (naked) void a_acos ()
 //;   single precision ulps.
 //;
 //;******************************************************************************
+#ifdef _WIN64
+void a_asin()
+{
+
+}
+#else
+
 __declspec (naked) void a_asin ()
 {
     __asm
@@ -395,12 +427,19 @@ __declspec (naked) void a_asin ()
         ret
     }
 }
+#endif
 //;******************************************************************************
 //; Routine:  a_sin
 //; Input:    mm0.lo
 //; Result:   mm0 (sin|sin)
 //; Uses:     mm0-mm7, eax, ebx, ecx, edx, esi
 //;******************************************************************************
+
+#ifdef _WIN64
+void a_sin()
+{
+}
+#else
 __declspec (naked) void a_sin ()
 {
     __asm
@@ -411,6 +450,7 @@ __declspec (naked) void a_sin ()
         ret
     }
 }
+#endif
 //;******************************************************************************
 #pragma warning (default:4799)
 //;******************************************************************************

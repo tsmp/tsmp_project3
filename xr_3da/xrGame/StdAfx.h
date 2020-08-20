@@ -1,6 +1,7 @@
 #pragma once
 
 #pragma warning(disable:4995)
+#pragma warning(disable:4577)
 #include "../stdafx.h"
 #pragma warning(default:4995)
 #pragma warning( 4 : 4018 )

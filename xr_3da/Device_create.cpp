@@ -4,8 +4,6 @@
 #include "xr_effgamma.h"
 #include "render.h"
 
-#include "..\TSMP2_Build_Config.h"
-
 void CRenderDevice::_SetupStates	()
 {
 	// General Render States

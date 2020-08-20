@@ -4,6 +4,8 @@
 
 #pragma warning(disable:4996)
 
+#define BOOST_NO_EXCEPTIONS
+
 #if (defined(_DEBUG) || defined(MIXED) || defined(DEBUG)) && !defined(FORCE_NO_EXCEPTIONS)
 	// "debug" or "mixed"
 	#if !defined(_CPPUNWIND)
@@ -11,6 +13,7 @@
 	#endif
 	#define _HAS_EXCEPTIONS		1	// STL
 	#define XRAY_EXCEPTIONS		1	// XRAY
+   
 #else
 	// "release"
 	#if defined(_CPPUNWIND)

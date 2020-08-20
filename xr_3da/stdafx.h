@@ -1,6 +1,8 @@
 #ifndef	STDAFX_3DA
 #define STDAFX_3DA
 
+#pragma warning(disable:4577)
+
 #pragma once
 
 #ifdef _EDITOR
@@ -13,7 +15,7 @@
 	#define D3D_DEBUG_INFO
 #endif
 
-#pragma warning(disable:4995)
+#pragma warning(disable:4577)
 #include <d3d9.h>
 #include <dplay8.h>
 #pragma warning(default:4995)

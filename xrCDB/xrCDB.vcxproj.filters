@@ -2,10 +2,10 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{8fb371b2-a484-4eca-ac78-49a3f932faf5}</UniqueIdentifier>
+      <UniqueIdentifier>{247c6724-0c12-46f7-8112-30ae4b90787f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Opcode">
-      <UniqueIdentifier>{24df29f3-6677-4e7a-ba29-144c6826f076}</UniqueIdentifier>
+      <UniqueIdentifier>{979f373e-f969-4574-8273-0769b5bfce2d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -232,8 +232,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt">
+    <None Include="ReadMe.txt">
       <Filter>Opcode</Filter>
-    </Text>
+    </None>
   </ItemGroup>
 </Project>

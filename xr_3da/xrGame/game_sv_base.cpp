@@ -641,13 +641,20 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 	{	
 	case GAME_EVENT_PLAYER_CONNECTED:
 		{
+				if (0 != strstr(Core.Params, "-debug")) Msg("GE:GAME_EVENT_PLAYER_CONNECTED");
+
 			ClientID ID;
 			tNetPacket.r_clientID(ID);
 			OnPlayerConnect(ID);
+
+			
+
+
 		}break;
 
 	case GAME_EVENT_PLAYER_DISCONNECTED:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("GE:GAME_EVENT_PLAYER_DISCONNECTED");
 			ClientID ID;
 			tNetPacket.r_clientID(ID);
 			string1024 PlayerName;
@@ -658,9 +665,11 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 
 	case GAME_EVENT_PLAYER_KILLED:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("GE:GAME_EVENT_PLAYER_KILLED");
 		}break	;
 	case GAME_EVENT_ON_HIT:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("GE:GAME_EVENT_ON_HIT");
 			u16		id_dest				= tNetPacket.r_u16();
 			u16     id_src				= tNetPacket.r_u16();
 			CSE_Abstract*	e_src		= get_entity_from_eid	(id_src	);
@@ -679,6 +688,7 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 		}break;
 	case GAME_EVENT_CREATE_CLIENT:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("GE:GAME_EVENT_CREATE_CLIENT");
 			IClient* CL					= (IClient*)m_server->ID_to_client(sender);
 			if ( CL == NULL ) { break; }
 			
@@ -687,11 +697,13 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 		}break;
 	case GAME_EVENT_PLAYER_AUTH:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("GE:GAME_EVENT_PLAYER_AUTH");
 			IClient*	CL	=	m_server->ID_to_client		(sender);
 			m_server->OnBuildVersionRespond(CL, tNetPacket);
 		}break;
 	default:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("GE:default, not implemented");
 			string16 tmp;
 			R_ASSERT3	(0,"Game Event not implemented!!!", itoa(type, tmp, 10));
 		};

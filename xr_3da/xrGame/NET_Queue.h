@@ -3,7 +3,7 @@
 #include "xrMessages.h"
 
 extern BOOL		g_bCheckTime;
-extern int		g_dwEventDelay;
+static int		g_dwEventDelay = 0;
 
 class	NET_Event
 {
@@ -45,7 +45,7 @@ public:
 			P.r				(&*data.begin(),size);
 		}
 	}
-	void				exportt		(NET_Packet& P)
+	void				_export		(NET_Packet& P) //KRodin: добавил _ перед export
 	{
 		u16	ID			=	M_EVENT;
 		P.w_begin		(ID			);
@@ -56,7 +56,7 @@ public:
 	}
 	void				implication	(NET_Packet& P) const
 	{
-		CopyMemory	(P.B.data,&*data.begin(),(u32)data.size());
+		std::memcpy	(P.B.data,&*data.begin(),(u32)data.size());
 		P.B.count		= (u32)data.size();
 		P.r_pos			= 0;
 	}

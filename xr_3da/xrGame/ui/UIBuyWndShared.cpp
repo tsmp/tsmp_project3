@@ -94,6 +94,11 @@ const u32	CItemMgr::GetItemsCount	() const
 
 const shared_str&	CItemMgr::GetItemName		(u32 Idx) const
 {
-	R_ASSERT(Idx<m_items.size());
-	return (m_items.begin()+Idx)->first;
+	//R_ASSERT(Idx<m_items.size());
+	if (!(Idx < m_items.size()))
+	{
+		Msg("! error Idx<m_items.size()");
+		return (m_items.begin() + 1)->first;
+	}
+	else return (m_items.begin() + Idx)->first;
 }

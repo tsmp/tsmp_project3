@@ -6,8 +6,6 @@
 #include <d3dx9.h>
 #pragma warning(pop)
 
-#include "..\TSMP2_Build_Config.h"
-
 #include "frustum.h"
 
 void CBackend::OnFrameEnd	()

@@ -11,7 +11,15 @@ bool xrServer::Process_event_reject	(NET_Packet& P, const ClientID sender, const
 #ifdef DEBUG
 	Msg("sv reject. id_parent %s id_entity %s [%d]",ent_name_safe(id_parent).c_str(),ent_name_safe(id_entity).c_str(), Device.dwFrame);
 #endif
-	R_ASSERT			(e_parent && e_entity);
+
+	
+	if (!(e_parent && e_entity))
+	{
+		Msg("! error (e_parent && e_entity) , ignoring");
+		return 0;
+	}
+ 
+//R_ASSERT			(e_parent && e_entity);
 	game->OnDetach		(id_parent,id_entity);
 
 	if (0xffff == e_entity->ID_Parent) 
@@ -22,7 +30,24 @@ bool xrServer::Process_event_reject	(NET_Packet& P, const ClientID sender, const
 	}
 
 	// Rebuild parentness
-	R_ASSERT3				(e_entity->ID_Parent == id_parent, e_entity->name_replace(), e_parent->name_replace());
+
+	if (!(e_entity->ID_Parent == id_parent))
+	{
+		Msg("! error e_entity->ID_Parent == id_parent, ignoring");
+		return false;
+	}
+	if (!(e_entity->name_replace()))
+	{
+		Msg("! error e_entity->name_replace(), ignoring");
+		return false;
+	}
+	if (!(e_parent->name_replace()))
+	{
+		Msg("! error e_parent->name_replace(), ignoring");
+		return false;
+	}
+
+//	R_ASSERT3				(e_entity->ID_Parent == id_parent, e_entity->name_replace(), e_parent->name_replace());
 	e_entity->ID_Parent		= 0xffff;
 	xr_vector<u16>& C		= e_parent->children;
 

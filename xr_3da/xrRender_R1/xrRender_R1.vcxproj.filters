@@ -2,46 +2,46 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Kernel">
-      <UniqueIdentifier>{9f65a607-a904-497f-9019-699d210dfbf3}</UniqueIdentifier>
+      <UniqueIdentifier>{36c615ea-ca08-4bf8-bf80-2c03a8d34731}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core">
-      <UniqueIdentifier>{c9e971de-e0e5-43dc-b401-809a99a1ff48}</UniqueIdentifier>
+      <UniqueIdentifier>{04d034bc-d9f6-4c1d-917a-7abab5f16ad5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\memory">
-      <UniqueIdentifier>{3105d4d4-5def-4c3f-96f4-bef4b53b946d}</UniqueIdentifier>
+      <UniqueIdentifier>{83363d27-f4e3-4bf4-9bbb-4612b61443cf}</UniqueIdentifier>
     </Filter>
     <Filter Include="Details">
-      <UniqueIdentifier>{40b5b032-777f-4c82-acb0-c30967613ad7}</UniqueIdentifier>
+      <UniqueIdentifier>{b623b834-e2c2-4ae8-a95e-7fa380dd5404}</UniqueIdentifier>
     </Filter>
     <Filter Include="Stripifier">
-      <UniqueIdentifier>{8930950e-b9cf-42eb-b815-2b64e1706dae}</UniqueIdentifier>
+      <UniqueIdentifier>{73ee5732-1b7a-4c05-8956-4c04a169b005}</UniqueIdentifier>
     </Filter>
     <Filter Include="Glows">
-      <UniqueIdentifier>{2587a2ac-483b-4150-8f42-04d3a2e628eb}</UniqueIdentifier>
+      <UniqueIdentifier>{83449478-0d75-469f-be9b-49293c7a91b5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Wallmarks">
-      <UniqueIdentifier>{6a96f12c-4d83-45e1-b848-e9e419f2d8de}</UniqueIdentifier>
+      <UniqueIdentifier>{d79e96c1-0fb4-4c12-a684-051fa5797e7a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shading templates">
-      <UniqueIdentifier>{6c28291b-2fdf-4181-8ea3-92cde4d5747f}</UniqueIdentifier>
+      <UniqueIdentifier>{0c5ec0cf-c2f5-4451-8d33-4e9e283e4acf}</UniqueIdentifier>
     </Filter>
     <Filter Include="Models">
-      <UniqueIdentifier>{00ffd9f1-26db-4a37-9e15-c3eadc0cb1c3}</UniqueIdentifier>
+      <UniqueIdentifier>{9699e5f6-d9a2-40ff-a58b-2e6a1295bbd9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Models\Visuals">
-      <UniqueIdentifier>{17212d8e-0108-495b-866c-4f49e8e91196}</UniqueIdentifier>
+      <UniqueIdentifier>{b12bb881-f15a-491d-a28d-17c059f98ab8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Visibility">
-      <UniqueIdentifier>{4fadbb00-3ed2-41f2-a248-ff2485476098}</UniqueIdentifier>
+      <UniqueIdentifier>{5dbcbcea-aa57-493a-a381-b6d305f586f3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Visibility\Sector/Portal">
-      <UniqueIdentifier>{c1714bf4-8265-44dc-a32a-223cb6b7a748}</UniqueIdentifier>
+      <UniqueIdentifier>{f825aab3-a04e-4129-a0b9-9b572bf5a1f2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Visibility\HOM Occlusion">
-      <UniqueIdentifier>{529fd817-8888-4198-ad29-a2d36d468522}</UniqueIdentifier>
+      <UniqueIdentifier>{f4097936-1992-4cf3-8ccb-7dddd57cfa9d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Lights">
-      <UniqueIdentifier>{5e8e3e90-176f-447d-a06c-fb1cbac6a3cf}</UniqueIdentifier>
+      <UniqueIdentifier>{54464aea-0b5f-4dd9-a048-fa3ed259163f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -415,6 +415,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Pipeline.txt" />
+    <None Include="Pipeline.txt" />
   </ItemGroup>
 </Project>

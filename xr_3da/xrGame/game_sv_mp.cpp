@@ -1,4 +1,10 @@
 #include "stdafx.h"
+
+#include <string>
+#include <cstring>
+
+
+
 #include "game_sv_mp.h"
 #include "xrServer.h"
 #include "xrMessages.h"
@@ -16,6 +22,7 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "xrGameSpyServer.h"
 
+
 #include "game_sv_mp_vote_flags.h"
 
 u32		g_dwMaxCorpses = 10;
@@ -28,8 +35,16 @@ BOOL		g_sv_mp_bSpectator_TeamCamera	= TRUE;
 int			g_sv_mp_iDumpStatsPeriod		= 0;
 int			g_sv_mp_iDumpStats_last			= 0;
 BOOL		g_sv_mp_bCountParticipants		= FALSE;
-float		g_sv_mp_fVoteQuota			= VOTE_QUOTA;
-float		g_sv_mp_fVoteTime				= VOTE_LENGTH_TIME;
+float		g_sv_mp_fVoteQuota				= VOTE_QUOTA;
+int			g_sv_mp_fVoteTime				= 60;
+int			g_sv_mp_Timer1Interval			= 15;
+int			g_sv_mp_Timer2Interval			= 15;
+int			g_sv_mp_Timer1Enabled			= 1;
+int			g_sv_mp_Timer2Enabled			= 0;
+int			g_sv_mp_DisablerEnabled			= 0;
+int			g_sv_mp_nickname_change_mode	= 3;
+
+int			g_sv_mp_Counter = 0;
 //-----------------------------------------------------------------
 
 extern xr_token	round_end_result_str[];
@@ -40,11 +55,24 @@ game_sv_mp::game_sv_mp() :inherited()
 {
 	m_strWeaponsData		= xr_new<CItemMgr>();
 	m_bVotingActive = false;	
+	m_uTimer1Started = false;
+	m_uTimer2Started = false;
+
+
+
+
+	if (!(0 != strstr(Core.Params, "-enable_name_change"))) g_sv_mp_nickname_change_mode = 1;
+
+
+
 	//------------------------------------------------------
 //	g_pGamePersistent->Environment().SetWeather("mp_weather");
 	m_aRanks.clear();	
 	//------------------------------------------------------	
 	round_end_reason = eRoundEnd_Force; //unknown
+
+
+//	StartTimer();
 }
 
 game_sv_mp::~game_sv_mp()
@@ -52,41 +80,99 @@ game_sv_mp::~game_sv_mp()
 	xr_delete(m_strWeaponsData);
 }
 
-void	game_sv_mp::Update	()
+void	game_sv_mp::Update()
 {
 	inherited::Update();
 
 	// remove corpses if their number exceed limit
-	for (u32 i=0; i<m_CorpseList.size(); )
+	for (u32 i = 0; i < m_CorpseList.size(); )
 	{
 		if (m_CorpseList.size() <= g_dwMaxCorpses) break;
 
-		u16 CorpseID				= m_CorpseList[i];
-		
-		CSE_Abstract* pCorpseObj	= get_entity_from_eid(CorpseID);
-		
+		u16 CorpseID = m_CorpseList[i];
+
+		CSE_Abstract* pCorpseObj = get_entity_from_eid(CorpseID);
+
 		if (!pCorpseObj)
 		{
 			m_CorpseList.erase(m_CorpseList.begin() + i);
-			Msg("corpse [%d] not found [%d]",CorpseID, Device.dwFrame);
+			Msg("corpse [%d] not found [%d]", CorpseID, Device.dwFrame);
 			continue;
 		}
 		if (!pCorpseObj->children.empty())
 		{
-			Msg("corpse [%d] childern not empty [%d]",CorpseID, Device.dwFrame);
+			Msg("corpse [%d] childern not empty [%d]", CorpseID, Device.dwFrame);
 			i++;
 			continue;
 		}
 
 		//---------------------------------------------
 		NET_Packet			P;
-		u_EventGen			(P,GE_DESTROY,CorpseID);
-		Level().Send		(P,net_flags(TRUE,TRUE));
-		m_CorpseList.erase	(m_CorpseList.begin() + i);
-		Msg("corpse [%d] send destroy [%d]",CorpseID, Device.dwFrame);
+		u_EventGen(P, GE_DESTROY, CorpseID);
+		Level().Send(P, net_flags(TRUE, TRUE));
+		m_CorpseList.erase(m_CorpseList.begin() + i);
+		Msg("corpse [%d] send destroy [%d]", CorpseID, Device.dwFrame);
 	}
 
 	if (IsVotingEnabled() && IsVotingActive()) UpdateVote();
+
+	if (g_sv_mp_Counter==500)
+	{
+
+	if (g_sv_mp_Timer1Enabled == 1)
+	{
+		if (m_uTimer1Started)
+		{
+			u32 CurTime = Level().timeServer();
+
+			if (m_uTimer1StartTime + u32(g_sv_mp_Timer1Interval * 60000) < CurTime)
+			{
+				Msg("# tsmp timer1 ");
+				//	if (!OnServer()) return;
+				//	(Level().Server && Level().Server->game)	
+				Console->Execute("cfg_load tsmp_timer1_commands");
+
+				m_uTimer1Started = false;
+			}
+		}
+		else
+		{
+			u32 CurTimeTimer = Level().timeServer();
+			m_uTimer1StartTime = CurTimeTimer;
+			m_uTimer1Started = true;
+			//		Msg("timer started");
+		}
+	}
+
+
+	if (g_sv_mp_Timer2Enabled == 1)
+	{
+		if (m_uTimer2Started)
+		{
+			u32 CurTime = Level().timeServer();
+
+			if (m_uTimer2StartTime + u32(g_sv_mp_Timer2Interval * 60000) < CurTime)
+			{
+				Msg("# tsmp timer2 ");
+				//	if (!OnServer()) return;
+				//	(Level().Server && Level().Server->game)	
+				Console->Execute("cfg_load tsmp_timer2_commands");
+
+				m_uTimer2Started = false;
+			}
+		}
+		else
+		{
+			u32 CurTimeTimer = Level().timeServer();
+			m_uTimer2StartTime = CurTimeTimer;
+			m_uTimer2Started = true;
+			//		Msg("timer started");
+		}
+	}
+	g_sv_mp_Counter = 0;
+}
+	g_sv_mp_Counter++;
+
 	//-------------------------------------------------------
 	UpdatePlayersMoney();
 
@@ -115,6 +201,13 @@ void game_sv_mp::OnRoundStart()
 	
 	m_CorpseList.clear();
 
+	
+	m_WeaponDisablerItemsCount = 0;
+	int ii;
+	for (ii = 0; ii < 100; ii++)	m_WeaponDisablerState[ii] = true;
+	for (ii = 0; ii < 100; ii++)	m_WeaponDisablerItems[ii] = "";
+
+
 	switch_Phase		(GAME_PHASE_INPROGRESS);
 	++m_round;
 	m_round_start_time	= Level().timeServer();
@@ -141,6 +234,9 @@ void game_sv_mp::OnRoundStart()
 	GenerateGameMessage (P);
 	P.w_u32				(GAME_EVENT_ROUND_STARTED);
 	u_EventSend(P);
+
+
+	Console->Execute("cfg_load all_server_settings");
 
 	signal_Syncronize();
 }
@@ -218,51 +314,176 @@ void	game_sv_mp::OnEvent (NET_Packet &P, u16 type, u32 time, ClientID sender )
 	{	
 	case GAME_EVENT_PLAYER_KILLED:  //playerKillPlayer
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("GAME_EVENT_PLAYER_KILLED");
 			OnPlayerKilled(P);
 		}break;
 	case GAME_EVENT_PLAYER_HITTED:
 		{
+				if (0 != strstr(Core.Params, "-debug")) Msg("GAME_EVENT_PLAYER_HITTED");
 			OnPlayerHitted(P);			
 		}break;
 	case GAME_EVENT_PLAYER_READY:// cs & dm 
 		{
+				if (0 != strstr(Core.Params, "-debug")) Msg("GAME_EVENT_PLAYER_READY");
 			xrClientData *l_pC = m_server->ID_to_client(sender);
 			if (!l_pC) break;
 			OnPlayerReady		(l_pC->ID);
 		}break;
 	case GAME_EVENT_PLAYER_BUY_SPAWN:
 		{
+				if (0 != strstr(Core.Params, "-debug")) Msg("GAME_EVENT_PLAYER_BUY_SPAWN");
 			xrClientData *l_pC = m_server->ID_to_client(sender);
 			if (!l_pC) break;
 			OnPlayerBuySpawn	(l_pC->ID);
 		}break;
 	case GAME_EVENT_VOTE_START:
 		{
+				if (0 != strstr(Core.Params, "-debug")) Msg("GAME_EVENT_VOTE_START");
 			if (!IsVotingEnabled()) break;
 			string1024 VoteCommand;
 			P.r_stringZ(VoteCommand);
-			OnVoteStart(VoteCommand, sender);
+			std::string Vte = VoteCommand;
+
+			
+
+			while (Vte.find('%') != std::string::npos)
+			{
+				Vte.replace(Vte.find("%"), 1, " ");
+				Msg("! bad symbol in vote found - percent");
+			}
+
+		
+
+			    size_t pos = Vte.find("changemap");
+    if (pos != std::string::npos) 
+	{
+
+				Msg("change map found");
+
+		
+				std::string String1,String2;
+				String1= Vte;
+				bool bIsAllOk = false;
+
+
+
+				if (String1.find(' ') != std::string::npos)
+				{
+					bIsAllOk = true;
+
+					char *s = new char[String1.size() + 1];
+
+					strcpy(s, String1.c_str());
+
+					char *p = strtok(s, " ");
+					int iii = 0;
+					while (p != NULL) {
+						//	cout << p << endl;
+						if (iii == 0) String1 = p;
+						else String2 = p;
+						p = strtok(NULL, " ");
+						iii++;
+					}
+
+					delete[] s;
+				}
+				std::string Type = Level().Server->game->type_name();
+
+			//	Msg("string 1 %s", String1.c_str());
+			//	Msg("string 2 %s", String2.c_str());
+			//	Msg("string gametype %s", Type.c_str());
+
+				
+				
+
+				if (Tsmp_is_map_registered(String2, Type))
+				{
+
+				}
+				else
+				{
+
+
+//using namespace xrServer;
+
+					//xrClientData* CL = ID_to_client(sender);
+
+					xrClientData *pPlayer = NULL;
+					u32	cnt = get_players_count();
+					for (u32 it = 0; it<cnt; it++)
+					{
+						xrClientData *l_pC = (xrClientData*)m_server->client_Get(it);
+						if (!l_pC) continue;
+						if (l_pC->ID == sender)
+						{						
+							pPlayer = l_pC;
+						}					
+					};
+
+					string512 PName;
+					strcpy(PName, pPlayer->ps->getName());
+					
+					std::string Show = "! cant find map["+String2+"] in the list.Vote started player["+PName+"] .";
+					Msg(Show.c_str());
+					break;
+				}
+			
+
+
+					//	sprintf_s(argsNew, "%s %s", LevelName, Level().Server->game->type_name());
+
+
+	}
+
+	else 
+	{
+		while (Vte.find('_') != std::string::npos)
+		{
+			Vte.replace(Vte.find("_"), 1, " ");
+			Msg("! bad symbol in vote found - _");
+		}
+
+	}
+			
+			if (strlen(VoteCommand) > 70)
+				Msg("! too many symbols in vote found");
+
+			Vte.resize(70);
+
+			
+			string1024 debug_msg_vote;
+			strcpy(debug_msg_vote, Vte.c_str());
+
+			Msg(debug_msg_vote);
+			//Msg(VoteCommand);
+		//	OnVoteStart(VoteCommand, sender);
+			OnVoteStart(Vte.c_str(), sender);
 		}break;
 	case GAME_EVENT_VOTE_YES:
 		{
+				if (0 != strstr(Core.Params, "-debug")) Msg("GAME_EVENT_VOTE_YES");
 			if (!IsVotingEnabled()) break;
 			OnVoteYes(sender);
 		}break;
 	case GAME_EVENT_VOTE_NO:
 		{
+				if (0 != strstr(Core.Params, "-debug")) Msg("GAME_EVENT_VOTE_NO");
 			if (!IsVotingEnabled()) break;
 			OnVoteNo(sender);
 		}break;
 	case GAME_EVENT_PLAYER_NAME:
 		{
+				if (0 != strstr(Core.Params, "-debug")) Msg("GAME_EVENT_PLAYER_NAME");
 			OnPlayerChangeName(P, sender);
 		}break;
 	case GAME_EVENT_SPEECH_MESSAGE:
 		{
+				if (0 != strstr(Core.Params, "-debug")) Msg("GAME_EVENT_SPEECH_MESSAGE");
 			OnPlayerSpeechMessage(P, sender);
 		}break;
 	case GAME_EVENT_PLAYER_GAME_MENU:
 		{
+				if (0 != strstr(Core.Params, "-debug")) Msg("GAME_EVENT_PLAYER_GAME_MENU");
 			OnPlayerGameMenu(P, sender);
 //			OnPlayerSelectSpectator(P, sender);
 		}break;
@@ -550,6 +771,8 @@ TeamStruct* game_sv_mp::GetTeamData				(u32 Team)
 
 void	game_sv_mp::SpawnWeaponForActor		(u16 actorId,  LPCSTR N, bool isScope, bool isGrenadeLauncher, bool isSilencer)
 {
+	if (0 != strstr(Core.Params, "-debug"))  Msg("SpawnWeaponForActor");
+
 		u8 addon_flags = 0;
 		if(isScope)
 			addon_flags |= CSE_ALifeItemWeapon::eWeaponAddonScope;
@@ -563,10 +786,185 @@ void	game_sv_mp::SpawnWeaponForActor		(u16 actorId,  LPCSTR N, bool isScope, boo
 		SpawnWeapon4Actor(actorId, N, addon_flags);
 }
 
+void	game_sv_mp::Tsmp_weapon_disabler(LPCSTR DATA)
+{
+	//Msg("disabler");
+	std::string String1 = DATA;
+	std::string String2;
+
+
+
+	bool bIsAllOk = false;
+
+
+
+	if (String1.find(' ') != std::string::npos)
+	{
+		bIsAllOk = true;
+
+		char *s = new char[String1.size() + 1];
+
+		strcpy(s, String1.c_str());
+
+		char *p = strtok(s, " ");
+		int iii = 0;
+		while (p != NULL) {
+			//	cout << p << endl;
+			if (iii == 0) String1 = p;
+			else String2 = p;
+			p = strtok(NULL, " ");
+			iii++;
+		}
+
+		delete[] s;
+	}
+
+	//Msg(String1.c_str());
+	//Msg(String2.c_str());
+
+//	if (String2 == "0") Msg("odin");
+//	if (String2 == "1") Msg("null");
+	if (!(String2 == "1" || String2 == "0")) bIsAllOk = false;
+
+	if (!bIsAllOk)
+	{
+		Msg("! error in weapon disabler");
+		return;
+	}
+
+	int iI,iIdx=0;
+	bool bFound = false;
+
+	for (iI = 0; (iI < m_WeaponDisablerItemsCount)&&(!bFound); iI++)
+	{
+		if (String1 == m_WeaponDisablerItems[iI])
+		{
+			iIdx = iI;
+			bFound = true;
+		//	Msg("bFound");
+		}
+	}
+
+	if (bFound)
+	{
+		if (String2 == "1") m_WeaponDisablerState[iIdx] = true;
+		else m_WeaponDisablerState[iIdx] = false;
+		return;
+	}
+
+	if (String2 == "1") m_WeaponDisablerState[m_WeaponDisablerItemsCount] = true;
+	if (String2 == "0") m_WeaponDisablerState[m_WeaponDisablerItemsCount] = false;
+	m_WeaponDisablerItems[m_WeaponDisablerItemsCount] = String1;
+	m_WeaponDisablerItemsCount++;
+
+};
+
 void	game_sv_mp::SpawnWeapon4Actor		(u16 actorId,  LPCSTR N, u8 Addons)
 {
+	std::string StrIng = N;
+
+	if (0 != strstr(Core.Params, "-debug"))
+	{
+		Msg("SpawnWeaponForActor called");
+		std::string ID = std::to_string(actorId);
+		
+		std::string Addon = std::to_string(Addons);
+		std::string output4 = "ActorId: " + ID + "; Weapon: " + StrIng + "; Addon:" + Addon + ";";
+		Msg(output4.c_str());
+	}
+		
+
 	if (!N) return;
 	
+	// maks0:блокировка предметов, начало	
+
+
+	if (g_sv_mp_DisablerEnabled == 1)
+	{
+		bool podstvol = false; 
+
+		for (int i = 0; i < m_WeaponDisablerItemsCount; i++)
+		{
+			if ((m_WeaponDisablerItems[i] == StrIng) && (m_WeaponDisablerState[i]))
+			{
+				/*
+				std::string Messs = "! " + StrIng + " запрещен для покупки на данном сервере (disabled on this server)";
+			
+				NET_Packet			PPP;
+				GenerateGameMessage(PPP);
+				PPP.w_u32(GAME_EVENT_SERVER_STRING_MESSAGE);
+				PPP.w_stringZ(Messs.c_str());
+				m_server->SendTo(m_server->GetServerClient()->ID, PPP);
+
+				*/
+
+				return;
+			}
+
+		//	m_DisablerPodstvol, m_DisablerGranati, m_DisablerHardWeapon
+
+			if ((m_WeaponDisablerItems[i] == "podstvol") && (m_WeaponDisablerState[i]))
+			{
+				podstvol = true;
+				if (StrIng == "mp_wpn_addon_grenade_launcher") return;
+				if (StrIng == "mp_wpn_addon_grenade_launcher_m203") return;
+				if (StrIng == "mp_ammo_vog-25") return;
+				if (StrIng == "mp_ammo_vog-25p") return;
+				if (StrIng == "mp_ammo_m209") return;
+			}
+
+			if ((m_WeaponDisablerItems[i] == "granati") && (m_WeaponDisablerState[i]))
+			{
+				if (StrIng == "mp_grenade_f1") return;
+				if (StrIng == "mp_grenade_rgd5") return;
+				if (StrIng == "mp_grenade_gd-05") return;
+			}
+
+			if ((m_WeaponDisablerItems[i] == "hard_weapon") && (m_WeaponDisablerState[i]))
+			{
+				if (StrIng == "mp_ammo_og-7b") return;
+				if (StrIng == "mp_wpn_rpg7_missile") return;
+				if (StrIng == "mp_wpn_rpg7") return;
+				if (StrIng == "mp_wpn_rg-6") return;
+			}
+
+
+		}
+
+		/*
+		 генерируем значения аддонов на оружие	
+		
+			0 - пусто 
+			1 - прицел 
+			2 - подствол 
+			3 - прицел+подствол 
+			4 - глушитель 
+			5 - прицел+глушитель 
+			6 - подствол+глушитель 
+			7 - прицел+подствол+глушитель
+		*/
+		
+		if (podstvol)
+		{
+
+			switch (Addons)
+			{
+			case 2:
+				Addons = 0;
+				break;
+			case 3:
+				Addons = 1;
+				break;
+			case 7:
+				Addons = 5;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+
 	CSE_Abstract			*E	=	spawn_begin	(N);
 	E->ID_Parent = actorId;
 
@@ -662,18 +1060,35 @@ _votecommands	votecommands[] = {
 void game_sv_mp::OnVoteStart				(LPCSTR VoteCommand, ClientID sender)
 {
 	if (!IsVotingEnabled()) return;
-	char	CommandName[256];	CommandName[0]=0;
+	//char	CommandName[4096];	CommandName[0]=0;
+	string4096 CommandName;	
+	//CommandName[0] = 0;
+
 	char	CommandParams[256];	CommandParams[0]=0;
+
 	string1024 resVoteCommand = "";
+
+	//std::string com_name;
 	sscanf	(VoteCommand,"%s ", CommandName);
+
+//	std::string com_name = CommandName;
+//	std::string messs = "bad symbol in vote found";
+//	while (com_name.find('%') != std::string::npos)
+//	{
+//		Msg(messs.c_str());
+//		com_name.replace(com_name.find("%"), 1, " ");
+//	}
+//	strcpy(CommandName, com_name.c_str());
+
+
 	if (xr_strlen(CommandName)+1 < xr_strlen(VoteCommand))
 	{
 		strcpy(CommandParams, VoteCommand + xr_strlen(CommandName)+1);
 	}
 
-	if (CommandName[0] == '$' && !IsVotingEnabled(flVoteText))
+	if (CommandName[0] == '$' && !IsVotingEnabled(flVoteText)) //проверка на неверную команду 
 		return;
-
+	
 	int i=0;
 	m_bVotingReal = false;
 	while (votecommands[i].command)
@@ -742,9 +1157,41 @@ void game_sv_mp::OnVoteStart				(LPCSTR VoteCommand, ClientID sender)
 		P.w_stringZ(resVoteCommand);
 	else
 		P.w_stringZ(VoteCommand+1);
-	P.w_stringZ(pStartedPlayer ? pStartedPlayer->ps->getName() : "");
-	P.w_u32(u32(g_sv_mp_fVoteTime*60000));
+
+	string4096 Starter;
+	strcpy(Starter, pStartedPlayer ? pStartedPlayer->ps->getName() : "");
+	std::string Star = Starter;
+
+	while (Star.find('%') != std::string::npos)
+	{
+		Star.replace(Star.find("%"), 1, " ");
+		Msg("! bad symbol in started vote player name found - percent");
+	}
+	while (Star.find('_') != std::string::npos)
+	{
+		Star.replace(Star.find("_"), 1, " ");
+		Msg("! bad symbol in started vote player name found - _");
+	}
+
+	if (strlen(Starter) > 70)
+		Msg("! too many symbols in started vote player name found");
+
+	Star.resize(70);
+
+
+	P.w_stringZ(Star.c_str());
+	P.w_u32(u32(g_sv_mp_fVoteTime*1000));
 	u_EventSend(P);
+
+	//std::string str1 = resVoteCommand;
+	//std::string str2 = CommandName;
+	//std::string str3 = CommandParams;
+	//std::string output = "resvotecommand - " + str1 + " ComName- " + str2 + " ComPars " + str3;
+	//Msg(resVoteCommand);
+	//Msg(CommandName);
+//	Msg(CommandParams);
+//	Msg(output.c_str());
+
 	//-----------------------------------------------------------------------------	
 };
 
@@ -770,19 +1217,20 @@ void		game_sv_mp::UpdateVote				()
 	bool VoteSucceed = false;
 	u32 CurTime = Level().timeServer();
 	
-	if (m_uVoteStartTime + u32(g_sv_mp_fVoteTime*60000) > CurTime)
+	if (m_uVoteStartTime + u32(g_sv_mp_fVoteTime *1000) > CurTime)
 	{
 		if (NumToCount == NumAgreed) VoteSucceed = true;
 		else
 			VoteSucceed = (float(NumAgreed)/float(NumToCount)) >= g_sv_mp_fVoteQuota;
 		if (!VoteSucceed) return;
+
 	}
 	else
 	{
-		if (g_sv_mp_bCountParticipants) 
-			VoteSucceed = (float(NumAgreed)/float(NumParticipated)) >= g_sv_mp_fVoteQuota;
-		else
-			VoteSucceed = (float(NumAgreed)/float(NumToCount)) >= g_sv_mp_fVoteQuota;
+	//	if (g_sv_mp_bCountParticipants) 
+	//		VoteSucceed = (float(NumAgreed)/float(NumParticipated)) >= g_sv_mp_fVoteQuota;
+	//	else
+	//		VoteSucceed = (float(NumAgreed)/float(NumToCount)) >= g_sv_mp_fVoteQuota;
 	};
 
 	SetVotingActive(false);
@@ -806,6 +1254,56 @@ void		game_sv_mp::UpdateVote				()
 	if (m_bVotingReal)
 		Console->Execute(m_pVoteCommand.c_str());
 };
+
+
+/*
+void		game_sv_mp::StartTimer()
+{
+	if (!m_uTimerStarted)
+	{
+
+		u32 CurTimeTimer = Level().timeServer();
+		m_uTimerStartTime = CurTimeTimer;
+		m_uTimerStarted = true;
+		Msg("timer started");
+	}
+	else
+	{
+		Msg("! timer already started");
+	}
+};
+
+
+
+void		game_sv_mp::UpdateTimer()
+{
+	u32 CurTime = Level().timeServer();
+
+	if ((m_uTimerStartTime + u32(g_sv_mp_fVoteTime * 60000) > CurTime) && (m_uTimerStarted))
+	{
+		if (!OnServer()) return;
+		if (Level().Server && Level().Server->game)	Console->Execute("cfg_load tsmp_server_settings");
+		m_uTimerStarted = false;
+
+		StartTimer();
+	}
+};
+
+*/
+
+void game_sv_mp::OnVoteSuccess()
+{
+	SetVotingActive(false);
+
+	NET_Packet P;
+	GenerateGameMessage(P);
+	P.w_u32(GAME_EVENT_VOTE_END);
+	P.w_stringZ("st_mp_voting_succeed");
+	u_EventSend(P);
+
+	if (m_bVotingReal) Console->Execute(m_pVoteCommand.c_str());
+
+}
 
 
 void		game_sv_mp::OnVoteYes				(ClientID sender)
@@ -985,6 +1483,25 @@ void game_sv_mp::OnPlayerHitted(NET_Packet P)
 	game_PlayerState* PSHitter		=	get_eid			(id_hitter);
 	if (!PSHitter) return;
 	game_PlayerState* PSHitted		=	get_eid			(id_hitted);
+
+		if (0 != strstr(Core.Params, "-debug")) 
+		{
+			Msg("id_hitted");
+			string1024 hitted;
+			sprintf (hitted, "%u", id_hitted);	
+			Msg(hitted);
+
+					Msg("id_hitter");
+			string1024 hitter;
+			sprintf (hitter, "%u", id_hitter);	
+			Msg(hitter);
+
+					Msg("health");
+			string1024 hea;
+			sprintf (hea, "%u", dHealth);	
+			Msg(hea);
+		}
+
 	if (!PSHitted) return;
 	if (PSHitted == PSHitter) return;
 	if (!CheckTeams() || (PSHitted->team != PSHitter->team))
@@ -1018,8 +1535,43 @@ void	game_sv_mp::SendPlayerKilledMessage	(u16 KilledID, KILL_TYPE KillType, u16 
 
 void	game_sv_mp::OnPlayerChangeName		(NET_Packet& P, ClientID sender)
 {
-	string1024 NewName = "";
+	
+		if ( (g_sv_mp_nickname_change_mode==3) || ( (g_sv_mp_nickname_change_mode==2)&&(IsVotingActive()) ) )
+	{
+			NET_Packet			PP;
+		GenerateGameMessage (PP);
+		PP.w_u32				(GAME_EVENT_SERVER_STRING_MESSAGE);
+		PP.w_stringZ			("Смена ника запрещена на данном сервере (nickname change is disabled on this server)");
+		m_server->SendTo( sender, PP );
+		}
+		else
+		{
+
+
+	string4096 NewName = "";
 	P.r_stringZ(NewName);
+	std::string NameNew = NewName;
+	NameNew.resize(70);
+
+	while (NameNew.find('%') != std::string::npos)
+	{
+		NameNew.replace(NameNew.find("%"), 1, " ");
+		std::string Messs = "! bad symbol percent tried to write in nick player " + NameNew;
+		Msg(Messs.c_str());
+	}
+
+	while (NameNew.find('_') != std::string::npos)
+	{
+		NameNew.replace(NameNew.find("_"), 1, " ");
+		std::string Messs1 = "! bad symbol _ tried to write in nick player " + NameNew;
+		Msg(Messs1.c_str());
+	}
+	std::string MM = "! too many symbols in name tried to write player - " + NameNew;
+	if (strlen(NewName) > 70)
+		Msg(MM.c_str());
+
+	strcpy(NewName, NameNew.c_str());
+
 	xrClientData*	pClient	= (xrClientData*)m_server->ID_to_client	(sender);
 	
 	if (!pClient || !pClient->net_Ready) return;
@@ -1037,6 +1589,8 @@ void	game_sv_mp::OnPlayerChangeName		(NET_Packet& P, ClientID sender)
 		m_server->SendTo( sender, P );
 		return;
 	}
+
+		
 
 	if (NewPlayerName_Exists(pClient, NewName))
 	{
@@ -1070,11 +1624,22 @@ void	game_sv_mp::OnPlayerChangeName		(NET_Packet& P, ClientID sender)
 	ps->setName(NewName);
 
 	signal_Syncronize();
+		}
 };
 
 void		game_sv_mp::OnPlayerSpeechMessage	(NET_Packet& P, ClientID sender)
 {
-	xrClientData*	pClient	= (xrClientData*)m_server->ID_to_client	(sender);
+		if (0 != strstr(Core.Params, "-nospeech"))
+	{
+			NET_Packet			PP;
+		GenerateGameMessage (PP);
+		PP.w_u32				(GAME_EVENT_SERVER_STRING_MESSAGE);
+		PP.w_stringZ			("Рация заблокирована на этом сервере (radio is disabled on this server)");
+		m_server->SendTo( sender, PP );
+	//	return;
+	} else	{
+
+	xrClientData*	pClient	= (xrClientData*)m_server->ID_to_client	(sender);	
 
 	if (!pClient || !pClient->net_Ready) return;
 	game_PlayerState* ps = pClient->ps;
@@ -1099,6 +1664,7 @@ void		game_sv_mp::OnPlayerSpeechMessage	(NET_Packet& P, ClientID sender)
 			m_server->SendTo(l_pC->ID, NP, net_flags(TRUE, TRUE, TRUE));
 		};
 	};
+	}
 };
 
 void		game_sv_mp::OnPlayerGameMenu(NET_Packet& P, ClientID sender)
@@ -1498,3 +2064,67 @@ void game_sv_mp::SvSendChatMessage(LPCSTR str)
 	P.w_s16				(0);
 	u_EventSend			(P);
 }
+
+#include "UIGameCustom.h"
+
+bool	game_sv_mp::Tsmp_is_map_registered(std::string MapName, std::string GameTypeStr)
+{
+	 // для проверки карт из списка
+
+
+//	sprintf_s(argsNew, "%s %s", LevelName, Level().Server->game->type_name());
+	string256 LevelName, GameType;
+	strcpy(LevelName, MapName.c_str());
+	strcpy(GameType, GameTypeStr.c_str());
+
+	if (!OnServer())	return false;
+
+
+
+
+//	sscanf(argsNew, "%s %s", LevelName, GameType);
+
+	if (!xr_strcmp(GameType, "dm")) sprintf_s(GameType, "deathmatch");
+	else
+		if (!xr_strcmp(GameType, "tdm")) sprintf_s(GameType, "teamdeathmatch");
+		else
+			if (!xr_strcmp(GameType, "artifacthunt")) sprintf_s(GameType, "artefacthunt");
+			else
+				if (!xr_strcmp(GameType, "ah")) sprintf_s(GameType, "artefacthunt");
+
+	if (xr_strcmp(GameType, "deathmatch"))
+		if (xr_strcmp(GameType, "teamdeathmatch"))
+			if (xr_strcmp(GameType, "artefacthunt"))
+			{
+				Msg("! Unknown gametype - %s", GameType);
+				return false;
+			};
+	//-----------------------------------------
+	s32 GameTypeID = 0;
+	if (!xr_strcmp(GameType, "deathmatch")) GameTypeID = GAME_DEATHMATCH;
+	else
+		if (!xr_strcmp(GameType, "teamdeathmatch")) GameTypeID = GAME_TEAMDEATHMATCH;
+		else
+			if (!xr_strcmp(GameType, "artefacthunt")) GameTypeID = GAME_ARTEFACTHUNT;
+	//-----------------------------------------
+
+	const SGameTypeMaps& M = gMapListHelper.GetMapListFor((EGameTypes)GameTypeID);
+	u32 cnt = M.m_map_names.size();
+	bool bMapFound = false;
+	for (u32 i = 0; i<cnt; ++i)
+	{
+		const shared_str& _map_name = M.m_map_names[i];
+		if (0 == xr_strcmp(_map_name.c_str(), LevelName))
+		{
+			bMapFound = true;
+			break;
+		}
+	}
+
+	if (!bMapFound) return false;
+	else return true;
+
+
+
+	
+};

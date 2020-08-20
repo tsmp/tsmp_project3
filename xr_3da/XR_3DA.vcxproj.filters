@@ -2,142 +2,139 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="General">
-      <UniqueIdentifier>{27a0abed-db22-40ce-a170-3a97ee4bdb6a}</UniqueIdentifier>
+      <UniqueIdentifier>{4a4708c9-a31c-4a13-a80e-a6aad21c531b}</UniqueIdentifier>
     </Filter>
     <Filter Include="General\Resources">
-      <UniqueIdentifier>{04f24d67-59c7-4294-a039-e2cbb19da0f4}</UniqueIdentifier>
+      <UniqueIdentifier>{2d355391-ee91-447f-8a48-1c7c77e3ebc6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfaces">
-      <UniqueIdentifier>{41219200-0e42-46cf-9951-e1edbf6ed0d9}</UniqueIdentifier>
+      <UniqueIdentifier>{b037bc63-9e69-4dcd-ae21-ec2859027f99}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfaces\Sound">
-      <UniqueIdentifier>{078d9116-2edb-41e1-b2f1-00345b81f5c9}</UniqueIdentifier>
+      <UniqueIdentifier>{4b1ddb26-3c95-463e-b366-b3c6392a426e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfaces\Input">
-      <UniqueIdentifier>{43d56301-2396-42f0-9493-fef05d43c0dc}</UniqueIdentifier>
+      <UniqueIdentifier>{de553c5f-ad57-4733-9d74-8bf6bf2edbb6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfaces\Sheduler">
-      <UniqueIdentifier>{62179ca0-906a-4aaf-822d-2522f15696d4}</UniqueIdentifier>
+      <UniqueIdentifier>{6d4f306c-9ed9-432e-a594-dae1a0a7a469}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfaces\Render">
-      <UniqueIdentifier>{4241e7ca-03da-4a00-9b07-c5dd4fdf2aae}</UniqueIdentifier>
+      <UniqueIdentifier>{dec88d52-a699-432b-a322-a6b0f69ed1e3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfaces\SPATIAL">
-      <UniqueIdentifier>{4e303dd5-9b46-4660-8a28-dbeb9f251905}</UniqueIdentifier>
+      <UniqueIdentifier>{4e7bf894-8150-4c15-8e4c-e413c3e5e503}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfaces\Collidable">
-      <UniqueIdentifier>{1469302e-058d-4ab0-8e5f-cd6f0a6e76a0}</UniqueIdentifier>
+      <UniqueIdentifier>{21257e94-38bf-4b98-84b5-557c6d430feb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game API">
-      <UniqueIdentifier>{25ee8a65-f4d7-4a96-8af1-d47c796081f2}</UniqueIdentifier>
+      <UniqueIdentifier>{7ba513fa-1cbd-4e4c-a593-0e6bb3b751c0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game API\Objects">
-      <UniqueIdentifier>{8091127a-7204-40ed-8bda-92bc0be465b3}</UniqueIdentifier>
+      <UniqueIdentifier>{e95b4466-e9ee-4832-aa62-ebb4ce943027}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game API\HUD">
-      <UniqueIdentifier>{51b2d9d2-7a76-466c-a264-889410036f9a}</UniqueIdentifier>
+      <UniqueIdentifier>{8b7a528e-17d6-4d0f-96bd-e6cdc33ca45c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game API\Environment">
-      <UniqueIdentifier>{dd8aed3b-dc82-4e94-85f5-8768c0c58086}</UniqueIdentifier>
+      <UniqueIdentifier>{09019c7e-6f04-48c8-ac6f-c7e0b873a394}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game API\Environment\Effects">
-      <UniqueIdentifier>{ccbc2067-998d-4a56-8868-cadd32fdced9}</UniqueIdentifier>
+      <UniqueIdentifier>{c9b537ab-44a4-49e1-b0be-57114c27573b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game API\Cameras">
-      <UniqueIdentifier>{42a3d9f6-be4a-42ec-bf67-a6fc9950face}</UniqueIdentifier>
+      <UniqueIdentifier>{13604d7d-1268-4e75-be02-c272c93ab2d8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game API\Collision">
-      <UniqueIdentifier>{0dc57e1f-6a0a-4dcb-903b-ea913e03672f}</UniqueIdentifier>
+      <UniqueIdentifier>{e11e750d-e413-4cf7-b1e5-99e43bd13e3b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game API\Animator">
-      <UniqueIdentifier>{c24d2dde-c01a-405d-8e37-1699eb1b752d}</UniqueIdentifier>
+      <UniqueIdentifier>{a4a0b3f9-feb9-4560-936b-7e281d28816c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game API\Feelers">
-      <UniqueIdentifier>{888fa23a-44a2-4a44-a13e-b814d8072dc4}</UniqueIdentifier>
+      <UniqueIdentifier>{e17af750-468c-4528-8785-73861770b125}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game API\Demo">
-      <UniqueIdentifier>{367e8d3c-b9ca-4df8-95eb-0f60fcbdbe95}</UniqueIdentifier>
+      <UniqueIdentifier>{06789a6d-b1e8-4482-be1b-f07521cc8f10}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render">
-      <UniqueIdentifier>{6b8c0060-7d16-49bf-a3af-c09966f1090a}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Visuals">
+      <UniqueIdentifier>{7dbf773c-ab4a-4fe6-8b84-4a210625ae59}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Visuals">
-      <UniqueIdentifier>{bb539ed6-c240-46b3-9996-3fc02e19ccd0}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Visuals\Skeleton">
+      <UniqueIdentifier>{85b1a069-54d8-4336-a7f0-481ed00be9e3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Visuals\Skeleton">
-      <UniqueIdentifier>{b107e469-0a19-42fe-9c53-57751e5b5dae}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Visibility">
+      <UniqueIdentifier>{68efba7c-8f15-4135-813b-69bfd3cd8e2d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Visibility">
-      <UniqueIdentifier>{59520338-5c4a-4b89-903a-12be71d5eeb5}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Visibility\Frustum">
+      <UniqueIdentifier>{a3e342ac-95be-44d2-8eb4-0bfbf903f96c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Visibility\Frustum">
-      <UniqueIdentifier>{39e983d3-99a9-4ea6-8593-1cca37196bca}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Particle system">
+      <UniqueIdentifier>{ba9d709e-fcb2-46d5-a8c4-ab593faf17e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Particle system">
-      <UniqueIdentifier>{f98e8fc8-f74b-46b4-8ff7-ed01197a13b4}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Lighting">
+      <UniqueIdentifier>{0b76f4bf-f242-4d9e-8cee-fc5d6d8492ac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Lighting">
-      <UniqueIdentifier>{b178f13c-dd5d-42f9-9c45-bb0ba637e384}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Font output">
+      <UniqueIdentifier>{a377f015-ec50-4b13-a0df-e8d8172e203a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Font output">
-      <UniqueIdentifier>{5ca6a8b5-5dfc-49ed-b4d3-9b0b85ec41e0}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Execution &amp; 3D">
+      <UniqueIdentifier>{acd7897f-faac-4e28-b0d9-c492965e8868}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D">
-      <UniqueIdentifier>{3500923e-b0da-4826-b67f-39606d9fa5f4}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Execution &amp; 3D\HW">
+      <UniqueIdentifier>{08921ee3-02c8-4311-aed4-edb21cd06da8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\HW">
-      <UniqueIdentifier>{d758e951-e561-4955-abf3-25e66e1e4380}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Execution &amp; 3D\Gamma">
+      <UniqueIdentifier>{a2edc49f-2610-4b90-9da2-f8995d9693f6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Gamma">
-      <UniqueIdentifier>{ed8ed785-3d4f-40b7-87cc-0b5622c4991d}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Execution &amp; 3D\Shaders">
+      <UniqueIdentifier>{dd1674bd-500f-4864-bf60-cdaf178e83d2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders">
-      <UniqueIdentifier>{292e15e6-df1c-4df2-98af-49097a469016}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Execution &amp; 3D\Shaders\Blender">
+      <UniqueIdentifier>{a4724ae5-613b-4e2a-bf11-657158da47ed}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\Blender">
-      <UniqueIdentifier>{b57373af-2d07-4ed6-b0d5-d89deed220c0}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Execution &amp; 3D\Shaders\Textures">
+      <UniqueIdentifier>{f9c5b6aa-8297-4c6d-9384-45cd98d18605}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\Textures">
-      <UniqueIdentifier>{eb1fb3e5-adc3-4a78-b26c-0a3b1041fd19}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager">
+      <UniqueIdentifier>{17dea409-bc77-4b6d-b09d-b73afc782039}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\ShaderManager">
-      <UniqueIdentifier>{a5dea2fe-3ef3-49aa-96ce-945bf120446a}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator">
+      <UniqueIdentifier>{5d0833ed-8e53-4b41-9acd-1d6327f2d8c6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator">
-      <UniqueIdentifier>{70a64189-c56c-42cf-b0a1-e33c5cf814b0}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Execution &amp; 3D\Shaders\Resources">
+      <UniqueIdentifier>{85d92af7-7929-4ae5-9a6f-a4e2a262ca3b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\Resources">
-      <UniqueIdentifier>{1d0c9348-fe76-4e2e-9a89-341dd92df37e}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader">
+      <UniqueIdentifier>{eaf2617c-6002-48ca-a9ef-e54dca277b2f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader">
-      <UniqueIdentifier>{7185e23e-0d4e-4bd0-a3ec-190ac93740be}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Execution &amp; 3D\TextConsole">
+      <UniqueIdentifier>{085137f0-19d0-4d7b-86d5-87ea54e184db}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\TextConsole">
-      <UniqueIdentifier>{b6e2542b-4865-4ee1-8c0b-aee1b2bf26b9}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Execution &amp; 3D\DebugDraw">
+      <UniqueIdentifier>{2e5a1530-6c1f-4eac-92ae-9f1fd01d3f2f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\DebugDraw">
-      <UniqueIdentifier>{9326d608-2da2-4ed4-9d93-b31b861e1805}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Render\Backend">
-      <UniqueIdentifier>{7573e81f-5075-4a71-afba-e3f625043052}</UniqueIdentifier>
+    <Filter Include="Interfaces\Render\Backend">
+      <UniqueIdentifier>{3297d54e-a985-4920-a34c-3329bc13610a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine">
-      <UniqueIdentifier>{c0928357-b20f-44ce-92ec-d3680f8d447c}</UniqueIdentifier>
+      <UniqueIdentifier>{7d3d0ac3-e1a0-4db0-8bd0-62274ea1cd57}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\Collision Core">
-      <UniqueIdentifier>{3113884f-e755-4879-92e2-b99135c24e10}</UniqueIdentifier>
+      <UniqueIdentifier>{25218558-aec9-49a1-a695-2b15a039d26c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\Console">
-      <UniqueIdentifier>{1d8c132b-d9b5-4ec3-8a6c-9938a8e44ba7}</UniqueIdentifier>
+      <UniqueIdentifier>{526d9640-9180-4144-aeb2-4e1b7ee984ba}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\Core">
-      <UniqueIdentifier>{fd721c6a-2b51-4a21-8757-60a855f07d66}</UniqueIdentifier>
+      <UniqueIdentifier>{119dd27d-86e7-4165-b88b-e9763f4a934f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\Core\Scripting">
-      <UniqueIdentifier>{64bf6ffe-2720-4b2a-98a6-c446e7e0603a}</UniqueIdentifier>
+      <UniqueIdentifier>{05991625-16d4-4b9a-bd9d-0a440fe0cb49}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\Noise">
-      <UniqueIdentifier>{1347d5c2-6218-45d3-9995-163a49169b18}</UniqueIdentifier>
+      <UniqueIdentifier>{24e25fe9-a02a-48b3-aa90-66d7a13cc2e1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -286,178 +283,178 @@
       <Filter>Game API\Demo</Filter>
     </ClInclude>
     <ClInclude Include="FBasicVisual.h">
-      <Filter>Render\Visuals</Filter>
+      <Filter>Interfaces\Render\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="FHierrarhyVisual.h">
-      <Filter>Render\Visuals</Filter>
+      <Filter>Interfaces\Render\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="Fmesh.h">
-      <Filter>Render\Visuals</Filter>
+      <Filter>Interfaces\Render\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="ParticleCustom.h">
-      <Filter>Render\Visuals</Filter>
+      <Filter>Interfaces\Render\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="EnnumerateVertices.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="SkeletonAnimated.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="SkeletonCustom.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="SkeletonMotions.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="SkeletonX.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="vis_common.h">
-      <Filter>Render\Visibility</Filter>
+      <Filter>Interfaces\Render\Visibility</Filter>
     </ClInclude>
     <ClInclude Include="Frustum.h">
-      <Filter>Render\Visibility\Frustum</Filter>
+      <Filter>Interfaces\Render\Visibility\Frustum</Filter>
     </ClInclude>
     <ClInclude Include="PS_instance.h">
-      <Filter>Render\Particle system</Filter>
+      <Filter>Interfaces\Render\Particle system</Filter>
     </ClInclude>
     <ClInclude Include="LightAnimLibrary.h">
-      <Filter>Render\Lighting</Filter>
+      <Filter>Interfaces\Render\Lighting</Filter>
     </ClInclude>
     <ClInclude Include="GameFont.h">
-      <Filter>Render\Font output</Filter>
+      <Filter>Interfaces\Render\Font output</Filter>
     </ClInclude>
     <ClInclude Include="MbHelpers.h">
-      <Filter>Render\Font output</Filter>
+      <Filter>Interfaces\Render\Font output</Filter>
     </ClInclude>
     <ClInclude Include="device.h">
-      <Filter>Render\Execution &amp; 3D</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClInclude>
     <ClInclude Include="StatGraph.h">
-      <Filter>Render\Execution &amp; 3D</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClInclude>
     <ClInclude Include="Stats.h">
-      <Filter>Render\Execution &amp; 3D</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClInclude>
     <ClInclude Include="HW.h">
-      <Filter>Render\Execution &amp; 3D\HW</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\HW</Filter>
     </ClInclude>
     <ClInclude Include="HWCaps.h">
-      <Filter>Render\Execution &amp; 3D\HW</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\HW</Filter>
     </ClInclude>
     <ClInclude Include="xr_effgamma.h">
-      <Filter>Render\Execution &amp; 3D\Gamma</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Gamma</Filter>
     </ClInclude>
     <ClInclude Include="Shader_xrLC.h">
-      <Filter>Render\Execution &amp; 3D\Shaders</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="WaveForm.h">
-      <Filter>Render\Execution &amp; 3D\Shaders</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="Blenders\Blender.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClInclude>
     <ClInclude Include="Blenders\Blender_CLSID.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClInclude>
     <ClInclude Include="Blenders\Blender_Recorder.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClInclude>
     <ClInclude Include="tss.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClInclude>
     <ClInclude Include="tss_def.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClInclude>
     <ClInclude Include="tntQAVI.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClInclude>
     <ClInclude Include="xrImage_Resampler.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClInclude>
     <ClInclude Include="xrTheora_Stream.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClInclude>
     <ClInclude Include="xrTheora_Surface.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClInclude>
     <ClInclude Include="xrTheora_Surface_mmx.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClInclude>
     <ClInclude Include="ETextureParams.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClInclude>
     <ClInclude Include="TextureDescrManager.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClInclude>
     <ClInclude Include="doug_lea_memory_allocator.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
     </ClInclude>
     <ClInclude Include="r_constants.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
     <ClInclude Include="SH_Atomic.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
     <ClInclude Include="SH_Constant.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
     <ClInclude Include="SH_Matrix.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
     <ClInclude Include="SH_RT.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
     <ClInclude Include="SH_Texture.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
     <ClInclude Include="r_constants_cache.h">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
     </ClInclude>
     <ClInclude Include="Text_Console.h">
-      <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\TextConsole</Filter>
     </ClInclude>
     <ClInclude Include="D3DUtils.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="DrawUtils.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="du_box.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="du_cone.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="du_cylinder.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="du_sphere.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="du_sphere_part.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="FVF.h">
-      <Filter>Render\Backend</Filter>
+      <Filter>Interfaces\Render\Backend</Filter>
     </ClInclude>
     <ClInclude Include="R_Backend.h">
-      <Filter>Render\Backend</Filter>
+      <Filter>Interfaces\Render\Backend</Filter>
     </ClInclude>
     <ClInclude Include="R_Backend_Runtime.h">
-      <Filter>Render\Backend</Filter>
+      <Filter>Interfaces\Render\Backend</Filter>
     </ClInclude>
     <ClInclude Include="R_Backend_xform.h">
-      <Filter>Render\Backend</Filter>
+      <Filter>Interfaces\Render\Backend</Filter>
     </ClInclude>
     <ClInclude Include="R_DStreams.h">
-      <Filter>Render\Backend</Filter>
+      <Filter>Interfaces\Render\Backend</Filter>
     </ClInclude>
     <ClInclude Include="Properties.h">
       <Filter>Engine</Filter>
@@ -645,202 +642,202 @@
       <Filter>Game API\Demo</Filter>
     </ClCompile>
     <ClCompile Include="FBasicVisual.cpp">
-      <Filter>Render\Visuals</Filter>
+      <Filter>Interfaces\Render\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="FHierrarhyVisual.cpp">
-      <Filter>Render\Visuals</Filter>
+      <Filter>Interfaces\Render\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="fmesh.cpp">
-      <Filter>Render\Visuals</Filter>
+      <Filter>Interfaces\Render\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="ParticleCustom.cpp">
-      <Filter>Render\Visuals</Filter>
+      <Filter>Interfaces\Render\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonAnimated.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonCustom.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonMotions.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonRigid.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonX.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
+      <Filter>Interfaces\Render\Visuals\Skeleton</Filter>
     </ClCompile>
     <ClCompile Include="Frustum.cpp">
-      <Filter>Render\Visibility\Frustum</Filter>
+      <Filter>Interfaces\Render\Visibility\Frustum</Filter>
     </ClCompile>
     <ClCompile Include="PS_instance.cpp">
-      <Filter>Render\Particle system</Filter>
+      <Filter>Interfaces\Render\Particle system</Filter>
     </ClCompile>
     <ClCompile Include="LightAnimLibrary.cpp">
-      <Filter>Render\Lighting</Filter>
+      <Filter>Interfaces\Render\Lighting</Filter>
     </ClCompile>
     <ClCompile Include="GameFont.cpp">
-      <Filter>Render\Font output</Filter>
+      <Filter>Interfaces\Render\Font output</Filter>
     </ClCompile>
     <ClCompile Include="MbHelpers.cpp">
-      <Filter>Render\Font output</Filter>
+      <Filter>Interfaces\Render\Font output</Filter>
     </ClCompile>
     <ClCompile Include="device.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="Device_create.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="Device_destroy.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="Device_Initialize.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="Device_Misc.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="Device_overdraw.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="Device_wndproc.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="StatGraph.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="Stats.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="HW.cpp">
-      <Filter>Render\Execution &amp; 3D\HW</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\HW</Filter>
     </ClCompile>
     <ClCompile Include="HWCaps.cpp">
-      <Filter>Render\Execution &amp; 3D\HW</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\HW</Filter>
     </ClCompile>
     <ClCompile Include="xr_effgamma.cpp">
-      <Filter>Render\Execution &amp; 3D\Gamma</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Gamma</Filter>
     </ClCompile>
     <ClCompile Include="Blenders\Blender.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
     <ClCompile Include="Blenders\Blender_Palette.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
     <ClCompile Include="Blenders\Blender_Recorder.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
     <ClCompile Include="Blender_Recorder_R2.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
     <ClCompile Include="Blender_Recorder_StandartBinding.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
     <ClCompile Include="tss_def.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
     <ClCompile Include="tntQAVI.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClCompile>
     <ClCompile Include="xrImage_Resampler.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClCompile>
     <ClCompile Include="xrTheora_Stream.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClCompile>
     <ClCompile Include="xrTheora_Surface.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClCompile>
     <ClCompile Include="xrTheora_Surface_mmx.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Textures</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Textures</Filter>
     </ClCompile>
     <ClCompile Include="ETextureParams.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager_Loader.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager_Reset.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager_Resources.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager_Scripting.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
     <ClCompile Include="TextureDescrManager.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
     <ClCompile Include="doug_lea_memory_allocator.c">
-      <Filter>Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\ShaderManager\doug_lea_memory_allocator</Filter>
     </ClCompile>
     <ClCompile Include="r_constants.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="SH_Atomic.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="SH_Constant.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="SH_Matrix.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="SH_RT.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="SH_Texture.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="r_constants_cache.cpp">
-      <Filter>Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
     </ClCompile>
     <ClCompile Include="Text_Console.cpp">
-      <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\TextConsole</Filter>
     </ClCompile>
     <ClCompile Include="Text_Console_WndProc.cpp">
-      <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\TextConsole</Filter>
     </ClCompile>
     <ClCompile Include="D3DUtils.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="du_box.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="du_cone.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="du_cylinder.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="du_sphere.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="du_sphere_part.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
+      <Filter>Interfaces\Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend.cpp">
-      <Filter>Render\Backend</Filter>
+      <Filter>Interfaces\Render\Backend</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend_DBG.cpp">
-      <Filter>Render\Backend</Filter>
+      <Filter>Interfaces\Render\Backend</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend_Runtime.cpp">
-      <Filter>Render\Backend</Filter>
+      <Filter>Interfaces\Render\Backend</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend_xform.cpp">
-      <Filter>Render\Backend</Filter>
+      <Filter>Interfaces\Render\Backend</Filter>
     </ClCompile>
     <ClCompile Include="R_DStreams.cpp">
-      <Filter>Render\Backend</Filter>
+      <Filter>Interfaces\Render\Backend</Filter>
     </ClCompile>
     <ClCompile Include="pure.cpp">
       <Filter>Engine</Filter>
@@ -890,17 +887,18 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="stalker.ico">
+    <None Include="stalker.ico">
       <Filter>General\Resources</Filter>
-    </Image>
-    <Image Include="ui_splash3.bmp">
+    </None>
+    <None Include="ClientServer.txt" />
+    <None Include="Effects description.txt" />
+    <None Include="features.txt" />
+    <None Include="TODO.txt" />
+    <None Include="ui_splash3.bmp">
       <Filter>General\Resources</Filter>
-    </Image>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ClientServer.txt" />
-    <Text Include="Effects description.txt" />
-    <Text Include="features.txt" />
-    <Text Include="TODO.txt" />
+    <Text Include="TSMP.txt" />
   </ItemGroup>
 </Project>

@@ -20,14 +20,31 @@
 	_graph_type\
 >
 
+
+
+#ifdef _WIN64
+
 TEMPLATE_SPECIALIZATION
-IC	CSGraphVertex::CVertex					(const _data_type &data, const _vertex_id_type &vertex_id, size_t *edge_count)
+IC	CSGraphVertex::CVertex(const _data_type &data, const _vertex_id_type &vertex_id, unsigned int *const edge_count)
 {
-	m_data					= data;
-	m_vertex_id				= vertex_id;
-	VERIFY					(edge_count);
-	m_edge_count			= edge_count;
+	m_data = data;
+	m_vertex_id = vertex_id;
+	VERIFY(edge_count);
+	m_edge_count = (size_t*)edge_count;
 }
+
+#else
+
+TEMPLATE_SPECIALIZATION
+IC	CSGraphVertex::CVertex(const _data_type &data, const _vertex_id_type &vertex_id, size_t *edge_count)
+{
+	m_data = data;
+	m_vertex_id = vertex_id;
+	VERIFY(edge_count);
+	m_edge_count = edge_count;
+}
+
+#endif
 
 TEMPLATE_SPECIALIZATION
 IC	CSGraphVertex::~CVertex				()
@@ -44,6 +61,7 @@ IC	CSGraphVertex::~CVertex				()
 	catch(...) {
 	}
 }
+
 
 TEMPLATE_SPECIALIZATION
 IC	const typename CSGraphVertex::_edge_type *CSGraphVertex::edge	(const _vertex_id_type &vertex_id) const

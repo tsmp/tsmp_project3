@@ -94,6 +94,11 @@ public:
 	virtual		void				SetVotingActive			( bool Active )	{ };
 	virtual		void				OnVoteStart				(LPCSTR VoteCommand, ClientID sender)			{};
 	virtual		void				OnVoteStop				()				{};
+	virtual		void				OnVoteSuccess			()				{};
+	virtual		void				Tsmp_weapon_disabler(LPCSTR DATA) {};
+	virtual		bool				Tsmp_is_map_registered(std::string MapName, std::string GameTypeStr) { return true; };
+	
+
 
 public:
 									game_sv_GameState		();

@@ -205,6 +205,31 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			CommonMessageOut(Text);
 			//---------------------------------------
 			Msg("%s connected", PlayerName);
+
+
+			{
+				if (!OnServer())	return;
+
+				u32	cnt = Level().Server->game->get_players_count();
+				Msg("------------------------");
+				Msg("- Total Players : %d", cnt);
+				for (u32 it = 0; it<cnt; it++)
+				{
+					xrClientData *l_pC = (xrClientData*)Level().Server->client_Get(it);
+					if (!l_pC)			continue;
+					ip_address			Address;
+					DWORD dwPort = 0;
+
+					Level().Server->GetClientAddress(l_pC->ID, Address, &dwPort);
+					Msg("%d : %s - %s port[%u] ping[%u]", it + 1, l_pC->ps->getName(),
+						Address.to_string().c_str(),
+						dwPort,
+						l_pC->ps->ping);
+				};
+				Msg("------------------------");
+			}
+
+
 		}break;
 	case GAME_EVENT_PLAYER_DISCONNECTED:
 		{

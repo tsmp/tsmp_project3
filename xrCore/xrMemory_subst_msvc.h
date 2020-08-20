@@ -1,3 +1,5 @@
+
+
 #ifdef DEBUG_MEMORY_NAME
 // new(0)
 template <class T>
@@ -81,10 +83,11 @@ IC	T*		xr_new		(const P1& p1, const P2& p2) {
 	return new (ptr) T(p1,p2);
 }
 // new(3)
+
 template <class T, class P1, class P2, class P3>
-IC	T*		xr_new		(const P1& p1, const P2& p2, const P3& p3) {
-	T* ptr	= (T*)Memory.mem_alloc(sizeof(T));
-	return new (ptr) T(p1,p2,p3);
+IC	T*		xr_new(const P1& p1, const P2& p2, const P3& p3) {
+	T* ptr = (T*)Memory.mem_alloc(sizeof(T));
+	return new (ptr) T(p1, p2, p3);
 }
 // new(4)
 template <class T, class P1, class P2, class P3, class P4>
@@ -154,16 +157,13 @@ IC	void	xr_delete	(T* &ptr)
 		ptr = NULL;
 	}
 }
-
 template <class T>
-IC	void	xr_delete(T* const& ptr)
+IC	void	xr_delete	(T* const &ptr)
 {
-	if (ptr)
+	if (ptr) 
 	{
-		T*& hacked_ptr = const_cast<T*&>(ptr);
-		xr_special_free<std::is_polymorphic_v<T>, T>()(hacked_ptr);
-
-		hacked_ptr = nullptr;
+		xr_special_free<is_polymorphic<T>::result,T>(ptr);
+		const_cast<T*&>(ptr) = NULL;
 	}
 }
 

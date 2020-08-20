@@ -1,15 +1,24 @@
 // xrServer.cpp: implementation of the xrServer class.
 //
 //////////////////////////////////////////////////////////////////////
+#include <string>
+
+//#include "game_sv_base.h"
+//#include "game_sv_mp.h"
+
+//BOOL DBGM=false;
 
 #include "pch_script.h"
 #include "xrServer.h"
+
 #include "xrMessages.h"
 #include "xrServer_Objects_ALife_All.h"
 #include "level.h"
 #include "game_cl_base.h"
 #include "ai_space.h"
 #include "../IGame_Persistent.h"
+
+
 
 #include "../XR_IOConsole.h"
 //#include "script_engine.h"
@@ -57,12 +66,16 @@ xrServer::~xrServer()
 {
 	while (net_Players.size())
 	{
+		
 		client_Destroy(net_Players[0]);
+		
 	}
 	
 	while (net_Players_disconnected.size())
 	{
+	
 		client_Destroy(net_Players_disconnected[0]);
+
 	}		
 	m_aUpdatePackets.clear();
 	m_aDelayedPackets.clear();
@@ -189,27 +202,38 @@ void		xrServer::client_Destroy	(IClient* C)
 				pp.SenderID = C->ID;
 
 				xr_deque<DelayedPacket>::iterator it;
+			
 				do{
 					it						=std::find(m_aDelayedPackets.begin(),m_aDelayedPackets.end(),pp);
 					if(it!=m_aDelayedPackets.end())
 					{
+						
 						m_aDelayedPackets.erase	(it);
 						Msg("removing packet from delayed event storage");
-					}else
+					}
+					else
+					{						
 						break;
+					}
 				}while(true);
+
+			
 			}
+			
 
 			if (!g_sv_Client_Reconnect_Time || !C->flags.bVerified)
 			{
+			
 				xr_delete(C);				
 			}
 			else
 			{
+				
 				C->dwTime_LastUpdate = Device.dwTimeGlobal;
-				net_Players_disconnected.push_back(C);				
+				net_Players_disconnected.push_back(C);	
 				((xrClientData*)C)->Clear();
 			};
+		
 			net_Players.erase	(net_Players.begin()+I);
 			break;
 		};
@@ -270,7 +294,9 @@ void xrServer::Update	()
 		IClient* CL				= net_Players_disconnected[DI];
 		if (CL->dwTime_LastUpdate+g_sv_Client_Reconnect_Time*60000<Device.dwTimeGlobal)
 		{
+			
 			client_Destroy(CL);
+			
 			continue;
 		}
 		DI++;
@@ -496,11 +522,13 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 	{
 	case M_UPDATE:	
 		{
+			//if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_UPDATE");
 			Process_update			(P,sender);						// No broadcast
 			VERIFY					(verify_entities());
 		}break;
 	case M_SPAWN:	
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_SPAWN");
 			if (CL->flags.bLocal)
 				Process_spawn		(P,sender);	
 
@@ -508,11 +536,13 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 		}break;
 	case M_EVENT:	
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_EVENT");
 			Process_event			(P,sender);
 			VERIFY					(verify_entities());
 		}break;
 	case M_EVENT_PACK:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_EVENT_PACK");
 			NET_Packet	tmpP;
 			while (!P.r_eof())
 			{
@@ -524,6 +554,7 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 		}break;
 	case M_CL_UPDATE:
 		{
+			//if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_CL_UPDATE");
 			xrClientData* CL		= ID_to_client	(sender);
 			if (!CL)				break;
 			CL->net_Ready			= TRUE;
@@ -540,6 +571,7 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 		}break;
 	case M_MOVE_PLAYERS_RESPOND:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_MOVE_PLAYERS_RESPOND");
 			xrClientData* CL		= ID_to_client	(sender);
 			if (!CL)				break;
 			CL->net_Ready			= TRUE;
@@ -548,6 +580,7 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 	//-------------------------------------------------------------------
 	case M_CL_INPUT:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_CL_INPUT");
 			xrClientData* CL		= ID_to_client	(sender);
 			if (CL)	CL->net_Ready	= TRUE;
 			if (SV_Client) SendTo	(SV_Client->ID, P, net_flags(TRUE, TRUE));
@@ -555,11 +588,13 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 		}break;
 	case M_GAMEMESSAGE:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_GAMEMESSAGE");
 			SendBroadcast			(BroadcastCID,P,net_flags(TRUE,TRUE));
 			VERIFY					(verify_entities());
 		}break;
 	case M_CLIENTREADY:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_CLIENTREADY");
 			xrClientData* CL		= ID_to_client(sender);
 			if ( CL )	
 			{
@@ -580,11 +615,13 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 		}break;
 	case M_SWITCH_DISTANCE:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_SWITCH_DISTANCE");
 			game->switch_distance	(P,sender);
 			VERIFY					(verify_entities());
 		}break;
 	case M_CHANGE_LEVEL:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_CHANGE_LEVEL");
 			if (game->change_level(P,sender))
 			{
 				SendBroadcast		(BroadcastCID,P,net_flags(TRUE,TRUE));
@@ -593,45 +630,54 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 		}break;
 	case M_SAVE_GAME:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_SAVE_GAME");
 			game->save_game			(P,sender);
 			VERIFY					(verify_entities());
 		}break;
 	case M_LOAD_GAME:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_LOAD_GAME");
 			game->load_game			(P,sender);
 			SendBroadcast			(BroadcastCID,P,net_flags(TRUE,TRUE));
 			VERIFY					(verify_entities());
 		}break;
 	case M_RELOAD_GAME:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_RELOAD_GAME");
 			SendBroadcast			(BroadcastCID,P,net_flags(TRUE,TRUE));
 			VERIFY					(verify_entities());
 		}break;
 	case M_SAVE_PACKET:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_SAVE_PACKET");
 			Process_save			(P,sender);
 			VERIFY					(verify_entities());
 		}break;
 	case M_CLIENT_REQUEST_CONNECTION_DATA:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_CLIENT_REQUEST_CONNECTION_DATA");
 			AddDelayedPacket(P, sender);
 		}break;
 	case M_CHAT_MESSAGE:
 		{
+	        if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_CHAT_MESSAGE");
 			xrClientData *l_pC			= ID_to_client(sender);
 			OnChatMessage				(&P, l_pC);
 		}break;
 	case M_CHANGE_LEVEL_GAME:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_CHANGE_LEVEL_GAME");
 			ClientID CID; CID.set		(0xffffffff);
 			SendBroadcast				(CID,P,net_flags(TRUE,TRUE));
 		}break;
 	case M_CL_AUTH:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_CL_AUTH");
 			game->AddDelayedEvent		(P,GAME_EVENT_PLAYER_AUTH, 0, sender);
 		}break;
 	case M_STATISTIC_UPDATE:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_STATISTIC_UPDATE");
 			if (SV_Client)
 				SendBroadcast			(SV_Client->ID,P,net_flags(TRUE,TRUE));
 			else
@@ -639,34 +685,82 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 		}break;
 	case M_STATISTIC_UPDATE_RESPOND:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_STATISTIC_UPDATE_RESPOND");
 			if (SV_Client) SendTo	(SV_Client->ID, P, net_flags(TRUE, TRUE));
 		}break;
 	case M_PLAYER_FIRE:
 		{
+			if (0 != strstr(Core.Params, "-debug")) 
+			{
+				Msg("Packet type: M_PLAYER_FIRE");
+			
+		//		u16			type2;
+		//	P.r_begin	(type2);
+
+
+	//		string128 str11;
+	//	P.r_stringZ(str11);
+	//	string4096 str22;
+	//P.r_stringZ(str22);
+	//s16 second1;
+	//P.r_s16(second1);
+
+
+		
+
+	//				Msg("packet type:");
+	//	string1024 pType;
+	//	sprintf (pType, "%u", type2);		
+	//		Msg(pType);	
+
+//			Msg("num");
+		//	string1024 sss;
+	//		sprintf (sss, "%u", second1);	
+			//Msg(sss);
+
+//		Msg("packet string");		
+	//		Msg(str11);
+		//		Msg("packet string");		
+			//Msg(str22);
+
+
+			}
+
 			if (game)
 				game->OnPlayerFire(sender, P);
 		}break;
 	case M_REMOTE_CONTROL_AUTH:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_REMOTE_CONTROL_AUTH");
 			string512				reason;
 			shared_str				user;
 			shared_str				pass;
 			P.r_stringZ				(user);
+
+			game_PlayerState* ps1;
+
+			xrClientData*	pClient2 = (xrClientData*)ID_to_client(sender);
+			ps1 = pClient2->ps;
+
+
 			if(0==stricmp(user.c_str(),"logoff"))
 			{
 				CL->m_admin_rights.m_has_admin_rights	= FALSE;
 				strcpy				(reason,"logged off");
 				Msg("# Remote administrator logged off.");
-			}else
+			} else
 			{
 				P.r_stringZ				(pass);
 				bool res = CheckAdminRights(user, pass, reason);
 				if(res){
 					CL->m_admin_rights.m_has_admin_rights	= TRUE;
 					CL->m_admin_rights.m_dwLoginTime		= Device.dwTimeGlobal;
-					Msg("# User [%s] logged as remote administrator.", user.c_str());
-				}else
-					Msg("# User [%s] tried to login as remote administrator. Access denied.", user.c_str());
+
+			
+
+					Msg("# Player [%s] logged as remote administrator with login [%s].", ps1->getName(), user.c_str());
+				} else
+					Msg("# Player [%s] tried to login as remote administrator with login [%s]. Access denied.", ps1->getName(), user.c_str());
 
 			}
 			NET_Packet			P_answ;			
@@ -677,10 +771,12 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 
 	case M_REMOTE_CONTROL_CMD:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_REMOTE_CONTROL_CMD");
 			AddDelayedPacket(P, sender);
 		}break;
 	case M_BATTLEYE:
 		{
+			if (0 != strstr(Core.Params, "-debug")) Msg("Packet type: M_BATTLEYE");
 #ifdef BATTLEYE
 			if ( g_pGameLevel )
 			{
@@ -830,6 +926,109 @@ void		xrServer::OnChatMessage(NET_Packet* P, xrClientData* CL)
 //	P->r_stringZ(ChatMsg);
 	if (!CL->net_Ready) return;
 	game_PlayerState* Cps = CL->ps;
+
+//	s16 first;
+//	P->r_s16(first);
+	string128 str1;
+	P->r_stringZ(str1);
+	string4096 str2;
+	P->r_stringZ(str2);
+	s16 second;
+	P->r_s16(second);
+
+//	string128 ResultStr;
+//	P->r_stringZ(ResultStr);
+//	Msg((LPCSTR)ResultStr);
+
+	//string128 ResultStr1;
+	//P->r_stringZ(ResultStr1);
+	//Msg((LPCSTR)ResultStr1);
+	int msg_size = strlen(str2);
+	std::string mess=str2;
+	std::string player = str1;
+	std::string srv_mes = "! player " + player + " used bad symbol in chat";
+
+//	unsigned int msg_size = static_cast<int>(mess.size);
+	std::string srv_mes_big = "! player " + player + " used too many symbols in chat - "+std::to_string((_Longlong)msg_size);
+	
+	
+	
+	if (msg_size > 70)
+		Msg(srv_mes_big.c_str());
+
+	mess.resize(70);
+//	Msg(str1);
+	//Msg(player.c_str());
+	//Msg(str2);
+	//Msg(mess.c_str());
+	while (mess.find('%') != std::string::npos)
+	{
+		Msg(srv_mes.c_str());
+
+		//	for (std::string::size_type n = 0; (n = mess.find("%", n)) != std::string::npos; ++n)
+		//	{
+		//		mess.replace(n, 2, 1, ' ');
+		//	}
+		//}
+		mess.replace(mess.find("%"), 1, "_");
+	}
+
+	if (0 != strstr(Core.Params, "-rus_test"))
+	{
+		while (mess.find('Q') != std::string::npos)	mess.replace(mess.find("Q"), 1, "й");
+		while (mess.find('W') != std::string::npos)	mess.replace(mess.find("W"), 1, "ц");
+		while (mess.find('E') != std::string::npos)	mess.replace(mess.find("E"), 1, "у");
+		while (mess.find('R') != std::string::npos)	mess.replace(mess.find("R"), 1, "к");
+		while (mess.find('T') != std::string::npos)	mess.replace(mess.find("T"), 1, "е");
+		while (mess.find('Y') != std::string::npos)	mess.replace(mess.find("Y"), 1, "н");
+		while (mess.find('U') != std::string::npos)	mess.replace(mess.find("U"), 1, "г");
+		while (mess.find('I') != std::string::npos)	mess.replace(mess.find("I"), 1, "ш");
+		while (mess.find('O') != std::string::npos)	mess.replace(mess.find("O"), 1, "щ");
+		while (mess.find('P') != std::string::npos)	mess.replace(mess.find("P"), 1, "з");
+		while (mess.find('{') != std::string::npos)	mess.replace(mess.find("{"), 1, "х");
+		while (mess.find('}') != std::string::npos)	mess.replace(mess.find("}"), 1, "ъ");
+		while (mess.find('A') != std::string::npos)	mess.replace(mess.find("A"), 1, "ф");
+		while (mess.find('S') != std::string::npos)	mess.replace(mess.find("S"), 1, "ы");
+		while (mess.find('D') != std::string::npos)	mess.replace(mess.find("D"), 1, "в");
+		while (mess.find('F') != std::string::npos)	mess.replace(mess.find("F"), 1, "а");
+		while (mess.find('G') != std::string::npos)	mess.replace(mess.find("G"), 1, "п");
+		while (mess.find('H') != std::string::npos)	mess.replace(mess.find("H"), 1, "р");
+		while (mess.find('J') != std::string::npos)	mess.replace(mess.find("J"), 1, "о");
+		while (mess.find('K') != std::string::npos)	mess.replace(mess.find("K"), 1, "л");
+		while (mess.find('L') != std::string::npos)	mess.replace(mess.find("L"), 1, "д");
+		while (mess.find(':') != std::string::npos)	mess.replace(mess.find(":"), 1, "ж");
+		while (mess.find('\"') != std::string::npos)	mess.replace(mess.find("\""), 1, "э");
+		while (mess.find('Z') != std::string::npos)	mess.replace(mess.find("Z"), 1, "я");
+		while (mess.find('X') != std::string::npos)	mess.replace(mess.find("X"), 1, "ч");
+		while (mess.find('C') != std::string::npos)	mess.replace(mess.find("C"), 1, "с");
+		while (mess.find('V') != std::string::npos)	mess.replace(mess.find("V"), 1, "м");
+		while (mess.find('B') != std::string::npos)	mess.replace(mess.find("B"), 1, "и");
+		while (mess.find('N') != std::string::npos)	mess.replace(mess.find("N"), 1, "т");
+		while (mess.find('M') != std::string::npos)	mess.replace(mess.find("M"), 1, "ь");
+		while (mess.find('<') != std::string::npos)	mess.replace(mess.find("<"), 1, "б");
+		while (mess.find('>') != std::string::npos)	mess.replace(mess.find(">"), 1, "ю");
+
+	}
+
+	//Msg(mess.c_str());
+
+	NET_Packet Np;  //создаем новый NetPacket в который помещается все из оригинального пакета, но с заменой %
+
+	Np.w_begin(M_CHAT_MESSAGE);
+	Np.w_s16(team);
+	Np.w_stringZ(str1);
+	Np.w_stringZ(mess.c_str());
+	Np.w_s16(second);
+
+	//NET_Packet	P;
+	//P.w_begin(M_CHAT_MESSAGE);
+	//P.w_s16(local_player->team);
+	//P.w_stringZ(local_player->getName());
+	//P.w_stringZ(phrase.c_str());
+	//P.w_s16(local_player->team);
+	//u_EventSend(P);
+
+
 	for (u32 client=0; client<net_Players.size(); ++client)
 	{
 		// Initialize process and check for available bandwidth
@@ -839,7 +1038,9 @@ void		xrServer::OnChatMessage(NET_Packet* P, xrClientData* CL)
 		if (team != 0 && ps->team != team) continue;
 		if (Cps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) && !ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 			continue;
-		SendTo(Client->ID, *P);
+
+	//	SendTo(Client->ID, *P);
+		SendTo(Client->ID, Np);
 	};
 };
 
@@ -902,8 +1103,9 @@ void xrServer::create_direct_client()
 	SClientConnectData cl_data;
 	cl_data.clientID.set(1);
 	strcpy_s( cl_data.name, "single_player" );
-	cl_data.process_id = GetCurrentProcessId();
+	cl_data.process_id = GetCurrentProcessId();	
 	
+
 	new_client( &cl_data );
 }
 

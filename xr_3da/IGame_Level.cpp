@@ -10,8 +10,6 @@
 #include "xrLevel.h"
 #include "CameraManager.h"
 
-#include "..\TSMP2_Build_Config.h"
-
 ENGINE_API	IGame_Level*	g_pGameLevel	= NULL;
 
 IGame_Level::IGame_Level	()

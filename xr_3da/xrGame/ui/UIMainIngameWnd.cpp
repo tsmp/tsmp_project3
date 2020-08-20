@@ -1,6 +1,10 @@
 #include "stdafx.h"
 
+
+#include <vector>
 #include <functional>
+#include <algorithm>
+
 
 #include "UIMainIngameWnd.h"
 #include "UIMessagesWindow.h"

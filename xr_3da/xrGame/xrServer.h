@@ -16,6 +16,8 @@
 //. #define SLOW_VERIFY_ENTITIES
 #endif
 
+//#pragma once
+//BOOL DBGM;
 
 class CSE_Abstract;
 

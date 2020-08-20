@@ -42,9 +42,9 @@ void CUIOptConCom::Init()
 	ReadPlayerNameFromRegistry();
 	CMD3(CCC_UserName,	"mm_net_player_name", m_playerName,	64);
 
-	m_iMaxPlayers		= 32;
+	m_iMaxPlayers		= 40;
 	m_curGameMode		= GAME_DEATHMATCH;
-	CMD4(CCC_Integer,	"mm_net_srv_maxplayers",			&m_iMaxPlayers,	2, 32);
+	CMD4(CCC_Integer,	"mm_net_srv_maxplayers",			&m_iMaxPlayers,	2, 40);
 	CMD3(CCC_Token,		"mm_net_srv_gamemode",				&m_curGameMode,	g_GameModes);
 	m_uNetSrvParams.zero();
 	CMD3(CCC_Mask,		"mm_mm_net_srv_dedicated",			&m_uNetSrvParams,	flNetSrvDedicated);

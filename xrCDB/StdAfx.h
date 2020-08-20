@@ -7,6 +7,7 @@
 #define stdafxH
 #pragma once
 
+#pragma warning(disable:4577)
 #include "../xrCore/xrCore.h"
 
 #define ENGINE_API

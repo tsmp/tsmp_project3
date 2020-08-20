@@ -63,12 +63,21 @@ void AddOne				(const char *split)
 	if (LogExecCB&&LogCB)LogCB(split);
 
 	logCS.Leave				();
+
+	if (0 != strstr(Core.Params, "-alwaysflush")) FlushLog();
 }
 
 void Log				(const char *s) 
 {
 	int		i,j;
 	char	split[1024];
+
+#ifdef _WIN64
+	std::string MMMM = s;
+	std::string XMXM = "s=:" + MMMM;
+	Msg(XMXM.c_str());
+
+#endif
 
 	for (i=0,j=0; s[i]!=0; i++) {
 		if (s[i]=='\n') {

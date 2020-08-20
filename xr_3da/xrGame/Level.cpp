@@ -1,4 +1,9 @@
 #include "pch_script.h"
+
+#include <vector>
+#include <functional>
+#include <algorithm>
+
 #include "../fdemorecord.h"
 #include "../fdemoplay.h"
 #include "../environment.h"
@@ -42,8 +47,6 @@
 #include "clsid_game.h"
 #include "MainMenu.h"
 #include "..\XR_IOConsole.h"
-
-#include <functional>
 
 #ifdef DEBUG
 #	include "level_debug.h"

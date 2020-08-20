@@ -2,6 +2,8 @@
 
 void	__stdcall	xrM44_Mul_x86	(_matrix<float>* pfD, _matrix<float>* pfM1, _matrix<float>* pfM2)
 {
+#ifndef _WIN64
+
     __asm
     {
         push        edx
@@ -249,4 +251,5 @@ void	__stdcall	xrM44_Mul_x86	(_matrix<float>* pfD, _matrix<float>* pfM1, _matrix
 
         pop         edx
     }
+#endif
 }

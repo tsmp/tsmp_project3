@@ -40,7 +40,7 @@ void ip_address::set(LPCSTR src_string)
 		m_data.a4	= u8(buff[3]&0xff);
 	}else
 	{
-		Msg			("! Bad ipAddress format [%s]",src_string);
+	//	Msg			("! Bad ipAddress format [%s]",src_string);
 		m_data.data		= 0;
 	}
 }
@@ -226,8 +226,7 @@ IClient*	IPureServer::ID_to_client		(ClientID ID, bool ScanAll)
 	return NULL;
 }
 
-void
-IPureServer::_Recieve( const void* data, u32 data_size, u32 param )
+void IPureServer::_Recieve( const void* data, u32 data_size, u32 param )
 {
 	if (data_size > NET_PacketSizeLimit) {
 		Msg		("! too large packet size[%d] received, DoS attack?", data_size);
@@ -329,7 +328,7 @@ IPureServer::EConnect IPureServer::Connect(LPCSTR options)
 			strncpy(tmpStr, sMaxPlayers, 63);
 		dwMaxPlayers = atol(tmpStr);
 	}
-	if (dwMaxPlayers > 32 || dwMaxPlayers<1) dwMaxPlayers = 32;
+	if (dwMaxPlayers > 40 || dwMaxPlayers<1) dwMaxPlayers = 40;
 	Msg("MaxPlayers = %d", dwMaxPlayers);
 
 	//-------------------------------------------------------------------
@@ -900,6 +899,11 @@ void IPureServer::BanAddress(const ip_address& Address, u32 BanTimeSec)
 		Msg("Already banned\n");
 		return;
 	};
+	if (Address.to_string()=="0.0.0.0") 
+	{
+		Msg("! attempt to ban server ip");
+		return;
+	}
 
 	IBannedClient* pNewClient = xr_new<IBannedClient>();
 	pNewClient->HAddr				= Address;

@@ -3,7 +3,7 @@
 
 #include "xrdebug.h"
 
-#include "dxerr9.h"
+//#include "dxerr.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -12,42 +12,54 @@
 #pragma warning(pop)
 
 extern bool shared_str_initialized;
-
+// KD: we don't need BugTrap since it provides _only_ nice ui window and e-mail sending
 #ifdef __BORLANDC__
-    #	include "d3d9.h"
+/*    #	include "d3d9.h"
     #	include "d3dx9.h"
     #	include "D3DX_Wrapper.h"
-    #	pragma comment(lib,"EToolsB.lib")
+    #	pragma comment(lib,"EToolsB.lib")   */
     #	define DEBUG_INVOKE	DebugBreak()
         static BOOL			bException	= TRUE;
-    #   define USE_BUG_TRAP
+//    #   define USE_BUG_TRAP
 #else
-    #   define USE_BUG_TRAP
+//    #   define USE_BUG_TRAP
+#ifdef _WIN64
+    #	define DEBUG_INVOKE	DebugBreak()
+#else
     #	define DEBUG_INVOKE	__asm int 3
+#endif
         static BOOL			bException	= FALSE;
 #endif
-
+/*
 #ifndef _M_AMD64
 #	ifndef __BORLANDC__
-#		pragma comment(lib,"dxerr9.lib")
+#		pragma comment(lib,"dxerr.lib")
 #	endif
-#endif
+#endif*/
 
 #include <dbghelp.h>						// MiniDump flags
 
 #ifdef USE_BUG_TRAP
-#	include "../bugtrap/bugtrap.h"						// for BugTrap functionality
+#ifdef _WIN64
+#	include "bugtrap.h"						// for BugTrap functionality
+#	pragma comment(lib,"BugTrap-x64.lib")		// Link to x64 dll
+#else
+#	include "bugtrap.h"						// for BugTrap functionality
     #ifndef __BORLANDC__
+
         #	pragma comment(lib,"BugTrap.lib")		// Link to ANSI DLL
+
     #else
         #	pragma comment(lib,"BugTrapB.lib")		// Link to ANSI DLL
     #endif
+#endif
 #endif // USE_BUG_TRAP
 
 #include <new.h>							// for _set_new_mode
 #include <signal.h>							// for signals
 
-#if 0//def DEBUG
+#if 1//def DEBUG
+#	define USE_OWN_MINI_DUMP
 #	define USE_OWN_ERROR_MESSAGE_WINDOW
 #else // DEBUG
 #	define USE_OWN_MINI_DUMP
@@ -186,7 +198,8 @@ void gather_info		(const char *expression, const char *description, const char *
 			Msg			("stack trace:\n");
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-		buffer			+= sprintf(buffer,"stack trace:%s%s",endline,endline);
+		buffer			+= sprintf(buffer,"See log file and minidump for detailed information\r\n");
+//		buffer			+= sprintf(buffer,"stack trace:%s%s",endline,endline);
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
 		BuildStackTrace	();		
@@ -196,7 +209,7 @@ void gather_info		(const char *expression, const char *description, const char *
 				Msg		("%s",g_stackTrace[i]);
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-			buffer		+= sprintf(buffer,"%s%s",g_stackTrace[i],endline);
+//			buffer		+= sprintf(buffer,"%s%s",g_stackTrace[i],endline);
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 		}
 
@@ -247,35 +260,37 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	MessageBox			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 #else
 #	ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-		int					result = 
-			MessageBox(
-				GetTopWindow(NULL),
-				assertion_info,
-				"Fatal Error",
-				MB_CANCELTRYCONTINUE|MB_ICONERROR|MB_SYSTEMMODAL
-			);
+	//	ShowWindow(GetTopWindow(NULL), SW_MINIMIZE);
+	//	ShowCursor(TRUE);
+	//	int					result = 
+	//		MessageBox(
+	//			GetTopWindow(NULL),
+	//			assertion_info,
+	//			"Fatal Error",
+	//			MB_CANCELTRYCONTINUE|MB_ICONERROR|MB_SYSTEMMODAL
+	//		);
 
-		switch (result) {
-			case IDCANCEL : {
-				DEBUG_INVOKE;
-				break;
-			}
-			case IDTRYAGAIN : {
-				error_after_dialog	= false;
-				break;
-			}
-			case IDCONTINUE : {
+	//	switch (result) {
+	//		case IDCANCEL : {
+	//			DEBUG_INVOKE;
+	//			break;
+	//		}
+	//		case IDTRYAGAIN : {
+	//			error_after_dialog	= false;
+	//			break;
+	//		}
+	//		case IDCONTINUE : {
 				error_after_dialog	= false;
 				ignore_always	= true;
-				break;
-			}
-			default : NODEFAULT;
-		}
+	//			break;
+	//		}
+	//		default : NODEFAULT;
+	//	}
 #	else // USE_OWN_ERROR_MESSAGE_WINDOW
 #		ifdef USE_BUG_TRAP
 			BT_SetUserMessage	(assertion_info);
 #		endif // USE_BUG_TRAP
-		DEBUG_INVOKE;
+		//DEBUG_INVOKE;
 #	endif // USE_OWN_ERROR_MESSAGE_WINDOW
 #endif
 
@@ -290,15 +305,15 @@ LPCSTR xrDebug::error2string	(long code)
 	LPCSTR				result	= 0;
 	static	string1024	desc_storage;
 
-#ifdef _M_AMD64
+/*#ifdef _M_AMD64
 #else
-	result				= DXGetErrorDescription9	(code);
+	result				= DXGetErrorDescription	(code);
 #endif
 	if (0==result) 
-	{
+	{*/
 		FormatMessage	(FORMAT_MESSAGE_FROM_SYSTEM,0,code,0,desc_storage,sizeof(desc_storage)-1,0);
 		result			= desc_storage;
-	}
+//	}
 	return		result	;
 }
 
@@ -613,6 +628,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 			Msg				("stack trace:\n");
 		copy_to_clipboard	("stack trace:\r\n\r\n");
 
+
 		string4096			buffer;
 		for (int i=0; i<g_stackTraceCount; ++i) {
 			if (shared_str_initialized)
@@ -633,16 +649,15 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 	if (shared_str_initialized)
 		FlushLog			();
 
-#ifndef USE_OWN_ERROR_MESSAGE_WINDOW
-#	ifdef USE_OWN_MINI_DUMP
+#ifdef USE_OWN_MINI_DUMP
 		save_mini_dump		(pExceptionInfo);
-#	endif // USE_OWN_MINI_DUMP
-#else // USE_OWN_ERROR_MESSAGE_WINDOW
+#endif // USE_OWN_MINI_DUMP
+#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	if (!error_after_dialog) {
 		if (Debug.get_on_dialog())
 			Debug.get_on_dialog()	(true);
 
-		MessageBox			(NULL,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+	//	MessageBox			(NULL,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	}
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
@@ -670,7 +685,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 #ifdef M_BORLAND
 	namespace std{
 		extern new_handler _RTLENTRY _EXPFUNC set_new_handler( new_handler new_p );
-	};
+	}; 
 
 	static void __cdecl def_new_handler() 
     {
@@ -685,12 +700,9 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 //		::SetUnhandledExceptionFilter	(UnhandledFilter);	// exception handler to all "unhandled" exceptions
     }
 #else
-
-/*
-typedef int		(__cdecl * _PNH)( size_t );
-_CRTIMP int		__cdecl _set_new_mode( int );
-_CRTIMP _PNH	__cdecl _set_new_handler( _PNH );
-*/
+    typedef int		(__cdecl * _PNH)( size_t );
+    _CRTIMP int		__cdecl _set_new_mode( int );
+//    _CRTIMP _PNH	__cdecl _set_new_handler( _PNH );
 
 #ifndef USE_BUG_TRAP
 	void _terminate		()

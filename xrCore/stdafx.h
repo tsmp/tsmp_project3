@@ -5,6 +5,9 @@
 #ifndef stdafxH
 #define stdafxH
 #pragma once
+
+#pragma warning(disable:4577)
+
 #include "xrCore.h"
 #include "xrCore_platform.h"
 
