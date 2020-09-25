@@ -4,7 +4,7 @@
 #include "Level.h"
 //#include "xrMessages.h"
 #include "game_base_space.h"
-#include "..\..\TSMP2_Build_Config.h"
+#include "..\..\TSMP3_Build_Config.h"
 
 #define BAG_REMOVE_TIME		60000
 

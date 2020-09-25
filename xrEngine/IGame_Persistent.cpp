@@ -13,7 +13,7 @@
 #	include "CustomHUD.h"
 
 
-#include "..\TSMP2_Build_Config.h"
+#include "..\TSMP3_Build_Config.h"
 
 ENGINE_API	IGame_Persistent*		g_pGamePersistent	= NULL;
 

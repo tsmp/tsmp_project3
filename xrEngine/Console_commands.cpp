@@ -12,7 +12,7 @@
 #include "SkeletonAnimated.h"
 #include "ResourceManager.h"
 #include "xr_object.h"
-#include "..\TSMP2_Build_Config.h"
+#include "..\TSMP3_Build_Config.h"
 
 extern xr_token *vid_mode_token;
 

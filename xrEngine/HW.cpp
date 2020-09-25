@@ -10,7 +10,7 @@
 #include "HW.h"
 #include "Console.h"
 
-#include "..\TSMP2_Build_Config.h"
+#include "..\TSMP3_Build_Config.h"
 
 	void	fill_vid_mode_list			(CHW* _hw);
 	void	free_vid_mode_list			();

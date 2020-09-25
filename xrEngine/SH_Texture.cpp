@@ -10,7 +10,7 @@
 #include "tntQAVI.h"
 #include "xrTheora_Surface.h"
 
-#include "..\TSMP2_Build_Config.h"
+#include "..\TSMP3_Build_Config.h"
 
 #define		PRIORITY_HIGH	12
 #define		PRIORITY_NORMAL	8

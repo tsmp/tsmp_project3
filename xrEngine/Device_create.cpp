@@ -4,7 +4,7 @@
 #include "xr_effgamma.h"
 #include "render.h"
 
-#include "..\TSMP2_Build_Config.h"
+#include "..\TSMP3_Build_Config.h"
 
 void CRenderDevice::_SetupStates	()
 {

@@ -2,7 +2,7 @@
 #include "xrserver.h"
 #include "xrserver_objects.h"
 #include "xrServer_Objects_ALife_Monsters.h"
-#include "..\..\TSMP2_Build_Config.h"
+#include "..\..\TSMP3_Build_Config.h"
 
 void ReplaceOwnershipHeader	(NET_Packet& P)
 {

@@ -6,7 +6,7 @@
 #include "EngineAPI.h"
 #include "xrXRC.h"
 
-#include "..\TSMP2_Build_Config.h"
+#include "..\TSMP3_Build_Config.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

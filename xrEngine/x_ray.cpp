@@ -21,7 +21,7 @@
 #include "DedicatedSrvConsole.h"
 #include <process.h>
 
-#include "..\TSMP2_Build_Config.h"
+#include "..\TSMP3_Build_Config.h"
 
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= NULL;
