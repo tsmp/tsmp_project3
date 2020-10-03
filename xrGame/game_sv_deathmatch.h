@@ -111,6 +111,11 @@ public:
 #ifdef ALIFE_MP
 	virtual bool custom_sls_default() { return !!m_alife_simulator; };
 
+	void sls_default()
+	{
+		alife().update_switch();
+	}
+
 	IC xrServer& server() const
 	{
 		VERIFY(m_server);
