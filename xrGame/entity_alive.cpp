@@ -21,6 +21,8 @@
 #include "material_manager.h"
 #include "game_base_space.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 #define SMALL_ENTITY_RADIUS		0.6f
 #define BLOOD_MARKS_SECT		"bloody_marks"
 
@@ -287,7 +289,12 @@ void CEntityAlive::Hit(SHit* pHDS)
 	//-------------------------------------------
 	inherited::Hit(&HDS);
 
-	if (g_Alive()&&IsGameTypeSingle()) {
+#ifdef ALIFE_MP
+	if (g_Alive())
+#else
+	if (g_Alive() && IsGameTypeSingle())
+#endif
+	{
 		CEntityAlive* EA = smart_cast<CEntityAlive*>(HDS.who);
 		if(EA && EA->g_Alive() && EA->ID() != ID())
 		{

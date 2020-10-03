@@ -18,6 +18,8 @@
 #include "monster_community.h"
 #include "ai_space.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 #define BODY_REMOVE_TIME		600000
 
 //////////////////////////////////////////////////////////////////////
@@ -80,7 +82,10 @@ void CEntity::Die(CObject* who)
 		VERIFY				(m_registered_member);
 	}
 	m_registered_member	= false;
+
+#ifndef ALIFE_MP
 	if (IsGameTypeSingle())
+#endif
 		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
 }
 
@@ -198,7 +203,12 @@ BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
 		}
 	}
 
-	if (g_Alive() && IsGameTypeSingle()) {
+#ifdef ALIFE_MP
+	if (g_Alive())
+#else
+	if (g_Alive() && IsGameTypeSingle())
+#endif
+	{
 		m_registered_member		= true;
 		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).register_member(this);
 		++Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).m_dwAliveCount;
@@ -229,9 +239,13 @@ BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
 
 void CEntity::net_Destroy	()
 {
-	if (m_registered_member) {
+	if (m_registered_member) 
+	{
 		m_registered_member	= false;
+
+#ifndef ALIFE_MP
 		if (IsGameTypeSingle())
+#endif
 			Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
 	}
 
