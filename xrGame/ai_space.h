@@ -63,6 +63,7 @@ public:
 	IC		const CALifeSimulator		*get_alife				() const;
 	IC		const CCoverManager			&cover_manager			() const;
 	IC		CScriptEngine				&script_engine			() const;
+	IC		CALifeSimulator* get_alife_nconst();
 
 #ifdef DEBUG
 			void						validate				(const u32			level_id) const;

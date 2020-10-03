@@ -64,6 +64,11 @@ IC	const CALifeSimulator		*CAI_Space::get_alife				() const
 	return					(m_alife_simulator);
 }
 
+IC	CALifeSimulator* CAI_Space::get_alife_nconst()
+{
+	return					(m_alife_simulator);
+}
+
 IC	const CCoverManager			&CAI_Space::cover_manager			() const
 {
 	VERIFY					(m_cover_manager);
