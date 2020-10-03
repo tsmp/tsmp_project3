@@ -47,6 +47,8 @@
 #include "alife_object_registry.h"
 #include "client_spawn_manager.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 #ifdef DEBUG
 #	include "debug_renderer.h"
 #endif
@@ -297,7 +299,13 @@ void CCustomMonster::shedule_Update	( u32 DT )
 
 	float dt			= float(DT)/1000.f;
 	// *** general stuff
-	if (g_Alive()) {
+
+#ifdef ALIFE_MP
+	if (g_Alive() && !Remote())
+#else
+	if (g_Alive())
+#endif	
+	{
 		if (g_mt_config.test(mtAiVision))
 #ifndef DEBUG
 			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
@@ -320,28 +328,35 @@ void CCustomMonster::shedule_Update	( u32 DT )
 
 	m_dwCurrentTime	= Device.dwTimeGlobal;
 
-	VERIFY				(_valid(Position()));
-	if (Remote())		{
-	} else {
+	VERIFY(_valid(Position()));
+
+	if (Remote()) {} 
+	else 
+	{
 		// here is monster AI call
-		m_fTimeUpdateDelta				= dt;
-		Device.Statistic->AI_Think.Begin	();
+		m_fTimeUpdateDelta = dt;
+		Device.Statistic->AI_Think.Begin();
 		Device.Statistic->TEST1.Begin();
+
 		if (GetScriptControl())
 			ProcessScripts();
-		else {
+		else 
+		{
 			if (Device.dwFrame > spawn_time() + g_AI_inactive_time)
-				Think					();
+				Think();
 		}
-		m_dwLastUpdateTime				= Device.dwTimeGlobal;
+
+		m_dwLastUpdateTime = Device.dwTimeGlobal;
 		Device.Statistic->TEST1.End();
-		Device.Statistic->AI_Think.End	();
+		Device.Statistic->AI_Think.End();
 
 		// Look and action streams
-		float							temp = conditions().health();
-		if (temp > 0) {
-			Exec_Action				(dt);
-			VERIFY					(_valid(Position()));
+		float temp = conditions().health();
+
+		if (temp > 0) 
+		{
+			Exec_Action(dt);
+			VERIFY(_valid(Position()));
 			//Exec_Visibility		();
 			VERIFY					(_valid(Position()));
 			//////////////////////////////////////
