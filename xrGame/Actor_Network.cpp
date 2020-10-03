@@ -42,6 +42,8 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 #ifdef DEBUG
 #	include "debug_renderer.h"
 #endif
@@ -52,12 +54,16 @@ int			g_dwInputUpdateDelta		= 20;
 BOOL		net_cl_inputguaranteed		= FALSE;
 CActor*		g_actor						= NULL;
 
-CActor*			Actor()	
+CActor* Actor()	
 {	
-	VERIFY		(g_actor); 
+	VERIFY(g_actor);
+
+#ifndef ALIFE_MP
 	if (GameID() != GAME_SINGLE) 
 		VERIFY	(g_actor == Level().CurrentControlEntity());
-	return		(g_actor); 
+#endif
+
+	return g_actor; 
 };
 
 //--------------------------------------------------------------------
