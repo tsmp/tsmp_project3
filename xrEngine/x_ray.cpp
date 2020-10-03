@@ -36,7 +36,7 @@ XRCORE_API	LPCSTR	build_date;
 XRCORE_API	u32		build_id;
 
 //#define NO_SINGLE
-#define NO_MULTI_INSTANCES
+//#define NO_MULTI_INSTANCES
 
 static LPSTR month_id[12] = {
 	"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"
