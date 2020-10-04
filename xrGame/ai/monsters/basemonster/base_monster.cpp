@@ -43,6 +43,8 @@
 #include "../../../ai_space.h"
 #include "../../../script_engine.h"
 
+#include "..\..\..\..\TSMP3_Build_Config.h"
+
 CBaseMonster::CBaseMonster()
 {
 	m_pPhysics_support=xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etBitting,this);
@@ -110,6 +112,11 @@ void CBaseMonster::UpdateCL()
 {
 	inherited::UpdateCL();
 	
+#ifdef ALIFE_MP
+	if (g_Alive() && Remote())	
+		make_Interpolation();	
+#endif
+
 	if (g_Alive()) {
 		CStepManager::update				();
 	}

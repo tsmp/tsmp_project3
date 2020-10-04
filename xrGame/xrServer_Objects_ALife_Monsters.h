@@ -14,6 +14,9 @@
 #include "character_info_defs.h"
 #include "associative_vector.h"
 
+#include "..\TSMP3_Build_Config.h"
+#include "net_physics_state.h"
+
 class CALifeMonsterBrain;
 class CALifeHumanBrain;
 class CALifeOnlineOfflineGroupBrain;
@@ -382,6 +385,11 @@ add_to_type_list(CSE_ALifeMonsterZombie)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_PHSkeleton)
 	u16								m_spec_object_id;
+
+#ifdef ALIFE_MP
+net_physics_state				physics_state;
+u8								phSyncFlag = 0;
+#endif
 
 									CSE_ALifeMonsterBase	(LPCSTR caSection);				// constructor for variable initialization
 	virtual							~CSE_ALifeMonsterBase	();

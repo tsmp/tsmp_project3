@@ -9686,5 +9686,6 @@
     <ClCompile Include="ui\UIGameTutorialVideoItem.cpp">
       <Filter>UI\Tutorial</Filter>
     </ClCompile>
+    <ClCompile Include="net_physics_state.cpp" />
   </ItemGroup>
 </Project>

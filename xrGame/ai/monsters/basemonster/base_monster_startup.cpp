@@ -185,6 +185,10 @@ BOOL CBaseMonster::net_Spawn (CSE_Abstract* DC)
 		Msg("- spawn monster on client");
 	else
 		Msg("- spawn monster on server");
+
+	m_bInInterpolation = false;
+	m_bInterpolate = false;
+	m_dwILastUpdateTime = 0;
 #endif
 
 	monster_squad().register_member			((u8)g_Team(),(u8)g_Squad(),(u8)g_Group(), this);
