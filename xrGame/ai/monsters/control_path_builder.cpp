@@ -13,6 +13,8 @@
 #include "../../Actor_Memory.h"
 #include "../../visual_memory_manager.h"
 
+#include "..\..\..\TSMP3_Build_Config.h"
+
 #ifdef DEBUG
 extern bool show_restrictions(CRestrictedObject *object);
 #endif
@@ -264,8 +266,13 @@ void CControlPathBuilder::make_inactual()
 
 bool CControlPathBuilder::can_use_distributed_compuations (u32 option) const
 {	
-	if (Actor()->memory().visual().visible_right_now(inherited_com::m_object)) return false;
+#ifndef ALIFE_MP
+	if (Actor()->memory().visual().visible_right_now(inherited_com::m_object)) 
+		return false;
 	return inherited::can_use_distributed_compuations(option);
+#else
+	return false;
+#endif
 }
 
 u32	 CControlPathBuilder::find_nearest_vertex				(const u32 &level_vertex_id, const Fvector &target_position, const float &range)

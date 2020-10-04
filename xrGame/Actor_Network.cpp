@@ -55,10 +55,10 @@ BOOL		net_cl_inputguaranteed		= FALSE;
 CActor*		g_actor						= NULL;
 
 CActor* Actor()	
-{	
+{
+#ifndef ALIFE_MP
 	VERIFY(g_actor);
 
-#ifndef ALIFE_MP
 	if (GameID() != GAME_SINGLE) 
 		VERIFY	(g_actor == Level().CurrentControlEntity());
 #endif
