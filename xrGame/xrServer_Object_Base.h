@@ -13,6 +13,7 @@
 #include "script_value_container.h"
 #include "alife_space.h"
 #include "../../xrNetServer/client_id.h"
+#include "..\TSMP3_Build_Config.h"
 
 class NET_Packet;
 class xrClientData;
@@ -61,6 +62,11 @@ public:
 private:
 	LPSTR							s_name_replace;
 
+#ifdef ALIFE_MP
+protected:
+	bool							firstUpdate = false;
+#endif
+
 public:
 	BOOL							net_Ready;
 	BOOL							net_Processed;	// Internal flag for connectivity-graph
@@ -100,6 +106,10 @@ public:
 	//client object custom data serialization
 	xr_vector<u8>					client_data;
 	virtual void					load			(NET_Packet	&tNetPacket);
+	
+#ifdef ALIFE_MP
+	void MarkAsFisrtUpdate()							{ firstUpdate = true; }
+#endif
 
 	//////////////////////////////////////////////////////////////////////////
 	

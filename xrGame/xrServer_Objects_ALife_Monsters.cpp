@@ -1666,6 +1666,14 @@ void CSE_ALifeMonsterBase::STATE_Write	(NET_Packet	&tNetPacket)
 #ifdef ALIFE_MP
 void CSE_ALifeMonsterBase::UPDATE_Read(NET_Packet& tNetPacket)
 {
+	if (CSE_Abstract::firstUpdate)
+	{
+		inherited1::UPDATE_Read(tNetPacket);
+		inherited2::UPDATE_Read(tNetPacket);
+		CSE_Abstract::firstUpdate = false;
+		return;
+	}
+
 	tNetPacket.r_u8(phSyncFlag);
 
 	if (phSyncFlag)
