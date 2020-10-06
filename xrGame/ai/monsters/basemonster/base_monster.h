@@ -323,11 +323,11 @@ private:
 		SPHNetState						LastState;
 		SPHNetState						RecalculatedState;
 		SPHNetState						PredictedState;
+		u16								motionIdx;
 
 		float							SCoeff[3][4];			
 		float							HCoeff[3][4];			
 		Fvector							IPosS, IPosH, IPosL;
-
 
 		xr_deque<monster_interpolation::net_update_A>	NET_A;
 		monster_interpolation::net_update_A				NET_A_Last;

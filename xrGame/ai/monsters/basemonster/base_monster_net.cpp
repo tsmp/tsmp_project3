@@ -16,6 +16,7 @@
 #include "..\..\..\net_physics_state.h"
 #include "..\..\..\PHWorld.h"
 #include "..\..\..\PHMovementControl.h"
+#include "..\control_animation_base.h"
 
 extern int g_cl_InterpolationType;
 #endif
@@ -56,6 +57,9 @@ void CBaseMonster::net_Export(NET_Packet& P)
 
 	P.w_angle8(movement().m_body.current.pitch);
 	P.w_angle8(movement().m_body.current.yaw);
+
+	CKinematicsAnimated* anim_obj = smart_cast<CKinematicsAnimated*>(Visual());
+	P.w_u16(anim_obj->ID_Cycle_Safe(m_anim_base->cur_anim_info().name).idx);
 }
 
 #else
@@ -146,6 +150,28 @@ void CBaseMonster::net_Import(NET_Packet& P)
 
 	setVisible(TRUE);
 	setEnabled(TRUE);
+
+	u16 newMotionIdx;
+	P.r_u16(newMotionIdx);
+
+	if (newMotionIdx != motionIdx)
+	{
+		motionIdx = newMotionIdx;
+		CKinematicsAnimated* anim_obj = smart_cast<CKinematicsAnimated*>(Visual());
+
+		MotionID motion;
+		motion.idx = motionIdx;
+		motion.slot = 0;
+
+		if (motion.valid())
+		{
+			CStepManager::on_animation_start(motion, anim_obj->LL_PlayCycle(anim_obj->LL_GetMotionDef(motion)->bone_or_part, motion, TRUE,
+				anim_obj->LL_GetMotionDef(motion)->Accrue(), anim_obj->LL_GetMotionDef(motion)->Falloff(),
+				anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0));
+		}
+		else
+			Msg("! cant play motion with idx: %u", motionIdx);		
+	}
 }
 
 #else

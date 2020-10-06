@@ -389,6 +389,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_P
 #ifdef ALIFE_MP
 net_physics_state				physics_state;
 u8								phSyncFlag = 0;
+u16								motionIdx;
 #endif
 
 									CSE_ALifeMonsterBase	(LPCSTR caSection);				// constructor for variable initialization

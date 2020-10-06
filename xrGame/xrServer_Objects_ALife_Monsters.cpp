@@ -1687,6 +1687,7 @@ void CSE_ALifeMonsterBase::UPDATE_Read(NET_Packet& tNetPacket)
 	tNetPacket.r_float(fHealth);
 	tNetPacket.r_angle8(o_torso.pitch);
 	tNetPacket.r_angle8(o_torso.yaw);
+	tNetPacket.r_u16(motionIdx);
 }
 #else
 void CSE_ALifeMonsterBase::UPDATE_Read(NET_Packet& tNetPacket)
@@ -1709,6 +1710,7 @@ void CSE_ALifeMonsterBase::UPDATE_Write	(NET_Packet	&tNetPacket)
 	tNetPacket.w_float(fHealth);
 	tNetPacket.w_angle8(o_torso.pitch);
 	tNetPacket.w_angle8(o_torso.yaw);
+	tNetPacket.w_u16(motionIdx);
 }
 #else
 void CSE_ALifeMonsterBase::UPDATE_Write(NET_Packet& tNetPacket)
