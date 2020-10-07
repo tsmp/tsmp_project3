@@ -67,7 +67,10 @@ CALifeSimulator::CALifeSimulator		(xrServer *server, shared_str *command_line) :
 	strcat						(temp,p.m_game_type);
 	strcat						(temp,"/");
 	strcat						(temp,p.m_alife);
+
+#ifndef ALIFE_MP
 	*command_line				= temp;
+#endif
 	
 	LPCSTR						start_game_callback = pSettings->r_string(alife_section,"start_game_callback");
 	luabind::functor<void>		functor;
