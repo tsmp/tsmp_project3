@@ -10,6 +10,8 @@
 #include "../xr_object.h"
 #include "../IGame_Persistent.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 void CLevel::cl_Process_Spawn(NET_Packet& P)
 {
 	// Begin analysis
@@ -107,9 +109,13 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 #endif // DEBUG_MEMORY_MANAGER
 	if (0==O || (!O->net_Spawn	(E))) 
 	{
-		O->net_Destroy			( );
+		O->net_Destroy();
+
+#ifndef ALIFE_MP
 		if(!g_dedicated_server)
+#endif
 			client_spawn_manager().clear(O->ID());
+
 		Objects.Destroy			(O);
 		Msg						("! Failed to spawn entity '%s'",*E->s_name);
 #ifdef DEBUG_MEMORY_MANAGER
@@ -119,8 +125,12 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 #ifdef DEBUG_MEMORY_MANAGER
 		mem_alloc_gather_stats	(!!psAI_Flags.test(aiDebugOnFrameAllocs));
 #endif // DEBUG_MEMORY_MANAGER
+
+#ifndef ALIFE_MP
 		if(!g_dedicated_server)
+#endif
 			client_spawn_manager().callback(O);
+		
 		//Msg			("--spawn--SPAWN: %f ms",1000.f*T.GetAsync());
 		if ((E->s_flags.is(M_SPAWN_OBJECT_LOCAL)) && (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)))	{
 			if (CurrentEntity() != NULL) 

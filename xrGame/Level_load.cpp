@@ -14,6 +14,8 @@
 #include "level_sounds.h"
 #include "GamePersistent.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 ENGINE_API	bool g_dedicated_server;
 
 BOOL CLevel::Load_GameSpecific_Before()
@@ -25,7 +27,12 @@ BOOL CLevel::Load_GameSpecific_Before()
 	if (GamePersistent().GameType() == GAME_SINGLE && !ai().get_alife() && FS.exist(fn_game,"$level$","level.ai"))
 		ai().load						(net_SessionName());
 
-	if (!g_dedicated_server && !ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game")) {
+#ifdef ALIFE_MP
+	if (!ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
+#else
+	if (!g_dedicated_server && !ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
+#endif
+	{
 		IReader							*stream = FS.r_open		(fn_game);
 		ai().patrol_path_storage_raw	(*stream);
 		FS.r_close						(stream);
@@ -89,7 +96,10 @@ BOOL CLevel::Load_GameSpecific_After()
 		}
 	}	
 
-	if (!g_dedicated_server) {
+#ifndef ALIFE_MP
+	if (!g_dedicated_server) 
+#endif
+	{
 		// loading scripts
 		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 

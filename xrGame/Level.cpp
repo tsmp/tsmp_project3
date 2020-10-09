@@ -52,6 +52,8 @@
 #	include "physicobject.h"
 #endif
 
+#include "..\TSMP3_Build_Config.h"
+
 ENGINE_API bool g_dedicated_server;
 
 extern BOOL	g_bDebugDumpPhysicsStep;
@@ -104,7 +106,11 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	physics_step_time_callback	= (PhysicsStepTimeCallback*) &PhisStepsCallback;
 	m_seniority_hierarchy_holder= xr_new<CSeniorityHierarchyHolder>();
 
+#ifdef ALIFE_MP
+	if(true)
+#else
 	if(!g_dedicated_server)
+#endif
 	{
 		m_level_sound_manager		= xr_new<CLevelSoundManager>();
 		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
@@ -241,7 +247,9 @@ CLevel::~CLevel()
 	xr_delete					(m_debug_renderer);
 #endif
 
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 
 	xr_delete					(game);
@@ -553,8 +561,12 @@ void CLevel::OnFrame	()
 	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),GetGameTimeFactor());
 
 	//Device.Statistic->cripting.Begin	();
+
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 		ai().script_engine().script_process	(ScriptEngine::eScriptProcessorLevel)->update();
+
 	//Device.Statistic->Scripting.End	();
 	m_ph_commander->update				();
 	m_ph_commander_scripts->update		();
@@ -573,13 +585,18 @@ void CLevel::OnFrame	()
 		else								
 			m_level_sound_manager->Update	();
 	}
+
 	// deffer LUA-GC-STEP
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 	{
-		if (g_mt_config.test(mtLUA_GC))	Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CLevel::script_gc));
-		else							script_gc	()	;
+		if (g_mt_config.test(mtLUA_GC))	
+			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this,&CLevel::script_gc));
+		else							
+			script_gc();
 	}
-	//-----------------------------------------------------
+
 	if (pStatGraphR)
 	{	
 		static	float fRPC_Mult = 10.0f;

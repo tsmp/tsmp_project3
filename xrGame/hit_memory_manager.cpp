@@ -28,6 +28,8 @@
 #	include "ai_debug.h"
 #endif // MASTER_GOLD
 
+#include "..\TSMP3_Build_Config.h"
+
 struct CHitObjectPredicate {
 	const CObject *m_object;
 
@@ -353,9 +355,13 @@ void CHitMemoryManager::load	(IReader &packet)
 		m_delayed_objects.push_back	(delayed_object);
 
 		const CClientSpawnManager::CSpawnCallback	*spawn_callback = Level().client_spawn_manager().callback(delayed_object.m_object_id,m_object->ID());
+
 		if (!spawn_callback || !spawn_callback->m_object_callback)
+#ifndef ALIFE_MP
 			if(!g_dedicated_server)
+#endif
 				Level().client_spawn_manager().add	(delayed_object.m_object_id,m_object->ID(),callback);
+
 #ifdef DEBUG
 		else {
 			if (spawn_callback && spawn_callback->m_object_callback) {

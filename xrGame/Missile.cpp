@@ -19,11 +19,12 @@
 #	include "phdebug.h"
 #endif
 
-
-#define PLAYING_ANIM_TIME 10000
-
 #include "ui/UIProgressShape.h"
 #include "ui/UIXmlInit.h"
+
+#include "..\TSMP3_Build_Config.h"
+
+#define PLAYING_ANIM_TIME 10000
 
 CUIProgressShape* g_MissileForceShape = NULL;
 
@@ -137,7 +138,11 @@ void CMissile::spawn_fake_missile()
 		CSE_Abstract		*object = Level().spawn_item(
 			*cNameSect(),
 			Position(),
-			(g_dedicated_server)?u32(-1):ai_location().level_vertex_id(),
+#ifdef ALIFE_MP
+			ai_location().level_vertex_id(),
+#else
+			(g_dedicated_server) ? u32(-1) : ai_location().level_vertex_id(),
+#endif
 			ID(),
 			true
 		);

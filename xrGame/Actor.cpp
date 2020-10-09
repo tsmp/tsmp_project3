@@ -64,6 +64,8 @@
 #include "InventoryBox.h"
 #include "location_manager.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 const u32		patch_frames	= 50;
 const float		respawn_delay	= 1.f;
 const float		respawn_auto	= 7.f;
@@ -181,8 +183,13 @@ CActor::CActor() : CEntityAlive()
 	m_iLastHittingWeaponID	= u16(-1);
 	m_game_task_manager		= NULL;
 	m_statistic_manager		= NULL;
-	//-----------------------------------------------------------------------------------
-	m_memory				= g_dedicated_server ? 0 : xr_new<CActorMemory>(this);
+
+#ifdef ALIFE_MP
+	m_memory = xr_new<CActorMemory>(this);
+#else
+	m_memory = g_dedicated_server ? 0 : xr_new<CActorMemory>(this);
+#endif
+
 	m_bOutBorder			= false;
 	hit_probability			= 1.f;
 	m_feel_touch_characters = 0;
@@ -232,9 +239,12 @@ void CActor::reinit	()
 	character_physics_support()->in_Init		();
 	material().reinit							();
 
-	m_pUsableObject								= NULL;
+	m_pUsableObject	= NULL;
+
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
-		memory().reinit							();
+#endif
+		memory().reinit();
 	
 	set_input_external_handler					(0);
 	m_time_lock_accel							= 0;
@@ -246,8 +256,12 @@ void CActor::reload	(LPCSTR section)
 	CInventoryOwner::reload		(section);
 	material().reload			(section);
 	CStepManager::reload		(section);
+
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
 		memory().reload			(section);
+#endif
+
 	m_location_manager->reload	(section);
 }
 
@@ -344,7 +358,11 @@ void CActor::Load	(LPCSTR section )
 
 	//Weapons				= xr_new<CWeaponList> (this);
 
+#ifndef ALIFE_MP
 if(!g_dedicated_server)
+#else
+#pragma todo("TSMP: не уверен надо ли это выделенному или нет")
+#endif
 {
 	LPCSTR hit_snd_sect = pSettings->r_string(section,"hit_sounds");
 	for(int hit_type=0; hit_type<(int)ALife::eHitTypeMax; ++hit_type)

@@ -169,6 +169,8 @@
 #	include "actor_mp_client.h"
 #endif // NO_XR_GAME
 
+#include "..\TSMP3_Build_Config.h"
+
 ENGINE_API	bool g_dedicated_server;
 
 #ifndef NO_XR_GAME
@@ -375,6 +377,8 @@ void CObjectFactory::register_classes	()
 	// because we do not have scripts
 	// and script functionality is not
 	// needed here
+
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
 		return;
 
@@ -404,4 +408,5 @@ void CObjectFactory::register_classes	()
 	ADD(CMincer					,CSE_ALifeAnomalousZone			,TEXT2CLSID("ZS_GALAN")			,"zone_galant_s");
 	ADD(CMincer					,CSE_ALifeAnomalousZone			,TEXT2CLSID("ZS_MINCE")			,"zone_mincer_s");
 	ADD(CSpaceRestrictor		,CSE_ALifeSpaceRestrictor		,TEXT2CLSID("SPC_RS_S")			,"script_restr");
+#endif
 }

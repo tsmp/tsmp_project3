@@ -14,6 +14,8 @@
 #include "client_spawn_manager.h"
 #include "seniority_hierarchy_holder.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 ENGINE_API bool g_dedicated_server;
 
 const int max_objects_size			= 2*1024;
@@ -53,13 +55,17 @@ void CLevel::remove_objects	()
 	ph_commander().clear		();
 	ph_commander_scripts().clear();
 
+#ifndef ALIFE_MP
 	if(!g_dedicated_server)
+#endif
 		space_restriction_manager().clear	();
 
 	psDeviceFlags.set			(rsDisableObjectsAsCrows, b_stored);
 	g_b_ClearGameCaptions		= true;
 
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 		ai().script_engine().collect_all_garbage	();
 
 	stalker_animation_data_storage().clear		();
@@ -73,7 +79,10 @@ void CLevel::remove_objects	()
 		if (!client_spawn_manager().registry().empty())
 			client_spawn_manager().dump				();
 #endif // DEBUG
+
+#ifndef ALIFE_MP
 	if(!g_dedicated_server)
+#endif
 	{
 		VERIFY										(client_spawn_manager().registry().empty());
 		client_spawn_manager().clear			();
@@ -113,7 +122,9 @@ void CLevel::net_Stop		()
 		xr_delete				(Server);
 	}
 
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 		ai().script_engine().collect_all_garbage	();
 
 #ifdef DEBUG

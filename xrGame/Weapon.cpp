@@ -27,6 +27,8 @@
 #include "object_broker.h"
 #include "../igame_persistent.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
 
@@ -896,7 +898,12 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 		D->ID_Phantom				= 0xffff;
 		D->s_flags.assign			(M_SPAWN_OBJECT_LOCAL);
 		D->RespawnTime				= 0;
-		l_pA->m_tNodeID				= g_dedicated_server ? u32(-1) : ai_location().level_vertex_id();
+
+#ifdef ALIFE_MP
+		l_pA->m_tNodeID	= ai_location().level_vertex_id();
+#else
+		l_pA->m_tNodeID = g_dedicated_server ? u32(-1) : ai_location().level_vertex_id();
+#endif
 
 		if(boxCurr == 0xffffffff) 	
 			boxCurr					= l_pA->m_boxSize;

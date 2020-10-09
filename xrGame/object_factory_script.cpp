@@ -12,6 +12,8 @@
 #include "script_engine.h"
 #include "object_item_script.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 void CObjectFactory::register_script_class	(LPCSTR client_class, LPCSTR server_class, LPCSTR clsid, LPCSTR script_clsid)
 {
 #ifndef NO_XR_GAME
@@ -62,7 +64,9 @@ ENGINE_API	bool g_dedicated_server;
 
 void CObjectFactory::register_script_classes()
 {
+#ifndef ALIFE_MP
 	if (!g_dedicated_server)
+#endif
 		ai();
 }
 

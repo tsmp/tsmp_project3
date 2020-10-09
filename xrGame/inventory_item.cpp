@@ -27,6 +27,8 @@
 #	include "debug_renderer.h"
 #endif
 
+#include "..\TSMP3_Build_Config.h"
+
 #define ITEM_REMOVE_TIME		30000
 struct net_update_IItem {	u32					dwTimeStamp;
 SPHNetState			State;};
@@ -303,7 +305,11 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 								smart_cast<CSE_ALifeDynamicObject*>(D);
 		R_ASSERT			(l_tpALifeDynamicObject);
 		
-		l_tpALifeDynamicObject->m_tNodeID = (g_dedicated_server)?u32(-1):object().ai_location().level_vertex_id();
+#ifdef ALIFE_MP
+		l_tpALifeDynamicObject->m_tNodeID = object().ai_location().level_vertex_id();
+#else
+		l_tpALifeDynamicObject->m_tNodeID = (g_dedicated_server) ? u32(-1) : object().ai_location().level_vertex_id();
+#endif
 			
 		// Fill
 		D->s_name			=	item_section_name;

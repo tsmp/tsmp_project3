@@ -28,6 +28,8 @@
 #include "client_spawn_manager.h"
 #include "memory_manager.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 #ifndef MASTER_GOLD
 #	include "clsid_game.h"
 #	include "ai_debug.h"
@@ -766,10 +768,16 @@ void CVisualMemoryManager::load	(IReader &packet)
 
 		m_delayed_objects.push_back	(delayed_object);
 
-		const CClientSpawnManager::CSpawnCallback	*spawn_callback = Level().client_spawn_manager().callback(delayed_object.m_object_id,m_object->ID());
+		const CClientSpawnManager::CSpawnCallback *spawn_callback = Level().client_spawn_manager().callback(delayed_object.m_object_id,m_object->ID());
+
 		if (!spawn_callback || !spawn_callback->m_object_callback)
-			if(!g_dedicated_server)
-				Level().client_spawn_manager().add	(delayed_object.m_object_id,m_object->ID(),callback);
+		{
+#ifndef ALIFE_MP
+			if (!g_dedicated_server)
+#endif
+				Level().client_spawn_manager().add(delayed_object.m_object_id, m_object->ID(), callback);
+		}
+
 #ifdef DEBUG
 		else {
 			if (spawn_callback && spawn_callback->m_object_callback) {

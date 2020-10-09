@@ -17,6 +17,8 @@
 #include "zone_effector.h"
 #include "breakableobject.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 //////////////////////////////////////////////////////////////////////////
 #define PREFETCHED_ARTEFACTS_NUM 1	//количество предварительно проспавненых артефактов
 #define WIND_RADIUS (4*Radius())	//расстояние до актера, когда появляется ветер 
@@ -1202,9 +1204,13 @@ void CCustomZone::SpawnArtefact()
 
 	Fvector pos;
 	Center(pos);
-	Level().spawn_item(*m_ArtefactSpawn[i].section, pos, (g_dedicated_server)?u32(-1):ai_location().level_vertex_id(), ID());
-}
 
+#ifdef ALIFE_MP
+	Level().spawn_item(*m_ArtefactSpawn[i].section, pos, ai_location().level_vertex_id(), ID());
+#else
+	Level().spawn_item(*m_ArtefactSpawn[i].section, pos, (g_dedicated_server) ? u32(-1) : ai_location().level_vertex_id(), ID());
+#endif
+}
 
 void CCustomZone::BornArtefact()
 {
