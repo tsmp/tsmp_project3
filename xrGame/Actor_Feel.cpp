@@ -16,8 +16,10 @@
 #include "game_cl_base.h"
 #include "Level.h"
 
+#include "..\TSMP3_Build_Config.h"
+ENGINE_API bool g_dedicated_server;
+
 #define PICKUP_INFO_COLOR 0xFFDDDDDD
-//AAAAAA
 
 void CActor::feel_touch_new				(CObject* O)
 {
@@ -204,7 +206,10 @@ void	CActor::PickupModeUpdate_COD	()
 				pNearestItem = NULL;
 	}
 
-	HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
+#ifdef ALIFE_MP
+	if(!g_dedicated_server)
+#endif
+		HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
 
 	if (pNearestItem && m_bPickupMode)
 	{

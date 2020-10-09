@@ -1597,12 +1597,22 @@ void CActor::AnimTorsoPlayCallBack(CBlend* B)
 
 void CActor::SetActorVisibility(u16 who, float value)
 {
+#ifdef ALIFE_MP
+	if (g_dedicated_server)
+		return;
+#endif
+
 	CUIMotionIcon		&motion_icon	= HUD().GetUI()->UIMainIngameWnd->MotionIcon();
 	motion_icon.SetActorVisibility		(who, value);
 }
 
 void CActor::UpdateMotionIcon(u32 mstate_rl)
 {
+#ifdef ALIFE_MP
+	if (g_dedicated_server)
+		return;
+#endif
+
 	CUIMotionIcon		&motion_icon=HUD().GetUI()->UIMainIngameWnd->MotionIcon();
 	if(mstate_rl&mcClimb)
 	{

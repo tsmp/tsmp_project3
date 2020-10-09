@@ -12,6 +12,9 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 
+#include "..\TSMP3_Build_Config.h"
+ENGINE_API bool g_dedicated_server;
+
 struct FindLocationBySpotID{
 	shared_str	spot_id;
 	u16			object_id;
@@ -168,6 +171,11 @@ CMapLocation* CMapManager::AddUserLocation(const shared_str& spot_type, const sh
 
 void CMapManager::RemoveMapLocation(const shared_str& spot_type, u16 id)
 {
+#ifdef ALIFE_MP
+	if (g_dedicated_server)
+		return;
+#endif
+
 	FindLocationBySpotID key(spot_type, id);
 	Locations_it it = std::find_if(Locations().begin(),Locations().end(),key);
 	if( it!=Locations().end() ){
@@ -183,6 +191,11 @@ void CMapManager::RemoveMapLocation(const shared_str& spot_type, u16 id)
 
 void CMapManager::RemoveMapLocationByObjectID(u16 id) //call on destroy object
 {
+#ifdef ALIFE_MP
+	if (g_dedicated_server)
+		return;
+#endif
+
 	FindLocationByID key(id);
 	Locations_it it = std::find_if(Locations().begin(),Locations().end(),key);
 	while( it!= Locations().end() ){
