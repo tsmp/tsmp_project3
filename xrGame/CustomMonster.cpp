@@ -110,6 +110,33 @@ CCustomMonster::~CCustomMonster	()
 		Level().client_spawn_manager().clear(ID());
 }
 
+#ifdef ALIFE_MP
+
+extern int g_iCorpseRemove;
+
+bool CCustomMonster::NeedToDestroyObject() const
+{
+	if (g_Alive())
+		return false;
+
+	if (g_iCorpseRemove == -1)
+		return false;
+
+	if (g_iCorpseRemove == 0)
+		return true;
+
+	return (TimePassedAfterDeath() > m_dwBodyRemoveTime);
+}
+
+ALife::_TIME_ID	CCustomMonster::TimePassedAfterDeath() const
+{
+	if (!g_Alive())
+		return Level().timeServer() - GetLevelDeathTime();
+	else
+		return 0;
+}
+#endif
+
 void CCustomMonster::Load		(LPCSTR section)
 {
 	inherited::Load				(section);
