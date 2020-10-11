@@ -20,7 +20,7 @@
 
 #include "..\TSMP3_Build_Config.h"
 
-#define BODY_REMOVE_TIME		600000
+#define BODY_REMOVE_TIME 30000
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
