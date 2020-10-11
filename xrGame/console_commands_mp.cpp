@@ -1117,6 +1117,43 @@ public:
 	}
 };
 
+#include "Actor.h"
+#include "ai_object_location.h"
+
+Fvector vec{ 0, 0, 0 };
+u16 game_vertex_id=0;
+u32 level_vertex_id = 0;
+
+class CCC_SvSpawn : public IConsole_Command 
+{
+public:
+	CCC_SvSpawn(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+	virtual void	Execute(LPCSTR args) 
+	{
+		if (!OnServer())
+			return;
+
+		if (Level().Server && Level().Server->game)
+		{
+			if (game_vertex_id == 0 && level_vertex_id == 0)
+			{
+				if (!Actor())
+				{
+					Msg("! error, cant get actor");
+					return;
+				}
+
+				game_vertex_id = Actor()->ai_location().game_vertex_id();
+				level_vertex_id = Actor()->ai_location().level_vertex_id();
+			}			
+
+			game_sv_Deathmatch* game = smart_cast<game_sv_Deathmatch*>(Level().Server->game);
+			if (game)
+				game->alife().spawn_item(args, vec, level_vertex_id, game_vertex_id, ALife::_OBJECT_ID(-1));
+		}
+	}
+};
+
 class CCC_MpStatistics : public IConsole_Command {
 public:
 					CCC_MpStatistics(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -1292,6 +1329,11 @@ void register_mp_console_commands()
 	CMD1(CCC_Name,			"name");
 	CMD1(CCC_SvStatus,		"sv_status");
 	CMD1(CCC_SvChat,		"chat");
+
+	CMD1(CCC_SvSpawn, "sv_spawn");
+	CMD4(CCC_SV_Float, "sv_spawn_x", &vec.x, -1000000.f, 1000000.0f);
+	CMD4(CCC_SV_Float, "sv_spawn_y", &vec.y, -1000000.f, 1000000.0f);
+	CMD4(CCC_SV_Float, "sv_spawn_z", &vec.z, -1000000.f, 1000000.0f);
 	
 	CMD1(CCC_CompressorStatus,"net_compressor_status");
 	CMD4(CCC_SV_Integer,	"net_compressor_enabled"		,	(int*)&g_net_compressor_enabled	,	0,1);
