@@ -14,6 +14,8 @@
 #include <malloc.h>
 #pragma warning(pop)
 
+extern void fz_download_mod(xrServer* server, ClientID ID);
+
 xrServer::EConnect xrServer::Connect(shared_str &session_name)
 {
 #ifdef DEBUG
@@ -88,6 +90,8 @@ IClient* xrServer::new_client( SClientConnectData* cl_data )
 
 void xrServer::AttachNewClient			(IClient* CL)
 {
+	fz_download_mod(this, CL->ID);
+
 	MSYS_CONFIG	msgConfig;
 	msgConfig.sign1 = 0x12071980;
 	msgConfig.sign2 = 0x26111975;

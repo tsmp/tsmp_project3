@@ -1154,6 +1154,48 @@ public:
 	}
 };
 
+extern int fz_downloader_enabled;
+extern std::string fz_downloader_mod_name;
+extern std::string fz_downloader_reconnect_ip;
+
+class CCC_fz_reconnect_ip : public IConsole_Command
+{
+public:
+	CCC_fz_reconnect_ip(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!xr_strlen(args_))
+		{
+			Msg("- fz_downloader_reconnect_ip %s", fz_downloader_reconnect_ip.c_str());
+			return;
+		}
+
+		fz_downloader_reconnect_ip = args_;
+	}
+
+	virtual void Info(TInfo& I) { strcpy(I, "Set reconnect IP for clients who use downloader"); }
+};
+
+class CCC_fz_mod_name : public IConsole_Command
+{
+public:
+	CCC_fz_mod_name(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!xr_strlen(args_))
+		{
+			Msg("- fz_downloader_mod_name %s", fz_downloader_mod_name.c_str());
+			return;
+		}
+
+		fz_downloader_mod_name = args_;
+	}
+
+	virtual void Info(TInfo& I) { strcpy(I, "Set mod name for downloader"); }
+};
+
 class CCC_MpStatistics : public IConsole_Command {
 public:
 					CCC_MpStatistics(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -1334,6 +1376,10 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Float, "sv_spawn_x", &vec.x, -1000000.f, 1000000.0f);
 	CMD4(CCC_SV_Float, "sv_spawn_y", &vec.y, -1000000.f, 1000000.0f);
 	CMD4(CCC_SV_Float, "sv_spawn_z", &vec.z, -1000000.f, 1000000.0f);
+
+	CMD4(CCC_Integer, "fz_downloader_enabled", (int*)&fz_downloader_enabled, 0, 1);
+	CMD1(CCC_fz_reconnect_ip, "fz_downloader_reconnect_ip");
+	CMD1(CCC_fz_mod_name, "fz_downloader_mod_name");
 	
 	CMD1(CCC_CompressorStatus,"net_compressor_status");
 	CMD4(CCC_SV_Integer,	"net_compressor_enabled"		,	(int*)&g_net_compressor_enabled	,	0,1);

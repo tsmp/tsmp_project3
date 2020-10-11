@@ -9687,5 +9687,6 @@
       <Filter>UI\Tutorial</Filter>
     </ClCompile>
     <ClCompile Include="net_physics_state.cpp" />
+    <ClCompile Include="fz\fz_downloader.cpp" />
   </ItemGroup>
 </Project>
