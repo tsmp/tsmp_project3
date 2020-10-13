@@ -139,68 +139,17 @@ ALife::_TIME_ID	CCustomMonster::TimePassedAfterDeath() const
 
 void CCustomMonster::Load		(LPCSTR section)
 {
-	inherited::Load				(section);
-	material().Load				(section);
-	memory().Load				(section);
-	movement().Load				(section);
-	//////////////////////////////////////////////////////////////////////////
+	inherited::Load(section);
+	material().Load(section);
+	memory().Load(section);
+	movement().Load(section);
 
-	///////////
-	// m_PhysicMovementControl: General
+	character_physics_support()->movement()->Load(section);
+	
+	Position().y += EPS_L;
 
-	character_physics_support()->movement()->Load			(section);
-	//Fbox	bb;
-
-	//// m_PhysicMovementControl: BOX
-	//Fvector	vBOX0_center= pSettings->r_fvector3	(section,"ph_box0_center"	);
-	//Fvector	vBOX0_size	= pSettings->r_fvector3	(section,"ph_box0_size"		);
-	//bb.set	(vBOX0_center,vBOX0_center); bb.grow(vBOX0_size);
-	//m_PhysicMovementControl->SetBox		(0,bb);
-
-	//// m_PhysicMovementControl: BOX
-	//Fvector	vBOX1_center= pSettings->r_fvector3	(section,"ph_box1_center"	);
-	//Fvector	vBOX1_size	= pSettings->r_fvector3	(section,"ph_box1_size"		);
-	//bb.set	(vBOX1_center,vBOX1_center); bb.grow(vBOX1_size);
-	//m_PhysicMovementControl->SetBox		(1,bb);
-
-	//// m_PhysicMovementControl: Foots
-	//Fvector	vFOOT_center= pSettings->r_fvector3	(section,"ph_foot_center"	);
-	//Fvector	vFOOT_size	= pSettings->r_fvector3	(section,"ph_foot_size"		);
-	//bb.set	(vFOOT_center,vFOOT_center); bb.grow(vFOOT_size);
-	//m_PhysicMovementControl->SetFoots	(vFOOT_center,vFOOT_size);
-
-	//// m_PhysicMovementControl: Crash speed and mass
-	//float	cs_min		= pSettings->r_float	(section,"ph_crash_speed_min"	);
-	//float	cs_max		= pSettings->r_float	(section,"ph_crash_speed_max"	);
-	//float	mass		= pSettings->r_float	(section,"ph_mass"				);
-	//m_PhysicMovementControl->SetCrashSpeeds	(cs_min,cs_max);
-	//m_PhysicMovementControl->SetMass		(mass);
-
-
-	// m_PhysicMovementControl: Frictions
-	/*
-	float af, gf, wf;
-	af					= pSettings->r_float	(section,"ph_friction_air"	);
-	gf					= pSettings->r_float	(section,"ph_friction_ground");
-	wf					= pSettings->r_float	(section,"ph_friction_wall"	);
-	m_PhysicMovementControl->SetFriction	(af,wf,gf);
-
-	// BOX activate
-	m_PhysicMovementControl->ActivateBox	(0);
-	*/
-	////////
-
-	Position().y			+= EPS_L;
-
-	//	m_current			= 0;
-
-	eye_fov					= pSettings->r_float(section,"eye_fov");
-	eye_range				= pSettings->r_float(section,"eye_range");
-
-	// Health & Armor
-//	fArmor					= 0;
-
-	// Msg				("! cmonster size: %d",sizeof(*this));
+	eye_fov	= pSettings->r_float(section,"eye_fov");
+	eye_range = pSettings->r_float(section,"eye_range");
 }
 
 void CCustomMonster::reinit		()
