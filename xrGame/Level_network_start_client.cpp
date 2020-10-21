@@ -154,6 +154,11 @@ bool	CLevel::net_start_client5				()
 
 bool	CLevel::net_start_client6				()
 {
+	std::string levelName = Level().name().c_str();
+
+	if (levelName == "619_moon")
+		ph_world->SetGravity(7.f);
+
 	if(connected_to_server){
 		// Sync
 		if(g_hud)

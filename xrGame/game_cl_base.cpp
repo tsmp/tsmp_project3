@@ -14,6 +14,28 @@
 #include "../Console.h"
 #include "game_sv_mp_vote_flags.h"
 
+struct Color
+{
+	u32 r;
+	u32 g;
+	u32 b;
+	u32 a;
+
+	u32 GetRGBA() { return color_rgba(r, g, b, a); }
+	void GetStr(string32& str)
+	{
+		string32 ch;
+		sprintf(ch, "11[%u,%u,%u,%u]", a, r, g, b);
+		ch[0] = '%%';
+		ch[1] = 'c';
+
+		strcpy(str, ch);
+	}
+};
+
+extern u32		Color_Teams_u32[3];
+extern string32	Color_Teams[3];
+
 game_cl_GameState::game_cl_GameState()
 {
 	m_WeaponUsageStatistic		= xr_new<WeaponUsageStatistic>();
@@ -28,6 +50,63 @@ game_cl_GameState::game_cl_GameState()
 
 	m_u16VotingEnabled			= 0;
 	m_bServerControlHits		= true;
+
+	Color team0;
+	Color team1;
+	Color team2;
+
+	if (pSettings->section_exist("mp_team_0_color_override"))
+	{
+		team0.r = pSettings->r_u32("mp_team_0_color_override", "r");
+		team0.g = pSettings->r_u32("mp_team_0_color_override", "g");
+		team0.b = pSettings->r_u32("mp_team_0_color_override", "b");
+		team0.a = pSettings->r_u32("mp_team_0_color_override", "a");
+	}
+	else
+	{
+		team0.r = 255;
+		team0.g = 240;
+		team0.b = 190;
+		team0.a = 255;
+	}
+
+	if (pSettings->section_exist("mp_team_1_color_override"))
+	{
+		team1.r = pSettings->r_u32("mp_team_1_color_override", "r");
+		team1.g = pSettings->r_u32("mp_team_1_color_override", "g");
+		team1.b = pSettings->r_u32("mp_team_1_color_override", "b");
+		team1.a = pSettings->r_u32("mp_team_1_color_override", "a");
+	}
+	else
+	{
+		team1.r = 64;
+		team1.g = 255;
+		team1.b = 64;
+		team1.a = 255;
+	}
+
+	if (pSettings->section_exist("mp_team_2_color_override"))
+	{
+		team2.r = pSettings->r_u32("mp_team_2_color_override", "r");
+		team2.g = pSettings->r_u32("mp_team_2_color_override", "g");
+		team2.b = pSettings->r_u32("mp_team_2_color_override", "b");
+		team2.a = pSettings->r_u32("mp_team_2_color_override", "a");
+	}
+	else
+	{
+		team2.r = 64;
+		team2.g = 64;
+		team2.b = 255;
+		team2.a = 255;
+	}
+
+	Color_Teams_u32[0] = team0.GetRGBA();
+	Color_Teams_u32[1] = team1.GetRGBA();
+	Color_Teams_u32[2] = team2.GetRGBA();
+
+	team0.GetStr(Color_Teams[0]);
+	team1.GetStr(Color_Teams[1]);
+	team2.GetStr(Color_Teams[2]);
 }
 
 game_cl_GameState::~game_cl_GameState()
@@ -182,8 +261,7 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 	CStringTable st;
 
 	string512 Text;
-	char	Color_Main[]	= "%c[255,192,192,192]";
-	LPSTR	Color_Teams[3]	= {"%c[255,255,240,190]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
+	char Color_Main[] = "%c[255,192,192,192]";
 
 	switch (msg)
 	{

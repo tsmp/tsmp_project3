@@ -132,7 +132,8 @@ protected:
 
 	//////////////////////////////////////////////
 	//для разлета осколков
-	float						m_fFragmentSpeed;
+	float m_fFragmentSpeed;
+	float m_effector_radius;
 	
 	//звуки
 	ref_sound					sndExplode;
@@ -158,12 +159,9 @@ protected:
 	virtual void				UpdateExplosionParticles ();	
 
 	// эффектор
-	struct {
-/*		float 					time;
-		float 					amplitude;	
-		float 					period_number;
-		shared_str				file_name;*/
-		shared_str				effect_sect_name;
+	struct 
+	{
+		shared_str effect_sect_name;
 	} effector;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

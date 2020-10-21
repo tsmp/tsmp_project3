@@ -122,12 +122,17 @@ void CExplosive::Load(CInifile *ini,LPCSTR section)
 
 	m_fExplodeDurationMax	= ini->r_float(section, "explode_duration");
 
-	effector.effect_sect_name= ini->r_string("explode_effector","effect_sect_name");
-//	if( ini->line_exist(section,"wallmark_section") )
-//	{
-		m_wallmark_manager.m_owner = cast_game_object();
-//		m_wallmark_manager.Load(pSettings,ini->r_string(section,"wallmark_section"));
-//	}
+	if (ini->line_exist(section, "effect_sect_name"))
+		effector.effect_sect_name = ini->r_string(section, "effect_sect_name");
+	else
+		effector.effect_sect_name = ini->r_string("explode_effector", "effect_sect_name");
+
+	if (ini->line_exist(section, "effector_radius"))
+		m_effector_radius = ini->r_float(section, "effector_radius");
+	else
+		m_effector_radius = EFFECTOR_RADIUS;
+
+	m_wallmark_manager.m_owner = cast_game_object();
 
 	m_bHideInExplosion = TRUE;
 	if (ini->line_exist(section, "hide_in_explosion"))
@@ -382,7 +387,23 @@ void CExplosive::Explode()
 											cartridge, SendHits );
 	}	
 
-	if (cast_game_object()->Remote()) return;
+	if (cast_game_object()->Remote())
+	{
+		// Explode Effector	//////////////
+		CGameObject* GO = smart_cast<CGameObject*>(Level().CurrentEntity());
+		CActor* pActor = smart_cast<CActor*>(GO);
+
+		if (pActor)
+		{
+			float dist_to_actor = pActor->Position().distance_to(pos);
+			float max_dist = m_effector_radius;
+
+			if (dist_to_actor < max_dist)
+				AddEffector(pActor, effExplodeHit, effector.effect_sect_name, (max_dist - dist_to_actor) / max_dist);
+		}
+
+		return;
+	}
 	
 	/////////////////////////////////
 	//взрывная волна
@@ -421,7 +442,7 @@ STOP_PROFILE
 	if(pActor)
 	{
 		float dist_to_actor = pActor->Position().distance_to(pos);
-		float max_dist		= EFFECTOR_RADIUS;
+		float max_dist = m_effector_radius;
 		if (dist_to_actor < max_dist)
 			AddEffector	(pActor, effExplodeHit, effector.effect_sect_name, (max_dist - dist_to_actor) / max_dist );
 	}
