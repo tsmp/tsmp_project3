@@ -48,6 +48,9 @@ protected:
 	bool m_bInputFocus;
 	bool m_bShift;
 
+	bool m_bCtrl;
+	bool m_bIsRussian;
+
 	bool m_bNumbersOnly;
 	bool m_bFloatNumbers;
 	bool m_bFocusByDbClick;
