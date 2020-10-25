@@ -1672,8 +1672,8 @@ void game_sv_Deathmatch::OnPlayerConnect(ClientID id_who)
 		return;
 	}
 
-	if (!xrCData->flags.bReconnect) 
-		Money_SetStart				(id_who);
+	if (!xrCData->flags.bReconnect || !ps_who->money_for_round)
+		Money_SetStart(id_who);
 
 	SetPlayersDefItems				(ps_who);
 }
