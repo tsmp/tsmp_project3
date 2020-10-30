@@ -625,9 +625,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 #endif // DEDICATED_SERVER
 
 	//SetThreadAffinityMask		(GetCurrentThread(),1);
-
-	if (!strstr(lpCmdLine, "-priority") == NULL)
-		SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
+	SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
 
 	// Title window
 	logoWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_STARTUP), 0, logDlgProc);
