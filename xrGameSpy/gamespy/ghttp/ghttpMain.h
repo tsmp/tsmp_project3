@@ -1,4 +1,4 @@
- /*
+/*
 GameSpy GHTTP SDK 
 Dan "Mr. Pants" Schoenblum
 dan@gamespy.com
@@ -16,7 +16,8 @@ devsupport@gamespy.com
 #define _GHTTPMAIN_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <stdio.h>

@@ -1,22 +1,24 @@
 #pragma once
 
+namespace UIMapWndActionsSpace
+{
 
-namespace UIMapWndActionsSpace {
-
-	enum EWorldProperties {
+	enum EWorldProperties
+	{
 		ePropTargetMapShown,
 		ePropMapMinimized,
 		ePropMapResized,
 		ePropMapIdle,
 		ePropMapCentered,
-		ePropDummy					= u16(-1),
+		ePropDummy = u16(-1),
 	};
 
-	enum EWorldOperators {
+	enum EWorldOperators
+	{
 		eOperatorMapResize,
 		eOperatorMapMinimize,
 		eOperatorMapIdle,
 		eOperatorMapCenter,
-		eWorldOperatorDummy			= u16(-1),
+		eWorldOperatorDummy = u16(-1),
 	};
-};
+}; // namespace UIMapWndActionsSpace

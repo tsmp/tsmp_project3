@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DedicatedSrvConsole.h"
 
-extern const char* ioc_prompt;
+extern const char *ioc_prompt;
 int g_svTextConsoleUpdateRate = 1;
 
 LRESULT CALLBACK TextConsole_LogWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -13,7 +13,7 @@ LRESULT CALLBACK TextConsole_LogWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 	case WM_PAINT:
 	{
-		CDedicatedSrvConsole* pConsole = (CDedicatedSrvConsole*)Console;
+		CDedicatedSrvConsole *pConsole = (CDedicatedSrvConsole *)Console;
 		pConsole->OnPaint();
 		return (LRESULT)0; // Say we handled it.
 	}
@@ -57,21 +57,12 @@ void CDedicatedSrvConsole::CreateConsoleWnd()
 	INT lWidth = rct.right - rct.left;
 	INT lHeight = rct.bottom - rct.top;
 
-	const char* wndClassName = "TEXT_CONSOLE";
+	const char *wndClassName = "TEXT_CONSOLE";
 
 	// Register the windows class
-	WNDCLASS wndClass = 
-	{ 
-		0
-		, DefWindowProc
-		, 0
-		, 0
-		, hInstance
-		, NULL
-		, LoadCursor(hInstance, IDC_ARROW)
-		, GetStockBrush(GRAY_BRUSH)
-		, NULL
-		, wndClassName };
+	WNDCLASS wndClass =
+		{
+			0, DefWindowProc, 0, 0, hInstance, NULL, LoadCursor(hInstance, IDC_ARROW), GetStockBrush(GRAY_BRUSH), NULL, wndClassName};
 
 	RegisterClass(&wndClass);
 
@@ -79,17 +70,7 @@ void CDedicatedSrvConsole::CreateConsoleWnd()
 	u32 dwWindowStyle = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE;
 
 	// Create the render window
-	hConsoleWnd = CreateWindow(wndClassName
-		, "XRAY Text Console"
-		, dwWindowStyle
-		, lX
-		, lY
-		, lWidth
-		, lHeight
-		, hMainWnd
-		, 0
-		, hInstance
-		, 0L);
+	hConsoleWnd = CreateWindow(wndClassName, "XRAY Text Console", dwWindowStyle, lX, lY, lWidth, lHeight, hMainWnd, 0, hInstance, 0L);
 
 	R_ASSERT2(hConsoleWnd, "Unable to Create TextConsole Window!");
 }
@@ -100,46 +81,27 @@ void CDedicatedSrvConsole::CreateLogWnd()
 
 	RECT rct;
 	GetClientRect(hConsoleWnd, &rct);
-	
+
 	INT lX = rct.left;
 	INT lY = rct.top;
 	INT lWidth = rct.right - rct.left;
 	INT lHeight = rct.bottom - rct.top;
 
-	const char* wndClassName = "TEXT_CONSOLE_LOG_WND";
+	const char *wndClassName = "TEXT_CONSOLE_LOG_WND";
 
 	// Register the windows class
-	WNDCLASS wndClass = 
-	{ 
-		0
-		, TextConsole_LogWndProc
-		, 0
-		, 0
-		, hInstance
-		, NULL
-		, LoadCursor(NULL, IDC_ARROW)
-		, GetStockBrush(BLACK_BRUSH)
-		, NULL
-		, wndClassName
-	};
+	WNDCLASS wndClass =
+		{
+			0, TextConsole_LogWndProc, 0, 0, hInstance, NULL, LoadCursor(NULL, IDC_ARROW), GetStockBrush(BLACK_BRUSH), NULL, wndClassName};
 
 	RegisterClass(&wndClass);
 
 	// Set the window's initial style
-	u32 dwWindowStyle = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE;// | WS_CLIPSIBLINGS;
+	u32 dwWindowStyle = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE; // | WS_CLIPSIBLINGS;
 
 	// Create the render window
 	hLogWnd = CreateWindow(wndClassName,
-		"XRAY Text Console Log"
-		, dwWindowStyle
-		, lX
-		, lY
-		, lWidth
-		, lHeight
-		, hConsoleWnd
-		, 0
-		, hInstance
-		, 0L);
+						   "XRAY Text Console Log", dwWindowStyle, lX, lY, lWidth, lHeight, hConsoleWnd, 0, hInstance, 0L);
 
 	R_ASSERT2(hLogWnd, "Unable to Create TextConsole Window!");
 
@@ -209,11 +171,16 @@ void CDedicatedSrvConsole::Destroy()
 	SelectObject(hdcBackBuffer, hPrevFont);
 	SelectObject(hdcBackBuffer, hOldBitmap);
 
-	if (hBitmap) DeleteObject(hBitmap);
-	if (hOldBitmap) DeleteObject(hOldBitmap);
-	if (hLogWndFont) DeleteObject(hLogWndFont);
-	if (hPrevFont) DeleteObject(hPrevFont);
-	if (hBackGroundBrush) DeleteObject(hBackGroundBrush);
+	if (hBitmap)
+		DeleteObject(hBitmap);
+	if (hOldBitmap)
+		DeleteObject(hOldBitmap);
+	if (hLogWndFont)
+		DeleteObject(hLogWndFont);
+	if (hPrevFont)
+		DeleteObject(hPrevFont);
+	if (hBackGroundBrush)
+		DeleteObject(hBackGroundBrush);
 
 	ReleaseDC(hLogWnd, hdcBackBuffer);
 	ReleaseDC(hLogWnd, hdcLogWnd);
@@ -240,23 +207,16 @@ void CDedicatedSrvConsole::OnPaint()
 	else
 		rect = pstruct.rcPaint;
 
-	// BitBlt выполняет передачу битовых блоков данных о цвете, соответствующих прямоугольнику 
+	// BitBlt выполняет передачу битовых блоков данных о цвете, соответствующих прямоугольнику
 	// пикселей из заданного исходного контекста устройства в целевой контекст устройства
-	
-	BitBlt(hdcLogWnd
-		, rect.left
-		, rect.top
-		, rect.right - rect.left
-		, rect.bottom - rect.top
-		, hdcBackBuffer
-		, rect.left
-		, rect.top,
-		SRCCOPY);
+
+	BitBlt(hdcLogWnd, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, hdcBackBuffer, rect.left, rect.top,
+		   SRCCOPY);
 
 	EndPaint(hLogWnd, &pstruct);
 }
 
-void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT* pRect)
+void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT *pRect)
 {
 	TEXTMETRIC tm;
 	GetTextMetrics(hDC, &tm);
@@ -273,7 +233,7 @@ void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT* pRect)
 	char buf[MAX_LEN + 5];
 	strcpy_s(buf, ioc_prompt);
 	strcat(buf, editor);
-	//if (bCursor) 
+	//if (bCursor)
 	strcat(buf, "|");
 
 	SetTextColor(hDC, RGB(128, 128, 255));
@@ -288,7 +248,7 @@ void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT* pRect)
 
 	int startPos = LogFile->size() - 1 - scroll_delta;
 
-	for (int i = startPos ; i >= 0; i--)
+	for (int i = startPos; i >= 0; i--)
 	{
 		YPos -= tm.tmHeight;
 
@@ -303,7 +263,7 @@ void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT* pRect)
 		Console_mark cm = (Console_mark)Str[0];
 		COLORREF c2 = (COLORREF)bgr2rgb(get_mark_color(cm));
 		SetTextColor(hDC, c2);
-		
+
 		u8 b = (is_mark(cm)) ? 2 : 0;
 		LPCSTR pOut = Str + b;
 
@@ -336,7 +296,7 @@ void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT* pRect)
 }
 
 void CDedicatedSrvConsole::IR_OnKeyboardPress(int dik)
-{	
+{
 	bScrollLog = true;
 	CConsole::IR_OnKeyboardPress(dik);
 }

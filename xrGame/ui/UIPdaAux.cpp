@@ -12,4 +12,4 @@
 //////////////////////////////////////////////////////////////////////////
 
 //const char * const ALL_PDA_HEADER_PREFIX	= "#root 15/FD-665#68";
-const char * const ALL_PDA_HEADER_PREFIX	= "# ";
+const char *const ALL_PDA_HEADER_PREFIX = "# ";

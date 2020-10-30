@@ -2,70 +2,79 @@
 #include "ai_monster_squad.h"
 #include "../../entity.h"
 
-CMonsterSquad::CMonsterSquad() : leader(0) 
+CMonsterSquad::CMonsterSquad() : leader(0)
 {
-	m_locked_covers.reserve	(20);
+	m_locked_covers.reserve(20);
 	m_locked_corpses.reserve(10);
 }
 
-CMonsterSquad::~CMonsterSquad() 
+CMonsterSquad::~CMonsterSquad()
 {
 }
 
 void CMonsterSquad::RegisterMember(CEntity *pE)
 {
 	// Добавить цель
-	SMemberGoal			G;
-	m_goals.insert		(mk_pair(pE, G));
-	
+	SMemberGoal G;
+	m_goals.insert(mk_pair(pE, G));
+
 	// Добавить команду
-	SSquadCommand		C;
-	C.type				= SC_NONE;
-	m_commands.insert	(mk_pair(pE, C));
-	
+	SSquadCommand C;
+	C.type = SC_NONE;
+	m_commands.insert(mk_pair(pE, C));
+
 	// установить лидера
-	if (!leader) leader = pE;
+	if (!leader)
+		leader = pE;
 }
 
 void CMonsterSquad::RemoveMember(CEntity *pE)
 {
 	// удалить из целей
 	MEMBER_GOAL_MAP_IT it_goal = m_goals.find(pE);
-	if (it_goal == m_goals.end()) return;	
+	if (it_goal == m_goals.end())
+		return;
 	m_goals.erase(it_goal);
 
 	// удалить из команд
 	MEMBER_COMMAND_MAP_IT it_command = m_commands.find(pE);
-	if (it_command == m_commands.end()) return;	
+	if (it_command == m_commands.end())
+		return;
 	m_commands.erase(it_command);
 
 	// если удаляемый елемент является лидером - переназначить лидера
-	if (leader == pE)  {
-		if (m_goals.empty()) leader = 0;
-		else leader = m_goals.begin()->first;
+	if (leader == pE)
+	{
+		if (m_goals.empty())
+			leader = 0;
+		else
+			leader = m_goals.begin()->first;
 	}
 
 	// усли последний элемент, очистить залоченные каверы
-	if (m_goals.empty()) {
-		m_locked_covers.clear	();
-		m_locked_corpses.clear	();
+	if (m_goals.empty())
+	{
+		m_locked_covers.clear();
+		m_locked_corpses.clear();
 	}
 }
 
 bool CMonsterSquad::SquadActive()
 {
-	if (!leader) return false;
+	if (!leader)
+		return false;
 
 	// проверить количество живых объектов в группе
 	u32 alive_num = 0;
-	for (MEMBER_GOAL_MAP_IT it = m_goals.begin(); it != m_goals.end(); it++) 
-		if (it->first->g_Alive()) alive_num++;
-	
-	if (alive_num < 2) return false;
-	
+	for (MEMBER_GOAL_MAP_IT it = m_goals.begin(); it != m_goals.end(); it++)
+		if (it->first->g_Alive())
+			alive_num++;
+
+	if (alive_num < 2)
+		return false;
+
 	return true;
 }
-
 
 void CMonsterSquad::UpdateGoal(CEntity *pE, const SMemberGoal &goal)
 {
@@ -105,61 +114,64 @@ void CMonsterSquad::GetGoal(CEntity *pE, SMemberGoal &goal)
 
 void CMonsterSquad::GetCommand(CEntity *pE, SSquadCommand &com)
 {
-	com	= GetCommand(pE);
+	com = GetCommand(pE);
 }
 
 void CMonsterSquad::UpdateSquadCommands()
 {
 	// Отменить все команды в группе
-	for (MEMBER_COMMAND_MAP_IT it = m_commands.begin(); it != m_commands.end(); it++) {
+	for (MEMBER_COMMAND_MAP_IT it = m_commands.begin(); it != m_commands.end(); it++)
+	{
 		it->second.type = SC_NONE;
 	}
 
 	// Удалить все цели, объекты которых невалидны или ушли в оффлайн
-	for (MEMBER_GOAL_MAP_IT it_goal = m_goals.begin(); it_goal != m_goals.end(); ++it_goal) {
+	for (MEMBER_GOAL_MAP_IT it_goal = m_goals.begin(); it_goal != m_goals.end(); ++it_goal)
+	{
 		SMemberGoal goal = it_goal->second;
-		if (!goal.entity || goal.entity->getDestroy()) {
+		if (!goal.entity || goal.entity->getDestroy())
+		{
 			it_goal->second.type = MG_None;
 		}
 	}
 
-	ProcessAttack	();
-	ProcessIdle		();
+	ProcessAttack();
+	ProcessIdle();
 }
 
 void CMonsterSquad::remove_links(CObject *O)
 {
 	// Удалить все цели, объекты которых невалидны или ушли в оффлайн
-	for (MEMBER_GOAL_MAP_IT it_goal = m_goals.begin(); it_goal != m_goals.end(); ++it_goal) {
+	for (MEMBER_GOAL_MAP_IT it_goal = m_goals.begin(); it_goal != m_goals.end(); ++it_goal)
+	{
 		SMemberGoal goal = it_goal->second;
-		if (goal.entity == O) {
-			it_goal->second.entity	= 0;
-			it_goal->second.type	= MG_None;
+		if (goal.entity == O)
+		{
+			it_goal->second.entity = 0;
+			it_goal->second.type = MG_None;
 		}
 	}
 
 	// Удалить все цели, объекты которых невалидны или ушли в оффлайн
-	for (MEMBER_COMMAND_MAP_IT it = m_commands.begin(); it != m_commands.end(); it++) {
+	for (MEMBER_COMMAND_MAP_IT it = m_commands.begin(); it != m_commands.end(); it++)
+	{
 		SSquadCommand com = it->second;
-		if (com.entity == O) {
-			it->second.entity	= 0;
-			it->second.type		= SC_NONE;
+		if (com.entity == O)
+		{
+			it->second.entity = 0;
+			it->second.type = SC_NONE;
 		}
 	}
 }
 
-
 bool CMonsterSquad::is_locked_cover(u32 node)
 {
-	return	(
+	return (
 		std::find(
 			m_locked_covers.begin(),
 			m_locked_covers.end(),
-			node
-		)
-		!=
-		m_locked_covers.end()
-	);
+			node) !=
+		m_locked_covers.end());
 }
 
 void CMonsterSquad::lock_cover(u32 node)
@@ -178,10 +190,13 @@ u8 CMonsterSquad::get_count(const CEntity *object, float radius)
 {
 	u8 count = 0;
 
-	for (MEMBER_GOAL_MAP_IT it_goal = m_goals.begin(); it_goal != m_goals.end(); ++it_goal) {
+	for (MEMBER_GOAL_MAP_IT it_goal = m_goals.begin(); it_goal != m_goals.end(); ++it_goal)
+	{
 		SMemberGoal goal = it_goal->second;
-		if ((goal.entity != 0) && (goal.entity != object) && (goal.entity->g_Alive())) {
-			if (goal.entity->Position().distance_to(object->Position()) < radius) count++;
+		if ((goal.entity != 0) && (goal.entity != object) && (goal.entity->g_Alive()))
+		{
+			if (goal.entity->Position().distance_to(object->Position()) < radius)
+				count++;
 		}
 	}
 
@@ -193,15 +208,12 @@ u8 CMonsterSquad::get_count(const CEntity *object, float radius)
 //////////////////////////////////////////////////////////////////////////
 bool CMonsterSquad::is_locked_corpse(const CEntityAlive *corpse)
 {
-	return	(
+	return (
 		std::find(
 			m_locked_corpses.begin(),
 			m_locked_corpses.end(),
-			corpse
-		)
-		!=
-		m_locked_corpses.end()
-	);
+			corpse) !=
+		m_locked_corpses.end());
 }
 
 void CMonsterSquad::lock_corpse(const CEntityAlive *corpse)

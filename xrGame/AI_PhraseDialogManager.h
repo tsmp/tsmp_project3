@@ -9,24 +9,24 @@
 
 #include "PhraseDialogManager.h"
 
-
-class CAI_PhraseDialogManager: public CPhraseDialogManager
+class CAI_PhraseDialogManager : public CPhraseDialogManager
 {
 private:
 	typedef CPhraseDialogManager inherited;
+
 public:
-					CAI_PhraseDialogManager			();
-	virtual			~CAI_PhraseDialogManager		();
+	CAI_PhraseDialogManager();
+	virtual ~CAI_PhraseDialogManager();
 
-	virtual void	ReceivePhrase					(DIALOG_SHARED_PTR& phrase_dialog);
-	virtual void	UpdateAvailableDialogs			(CPhraseDialogManager* partner);
-	virtual void	AnswerPhrase					(DIALOG_SHARED_PTR& phrase_dialog);
+	virtual void ReceivePhrase(DIALOG_SHARED_PTR &phrase_dialog);
+	virtual void UpdateAvailableDialogs(CPhraseDialogManager *partner);
+	virtual void AnswerPhrase(DIALOG_SHARED_PTR &phrase_dialog);
 
+	virtual void SetStartDialog(shared_str phrase_dialog);
+	virtual void SetDefaultStartDialog(shared_str phrase_dialog);
+	virtual shared_str GetStartDialog() { return m_sStartDialog; }
+	virtual void RestoreDefaultStartDialog();
 
-	virtual void				SetStartDialog				(shared_str phrase_dialog);
-	virtual void				SetDefaultStartDialog		(shared_str phrase_dialog);
-	virtual shared_str	GetStartDialog						()								{return m_sStartDialog;}
-	virtual void				RestoreDefaultStartDialog	();
 protected:
 	//диалог, если не NULL, то его персонаж запустит
 	//при встрече с актером

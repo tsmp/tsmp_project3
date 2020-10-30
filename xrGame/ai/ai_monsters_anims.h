@@ -11,50 +11,57 @@
 #include "../SkeletonAnimated.h"
 #include "../ai_debug.h"
 
-DEFINE_VECTOR	(MotionID,ANIM_VECTOR, ANIM_IT);
+DEFINE_VECTOR(MotionID, ANIM_VECTOR, ANIM_IT);
 
-class CAniVector {
+class CAniVector
+{
 public:
-	ANIM_VECTOR		A;
+	ANIM_VECTOR A;
 
-			void	Load	(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName);
+	void Load(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName);
 };
 
-template <LPCSTR caBaseNames[]> class CAniFVector {
+template <LPCSTR caBaseNames[]>
+class CAniFVector
+{
 public:
-	ANIM_VECTOR		A;
+	ANIM_VECTOR A;
 
-	IC	void		Load(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
+	IC void Load(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 	{
-		A.clear			();
-		string256		S;
+		A.clear();
+		string256 S;
 		int i, j;
-		for (j=0; caBaseNames[j]; ++j);
-		A.resize		(j);
-		for (i=0; i<j; ++i) 
+		for (j = 0; caBaseNames[j]; ++j)
+			;
+		A.resize(j);
+		for (i = 0; i < j; ++i)
 		{
-			strconcat	(sizeof(S),S,caBaseName,caBaseNames[i]);
-			A[i]		= tpKinematics->ID_Cycle_Safe(S);
+			strconcat(sizeof(S), S, caBaseName, caBaseNames[i]);
+			A[i] = tpKinematics->ID_Cycle_Safe(S);
 #ifdef DEBUG
 			if (A[i] && psAI_Flags.test(aiAnimation))
-				Msg		("* Loaded animation %s",S);
+				Msg("* Loaded animation %s", S);
 #endif
 		}
 	}
 };
 
-template <class TYPE_NAME, LPCSTR caBaseNames[]> class CAniCollection {
+template <class TYPE_NAME, LPCSTR caBaseNames[]>
+class CAniCollection
+{
 public:
-	xr_vector<TYPE_NAME>	A;
+	xr_vector<TYPE_NAME> A;
 
-	IC	void		Load(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
+	IC void Load(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 	{
-		A.clear		();
-		string256	S;
-		int j,i;
-		for (j=0; caBaseNames[j]; ++j);
-		A.resize	(j);
-		for (i=0; i<j; ++i)
-			A[i].Load	(tpKinematics,strconcat(sizeof(S),S,caBaseName,caBaseNames[i]));
+		A.clear();
+		string256 S;
+		int j, i;
+		for (j = 0; caBaseNames[j]; ++j)
+			;
+		A.resize(j);
+		for (i = 0; i < j; ++i)
+			A[i].Load(tpKinematics, strconcat(sizeof(S), S, caBaseName, caBaseNames[i]));
 	}
 };

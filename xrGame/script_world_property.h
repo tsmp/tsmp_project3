@@ -13,7 +13,8 @@
 
 typedef GraphEngineSpace::CWorldProperty CScriptWorldProperty;
 
-class CScriptWorldPropertyWrapper {
+class CScriptWorldPropertyWrapper
+{
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

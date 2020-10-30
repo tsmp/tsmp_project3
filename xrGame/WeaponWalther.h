@@ -3,10 +3,10 @@
 #include "weaponpistol.h"
 #include "script_export_space.h"
 
-class CWeaponWalther :
-	public CWeaponPistol
+class CWeaponWalther : public CWeaponPistol
 {
 	typedef CWeaponPistol inherited;
+
 public:
 	CWeaponWalther(void);
 	virtual ~CWeaponWalther(void);

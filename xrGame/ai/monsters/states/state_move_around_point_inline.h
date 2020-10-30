@@ -1,8 +1,7 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
+#define TEMPLATE_SPECIALIZATION template < \
+	typename _Object>
 
 #define CStateMonsterMoveAroundPointAbstract CStateMonsterMoveAroundPoint<_Object>
 
@@ -29,15 +28,15 @@ void CStateMonsterMoveAroundPointAbstract::execute()
 	//if (data.action.sound_type != u32(-1)) {
 	//	if (data.action.sound_delay != u32(-1))
 	//		object->sound().play(data.action.sound_type, 0,0,data.action.sound_delay);
-	//	else 
+	//	else
 	//		object->sound().play(data.action.sound_type);
 	//}
 }
 
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterMoveAroundPointAbstract::check_completion()
-{	
-//	if (data.time_out)
+{
+	//	if (data.time_out)
 
 	return false;
 }

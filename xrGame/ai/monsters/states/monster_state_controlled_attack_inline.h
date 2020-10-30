@@ -1,8 +1,7 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
+#define TEMPLATE_SPECIALIZATION template < \
+	typename _Object>
 
 #define CStateMonsterControlledAttackAbstract CStateMonsterControlledAttack<_Object>
 
@@ -44,7 +43,7 @@ const CEntityAlive *CStateMonsterControlledAttackAbstract::get_enemy()
 {
 	CControlledEntityBase *entity = smart_cast<CControlledEntityBase *>(object);
 	VERIFY(entity);
-	return smart_cast<const CEntityAlive*>(entity->get_data().m_object);
+	return smart_cast<const CEntityAlive *>(entity->get_data().m_object);
 }
 
 #undef TEMPLATE_SPECIALIZATION

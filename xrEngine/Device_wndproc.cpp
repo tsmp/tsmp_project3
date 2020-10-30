@@ -4,28 +4,28 @@
 // Name: WndProc()
 // Desc: Static msg handler which passes messages to the application class.
 //-----------------------------------------------------------------------------
-LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	switch(uMsg)
+	switch (uMsg)
 	{
 	case WM_ACTIVATE:
-		{
-			Device.OnWM_Activate			(wParam, lParam);
-		}
+	{
+		Device.OnWM_Activate(wParam, lParam);
+	}
 
-		break;
+	break;
 	case WM_SETCURSOR:
 		return 1;
 	case WM_SYSCOMMAND:
 		// Prevent moving/sizing and power loss in fullscreen mode
-		switch( wParam )
+		switch (wParam)
 		{
 		case SC_MOVE:
 		case SC_SIZE:
 		case SC_MAXIMIZE:
 		case SC_MONITORPOWER:
-		return 1;
-		break;
+			return 1;
+			break;
 		}
 		break;
 	case WM_CLOSE:
@@ -35,5 +35,5 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	default:
 		break;
 	}
-	return DefWindowProc(hWnd,uMsg,wParam,lParam);
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }

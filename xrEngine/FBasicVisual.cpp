@@ -5,9 +5,8 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#include "render.h"
 
-    #include "render.h"
-  
 #include "fbasicvisual.h"
 #include "fmesh.h"
 
@@ -15,60 +14,64 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-IRender_Mesh::~IRender_Mesh()		
-{ 
-	_RELEASE(p_rm_Vertices); 
-	_RELEASE(p_rm_Indices);		
-}
-
-IRender_Visual::IRender_Visual		()
+IRender_Mesh::~IRender_Mesh()
 {
-	Type				= 0;
-	shader				= 0;
-	vis.clear			();
+	_RELEASE(p_rm_Vertices);
+	_RELEASE(p_rm_Indices);
 }
 
-IRender_Visual::~IRender_Visual		()
+IRender_Visual::IRender_Visual()
 {
+	Type = 0;
+	shader = 0;
+	vis.clear();
 }
 
-void IRender_Visual::Release		()
+IRender_Visual::~IRender_Visual()
 {
 }
 
-CStatTimer						tscreate;
+void IRender_Visual::Release()
+{
+}
 
-void IRender_Visual::Load		(const char* N, IReader *data, u32 )
+CStatTimer tscreate;
+
+void IRender_Visual::Load(const char *N, IReader *data, u32)
 {
 #ifdef DEBUG
-	dbg_name	= N;
+	dbg_name = N;
 #endif
 
 	// header
-	VERIFY		(data);
-	ogf_header	hdr;
-	if (data->r_chunk_safe(OGF_HEADER,&hdr,sizeof(hdr)))
+	VERIFY(data);
+	ogf_header hdr;
+	if (data->r_chunk_safe(OGF_HEADER, &hdr, sizeof(hdr)))
 	{
-		R_ASSERT2			(hdr.format_version==xrOGF_FormatVersion, "Invalid visual version");
-		Type				= hdr.type;
-		if (hdr.shader_id)	shader	= ::Render->getShader	(hdr.shader_id);
-		vis.box.set			(hdr.bb.min,hdr.bb.max	);
-		vis.sphere.set		(hdr.bs.c,	hdr.bs.r	);
-	} else {
-		FATAL				("Invalid visual");
+		R_ASSERT2(hdr.format_version == xrOGF_FormatVersion, "Invalid visual version");
+		Type = hdr.type;
+		if (hdr.shader_id)
+			shader = ::Render->getShader(hdr.shader_id);
+		vis.box.set(hdr.bb.min, hdr.bb.max);
+		vis.sphere.set(hdr.bs.c, hdr.bs.r);
+	}
+	else
+	{
+		FATAL("Invalid visual");
 	}
 
 	// Shader
-	if (data->find_chunk(OGF_TEXTURE)) {
-		string256		fnT,fnS;
-		data->r_stringZ	(fnT,sizeof(fnT));
-		data->r_stringZ	(fnS,sizeof(fnS));
-		shader.create	(fnS,fnT);
+	if (data->find_chunk(OGF_TEXTURE))
+	{
+		string256 fnT, fnS;
+		data->r_stringZ(fnT, sizeof(fnT));
+		data->r_stringZ(fnS, sizeof(fnS));
+		shader.create(fnS, fnT);
 	}
 }
 
-#define PCOPY(a)	a = pFrom->a
-void	IRender_Visual::Copy(IRender_Visual *pFrom)
+#define PCOPY(a) a = pFrom->a
+void IRender_Visual::Copy(IRender_Visual *pFrom)
 {
 	PCOPY(Type);
 	PCOPY(shader);

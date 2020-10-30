@@ -8,9 +8,11 @@
 
 #pragma once
 
-namespace SightManager {
-	enum ESightType {
-		eSightTypeCurrentDirection	= u32(0),
+namespace SightManager
+{
+	enum ESightType
+	{
+		eSightTypeCurrentDirection = u32(0),
 		eSightTypePathDirection,
 		eSightTypeDirection,
 		eSightTypePosition,
@@ -20,7 +22,7 @@ namespace SightManager {
 		eSightTypeLookOver,
 		eSightTypeCoverLookOver,
 		eSightTypeFireObject,
-		eSightTypeFirePosition,		// must be removed
-		eSightTypeDummy				= u32(-1),
+		eSightTypeFirePosition, // must be removed
+		eSightTypeDummy = u32(-1),
 	};
 };

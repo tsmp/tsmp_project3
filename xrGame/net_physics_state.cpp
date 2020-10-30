@@ -4,7 +4,7 @@
 
 net_physics_state::net_physics_state()
 {
-	physics_linear_velocity.set(0,0,0);
+	physics_linear_velocity.set(0, 0, 0);
 	physics_position.set(0, 0, 0);
 	physics_state_enabled = false;
 	dwTimeStamp = 0;

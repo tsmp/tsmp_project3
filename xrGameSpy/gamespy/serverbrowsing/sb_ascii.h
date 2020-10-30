@@ -19,17 +19,17 @@ devsupport@gamespy.com
 // PROTOTYPES FOR ASCII VERSIONS
 // This is required to silence CodeWarrior warnings about functions not having a prototype
 
-
 #ifndef _SB_ASCII_H
 #define _SB_ASCII_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-	
+
 #include "../common/gsCommon.h"
 
-/*
+	/*
 ServerBrowserNew
 ----------------
 Creates and returns a new (empty) ServerBrowser object.
@@ -43,10 +43,9 @@ maxConcUpdates - Max number of concurent updates (10-15 for modem users, 20-30 f
 queryVersion - Query protocol to use. Use QVERSION_GOA for DeveloperSpec/Query&Reporting1 games, and QVERSION_QR2 for games that use Query & Reporting 2
 callback - The function that will be called with list updates
 instance - User-defined instance data (e.g. structure or object pointer)  */
-ServerBrowser ServerBrowserNewA(const char *queryForGamename, const char *queryFromGamename, const char *queryFromKey, int queryFromVersion, int maxConcUpdates, int queryVersion, SBBool lanBrowse, ServerBrowserCallback callback, void *instance);
+	ServerBrowser ServerBrowserNewA(const char *queryForGamename, const char *queryFromGamename, const char *queryFromKey, int queryFromVersion, int maxConcUpdates, int queryVersion, SBBool lanBrowse, ServerBrowserCallback callback, void *instance);
 
-
-/* ServerBrowserUpdate
+	/* ServerBrowserUpdate
 -------------------
 Starts an update by downloading a list of servers from the master server, then querying them.
 
@@ -66,12 +65,11 @@ ServerBrowserLimitUpdate
 ------------------------
 Identical to ServerBrowserUpdate, except that the number of servers returned can be limited
 maxServers - Maximum number of servers to be returned
-*/ 
-SBError ServerBrowserUpdateA(ServerBrowser sb, SBBool async, SBBool disconnectOnComplete, const unsigned char *basicFields, int numBasicFields, const char *serverFilter);
-SBError ServerBrowserLimitUpdateA(ServerBrowser sb, SBBool async, SBBool disconnectOnComplete, const unsigned char *basicFields, int numBasicFields, const char *serverFilter, int maxServers);
+*/
+	SBError ServerBrowserUpdateA(ServerBrowser sb, SBBool async, SBBool disconnectOnComplete, const unsigned char *basicFields, int numBasicFields, const char *serverFilter);
+	SBError ServerBrowserLimitUpdateA(ServerBrowser sb, SBBool async, SBBool disconnectOnComplete, const unsigned char *basicFields, int numBasicFields, const char *serverFilter, int maxServers);
 
-
-/* ServerBrowserAuxUpdateIP
+	/* ServerBrowserAuxUpdateIP
 -------------------
 Manually updates a server given an IP address and query port. Use to manually add servers to the list when you just
 have an IP and port for them. 
@@ -86,86 +84,79 @@ async - If SBTrue, the update will be initiated, and ServerListThink must be cal
 		If SBFalse, the function will not return until the server has been successfully or unsuccessfully updated
 fullUpdate - If SBTrue, all server keys/rules/player/team information will be retrieved
 			 If SBFalse, only the keys specified in the basicFields array of the ServerBrowserUpdate function will be retrieved */
-SBError ServerBrowserAuxUpdateIPA(ServerBrowser sb, const char *ip, unsigned short port, SBBool viaMaster, SBBool async, SBBool fullUpdate);
+	SBError ServerBrowserAuxUpdateIPA(ServerBrowser sb, const char *ip, unsigned short port, SBBool viaMaster, SBBool async, SBBool fullUpdate);
 
-/* ServerBrowserRemoveIP
+	/* ServerBrowserRemoveIP
 -------------------
 Removes a server from the list given an IP and query port */
-void ServerBrowserRemoveIPA(ServerBrowser sb, const char *ip, unsigned short port);
+	void ServerBrowserRemoveIPA(ServerBrowser sb, const char *ip, unsigned short port);
 
-/* ServerBrowserErrorDesc
+	/* ServerBrowserErrorDesc
 -------------------
 Returns a human-readable error string for the given error code. */
-const char *ServerBrowserErrorDescA(ServerBrowser sb, SBError error);
+	const char *ServerBrowserErrorDescA(ServerBrowser sb, SBError error);
 
-/* ServerBrowserListQueryError
+	/* ServerBrowserListQueryError
 -------------------
 When a list query error occurs, as indicated by the sbc_queryerror callback, this function allows you to
 obtain the human-readable error string for the error (generally these errors are caused by errors in the 
 filter string) */
-const char *ServerBrowserListQueryErrorA(ServerBrowser sb);
+	const char *ServerBrowserListQueryErrorA(ServerBrowser sb);
 
-
-/* ServerBrowserSendNatNegotiateCookieToServer
+	/* ServerBrowserSendNatNegotiateCookieToServer
 ------------------
 Sends a cookie value to the server for use with NAT Negotiation */
-SBError ServerBrowserSendNatNegotiateCookieToServerA(ServerBrowser sb, const char *ip, unsigned short port, int cookie);
+	SBError ServerBrowserSendNatNegotiateCookieToServerA(ServerBrowser sb, const char *ip, unsigned short port, int cookie);
 
-
-/* ServerBrowserSendMessageToServer
+	/* ServerBrowserSendMessageToServer
 ------------------
 Sends a game-specific message to a server  */
-SBError ServerBrowserSendMessageToServerA(ServerBrowser sb, const char *ip, unsigned short port, const char *data, int len);
+	SBError ServerBrowserSendMessageToServerA(ServerBrowser sb, const char *ip, unsigned short port, const char *data, int len);
 
-
-/* ServerBrowserSort
+	/* ServerBrowserSort
 -----------------
 Sort the server list in either ascending or descending order using the 
 specified comparemode.
 sortkey can be a normal server key, or "ping" or "hostaddr" */
-void ServerBrowserSortA(ServerBrowser sb, SBBool ascending, const char *sortkey, SBCompareMode comparemode);
+	void ServerBrowserSortA(ServerBrowser sb, SBBool ascending, const char *sortkey, SBCompareMode comparemode);
 
-/*******************
+	/*******************
 SBServer Object Functions
 ********************/
 
-
-/* SBServerGetPublicAddress/SBServerGetPrivateAddress
+	/* SBServerGetPublicAddress/SBServerGetPrivateAddress
 -------------------
 Returns the string, dotted IP address for the specified server 
 The "private" version is only valid when the server has a private address available */
-char *SBServerGetPublicAddress(SBServer server);
-char *SBServerGetPrivateAddress(SBServer server);
+	char *SBServerGetPublicAddress(SBServer server);
+	char *SBServerGetPrivateAddress(SBServer server);
 
-
-/* SBServerGet[]Value
+	/* SBServerGet[]Value
 ------------------
 Returns the value for the specified key. If the key does not exist for the
 given server, the default value is returned */
-const char *SBServerGetStringValueA(SBServer server, const char *keyname, const char *def);
-int SBServerGetIntValueA(SBServer server, const char *key, int idefault);
-double SBServerGetFloatValueA(SBServer server, const char *key, double fdefault);
-SBBool SBServerGetBoolValueA(SBServer server, const char *key, SBBool bdefault);
+	const char *SBServerGetStringValueA(SBServer server, const char *keyname, const char *def);
+	int SBServerGetIntValueA(SBServer server, const char *key, int idefault);
+	double SBServerGetFloatValueA(SBServer server, const char *key, double fdefault);
+	SBBool SBServerGetBoolValueA(SBServer server, const char *key, SBBool bdefault);
 
-
-/* SBServerGetPlayer[]Value / SBServerGetTeam[]Value
+	/* SBServerGetPlayer[]Value / SBServerGetTeam[]Value
 ------------------
 Returns the value for the specified key on the specified player or team. If the key does not exist for the
 given server, the default value is returned 
 Player keys take the form keyname_N where N is the player index, and team keys take the form
 keyname_tN where N is the team index. You should only specify the keyname for the key in the below functions.
 */
-const char *SBServerGetPlayerStringValueA(SBServer server, int playernum, const char *key, const char *sdefault);
-int SBServerGetPlayerIntValueA(SBServer server, int playernum, const char *key, int idefault);
-double SBServerGetPlayerFloatValueA(SBServer server, int playernum, const char *key, double fdefault);
+	const char *SBServerGetPlayerStringValueA(SBServer server, int playernum, const char *key, const char *sdefault);
+	int SBServerGetPlayerIntValueA(SBServer server, int playernum, const char *key, int idefault);
+	double SBServerGetPlayerFloatValueA(SBServer server, int playernum, const char *key, double fdefault);
 
-const char *SBServerGetTeamStringValueA(SBServer server, int teamnum, const char *key, const char *sdefault);
-int SBServerGetTeamIntValueA(SBServer server, int teamnum, const char *key, int idefault);
-double SBServerGetTeamFloatValueA(SBServer server, int teamnum, const char *key, double fdefault);
-
+	const char *SBServerGetTeamStringValueA(SBServer server, int teamnum, const char *key, const char *sdefault);
+	int SBServerGetTeamIntValueA(SBServer server, int teamnum, const char *key, int idefault);
+	double SBServerGetTeamFloatValueA(SBServer server, int teamnum, const char *key, double fdefault);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif 
+#endif

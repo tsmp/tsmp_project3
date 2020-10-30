@@ -8,8 +8,8 @@ struct net_physics_state
 {
 	Fvector physics_linear_velocity;
 	Fvector physics_position;
-	bool	physics_state_enabled;
-	u32		dwTimeStamp;
+	bool physics_state_enabled;
+	u32 dwTimeStamp;
 
 	net_physics_state();
 	void fill(SPHNetState &state, u32 time);

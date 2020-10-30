@@ -8,9 +8,11 @@
 
 #pragma once
 
-namespace ObjectHandlerSpace {
-	enum EWorldProperties {
-		eWorldPropertyItemID		= u32(0),
+namespace ObjectHandlerSpace
+{
+	enum EWorldProperties
+	{
+		eWorldPropertyItemID = u32(0),
 		eWorldPropertyHidden,
 		eWorldPropertyStrapped,
 		eWorldPropertyStrapped2Idle,
@@ -39,7 +41,7 @@ namespace ObjectHandlerSpace {
 		eWorldPropertyAimingReady2,
 		eWorldPropertyAimForceFull1,
 		eWorldPropertyAimForceFull2,
-		
+
 		eWorldPropertyThrowStarted,
 		eWorldPropertyThrowIdle,
 		eWorldPropertyThrow,
@@ -49,13 +51,14 @@ namespace ObjectHandlerSpace {
 		eWorldPropertyUsed,
 		eWorldPropertyUseEnough,
 
-		eWorldPropertyNoItems				= u32((u16(-1) << 16) | eWorldPropertyItemID),
-		eWorldPropertyNoItemsIdle			= u32((u16(-1) << 16) | eWorldPropertyIdle),
-		eWorldPropertyDummy					= u32(-1),
+		eWorldPropertyNoItems = u32((u16(-1) << 16) | eWorldPropertyItemID),
+		eWorldPropertyNoItemsIdle = u32((u16(-1) << 16) | eWorldPropertyIdle),
+		eWorldPropertyDummy = u32(-1),
 	};
 
-	enum EWorldOperators {
-		eWorldOperatorShow			= u32(0),
+	enum EWorldOperators
+	{
+		eWorldOperatorShow = u32(0),
 		eWorldOperatorHide,
 		eWorldOperatorDrop,
 		eWorldOperatorStrapping,
@@ -92,7 +95,7 @@ namespace ObjectHandlerSpace {
 		eWorldOperatorPrepare,
 		eWorldOperatorUse,
 
-		eWorldOperatorNoItemsIdle	= u32((u16(-1) << 16) | eWorldOperatorIdle),
-		eWorldOperatorDummy			= u32(-1),
+		eWorldOperatorNoItemsIdle = u32((u16(-1) << 16) | eWorldOperatorIdle),
+		eWorldOperatorDummy = u32(-1),
 	};
-};
+}; // namespace ObjectHandlerSpace

@@ -8,8 +8,10 @@
 
 #pragma once
 
-namespace PatrolPathManager {
-	enum EPatrolStartType {
+namespace PatrolPathManager
+{
+	enum EPatrolStartType
+	{
 		ePatrolStartTypeFirst = u32(0),
 		ePatrolStartTypeLast,
 		ePatrolStartTypeNearest,
@@ -17,10 +19,10 @@ namespace PatrolPathManager {
 		ePatrolStartTypeNext,
 		ePatrolStartTypeDummy = u32(-1),
 	};
-	enum EPatrolRouteType {
+	enum EPatrolRouteType
+	{
 		ePatrolRouteTypeStop = u32(0),
 		ePatrolRouteTypeContinue,
 		ePatrolRouteTypeDummy = u32(-1),
 	};
-};
-
+}; // namespace PatrolPathManager

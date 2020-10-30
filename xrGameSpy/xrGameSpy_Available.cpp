@@ -5,9 +5,9 @@
 #include "xrGameSpy_Available.h"
 
 //XRGAMESPY_API void	xrGS_GSIStartAvailableCheck(const gsi_char * gamename)
-XRGAMESPY_API void	xrGS_GSIStartAvailableCheck()
+XRGAMESPY_API void xrGS_GSIStartAvailableCheck()
 {
-//	GSIStartAvailableCheck(gamename);
+	//	GSIStartAvailableCheck(gamename);
 	GSIStartAvailableCheck(GAMESPY_GAMENAME);
 };
 

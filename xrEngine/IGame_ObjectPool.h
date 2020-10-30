@@ -1,12 +1,12 @@
 #pragma once
 
 // refs
-class ENGINE_API				CObject;
+class ENGINE_API CObject;
 
 //-----------------------------------------------------------------------------------------------------------
-class ENGINE_API 				IGame_ObjectPool
+class ENGINE_API IGame_ObjectPool
 {
-/*
+	/*
 private:
 	struct str_pred : public std::binary_function<shared_str&, shared_str&, bool> 
 	{	
@@ -18,17 +18,18 @@ private:
 private:
 	POOL						map_POOL;
 */
-	typedef xr_vector<CObject*>	ObjectVec;
-	typedef ObjectVec::iterator	ObjectVecIt;
-	ObjectVec					m_PrefetchObjects;
+	typedef xr_vector<CObject *> ObjectVec;
+	typedef ObjectVec::iterator ObjectVecIt;
+	ObjectVec m_PrefetchObjects;
+
 public:
-	void						prefetch			( );
-	void						clear				( );
+	void prefetch();
+	void clear();
 
-	CObject*					create				( LPCSTR	name	);
-	void						destroy				( CObject*	O		);
+	CObject *create(LPCSTR name);
+	void destroy(CObject *O);
 
-	IGame_ObjectPool			();
-	virtual ~IGame_ObjectPool	();
+	IGame_ObjectPool();
+	virtual ~IGame_ObjectPool();
 };
 //-----------------------------------------------------------------------------------------------------------

@@ -2,7 +2,6 @@
 #include "sb_internal.h"
 #include "sb_ascii.h"
 
-
 #define SERVER_GROWBY 100
 
 //for the master server info
@@ -10,13 +9,7 @@
 
 #define MAX_OUTGOING_REQUEST_SIZE (MAX_FIELD_LIST_LEN + MAX_FILTER_LEN + 255)
 
-
-
-
-
-
 static SBServerList *g_sortserverlist; //global serverlist for sorting info!!
-
 
 //private function used to compare the key values based on a previously defined sortkey
 static int prevKeyCompare(SBServer server1, SBServer server2)
@@ -25,40 +18,39 @@ static int prevKeyCompare(SBServer server1, SBServer server2)
 	int diff;
 	double f;
 	//test which type of sort
-	switch(g_sortserverlist->prevsortinfo.comparemode)
+	switch (g_sortserverlist->prevsortinfo.comparemode)
 	{
-		case sbcm_int: 
-			diff = SBServerGetIntValueA(server1, prevsortkey, 0) - 
-					SBServerGetIntValueA(server2, prevsortkey, 0);
-			break;
-		case sbcm_float: 
-			f = SBServerGetFloatValueA(server1, prevsortkey, 0) - 
-					SBServerGetFloatValueA(server2, prevsortkey, 0);
-			if (!g_sortserverlist->sortascending) 
-				f = -f;
-			if ((float)f > (float)0.0) 
-				return 1;
-			else if ((float)f < (float)0.0) 
-				return -1;
-			else
-				return 0;
-			//break;
-		case sbcm_strcase: 
-			diff = strcmp(SBServerGetStringValueA(server1, prevsortkey, ""),
-							SBServerGetStringValueA(server2, prevsortkey, ""));
-			break;
-		case sbcm_stricase: 
-			diff = strcasecmp(SBServerGetStringValueA(server1, prevsortkey, ""),
-								SBServerGetStringValueA(server2, prevsortkey, ""));		
-			break;
-		default: 
-			return 0;		
+	case sbcm_int:
+		diff = SBServerGetIntValueA(server1, prevsortkey, 0) -
+			   SBServerGetIntValueA(server2, prevsortkey, 0);
+		break;
+	case sbcm_float:
+		f = SBServerGetFloatValueA(server1, prevsortkey, 0) -
+			SBServerGetFloatValueA(server2, prevsortkey, 0);
+		if (!g_sortserverlist->sortascending)
+			f = -f;
+		if ((float)f > (float)0.0)
+			return 1;
+		else if ((float)f < (float)0.0)
+			return -1;
+		else
+			return 0;
+		//break;
+	case sbcm_strcase:
+		diff = strcmp(SBServerGetStringValueA(server1, prevsortkey, ""),
+					  SBServerGetStringValueA(server2, prevsortkey, ""));
+		break;
+	case sbcm_stricase:
+		diff = strcasecmp(SBServerGetStringValueA(server1, prevsortkey, ""),
+						  SBServerGetStringValueA(server2, prevsortkey, ""));
+		break;
+	default:
+		return 0;
 	}
-	if (!g_sortserverlist->sortascending) 
+	if (!g_sortserverlist->sortascending)
 		diff = -diff;
 	return diff;
 }
-
 
 /****
 Comparision Functions
@@ -69,54 +61,53 @@ static int GS_STATIC_CALLBACK IntKeyCompare(const void *entry1, const void *entr
 	int diff;
 	const char *currsortkey = (const char *)g_sortserverlist->currsortinfo.sortkey;
 
-	diff = SBServerGetIntValueA(server1, currsortkey, 0) - 
-			SBServerGetIntValueA(server2, currsortkey, 0);
+	diff = SBServerGetIntValueA(server1, currsortkey, 0) -
+		   SBServerGetIntValueA(server2, currsortkey, 0);
 
 	if (diff == 0) //if equal, sort by previous sort value to retain earlier sort
-		return prevKeyCompare(server1, server2);			
+		return prevKeyCompare(server1, server2);
 
-	if (!g_sortserverlist->sortascending) 
+	if (!g_sortserverlist->sortascending)
 		diff = -diff;
 	return diff;
-	
 }
 
 static int GS_STATIC_CALLBACK FloatKeyCompare(const void *entry1, const void *entry2)
 {
-    SBServer server1 = *(SBServer *)entry1, server2 = *(SBServer *)entry2;
+	SBServer server1 = *(SBServer *)entry1, server2 = *(SBServer *)entry2;
 	double f;
 	const char *currsortkey = (const char *)g_sortserverlist->currsortinfo.sortkey;
 
-	f = SBServerGetFloatValueA(server1, currsortkey, 0) - 
-			SBServerGetFloatValueA(server2, currsortkey, 0);
+	f = SBServerGetFloatValueA(server1, currsortkey, 0) -
+		SBServerGetFloatValueA(server2, currsortkey, 0);
 
 	//if equal, sort by previous sort value to retain earlier sort
-	if ( !((float)f > (float)0.0) && !((float)f < (float)0.0) )
-		return prevKeyCompare(server1, server2);			
+	if (!((float)f > (float)0.0) && !((float)f < (float)0.0))
+		return prevKeyCompare(server1, server2);
 
-	if (!g_sortserverlist->sortascending) 
+	if (!g_sortserverlist->sortascending)
 		f = -f;
-	if ((float)f > (float)0.0) 
+	if ((float)f > (float)0.0)
 		return 1;
-	else if ((float)f < (float)0.0) 
-		return -1; 
-	else 
+	else if ((float)f < (float)0.0)
+		return -1;
+	else
 		return 0;
 }
 
 static int GS_STATIC_CALLBACK StrCaseKeyCompare(const void *entry1, const void *entry2)
 {
-    SBServer server1 = *(SBServer *)entry1, server2 = *(SBServer *)entry2;
+	SBServer server1 = *(SBServer *)entry1, server2 = *(SBServer *)entry2;
 	int diff;
 	const char *currsortkey = (const char *)g_sortserverlist->currsortinfo.sortkey;
 
-    diff = strcmp(SBServerGetStringValueA(server1, currsortkey, ""),
-				SBServerGetStringValueA(server2, currsortkey, ""));
+	diff = strcmp(SBServerGetStringValueA(server1, currsortkey, ""),
+				  SBServerGetStringValueA(server2, currsortkey, ""));
 
 	if (diff == 0) //if equal, sort by previous sort value to retain earlier sort
-		return prevKeyCompare(server1, server2);			
+		return prevKeyCompare(server1, server2);
 
-	if (!g_sortserverlist->sortascending) 
+	if (!g_sortserverlist->sortascending)
 		diff = -diff;
 	return diff;
 }
@@ -128,16 +119,15 @@ static int GS_STATIC_CALLBACK StrNoCaseKeyCompare(const void *entry1, const void
 	const char *currsortkey = (const char *)g_sortserverlist->currsortinfo.sortkey;
 
 	diff = strcasecmp(SBServerGetStringValueA(server1, currsortkey, ""),
-				SBServerGetStringValueA(server2, currsortkey, ""));
+					  SBServerGetStringValueA(server2, currsortkey, ""));
 
 	if (diff == 0) //if equal, sort by previous sort value to retain earlier sort
-		return prevKeyCompare(server1, server2);			
-	
-	if (!g_sortserverlist->sortascending) 
+		return prevKeyCompare(server1, server2);
+
+	if (!g_sortserverlist->sortascending)
 		diff = -diff;
 	return diff;
 }
-
 
 /* ServerListSort
 -----------------
@@ -149,15 +139,19 @@ void SBServerListSort(SBServerList *slist, SBBool ascending, SortInfo sortinfo)
 	ArrayCompareFn comparator;
 	switch (sortinfo.comparemode)
 	{
-	case sbcm_int: comparator = IntKeyCompare;
+	case sbcm_int:
+		comparator = IntKeyCompare;
 		break;
-	case sbcm_float: comparator = FloatKeyCompare;
+	case sbcm_float:
+		comparator = FloatKeyCompare;
 		break;
-	case sbcm_strcase: comparator = StrCaseKeyCompare;
+	case sbcm_strcase:
+		comparator = StrCaseKeyCompare;
 		break;
-	case sbcm_stricase: comparator = StrNoCaseKeyCompare;
+	case sbcm_stricase:
+		comparator = StrNoCaseKeyCompare;
 		break;
-	default: 
+	default:
 		comparator = StrNoCaseKeyCompare;
 	}
 
@@ -166,30 +160,25 @@ void SBServerListSort(SBServerList *slist, SBBool ascending, SortInfo sortinfo)
 		slist->prevsortinfo = sortinfo;
 	else if (strcmp((const char *)sortinfo.sortkey, (const char *)slist->currsortinfo.sortkey) != 0)
 		slist->prevsortinfo = slist->currsortinfo; //only set new sort if different than prev
-	
+
 	slist->currsortinfo = sortinfo;
 	slist->sortascending = ascending;
 	g_sortserverlist = slist;
-	ArraySort(slist->servers,comparator);
+	ArraySort(slist->servers, comparator);
 }
 
-
-
- 
 void SBServerListAppendServer(SBServerList *slist, SBServer server)
 {
 	ArrayAppend(slist->servers, &server);
 	slist->ListCallback(slist, slc_serveradded, server, slist->instance);
 }
 
-
-
 int SBServerListFindServer(SBServerList *slist, SBServer findserver)
 {
 	int numservers;
 	int i;
 	numservers = ArrayLength(slist->servers);
-	for (i = 0 ; i < numservers ; i++)
+	for (i = 0; i < numservers; i++)
 	{
 		if (findserver == *(SBServer *)ArrayNth(slist->servers, i))
 		{
@@ -205,7 +194,7 @@ int SBServerListFindServerByIP(SBServerList *slist, goa_uint32 ip, unsigned shor
 	SBServer server;
 	int i;
 	numservers = ArrayLength(slist->servers);
-	for (i = 0 ; i < numservers ; i++)
+	for (i = 0; i < numservers; i++)
 	{
 		server = *(SBServer *)ArrayNth(slist->servers, i);
 		if (SBServerGetPublicInetAddress(server) == ip && SBServerGetPublicQueryPortNBO(server) == port)
@@ -222,11 +211,11 @@ static void AddServerToDeadlist(SBServerList *slist, SBServer server)
 	if (slist->deadlist == NULL)
 	{
 		SBServerSetNext(server, NULL);
-	} else
+	}
+	else
 		SBServerSetNext(server, slist->deadlist);
-	slist->deadlist = server;	
+	slist->deadlist = server;
 }
-
 
 void SBServerListRemoveAt(SBServerList *slist, int index)
 {
@@ -248,7 +237,6 @@ SBServer SBServerListNth(SBServerList *slist, int i)
 	return *(SBServer *)ArrayNth(slist->servers, i);
 }
 
-
 void SBFreeDeadList(SBServerList *slist)
 {
 	SBServer server, next;
@@ -264,13 +252,12 @@ void SBFreeDeadList(SBServerList *slist)
 	slist->deadlist = NULL;
 }
 
-
 void SBServerListClear(SBServerList *slist)
 {
 	//we need to add each server to the dead list so it can be freed after the clear
 	int i;
 	int nservers = ArrayLength(slist->servers);
-	for (i = 0 ; i < nservers ; i++)
+	for (i = 0; i < nservers; i++)
 	{
 		AddServerToDeadlist(slist, *(SBServer *)ArrayNth(slist->servers, i));
 	}
@@ -281,11 +268,9 @@ void SBServerListClear(SBServerList *slist)
 
 void SBAllocateServerList(SBServerList *slist)
 {
-	slist->servers = ArrayNew(sizeof(SBServer ), SERVER_GROWBY, NULL); //don't free the server automatically - it goes into the dead list
+	slist->servers = ArrayNew(sizeof(SBServer), SERVER_GROWBY, NULL); //don't free the server automatically - it goes into the dead list
 	slist->deadlist = NULL;
 }
-
-
 
 const char *SBRefStr(SBServerList *slist, const char *str)
 {
@@ -306,8 +291,6 @@ const char *SBRefStr(SBServerList *slist, const char *str)
 #endif
 	TableEnter(SBRefStrHash(slist), &ref);
 	return ref.str;
-	
-	
 }
 
 void SBReleaseStr(SBServerList *slist, const char *str)
@@ -324,34 +307,28 @@ void SBReleaseStr(SBServerList *slist, const char *str)
 }
 
 #ifdef VENGINE_SUPPORT
-	#define FTABLE_ASSIGN
-	#include "../VEngine/ve_gm3ftable.h"
+#define FTABLE_ASSIGN
+#include "../VEngine/ve_gm3ftable.h"
 #endif
-
 
 #ifdef VENGINE_SUPPORT
 #define FTABLE_DEFINES
 #include "../VEngine/ve_gm3ftable.h"
 #endif
 
-
-
 //global pointer to alternate master server name/IP
 char *SBOverrideMasterServer = NULL;
-
 
 int NTSLengthSB(char *buf, int len)
 {
 	int i;
-	for (i = 0 ; i < len ; i++)
+	for (i = 0; i < len; i++)
 	{
 		if (buf[i] == '\0') //found a full NTS
-			return i + 1; //return the length including the null
+			return i + 1;	//return the length including the null
 	}
 	return -1;
 }
-
-
 
 void SBServerListInit(SBServerList *slist, const char *queryForGamename, const char *queryFromGamename, const char *queryFromKey, int queryFromVersion, SBBool lanBrowse, SBListCallBackFn callback, void *instance)
 {
@@ -361,14 +338,14 @@ void SBServerListInit(SBServerList *slist, const char *queryForGamename, const c
 	///////////////////////////////////////////////////
 	if (lanBrowse == SBFalse)
 	{
-		if(__GSIACResult != GSIACAvailable)
+		if (__GSIACResult != GSIACAvailable)
 			return;
 	}
-	
+
 #ifdef VENGINE_SUPPORT
-		SBServerListSetPointers(slist);
+	SBServerListSetPointers(slist);
 #endif
-	
+
 	slist->state = sl_disconnected;
 	SBAllocateServerList(slist);
 	SBRefStrHash(slist); //make sure it's initialized
@@ -403,16 +380,14 @@ void SBServerListInit(SBServerList *slist, const char *queryForGamename, const c
 
 	srand((unsigned int)current_time());
 	SocketStartUp();
-	
 }
-
 
 static void ErrorDisconnect(SBServerList *slist)
 {
-	static char* QUERY_ERROR = "Query Error: ";
+	static char *QUERY_ERROR = "Query Error: ";
 
 	// check to see if there is a Query Error string in the inbuffer
-	if ((slist->inbufferlen > 0) && ((unsigned int)slist->inbufferlen > strlen(QUERY_ERROR)) && 
+	if ((slist->inbufferlen > 0) && ((unsigned int)slist->inbufferlen > strlen(QUERY_ERROR)) &&
 		(0 == strncmp(slist->inbuffer, QUERY_ERROR, strlen(QUERY_ERROR))))
 	{
 		// call the callback with queryerror first
@@ -422,7 +397,7 @@ static void ErrorDisconnect(SBServerList *slist)
 
 	//call the callback..
 	slist->ListCallback(slist, slc_disconnected, SBNullServer, slist->instance);
-	SBServerListDisconnect(slist);	
+	SBServerListDisconnect(slist);
 }
 
 #define MULTIPLIER -1664117991
@@ -434,26 +409,23 @@ static int StringHash(const char *s, int numbuckets)
 		hashcode = (goa_uint32)((int)hashcode * MULTIPLIER + tolower(*s));
 		s++;
 	}
-    return (int)(hashcode % numbuckets);
-
+	return (int)(hashcode % numbuckets);
 }
-
 
 #define BUFFER_SIZE 256
 
 static SBError ServerListConnect(SBServerList *slist)
 {
-	struct   sockaddr_in saddr;
+	struct sockaddr_in saddr;
 	struct hostent *hent;
 	char masterHostname[BUFFER_SIZE];
 	int masterIndex;
-	
 
 	masterIndex = StringHash(slist->queryforgamename, NUM_MASTER_SERVERS);
 	if (SBOverrideMasterServer != NULL)
 		strcpy(masterHostname, SBOverrideMasterServer);
 	else //use the default format...
-		sprintf_s(masterHostname,BUFFER_SIZE,"%s.ms%d." GSI_DOMAIN_NAME, slist->queryforgamename, masterIndex);
+		sprintf_s(masterHostname, BUFFER_SIZE, "%s.ms%d." GSI_DOMAIN_NAME, slist->queryforgamename, masterIndex);
 	saddr.sin_family = AF_INET;
 	saddr.sin_port = htons(MSPORT2);
 	saddr.sin_addr.s_addr = inet_addr(masterHostname);
@@ -461,26 +433,25 @@ static SBError ServerListConnect(SBServerList *slist)
 	{
 		hent = gethostbyname(masterHostname);
 		if (!hent)
-			return sbe_dnserror; 
-		memcpy(&saddr.sin_addr.s_addr,hent->h_addr_list[0], sizeof(saddr.sin_addr.s_addr));
+			return sbe_dnserror;
+		memcpy(&saddr.sin_addr.s_addr, hent->h_addr_list[0], sizeof(saddr.sin_addr.s_addr));
 	}
 
 	if (slist->slsocket == INVALID_SOCKET)
 	{
-		slist->slsocket = socket ( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+		slist->slsocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		if (slist->slsocket == INVALID_SOCKET)
 			return sbe_socketerror;
 	}
-	if (connect ( slist->slsocket, (struct sockaddr *) &saddr, sizeof saddr ) != 0)
+	if (connect(slist->slsocket, (struct sockaddr *)&saddr, sizeof saddr) != 0)
 	{
 		closesocket(slist->slsocket);
 		slist->slsocket = INVALID_SOCKET;
-		return sbe_connecterror; 
+		return sbe_connecterror;
 	}
-	
+
 	//else we are connected
 	return sbe_noerror;
-
 }
 
 #undef BUFFER_SIZE
@@ -515,13 +486,12 @@ static void BufferAddIntLE(char **buffer, int ival, int *len)
 {
 	unsigned int ivalNBO = htonl(ival);
 	unsigned int ivalBE = 0;
-	ivalBE |= ((0x000000FF&ivalNBO)<<24);
-	ivalBE |= ((0x0000FF00&ivalNBO)<< 8);
-	ivalBE |= ((0x00FF0000&ivalNBO)>> 8);
-	ivalBE |= ((0xFF000000&ivalNBO)>>24);
-	BufferAddInt(buffer, (int)ivalBE, len); 		
+	ivalBE |= ((0x000000FF & ivalNBO) << 24);
+	ivalBE |= ((0x0000FF00 & ivalNBO) << 8);
+	ivalBE |= ((0x00FF0000 & ivalNBO) >> 8);
+	ivalBE |= ((0xFF000000 & ivalNBO) >> 24);
+	BufferAddInt(buffer, (int)ivalBE, len);
 }
-
 
 static void BufferAddData(char **buffer, char *data, int dlen, int *len)
 {
@@ -530,9 +500,7 @@ static void BufferAddData(char **buffer, char *data, int dlen, int *len)
 	(*buffer) += dlen;
 }
 
-
-
-#define CALCULATEODDMODE(buffer, i, oddmode) ((buffer[i-1] & 1) ^ (i & 1) ^ oddmode ^ (buffer[0] & 1) ^ ((buffer[0] < 79) ? 1 : 0) ^ ((buffer[i-1] < buffer[0]) ? 1 : 0));
+#define CALCULATEODDMODE(buffer, i, oddmode) ((buffer[i - 1] & 1) ^ (i & 1) ^ oddmode ^ (buffer[0] & 1) ^ ((buffer[0] < 79) ? 1 : 0) ^ ((buffer[i - 1] < buffer[0]) ? 1 : 0));
 static void SetupListChallenge(SBServerList *slist)
 {
 	int i;
@@ -540,14 +508,13 @@ static void SetupListChallenge(SBServerList *slist)
 
 	slist->mychallenge[0] = (char)(33 + rand() % 93); //use chars in the range 33 - 125
 	oddmode = 0;
-	for (i = 1; i < LIST_CHALLENGE_LEN ; i++)
+	for (i = 1; i < LIST_CHALLENGE_LEN; i++)
 	{
-		oddmode = CALCULATEODDMODE(slist->mychallenge,i, oddmode);
+		oddmode = CALCULATEODDMODE(slist->mychallenge, i, oddmode);
 		slist->mychallenge[i] = (char)(33 + rand() % 93); //use chars in the range 33 - 125
 		//if oddmode make sure the char is odd, otherwise make sure it's even
 		if ((oddmode && (slist->mychallenge[i] & 1) == 0) || (!oddmode && ((slist->mychallenge[i] & 1) == 1)))
 			slist->mychallenge[i]++;
-
 	}
 }
 
@@ -555,9 +522,9 @@ static SBError SendWithRetry(SBServerList *slist, char *data, int len)
 {
 	SBError err;
 	int ret = 0;
-	
+
 	int retryCount = 1;
-	
+
 	while (retryCount >= 0)
 	{
 		retryCount--;
@@ -571,7 +538,8 @@ static SBError SendWithRetry(SBServerList *slist, char *data, int len)
 				ErrorDisconnect(slist);
 				return err; //couldn't reconnect
 			}
-		} else
+		}
+		else
 			break; //send ok
 	}
 
@@ -585,8 +553,6 @@ static SBError SendWithRetry(SBServerList *slist, char *data, int len)
 	else
 		return sbe_noerror;
 }
-
-
 
 /*
 1 bytes - message type (0)
@@ -616,18 +582,16 @@ SBError SBServerListConnectAndQuery(SBServerList *slist, const char *fieldList, 
 	char outgoingRequest[MAX_OUTGOING_REQUEST_SIZE + 1];
 	assert(slist->state == sl_disconnected);
 
-	
 	if (fieldList == NULL)
 		fieldList = "";
 	if (serverFilter == NULL)
 		serverFilter = "";
-	
+
 	if (strlen(fieldList) > MAX_FIELD_LIST_LEN)
 		return sbe_paramerror;
-	
+
 	if (strlen(serverFilter) > MAX_FILTER_LEN)
 		return sbe_paramerror;
-	
 
 	err = ServerListConnect(slist);
 	if (err != sbe_noerror)
@@ -645,25 +609,25 @@ SBError SBServerListConnectAndQuery(SBServerList *slist, const char *fieldList, 
 	BufferAddByte(&requestBuf, SERVER_LIST_REQUEST, &requestLen);
 	BufferAddByte(&requestBuf, LIST_PROTOCOL_VERSION, &requestLen);
 	BufferAddByte(&requestBuf, LIST_ENCODING_VERSION, &requestLen);
-	BufferAddIntLE(&requestBuf, slist->fromgamever, &requestLen); 		
+	BufferAddIntLE(&requestBuf, slist->fromgamever, &requestLen);
 	BufferAddNTS(&requestBuf, slist->queryforgamename, &requestLen);
 	BufferAddNTS(&requestBuf, slist->queryfromgamename, &requestLen);
 	BufferAddData(&requestBuf, slist->mychallenge, LIST_CHALLENGE_LEN, &requestLen);
 	BufferAddNTS(&requestBuf, serverFilter, &requestLen);
 	BufferAddNTS(&requestBuf, fieldList, &requestLen);
 	options = (int)htonl((unsigned int)options);
-	BufferAddInt(&requestBuf, options, &requestLen); 
+	BufferAddInt(&requestBuf, options, &requestLen);
 	if (slist->queryoptions & ALTERNATE_SOURCE_IP)
 	{
-		BufferAddInt(&requestBuf, (int)slist->srcip, &requestLen); 		
+		BufferAddInt(&requestBuf, (int)slist->srcip, &requestLen);
 	}
 	if (slist->queryoptions & LIMIT_RESULT_COUNT)
 	{
-		BufferAddIntLE(&requestBuf, maxServers, &requestLen); 		
+		BufferAddIntLE(&requestBuf, maxServers, &requestLen);
 	}
 	netLen = htons((unsigned short)requestLen);
 	memcpy(outgoingRequest, &netLen, 2); //set the length...
-	
+
 	//now send!
 	ret = send(slist->slsocket, outgoingRequest, requestLen, 0);
 	if (ret <= 0)
@@ -681,30 +645,29 @@ SBError SBServerListConnectAndQuery(SBServerList *slist, const char *fieldList, 
 			return sbe_allocerror;
 		slist->inbufferlen = 0;
 	}
-	
 
 	return sbe_noerror;
 }
 
 SBError SBServerListGetLANList(SBServerList *slist, unsigned short startport, unsigned short endport, int queryversion)
 {
-	struct   sockaddr_in saddr;
+	struct sockaddr_in saddr;
 	unsigned short i;
 	unsigned char qr2_echo_request[] = {QR2_MAGIC_1, QR2_MAGIC_2, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00};
 	int qr2requestlen = sizeof(qr2_echo_request) / sizeof(qr2_echo_request[0]);
 	if (slist->state != sl_disconnected)
 		SBServerListDisconnect(slist);
 
-	slist->slsocket = socket ( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
+	slist->slsocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (slist->slsocket == INVALID_SOCKET)
 		return sbe_socketerror;
 
 // enable broadcasting where needed
 #if !defined(INSOCK) && !defined(_NITRO)
 	{
-	int optval = 1;
-	if (setsockopt(slist->slsocket, SOL_SOCKET, SO_BROADCAST, (char *)&optval, sizeof(optval)) != 0)
-		return sbe_socketerror;
+		int optval = 1;
+		if (setsockopt(slist->slsocket, SOL_SOCKET, SO_BROADCAST, (char *)&optval, sizeof(optval)) != 0)
+			return sbe_socketerror;
 	}
 #endif
 
@@ -718,19 +681,19 @@ SBError SBServerListGetLANList(SBServerList *slist, unsigned short startport, un
 		aClassCAddr.sin_family = AF_INET;
 		aClassCAddr.sin_addr.s_addr = inet_addr(slist->mLanAdapterOverride);
 		aClassCAddr.sin_port = 0; // bind to any port
-		if (0 != bind(slist->slsocket, (struct sockaddr*)&aClassCAddr, sizeof(aClassCAddr)))
+		if (0 != bind(slist->slsocket, (struct sockaddr *)&aClassCAddr, sizeof(aClassCAddr)))
 			return sbe_socketerror;
 	}
 
 	if (endport - startport > 500) //the max we will search
 		endport = (unsigned short)(startport + 500);
-	for (i = startport ; i <= endport ; i += 1)
+	for (i = startport; i <= endport; i += 1)
 	{
 		saddr.sin_port = htons(i);
 		if (queryversion == QVERSION_QR2) //send a QR2 echo request
-			sendto(slist->slsocket, (char*)qr2_echo_request,qr2requestlen,0,(struct sockaddr *)&saddr,sizeof(saddr));
+			sendto(slist->slsocket, (char *)qr2_echo_request, qr2requestlen, 0, (struct sockaddr *)&saddr, sizeof(saddr));
 		else //send a GOA echo request
-			sendto(slist->slsocket, "\\echo\\test",10,0,(struct sockaddr *)&saddr,sizeof(saddr));
+			sendto(slist->slsocket, "\\echo\\test", 10, 0, (struct sockaddr *)&saddr, sizeof(saddr));
 	}
 	slist->state = sl_lanbrowse;
 	slist->lanstarttime = current_time();
@@ -740,7 +703,7 @@ SBError SBServerListGetLANList(SBServerList *slist, unsigned short startport, un
 static void FreePopularValues(SBServerList *slist)
 {
 	int i;
-	for (i = 0 ; i < slist->numpopularvalues ; i++)
+	for (i = 0; i < slist->numpopularvalues; i++)
 		SBReleaseStr(slist, slist->popularvalues[i]);
 	slist->numpopularvalues = 0;
 }
@@ -750,12 +713,11 @@ static void FreeKeyList(SBServerList *slist)
 	int i;
 	if (slist->keylist == NULL)
 		return;
-	for (i = 0 ; i < ArrayLength(slist->keylist) ; i++)
-		SBReleaseStr(slist, ((KeyInfo *)ArrayNth(slist->keylist,i))->keyName);
+	for (i = 0; i < ArrayLength(slist->keylist); i++)
+		SBReleaseStr(slist, ((KeyInfo *)ArrayNth(slist->keylist, i))->keyName);
 
 	ArrayFree(slist->keylist);
 	slist->keylist = NULL;
-
 }
 
 void SBServerListDisconnect(SBServerList *slist)
@@ -771,7 +733,7 @@ void SBServerListDisconnect(SBServerList *slist)
 
 	FreeKeyList(slist);
 	slist->expectedelements = -1;
-	FreePopularValues(slist);	
+	FreePopularValues(slist);
 }
 
 void SBServerListCleanup(SBServerList *slist)
@@ -779,7 +741,7 @@ void SBServerListCleanup(SBServerList *slist)
 	SBServerListDisconnect(slist);
 	SBServerListClear(slist);
 	SBRefStrHashCleanup(slist);
-	if(slist->servers)
+	if (slist->servers)
 		ArrayFree(slist->servers);
 	slist->servers = NULL;
 
@@ -792,22 +754,18 @@ void SBServerListCleanup(SBServerList *slist)
 #endif
 }
 
-
-
 static void InitCryptKey(SBServerList *slist, char *key, int keylen)
 {
 	//combine our secret key, our challenge, and the server's challenge into a crypt key
 	int i;
 	int seckeylen = (int)strlen(slist->queryfromkey);
 	char *seckey = slist->queryfromkey;
-	for (i = 0 ; i < keylen ; i++)
+	for (i = 0; i < keylen; i++)
 	{
-		slist->mychallenge[(i *  seckey[i % seckeylen]) % LIST_CHALLENGE_LEN] ^= (char)((slist->mychallenge[i % LIST_CHALLENGE_LEN] ^ key[i]) & 0xFF);
+		slist->mychallenge[(i * seckey[i % seckeylen]) % LIST_CHALLENGE_LEN] ^= (char)((slist->mychallenge[i % LIST_CHALLENGE_LEN] ^ key[i]) & 0xFF);
 	}
 	GOACryptInit(&(slist->cryptkey), (unsigned char *)(slist->mychallenge), LIST_CHALLENGE_LEN);
-
 }
-
 
 static int ServerSizeForFlags(int flags)
 {
@@ -821,9 +779,7 @@ static int ServerSizeForFlags(int flags)
 	if (flags & NONSTANDARD_PRIVATE_PORT_FLAG)
 		size += 2;
 	return size;
-
 }
-
 
 static int FullRulesPresent(char *buf, int len)
 {
@@ -832,14 +788,14 @@ static int FullRulesPresent(char *buf, int len)
 	{
 		i = NTSLengthSB(buf, len);
 		if (i < 0)
-			return 0;  //no full key
+			return 0; //no full key
 		buf += i;
 		len -= i;
 		i = NTSLengthSB(buf, len);
 		if (i < 0)
 			return 0; //no full value
 		buf += i;
-		len -= i;		
+		len -= i;
 	}
 	if (len == 0)
 		return 0; //not even enough space for the null term
@@ -855,7 +811,7 @@ static int AllKeysPresent(SBServerList *slist, char *buf, int len)
 	int i;
 	int strindex;
 	numkeys = ArrayLength(slist->keylist);
-	for (i = 0 ; i < numkeys ; i++)
+	for (i = 0; i < numkeys; i++)
 	{
 		switch (((KeyInfo *)ArrayNth(slist->keylist, i))->keyType)
 		{
@@ -905,21 +861,19 @@ static void ParseServerIPPort(SBServerList *slist, char *buf, int len, goa_uint3
 	buf++;
 	len--;
 	memcpy(ip, buf, 4);
-	
+
 	buf += 4;
 	len -= 4;
-		
+
 	if (flags & NONSTANDARD_PORT_FLAG)
 	{
 		if (len < 2)
 			return; //invalid buffer
 		memcpy(port, buf, 2);
-	} else
+	}
+	else
 		*port = slist->defaultport;
 }
-
-
-
 
 //parse a server buffer
 static int ParseServer(SBServerList *slist, SBServer server, char *buf, int len, int usepopularlist)
@@ -933,7 +887,6 @@ static int ParseServer(SBServerList *slist, SBServer server, char *buf, int len,
 	unsigned short port;
 	unsigned char flags;
 
-
 	flags = (unsigned char)buf[0];
 	SBServerSetFlags(server, flags);
 	buf++;
@@ -942,7 +895,7 @@ static int ParseServer(SBServerList *slist, SBServer server, char *buf, int len,
 	//skip the IP, it's already set
 	buf += 4;
 	len -= 4;
-		
+
 	//skip the port, if needed
 	if (flags & NONSTANDARD_PORT_FLAG)
 	{
@@ -955,14 +908,16 @@ static int ParseServer(SBServerList *slist, SBServer server, char *buf, int len,
 		memcpy(&ip, buf, 4);
 		buf += 4;
 		len -= 4;
-	} else
+	}
+	else
 		ip = 0;
 	if (flags & NONSTANDARD_PRIVATE_PORT_FLAG)
 	{
 		memcpy(&port, buf, 2);
 		buf += 2;
 		len -= 2;
-	} else
+	}
+	else
 		port = slist->defaultport;
 	SBServerSetPrivateAddr(server, ip, port);
 	if (flags & ICMP_IP_FLAG)
@@ -972,47 +927,48 @@ static int ParseServer(SBServerList *slist, SBServer server, char *buf, int len,
 		len -= 4;
 		SBServerSetICMPIP(server, ip);
 	}
-	
+
 	if (flags & HAS_KEYS_FLAG) //parse the keys
-	{	
+	{
 		numkeys = ArrayLength(slist->keylist);
-		for (i = 0 ; i < numkeys ; i++)
+		for (i = 0; i < numkeys; i++)
 		{
 			KeyInfo *ki = (KeyInfo *)ArrayNth(slist->keylist, i);
 			switch (ki->keyType)
 			{
-				case KEYTYPE_BYTE:
-					SBServerAddIntKeyValue(server, ki->keyName, (unsigned char)buf[0]);
+			case KEYTYPE_BYTE:
+				SBServerAddIntKeyValue(server, ki->keyName, (unsigned char)buf[0]);
+				buf++;
+				len--;
+				break;
+			case KEYTYPE_SHORT:
+				memcpy(&sval, buf, 2);
+				SBServerAddIntKeyValue(server, ki->keyName, ntohs((unsigned short)sval));
+				buf += 2;
+				len -= 2;
+				break;
+			case KEYTYPE_STRING:
+				if (usepopularlist)
+				{
+					strindex = (unsigned char)(buf[0]);
 					buf++;
 					len--;
-					break;
-				case KEYTYPE_SHORT:
-					memcpy(&sval, buf, 2);
-					SBServerAddIntKeyValue(server, ki->keyName, ntohs((unsigned short)sval));
-					buf += 2;
-					len -= 2;
-					break;
-				case KEYTYPE_STRING:
-					if (usepopularlist)
-					{
-						strindex = (unsigned char)(buf[0]);
-						buf++;
-						len--;
-					} else
-						strindex = 0xFF;
-					if (strindex == 0xFF) //a NTS string
-					{
-						SBServerAddKeyValue(server, ki->keyName, buf);
-						strindex = (int)strlen(buf) + 1;
-						buf += strindex;
-						len -= strindex;
-					} else //else it's a popular string - just the index is present
-					{
-						SBServerAddKeyValue(server, ki->keyName, slist->popularvalues[strindex]);
-					}
-					break;
+				}
+				else
+					strindex = 0xFF;
+				if (strindex == 0xFF) //a NTS string
+				{
+					SBServerAddKeyValue(server, ki->keyName, buf);
+					strindex = (int)strlen(buf) + 1;
+					buf += strindex;
+					len -= strindex;
+				}
+				else //else it's a popular string - just the index is present
+				{
+					SBServerAddKeyValue(server, ki->keyName, slist->popularvalues[strindex]);
+				}
+				break;
 			}
-		
 		}
 		SBServerSetState(server, (unsigned char)(SBServerGetState(server) | STATE_BASICKEYS));
 	}
@@ -1033,14 +989,13 @@ static int ParseServer(SBServerList *slist, SBServer server, char *buf, int len,
 		len--; //get the last null out
 		SBServerSetState(server, (unsigned char)(SBServerGetState(server) | STATE_FULLKEYS));
 	}
-	
-	// the server was an empty server message, thus it should be cleared of 
+
+	// the server was an empty server message, thus it should be cleared of
 	// basic key and full key states
-	if ((flags & (HAS_FULL_RULES_FLAG|HAS_KEYS_FLAG)) == 0 && ((server->state & STATE_BASICKEYS) | (server->state & STATE_FULLKEYS)))
-		server->state &= (unsigned char)~(STATE_BASICKEYS|STATE_FULLKEYS);
+	if ((flags & (HAS_FULL_RULES_FLAG | HAS_KEYS_FLAG)) == 0 && ((server->state & STATE_BASICKEYS) | (server->state & STATE_FULLKEYS)))
+		server->state &= (unsigned char)~(STATE_BASICKEYS | STATE_FULLKEYS);
 	return holdlen - len;
 }
-
 
 static int IncomingListParseServer(SBServerList *slist, char *buf, int len)
 {
@@ -1076,7 +1031,7 @@ static int IncomingListParseServer(SBServerList *slist, char *buf, int len)
 		return -2;
 	i = ParseServer(slist, server, buf, len, 1);
 	SBServerListAppendServer(slist, server);
-	return i;	
+	return i;
 }
 
 const char *SBLastListErrorA(SBServerList *slist)
@@ -1089,7 +1044,7 @@ const unsigned short *SBLastListErrorW(SBServerList *slist)
 	return slist->lasterror_W;
 }
 #endif
-void SBSetLastListErrorPtr(SBServerList *slist, char* theError)
+void SBSetLastListErrorPtr(SBServerList *slist, char *theError)
 {
 #ifdef GSI_UNICODE
 	if (slist->lasterror != theError)
@@ -1156,7 +1111,7 @@ Byte Values
 	1 byte - value
 	Short values?
 	2 bytes - value
-*/		  
+*/
 
 static SBError ProcessMainListData(SBServerList *slist)
 {
@@ -1198,7 +1153,7 @@ static SBError ProcessMainListData(SBServerList *slist)
 		memcpy(&slist->mypublicip, inbuf, 4);
 		slist->ListCallback(slist, slc_publicipdetermined, SBNullServer, slist->instance);
 		memcpy(&slist->defaultport, inbuf + 4, 2);
-		if (slist->defaultport == 0xFFFF) //there was an error-  grab the error string if present.. 
+		if (slist->defaultport == 0xFFFF) //there was an error-  grab the error string if present..
 		{
 			if (NTSLengthSB(inbuf + FIXED_HEADER_LEN, inlen - FIXED_HEADER_LEN) == -1) //not all there
 				break;
@@ -1218,7 +1173,7 @@ static SBError ProcessMainListData(SBServerList *slist)
 		}
 		slist->pstate = pi_keylist;
 		slist->expectedelements = -1;
-		
+
 		//and fall through
 	case pi_keylist:
 		if (slist->expectedelements == -1) //we haven't read the initial count of keys yet..
@@ -1275,15 +1230,15 @@ static SBError ProcessMainListData(SBServerList *slist)
 		if (slist->expectedelements > slist->numpopularvalues)
 			break; //didn't read all the popular values
 		//else we've got them all - move on to servers!
-		slist->pstate = pi_servers;		
-	case pi_servers :
+		slist->pstate = pi_servers;
+	case pi_servers:
 		if (inlen < 5) //not enough for a full servers
 			break;
 		do
 		{
-			reqlen =  IncomingListParseServer(slist, inbuf, inlen);
+			reqlen = IncomingListParseServer(slist, inbuf, inlen);
 			if (reqlen == -2)
-				return sbe_allocerror;			
+				return sbe_allocerror;
 			else if (reqlen == -1) //that was the last server!
 			{
 				inlen -= 5;
@@ -1305,7 +1260,7 @@ static SBError ProcessMainListData(SBServerList *slist)
 	assert(inlen >= 0);
 	if (slist->inbuffer == NULL)
 		return sbe_noerror; //don't keep processing - they disconnected
-	if (inlen != 0) //need to shift it over..
+	if (inlen != 0)			//need to shift it over..
 	{
 		memmove(slist->inbuffer, inbuf, (size_t)inlen);
 	}
@@ -1320,7 +1275,7 @@ static SBError ProcessMainListData(SBServerList *slist)
   List of Keys - with key type
   Key Type - 1 Byte (0 = string, 1 = byte, 2 = short)	
   KeyName - NTS
-*/  
+*/
 static SBError ProcessPushKeyList(SBServerList *slist, char *buf, int len)
 {
 	int i;
@@ -1337,7 +1292,7 @@ static SBError ProcessPushKeyList(SBServerList *slist, char *buf, int len)
 	slist->keylist = ArrayNew(sizeof(KeyInfo), numkeys, NULL);
 	if (slist->keylist == NULL)
 		return sbe_allocerror;
-	for (i = 0 ; i < numkeys ; i++)
+	for (i = 0; i < numkeys; i++)
 	{
 		int keylen;
 		KeyInfo ki;
@@ -1352,9 +1307,8 @@ static SBError ProcessPushKeyList(SBServerList *slist, char *buf, int len)
 		buf += keylen + 1;
 		len -= keylen + 1;
 	}
-	return sbe_noerror;	
+	return sbe_noerror;
 }
-
 
 /*
 Is Final Packet - Byte 
@@ -1382,7 +1336,7 @@ static SBError ProcessPlayerSearch(SBServerList *slist, char *buf, int len)
 	resultCount = (unsigned char)buf[1];
 	buf += 2;
 	len -= 2;
-	for (i = 0 ; i < resultCount ; i++)
+	for (i = 0; i < resultCount; i++)
 	{
 		int slen;
 		nick = buf;
@@ -1396,7 +1350,7 @@ static SBError ProcessPlayerSearch(SBServerList *slist, char *buf, int len)
 		memcpy(&ip, buf, 4);
 		memcpy(&port, buf + 4, 2);
 		memcpy(&lastSeen, buf + 6, 4);
-		lastSeen  = (time_t)ntohl((unsigned long)lastSeen);
+		lastSeen = (time_t)ntohl((unsigned long)lastSeen);
 		buf += 10;
 		len -= 10;
 		slen = NTSLengthSB(buf, len);
@@ -1410,9 +1364,7 @@ static SBError ProcessPlayerSearch(SBServerList *slist, char *buf, int len)
 	if (isFinal) //send a final callback
 		slist->PlayerSearchCallback(slist, NULL, 0, 0, 0, NULL, slist->instance);
 
-
 	return sbe_noerror;
-
 }
 /*
  Server IP - 4 bytes
@@ -1422,7 +1374,6 @@ static SBError ProcessPlayerSearch(SBServerList *slist, char *buf, int len)
  Maps
    Mapname - NTS
 */
-
 
 static SBError ProcessMaploop(SBServerList *slist, char *buf, int len)
 {
@@ -1446,7 +1397,7 @@ static SBError ProcessMaploop(SBServerList *slist, char *buf, int len)
 	mapCount = (unsigned char)buf[10];
 	buf += 11;
 	len -= 11;
-	for (i = 0 ; i < mapCount && i < MAX_MAPLOOP_LENGTH; i++)
+	for (i = 0; i < mapCount && i < MAX_MAPLOOP_LENGTH; i++)
 	{
 		int maplen;
 		if (len < 1)
@@ -1499,14 +1450,15 @@ static SBError ProcessPushServer(SBServerList *slist, char *buf, int len)
 		return sbe_dataerror;
 	//need to grab out the ip & port to find it in our list
 	ParseServerIPPort(slist, buf, len, &ip, &port);
-	
+
 	foundexisting = SBServerListFindServerByIP(slist, ip, port);
 	if (foundexisting == -1) //need to add it
 	{
 		server = SBAllocServer(slist, ip, port);
 		if (SBIsNullServer(server))
 			return sbe_allocerror;
-	} else
+	}
+	else
 		server = SBServerListNth(slist, foundexisting);
 	i = ParseServer(slist, server, buf, len, 0);
 	if (i < 0)
@@ -1515,10 +1467,7 @@ static SBError ProcessPushServer(SBServerList *slist, char *buf, int len)
 		SBServerListAppendServer(slist, server);
 	slist->ListCallback(slist, slc_serverupdated, server, slist->instance);
 	return sbe_noerror;
-	
 }
-
-
 
 static SBError ProcessAdHocData(SBServerList *slist)
 {
@@ -1540,28 +1489,28 @@ static SBError ProcessAdHocData(SBServerList *slist)
 		//else process the message
 		switch (slist->inbuffer[2])
 		{
-			case PUSH_KEYS_MESSAGE:
-				ret = ProcessPushKeyList(slist, slist->inbuffer + 3, msglen - 3);
-				break;
-			case PUSH_SERVER_MESSAGE:
-				ret = ProcessPushServer(slist, slist->inbuffer + 3, msglen - 3);
-				break;
-			case KEEPALIVE_MESSAGE: //just need to send it back..
-				i = (int)send(slist->slsocket, slist->inbuffer, msglen, 0);
-				if (i <= 0)
-					return sbe_connecterror;
-				break;
-			case DELETE_SERVER_MESSAGE:
-				ret = ProcessDeleteServer(slist, slist->inbuffer + 3, msglen - 3);
-				break;
-			case MAPLOOP_MESSAGE:
-				ret = ProcessMaploop(slist, slist->inbuffer + 3, msglen - 3);
-				break;
-			case PLAYERSEARCH_MESSAGE:
-				ret = ProcessPlayerSearch(slist, slist->inbuffer + 3, msglen - 3);
-				break;
+		case PUSH_KEYS_MESSAGE:
+			ret = ProcessPushKeyList(slist, slist->inbuffer + 3, msglen - 3);
+			break;
+		case PUSH_SERVER_MESSAGE:
+			ret = ProcessPushServer(slist, slist->inbuffer + 3, msglen - 3);
+			break;
+		case KEEPALIVE_MESSAGE: //just need to send it back..
+			i = (int)send(slist->slsocket, slist->inbuffer, msglen, 0);
+			if (i <= 0)
+				return sbe_connecterror;
+			break;
+		case DELETE_SERVER_MESSAGE:
+			ret = ProcessDeleteServer(slist, slist->inbuffer + 3, msglen - 3);
+			break;
+		case MAPLOOP_MESSAGE:
+			ret = ProcessMaploop(slist, slist->inbuffer + 3, msglen - 3);
+			break;
+		case PLAYERSEARCH_MESSAGE:
+			ret = ProcessPlayerSearch(slist, slist->inbuffer + 3, msglen - 3);
+			break;
 		}
-		
+
 		slist->inbufferlen -= msglen;
 		assert(slist->inbufferlen >= 0);
 		if (slist->inbufferlen != 0 && slist->inbuffer != NULL) //if anything is left, shift it over..
@@ -1576,23 +1525,22 @@ static SBError ProcessAdHocData(SBServerList *slist)
 	return ret;
 }
 
-
 static SBError ProcessIncomingData(SBServerList *slist)
 {
 	SBError err;
 	int len;
 	int oldlen;
 
-	if(!CanReceiveOnSocket(slist->slsocket))
+	if (!CanReceiveOnSocket(slist->slsocket))
 		return sbe_noerror;
-	
+
 	//append to data
 	oldlen = slist->inbufferlen;
 	len = recv(slist->slsocket, slist->inbuffer + slist->inbufferlen, INCOMING_BUFFER_SIZE - slist->inbufferlen, 0);
-	if (gsiSocketIsError(len)|| len == 0)
+	if (gsiSocketIsError(len) || len == 0)
 	{
 		ErrorDisconnect(slist);
-		return sbe_connecterror;		
+		return sbe_connecterror;
 	}
 	slist->inbufferlen += len;
 	err = sbe_noerror;
@@ -1600,16 +1548,15 @@ static SBError ProcessIncomingData(SBServerList *slist)
 	{
 		GOADecrypt(&(slist->cryptkey), (unsigned char *)(slist->inbuffer + oldlen), slist->inbufferlen - oldlen);
 	}
-	
+
 	if (slist->state == sl_mainlist)
 		err = ProcessMainListData(slist);
 	if (err != sbe_noerror)
 		return err;
 	//always need to check this after mainlistdata, in case some extra data has some in (e.g. key list for push)
-	if (slist->state == sl_connected && slist->inbufferlen > 0)	
+	if (slist->state == sl_connected && slist->inbufferlen > 0)
 		return ProcessAdHocData(slist);
 	return sbe_noerror;
-
 }
 
 SBError SBGetServerRulesFromMaster(SBServerList *slist, goa_uint32 ip, unsigned short port)
@@ -1617,9 +1564,9 @@ SBError SBGetServerRulesFromMaster(SBServerList *slist, goa_uint32 ip, unsigned 
 	char requestBuffer[16];
 	unsigned short tmp;
 	unsigned short msgLen = 9;
-	
+
 	if (slist->state == sl_disconnected) //try to connect
-		SBServerListConnectAndQuery(slist, NULL, NULL, NO_SERVER_LIST, 0); 
+		SBServerListConnectAndQuery(slist, NULL, NULL, NO_SERVER_LIST, 0);
 
 	if (slist->state == sl_disconnected)
 		return sbe_connecterror;
@@ -1630,8 +1577,8 @@ SBError SBGetServerRulesFromMaster(SBServerList *slist, goa_uint32 ip, unsigned 
 	//the message type
 	requestBuffer[2] = SERVER_INFO_REQUEST;
 	memcpy(requestBuffer + 3, &ip, sizeof(ip));
-	memcpy(requestBuffer + 7, &port, sizeof(port));	
-	return SendWithRetry(slist, requestBuffer, msgLen);	
+	memcpy(requestBuffer + 7, &port, sizeof(port));
+	return SendWithRetry(slist, requestBuffer, msgLen);
 }
 
 SBError SBSendMessageToServer(SBServerList *slist, goa_uint32 ip, unsigned short port, const char *data, int len)
@@ -1641,9 +1588,9 @@ SBError SBSendMessageToServer(SBServerList *slist, goa_uint32 ip, unsigned short
 	unsigned short msgLen = 9;
 	SBError ret;
 	int i;
-	
+
 	if (slist->state == sl_disconnected) //try to connect
-		SBServerListConnectAndQuery(slist, NULL, NULL, NO_SERVER_LIST, 0); 
+		SBServerListConnectAndQuery(slist, NULL, NULL, NO_SERVER_LIST, 0);
 
 	if (slist->state == sl_disconnected)
 		return sbe_connecterror;
@@ -1654,7 +1601,7 @@ SBError SBSendMessageToServer(SBServerList *slist, goa_uint32 ip, unsigned short
 	//the message type
 	requestBuffer[2] = SEND_MESSAGE_REQUEST;
 	memcpy(requestBuffer + 3, &ip, sizeof(ip));
-	memcpy(requestBuffer + 7, &port, sizeof(port));	
+	memcpy(requestBuffer + 7, &port, sizeof(port));
 	ret = SendWithRetry(slist, requestBuffer, msgLen);
 	if (ret != sbe_noerror)
 		return ret;
@@ -1662,7 +1609,6 @@ SBError SBSendMessageToServer(SBServerList *slist, goa_uint32 ip, unsigned short
 	if (i < 0)
 		return sbe_connecterror;
 	return sbe_noerror;
-	
 }
 
 SBError SBSendPlayerSearchRequest(SBServerList *slist, char *searchName, int searchOptions, int maxResults, SBPlayerSearchCallbackFn callback)
@@ -1673,12 +1619,11 @@ SBError SBSendPlayerSearchRequest(SBServerList *slist, char *searchName, int sea
 	SBError ret;
 
 	if (slist->state == sl_disconnected) //try to connect
-		SBServerListConnectAndQuery(slist, NULL, NULL, NO_SERVER_LIST, 0); 
+		SBServerListConnectAndQuery(slist, NULL, NULL, NO_SERVER_LIST, 0);
 	if (slist->state == sl_disconnected)
 		return sbe_connecterror;
 
 	slist->PlayerSearchCallback = callback;
-	
 
 	requestBuffer[2] = PLAYERSEARCH_REQUEST;
 	searchOptions = (int)htonl((unsigned int)searchOptions);
@@ -1698,7 +1643,6 @@ SBError SBSendPlayerSearchRequest(SBServerList *slist, char *searchName, int sea
 	return sbe_noerror;
 }
 
-
 SBError SBSendMaploopRequest(SBServerList *slist, SBServer server, SBMaploopCallbackFn callback)
 {
 	char requestBuffer[16];
@@ -1708,9 +1652,8 @@ SBError SBSendMaploopRequest(SBServerList *slist, SBServer server, SBMaploopCall
 	unsigned int ip;
 	SBError ret;
 
-
 	if (slist->state == sl_disconnected) //try to connect
-		SBServerListConnectAndQuery(slist, NULL, NULL, NO_SERVER_LIST, 0); 
+		SBServerListConnectAndQuery(slist, NULL, NULL, NO_SERVER_LIST, 0);
 	if (slist->state == sl_disconnected)
 		return sbe_connecterror;
 
@@ -1723,12 +1666,11 @@ SBError SBSendMaploopRequest(SBServerList *slist, SBServer server, SBMaploopCall
 	ip = SBServerGetPublicInetAddress(server);
 	port = SBServerGetPublicQueryPortNBO(server);
 	memcpy(requestBuffer + 3, &ip, sizeof(ip));
-	memcpy(requestBuffer + 7, &port, sizeof(port));	
+	memcpy(requestBuffer + 7, &port, sizeof(port));
 	ret = SendWithRetry(slist, requestBuffer, msgLen);
 	if (ret != sbe_noerror)
 		return ret;
 	return sbe_noerror;
-
 }
 
 SBError SBSendNatNegotiateCookieToServer(SBServerList *slist, goa_uint32 ip, unsigned short port, int cookie)
@@ -1742,13 +1684,13 @@ SBError SBSendNatNegotiateCookieToServer(SBServerList *slist, goa_uint32 ip, uns
 	negotiateBuffer[5] = NN_MAGIC_5;
 	cookie = (int)htonl((unsigned int)cookie);
 	memcpy(negotiateBuffer + NATNEG_MAGIC_LEN, &cookie, 4);
-	return SBSendMessageToServer(slist, ip, port, (char*)negotiateBuffer, NATNEG_MAGIC_LEN + 4);
+	return SBSendMessageToServer(slist, ip, port, (char *)negotiateBuffer, NATNEG_MAGIC_LEN + 4);
 }
 
 static SBError ProcessLanData(SBServerList *slist)
 {
-	char indata[1500];  // make sure we have enough room for a large UDP packet
-	struct   sockaddr_in saddr;
+	char indata[1500]; // make sure we have enough room for a large UDP packet
+	struct sockaddr_in saddr;
 	int saddrlen = sizeof(saddr);
 	int error;
 	int foundexisting;
@@ -1757,13 +1699,13 @@ static SBError ProcessLanData(SBServerList *slist)
 	while (CanReceiveOnSocket(slist->slsocket)) //we break if the select fails
 	{
 #if defined(_PS3)
-		error = (int)recvfrom(slist->slsocket, indata, sizeof(indata) - 1, 0, (struct sockaddr *)&saddr, (socklen_t*)&saddrlen );
+		error = (int)recvfrom(slist->slsocket, indata, sizeof(indata) - 1, 0, (struct sockaddr *)&saddr, (socklen_t *)&saddrlen);
 #else
-		error = (int)recvfrom(slist->slsocket, indata, sizeof(indata) - 1, 0, (struct sockaddr *)&saddr, &saddrlen );
+		error = (int)recvfrom(slist->slsocket, indata, sizeof(indata) - 1, 0, (struct sockaddr *)&saddr, &saddrlen);
 #endif
 
 		if (gsiSocketIsError(error))
-			continue; 
+			continue;
 		//if we got data, then add it to the list...
 		foundexisting = SBServerListFindServerByIP(slist, saddr.sin_addr.s_addr, saddr.sin_port);
 		if (foundexisting != -1) //already exists
@@ -1771,7 +1713,7 @@ static SBError ProcessLanData(SBServerList *slist)
 		server = SBAllocServer(slist, saddr.sin_addr.s_addr, saddr.sin_port);
 		if (SBIsNullServer(server))
 			return sbe_allocerror;
-		SBServerSetFlags(server, UNSOLICITED_UDP_FLAG|NONSTANDARD_PORT_FLAG);
+		SBServerSetFlags(server, UNSOLICITED_UDP_FLAG | NONSTANDARD_PORT_FLAG);
 		SBServerListAppendServer(slist, server);
 	}
 	if (current_time() - slist->lanstarttime > SL_LAN_SEARCH_TIME) //done waiting for replies
@@ -1802,9 +1744,4 @@ SBError SBListThink(SBServerList *slist)
 
 	return sbe_noerror;
 	//see if any data is available...
-	
 }
-
-
-
-

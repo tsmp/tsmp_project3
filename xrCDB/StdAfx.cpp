@@ -5,8 +5,8 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#pragma comment(lib,"xrCore.lib")
-#pragma comment(lib,"winmm.lib")
+#pragma comment(lib, "xrCore.lib")
+#pragma comment(lib, "winmm.lib")
 
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file

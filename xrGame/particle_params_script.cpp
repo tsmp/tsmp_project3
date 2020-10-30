@@ -11,15 +11,13 @@
 
 using namespace luabind;
 
-#pragma optimize("s",on)
+#pragma optimize("s", on)
 void CParticleParams::script_register(lua_State *L)
 {
 	module(L)
-	[
-		class_<CParticleParams>("particle_params")
-			.def(								constructor<>())
-			.def(								constructor<const Fvector &>())
-			.def(								constructor<const Fvector &,const Fvector &>())
-			.def(								constructor<const Fvector &,const Fvector &,const Fvector &>())
-	];
+		[class_<CParticleParams>("particle_params")
+			 .def(constructor<>())
+			 .def(constructor<const Fvector &>())
+			 .def(constructor<const Fvector &, const Fvector &>())
+			 .def(constructor<const Fvector &, const Fvector &, const Fvector &>())];
 }

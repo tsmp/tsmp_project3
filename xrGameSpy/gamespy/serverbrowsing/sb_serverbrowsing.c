@@ -4,7 +4,6 @@
 //Future Versions:
 //ICMP Ping support (icmp engine)
 
-
 //internal callback proxy for server list
 static void ListCallback(SBServerList *serverlist, SBListCallbackReason reason, SBServer server, void *instance)
 {
@@ -13,10 +12,10 @@ static void ListCallback(SBServerList *serverlist, SBListCallbackReason reason, 
 	{
 	case slc_serveradded:
 		sb->BrowserCallback(sb, sbc_serveradded, server, sb->instance);
-		if ((server->state & (STATE_BASICKEYS|STATE_FULLKEYS)) == 0 || (server->state & STATE_VALIDPING) == 0) //we need to do an update
+		if ((server->state & (STATE_BASICKEYS | STATE_FULLKEYS)) == 0 || (server->state & STATE_VALIDPING) == 0) //we need to do an update
 		{
 			// Don't update if an update is already pending
-			if (server->state & (STATE_PENDINGBASICQUERY|STATE_PENDINGFULLQUERY|STATE_PENDINGICMPQUERY))
+			if (server->state & (STATE_PENDINGBASICQUERY | STATE_PENDINGFULLQUERY | STATE_PENDINGICMPQUERY))
 				break;
 
 			if (!sb->dontUpdate) //if this flag is set, we don't want to trigger updates
@@ -28,25 +27,25 @@ static void ListCallback(SBServerList *serverlist, SBListCallbackReason reason, 
 						qtype = QTYPE_FULL;
 					else
 						qtype = QTYPE_BASIC;
-				} else
+				}
+				else
 					qtype = QTYPE_ICMP; //we can only do an ICMP query
 
 				if (serverlist->backendgameflags & QR2_USE_QUERY_CHALLENGE)
 					SBQueryEngineUpdateServer(&sb->engine, server, 0, qtype, SBTrue);
 				else
 					SBQueryEngineUpdateServer(&sb->engine, server, 0, qtype, SBFalse);
-
 			}
 		}
-		break; 
+		break;
 	case slc_serverupdated:
-		if ((server->state & (STATE_BASICKEYS|STATE_FULLKEYS|STATE_VALIDPING)) == 0) //if it was updated, but with no data, then the update failed!
+		if ((server->state & (STATE_BASICKEYS | STATE_FULLKEYS | STATE_VALIDPING)) == 0) //if it was updated, but with no data, then the update failed!
 			sb->BrowserCallback(sb, sbc_serverupdatefailed, server, sb->instance);
 		else
 			sb->BrowserCallback(sb, sbc_serverupdated, server, sb->instance);
 		break;
 	case slc_serverdeleted:
-		if ((server->state & (STATE_PENDINGBASICQUERY|STATE_PENDINGFULLQUERY|STATE_PENDINGICMPQUERY)) != 0) 
+		if ((server->state & (STATE_PENDINGBASICQUERY | STATE_PENDINGFULLQUERY | STATE_PENDINGICMPQUERY)) != 0)
 			SBQueryEngineRemoveServerFromFIFOs(&sb->engine, server);
 		sb->BrowserCallback(sb, sbc_serverdeleted, server, sb->instance);
 		break;
@@ -54,11 +53,11 @@ static void ListCallback(SBServerList *serverlist, SBListCallbackReason reason, 
 		if (sb->disconnectFlag)
 			SBServerListDisconnect(serverlist);
 		// If there aren't any servers to query, call the completed callback
-		if (ArrayLength(serverlist->servers)==0 || sb->engine.querylist.count==0)
+		if (ArrayLength(serverlist->servers) == 0 || sb->engine.querylist.count == 0)
 			sb->BrowserCallback(sb, sbc_updatecomplete, NULL, sb->instance);
 		break;
 	case slc_disconnected:
-		break; 
+		break;
 	case slc_queryerror:
 		sb->BrowserCallback(sb, sbc_queryerror, NULL, sb->instance);
 		break;
@@ -94,21 +93,19 @@ static void EngineCallback(SBQueryEnginePtr engine, SBQueryEngineCallbackReason 
 	}
 	if (server != NULL && server->publicip == sb->triggerIP && server->publicport == sb->triggerPort)
 		sb->triggerIP = 0; //clear the trigger
-		
+
 	GSI_UNUSED(engine);
 }
-
-
 
 ServerBrowser ServerBrowserNewA(const char *queryForGamename, const char *queryFromGamename, const char *queryFromKey, int queryFromVersion, int maxConcUpdates, int queryVersion, SBBool lanBrowse, ServerBrowserCallback callback, void *instance)
 {
 	ServerBrowser sb;
-	if(lanBrowse == SBFalse)
+	if (lanBrowse == SBFalse)
 	{
-		if(__GSIACResult != GSIACAvailable)
+		if (__GSIACResult != GSIACAvailable)
 			return NULL;
 	}
-	
+
 	sb = (ServerBrowser)gsimalloc(sizeof(struct _ServerBrowser));
 	if (sb == NULL)
 		return NULL;
@@ -147,7 +144,7 @@ void ServerBrowserFree(ServerBrowser sb)
 //internal version that allows passing of additional options
 SBError ServerBrowserBeginUpdate2(ServerBrowser sb, SBBool async, SBBool disconnectOnComplete, const unsigned char *basicFields, int numBasicFields, const char *serverFilter, int updateOptions, int maxServers)
 {
-	char keyList[MAX_FIELD_LIST_LEN] = "";	
+	char keyList[MAX_FIELD_LIST_LEN] = "";
 	int listLen = 0;
 	int i;
 	int keylen;
@@ -157,12 +154,12 @@ SBError ServerBrowserBeginUpdate2(ServerBrowser sb, SBBool async, SBBool disconn
 	//clear this out in case it was already set
 	sb->engine.numserverkeys = 0;
 	//build the key list...
-	for (i = 0 ; i < numBasicFields ; i++)
+	for (i = 0; i < numBasicFields; i++)
 	{
 		keylen = (int)strlen(qr2_registered_key_list[basicFields[i]]);
 		if (listLen + keylen + 1 >= MAX_FIELD_LIST_LEN)
 			break; //can't add this field, too long
-		listLen += sprintf_s(keyList + listLen, MAX_FIELD_LIST_LEN-listLen, "\\%s", qr2_registered_key_list[basicFields[i]]);
+		listLen += sprintf_s(keyList + listLen, MAX_FIELD_LIST_LEN - listLen, "\\%s", qr2_registered_key_list[basicFields[i]]);
 		//add to the engine query list
 		SBQueryEngineAddQueryKey(&sb->engine, basicFields[i]);
 	}
@@ -180,7 +177,7 @@ SBError ServerBrowserBeginUpdate2(ServerBrowser sb, SBBool async, SBBool disconn
 	err = SBServerListConnectAndQuery(&sb->list, keyList, serverFilter, updateOptions, maxServers);
 	if (err != sbe_noerror)
 		return err;
-	
+
 	if (!async) //loop while we are still getting the main list and the engine is updating...
 	{
 		while ((sb->list.state == sl_mainlist) || ((sb->engine.querylist.count > 0) && (err == sbe_noerror)))
@@ -192,7 +189,6 @@ SBError ServerBrowserBeginUpdate2(ServerBrowser sb, SBBool async, SBBool disconn
 	return err;
 }
 
-
 SBError ServerBrowserUpdateA(ServerBrowser sb, SBBool async, SBBool disconnectOnComplete, const unsigned char *basicFields, int numBasicFields, const char *serverFilter)
 {
 	return ServerBrowserBeginUpdate2(sb, async, disconnectOnComplete, basicFields, numBasicFields, serverFilter, 0, 0);
@@ -203,7 +199,7 @@ SBError ServerBrowserUpdateW(ServerBrowser sb, SBBool async, SBBool disconnectOn
 	char serverFilter_A[1024];
 	if (serverFilter != NULL)
 		UCS2ToUTF8String(serverFilter, serverFilter_A);
-	return ServerBrowserUpdateA(sb, async, disconnectOnComplete, basicFields, numBasicFields, (serverFilter != NULL) ? serverFilter_A:NULL);
+	return ServerBrowserUpdateA(sb, async, disconnectOnComplete, basicFields, numBasicFields, (serverFilter != NULL) ? serverFilter_A : NULL);
 }
 #endif
 
@@ -217,7 +213,7 @@ SBError ServerBrowserLimitUpdateW(ServerBrowser sb, SBBool async, SBBool disconn
 	char serverFilter_A[1024];
 	if (serverFilter != NULL)
 		UCS2ToUTF8String(serverFilter, serverFilter_A);
-	return ServerBrowserLimitUpdateA(sb, async, disconnectOnComplete, basicFields, numBasicFields, (serverFilter != NULL) ? serverFilter_A:NULL, maxServers);
+	return ServerBrowserLimitUpdateA(sb, async, disconnectOnComplete, basicFields, numBasicFields, (serverFilter != NULL) ? serverFilter_A : NULL, maxServers);
 }
 #endif
 
@@ -246,12 +242,10 @@ static SBError WaitForTriggerUpdate(ServerBrowser sb, SBBool viaMaster)
 		msleep(10);
 		err = ServerBrowserThink(sb);
 		if (viaMaster && sb->list.state == sb_disconnected) //we were supposed to get from master, and it's disconnected
-			break;		
+			break;
 	}
 	return err;
-
 }
-
 
 SBError ServerBrowserSendMessageToServerA(ServerBrowser sb, const char *ip, unsigned short port, const char *data, int len)
 {
@@ -281,7 +275,7 @@ SBError ServerBrowserSendNatNegotiateCookieToServerW(ServerBrowser sb, const uns
 
 SBError ServerBrowserAuxUpdateIPA(ServerBrowser sb, const char *ip, unsigned short port, SBBool viaMaster, SBBool async, SBBool fullUpdate)
 {
-	
+
 	SBError err = sbe_noerror;
 	sb->dontUpdate = SBTrue;
 
@@ -289,7 +283,7 @@ SBError ServerBrowserAuxUpdateIPA(ServerBrowser sb, const char *ip, unsigned sho
 	{
 		SBServer server;
 		int i;
-		SBBool usequerychallenge = (sb->list.backendgameflags & QR2_USE_QUERY_CHALLENGE) > 0 ? SBTrue:SBFalse;
+		SBBool usequerychallenge = (sb->list.backendgameflags & QR2_USE_QUERY_CHALLENGE) > 0 ? SBTrue : SBFalse;
 
 		//need to see if the server exists...
 		i = SBServerListFindServerByIP(&sb->list, inet_addr(ip), htons(port));
@@ -308,9 +302,10 @@ SBError ServerBrowserAuxUpdateIPA(ServerBrowser sb, const char *ip, unsigned sho
 			//SBQueryEngineRemoveServerFromFIFOs(&sb->engine, server); // Remove FIFO entry (if exists)
 			//SBQueryEngineUpdateServer(&sb->engine, server, 1, (fullUpdate) ? QTYPE_FULL : QTYPE_BASIC, usequerychallenge);
 		}
-	} else //do a master update
+	}
+	else //do a master update
 	{
-		err = SBGetServerRulesFromMaster(&sb->list, inet_addr(ip), htons(port));	
+		err = SBGetServerRulesFromMaster(&sb->list, inet_addr(ip), htons(port));
 		//this will add the server itself..
 	}
 	if (!async && err == sbe_noerror)
@@ -335,19 +330,20 @@ SBError ServerBrowserAuxUpdateServer(ServerBrowser sb, SBServer server, SBBool a
 {
 	SBBool viaMaster;
 	SBError err = sbe_noerror;
-	SBBool usequerychallenge = (sb->list.backendgameflags & QR2_USE_QUERY_CHALLENGE) > 0 ? SBTrue:SBFalse;
+	SBBool usequerychallenge = (sb->list.backendgameflags & QR2_USE_QUERY_CHALLENGE) > 0 ? SBTrue : SBFalse;
 
 	sb->dontUpdate = SBTrue;
-	
+
 	if (server->flags & UNSOLICITED_UDP_FLAG) //do an engine query
 	{
 		//remove from the existing update lists if present
 		SBQueryEngineRemoveServerFromFIFOs(&sb->engine, server);
 		SBQueryEngineUpdateServer(&sb->engine, server, 1, (fullUpdate) ? QTYPE_FULL : QTYPE_BASIC, usequerychallenge);
 		viaMaster = SBFalse;
-	} else //do a master update
+	}
+	else //do a master update
 	{
-		err = SBGetServerRulesFromMaster(&sb->list, server->publicip, server->publicport);	
+		err = SBGetServerRulesFromMaster(&sb->list, server->publicip, server->publicport);
 		viaMaster = SBTrue;
 	}
 	if (!async && err == sbe_noerror)
@@ -394,7 +390,6 @@ void ServerBrowserHalt(ServerBrowser sb)
 	SBServerListDisconnect(&sb->list);
 	//stop the query engine...
 	SBEngineHaltUpdates(&sb->engine);
-
 }
 
 void ServerBrowserClear(ServerBrowser sb)
@@ -467,7 +462,7 @@ const unsigned short *ServerBrowserErrorDescW(ServerBrowser sb, SBError error)
 		break;
 	}
 	return L"";
-	
+
 	GSI_UNUSED(sb);
 }
 #endif
@@ -504,7 +499,7 @@ SBServer ServerBrowserGetServer(ServerBrowser sb, int index)
 	return SBServerListNth(&sb->list, index);
 }
 
-SBServer ServerBrowserGetServerByIPA(ServerBrowser sb, const char* ip, unsigned short port)
+SBServer ServerBrowserGetServerByIPA(ServerBrowser sb, const char *ip, unsigned short port)
 {
 	int anIndex = -1;
 	goa_uint32 anIP = 0;
@@ -517,11 +512,11 @@ SBServer ServerBrowserGetServerByIPA(ServerBrowser sb, const char* ip, unsigned 
 	return NULL;
 }
 #ifdef GSI_UNICODE
-SBServer ServerBrowserGetServerByIPW(ServerBrowser sb, const unsigned short* ip, unsigned short port)
+SBServer ServerBrowserGetServerByIPW(ServerBrowser sb, const unsigned short *ip, unsigned short port)
 {
 	char ip_A[20];
 
-	if(ip == NULL || wcslen(ip) > 16)
+	if (ip == NULL || wcslen(ip) > 16)
 		return NULL;
 
 	UCS2ToAsciiString(ip, ip_A);
@@ -577,11 +572,10 @@ void ServerBrowserDisconnect(ServerBrowser sb)
 }
 
 // Allows the user to specify a broadcast address for LAN hosting
-void ServerBrowserLANSetLocalAddr(ServerBrowser sb, const char* theAddr)
+void ServerBrowserLANSetLocalAddr(ServerBrowser sb, const char *theAddr)
 {
 	sb->list.mLanAdapterOverride = theAddr;
 }
-
 
 /* SBServerGetConnectionInfo
 ----------------
@@ -598,24 +592,22 @@ fills an IP string
 SBBool SBServerGetConnectionInfo(ServerBrowser gSB, SBServer server, gsi_u16 PortToConnectTo, char *ipstring)
 {
 	SBBool natneg = SBFalse;
-    if (SBServerHasPrivateAddress(server) == SBTrue && (SBServerGetPublicInetAddress(server) == ServerBrowserGetMyPublicIPAddr(gSB)))
+	if (SBServerHasPrivateAddress(server) == SBTrue && (SBServerGetPublicInetAddress(server) == ServerBrowserGetMyPublicIPAddr(gSB)))
 	{
 
 		//directly connect to private IP (LAN)
-		sprintf(ipstring,"%s:%d", SBServerGetPrivateAddress(server),PortToConnectTo );
- 
+		sprintf(ipstring, "%s:%d", SBServerGetPrivateAddress(server), PortToConnectTo);
 	}
-	else
-	if ((SBServerDirectConnect(server) == SBTrue )&& (SBServerHasPrivateAddress(server) == SBFalse))
+	else if ((SBServerDirectConnect(server) == SBTrue) && (SBServerHasPrivateAddress(server) == SBFalse))
 	{
-            //can directly connect to public IP, no negotiation required
-			sprintf(ipstring,"%s:%d", SBServerGetPrivateAddress(server),	PortToConnectTo );
+		//can directly connect to public IP, no negotiation required
+		sprintf(ipstring, "%s:%d", SBServerGetPrivateAddress(server), PortToConnectTo);
 	}
 	else
 	{
 		//Nat Negotiation required
 		natneg = SBTrue;
-		sprintf(ipstring,"%s:%d", SBServerGetPublicAddress(server),	SBServerGetPublicQueryPort	(server) );
+		sprintf(ipstring, "%s:%d", SBServerGetPublicAddress(server), SBServerGetPublicQueryPort(server));
 	}
 	return natneg;
 }

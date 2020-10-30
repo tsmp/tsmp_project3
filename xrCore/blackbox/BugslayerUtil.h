@@ -61,7 +61,6 @@ DEC '99 - Many updates for the book.
 // Force imagehlp in.
 #include <imagehlp.h>
 
-
 /*//////////////////////////////////////////////////////////////////////
                             Special Defines
 //////////////////////////////////////////////////////////////////////*/
@@ -84,16 +83,16 @@ DEC '99 - Many updates for the book.
 // The memory stress routines.
 //#include "MemStress.h"
 
-
 /*//////////////////////////////////////////////////////////////////////
                       C Function Declaration Area
                                  START
 //////////////////////////////////////////////////////////////////////*/
 #ifdef __cplusplus
-extern "C" {
-#endif  // _cplusplus
+extern "C"
+{
+#endif // _cplusplus
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   GetLoadedModules
 DISCUSSION      :
     For the specified process id, this function returns the HMODULES for
@@ -116,13 +115,12 @@ RETURNS         :
     TRUE  - The function succeeded.  See the parameter discussion for
             the output parameters.
 ----------------------------------------------------------------------*/
-BOOL  __stdcall
-                           GetLoadedModules ( DWORD     dwPID        ,
-                                              UINT      uiCount      ,
-                                              HMODULE * paModArray   ,
-                                              LPDWORD   pdwRealCount  );
+    BOOL __stdcall GetLoadedModules(DWORD dwPID,
+                                    UINT uiCount,
+                                    HMODULE *paModArray,
+                                    LPDWORD pdwRealCount);
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   AllocAndFillProcessModuleList
 DISCUSSION      :
     Hides the work to get the loaded module list for the current
@@ -136,35 +134,34 @@ RETURNS         :
     NULL  - There was a problem.
     !NULL - The block of memory holding the HMODULEs.
 ----------------------------------------------------------------------*/
-HMODULE * /**/ __stdcall
-                     AllocAndFillProcessModuleList ( HANDLE hHeap    ,
-                                                     LPDWORD pdwCount  );
+    HMODULE * /**/ __stdcall AllocAndFillProcessModuleList(HANDLE hHeap,
+                                                           LPDWORD pdwCount);
 
-typedef struct tag_HOOKFUNCDESCA
-{
-    // The name of the function to hook.
-    LPCSTR szFunc   ;
-    // The procedure to blast in.
-    PROC   pProc    ;
-} HOOKFUNCDESCA , * LPHOOKFUNCDESCA ;
+    typedef struct tag_HOOKFUNCDESCA
+    {
+        // The name of the function to hook.
+        LPCSTR szFunc;
+        // The procedure to blast in.
+        PROC pProc;
+    } HOOKFUNCDESCA, *LPHOOKFUNCDESCA;
 
-typedef struct tag_HOOKFUNCDESCW
-{
-    // The name of the function to hook.
-    LPCWSTR szFunc   ;
-    // The procedure to blast in.
-    PROC    pProc    ;
-} HOOKFUNCDESCW , * LPHOOKFUNCDESCW ;
+    typedef struct tag_HOOKFUNCDESCW
+    {
+        // The name of the function to hook.
+        LPCWSTR szFunc;
+        // The procedure to blast in.
+        PROC pProc;
+    } HOOKFUNCDESCW, *LPHOOKFUNCDESCW;
 
 #ifdef UNICODE
-#define HOOKFUNCDESC   HOOKFUNCDESCW
+#define HOOKFUNCDESC HOOKFUNCDESCW
 #define LPHOOKFUNCDESC LPHOOKFUNCDESCW
 #else
-#define HOOKFUNCDESC   HOOKFUNCDESCA
+#define HOOKFUNCDESC HOOKFUNCDESCA
 #define LPHOOKFUNCDESC LPHOOKFUNCDESCA
-#endif  // UNICODE
+#endif // UNICODE
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   HookImportedFunctionsByName
 DISCUSSION      :
     Hooks the specified functions imported into hModule by the module
@@ -207,15 +204,14 @@ RETURNS         :
     TRUE  - The function succeeded.  See the parameter discussion for
             the output parameters.
 ----------------------------------------------------------------------*/
-BOOL  __stdcall
-        HookImportedFunctionsByName ( HMODULE         hModule     ,
-                                      LPCSTR          szImportMod ,
-                                      UINT            uiCount     ,
-                                      LPHOOKFUNCDESCA paHookArray ,
-                                      PROC *          paOrigFuncs ,
-                                      LPDWORD         pdwHooked    ) ;
+    BOOL __stdcall HookImportedFunctionsByName(HMODULE hModule,
+                                               LPCSTR szImportMod,
+                                               UINT uiCount,
+                                               LPHOOKFUNCDESCA paHookArray,
+                                               PROC *paOrigFuncs,
+                                               LPDWORD pdwHooked);
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   HookOrdinalExport
 DISCUSSION      :
     Akin to HookImportedFunctionsByName, this function hooks functions
@@ -239,14 +235,13 @@ RETURNS         :
     TRUE  - The function succeeded.  See the parameter discussion for
             the output parameters.
 ----------------------------------------------------------------------*/
-BOOL  __stdcall
-                    HookOrdinalExport ( HMODULE hModule     ,
-                                        LPCTSTR szImportMod ,
-                                        DWORD   dwOrdinal   ,
-                                        PROC    pHookFunc   ,
-                                        PROC *  ppOrigAddr   ) ;
+    BOOL __stdcall HookOrdinalExport(HMODULE hModule,
+                                     LPCTSTR szImportMod,
+                                     DWORD dwOrdinal,
+                                     PROC pHookFunc,
+                                     PROC *ppOrigAddr);
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   BSUGetModuleBaseName
 DISCUSSION      :
     Returns the base name of the specified module in a manner that is
@@ -263,13 +258,12 @@ RETURNS         :
     0  - The function failed.  To get extended error information,
          call GetLastError
 ----------------------------------------------------------------------*/
-DWORD  __stdcall
-      BSUGetModuleBaseName ( HANDLE  hProcess   ,
-                             HMODULE hModule    ,
-                             LPTSTR  lpBaseName ,
-                             DWORD   nSize       ) ;
+    DWORD __stdcall BSUGetModuleBaseName(HANDLE hProcess,
+                                         HMODULE hModule,
+                                         LPTSTR lpBaseName,
+                                         DWORD nSize);
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   BSUGetModuleFileNameEx
 DISCUSSION      :
     Returns the full path name of the specified module in a manner that is
@@ -285,15 +279,13 @@ RETURNS         :
     0  - The function failed.  To get extended error information,
          call GetLastError
 ----------------------------------------------------------------------*/
-DWORD  __stdcall
-      BSUGetModuleFileNameEx ( DWORD     dwPID        ,
-                               HANDLE    hProcess     ,
-                               HMODULE   hModule      ,
-                               LPTSTR    szFilename   ,
-                               DWORD     nSize         ) ;
+    DWORD __stdcall BSUGetModuleFileNameEx(DWORD dwPID,
+                                           HANDLE hProcess,
+                                           HMODULE hModule,
+                                           LPTSTR szFilename,
+                                           DWORD nSize);
 
-
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   IsNT
 DISCUSSION      :
     Returns TRUE if the operating system is NT.  I simply got tired of
@@ -305,9 +297,9 @@ PARAMETERS      :
 RETURNS         :
 
 ----------------------------------------------------------------------*/
-BOOL  __stdcall IsNT ( void ) ;
+    BOOL __stdcall IsNT(void);
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   BSUSymInitialize
 DISCUSSION      :
     Under Win9x, you cannot set the SymInitialize fInvadeProcess flag to
@@ -323,16 +315,14 @@ PARAMETERS      :
 RETURNS         :
     Whatever SymInitialize returns.
 ----------------------------------------------------------------------*/
-DWORD  __stdcall
-        BSUSymInitialize ( DWORD  dwPID          ,
-                           HANDLE hProcess       ,
-                           PSTR   UserSearchPath ,
-                           BOOL   fInvadeProcess  ) ;
-
+    DWORD __stdcall BSUSymInitialize(DWORD dwPID,
+                                     HANDLE hProcess,
+                                     PSTR UserSearchPath,
+                                     BOOL fInvadeProcess);
 
 #ifdef __cplusplus
 }
-#endif  // _cplusplus
+#endif // _cplusplus
 /*//////////////////////////////////////////////////////////////////////
                                   END
                       C Function Declaration Area
@@ -346,12 +336,10 @@ DWORD  __stdcall
 
 #include "SymbolEngine.h"
 
-#endif  // __cplusplus
+#endif // __cplusplus
 /*//////////////////////////////////////////////////////////////////////
                                   END
                          C++ Only Declarations
 //////////////////////////////////////////////////////////////////////*/
 
-#endif  // _BUGSLAYERUTIL_H
-
-
+#endif // _BUGSLAYERUTIL_H

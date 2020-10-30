@@ -21,21 +21,21 @@
 extern int g_cl_InterpolationType;
 #endif
 
-void CBaseMonster::net_Save(NET_Packet& P)
+void CBaseMonster::net_Save(NET_Packet &P)
 {
 	inherited::net_Save(P);
 	m_pPhysics_support->in_NetSave(P);
 }
 
-BOOL CBaseMonster::net_SaveRelevant	()
+BOOL CBaseMonster::net_SaveRelevant()
 {
-	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell()!=NULL));
+	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell() != NULL));
 }
 
 #ifdef ALIFE_MP
-void CBaseMonster::net_Export(NET_Packet& P)
+void CBaseMonster::net_Export(NET_Packet &P)
 {
-	CPHSynchronize* sync = PHGetSyncItem(0);
+	CPHSynchronize *sync = PHGetSyncItem(0);
 
 	if (sync)
 	{
@@ -58,53 +58,53 @@ void CBaseMonster::net_Export(NET_Packet& P)
 	P.w_angle8(movement().m_body.current.pitch);
 	P.w_angle8(movement().m_body.current.yaw);
 
-	CKinematicsAnimated* anim_obj = smart_cast<CKinematicsAnimated*>(Visual());
+	CKinematicsAnimated *anim_obj = smart_cast<CKinematicsAnimated *>(Visual());
 	P.w_u16(anim_obj->ID_Cycle_Safe(m_anim_base->cur_anim_info().name).idx);
 }
 
 #else
 
-void CBaseMonster::net_Export(NET_Packet& P)
+void CBaseMonster::net_Export(NET_Packet &P)
 {
-	R_ASSERT				(Local());
+	R_ASSERT(Local());
 
 	// export last known packet
-	R_ASSERT				(!NET.empty());
-	net_update& N			= NET.back();
-	P.w_float				(GetfHealth());
-	P.w_u32					(N.dwTimeStamp);
-	P.w_u8					(0);
-	P.w_vec3				(N.p_pos);
-	P.w_float /*w_angle8*/				(N.o_model);
-	P.w_float /*w_angle8*/				(N.o_torso.yaw);
-	P.w_float /*w_angle8*/				(N.o_torso.pitch);
-	P.w_float /*w_angle8*/				(N.o_torso.roll);
-	P.w_u8					(u8(g_Team()));
-	P.w_u8					(u8(g_Squad()));
-	P.w_u8					(u8(g_Group()));
+	R_ASSERT(!NET.empty());
+	net_update &N = NET.back();
+	P.w_float(GetfHealth());
+	P.w_u32(N.dwTimeStamp);
+	P.w_u8(0);
+	P.w_vec3(N.p_pos);
+	P.w_float /*w_angle8*/ (N.o_model);
+	P.w_float /*w_angle8*/ (N.o_torso.yaw);
+	P.w_float /*w_angle8*/ (N.o_torso.pitch);
+	P.w_float /*w_angle8*/ (N.o_torso.roll);
+	P.w_u8(u8(g_Team()));
+	P.w_u8(u8(g_Squad()));
+	P.w_u8(u8(g_Group()));
 
-	GameGraph::_GRAPH_ID		l_game_vertex_id = ai_location().game_vertex_id();
-	P.w						(&l_game_vertex_id,			sizeof(l_game_vertex_id));
-	P.w						(&l_game_vertex_id,			sizeof(l_game_vertex_id));
-	float					f1 = 0;
+	GameGraph::_GRAPH_ID l_game_vertex_id = ai_location().game_vertex_id();
+	P.w(&l_game_vertex_id, sizeof(l_game_vertex_id));
+	P.w(&l_game_vertex_id, sizeof(l_game_vertex_id));
+	float f1 = 0;
 
-	if (ai().game_graph().valid_vertex_id(l_game_vertex_id)) 
+	if (ai().game_graph().valid_vertex_id(l_game_vertex_id))
 	{
-		f1					= Position().distance_to	(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.w					(&f1,						sizeof(f1));
-		f1					= Position().distance_to	(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.w					(&f1,						sizeof(f1));
+		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
+		P.w(&f1, sizeof(f1));
+		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
+		P.w(&f1, sizeof(f1));
 	}
-	else 
+	else
 	{
-		P.w					(&f1,						sizeof(f1));
-		P.w					(&f1,						sizeof(f1));
-	}	
+		P.w(&f1, sizeof(f1));
+		P.w(&f1, sizeof(f1));
+	}
 }
 #endif
 
 #ifdef ALIFE_MP
-void CBaseMonster::net_Import(NET_Packet& P)
+void CBaseMonster::net_Import(NET_Packet &P)
 {
 	net_physics_state physics_state;
 	SRotation fv_direction;
@@ -157,7 +157,7 @@ void CBaseMonster::net_Import(NET_Packet& P)
 	if (newMotionIdx != motionIdx)
 	{
 		motionIdx = newMotionIdx;
-		CKinematicsAnimated* anim_obj = smart_cast<CKinematicsAnimated*>(Visual());
+		CKinematicsAnimated *anim_obj = smart_cast<CKinematicsAnimated *>(Visual());
 
 		MotionID motion;
 		motion.idx = motionIdx;
@@ -166,20 +166,20 @@ void CBaseMonster::net_Import(NET_Packet& P)
 		if (motion.valid())
 		{
 			CStepManager::on_animation_start(motion, anim_obj->LL_PlayCycle(anim_obj->LL_GetMotionDef(motion)->bone_or_part, motion, TRUE,
-				anim_obj->LL_GetMotionDef(motion)->Accrue(), anim_obj->LL_GetMotionDef(motion)->Falloff(),
-				anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0));
+																			anim_obj->LL_GetMotionDef(motion)->Accrue(), anim_obj->LL_GetMotionDef(motion)->Falloff(),
+																			anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0));
 		}
 		else
-			Msg("! cant play motion with idx: %u", motionIdx);		
+			Msg("! cant play motion with idx: %u", motionIdx);
 	}
 }
 
 #else
 
-void CBaseMonster::net_Import(NET_Packet& P)
+void CBaseMonster::net_Import(NET_Packet &P)
 {
 	R_ASSERT(Remote());
-	net_update				N;
+	net_update N;
 
 	u8 flags;
 
@@ -190,15 +190,15 @@ void CBaseMonster::net_Import(NET_Packet& P)
 	P.r_u32(N.dwTimeStamp);
 	P.r_u8(flags);
 	P.r_vec3(N.p_pos);
-	P.r_float /*r_angle8*/(N.o_model);
-	P.r_float /*r_angle8*/(N.o_torso.yaw);
-	P.r_float /*r_angle8*/(N.o_torso.pitch);
-	P.r_float /*r_angle8*/(N.o_torso.roll);
+	P.r_float /*r_angle8*/ (N.o_model);
+	P.r_float /*r_angle8*/ (N.o_torso.yaw);
+	P.r_float /*r_angle8*/ (N.o_torso.pitch);
+	P.r_float /*r_angle8*/ (N.o_torso.roll);
 	id_Team = P.r_u8();
 	id_Squad = P.r_u8();
 	id_Group = P.r_u8();
 
-	GameGraph::_GRAPH_ID		l_game_vertex_id = ai_location().game_vertex_id();
+	GameGraph::_GRAPH_ID l_game_vertex_id = ai_location().game_vertex_id();
 	P.r(&l_game_vertex_id, sizeof(l_game_vertex_id));
 	P.r(&l_game_vertex_id, sizeof(l_game_vertex_id));
 
@@ -208,7 +208,7 @@ void CBaseMonster::net_Import(NET_Packet& P)
 		NET_WasInterpolating = TRUE;
 	}
 
-	float					f1 = 0;
+	float f1 = 0;
 
 	if (ai().game_graph().valid_vertex_id(l_game_vertex_id))
 	{
@@ -230,7 +230,7 @@ void CBaseMonster::net_Import(NET_Packet& P)
 #endif
 
 #ifdef ALIFE_MP
-void CBaseMonster::postprocess_packet(monster_interpolation::net_update_A& N_A)
+void CBaseMonster::postprocess_packet(monster_interpolation::net_update_A &N_A)
 {
 	N_A.State.previous_position = N_A.State.position;
 	N_A.State.previous_quaternion = N_A.State.quaternion;
@@ -238,20 +238,20 @@ void CBaseMonster::postprocess_packet(monster_interpolation::net_update_A& N_A)
 	if (Local() && OnClient() || !g_Alive())
 		return;
 
-	if (!NET_A.empty() && N_A.dwTimeStamp < NET_A.back().dwTimeStamp) 
+	if (!NET_A.empty() && N_A.dwTimeStamp < NET_A.back().dwTimeStamp)
 		return;
 
-	if (!NET_A.empty() && N_A.dwTimeStamp == NET_A.back().dwTimeStamp)	
-		NET_A.back() = N_A;	
+	if (!NET_A.empty() && N_A.dwTimeStamp == NET_A.back().dwTimeStamp)
+		NET_A.back() = N_A;
 	else
-	{		
+	{
 		NET_A.push_back(N_A);
 
-		if (NET_A.size() > 5)		
-			NET_A.pop_front();		
+		if (NET_A.size() > 5)
+			NET_A.pop_front();
 	}
 
-	if (!NET_A.empty()) 
+	if (!NET_A.empty())
 		m_bInterpolate = true;
 
 	Level().AddObject_To_Objects4CrPr(this);
@@ -267,17 +267,17 @@ void CBaseMonster::PH_B_CrPr()
 		return;
 	}
 
-	if (CrPr_IsActivated()) 
+	if (CrPr_IsActivated())
 		return;
 
-	if (CrPr_GetActivationStep() > ph_world->m_steps_num) 
+	if (CrPr_GetActivationStep() > ph_world->m_steps_num)
 		return;
 
 	if (g_Alive())
 	{
 		CrPr_SetActivated(true);
 
-		monster_interpolation::InterpData* pIStart = &IStart;
+		monster_interpolation::InterpData *pIStart = &IStart;
 		pIStart->Pos = Position();
 		pIStart->Vel = m_pPhysics_support->movement()->GetVelocity();
 
@@ -285,14 +285,14 @@ void CBaseMonster::PH_B_CrPr()
 		pIStart->o_torso.pitch = angle_normalize(movement().m_body.current.pitch);
 		pIStart->o_torso.roll = angle_normalize(movement().m_body.current.roll);
 
-		CPHSynchronize* pSyncObj = nullptr;
+		CPHSynchronize *pSyncObj = nullptr;
 		pSyncObj = PHGetSyncItem(0);
-		
-		if (!pSyncObj) 
+
+		if (!pSyncObj)
 			return;
-		
+
 		pSyncObj->get_State(LastState);
-		
+
 		if (Local() && OnClient())
 		{
 			PHUnFreeze();
@@ -302,7 +302,7 @@ void CBaseMonster::PH_B_CrPr()
 		{
 			auto N_A = NET_A.back();
 			NET_A_Last = N_A;
-			
+
 			if (!N_A.State.enabled)
 				pSyncObj->set_State(N_A.State);
 			else
@@ -328,13 +328,15 @@ void CBaseMonster::PH_I_CrPr()
 		return;
 	}
 
-	if (!CrPr_IsActivated()) return;
+	if (!CrPr_IsActivated())
+		return;
 
 	if (g_Alive())
 	{
-		CPHSynchronize* pSyncObj = nullptr;
+		CPHSynchronize *pSyncObj = nullptr;
 		pSyncObj = PHGetSyncItem(0);
-		if (!pSyncObj) return;
+		if (!pSyncObj)
+			return;
 		pSyncObj->get_State(RecalculatedState);
 	}
 }
@@ -347,31 +349,33 @@ void CBaseMonster::PH_A_CrPr()
 		return;
 	}
 
-	if (!CrPr_IsActivated()) return;
-	if (!g_Alive()) return;
+	if (!CrPr_IsActivated())
+		return;
+	if (!g_Alive())
+		return;
 
-	CPHSynchronize* pSyncObj = nullptr;
+	CPHSynchronize *pSyncObj = nullptr;
 	pSyncObj = PHGetSyncItem(0);
 
-	if (!pSyncObj) 
+	if (!pSyncObj)
 		return;
 
 	pSyncObj->get_State(PredictedState);
 	pSyncObj->set_State(RecalculatedState);
 
-	if (!m_bInterpolate)	
-		return;	
+	if (!m_bInterpolate)
+		return;
 
 	CalculateInterpolationParams();
 }
 
 void CBaseMonster::CalculateInterpolationParams()
 {
-	CPHSynchronize* pSyncObj = nullptr;
+	CPHSynchronize *pSyncObj = nullptr;
 	pSyncObj = PHGetSyncItem(0);
 
-	monster_interpolation::InterpData* pIStart = &IStart;
-	monster_interpolation::InterpData* pIEnd = &IEnd;
+	monster_interpolation::InterpData *pIStart = &IStart;
+	monster_interpolation::InterpData *pIEnd = &IEnd;
 
 	pIEnd->Pos = PredictedState.position;
 	pIEnd->Vel = PredictedState.linear_vel;
@@ -388,7 +392,7 @@ void CBaseMonster::CalculateInterpolationParams()
 		u32 CurTime = Level().timeServer();
 		float factor = float(CurTime - m_dwIStartTime) / (m_dwIEndTime - m_dwIStartTime);
 
-		if (factor > 1.0f) 
+		if (factor > 1.0f)
 			factor = 1.0f;
 
 		float c = factor;
@@ -399,7 +403,7 @@ void CBaseMonster::CalculateInterpolationParams()
 			SP1[k] = (c * c * SCoeff[k][0] * 3 + c * SCoeff[k][1] * 2 + SCoeff[k][2]) / 3;
 
 			HP0[k] = c * (c * (c * HCoeff[k][0] + HCoeff[k][1]) + HCoeff[k][2]) + HCoeff[k][3];
-			HP1[k] = (c * c * HCoeff[k][0] * 3 + c * HCoeff[k][1] * 2 + HCoeff[k][2]) / 3; 
+			HP1[k] = (c * c * HCoeff[k][0] * 3 + c * HCoeff[k][1] * 2 + HCoeff[k][2]) / 3;
 		}
 
 		SP1.add(SP0);
@@ -407,7 +411,7 @@ void CBaseMonster::CalculateInterpolationParams()
 	else
 	{
 		if (LastState.linear_vel.x == 0 && LastState.linear_vel.y == 0 && LastState.linear_vel.z == 0)
-			HP1.sub(RecalculatedState.position, RecalculatedState.previous_position);		
+			HP1.sub(RecalculatedState.position, RecalculatedState.previous_position);
 		else
 			HP1.sub(LastState.position, LastState.previous_position);
 
@@ -426,8 +430,8 @@ void CBaseMonster::CalculateInterpolationParams()
 	TotalPath.sub(SP3, SP0);
 	float TotalLen = TotalPath.magnitude();
 
-	SPHNetState	State0 = (NET_A.back()).State;
-	SPHNetState	State1 = PredictedState;
+	SPHNetState State0 = (NET_A.back()).State;
+	SPHNetState State1 = PredictedState;
 
 	float lV0 = State0.linear_vel.magnitude();
 	float lV1 = State1.linear_vel.magnitude();
@@ -479,10 +483,10 @@ void CBaseMonster::CalculateInterpolationParams()
 		HCoeff[i][2] = HP1[i];
 		HCoeff[i][3] = HP0[i];
 	}
-	
+
 	m_bInInterpolation = true;
 
-	if (m_pPhysicsShell) 
+	if (m_pPhysicsShell)
 		m_pPhysicsShell->NetInterpolationModeON();
 }
 
@@ -498,10 +502,10 @@ void CBaseMonster::make_Interpolation()
 		{
 			m_bInInterpolation = false;
 
-			CPHSynchronize* pSyncObj = nullptr;
+			CPHSynchronize *pSyncObj = nullptr;
 			pSyncObj = PHGetSyncItem(0);
 
-			if (!pSyncObj) 
+			if (!pSyncObj)
 				return;
 
 			pSyncObj->set_State(PredictedState);
@@ -550,21 +554,24 @@ void CBaseMonster::make_Interpolation()
 				ResPosition.set(IPosL);
 				SpeedVector.sub(IEnd.Pos, IStart.Pos);
 				SpeedVector.div(float(m_dwIEndTime - m_dwIStartTime) / 1000.0f);
-			}break;
+			}
+			break;
 			case 1:
 			{
 				for (int k = 0; k < 3; k++)
 					SpeedVector[k] = (factor * factor * SCoeff[k][0] * 3 + factor * SCoeff[k][1] * 2 + SCoeff[k][2]) / 3; //     3       !!!!
 
 				ResPosition.set(IPosS);
-			}break;
+			}
+			break;
 			case 2:
 			{
 				for (int k = 0; k < 3; k++)
 					SpeedVector[k] = (factor * factor * HCoeff[k][0] * 3 + factor * HCoeff[k][1] * 2 + HCoeff[k][2]);
 
 				ResPosition.set(IPosH);
-			}break;
+			}
+			break;
 			default:
 				R_ASSERT2(0, "Unknown interpolation curve type!");
 				break;
@@ -574,7 +581,7 @@ void CBaseMonster::make_Interpolation()
 			character_physics_support()->movement()->SetVelocity(SpeedVector);
 		}
 	}
-	else	
-		m_bInInterpolation = false;	
+	else
+		m_bInInterpolation = false;
 };
 #endif

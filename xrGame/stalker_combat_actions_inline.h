@@ -12,4 +12,3 @@
 //{
 //	return					(*m_last_cover);
 //}
-

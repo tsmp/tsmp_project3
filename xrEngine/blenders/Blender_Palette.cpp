@@ -5,15 +5,14 @@
 
 //////////////////////////////////////////////////////////////////////
 #include "blender_clsid.h"
-IC bool		p_sort			(IBlender* A, IBlender* B)
+IC bool p_sort(IBlender *A, IBlender *B)
 {
-	return stricmp(A->getComment(),B->getComment())<0;
+	return stricmp(A->getComment(), B->getComment()) < 0;
 }
 
-	#define TYPES_EQUAL(A,B) (typeid(A).raw_name() == typeid(B).raw_name())
+#define TYPES_EQUAL(A, B) (typeid(A).raw_name() == typeid(B).raw_name())
 
-
-void		IBlender::CreatePalette(xr_vector<IBlender*> &palette)
+void IBlender::CreatePalette(xr_vector<IBlender *> &palette)
 {
 	// Create palette itself
 	R_ASSERT(palette.empty());
@@ -39,13 +38,13 @@ void		IBlender::CreatePalette(xr_vector<IBlender*> &palette)
 	palette.push_back(Create(B_PARTICLE));
 
 	// Remove duplicated classes (some of them are really the same in different renderers)
-	for (u32 i=0; i<palette.size(); i++)
+	for (u32 i = 0; i < palette.size(); i++)
 	{
-		IBlender* A		= palette[i];
-		for (u32 j=i+1; j<palette.size(); j++)
+		IBlender *A = palette[i];
+		for (u32 j = i + 1; j < palette.size(); j++)
 		{
-			IBlender* B		= palette[j];
-			if (TYPES_EQUAL(*A,*B))
+			IBlender *B = palette[j];
+			if (TYPES_EQUAL(*A, *B))
 			{
 				xr_delete(palette[j]);
 				j--;
@@ -54,17 +53,16 @@ void		IBlender::CreatePalette(xr_vector<IBlender*> &palette)
 	}
 
 	// Sort by desc and return
-	std::sort		(palette.begin(),palette.end(),p_sort);
+	std::sort(palette.begin(), palette.end(), p_sort);
 }
 
 // Engine
 #include "..\render.h"
-IBlender*	IBlender::Create	(CLASS_ID cls)
+IBlender *IBlender::Create(CLASS_ID cls)
 {
-	return ::Render->blender_create	(cls);
+	return ::Render->blender_create(cls);
 }
-void		IBlender::Destroy	(IBlender*& B)
+void IBlender::Destroy(IBlender *&B)
 {
-	::Render->blender_destroy		(B);
+	::Render->blender_destroy(B);
 }
-

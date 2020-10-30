@@ -7,17 +7,19 @@
 #pragma once
 #include "artifact.h"
 
-class CMercuryBall : public CArtefact 
+class CMercuryBall : public CArtefact
 {
 private:
 	typedef CArtefact inherited;
+
 public:
 	CMercuryBall(void);
 	virtual ~CMercuryBall(void);
 
-	virtual void Load				(LPCSTR section);
+	virtual void Load(LPCSTR section);
+
 protected:
-	virtual void	UpdateCLChild	();
+	virtual void UpdateCLChild();
 
 	//время последнего обновления поведения шара
 	ALife::_TIME_ID m_timeLastUpdate;

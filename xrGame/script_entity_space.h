@@ -8,8 +8,10 @@
 
 #pragma once
 
-namespace ScriptEntity {
-	enum EActionType {
+namespace ScriptEntity
+{
+	enum EActionType
+	{
 		eActionTypeMovement = u32(0),
 		eActionTypeWatch,
 		eActionTypeAnimation,
@@ -19,4 +21,3 @@ namespace ScriptEntity {
 		eActionTypeCount
 	};
 };
-

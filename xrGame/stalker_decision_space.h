@@ -8,12 +8,14 @@
 
 #pragma once
 
-namespace StalkerDecisionSpace {
-	enum EWorldProperties {
-		eWorldPropertyAlive			= u32(0),
+namespace StalkerDecisionSpace
+{
+	enum EWorldProperties
+	{
+		eWorldPropertyAlive = u32(0),
 		eWorldPropertyDead,
 		eWorldPropertyAlreadyDead,
-		
+
 		eWorldPropertyALife,
 		eWorldPropertyPuzzleSolved,
 
@@ -21,7 +23,7 @@ namespace StalkerDecisionSpace {
 		eWorldPropertyItems,
 		eWorldPropertyEnemy,
 		eWorldPropertyDanger,
-		
+
 		eWorldPropertyItemToKill,
 		eWorldPropertyFoundItemToKill,
 		eWorldPropertyItemCanKill,
@@ -62,31 +64,32 @@ namespace StalkerDecisionSpace {
 		eWorldPropertyInsideAnomaly,
 
 		eWorldPropertyScript,
-		eWorldPropertyDummy			= u32(-1),
+		eWorldPropertyDummy = u32(-1),
 	};
 
-	enum EWorldOperators {
-// death
-		eWorldOperatorDead	= u32(0),
+	enum EWorldOperators
+	{
+		// death
+		eWorldOperatorDead = u32(0),
 		eWorldOperatorDying,
-		
-// alife
+
+		// alife
 		eWorldOperatorGatherItems,
 		eWorldOperatorALifeEmulation,
 		eWorldOperatorSmartTerrainTask,
 
-// alife : tasks
+		// alife : tasks
 		eWorldOperatorSolveZonePuzzle,
 		eWorldOperatorReachTaskLocation,
 		eWorldOperatorAccomplishTask,
 		eWorldOperatorReachCustomerLocation,
 		eWorldOperatorCommunicateWithCustomer,
 
-// anomaly
+		// anomaly
 		eWorldOperatorGetOutOfAnomaly,
 		eWorldOperatorDetectAnomaly,
 
-// combat
+		// combat
 		eWorldOperatorGetItemToKill,
 		eWorldOperatorFindItemToKill,
 		eWorldOperatorMakeItemKilling,
@@ -116,7 +119,7 @@ namespace StalkerDecisionSpace {
 		eWorldOperatorKillEnemyIfCriticallyWounded,
 		eWorldOperatorPauseAfterKill,
 
-// danger
+		// danger
 		eWorldOperatorDangerUnknownPlanner,
 		eWorldOperatorDangerInDirectionPlanner,
 		eWorldOperatorDangerGrenadePlanner,
@@ -138,21 +141,22 @@ namespace StalkerDecisionSpace {
 		eWorldOperatorDangerGrenadeLookAround,
 		eWorldOperatorDangerGrenadeSearch,
 
-// global
+		// global
 		eWorldOperatorDeathPlanner,
 		eWorldOperatorALifePlanner,
 		eWorldOperatorCombatPlanner,
 		eWorldOperatorAnomalyPlanner,
 		eWorldOperatorDangerPlanner,
 
-// script
+		// script
 		eWorldOperatorScript,
-		eWorldOperatorDummy			= u32(-1),
+		eWorldOperatorDummy = u32(-1),
 	};
 
-	enum ESightActionType {
-		eSightActionTypeWatchItem	= u32(0),
+	enum ESightActionType
+	{
+		eSightActionTypeWatchItem = u32(0),
 		eSightActionTypeWatchEnemy,
-		eSightActionTypeDummy		= u32(-1),
+		eSightActionTypeDummy = u32(-1),
 	};
-};
+}; // namespace StalkerDecisionSpace

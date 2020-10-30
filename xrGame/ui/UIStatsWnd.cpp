@@ -7,7 +7,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-const char * const STATS_XML = "stats.xml";
+const char *const STATS_XML = "stats.xml";
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -21,7 +21,6 @@ CUIStatsWnd::CUIStatsWnd(LPCSTR XML)
 
 CUIStatsWnd::~CUIStatsWnd()
 {
-
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -29,8 +28,10 @@ CUIStatsWnd::~CUIStatsWnd()
 void CUIStatsWnd::Init(LPCSTR XML)
 {
 	CUIXml uiXml;
-	if (XML) strcpy(XML_NAME, XML);
-	else strcpy(XML_NAME, STATS_XML);
+	if (XML)
+		strcpy(XML_NAME, XML);
+	else
+		strcpy(XML_NAME, STATS_XML);
 	bool xml_result = uiXml.Init(CONFIG_PATH, UI_PATH, XML_NAME);
 	R_ASSERT2(xml_result, "xml file not found");
 
@@ -55,10 +56,10 @@ void CUIStatsWnd::Init(LPCSTR XML)
 
 //////////////////////////////////////////////////////////////////////////
 
-CUIStatsListItem * CUIStatsWnd::AddItem()
+CUIStatsListItem *CUIStatsWnd::AddItem()
 {
 	CUIStatsListItem *pNewItem = xr_new<CUIStatsListItem>();
-	UIStatsList.AddItem<CUIListItem>(pNewItem); 
+	UIStatsList.AddItem<CUIListItem>(pNewItem);
 	UIStatsList.ScrollToBegin();
 
 	CUIXml uiXml;
@@ -66,17 +67,17 @@ CUIStatsListItem * CUIStatsWnd::AddItem()
 	R_ASSERT2(xml_result, "xml file not found");
 
 	pNewItem->XmlInit("list", uiXml);
-//	pNewItem->SetMessageTarget(this);
+	//	pNewItem->SetMessageTarget(this);
 	return pNewItem;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-CUIStatsListItem * CUIStatsWnd::FindFrom(const u32 beg_pos, const char *strCaption)
+CUIStatsListItem *CUIStatsWnd::FindFrom(const u32 beg_pos, const char *strCaption)
 {
 	for (int i = 0; i < UIStatsList.GetItemsCount(); ++i)
 	{
-		CUIStatsListItem *pSLItem = smart_cast<CUIStatsListItem*>(UIStatsList.GetItem(i));
+		CUIStatsListItem *pSLItem = smart_cast<CUIStatsListItem *>(UIStatsList.GetItem(i));
 		R_ASSERT(beg_pos < pSLItem->FieldsVector.size());
 		for (FIELDS_VECTOR_it it = pSLItem->FieldsVector.begin() + beg_pos; it < pSLItem->FieldsVector.end(); ++it)
 		{
@@ -107,9 +108,9 @@ void CUIStatsWnd::HighlightItem(const u32 uItem)
 	if (m_uHighlightedItem != uItem)
 	{
 		if (m_uHighlightedItem != 0xffffffff)
-			smart_cast<CUIStatsListItem*>(UIStatsList.GetItem(m_uHighlightedItem))->Highlight(false);
+			smart_cast<CUIStatsListItem *>(UIStatsList.GetItem(m_uHighlightedItem))->Highlight(false);
 		if (uItem != 0xffffffff)
-			smart_cast<CUIStatsListItem*>(UIStatsList.GetItem(uItem))->Highlight(true);
+			smart_cast<CUIStatsListItem *>(UIStatsList.GetItem(uItem))->Highlight(true);
 		m_uHighlightedItem = uItem;
 	}
 }
@@ -135,16 +136,16 @@ void CUIStatsWnd::SetHeaderColumnText(const u32 headerItem, const shared_str &te
 
 void CUIStatsListItem::XmlInit(const char *path, CUIXml &uiXml)
 {
-	CUIXmlInit	xml_init;
-//	CUIStatic	*pStatic;
-	CUIButton	*pButton;
+	CUIXmlInit xml_init;
+	//	CUIStatic	*pStatic;
+	CUIButton *pButton;
 
 	string256 buf;
-	strconcat(sizeof(buf),buf, path, ":static");
+	strconcat(sizeof(buf), buf, path, ":static");
 
 	int tabsCount = uiXml.GetNodesNum(path, 0, "static");
 
-	XML_NODE* tab_node = uiXml.NavigateToNode(path,0);
+	XML_NODE *tab_node = uiXml.NavigateToNode(path, 0);
 	uiXml.SetLocalRoot(tab_node);
 
 	for (int i = 0; i < tabsCount; ++i)

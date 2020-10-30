@@ -1,7 +1,9 @@
 #pragma once
 
-namespace GameObject {
-	enum ECallbackType {
+namespace GameObject
+{
+	enum ECallbackType
+	{
 		eTradeStart = u32(0),
 		eTradeStop,
 		eTradeSellBuyItem,
@@ -43,7 +45,7 @@ namespace GameObject {
 		eOnItemDrop,
 
 		eScriptAnimation,
-		
+
 		eTraderGlobalAnimationRequest,
 		eTraderHeadAnimationRequest,
 		eTraderSoundEnd,
@@ -53,9 +55,10 @@ namespace GameObject {
 	};
 };
 
-enum EBoneCallbackType{
-	bctDummy			= u32(0),	// 0 - required!!!
+enum EBoneCallbackType
+{
+	bctDummy = u32(0), // 0 - required!!!
 	bctPhysics,
 	bctCustom,
-	bctForceU32			= u32(-1),
+	bctForceU32 = u32(-1),
 };

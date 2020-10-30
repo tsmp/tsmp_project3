@@ -24,36 +24,42 @@
 #include "xrServer_Object_Base.h"
 
 template <typename _1, typename _2>
-struct heritage {
+struct heritage
+{
 	template <typename _type, typename _base>
-	struct linear_registrator : public _base, public _type {};
+	struct linear_registrator : public _base, public _type
+	{
+	};
 
 	template <typename _type>
-	struct linear_registrator<_type,Loki::EmptyType> : public _type {};
+	struct linear_registrator<_type, Loki::EmptyType> : public _type
+	{
+	};
 
-	typedef Loki::Typelist<_1,Loki::Typelist<_2, Loki::NullType> >					tl;
-	typedef typename Loki::TL::Erase<tl,Loki::EmptyType>::Result					pure_tl;
-	typedef typename Loki::GenLinearHierarchy<pure_tl,linear_registrator>::LinBase	result;
+	typedef Loki::Typelist<_1, Loki::Typelist<_2, Loki::NullType>> tl;
+	typedef typename Loki::TL::Erase<tl, Loki::EmptyType>::Result pure_tl;
+	typedef typename Loki::GenLinearHierarchy<pure_tl, linear_registrator>::LinBase result;
 };
 
 template <typename base, typename luabind_base = Loki::EmptyType>
-class DLL_PureWrapper : public heritage<base,luabind_base>::result {
+class DLL_PureWrapper : public heritage<base, luabind_base>::result
+{
 public:
-	IC					DLL_PureWrapper		() {};
-	virtual				~DLL_PureWrapper	() {};
+	IC DLL_PureWrapper(){};
+	virtual ~DLL_PureWrapper(){};
 
-	virtual	DLL_Pure*	_construct			()
+	virtual DLL_Pure *_construct()
 	{
-		return			(call_member<DLL_Pure*>(this,"_construct"));
+		return (call_member<DLL_Pure *>(this, "_construct"));
 	}
 
-	static	DLL_Pure*	_construct_static	(base *self)
+	static DLL_Pure *_construct_static(base *self)
 	{
-		return			(self->base::_construct());
+		return (self->base::_construct());
 	}
 };
 
-typedef DLL_PureWrapper<DLL_Pure,luabind::wrap_base> CDLL_PureWrapper;
+typedef DLL_PureWrapper<DLL_Pure, luabind::wrap_base> CDLL_PureWrapper;
 
 /*	
 template <typename base, typename luabind_base = Loki::EmptyType>
@@ -136,45 +142,47 @@ typedef ISpatialWrapper<ISpatial,luabind::wrap_base> CISpatialWrapper;
 */
 
 template <typename base, typename luabind_base = Loki::EmptyType>
-class ISheduledWrapper : public heritage<base,luabind_base>::result {
+class ISheduledWrapper : public heritage<base, luabind_base>::result
+{
 public:
-	IC						ISheduledWrapper		() {};
-	virtual					~ISheduledWrapper		() {};
-	
-	virtual float			shedule_Scale			()
+	IC ISheduledWrapper(){};
+	virtual ~ISheduledWrapper(){};
+
+	virtual float shedule_Scale()
 	{
 		return 1;
-//		return	(call_member<float>(this,"shedule_Scale"));
+		//		return	(call_member<float>(this,"shedule_Scale"));
 	}
 
-/*	static float			shedule_Scale_static	(base *self)
+	/*	static float			shedule_Scale_static	(base *self)
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError,"You are trying to call a pure virtual function ISheduled::shedule_Scale!\nReturning default value 1000.0");
 		return	(1000.f);
 	}
 */
-	virtual void			shedule_Update			(u32 dt)
+	virtual void shedule_Update(u32 dt)
 	{
-		base::shedule_Update			(dt);
-//		call_member<void>(this,"shedule_Update");
+		base::shedule_Update(dt);
+		//		call_member<void>(this,"shedule_Update");
 	}
 
-/*	static  void			shedule_Update_static	(base *self, u32 dt)
+	/*	static  void			shedule_Update_static	(base *self, u32 dt)
 	{
 		self->base::shedule_Update(dt);
 	}
 */
 };
 
-typedef ISheduledWrapper<ISheduled,luabind::wrap_base> CISheduledWrapper;
+typedef ISheduledWrapper<ISheduled, luabind::wrap_base> CISheduledWrapper;
 
 template <typename base, typename luabind_base = Loki::EmptyType>
-class IRenderableWrapper : public heritage<base,luabind_base>::result {
+class IRenderableWrapper : public heritage<base, luabind_base>::result
+{
 public:
-	IC				IRenderableWrapper				()  {};
-	virtual			~IRenderableWrapper				()  {};
-	
-/*
+	IC IRenderableWrapper(){};
+	virtual ~IRenderableWrapper(){};
+
+	/*
 	virtual	void	renderable_Render				()
 	{
 		call_member<void>(this,"renderable_Render");
@@ -207,7 +215,7 @@ public:
 */
 };
 
-typedef IRenderableWrapper<IRenderable,luabind::wrap_base> CIRenderableWrapper;
+typedef IRenderableWrapper<IRenderable, luabind::wrap_base> CIRenderableWrapper;
 
 //typedef DLL_PureWrapper<CObject,luabind::wrap_base> CObjectDLL_Pure;
 //typedef ISpatialWrapper<CObjectDLL_Pure>			CObjectISpatial;
@@ -245,80 +253,80 @@ typedef IRenderableWrapper<IRenderable,luabind::wrap_base> CIRenderableWrapper;
 ///**/
 //};
 
-
-typedef DLL_PureWrapper<CGameObject,luabind::wrap_base> CGameObjectDLL_Pure;
+typedef DLL_PureWrapper<CGameObject, luabind::wrap_base> CGameObjectDLL_Pure;
 //typedef ISpatialWrapper<CGameObjectDLL_Pure>				CGameObjectISpatial;
-typedef ISheduledWrapper<CGameObjectDLL_Pure>				CGameObjectISheduled;
-typedef IRenderableWrapper<CGameObjectISheduled>			CGameObjectIRenderable;
+typedef ISheduledWrapper<CGameObjectDLL_Pure> CGameObjectISheduled;
+typedef IRenderableWrapper<CGameObjectISheduled> CGameObjectIRenderable;
 
-class CGameObjectWrapper : public CGameObjectIRenderable {
+class CGameObjectWrapper : public CGameObjectIRenderable
+{
 public:
-	IC						CGameObjectWrapper	() {};
-	virtual					~CGameObjectWrapper	() {};
-	virtual bool			use					(CGameObject* who_use)
+	IC CGameObjectWrapper(){};
+	virtual ~CGameObjectWrapper(){};
+	virtual bool use(CGameObject *who_use)
 	{
-		return call<bool>("use",who_use);
+		return call<bool>("use", who_use);
 	}
 
-	static bool			use_static			(CGameObject *self, CGameObject* who_use)
+	static bool use_static(CGameObject *self, CGameObject *who_use)
 	{
 		return self->CGameObject::use(who_use);
 	}
 
-
-	virtual void			net_Import			(NET_Packet &packet)
+	virtual void net_Import(NET_Packet &packet)
 	{
-		call<void>("net_Import",&packet);
+		call<void>("net_Import", &packet);
 	}
 
-	static	void			net_Import_static	(CGameObject *self, NET_Packet *packet)
+	static void net_Import_static(CGameObject *self, NET_Packet *packet)
 	{
 		self->CGameObject::net_Import(*packet);
 	}
 
-	virtual void			net_Export			(NET_Packet &packet)
+	virtual void net_Export(NET_Packet &packet)
 	{
-		call<void>("net_Export",&packet);
+		call<void>("net_Export", &packet);
 	}
 
-	static	void			net_Export_static	(CGameObject *self, NET_Packet *packet)
+	static void net_Export_static(CGameObject *self, NET_Packet *packet)
 	{
 		self->CGameObject::net_Export(*packet);
 	}
 
-	virtual BOOL			net_Spawn			(CSE_Abstract* data)
+	virtual BOOL net_Spawn(CSE_Abstract *data)
 	{
-		return			(luabind::call_member<bool>(this,"net_Spawn",data));
+		return (luabind::call_member<bool>(this, "net_Spawn", data));
 	}
 
-	static	bool			net_Spawn_static	(CGameObject *self, CSE_Abstract *abstract)
+	static bool net_Spawn_static(CGameObject *self, CSE_Abstract *abstract)
 	{
-		return			(!!self->CGameObject::net_Spawn(abstract));
+		return (!!self->CGameObject::net_Spawn(abstract));
 	}
 };
 
-class CEntityWrapper : public CEntity, public luabind::wrap_base {
+class CEntityWrapper : public CEntity, public luabind::wrap_base
+{
 public:
-	IC						CEntityWrapper		() {}
-	virtual					~CEntityWrapper		() {}
+	IC CEntityWrapper() {}
+	virtual ~CEntityWrapper() {}
 
-	virtual void			HitSignal			(float P, Fvector &local_dir,	CObject* who, s16 element)
+	virtual void HitSignal(float P, Fvector &local_dir, CObject *who, s16 element)
 	{
-		luabind::call_member<void>(this,"HitSignal",P,local_dir,who,element);
+		luabind::call_member<void>(this, "HitSignal", P, local_dir, who, element);
 	}
 
-	static	void			HitSignal_static	(CEntity *self, float P, Fvector &local_dir,	CObject* who, s16 element)
+	static void HitSignal_static(CEntity *self, float P, Fvector &local_dir, CObject *who, s16 element)
 	{
-		ai().script_engine().script_log(eLuaMessageTypeError,"You are trying to call a pure virtual function CEntity::HitSignal!");
+		ai().script_engine().script_log(eLuaMessageTypeError, "You are trying to call a pure virtual function CEntity::HitSignal!");
 	}
 
-	virtual void			HitImpulse			(float P, Fvector &vWorldDir, 	Fvector& vLocalDir)
+	virtual void HitImpulse(float P, Fvector &vWorldDir, Fvector &vLocalDir)
 	{
-		luabind::call_member<void>(this,"HitImpulse",P,vWorldDir,vLocalDir);
+		luabind::call_member<void>(this, "HitImpulse", P, vWorldDir, vLocalDir);
 	}
 
-	static	void			HitImpulse_static	(float P, Fvector &vWorldDir, 	Fvector& vLocalDir)
+	static void HitImpulse_static(float P, Fvector &vWorldDir, Fvector &vLocalDir)
 	{
-		ai().script_engine().script_log(eLuaMessageTypeError,"You are trying to call a pure virtual function CEntity::HitImpulse!");
+		ai().script_engine().script_log(eLuaMessageTypeError, "You are trying to call a pure virtual function CEntity::HitImpulse!");
 	}
 };

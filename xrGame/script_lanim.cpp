@@ -10,41 +10,39 @@
 #include "script_lanim.h"
 #include "../LightAnimLibrary.h"
 
-
 using namespace luabind;
 
 struct lanim_wrapper
 {
-	CLAItem* item;
+	CLAItem *item;
+
 public:
-			lanim_wrapper	(LPCSTR name){load(name);}
-	void	load			(LPCSTR name)
+	lanim_wrapper(LPCSTR name) { load(name); }
+	void load(LPCSTR name)
 	{
-		item				= LALib.FindItem(name);
-		R_ASSERT3			(item,"Can't find color anim:",name);
+		item = LALib.FindItem(name);
+		R_ASSERT3(item, "Can't find color anim:", name);
 	}
-	u32		length			()
+	u32 length()
 	{
-		VERIFY				(item);
+		VERIFY(item);
 		return item->Length_ms();
 	}
-	Fcolor	calculate		(float T)
+	Fcolor calculate(float T)
 	{
 		int frame;
-		VERIFY				(item);
-		return Fcolor().set(item->CalculateRGB(T,frame));
+		VERIFY(item);
+		return Fcolor().set(item->CalculateRGB(T, frame));
 	}
 };
 
-#pragma optimize("s",on)
+#pragma optimize("s", on)
 void lanim_registrator::script_register(lua_State *L)
 {
 	module(L)
-		[
-			class_<lanim_wrapper>("color_animator")
-			.def(					constructor<LPCSTR>())
-			.def("load",			&lanim_wrapper::load)
-			.def("calculate",		&lanim_wrapper::calculate)
-			.def("length",			&lanim_wrapper::length)
-		];
+		[class_<lanim_wrapper>("color_animator")
+			 .def(constructor<LPCSTR>())
+			 .def("load", &lanim_wrapper::load)
+			 .def("calculate", &lanim_wrapper::calculate)
+			 .def("length", &lanim_wrapper::length)];
 }

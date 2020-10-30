@@ -4,8 +4,7 @@
 #include "Console.h"
 #include "IGame_Level.h"
 
-class ENGINE_API CDedicatedSrvConsole final :
-	public CConsole
+class ENGINE_API CDedicatedSrvConsole final : public CConsole
 {
 	using inherited = CConsole;
 
@@ -25,28 +24,28 @@ private:
 	HBITMAP hOldBitmap;
 
 	bool bNeedUpdate;
-	u32	LastUpdateTime;
+	u32 LastUpdateTime;
 
 	CServerInfo server_info;
 	bool bScrollLog;
-	
+
 	u32 LastStatisticsUpdate;
 
 private:
 	void CreateConsoleWnd();
 	void CreateLogWnd();
-	void DrawLog(HDC hDC, RECT* pRect);
+	void DrawLog(HDC hDC, RECT *pRect);
 
 public:
 	CDedicatedSrvConsole();
 	virtual ~CDedicatedSrvConsole();
 
-	virtual	void Initialize();
-	virtual	void Destroy();
+	virtual void Initialize();
+	virtual void Destroy();
 
 	void OnPaint();
 
-	virtual void OnRender() {};
+	virtual void OnRender(){};
 	virtual void OnFrame();
 
 	virtual void IR_OnKeyboardPress(int dik);

@@ -3,10 +3,10 @@
 #include "weaponmagazinedwgrenade.h"
 #include "script_export_space.h"
 
-class CWeaponGroza :
-	public CWeaponMagazinedWGrenade
+class CWeaponGroza : public CWeaponMagazinedWGrenade
 {
 	typedef CWeaponMagazinedWGrenade inherited;
+
 public:
 	CWeaponGroza(void);
 	virtual ~CWeaponGroza(void);

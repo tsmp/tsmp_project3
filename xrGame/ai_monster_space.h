@@ -10,32 +10,38 @@
 
 #include "xrserver_space.h"
 
-namespace MonsterSpace {
-	enum EMentalState {
+namespace MonsterSpace
+{
+	enum EMentalState
+	{
 		eMentalStateDanger = u32(0),
 		eMentalStateFree,
 		eMentalStatePanic,
 	};
 
-	enum EBodyState {
+	enum EBodyState
+	{
 		eBodyStateCrouch = 0,
 		eBodyStateStand,
 	};
 
-	enum EMovementType {
+	enum EMovementType
+	{
 		eMovementTypeWalk = 0,
 		eMovementTypeRun,
 		eMovementTypeStand,
 	};
 
-	enum EMovementDirection {
+	enum EMovementDirection
+	{
 		eMovementDirectionForward = 0,
 		eMovementDirectionBackward,
 		eMovementDirectionLeft,
 		eMovementDirectionRight,
 	};
 
-	enum EObjectAction {
+	enum EObjectAction
+	{
 		eObjectActionSwitch1,
 		eObjectActionSwitch2,
 		eObjectActionReload1,
@@ -63,18 +69,20 @@ namespace MonsterSpace {
 		eObjectActionTake,
 		eObjectActionMisfire1,
 		eObjectActionEmpty1,
-		eObjectActionNoItems		= eObjectActionIdle | u16(-1),
-		// 
-		eObjectActionDummy			= u32(-1),
+		eObjectActionNoItems = eObjectActionIdle | u16(-1),
+		//
+		eObjectActionDummy = u32(-1),
 	};
 
-	struct SBoneRotation {
-		SRotation		current;
-		SRotation		target;
-		float			speed;
+	struct SBoneRotation
+	{
+		SRotation current;
+		SRotation target;
+		float speed;
 	};
 
-	enum EScriptMonsterMoveAction {
+	enum EScriptMonsterMoveAction
+	{
 		eMA_WalkFwd,
 		eMA_WalkBkwd,
 		eMA_Run,
@@ -82,45 +90,50 @@ namespace MonsterSpace {
 		eMA_Jump,
 		eMA_Steal
 	};
-	
-	enum EScriptMonsterSpeedParam {
-		eSP_Default				= u32(0),
-		eSP_ForceSpeed,	
-		eSP_None				= u32(-1),
+
+	enum EScriptMonsterSpeedParam
+	{
+		eSP_Default = u32(0),
+		eSP_ForceSpeed,
+		eSP_None = u32(-1),
 	};
 
-	enum EScriptMonsterAnimAction {
-		eAA_StandIdle, 
-		eAA_SitIdle,			
-		eAA_LieIdle,			
-		eAA_Eat,				
-		eAA_Sleep,				
-		eAA_Rest,				
-		eAA_Attack,				
+	enum EScriptMonsterAnimAction
+	{
+		eAA_StandIdle,
+		eAA_SitIdle,
+		eAA_LieIdle,
+		eAA_Eat,
+		eAA_Sleep,
+		eAA_Rest,
+		eAA_Attack,
 		eAA_LookAround,
 		eAA_Turn,
-		eAA_NoAction			= u32(-1)
+		eAA_NoAction = u32(-1)
 	};
 
-	enum EScriptMonsterGlobalAction {
-		eGA_Rest				= u32(0),
+	enum EScriptMonsterGlobalAction
+	{
+		eGA_Rest = u32(0),
 		eGA_Eat,
 		eGA_Attack,
 		eGA_Panic,
-		eGA_None				= u32(-1)
+		eGA_None = u32(-1)
 	};
 
-	enum EScriptSoundAnim {
-		eAnimSoundCustom		= u32(0),
+	enum EScriptSoundAnim
+	{
+		eAnimSoundCustom = u32(0),
 		eAnimSoundDefault,
 	};
 
-	enum EMonsterHeadAnimType {
-		eHeadAnimNormal			= u32(0),
+	enum EMonsterHeadAnimType
+	{
+		eHeadAnimNormal = u32(0),
 		eHeadAnimAngry,
 		eHeadAnimGlad,
 		eHeadAnimKind,
 
-		eHeadAnimNone			= u32(-1),
+		eHeadAnimNone = u32(-1),
 	};
-};
+}; // namespace MonsterSpace

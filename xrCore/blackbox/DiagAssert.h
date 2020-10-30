@@ -7,8 +7,9 @@ Copyright (c) 1999-2000 John Robbins -- All rights reserved.
 #define _DIAGASSERT_H
 
 #ifdef __cplusplus
-extern "C" {
-#endif  //__cplusplus
+extern "C"
+{
+#endif //__cplusplus
 
 //#include <tchar.h>
 
@@ -17,17 +18,17 @@ extern "C" {
 //////////////////////////////////////////////////////////////////////*/
 // Keep the core stuff available in both release and debug builds.
 // Uses the global assert flags.
-#define DA_USEDEFAULTS      0x0000
+#define DA_USEDEFAULTS 0x0000
 // Turns on showing the assert in a messagebox.  This is the default.
-#define DA_SHOWMSGBOX       0x0001
+#define DA_SHOWMSGBOX 0x0001
 // Turns on showing the assert as through OutputDebugString.  This is
 // the default.
-#define DA_SHOWODS          0x0002
+#define DA_SHOWODS 0x0002
 // Shows a stack trace in the assert.  This is off by default with the
 // ASSERT macro and on in the SUPERASSERT macro.
-#define DA_SHOWSTACKTRACE   0x0004
+#define DA_SHOWSTACKTRACE 0x0004
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   SetDiagAssertOptions
 DISCUSSION      :
     Sets the global options for normal ASSERT macros.
@@ -36,10 +37,9 @@ PARAMETERS      :
 RETURNS         :
     The previous options
 ----------------------------------------------------------------------*/
-DWORD  __stdcall
-    SetDiagAssertOptions ( DWORD dwOpts ) ;
+    DWORD __stdcall SetDiagAssertOptions(DWORD dwOpts);
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   SetDiagAssertFile
 DISCUSSION      :
     Sets a HANDLE where the data in any assertion will be written.  To
@@ -52,10 +52,9 @@ PARAMETERS      :
 RETURNS         :
     The previous file handle
 ----------------------------------------------------------------------*/
-HANDLE  __stdcall
-    SetDiagAssertFile ( HANDLE hFile ) ;
+    HANDLE __stdcall SetDiagAssertFile(HANDLE hFile);
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   AddDiagAssertModule
 DISCUSSION      :
     Adds the specified module to the list of modules that error strings
@@ -66,10 +65,9 @@ RETURNS         :
     TRUE  - The module was added.
     FALSE - The internal table is full.
 ----------------------------------------------------------------------*/
-BOOL  __stdcall
-    AddDiagAssertModule ( HMODULE hMod ) ;
+    BOOL __stdcall AddDiagAssertModule(HMODULE hMod);
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   DiagAssert
 DISCUSSION      :
     The assert function for C and C++ programs
@@ -83,25 +81,23 @@ RETURNS         :
     FALSE - Ignore the assert.
     TRUE  - Trigger the DebugBreak.
 ----------------------------------------------------------------------*/
-BOOL  __stdcall
-    DiagAssertA ( DWORD     dwOverrideOpts  ,
-                  LPCSTR    szMsg           ,
-                  LPCSTR    szFile          ,
-                  DWORD     dwLine           ) ;
+    BOOL __stdcall DiagAssertA(DWORD dwOverrideOpts,
+                               LPCSTR szMsg,
+                               LPCSTR szFile,
+                               DWORD dwLine);
 
-BOOL  __stdcall
-    DiagAssertW ( DWORD     dwOverrideOpts  ,
-                  LPCWSTR   szMsg           ,
-                  LPCSTR    szFile          ,
-                  DWORD     dwLine           ) ;
+    BOOL __stdcall DiagAssertW(DWORD dwOverrideOpts,
+                               LPCWSTR szMsg,
+                               LPCSTR szFile,
+                               DWORD dwLine);
 
 #ifdef UNICODE
-#define DiagAssert  DiagAssertW
+#define DiagAssert DiagAssertW
 #else
-#define DiagAssert  DiagAssertA
+#define DiagAssert DiagAssertA
 #endif
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   DiagAssertVB
 DISCUSSION      :
     The assert function for VB programs.
@@ -115,13 +111,11 @@ RETURNS         :
     FALSE - Ignore the assert.
     TRUE  - Trigger DebugBreak.
 ----------------------------------------------------------------------*/
-BOOL  __stdcall
-    DiagAssertVB ( DWORD   dwOverrideOpts  ,
-                   BOOL    bAllowHalts     ,
-                   LPCSTR  szMsg            ) ;
+    BOOL __stdcall DiagAssertVB(DWORD dwOverrideOpts,
+                                BOOL bAllowHalts,
+                                LPCSTR szMsg);
 
-
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   SetDiagOutputFile
 DISCUSSION      :
 
@@ -134,10 +128,9 @@ PARAMETERS      :
 RETURNS         :
     The previous file handle
 ----------------------------------------------------------------------*/
-HANDLE  __stdcall
-    SetDiagOutputFile ( HANDLE hFile ) ;
+    HANDLE __stdcall SetDiagOutputFile(HANDLE hFile);
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   DiagOutput
 DISCUSSION      :
     Provides a tracing routine to send strings through
@@ -148,19 +141,19 @@ PARAMETERS      :
 RETURNS         :
     None.
 ----------------------------------------------------------------------*/
-void 
-    DiagOutputA ( LPCSTR szFmt , ... ) ;
+    void
+    DiagOutputA(LPCSTR szFmt, ...);
 
-void 
-    DiagOutputW ( LPCWSTR szFmt , ... ) ;
+    void
+    DiagOutputW(LPCWSTR szFmt, ...);
 
 #ifdef UNICODE
-#define DiagOutput  DiagOutputW
+#define DiagOutput DiagOutputW
 #else
-#define DiagOutput  DiagOutputA
+#define DiagOutput DiagOutputA
 #endif
 
-/*----------------------------------------------------------------------
+    /*----------------------------------------------------------------------
 FUNCTION        :   DiagOutputVB
 DISCUSSION      :
     Provides a tracing routine to send strings through
@@ -170,8 +163,7 @@ PARAMETERS      :
 RETURNS         :
     None.
 ----------------------------------------------------------------------*/
-void  __stdcall
-    DiagOutputVB ( LPCSTR szMsg ) ;
+    void __stdcall DiagOutputVB(LPCSTR szMsg);
 
 /*//////////////////////////////////////////////////////////////////////
                                UNDEFINES
@@ -204,7 +196,6 @@ void  __stdcall
 #undef TRACE3
 #endif
 
-
 /*//////////////////////////////////////////////////////////////////////
                            _DEBUG Is Defined
 //////////////////////////////////////////////////////////////////////*/
@@ -222,44 +213,44 @@ void  __stdcall
 // Turn off "conditional expression is constant" because of while(0).
 // I need to turn this off globally because the compilation error
 // occurs on the expansion of the macro.
-#pragma warning ( disable : 4127 )
+#pragma warning(disable : 4127)
 
 #ifdef PORTABLE_BUGSLAYERUTIL
-#define ASSERTMACRO(a,x)                                            \
-    do                                                              \
-    {                                                               \
-        if ( !(x)                                               &&  \
-             DiagAssert ( a , _T ( #x ) , __FILE__  , __LINE__)    )\
-        {                                                           \
-                DebugBreak ( ) ;                                    \
-        }                                                           \
+#define ASSERTMACRO(a, x)                              \
+    do                                                 \
+    {                                                  \
+        if (!(x) &&                                    \
+            DiagAssert(a, _T(#x), __FILE__, __LINE__)) \
+        {                                              \
+            DebugBreak();                              \
+        }                                              \
     } while (0)
-#else   //!PORTABLE_BUGSLAYERUTIL
-#define ASSERTMACRO(a,x)                                            \
-    do                                                              \
-    {                                                               \
-        if ( !(x)                                               &&  \
-             DiagAssert ( a , _T ( #x ) , __FILE__  , __LINE__)    )\
-        {                                                           \
-                __asm int 3                                         \
-        }                                                           \
+#else //!PORTABLE_BUGSLAYERUTIL
+#define ASSERTMACRO(a, x)                              \
+    do                                                 \
+    {                                                  \
+        if (!(x) &&                                    \
+            DiagAssert(a, _T(#x), __FILE__, __LINE__)) \
+        {                                              \
+            __asm int 3                                \
+        }                                              \
     } while (0)
-#endif  // PORTABLE_BUGSLAYERUTIL
+#endif // PORTABLE_BUGSLAYERUTIL
 
 // The normal assert. It just uses the module defaults.
-#define ASSERT(x) ASSERTMACRO(DA_USEDEFAULTS,x)
+#define ASSERT(x) ASSERTMACRO(DA_USEDEFAULTS, x)
 
 // Do the lowercase one.
 #define assert ASSERT
 
 // Trust, but verify.
-#define VERIFY(x)   ASSERT(x)
+#define VERIFY(x) ASSERT(x)
 
 // Full-blown assert with all the trimmings
-#define SUPERASSERT(x) ASSERTMACRO ( DA_SHOWSTACKTRACE |    \
-                                        DA_SHOWMSGBOX  |    \
-                                        DA_SHOWODS      ,   \
-                                     x                  , )
+#define SUPERASSERT(x) ASSERTMACRO(DA_SHOWSTACKTRACE | \
+                                       DA_SHOWMSGBOX | \
+                                       DA_SHOWODS,     \
+                                   x, )
 
 // The options macro
 #define SETDIAGASSERTOPTIONS(x) SetDiagAssertOptions(x)
@@ -269,43 +260,40 @@ void  __stdcall
 
 // The TRACE macros
 #ifdef __cplusplus
-#define TRACE   ::DiagOutput
+#define TRACE ::DiagOutput
 #endif
 
-#define TRACE0(sz)              DiagOutput(_T("%s"), _T(sz))
-#define TRACE1(sz, p1)          DiagOutput(_T(sz), p1)
-#define TRACE2(sz, p1, p2)      DiagOutput(_T(sz), p1, p2)
-#define TRACE3(sz, p1, p2, p3)  DiagOutput(_T(sz), p1, p2, p3)
+#define TRACE0(sz) DiagOutput(_T("%s"), _T(sz))
+#define TRACE1(sz, p1) DiagOutput(_T(sz), p1)
+#define TRACE2(sz, p1, p2) DiagOutput(_T(sz), p1, p2)
+#define TRACE3(sz, p1, p2, p3) DiagOutput(_T(sz), p1, p2, p3)
 
-#else   // !_DEBUG
+#else // !_DEBUG
 /*//////////////////////////////////////////////////////////////////////
                        _DEBUG Is !!NOT!! Defined
 //////////////////////////////////////////////////////////////////////*/
 
-#define ASSERTMACRO(a,x)
+#define ASSERTMACRO(a, x)
 #define ASSERT(x)
-#define VERIFY(x)   ((void)(x))
+#define VERIFY(x) ((void)(x))
 #define SUPERASSERT(x)
 #define SETDIAGASSERTOPTIONS(x)
 #define ADDDIAGASSERTMODULE(x)
 
 #ifdef __cplusplus
 //inline void TraceOutput(LPCTSTR, ...) { }
-#define TRACE   (void)0
+#define TRACE (void)0
 #endif
 
 #define TRACE0(fmt)
-#define TRACE1(fmt,arg1)
-#define TRACE2(fmt,arg1,arg2)
-#define TRACE3(fmt,arg1,arg2,arg3)
+#define TRACE1(fmt, arg1)
+#define TRACE2(fmt, arg1, arg2)
+#define TRACE3(fmt, arg1, arg2, arg3)
 
-#endif  // _DEBUG
-
+#endif // _DEBUG
 
 #ifdef __cplusplus
 }
-#endif  //__cplusplus
+#endif //__cplusplus
 
-#endif  // _DIAGASSERT_H
-
-
+#endif // _DIAGASSERT_H

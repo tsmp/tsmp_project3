@@ -12,11 +12,10 @@
 #include "alife_combat_manager.h"
 #include "alife_communication_manager.h"
 
-class CALifeInteractionManager : 
-	public CALifeCombatManager,
-	public CALifeCommunicationManager
+class CALifeInteractionManager : public CALifeCombatManager,
+								 public CALifeCommunicationManager
 {
-/**
+	/**
 	friend class CCheckForInteractionPredicate;
 protected:
 	u32								m_inventory_slot_count;
@@ -27,8 +26,8 @@ public:
 
 /**/
 public:
-									CALifeInteractionManager	(xrServer *server, LPCSTR section);
-/**
+	CALifeInteractionManager(xrServer *server, LPCSTR section);
+	/**
 	virtual							~CALifeInteractionManager	();
 			void					check_for_interaction		(CSE_ALifeSchedulable		*tpALifeSchedulable);
 			void					check_for_interaction		(CSE_ALifeSchedulable		*tpALifeSchedulable,		GameGraph::_GRAPH_ID		tGraphID);

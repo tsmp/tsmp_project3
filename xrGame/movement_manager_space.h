@@ -8,8 +8,10 @@
 
 #pragma once
 
-namespace MovementManager {
-	enum EPathType {
+namespace MovementManager
+{
+	enum EPathType
+	{
 		ePathTypeGamePath = u32(0),
 		ePathTypeLevelPath,
 		ePathTypePatrolPath,
@@ -17,4 +19,3 @@ namespace MovementManager {
 		ePathTypeDummy = u32(-1),
 	};
 };
-

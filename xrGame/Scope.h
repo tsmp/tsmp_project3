@@ -8,11 +8,13 @@
 #include "inventory_item_object.h"
 #include "script_export_space.h"
 
-class CScope : public CInventoryItemObject {
+class CScope : public CInventoryItemObject
+{
 private:
 	typedef CInventoryItemObject inherited;
+
 public:
-			CScope ();
+	CScope();
 	virtual ~CScope();
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

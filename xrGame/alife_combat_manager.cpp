@@ -38,10 +38,9 @@ void print_time(LPCSTR S, _TIME_ID tTimeID)
 }
 
 /**/
-CALifeCombatManager::CALifeCombatManager	(xrServer *server, LPCSTR section) :
-	CALifeSimulatorBase	(server,section)
+CALifeCombatManager::CALifeCombatManager(xrServer *server, LPCSTR section) : CALifeSimulatorBase(server, section)
 {
-/**
+	/**
 	seed						(u32(CPU::QPC() & 0xffffffff));
 	m_dwMaxCombatIterationCount	= pSettings->r_u32	(section,"max_combat_iteration_count");
 	for (int i=0; i<2; ++i) {
@@ -455,20 +454,21 @@ ALife::ERelationType	CALifeCombatManager::relation_type	(CSE_ALifeMonsterAbstrac
 		return(ALife::eRelationTypeNeutral);
 }
 /**/
-void CALifeCombatManager::kill_entity	(CSE_ALifeMonsterAbstract *l_tpALifeMonsterAbstract, const GameGraph::_GRAPH_ID &l_tGraphID, CSE_ALifeSchedulable *schedulable)
+void CALifeCombatManager::kill_entity(CSE_ALifeMonsterAbstract *l_tpALifeMonsterAbstract, const GameGraph::_GRAPH_ID &l_tGraphID, CSE_ALifeSchedulable *schedulable)
 {
-	VERIFY									(l_tpALifeMonsterAbstract->g_Alive());
-	append_item_vector						(l_tpALifeMonsterAbstract->children,m_temp_item_vector);
-	GameGraph::_GRAPH_ID					l_tGraphID1 = l_tpALifeMonsterAbstract->m_tGraphID;
-	assign_death_position					(l_tpALifeMonsterAbstract, l_tGraphID, schedulable);
-	l_tpALifeMonsterAbstract->vfDetachAll	();
-	R_ASSERT								(l_tpALifeMonsterAbstract->children.empty());
-	scheduled().remove						(l_tpALifeMonsterAbstract);
-	if (l_tpALifeMonsterAbstract->m_tGraphID != l_tGraphID1) {
-		graph().remove						(l_tpALifeMonsterAbstract,l_tGraphID1);
-		graph().add							(l_tpALifeMonsterAbstract,l_tpALifeMonsterAbstract->m_tGraphID);
+	VERIFY(l_tpALifeMonsterAbstract->g_Alive());
+	append_item_vector(l_tpALifeMonsterAbstract->children, m_temp_item_vector);
+	GameGraph::_GRAPH_ID l_tGraphID1 = l_tpALifeMonsterAbstract->m_tGraphID;
+	assign_death_position(l_tpALifeMonsterAbstract, l_tGraphID, schedulable);
+	l_tpALifeMonsterAbstract->vfDetachAll();
+	R_ASSERT(l_tpALifeMonsterAbstract->children.empty());
+	scheduled().remove(l_tpALifeMonsterAbstract);
+	if (l_tpALifeMonsterAbstract->m_tGraphID != l_tGraphID1)
+	{
+		graph().remove(l_tpALifeMonsterAbstract, l_tGraphID1);
+		graph().add(l_tpALifeMonsterAbstract, l_tpALifeMonsterAbstract->m_tGraphID);
 	}
-	CSE_ALifeInventoryItem *l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeMonsterAbstract);
+	CSE_ALifeInventoryItem *l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem *>(l_tpALifeMonsterAbstract);
 	if (l_tpALifeInventoryItem)
-		m_temp_item_vector.push_back		(l_tpALifeInventoryItem);
+		m_temp_item_vector.push_back(l_tpALifeInventoryItem);
 }

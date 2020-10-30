@@ -1,24 +1,26 @@
 #pragma once
 
-namespace ControlCom {
-	enum EControlType {
+namespace ControlCom
+{
+	enum EControlType
+	{
 		// 1st level
-		eControlMovement	= u32(0),	// linear velocity
-		eControlPath,					// path builder
-		eControlDir,					// model direction
-		eControlAnimation,				// animation manager
-//		eControlSound,					// sound manager
+		eControlMovement = u32(0), // linear velocity
+		eControlPath,			   // path builder
+		eControlDir,			   // model direction
+		eControlAnimation,		   // animation manager
+								   //		eControlSound,					// sound manager
 
 		// 2nd level
-		eControlSequencer,				// capture: anim
-		eControlTripleAnimation,		// capture: anim
+		eControlSequencer,		 // capture: anim
+		eControlTripleAnimation, // capture: anim
 
-		//// 3rd level 
-		eControlJump,					// capture: path, movement, triple_anim     disable : fsm, dir
-		eControlRotationJump,			// capture: path, movement, sequencer, dir
-		eControlRunAttack,				// capture: path, movement, sequencer
-		eControlThreaten,				
-		eControlMeleeJump,				// capture: path, movement, sequencer, dir
+		//// 3rd level
+		eControlJump,		  // capture: path, movement, triple_anim     disable : fsm, dir
+		eControlRotationJump, // capture: path, movement, sequencer, dir
+		eControlRunAttack,	  // capture: path, movement, sequencer
+		eControlThreaten,
+		eControlMeleeJump, // capture: path, movement, sequencer, dir
 
 		eControlAnimationBase,
 		eControlMovementBase,
@@ -29,16 +31,21 @@ namespace ControlCom {
 
 		eComCustom1,
 		eComCriticalWound,
-		
+
 		eControllersCount,
 
-		eControlInvalid		= u32(-1)
+		eControlInvalid = u32(-1)
 	};
 
-	struct	IComData	{};
-	struct	IEventData	{};
+	struct IComData
+	{
+	};
+	struct IEventData
+	{
+	};
 
-	enum EEventType {
+	enum EEventType
+	{
 		eventAnimationStart = u32(0),
 		eventAnimationEnd,
 		eventLegsAnimationEnd,
@@ -65,10 +72,10 @@ namespace ControlCom {
 		eventCriticalWoundEnd
 	};
 
-	enum ECaptureType {
-		eCapturePath		= u32(1) << 0,
-		eCaptureMovement	= u32(1) << 1,
-		eCaptureDir			= u32(1) << 2,
+	enum ECaptureType
+	{
+		eCapturePath = u32(1) << 0,
+		eCaptureMovement = u32(1) << 1,
+		eCaptureDir = u32(1) << 2,
 	};
-};
-
+}; // namespace ControlCom

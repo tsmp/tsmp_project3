@@ -4,21 +4,27 @@
 #include "script_export_space.h"
 #include "alife_space.h"
 
-#pragma pack(push,1)
+#pragma pack(push, 1)
 
-struct	game_PlayerState;//fw
-class	NET_Packet;
+struct game_PlayerState; //fw
+class NET_Packet;
 
-struct		RPoint
+struct RPoint
 {
-	Fvector	P;
+	Fvector P;
 	Fvector A;
-	u32		TimeToUnfreeze;
-	bool	Blocked;
-	u32		BlockedByID;
-	u32		BlockTime;
-	RPoint(){P.set(.0f,0.f,.0f);A.set(.0f,0.f,.0f); TimeToUnfreeze = 0; Blocked = false;}
-	bool	operator ==		(const u32& ID)	const			{ return (Blocked && BlockedByID == ID);		}
+	u32 TimeToUnfreeze;
+	bool Blocked;
+	u32 BlockedByID;
+	u32 BlockTime;
+	RPoint()
+	{
+		P.set(.0f, 0.f, .0f);
+		A.set(.0f, 0.f, .0f);
+		TimeToUnfreeze = 0;
+		Blocked = false;
+	}
+	bool operator==(const u32 &ID) const { return (Blocked && BlockedByID == ID); }
 	DECLARE_SCRIPT_REGISTER_FUNCTION_STRUCT
 };
 
@@ -26,12 +32,23 @@ add_to_type_list(RPoint)
 #undef script_type_list
 #define script_type_list save_type_list(RPoint)
 
-struct Bonus_Money_Struct {
-	s32		Money;
-	u8		Reason;
-	u8		Kills;
-	Bonus_Money_Struct(s32 M, u8 R, u8 K) {Money = M; Reason = R; Kills = K;}
-	Bonus_Money_Struct() {Money = 0; Reason = 0; Kills=0;}
+	struct Bonus_Money_Struct
+{
+	s32 Money;
+	u8 Reason;
+	u8 Kills;
+	Bonus_Money_Struct(s32 M, u8 R, u8 K)
+	{
+		Money = M;
+		Reason = R;
+		Kills = K;
+	}
+	Bonus_Money_Struct()
+	{
+		Money = 0;
+		Reason = 0;
+		Kills = 0;
+	}
 };
 
 struct game_PlayerState
@@ -89,10 +106,8 @@ public:
 
 	s16 frags() const { return m_iRivalKills - m_iSelfKills - m_iTeamKills; }
 
-
 	virtual void net_Export(NET_Packet &P, BOOL Full = FALSE);
 	virtual void net_Import(NET_Packet &P);
-
 
 	DEF_VECTOR(PLAYER_ITEMS_LIST, u16);
 
@@ -105,7 +120,7 @@ public:
 
 	s32 LastBuyAcount;
 	bool m_bClearRun;
-	
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION_STRUCT
 };
 
@@ -113,77 +128,73 @@ add_to_type_list(game_PlayerState)
 #undef script_type_list
 #define script_type_list save_type_list(game_PlayerState)
 
-
-struct	game_TeamState
+	struct game_TeamState
 {
-	int			score;
-	u16			num_targets;
+	int score;
+	u16 num_targets;
 
 	game_TeamState();
 };
 
-
 #pragma pack(pop)
 
-class	game_GameState : public DLL_Pure
+class game_GameState : public DLL_Pure
 {
 protected:
-	s32								m_type;
-	u16								m_phase;
-	s32								m_round;
-	u32								m_start_time;
+	s32 m_type;
+	u16 m_phase;
+	s32 m_round;
+	u32 m_start_time;
 
-	u32								m_round_start_time;
-	string64						m_round_start_time_str;
-//	u32								buy_time;
-//	s32								fraglimit; //dm,tdm,ah
-//	s32								timelimit; //dm
-//	u32								damageblocklimit;//dm,tdm
-//	xr_vector<game_TeamState>		teams;//dm,tdm,ah
+	u32 m_round_start_time;
+	string64 m_round_start_time_str;
+	//	u32								buy_time;
+	//	s32								fraglimit; //dm,tdm,ah
+	//	s32								timelimit; //dm
+	//	u32								damageblocklimit;//dm,tdm
+	//	xr_vector<game_TeamState>		teams;//dm,tdm,ah
 	// for Artefact Hunt
-//	u8								artefactsNum;//ah
-//	u16								artefactBearerID;//ah,ZoneMap
-//	u8								teamInPossession;//ah,ZoneMap
+	//	u8								artefactsNum;//ah
+	//	u16								artefactBearerID;//ah,ZoneMap
+	//	u8								teamInPossession;//ah,ZoneMap
 protected:
-	virtual		void				switch_Phase			(u32 new_phase);
-	virtual		void				OnSwitchPhase			(u32 old_phase, u32 new_phase)	{};	
+	virtual void switch_Phase(u32 new_phase);
+	virtual void OnSwitchPhase(u32 old_phase, u32 new_phase){};
 
 public:
-									game_GameState			();
-	virtual							~game_GameState			()								{}
-				u32					Type					() const						{return m_type;};
-				u16					Phase					() const						{return m_phase;};
-				s32					Round					() const						{return m_round;};
-				u32					StartTime				() const						{return m_start_time;};
-	virtual		void				Create					(shared_str& options)				{};
-	virtual		LPCSTR				type_name				() const						{return "base game";};
-//for scripting enhancement
-	static		CLASS_ID			getCLASS_ID				(LPCSTR game_type_name, bool bServer);
-	virtual		game_PlayerState*	createPlayerState()		{return xr_new<game_PlayerState>(); };
+	game_GameState();
+	virtual ~game_GameState() {}
+	u32 Type() const { return m_type; };
+	u16 Phase() const { return m_phase; };
+	s32 Round() const { return m_round; };
+	u32 StartTime() const { return m_start_time; };
+	virtual void Create(shared_str &options){};
+	virtual LPCSTR type_name() const { return "base game"; };
+	//for scripting enhancement
+	static CLASS_ID getCLASS_ID(LPCSTR game_type_name, bool bServer);
+	virtual game_PlayerState *createPlayerState() { return xr_new<game_PlayerState>(); };
 
-//moved from game_sv_base (time routines)
+	//moved from game_sv_base (time routines)
 private:
 	// scripts
-	u64								m_qwStartProcessorTime;
-	u64								m_qwStartGameTime;
-	float							m_fTimeFactor;
+	u64 m_qwStartProcessorTime;
+	u64 m_qwStartGameTime;
+	float m_fTimeFactor;
 	//-------------------------------------------------------
-	u64								m_qwEStartProcessorTime;
-	u64								m_qwEStartGameTime;
-	float							m_fETimeFactor;
+	u64 m_qwEStartProcessorTime;
+	u64 m_qwEStartGameTime;
+	float m_fETimeFactor;
 	//-------------------------------------------------------
 public:
+	virtual ALife::_TIME_ID GetGameTime();
+	virtual float GetGameTimeFactor();
+	void SetGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor);
+	virtual void SetGameTimeFactor(const float fTimeFactor);
 
-	virtual		ALife::_TIME_ID		GetGameTime				();	
-	virtual		float				GetGameTimeFactor		();	
-				void				SetGameTimeFactor		(ALife::_TIME_ID GameTime, const float fTimeFactor);
-	virtual		void				SetGameTimeFactor		(const float fTimeFactor);
-	
-
-	virtual		ALife::_TIME_ID		GetEnvironmentGameTime	();
-	virtual		float				GetEnvironmentGameTimeFactor		();
-				void				SetEnvironmentGameTimeFactor		(ALife::_TIME_ID GameTime, const float fTimeFactor);
-	virtual		void				SetEnvironmentGameTimeFactor		(const float fTimeFactor);
+	virtual ALife::_TIME_ID GetEnvironmentGameTime();
+	virtual float GetEnvironmentGameTimeFactor();
+	void SetEnvironmentGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor);
+	virtual void SetEnvironmentGameTimeFactor(const float fTimeFactor);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

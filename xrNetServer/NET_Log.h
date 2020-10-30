@@ -3,31 +3,31 @@
 #include "net_shared.h"
 struct SLogPacket
 {
-	u32			m_u32Time;
-	u32			m_u32Size;
-	u16			m_u16Type;
-	string64	m_sTypeStr;
-	bool		m_bIsIn;
+	u32 m_u32Time;
+	u32 m_u32Size;
+	u16 m_u16Type;
+	string64 m_sTypeStr;
+	bool m_bIsIn;
 };
 class INetLog
 {
 private:
-	FILE*		m_pLogFile;
-	string1024  m_cFileName;
-	u32			m_dwStartTime;
+	FILE *m_pLogFile;
+	string1024 m_cFileName;
+	u32 m_dwStartTime;
 
-	xrCriticalSection		m_cs;
-	
-	xr_vector<SLogPacket>	m_aLogPackets;
+	xrCriticalSection m_cs;
 
-	void		FlushLog();
-	
+	xr_vector<SLogPacket> m_aLogPackets;
+
+	void FlushLog();
+
 public:
 	INetLog(LPCSTR sFileName, u32 dwStartTime);
-	~INetLog();	
+	~INetLog();
 
-	void		LogPacket(u32 Time, NET_Packet* pPacket, bool IsIn = FALSE);
-	void		LogData(u32 Time, void* data, u32 size, bool IsIn = FALSE);
+	void LogPacket(u32 Time, NET_Packet *pPacket, bool IsIn = FALSE);
+	void LogData(u32 Time, void *data, u32 size, bool IsIn = FALSE);
 };
 
 /*

@@ -16,20 +16,18 @@
 
 extern xr_token *vid_mode_token;
 
-xr_token renderer_type_token[] = 
-{
-	{"renderer_r1", 0},
-	{"renderer_r2a", 1},
-	{"renderer_r2", 2},
-	{0, 0}
-};
+xr_token renderer_type_token[] =
+	{
+		{"renderer_r1", 0},
+		{"renderer_r2a", 1},
+		{"renderer_r2", 2},
+		{0, 0}};
 
-xr_token vid_bpp_token[] = 
-{
-	{"16", 16},
-	{"32", 32},
-	{0, 0}
-};
+xr_token vid_bpp_token[] =
+	{
+		{"16", 16},
+		{"32", 32},
+		{0, 0}};
 
 class CCC_Quit : public IConsole_Command
 {
@@ -94,7 +92,7 @@ public:
 
 			Msg("%-20s (%-10s) --- %s", C.Name(), _S, _I);
 		}
-		
+
 		Log("- --- Command listing: end ----");
 	}
 };
@@ -138,7 +136,7 @@ public:
 	}
 };
 
-CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command(N) {};
+CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command(N){};
 
 void CCC_LoadCFG::Execute(LPCSTR args)
 {
@@ -176,7 +174,7 @@ void CCC_LoadCFG::Execute(LPCSTR args)
 		Msg("[%s] successfully loaded.", cfg_full_name);
 	}
 	else
-			Msg("! Cannot open script file [%s]", cfg_full_name);	
+		Msg("! Cannot open script file [%s]", cfg_full_name);
 }
 
 CCC_LoadCFG_custom::CCC_LoadCFG_custom(LPCSTR cmd)
@@ -187,7 +185,7 @@ CCC_LoadCFG_custom::CCC_LoadCFG_custom(LPCSTR cmd)
 
 bool CCC_LoadCFG_custom::allow(LPCSTR cmd)
 {
-	return (cmd == strstr(cmd, m_cmd) );
+	return (cmd == strstr(cmd, m_cmd));
 };
 
 class CCC_Start : public IConsole_Command
@@ -242,7 +240,7 @@ public:
 	virtual void Execute(LPCSTR args)
 	{
 		if (Device.b_is_Ready)
-					Device.Reset();		
+			Device.Reset();
 	}
 };
 
@@ -391,7 +389,8 @@ class CCC_DumpResources : public IConsole_Command
 {
 public:
 	CCC_DumpResources(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(LPCSTR args)
+	{
 		Device.Resources->Dump(args != NULL);
 	}
 };
@@ -401,7 +400,8 @@ class CCC_DumpOpenFiles : public IConsole_Command
 {
 public:
 	CCC_DumpOpenFiles(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = FALSE; };
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(LPCSTR args)
+	{
 		int _mode = atoi(args);
 		_dump_open_files(_mode);
 	}
@@ -504,7 +504,7 @@ void CCC_Register()
 	CMD1(CCC_DumpResources, "dump_resources");
 	CMD1(CCC_DumpOpenFiles, "dump_open_files");
 
-	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);	
+	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
 
 	RegisterDebugCommands();
@@ -576,7 +576,8 @@ void crashthread(void *)
 		__try
 		{
 			//try {
-			union {
+			union
+			{
 				struct
 				{
 					u8 _b0;
@@ -666,4 +667,3 @@ void RegisterDebugCommands()
 	CMD4(CCC_Integer, "error_line_count", &g_ErrorLineCount, 6, 1024);
 #endif // DEBUG
 }
- 

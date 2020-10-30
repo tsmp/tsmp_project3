@@ -15,10 +15,11 @@
  */
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/* Type: DArray
+    /* Type: DArray
  * ----------------
  * Defines the DArray type itself. The client can declare variables of type 
  * DArray, but these variables must be initialized with the result of ArrayNew.
@@ -28,8 +29,7 @@ extern "C" {
  * The struct declaration below is "incomplete"- the implementation
  * details are literally not visible in the client .h file.
  */
-typedef struct DArrayImplementation *DArray;
-
+    typedef struct DArrayImplementation *DArray;
 
 /* ArrayCompareFn
  * --------------
@@ -43,39 +43,37 @@ typedef struct DArrayImplementation *DArray;
  * If the two elements are "equal", return 0.
  */
 #if defined(WIN32)
-	typedef int (__cdecl *ArrayCompareFn)(const void *elem1, const void *elem2);
+    typedef int(__cdecl *ArrayCompareFn)(const void *elem1, const void *elem2);
 #else
-	typedef int (*ArrayCompareFn)(const void *elem1, const void *elem2);
+typedef int (*ArrayCompareFn)(const void *elem1, const void *elem2);
 #endif
 
-
-/* ArrayMapFn
+    /* ArrayMapFn
  * ----------
  * ArrayMapFn defines the space of functions that can be used to map over
  * the elements in a DArray.  A map function is called with a pointer to
  * the element and a client data pointer passed in from the original
  * caller.
  */
-typedef void (*ArrayMapFn)(void *elem, void *clientData);
+    typedef void (*ArrayMapFn)(void *elem, void *clientData);
 
-/* ArrayMapFn2
+    /* ArrayMapFn2
  * ----------_
  * Same as ArrayMapFn, but can return 0 to stop the mapping.
  * Used by ArrayMap2
  */
-typedef int (*ArrayMapFn2)(void *elem, void *clientData);
+    typedef int (*ArrayMapFn2)(void *elem, void *clientData);
 
- /* ArrayElementFreeFn
+    /* ArrayElementFreeFn
  * ------------------
  * ArrayElementFreeFn defines the space of functions that can be used as the
  * clean-up function for an element as it is deleted from the array
  * or when the entire array of elements is freed.  The cleanup function is 
  * called with a pointer to an element about to be deleted.
  */
-typedef void (*ArrayElementFreeFn)(void *elem);
+    typedef void (*ArrayElementFreeFn)(void *elem);
 
-
-/* ArrayNew
+    /* ArrayNew
  * --------
  * Creates a new DArray and returns it. There are zero elements in the array.
  * to start. The elemSize parameter specifies the number of bytes that a single 
@@ -115,12 +113,10 @@ typedef void (*ArrayElementFreeFn)(void *elem);
  * (such as freeing any pointers contained in the element). The client can pass 
  * NULL for the cleanupFn if the elements don't require any handling on free. 
  */
-DArray ArrayNew(int elemSize, int numElemsToAllocate, 
-                ArrayElementFreeFn elemFreeFn);
+    DArray ArrayNew(int elemSize, int numElemsToAllocate,
+                    ArrayElementFreeFn elemFreeFn);
 
-
-
- /* ArrayFree
+    /* ArrayFree
  * ----------
  * Frees up all the memory for the array and elements. It DOES NOT 
  * automatically free memory owned by pointers embedded in the elements. 
@@ -131,18 +127,16 @@ DArray ArrayNew(int elemSize, int numElemsToAllocate,
  * embedded pointers through that function.  After calling this, the value of 
  * what array is pointing to is undefined.
  */
-void ArrayFree(DArray array);
+    void ArrayFree(DArray array);
 
-
-/* ArrayLength
+    /* ArrayLength
  * -----------
  * Returns the logical length of the array, i.e. the number of elements
  * currently in the array.  Must run in constant time.
  */
-int ArrayLength(const DArray array);
+    int ArrayLength(const DArray array);
 
-
-/* ArrayNth
+    /* ArrayNth
  * --------
  * Returns a pointer to the element numbered n in the specified array.  
  * Numbering begins with 0.  An assert is raised if n is less than 0 or greater 
@@ -155,11 +149,10 @@ int ArrayLength(const DArray array);
  * careful when using it. In particular, a pointer returned by ArrayNth 
  * becomes invalid after any calls which involve insertion, deletion or 
  * sorting the array, as all of these may rearrange the element storage.
- */ 
-void *ArrayNth(DArray array, int n);
+ */
+    void *ArrayNth(DArray array, int n);
 
-
-/* ArrayAppend
+    /* ArrayAppend
  * -----------
  * Adds a new element to the end of the specified array.  The element is 
  * passed by address, the element contents are copied from the memory pointed 
@@ -168,9 +161,9 @@ void *ArrayNth(DArray array, int n);
  * minus 1. This function must run in constant time (neglecting 
  * the memory reallocation time which may be required occasionally).
  */
-void ArrayAppend(DArray array, const void *newElem);
+    void ArrayAppend(DArray array, const void *newElem);
 
-/* ArrayInsertAt
+    /* ArrayInsertAt
  * -------------
  * Inserts a new element into the array, placing it at the position n.
  * An assert is raised if n is less than 0 or greater than the logical length.
@@ -178,18 +171,18 @@ void ArrayAppend(DArray array, const void *newElem);
  * element is passed by address, the new element's contents are copied from 
  * the memory pointed to by newElem. This function runs in linear time.
  */
-void ArrayInsertAt(DArray array, const void *newElem, int n);
+    void ArrayInsertAt(DArray array, const void *newElem, int n);
 
-/* ArrayInsertSorted
+    /* ArrayInsertSorted
  * -------------
  * Inserts a new element into the array, placing it at the position indicated by
  * a binary search of the array using comparator.
  * The array MUST be sorted prior to calling InsertSorted.
  * Note that if you only ever call InsertSorted, the array will always be sorted.
  */
-void ArrayInsertSorted(DArray array, const void *newElem, ArrayCompareFn comparator);
+    void ArrayInsertSorted(DArray array, const void *newElem, ArrayCompareFn comparator);
 
- /* ArrayDeleteAt
+    /* ArrayDeleteAt
  * -------------
  * Deletes the element numbered n from the array. Before being removed,
  * the elemFreeFn that was supplied to ArrayNew will be called on the element.
@@ -199,9 +192,9 @@ void ArrayInsertSorted(DArray array, const void *newElem, ArrayCompareFn compara
  * allocated size of the array when an element is deleted, the array just 
  * stays over-allocated.
  */
-void ArrayDeleteAt(DArray array, int n);
+    void ArrayDeleteAt(DArray array, int n);
 
- /* ArrayDeleteAt
+    /* ArrayDeleteAt
  * -------------
  * Removes the element numbered n from the array. The element will not be freed
  * before being removed. All the elements after position n will be shifted over to fill 
@@ -209,9 +202,9 @@ void ArrayDeleteAt(DArray array, int n);
  * allocated size of the array when an element is deleted, the array just 
  * stays over-allocated.
  */
-void ArrayRemoveAt(DArray array, int n);
+    void ArrayRemoveAt(DArray array, int n);
 
-/* ArrayReplaceAt
+    /* ArrayReplaceAt
  * -------------
  * Overwrites the element numbered n from the array with a new value. Before 
  * being overwritten, the elemFreeFn that was supplied to ArrayNew is called 
@@ -222,21 +215,19 @@ void ArrayRemoveAt(DArray array, int n);
  * operation and the size of the array remains constant. This function must
  * operate in constant time.
  */
-void ArrayReplaceAt(DArray array, const void *newElem, int n);
+    void ArrayReplaceAt(DArray array, const void *newElem, int n);
 
-
-/* ArraySort
+    /* ArraySort
  * ---------
  * Sorts the specified array into ascending order according to the supplied
  * comparator.  The numbering of the elements will change to reflect the 
  * new ordering. An assert is raised if the comparator is NULL.
  */
-void ArraySort(DArray array, ArrayCompareFn comparator);
+    void ArraySort(DArray array, ArrayCompareFn comparator);
 
+#define NOT_FOUND -1 // returned when a search fails to find the key
 
-#define NOT_FOUND -1	// returned when a search fails to find the key
-
-/* ArraySearch
+    /* ArraySearch
  * -----------
  * Searches the specified array for an element whose contents match
  * the element passed as the key.  Uses the comparator argument to test
@@ -255,11 +246,10 @@ void ArraySort(DArray array, ArrayCompareFn comparator);
  * array from 0 without getting an assert). An assert is raised if the
  * comparator is NULL.
  */
-int ArraySearch(DArray array, const void *key, ArrayCompareFn comparator, 
-                  int fromIndex, int isSorted);
+    int ArraySearch(DArray array, const void *key, ArrayCompareFn comparator,
+                    int fromIndex, int isSorted);
 
-
-/* ArrayMap
+    /* ArrayMap
  * -----------
  * Iterates through each element in the array in order (from element 0 to
  * element n-1) and calls the function fn for that element.  The function is 
@@ -268,47 +258,47 @@ int ArraySearch(DArray array, const void *key, ArrayCompareFn comparator,
  * the client-supplied function, if necessary.  If no client data is required, 
  * this argument should be NULL. An assert is raised if map function is NULL.
  */
-void ArrayMap(DArray array, ArrayMapFn fn, void *clientData);
+    void ArrayMap(DArray array, ArrayMapFn fn, void *clientData);
 
-/* ArrayMapBackwards
+    /* ArrayMapBackwards
  * -----------
  * Same as ArrayMap, but goes through the array from end to front.  This
  * makes it safe to free elements during the mapping.
  */
-void ArrayMapBackwards(DArray array, ArrayMapFn fn, void *clientData);
+    void ArrayMapBackwards(DArray array, ArrayMapFn fn, void *clientData);
 
-/* ArrayMap2
+    /* ArrayMap2
  * -----------
  * Same as ArrayMap, but allows the mapping to be stopped by returning 0
  * from the mapping function.  If the mapping was stopped, the element
  * it was stopped at will be returned.  If it wasn't stopped, then NULL
  * will be returned.
  */
-void * ArrayMap2(DArray array, ArrayMapFn2 fn, void *clientData);
+    void *ArrayMap2(DArray array, ArrayMapFn2 fn, void *clientData);
 
-/* ArrayMapBackwards2
+    /* ArrayMapBackwards2
  * ------------
  * Goes through the array backwards, and allows you to stop the mapping.
  */
-void * ArrayMapBackwards2(DArray array, ArrayMapFn2 fn, void *clientData);
+    void *ArrayMapBackwards2(DArray array, ArrayMapFn2 fn, void *clientData);
 
-/* ArrayClear
+    /* ArrayClear
  * -----------
  * Deletes all elements in the array, but without freeing the array.
  */
-void ArrayClear(DArray array);
+    void ArrayClear(DArray array);
 
-/* ArrayGetDataPtr
+    /* ArrayGetDataPtr
  * -----------
  * Obtain the pointer to the actual data storage
  */
-void *ArrayGetDataPtr(DArray array);
+    void *ArrayGetDataPtr(DArray array);
 
-/* ArraySetDataPtr
+    /* ArraySetDataPtr
  * -----------
  * Set the pointer to the actual data storage, which must be allocated with malloc
  */
-void ArraySetDataPtr(DArray array, void *ptr, int count, int capacity);
+    void ArraySetDataPtr(DArray array, void *ptr, int count, int capacity);
 
 #ifdef __cplusplus
 }

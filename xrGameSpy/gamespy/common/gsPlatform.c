@@ -2,24 +2,22 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "gsPlatform.h"
 
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // Include standard network lib
 #if defined(_WIN32) && !defined(UNDER_CE) && !defined(_XBOX)
-	#if defined(GSI_WINSOCK2)
-		#pragma comment(lib, "ws2_32")
-	#else
-		#pragma comment(lib, "wsock32")
-	#endif
-	#pragma comment(lib, "advapi32")
+#if defined(GSI_WINSOCK2)
+#pragma comment(lib, "ws2_32")
+#else
+#pragma comment(lib, "wsock32")
+#endif
+#pragma comment(lib, "advapi32")
 #endif
 
 #ifdef UNDER_CE
-	#pragma comment(lib, "platutil")
-	#pragma comment(lib, "winsock")
+#pragma comment(lib, "platutil")
+#pragma comment(lib, "winsock")
 #endif
-
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,4 +59,3 @@ gsi_u64 gsiByteOrderSwap64(gsi_u64 _in)
 	out[7] = in[0];
 	return t;
 }
-

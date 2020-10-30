@@ -19,14 +19,14 @@
 
 CStateManagerPoltergeist::CStateManagerPoltergeist(CPoltergeist *obj) : inherited(obj)
 {
-	add_state(eStateRest,					xr_new<CPoltergeistStateRest<CPoltergeist> > (obj));
-	add_state(eStateEat,					xr_new<CStateMonsterEat<CPoltergeist> >(obj));
-	add_state(eStateAttack,					xr_new<CStateMonsterAttack<CPoltergeist> >(obj));
-	add_state(eStateAttack_AttackHidden,	xr_new<CStatePoltergeistAttackHidden<CPoltergeist> > (obj));
-	add_state(eStatePanic,					xr_new<CStateMonsterPanic<CPoltergeist> >(obj));
-	add_state(eStateHitted,					xr_new<CStateMonsterHitted<CPoltergeist> >(obj));
-	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound<CPoltergeist> >(obj));
-	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound<CPoltergeist> >(obj));
+	add_state(eStateRest, xr_new<CPoltergeistStateRest<CPoltergeist>>(obj));
+	add_state(eStateEat, xr_new<CStateMonsterEat<CPoltergeist>>(obj));
+	add_state(eStateAttack, xr_new<CStateMonsterAttack<CPoltergeist>>(obj));
+	add_state(eStateAttack_AttackHidden, xr_new<CStatePoltergeistAttackHidden<CPoltergeist>>(obj));
+	add_state(eStatePanic, xr_new<CStateMonsterPanic<CPoltergeist>>(obj));
+	add_state(eStateHitted, xr_new<CStateMonsterHitted<CPoltergeist>>(obj));
+	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound<CPoltergeist>>(obj));
+	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound<CPoltergeist>>(obj));
 }
 
 CStateManagerPoltergeist::~CStateManagerPoltergeist()
@@ -36,11 +36,10 @@ CStateManagerPoltergeist::~CStateManagerPoltergeist()
 void CStateManagerPoltergeist::reinit()
 {
 	inherited::reinit();
-	
-	time_next_flame_attack	= 0;
-	time_next_tele_attack	= 0;
-	time_next_scare_attack	= 0;
 
+	time_next_flame_attack = 0;
+	time_next_tele_attack = 0;
+	time_next_scare_attack = 0;
 }
 
 void CStateManagerPoltergeist::execute()
@@ -67,13 +66,13 @@ void CStateManagerPoltergeist::execute()
 	//} else {
 	//	if (can_eat()) state_id = eStateEat;
 	//	else state_id = eStateRest;
-	//	
+	//
 	//	if (state_id == eStateEat) {
 	//		if (object->CorpseMan.get_corpse()->Position().distance_to(object->Position()) < 5.f) {
 	//			if (object->is_hidden()) {
 	//				object->CEnergyHolder::deactivate();
 	//			}
-	//			
+	//
 	//			object->DisableHide();
 	//		}
 	//	}
@@ -82,12 +81,12 @@ void CStateManagerPoltergeist::execute()
 
 	////if (state_id == eStateAttack_AttackHidden) polter_attack();
 
-	//if ((prev_substate == eStateEat) && (state_id != eStateEat)) 
+	//if ((prev_substate == eStateEat) && (state_id != eStateEat))
 	//	object->EnableHide();
 
 	state_id = eStateRest;
-	
-	select_state(state_id); 
+
+	select_state(state_id);
 
 	// выполнить текущее состояние
 	get_state_current()->execute();
@@ -105,7 +104,7 @@ void CStateManagerPoltergeist::polter_attack()
 	//bool b_aggressive = object->conditions().GetHealth() < 0.5f;
 
 	//if ((time_next_flame_attack < cur_time) && (object->EnemyMan.get_enemy_time_last_seen() + TIME_SEEN_FOR_FIRE > cur_time)) {
-	//	
+	//
 
 	//	object->FireFlame(enemy);
 	//	time_next_flame_attack = cur_time + Random.randI(object->m_flame_delay.min, (b_aggressive) ? object->m_flame_delay.aggressive : object->m_flame_delay.normal);
@@ -119,9 +118,9 @@ void CStateManagerPoltergeist::polter_attack()
 	//if (time_next_scare_attack < cur_time) {
 	//	if (Random.randI(2))
 	//		object->PhysicalImpulse(enemy->Position());
-	//	else 
+	//	else
 	//		object->StrangeSounds(enemy->Position());
-	//	
+	//
 	//	time_next_scare_attack = cur_time + Random.randI(object->m_scare_delay.min, (b_aggressive) ? object->m_scare_delay.aggressive : object->m_scare_delay.normal);
 	//}
 }

@@ -1,6 +1,5 @@
 /// DO NOT DELETE THIS FILE
 
-
 /**
 struct CSortItemPredicate {
 	IC bool							operator()							(const CSE_ALifeInventoryItem *tpALifeInventoryItem1, const CSE_ALifeInventoryItem *tpALifeInventoryItem2)  const
