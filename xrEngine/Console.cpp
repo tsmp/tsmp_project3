@@ -293,26 +293,26 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 
 		break;
 	case DIK_1:
-		if (bShift)
+		if (!bShift)
 			strcat(editor, "!");
 		else
 			strcat(editor, "1");
 		break;
 	case DIK_2:
 		if (bShift)
-			strcat(editor, "@");
+			strcat(editor, bRussian ? "\"" : "@");
 		else
 			strcat(editor, "2");
 		break;
 	case DIK_3:
 		if (bShift)
-			strcat(editor, "#");
+			strcat(editor, bRussian ? "¹" : "#");
 		else
 			strcat(editor, "3");
 		break;
 	case DIK_4:
 		if (bShift)
-			strcat(editor, "$");
+			strcat(editor, bRussian ? ";" : "$");
 		else
 			strcat(editor, "4");
 		break;
@@ -324,13 +324,13 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 		break;
 	case DIK_6:
 		if (bShift)
-			strcat(editor, "^");
+			strcat(editor, bRussian ? ":" : "^");
 		else
 			strcat(editor, "6");
 		break;
 	case DIK_7:
 		if (bShift)
-			strcat(editor, "&");
+			strcat(editor, bRussian ? "?" : "&");
 		else
 			strcat(editor, "7");
 		break;
@@ -380,18 +380,6 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 			strcat(editor, "_");
 		else
 			strcat(editor, "-");
-		break;
-	case 0x27:
-		if (bShift)
-			strcat(editor, ":");
-		else
-			strcat(editor, ";");
-		break;
-	case 0x35:
-		if (bShift)
-			strcat(editor, "?");
-		else
-			strcat(editor, "/");
 		break;
 	case DIK_RETURN:
 		strcpy(command, editor);
