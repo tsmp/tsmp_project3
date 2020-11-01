@@ -6,12 +6,6 @@
 #include "Hit.h"
 #include "../pure_relcase.h"
 
-#include "..\TSMP3_Build_Config.h"
-
-#ifdef ALIFE_MP
-#include "alife_simulator.h"
-#endif
-
 class game_sv_Deathmatch : public game_sv_mp, private pure_relcase
 {
 	typedef game_sv_mp inherited;
@@ -33,10 +27,6 @@ protected:
 			return MinEnemyDist < x.MinEnemyDist;
 		};
 	};
-
-#ifdef ALIFE_MP
-	CALifeSimulator *m_alife_simulator;
-#endif
 
 	xr_vector<u32> m_vFreeRPoints;
 	u32 m_dwLastRPoint;
@@ -107,24 +97,6 @@ protected:
 	void __stdcall net_Relcase(CObject *O);
 
 public:
-#ifdef ALIFE_MP
-	virtual bool custom_sls_default()
-	{
-		return !!m_alife_simulator;
-	};
-
-	IC xrServer &server() const
-	{
-		VERIFY(m_server);
-		return (*m_server);
-	}
-
-	IC CALifeSimulator &alife() const
-	{
-		VERIFY(m_alife_simulator);
-		return (*m_alife_simulator);
-	}
-#endif
 
 	game_sv_Deathmatch();
 	virtual ~game_sv_Deathmatch();

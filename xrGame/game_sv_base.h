@@ -5,6 +5,7 @@
 #include "script_export_space.h"
 #include "../../xrNetServer/client_id.h"
 #include "game_sv_base_console_vars.h"
+#include "alife_simulator.h"
 
 enum ERoundEnd_Result
 {
@@ -30,11 +31,10 @@ class game_sv_GameState : public game_GameState
 {
 	typedef game_GameState inherited;
 
-protected:
-	//	u32								m_RPointFreezeTime;
+protected:	
 	xrServer *m_server;
 	GameEventQueue *m_event_queue;
-	//	BOOL							m_bVotingEnabled;
+	CALifeSimulator* m_alife_simulator;
 
 	//Events
 	virtual void OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender);
@@ -171,12 +171,28 @@ public:
 	virtual void add_restriction(NET_Packet &packet, u16 id);
 	virtual void remove_restriction(NET_Packet &packet, u16 id);
 	virtual void remove_all_restrictions(NET_Packet &packet, u16 id);
-	virtual bool custom_sls_default() { return false; };
 	virtual void sls_default(){};
 	virtual shared_str level_name(const shared_str &server_options) const;
 	virtual void on_death(CSE_Abstract *e_dest, CSE_Abstract *e_src);
 
 	virtual void DumpOnlineStatistic(){};
+
+	virtual bool custom_sls_default()
+	{
+		return !!m_alife_simulator;
+	};
+
+	IC xrServer& server() const
+	{
+		VERIFY(m_server);
+		return (*m_server);
+	}
+
+	IC CALifeSimulator& alife() const
+	{
+		VERIFY(m_alife_simulator);
+		return (*m_alife_simulator);
+	}
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
