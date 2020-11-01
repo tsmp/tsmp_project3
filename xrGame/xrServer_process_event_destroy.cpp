@@ -7,7 +7,6 @@
 #include "game_cl_base.h"
 #include "ai_space.h"
 #include "alife_object_registry.h"
-#include "..\..\TSMP3_Build_Config.h"
 
 xr_string xrServer::ent_name_safe(u16 eid)
 {
@@ -93,15 +92,13 @@ void xrServer::Process_event_destroy(NET_Packet &P, ClientID sender, u32 time, u
 	// Everything OK, so perform entity-destroy
 	if (e_dest->m_bALifeControl && ai().get_alife())
 	{
-#ifdef ALIFE_MP
+		const game_sv_GameState* pGame = smart_cast<game_sv_GameState*>(game);
+		
+		R_ASSERT(pGame);
+		R_ASSERT(pGame->HasAlifeSimulator());
+
 		if (ai().alife().objects().object(id_dest, true))
-			ai().get_alife_nconst()->release(e_dest, false);
-#else
-		game_sv_Single *_game = smart_cast<game_sv_Single *>(game);
-		VERIFY(_game);
-		if (ai().alife().objects().object(id_dest, true))
-			_game->alife().release(e_dest, false);
-#endif
+			pGame->alife().release(e_dest, false);
 	}
 
 	if (game)

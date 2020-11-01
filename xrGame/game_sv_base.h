@@ -90,6 +90,7 @@ public:
 	virtual bool OnNextMap() { return false; }
 	virtual void OnPrevMap() {}
 	virtual bool SwitchToNextMap() { return m_bMapNeedRotation; };
+	bool HasAlifeSimulator() const { return !!m_alife_simulator; };
 
 	virtual BOOL IsVotingEnabled();
 	virtual BOOL IsVotingEnabled(u16 flag);
