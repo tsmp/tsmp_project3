@@ -293,7 +293,7 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 
 		break;
 	case DIK_1:
-		if (!bShift)
+		if (bShift)
 			strcat(editor, "!");
 		else
 			strcat(editor, "1");
