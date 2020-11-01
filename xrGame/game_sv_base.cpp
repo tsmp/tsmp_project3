@@ -12,8 +12,9 @@
 #include "../Console.h"
 #include "../Console_commands.h"
 #include "string_table.h"
-
+#include "object_broker.h"
 #include "debug_renderer.h"
+
 
 #include "..\TSMP3_Build_Config.h"
 
@@ -442,26 +443,21 @@ void game_sv_GameState::Create(shared_str &options)
 		xr_delete(l_tpIniFile);
 	}
 
-	//---------------------------------------------------------------------
 	ConsoleCommands_Create();
-	//---------------------------------------------------------------------
-	//	CCC_LoadCFG_custom*	pTmp = xr_new<CCC_LoadCFG_custom>("sv_");
-	//	pTmp->Execute				(Console->ConfigFile);
-	//	xr_delete					(pTmp);
-	//---------------------------------------------------------------------
 	LPCSTR svcfg_ltx_name = "-svcfg ";
+
 	if (strstr(Core.Params, svcfg_ltx_name))
 	{
 		string_path svcfg_name = "";
 		int sz = xr_strlen(svcfg_ltx_name);
 		sscanf(strstr(Core.Params, svcfg_ltx_name) + sz, "%[^ ] ", svcfg_name);
-		//		if (FS.exist(svcfg_name))
-		{
-			Console->ExecuteScript(svcfg_name);
-		}
-	};
-	//---------------------------------------------------------------------
+		Console->ExecuteScript(svcfg_name);		
+	}
+	
 	ReadOptions(options);
+
+	if (strstr(*options, "/alife"))
+		m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
 }
 
 void game_sv_GameState::ReadOptions(shared_str &options)
@@ -656,6 +652,7 @@ game_sv_GameState::game_sv_GameState()
 	m_bMapNeedRotation = false;
 	m_bFastRestart = false;
 	m_pMapRotation_List.clear();
+	m_alife_simulator = nullptr;
 
 	for (int i = 0; i < TEAM_COUNT; i++)
 		rpoints_MinDist[i] = 1000.0f;
@@ -675,6 +672,9 @@ game_sv_GameState::~game_sv_GameState()
 	m_pMapRotation_List.clear();
 	//-------------------------------------------------------
 	ConsoleCommands_Clear();
+
+	if (m_alife_simulator)
+		delete_data(m_alife_simulator);
 }
 
 bool game_sv_GameState::change_level(NET_Packet &net_packet, ClientID sender)

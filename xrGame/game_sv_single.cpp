@@ -13,38 +13,16 @@
 
 game_sv_Single::game_sv_Single()
 {
-	m_alife_simulator = NULL;
 	m_type = GAME_SINGLE;
 };
 
-game_sv_Single::~game_sv_Single()
-{
-	delete_data(m_alife_simulator);
-}
+game_sv_Single::~game_sv_Single() {};
 
 void game_sv_Single::Create(shared_str &options)
 {
 	inherited::Create(options);
-
-	if (strstr(*options, "/alife"))
-		m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
-
 	switch_Phase(GAME_PHASE_INPROGRESS);
 }
-
-/**
-CSE_Abstract*		game_sv_Single::get_entity_from_eid		(u16 id)
-{
-	if (!ai().get_alife())
-		return			(inherited::get_entity_from_eid(id));
-
-	CSE_Abstract		*object = ai().alife().objects().object(id,true);
-	if (!object)
-		return			(inherited::get_entity_from_eid(id));
-
-	return				(object);
-}
-/**/
 
 void game_sv_Single::OnCreate(u16 id_who)
 {
