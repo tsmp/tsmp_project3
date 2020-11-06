@@ -217,6 +217,10 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			Jump = m_fJumpSpeed;
 			m_fJumpTime = s_fJumpTime;
 
+			// немного смещаем игрока при прыжке чтобы не работал лифт
+			Fvector vec = { Random.randF(-0.1f, 0.1f), 0.f, Random.randF(-0.1f, 0.1f) };
+			character_physics_support()->movement()->AddControlVel(vec);
+
 			//уменьшить силу игрока из-за выполненого прыжка
 			if (!GodMode())
 				conditions().ConditionJump(inventory().TotalWeight() / MaxCarryWeight());
