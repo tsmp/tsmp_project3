@@ -15,6 +15,8 @@
 #include "stream_reader.h"
 #include "file_stream_reader.h"
 
+#include "..\TSMP3_Build_Config.h"
+
 const u32 BIG_FILE_READER_WINDOW_SIZE = 1024 * 1024;
 
 #define PROTECTED_BUILD
@@ -314,6 +316,13 @@ IReader *open_chunk(void *ptr, u32 ID)
 
 void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 {
+#ifdef FZ_MOD_CLIENT
+	string_path pathq {0};
+	FS_Path* pFSRoot = FS.get_path("$fs_root$");
+	strconcat(sizeof(pathq), pathq, pFSRoot->m_Path, "gamedata");
+	base_path = pathq;
+#endif
+
 	// find existing archive
 	shared_str path = _path;
 
