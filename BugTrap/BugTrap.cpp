@@ -379,7 +379,7 @@ static void SetDefaultReportPath(void)
 		{
 			PathCombine(g_szReportFilePath, szAppDataPath, szAppName);
 			PathAppend(g_szReportFilePath, _T("reports"));
-			PathAppend(g_szReportFilePath, _T("tsmp2"));
+			PathAppend(g_szReportFilePath, _T("tsmp3"));
 		}
 	}
 }
