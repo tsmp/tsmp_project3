@@ -116,7 +116,9 @@ CLevel::CLevel() : IPureClient(Device.GetTimerGlobal())
 		m_level_sound_manager = xr_new<CLevelSoundManager>();
 		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
 		m_client_spawn_manager = xr_new<CClientSpawnManager>();
-		m_autosave_manager = xr_new<CAutosaveManager>();
+		if (IsGameTypeSingle())
+			m_autosave_manager = xr_new<CAutosaveManager>();
+		else m_autosave_manager = NULL;
 
 #ifdef DEBUG
 		m_debug_renderer = xr_new<CDebugRenderer>();
