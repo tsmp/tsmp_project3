@@ -1584,6 +1584,11 @@ BOOL game_sv_Deathmatch::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 						EventPack.w(&PacketReject.B.data, PacketReject.B.count);
 						EventPack.w_u8(u8(PacketTake.B.count));
 						EventPack.w(&PacketTake.B.data, PacketTake.B.count);
+						if ((EventPack.B.count + 100) > NET_PacketSizeLimit)
+						{
+							u_EventSend(EventPack);
+							EventPack.w_begin(M_EVENT_PACK);
+						}
 					}
 					if (EventPack.B.count > 2)
 						u_EventSend(EventPack);
@@ -1707,6 +1712,11 @@ void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
 			EventPack.w(&PacketReject.B.data, PacketReject.B.count);
 			EventPack.w_u8(u8(PacketTake.B.count));
 			EventPack.w(&PacketTake.B.data, PacketTake.B.count);
+			if ((EventPack.B.count + 100) > NET_PacketSizeLimit)
+			{
+				u_EventSend(EventPack);
+				EventPack.w_begin(M_EVENT_PACK);
+			}
 		}
 
 		if (EventPack.B.count > 2)
