@@ -54,8 +54,15 @@ void xrServer::Process_event_destroy(NET_Packet &P, ClientID sender, u32 time, u
 		if (!pEventPack)
 			pEventPack = &P2;
 
-		while (!e_dest->children.empty())
+		while (!e_dest->children.empty()) 
+		{
 			Process_event_destroy(P, sender, time, *e_dest->children.begin(), pEventPack);
+			if ((pEventPack->B.count + 100) > NET_PacketSizeLimit)
+			{
+				SendBroadcast(BroadcastCID, *pEventPack, MODE);
+				pEventPack->w_begin(M_EVENT_PACK);
+			}
+		}
 	};
 
 	if (0xffff == parent_id && NULL == pEventPack)
