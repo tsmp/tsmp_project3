@@ -31,6 +31,7 @@ struct SControlAnimationData : public ControlCom::IComData
 	SAnimationPart global;
 	SAnimationPart legs;
 	SAnimationPart torso;
+	SAnimationPart globalClientMP;
 };
 
 struct SAnimationSignalEventData : public ControlCom::IEventData
@@ -66,8 +67,11 @@ class CControlAnimation : public CControl_ComPure<SControlAnimationData>
 
 public:
 	bool m_global_animation_end;
+	bool m_globalMP_animation_end;
 	bool m_legs_animation_end;
 	bool m_torso_animation_end;
+	
+	u16 currentAnim;
 
 public:
 	virtual void reinit();

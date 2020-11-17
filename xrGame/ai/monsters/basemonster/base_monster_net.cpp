@@ -54,12 +54,9 @@ void CBaseMonster::net_Export(NET_Packet &P)
 	}
 
 	P.w_float(GetfHealth());
-
 	P.w_angle8(movement().m_body.current.pitch);
 	P.w_angle8(movement().m_body.current.yaw);
-
-	CKinematicsAnimated *anim_obj = smart_cast<CKinematicsAnimated *>(Visual());
-	P.w_u16(anim_obj->ID_Cycle_Safe(m_anim_base->cur_anim_info().name).idx);
+	P.w_u16(control().animation().currentAnim);
 }
 
 #else
@@ -111,9 +108,6 @@ void CBaseMonster::net_Import(NET_Packet &P)
 	Fvector fv_position;
 
 	float f_health;
-	u16 u_motion_idx;
-
-	u8 u_motion_slot;
 	u8 phSyncFlag;
 
 	P.r_u8(phSyncFlag);
@@ -151,26 +145,19 @@ void CBaseMonster::net_Import(NET_Packet &P)
 	setVisible(TRUE);
 	setEnabled(TRUE);
 
-	u16 newMotionIdx;
-	P.r_u16(newMotionIdx);
+	u16 newMotion;
+	P.r_u16(newMotion);
 
-	if (newMotionIdx != motionIdx)
+	if (newMotion != motionId)
 	{
-		motionIdx = newMotionIdx;
-		CKinematicsAnimated *anim_obj = smart_cast<CKinematicsAnimated *>(Visual());
+		motionId = newMotion;
 
 		MotionID motion;
-		motion.idx = motionIdx;
-		motion.slot = 0;
+		motion.val = motionId;		
 
-		if (motion.valid())
-		{
-			CStepManager::on_animation_start(motion, anim_obj->LL_PlayCycle(anim_obj->LL_GetMotionDef(motion)->bone_or_part, motion, TRUE,
-																			anim_obj->LL_GetMotionDef(motion)->Accrue(), anim_obj->LL_GetMotionDef(motion)->Falloff(),
-																			anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0));
-		}
-		else
-			Msg("! cant play motion with idx: %u", motionIdx);
+		SControlAnimationData *data = (SControlAnimationData*)control().animation().data();
+		data->globalClientMP.actual = false;
+		data->globalClientMP.motion = motion;
 	}
 }
 

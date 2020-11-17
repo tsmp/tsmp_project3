@@ -318,7 +318,7 @@ private:
 	SPHNetState LastState;
 	SPHNetState RecalculatedState;
 	SPHNetState PredictedState;
-	u16 motionIdx;
+	u16 motionId;
 
 	float SCoeff[3][4];
 	float HCoeff[3][4];

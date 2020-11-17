@@ -61,11 +61,19 @@ static void global_animation_end_callback(CBlend *B)
 	CControlAnimation *controller = (CControlAnimation *)B->CallbackParam;
 	controller->m_global_animation_end = true;
 }
+
+static void globalMP_animation_end_callback(CBlend* B)
+{
+	CControlAnimation* controller = (CControlAnimation*)B->CallbackParam;
+	controller->m_globalMP_animation_end = true;
+}
+
 static void legs_animation_end_callback(CBlend *B)
 {
 	CControlAnimation *controller = (CControlAnimation *)B->CallbackParam;
 	controller->m_legs_animation_end = true;
 }
+
 static void torso_animation_end_callback(CBlend *B)
 {
 	CControlAnimation *controller = (CControlAnimation *)B->CallbackParam;
@@ -74,35 +82,42 @@ static void torso_animation_end_callback(CBlend *B)
 
 void CControlAnimation::play()
 {
-	if (!m_data.global.actual)
+	if (OnClient())
 	{
-		play_part(m_data.global, global_animation_end_callback);
-		if (m_data.global.blend)
-			m_saved_global_speed = m_data.global.blend->speed;
+		if (!m_data.globalClientMP.actual)
+			play_part(m_data.globalClientMP, globalMP_animation_end_callback);
 	}
-
-	if (!m_data.legs.actual)
-		play_part(m_data.legs, legs_animation_end_callback);
-	if (!m_data.torso.actual)
-		play_part(m_data.torso, torso_animation_end_callback);
-
-	// speed only for global
-	if (m_data.global.blend)
+	else
 	{
-		if (m_data.get_speed() > 0)
+		if (!m_data.global.actual)
 		{
-			m_data.global.blend->speed = m_data.get_speed(); // TODO: make factor
+			play_part(m_data.global, global_animation_end_callback);
+
+			if (m_data.global.blend)
+				m_saved_global_speed = m_data.global.blend->speed;
 		}
-		else
+
+		if (!m_data.legs.actual)
+			play_part(m_data.legs, legs_animation_end_callback);
+
+		if (!m_data.torso.actual)
+			play_part(m_data.torso, torso_animation_end_callback);
+
+		// speed only for global
+		if (m_data.global.blend)
 		{
-			m_data.global.blend->speed = m_saved_global_speed;
+			if (m_data.get_speed() > 0)			
+				m_data.global.blend->speed = m_data.get_speed(); // TODO: make factor			
+			else			
+				m_data.global.blend->speed = m_saved_global_speed;			
 		}
 	}
 }
 
 void CControlAnimation::play_part(SAnimationPart &part, PlayCallback callback)
 {
-	VERIFY(part.motion.valid());
+	if (!part.motion.valid())
+		return;	
 
 	u16 bone_or_part = m_skeleton_animated->LL_GetMotionDef(part.motion)->bone_or_part;
 	if (bone_or_part == u16(-1))
@@ -113,10 +128,12 @@ void CControlAnimation::play_part(SAnimationPart &part, PlayCallback callback)
 	if (part.blend && !part.blend->stop_at_end)
 		pos = fmod(part.blend->timeCurrent, part.blend->timeTotal) / part.blend->timeTotal;
 #ifdef DEBUG
-		//CKinematicsAnimated * K = m_object->Visual()->dcast_PKinematicsAnimated();
-		//Msg				("%6d Playing animation : %s , %s , Object %s",Device.dwTimeGlobal, K->LL_MotionDefName_dbg(part.motion).first,K->LL_MotionDefName_dbg(part.motion).second, *(m_object->cName()));
-#endif
-
+	//CKinematicsAnimated* K = m_skeleton_animated;
+	//if(currentAnim != part.motion.val)
+	//	Msg("%6d Playing animation : %s , %s , Object %s",Device.dwTimeGlobal, K->LL_MotionDefName_dbg(part.motion).first,K->LL_MotionDefName_dbg(part.motion).second, *(m_object->cName()));		
+#endif	
+	
+	currentAnim = part.motion.val;
 	part.blend = m_skeleton_animated->LL_PlayCycle(bone_or_part, part.motion, TRUE, callback, this);
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -215,6 +232,13 @@ void CControlAnimation::check_callbacks()
 	{
 		m_man->notify(ControlCom::eventTorsoAnimationEnd, 0);
 		m_torso_animation_end = false;
+	}
+
+	if (m_globalMP_animation_end)
+	{
+		// На случай если два раза подряд должна та же анимация играться
+		m_data.globalClientMP.actual = false;
+		m_globalMP_animation_end = false;
 	}
 }
 
