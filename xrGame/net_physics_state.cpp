@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "net_physics_state.h"
-#include "..\xrNetServer\NET_utils.h"
+#include "..\xrNetwork\NET_utils.h"
 
 net_physics_state::net_physics_state()
 {

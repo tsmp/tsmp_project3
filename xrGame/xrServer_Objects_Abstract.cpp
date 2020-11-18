@@ -10,7 +10,7 @@
 #pragma hdrstop
 #pragma pack(push, 4)
 
-#include "../../xrNetServer/net_utils.h"
+#include "../../xrNetwork/net_utils.h"
 #include "xrServer_Objects_Abstract.h"
 #include "xrMessages.h"
 

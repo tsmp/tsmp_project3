@@ -21,7 +21,7 @@ struct
 static NET_Compressor gCompressor;
 static const unsigned MaxMultipacketSize = 32768;
 
-XRNETSERVER_API int psNET_GuaranteedPacketMode = NET_GUARANTEEDPACKET_DEFAULT;
+XRNETWORK_API int psNET_GuaranteedPacketMode = NET_GUARANTEEDPACKET_DEFAULT;
 
 //------------------------------------------------------------------------------
 
@@ -198,7 +198,7 @@ void MultipacketReciever::RecievePacket(const void *packet_data, u32 packet_sz, 
     }
 }
 
-void XRNETSERVER_API DumpNetCompressorStats(bool brief)
+void XRNETWORK_API DumpNetCompressorStats(bool brief)
 {
     gCompressor.DumpStats(brief);
 }

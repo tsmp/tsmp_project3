@@ -3,7 +3,7 @@
 #include "game_base.h"
 #include "alife_space.h"
 #include "script_export_space.h"
-#include "../../xrNetServer/client_id.h"
+#include "../../xrNetwork/client_id.h"
 #include "game_sv_base_console_vars.h"
 #include "alife_simulator.h"
 

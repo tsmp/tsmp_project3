@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "actor_mp_server.h"
-#include "../../xrNetServer/net_utils.h"
+#include "../../xrNetwork/net_utils.h"
 #include "..\TSMP3_Build_Config.h"
 
 void CSE_ActorMP::UPDATE_Read(NET_Packet &packet)

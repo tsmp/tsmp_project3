@@ -21,7 +21,7 @@ struct SClientConnectData
 
 class IPureServer;
 
-struct XRNETSERVER_API ip_address
+struct XRNETWORK_API ip_address
 {
 	union
 	{
@@ -47,7 +47,7 @@ struct XRNETSERVER_API ip_address
 	}
 };
 
-class XRNETSERVER_API
+class XRNETWORK_API
 	IClient : public MultipacketSender
 {
 public:
@@ -84,7 +84,7 @@ private:
 
 IC bool operator==(IClient const *pClient, ClientID const &ID) { return pClient->ID == ID; }
 
-class XRNETSERVER_API IServerStatistic
+class XRNETWORK_API IServerStatistic
 {
 public:
 	void clear()
@@ -105,7 +105,7 @@ public:
 	u32 dwBytesPerSec;
 };
 
-class XRNETSERVER_API IBannedClient
+class XRNETWORK_API IBannedClient
 {
 public:
 	ip_address HAddr;
@@ -125,7 +125,7 @@ public:
 //==============================================================================
 class CServerInfo;
 
-class XRNETSERVER_API
+class XRNETWORK_API
 	IPureServer
 	: private MultipacketReciever
 {

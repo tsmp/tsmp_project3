@@ -21,11 +21,11 @@
 #define NET_GUARANTEEDPACKET_IGNORE 1
 #define NET_GUARANTEEDPACKET_SEPARATE 2
 
-extern XRNETSERVER_API int psNET_GuaranteedPacketMode;
+extern XRNETWORK_API int psNET_GuaranteedPacketMode;
 
 //==============================================================================
 
-class XRNETSERVER_API
+class XRNETWORK_API
     MultipacketSender
 {
 public:
@@ -59,7 +59,7 @@ private:
 
 //==============================================================================
 
-class XRNETSERVER_API
+class XRNETWORK_API
     MultipacketReciever
 {
 public:

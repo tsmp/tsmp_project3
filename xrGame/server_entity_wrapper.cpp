@@ -10,7 +10,7 @@
 #include "server_entity_wrapper.h"
 #include "xrServer_Objects.h"
 #include "xrmessages.h"
-#include "../../xrNetServer/net_utils.h"
+#include "../../xrNetwork/net_utils.h"
 #include "..\TSMP3_Build_Config.h"
 
 struct ISE_Abstract;

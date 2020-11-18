@@ -23,10 +23,10 @@ void dump_URL(LPCSTR p, IDirectPlay8Address* A);
 
 LPCSTR nameTraffic = "traffic.net";
 
-XRNETSERVER_API int psNET_ServerUpdate = 30; // FPS
-XRNETSERVER_API int psNET_ServerPending = 2;
+XRNETWORK_API int psNET_ServerUpdate = 30; // FPS
+XRNETWORK_API int psNET_ServerPending = 2;
 
-XRNETSERVER_API ClientID BroadcastCID(0xffffffff);
+XRNETWORK_API ClientID BroadcastCID(0xffffffff);
 
 void ip_address::set(LPCSTR src_string)
 {
@@ -127,7 +127,7 @@ void gen_auth_code()
 	test.push_back(xr_string("xrgame.dll"));
 	test.push_back(xr_string("xrgamespy.dll"));
 	test.push_back(xr_string("xrlua.dll"));
-	test.push_back(xr_string("xrnetserver.dll"));
+	test.push_back(xr_string("xrnetwork.dll"));
 	test.push_back(xr_string("xrparticles.dll"));
 	test.push_back(xr_string("xrrender_r1.dll"));
 	test.push_back(xr_string("xrrender_r2.dll"));

@@ -5,7 +5,7 @@
 
 struct ip_address;
 
-class XRNETSERVER_API INetQueue
+class XRNETWORK_API INetQueue
 {
 	xrCriticalSection cs;
 	xr_deque<NET_Packet *> ready;
@@ -25,7 +25,7 @@ public:
 
 //==============================================================================
 
-class XRNETSERVER_API
+class XRNETWORK_API
 	IPureClient
 	: private MultipacketReciever,
 	  private MultipacketSender

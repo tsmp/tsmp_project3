@@ -78,9 +78,9 @@ extern int g_sv_Pending_Wait_Time;
 extern int g_sv_Client_Reconnect_Time;
 int g_dwEventDelay = 0;
 
-void XRNETSERVER_API DumpNetCompressorStats(bool brief);
-BOOL XRNETSERVER_API g_net_compressor_enabled;
-BOOL XRNETSERVER_API g_net_compressor_gather_stats;
+void XRNETWORK_API DumpNetCompressorStats(bool brief);
+BOOL XRNETWORK_API g_net_compressor_enabled;
+BOOL XRNETWORK_API g_net_compressor_gather_stats;
 
 class CCC_Restart : public IConsole_Command
 {

@@ -3,27 +3,27 @@
 #include "net_utils.h"
 #include "net_messages.h"
 
-#ifdef XR_NETSERVER_EXPORTS
-#define XRNETSERVER_API __declspec(dllexport)
+#ifdef XR_NETWORK_EXPORTS
+#define XRNETWORK_API __declspec(dllexport)
 #else
-#define XRNETSERVER_API __declspec(dllimport)
-#pragma comment(lib, "xrNetServer")
+#define XRNETWORK_API __declspec(dllimport)
+#pragma comment(lib, "xrNetwork")
 #endif
 
 #include "net_compressor.h"
 
-XRNETSERVER_API extern ClientID BroadcastCID;
+XRNETWORK_API extern ClientID BroadcastCID;
 
-XRNETSERVER_API extern Flags32 psNET_Flags;
-XRNETSERVER_API extern int psNET_ClientUpdate;
-XRNETSERVER_API extern int get_psNET_ClientUpdate();
-XRNETSERVER_API extern int psNET_ClientPending;
-XRNETSERVER_API extern char psNET_Name[];
-XRNETSERVER_API extern int psNET_ServerUpdate;
-XRNETSERVER_API extern int get_psNET_ServerUpdate();
-XRNETSERVER_API extern int psNET_ServerPending;
+XRNETWORK_API extern Flags32 psNET_Flags;
+XRNETWORK_API extern int psNET_ClientUpdate;
+XRNETWORK_API extern int get_psNET_ClientUpdate();
+XRNETWORK_API extern int psNET_ClientPending;
+XRNETWORK_API extern char psNET_Name[];
+XRNETWORK_API extern int psNET_ServerUpdate;
+XRNETWORK_API extern int get_psNET_ServerUpdate();
+XRNETWORK_API extern int psNET_ServerPending;
 
-XRNETSERVER_API extern BOOL psNET_direct_connect;
+XRNETWORK_API extern BOOL psNET_direct_connect;
 
 enum
 {
@@ -36,7 +36,7 @@ enum
 IC u32 TimeGlobal(CTimer *timer) { return timer->GetElapsed_ms(); }
 IC u32 TimerAsync(CTimer *timer) { return TimeGlobal(timer); }
 
-class XRNETSERVER_API IClientStatistic
+class XRNETWORK_API IClientStatistic
 {
 	DPN_CONNECTION_INFO ci_last;
 	u32 mps_recive, mps_receive_base;

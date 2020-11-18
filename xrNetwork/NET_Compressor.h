@@ -4,7 +4,7 @@
 
 #include "xrSyncronize.h"
 
-class XRNETSERVER_API NET_Compressor
+class XRNETWORK_API NET_Compressor
 {
 	xrCriticalSection CS;
 

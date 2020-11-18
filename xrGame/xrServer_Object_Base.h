@@ -12,7 +12,7 @@
 #include "object_interfaces.h"
 #include "script_value_container.h"
 #include "alife_space.h"
-#include "../../xrNetServer/client_id.h"
+#include "../../xrNetwork/client_id.h"
 #include "..\TSMP3_Build_Config.h"
 
 class NET_Packet;
