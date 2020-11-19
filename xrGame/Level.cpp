@@ -106,6 +106,7 @@ CLevel::CLevel() : IPureClient(Device.GetTimerGlobal())
 
 	physics_step_time_callback = (PhysicsStepTimeCallback *)&PhisStepsCallback;
 	m_seniority_hierarchy_holder = xr_new<CSeniorityHierarchyHolder>();
+	m_autosave_manager = nullptr;
 
 #ifdef ALIFE_MP
 	if (true)
@@ -116,9 +117,9 @@ CLevel::CLevel() : IPureClient(Device.GetTimerGlobal())
 		m_level_sound_manager = xr_new<CLevelSoundManager>();
 		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
 		m_client_spawn_manager = xr_new<CClientSpawnManager>();
-		if (IsGameTypeSingle())
-			m_autosave_manager = xr_new<CAutosaveManager>();
-		else m_autosave_manager = NULL;
+
+		if (!xr_strcmp(Core.Params, "/single/"))
+			m_autosave_manager = xr_new<CAutosaveManager>();			
 
 #ifdef DEBUG
 		m_debug_renderer = xr_new<CDebugRenderer>();
@@ -129,7 +130,6 @@ CLevel::CLevel() : IPureClient(Device.GetTimerGlobal())
 	{
 		m_level_sound_manager = NULL;
 		m_client_spawn_manager = NULL;
-		m_autosave_manager = NULL;
 		m_space_restriction_manager = NULL;
 #ifdef DEBUG
 		m_debug_renderer = NULL;
@@ -570,17 +570,13 @@ void CLevel::OnFrame()
 	//	g_pGamePersistent->Environment().SetGameTime	(GetGameDayTimeSec(),GetGameTimeFactor());
 	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), GetGameTimeFactor());
 
-	//Device.Statistic->cripting.Begin	();
-
 #ifndef ALIFE_MP
 	if (!g_dedicated_server)
 #endif
 		ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->update();
 
-	//Device.Statistic->Scripting.End	();
 	m_ph_commander->update();
 	m_ph_commander_scripts->update();
-	//	autosave_manager().update			();
 
 	//просчитать полет пуль
 	Device.Statistic->TEST0.Begin();

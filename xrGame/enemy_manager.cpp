@@ -181,10 +181,8 @@ void CEnemyManager::set_ready_to_save()
 		return;
 
 	if (IsGameTypeSingle())
-	{
-		//	Msg							("%6d %s DEcreased enemy counter for player (%d -> %d)",Device.dwTimeGlobal,*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()-1);
 		Level().autosave_manager().dec_not_ready();
-	}
+	
 	m_ready_to_save = true;
 }
 
@@ -394,20 +392,21 @@ void CEnemyManager::try_change_enemy()
 void CEnemyManager::update()
 {
 	START_PROFILE("Memory Manager/enemies::update")
-	if (!m_ready_to_save && IsGameTypeSingle())
-	{
+
+	if (!m_ready_to_save && IsGameTypeSingle())	
 		Level().autosave_manager().dec_not_ready();
-	}
+	
     m_ready_to_save = true;
 	try_change_enemy();
+
 	if (selected())
 	{
 		m_last_enemy_time = Device.dwTimeGlobal;
 		m_last_enemy = selected();
 	}
-	if (!m_ready_to_save && IsGameTypeSingle())
-	{
+
+	if (!m_ready_to_save && IsGameTypeSingle())	
 		Level().autosave_manager().inc_not_ready();
-	}
+	
 	STOP_PROFILE
 }
