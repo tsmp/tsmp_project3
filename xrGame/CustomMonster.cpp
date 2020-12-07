@@ -393,7 +393,10 @@ void CCustomMonster::net_update::lerp(CCustomMonster::net_update &A, CCustomMons
 
 void CCustomMonster::update_sound_player()
 {
-	sound().update(client_update_fdelta());
+	if (m_sound_player)
+		sound().update(client_update_fdelta());
+	else
+		Msg("! cant update sound player");
 }
 
 void CCustomMonster::UpdateCL()

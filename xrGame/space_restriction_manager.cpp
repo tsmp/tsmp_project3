@@ -144,7 +144,14 @@ void CSpaceRestrictionManager::restrict(ALife::_OBJECT_ID id, shared_str out_res
 void CSpaceRestrictionManager::unrestrict(ALife::_OBJECT_ID id)
 {
 	CLIENT_RESTRICTIONS::iterator I = m_clients->find(id);
-	VERIFY(I != m_clients->end());
+
+	if (I == m_clients->end())
+	{
+		VERIFY(false);
+		Msg("! attempt to unrestrict without clients!");
+		return;
+	}
+	
 	m_clients->erase(I);
 	collect_garbage();
 }
