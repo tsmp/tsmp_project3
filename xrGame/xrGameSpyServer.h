@@ -60,11 +60,13 @@ protected:
 public:
 	shared_str HostName;
 	shared_str MapName;
+	shared_str MapNameRus;
 	shared_str Password;
 	Flags8 ServerFlags;
 
 	int m_iMaxPlayers;
 	bool m_bCheckCDKey;
+	bool m_bHasRusMapName;
 
 	int GetPlayersCount();
 	void OnCDKey_Validation(int LocalID, int res, char *errormsg);

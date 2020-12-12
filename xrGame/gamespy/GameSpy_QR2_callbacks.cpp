@@ -49,7 +49,10 @@ void __cdecl callback_serverkey(int keyid, void *outbuf, void *userdata)
 		pQR2->BufferAdd(outbuf, pServer->HostName.c_str());
 		break;
 	case MAPNAME_KEY:
-		pQR2->BufferAdd(outbuf, pServer->MapName.c_str());
+		if(pServer->m_bHasRusMapName)
+			pQR2->BufferAdd(outbuf, pServer->MapNameRus.c_str());
+		else
+			pQR2->BufferAdd(outbuf, pServer->MapName.c_str());
 		break;
 	case GAMEVER_KEY:
 		pQR2->BufferAdd(outbuf, pQR2->GetGameVersion(game_version));

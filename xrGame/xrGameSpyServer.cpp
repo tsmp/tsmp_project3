@@ -75,7 +75,30 @@ xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str &session_name)
 	string4096 tMapName = "";
 	const char *SName = *session_name;
 	strncpy(tMapName, *session_name, strchr(SName, '/') - SName);
-	MapName._set(tMapName); // = (session_name);
+	MapName._set(tMapName);
+	m_bHasRusMapName = false;
+
+	string_path rusNamePath;
+	FS.update_path(rusNamePath, "$level$", "level.name");
+	IReader* reader = FS.r_open(rusNamePath);
+
+	if (!reader)
+		Msg("! russian name for map not found");
+	else
+	{
+		const int bufferSize = 32;
+		char buffer[bufferSize];
+		reader->r_string(buffer, bufferSize);
+		FS.r_close(reader);
+		buffer[bufferSize - 1] = '\0';
+
+		if (xr_strlen(buffer))
+		{
+			MapNameRus._set(buffer);
+			m_bHasRusMapName = true;
+			Msg("- loaded russian name for map");
+		}
+	}	
 
 	m_iReportToMasterServer = game->get_option_i(*session_name, "public", 0);
 	m_iMaxPlayers = game->get_option_i(*session_name, "maxplayers", 32);
@@ -88,10 +111,8 @@ xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str &session_name)
 		//----- Check for Backend Services ---
 		CGameSpy_Available GSA;
 		shared_str result_string;
-		if (!GSA.CheckAvailableServices(result_string))
-		{
-			Msg(*result_string);
-		};
+		if (!GSA.CheckAvailableServices(result_string))		
+			Msg(*result_string);		
 
 		//------ Init of QR2 SDK -------------
 		iGameSpyBasePort = game->get_option_i(*session_name, "portgs", -1);
