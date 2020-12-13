@@ -124,6 +124,7 @@ public:
 	virtual void renderable_Render();
 	virtual void shedule_Update(u32 DT);
 	virtual void UpdateCL();
+	virtual	BOOL net_Relevant() { return FALSE; }
 
 	virtual CEntity *cast_entity() { return this; }
 
