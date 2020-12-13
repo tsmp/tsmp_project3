@@ -491,27 +491,77 @@ public:
 		if (!OnServer())
 			return;
 
-		u32 cnt = Level().Server->game->get_players_count();
 		Msg("------------------------");
+
+		Level().Server->clients_Lock();
+		u32	cnt = Level().Server->game->get_players_count();
+
 		Msg("- Total Players : %d", cnt);
+
+		for (u32 it = 0; it < cnt; it++)
+		{
+			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+			ip_address Address;
+
+			if (!l_pC)
+				continue;		
+
+			Level().Server->GetClientAddress(l_pC->ID, Address, nullptr);
+
+			Msg("%d (name: %s), (session_id: %u), (hash: @), (ip: %s), (ping: %u);"
+				, it + 1
+				, l_pC->ps->getName()
+				, l_pC->ID.value()
+				, Address.to_string().c_str()
+				, l_pC->ps->ping);
+		}
+
+		Level().Server->clients_Unlock();
+		Msg("------------------------");
+	};
+
+	virtual void Info(TInfo& I) { strcpy(I, "List Players"); }
+};
+
+class CCC_ListPlayersOld : public IConsole_Command
+{
+public:
+	CCC_ListPlayersOld(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void Execute(LPCSTR args)
+	{
+		if (!OnServer())
+			return;
+
+		Msg("------------------------");
+
+		Level().Server->clients_Lock();
+		u32 cnt = Level().Server->game->get_players_count();
+		
+		Msg("- Total Players : %d", cnt);
+
 		for (u32 it = 0; it < cnt; it++)
 		{
 			xrClientData *l_pC = (xrClientData *)Level().Server->client_Get(it);
+
 			if (!l_pC)
 				continue;
+
 			ip_address Address;
 			DWORD dwPort = 0;
 
 			Level().Server->GetClientAddress(l_pC->ID, Address, &dwPort);
+
 			Msg("%d : %s - %s port[%u] ping[%u]", it + 1, l_pC->ps->getName(),
 				Address.to_string().c_str(),
 				dwPort,
 				l_pC->ps->ping);
-		};
+		}
+
+		Level().Server->clients_Unlock();
 		Msg("------------------------");
 	};
 
-	virtual void Info(TInfo &I) { strcpy(I, "List Players"); }
+	virtual void Info(TInfo &I) { strcpy(I, "List Players Original"); }
 };
 
 class CCC_ListPlayers_Banned : public IConsole_Command
@@ -1360,6 +1410,7 @@ void register_mp_console_commands()
 	CMD1(CCC_UnBanPlayerByIP, "sv_unbanplayer_ip");
 
 	CMD1(CCC_ListPlayers, "sv_listplayers");
+	CMD1(CCC_ListPlayersOld, "sv_listplayers_old");
 	CMD1(CCC_ListPlayers_Banned, "sv_listplayers_banned");
 
 	CMD1(CCC_ChangeGameType, "sv_changegametype");
