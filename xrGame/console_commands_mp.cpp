@@ -1259,6 +1259,34 @@ public:
 	}
 };
 
+class CCC_SvEventMsg : public IConsole_Command
+{
+public:
+	CCC_SvEventMsg(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		if (!OnServer())
+			return;
+
+		if (!Level().Server || !Level().Server->game)
+			return;
+		
+		game_sv_mp* game = smart_cast<game_sv_mp*>(Level().Server->game);
+
+		if (game)
+		{
+			NET_Packet netP;
+			game->GenerateGameMessage(netP);
+
+			netP.w_u32(GAME_EVENT_SERVER_STRING_MESSAGE);
+			netP.w_stringZ(args);
+
+			game->u_EventSend(netP);
+		}
+	}
+};
+
 #include "Actor.h"
 #include "ai_object_location.h"
 
@@ -1793,6 +1821,7 @@ void register_mp_console_commands()
 	CMD1(CCC_Name, "name");
 	CMD1(CCC_SvStatus, "sv_status");
 	CMD1(CCC_SvChat, "chat");
+	CMD1(CCC_SvEventMsg, "event_msg");
 
 	CMD1(CCC_SvSpawn, "sv_spawn");
 	CMD4(CCC_SV_Float, "sv_spawn_x", &vec.x, -1000000.f, 1000000.0f);
