@@ -1353,6 +1353,7 @@ public:
 	}
 	virtual void Info(TInfo &I) { strcpy(I, "Shows current server settings"); }
 };
+
 class CCC_CompressorStatus : public IConsole_Command
 {
 public:
@@ -1367,6 +1368,282 @@ public:
 			InvalidSyntax();
 	}
 	virtual void Info(TInfo &I) { strcpy(I, "valid arguments is [info info_full on off]"); }
+};
+
+class CCC_SV_SetMoneyCount : public IConsole_Command
+{
+public:
+	CCC_SV_SetMoneyCount(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!g_pGameLevel || !Level().Server)
+			return;
+
+		string128 buff;
+		strcpy(buff, args_);
+		u32 len = xr_strlen(buff);
+
+		if (!len)
+			return;
+
+		string128 digits;
+		LPSTR p = buff + len - 1;
+
+		while (isdigit(*p))
+		{
+			if (p == buff)
+				break;
+
+			--p;
+		}
+
+		R_ASSERT(p >= buff);
+		strcpy(digits, p);
+
+		*p = 0;
+
+		if (!xr_strlen(buff))
+		{
+			Msg("incorrect parameter passed. bad money count");
+			return;
+		}
+
+		u32 money_count = atol(digits);
+
+		if (!money_count)
+		{
+			Msg("incorrect parameters passed.  ID and count required");
+			return;
+		}
+
+		string128 s_id;
+		strcpy(s_id, buff);
+		u32 id = static_cast<u32>(atoll(s_id));
+
+		if (!id)
+		{
+			Msg("invalid id");
+			return;
+		}
+
+		Level().Server->clients_Lock();
+		u32	cnt = Level().Server->game->get_players_count();
+
+		for (u32 it = 0; it < cnt; it++)
+		{
+			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+
+			if (!l_pC)
+				continue;
+
+			if (l_pC->ID.value() == id)
+			{
+				u64 temp = (u64)money_count;
+
+				if (temp > (u64)MAXLONG)
+					Msg("! cant set too much money");
+				else
+					l_pC->ps->money_for_round = (s32)money_count;
+
+				Level().Server->clients_Unlock();
+				return;
+			}
+		}
+
+		Level().Server->clients_Unlock();
+		Msg("! client with this id not found");
+	};
+
+	virtual void Info(TInfo& I) { strcpy(I, "Set money count by ClientID"); }
+};
+
+class CCC_SV_RankUp : public IConsole_Command
+{
+public:
+	CCC_SV_RankUp(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!g_pGameLevel || !Level().Server)
+			return;
+
+		string128 s_id;
+		strcpy(s_id, args_);
+		u32 id = static_cast<u32>(atoll(s_id));
+
+		if (!id)
+		{
+			Msg("invalid id");
+			return;
+		}	
+
+		Level().Server->clients_Lock();
+		u32	cnt = Level().Server->game->get_players_count();
+
+		for (u32 it = 0; it < cnt; it++)
+		{
+			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+
+			if (!l_pC)
+				continue;
+
+			if (l_pC->ID.value() == id)
+			{
+				if (l_pC->ps->rank < 4)
+					l_pC->ps->rank++;
+				else
+					Msg("! cant increase rank");
+
+				Level().Server->clients_Unlock();
+				return;
+			}
+		}
+
+		Level().Server->clients_Unlock();
+		Msg("! client with this id not found");
+	};
+
+	virtual void Info(TInfo& I) { strcpy(I, "Increase player rank by ClientID"); }
+};
+
+class CCC_SV_RankDown : public IConsole_Command
+{
+public:
+	CCC_SV_RankDown(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!g_pGameLevel || !Level().Server)
+			return;
+
+		string128 s_id;
+		strcpy(s_id, args_);
+		u32 id = static_cast<u32>(atoll(s_id));
+
+		if (!id)
+		{
+			Msg("invalid id");
+			return;
+		}
+
+		Level().Server->clients_Lock();
+		u32	cnt = Level().Server->game->get_players_count();
+
+		for (u32 it = 0; it < cnt; it++)
+		{
+			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+
+			if (!l_pC)
+				continue;
+
+			if (l_pC->ID.value() == id)
+			{
+				if (l_pC->ps->rank > 0)
+					l_pC->ps->rank--;
+				else
+					Msg("! cant decrease rank");
+
+				Level().Server->clients_Unlock();
+				return;
+			}
+		}
+
+		Level().Server->clients_Unlock();
+		Msg("! client with this id not found");
+	};
+
+	virtual void Info(TInfo& I) { strcpy(I, "Decrease player rank bu ClientID"); }
+};
+
+class CCC_SV_MuteChat : public IConsole_Command
+{
+public:
+	CCC_SV_MuteChat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!g_pGameLevel || !Level().Server)
+			return;
+
+		string128 s_id;
+		strcpy(s_id, args_);
+		u32 id = static_cast<u32>(atoll(s_id));
+
+		if (!id)
+		{
+			Msg("invalid id");
+			return;
+		}
+
+		Level().Server->clients_Lock();
+		u32	cnt = Level().Server->game->get_players_count();
+
+		for (u32 it = 0; it < cnt; it++)
+		{
+			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+
+			if (!l_pC)
+				continue;
+
+			if (l_pC->ID.value() == id)
+			{
+				l_pC->bMutedChat = true;
+				Level().Server->clients_Unlock();
+				return;
+			}
+		}
+
+		Level().Server->clients_Unlock();
+		Msg("! client with this id not found");
+	};
+
+	virtual void Info(TInfo& I) { strcpy(I, "Mute chat for player by ClientID"); }
+};
+
+class CCC_SV_UnMuteChat : public IConsole_Command
+{
+public:
+	CCC_SV_UnMuteChat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!g_pGameLevel || !Level().Server)
+			return;
+
+		string128 s_id;
+		strcpy(s_id, args_);
+		u32 id = static_cast<u32>(atoll(s_id));
+
+		if (!id)
+		{
+			Msg("invalid id");
+			return;
+		}
+
+		Level().Server->clients_Lock();
+		u32	cnt = Level().Server->game->get_players_count();
+
+		for (u32 it = 0; it < cnt; it++)
+		{
+			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+
+			if (!l_pC)
+				continue;
+
+			if (l_pC->ID.value() == id)
+			{
+				l_pC->bMutedChat = false;
+				Level().Server->clients_Unlock();
+				return;
+			}
+		}
+
+		Level().Server->clients_Unlock();
+		Msg("! client with this id not found");
+	};
+
+	virtual void Info(TInfo& I) { strcpy(I, "Unmute chat for player by ClientID"); }
 };
 
 void register_mp_console_commands()
@@ -1531,4 +1808,10 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer, "net_compressor_gather_stats", (int *)&g_net_compressor_gather_stats, 0, 1);
 	CMD1(CCC_MpStatistics, "sv_dump_online_statistics");
 	CMD4(CCC_SV_Integer, "sv_dump_online_statistics_period", (int *)&g_sv_mp_iDumpStatsPeriod, 0, 60); //min
+
+	CMD1(CCC_SV_MuteChat, "sv_mute_chat");
+	CMD1(CCC_SV_UnMuteChat, "sv_unmute_chat");
+	CMD1(CCC_SV_RankUp, "sv_rank_up");
+	CMD1(CCC_SV_RankDown, "sv_rank_down");
+	CMD1(CCC_SV_SetMoneyCount, "sv_set_money");
 }

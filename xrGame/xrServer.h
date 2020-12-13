@@ -31,6 +31,7 @@ public:
 
 	BOOL net_PassUpdates;
 	u32 net_LastMoveUpdateTime;
+	bool bMutedChat;
 
 	game_PlayerState *ps;
 	struct

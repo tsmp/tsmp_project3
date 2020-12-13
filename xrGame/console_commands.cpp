@@ -1694,7 +1694,9 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask, "ai_use_torch_dynamic_lights", &g_uCommonFlags, flAiUseTorchDynamicLights);
 
+#ifndef FZ_MOD_CLIENT
 	CMD3(CCC_Mask, "g_no_clip", &psActorFlags, AF_NO_CLIP);
+#endif
 
 #ifndef MASTER_GOLD
 	CMD4(CCC_Vector3, "psp_cam_offset", &CCameraLook2::m_cam_offset, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));

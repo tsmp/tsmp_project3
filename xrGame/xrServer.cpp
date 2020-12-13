@@ -38,6 +38,7 @@ void xrClientData::Clear()
 	m_ping_warn.m_maxPingWarnings = 0;
 	m_ping_warn.m_dwLastMaxPingWarningTime = 0;
 	m_admin_rights.m_has_admin_rights = FALSE;
+	bMutedChat = false;
 };
 
 xrClientData::~xrClientData()
@@ -851,13 +852,12 @@ CSE_Abstract *xrServer::GetEntity(u32 Num)
 
 void xrServer::OnChatMessage(NET_Packet *P, xrClientData *CL)
 {
-	//	string256 ChatMsg;
-	//	u16 PlayerID = P->r_u16();
 	s16 team = P->r_s16();
-	//	P->r_stringZ(ChatMsg);
-	if (!CL->net_Ready)
-		return;
-	game_PlayerState *Cps = CL->ps;
+	game_PlayerState* Cps = CL->ps;
+	
+	if (!CL->net_Ready || CL->bMutedChat)
+		return;	
+
 	for (u32 client = 0; client < net_Players.size(); ++client)
 	{
 		// Initialize process and check for available bandwidth
