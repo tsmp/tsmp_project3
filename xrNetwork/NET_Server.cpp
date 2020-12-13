@@ -855,6 +855,12 @@ bool IPureServer::DisconnectClient(IClient* C, string512& Reason)
 
 bool IPureServer::DisconnectAddress(const ip_address& Address)
 {
+	if (Address.to_string() == "0.0.0.0")
+	{
+		Msg("! attempt to disconnect server ip");
+		return false;
+	}
+
 	xr_vector<IClient*> PlayersToDisconnect;
 
 	for (u32 idx = 0; idx < net_Players.size(); ++idx)
@@ -862,19 +868,16 @@ bool IPureServer::DisconnectAddress(const ip_address& Address)
 		ip_address ClAddress;
 		GetClientAddress(net_Players[idx]->ID, ClAddress);
 
-		if (Address == ClAddress)
-		{
-			PlayersToDisconnect.push_back(net_Players[idx]);
-		};
-	};
+		if (Address == ClAddress)		
+			PlayersToDisconnect.push_back(net_Players[idx]);		
+	}
 
 	xr_vector<IClient*>::iterator it = PlayersToDisconnect.begin();
 	xr_vector<IClient*>::iterator it_e = PlayersToDisconnect.end();
 
-	for (; it != it_e; ++it)
-	{
+	for (; it != it_e; ++it)	
 		DisconnectClient(*it);
-	};
+	
 	return true;
 };
 
