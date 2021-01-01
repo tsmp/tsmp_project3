@@ -419,6 +419,7 @@ void CActor::Load(LPCSTR section)
 	m_sInventoryBoxUseAction = "inventory_box_use";
 	//---------------------------------------------------------------------
 	m_sHeadShotParticle = READ_IF_EXISTS(pSettings, r_string, section, "HeadShotParticle", 0);
+	m_dontAllowLookouts = READ_IF_EXISTS(pSettings, r_bool, "lookout_settings", "disable_lookout", false);
 }
 
 void CActor::PHHit(float P, Fvector &dir, CObject *who, s16 element, Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* = ALife::eHitTypeWound */)
