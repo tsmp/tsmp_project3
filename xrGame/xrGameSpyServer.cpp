@@ -162,13 +162,12 @@ int xrGameSpyServer::GetPlayersCount()
 	return NumPlayers - 1;
 };
 
-bool xrGameSpyServer::NeedToCheckClient_GameSpy_CDKey(IClient *CL)
+void xrGameSpyServer::CheckClientGameSpyCDKey(IClient *CL)
 {
 	if (!m_bCDKey_Initialized || (CL == GetServerClient() && g_dedicated_server))
-		return false;
+		return;
 
 	SendChallengeString_2_Client(CL);
-	return true;
 }
 
 void xrGameSpyServer::OnCL_Disconnected(IClient *_CL)

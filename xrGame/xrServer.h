@@ -152,11 +152,10 @@ protected:
 
 	virtual bool Check_ServerAccess(IClient *CL, string512 &reason) { return true; }
 
-	virtual bool NeedToCheckClient_GameSpy_CDKey(IClient *CL) { return false; }
-	virtual void Check_GameSpy_CDKey_Success(IClient *CL);
+	virtual void CheckClientGameSpyCDKey(IClient* CL) {};
+	virtual void CheckClientBuildVersion(IClient *CL);
 
-	virtual bool NeedToCheckClient_BuildVersion(IClient *CL);
-	virtual void Check_BuildVersion_Success(IClient *CL);
+	virtual void SetBuildVersionCheckSuccessful(IClient *CL);
 
 	void SendConnectionData(IClient *CL);
 	void OnChatMessage(NET_Packet *P, xrClientData *CL);
