@@ -110,7 +110,9 @@ void xrServer::AttachNewClient(IClient *CL)
 		Server_Client_Check(CL);
 	}
 
+	CL->flags.bVerified = FALSE;
 	CheckClientGameSpyCDKey(CL);
 	CheckClientBuildVersion(CL);
+	CheckClientHWID(CL);
 	CL->m_guid[0] = 0;
 }

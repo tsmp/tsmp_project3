@@ -120,14 +120,19 @@ void xrServer::CheckClientBuildVersion(IClient *CL)
 {
 	if (g_SV_Disable_Auth_Check)
 	{
-		SetBuildVersionCheckSuccessful(CL);
+		OnConnectionVerificationStepComplete(CL);
 		return;
 	}
-
-	CL->flags.bVerified = FALSE;
+	
 	NET_Packet P;
 	P.w_begin(M_AUTH_CHALLENGE);
 	SendTo(CL->ID, P);
+}
+
+void xrServer::CheckClientHWID(IClient* CL)
+{
+	// Пока заглушка
+	OnConnectionVerificationStepComplete(CL);
 }
 
 void xrServer::OnBuildVersionRespond(IClient *CL, NET_Packet &P)
@@ -153,9 +158,11 @@ void xrServer::OnBuildVersionRespond(IClient *CL, NET_Packet &P)
 			bAccessUser = Check_ServerAccess(CL, res_check);		
 
 		if (CL->flags.bLocal || bAccessUser)		
-			SetBuildVersionCheckSuccessful(CL);		
+			OnConnectionVerificationStepComplete(CL);
 		else
 		{
+#pragma TODO("TSMP: Турнирный сервер не будет проверять логин/пароль если отключена проверка ресурсов!")
+
 			Msg(res_check);
 			strcat_s(res_check, "Invalid login/password. Client \"");
 			strcat_s(res_check, CL->name.c_str());
@@ -166,8 +173,14 @@ void xrServer::OnBuildVersionRespond(IClient *CL, NET_Packet &P)
 	}
 }
 
-void xrServer::SetBuildVersionCheckSuccessful(IClient *CL)
+void xrServer::OnConnectionVerificationStepComplete(IClient *CL)
 {
-	CL->flags.bVerified = TRUE;
-	SendConnectResult(CL, 1, 0, "All Ok");
+	CL->verificationStepsCompleted++;
+
+	// проверяем ключ, билд, hwid, поэтому 3
+	if (CL->verificationStepsCompleted == 3)
+	{
+		CL->flags.bVerified = TRUE;
+		SendConnectResult(CL, 1, 0, "All Ok");
+	}
 }

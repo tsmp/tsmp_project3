@@ -154,8 +154,9 @@ protected:
 
 	virtual void CheckClientGameSpyCDKey(IClient* CL) {};
 	virtual void CheckClientBuildVersion(IClient *CL);
+	virtual void CheckClientHWID(IClient* CL);
 
-	virtual void SetBuildVersionCheckSuccessful(IClient *CL);
+	virtual void OnConnectionVerificationStepComplete(IClient *CL);
 
 	void SendConnectionData(IClient *CL);
 	void OnChatMessage(NET_Packet *P, xrClientData *CL);

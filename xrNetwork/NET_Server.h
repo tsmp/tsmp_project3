@@ -63,6 +63,7 @@ public:
 	virtual ~IClient();
 
 	IClientStatistic stats;
+	int verificationStepsCompleted;
 
 	ClientID ID;
 	string128 m_guid;

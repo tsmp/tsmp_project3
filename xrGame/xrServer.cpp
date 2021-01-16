@@ -39,7 +39,8 @@ void xrClientData::Clear()
 	m_ping_warn.m_dwLastMaxPingWarningTime = 0;
 	m_admin_rights.m_has_admin_rights = FALSE;
 	bMutedChat = false;
-};
+	verificationStepsCompleted = 0;
+}
 
 xrClientData::~xrClientData()
 {

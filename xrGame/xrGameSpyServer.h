@@ -54,7 +54,7 @@ private:
 	int iGameSpyBasePort;
 
 protected:
-	virtual void CheckClientGameSpyCDKey(IClient *CL);
+	virtual void CheckClientGameSpyCDKey(IClient *CL) override;
 	virtual bool Check_ServerAccess(IClient *CL, string512 &reason);
 
 public:

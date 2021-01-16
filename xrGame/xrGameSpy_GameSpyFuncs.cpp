@@ -59,6 +59,7 @@ void xrGameSpyServer::OnCDKey_Validation(int LocalID, int res, char *errormsg)
 	{
 		CL->m_bCDKeyAuth = true;
 		Msg("CDKey: Validation successful - <%s>", errormsg);
+		OnConnectionVerificationStepComplete(CL);
 	}
 	else
 	{

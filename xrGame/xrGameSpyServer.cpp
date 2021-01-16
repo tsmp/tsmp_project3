@@ -165,7 +165,10 @@ int xrGameSpyServer::GetPlayersCount()
 void xrGameSpyServer::CheckClientGameSpyCDKey(IClient *CL)
 {
 	if (!m_bCDKey_Initialized || (CL == GetServerClient() && g_dedicated_server))
+	{
+		OnConnectionVerificationStepComplete(CL);
 		return;
+	}
 
 	SendChallengeString_2_Client(CL);
 }
