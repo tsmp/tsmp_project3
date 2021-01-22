@@ -51,13 +51,15 @@ void LoadDLL()
 
 void UnloadSysmsgsDLL()
 {
-	if (LoadedDLL)
-	{
-		FZSysMsgsFree FreeFZ = (FZSysMsgsFree)GetProcAddress(dll, "FZSysMsgsFree");
-		FreeFZ();
+#pragma TODO("TSMP: Разобраться что тут вылетает при выгрузке FZ загрузчика!")
+	// Код вроде правильный но чет вылетает
+	//if (LoadedDLL)
+	//{
+	//	FZSysMsgsFree FreeFZ = (FZSysMsgsFree)GetProcAddress(dll, "FZSysMsgsFree");
+	//	FreeFZ();
 
-		FreeLibrary(dll);
-	}
+	//	FreeLibrary(dll);
+	//}
 
 	LoadedDLL = false;
 }
