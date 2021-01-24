@@ -1,14 +1,13 @@
-#ifndef _PURE_H_AAA_
-#define _PURE_H_AAA_
+#pragma once
 
-// messages
+// Приоритеты для задания нужного порядка вызовов функций
 #define REG_PRIORITY_LOW 0x11111111ul
 #define REG_PRIORITY_NORMAL 0x22222222ul
 #define REG_PRIORITY_HIGH 0x33333333ul
-#define REG_PRIORITY_CAPTURE 0x7ffffffful
 #define REG_PRIORITY_INVALID 0xfffffffful
 
 typedef void __fastcall RP_FUNC(void *obj);
+
 #define DECLARE_MESSAGE(name)            \
 	extern ENGINE_API RP_FUNC rp_##name; \
 	class ENGINE_API pure##name          \
@@ -16,8 +15,6 @@ typedef void __fastcall RP_FUNC(void *obj);
 	public:                              \
 		virtual void On##name(void) = 0; \
 	}
-#define DECLARE_RP(name) \
-	void __fastcall rp_##name(void *p) { ((pure##name *)p)->On##name(); }
 
 DECLARE_MESSAGE(Frame);
 DECLARE_MESSAGE(Render);
@@ -27,93 +24,106 @@ DECLARE_MESSAGE(AppStart);
 DECLARE_MESSAGE(AppEnd);
 DECLARE_MESSAGE(DeviceReset);
 
-//-----------------------------------------------------------------------------
-struct _REG_INFO
+template <class ClientType>
+class CRegistrator
 {
-	void *Object;
-	int Prio;
-	u32 Flags;
-};
-
-ENGINE_API extern int __cdecl _REG_Compare(const void *, const void *);
-
-template <class T>
-class CRegistrator // the registrator itself
-{
-	friend ENGINE_API int __cdecl _REG_Compare(const void *, const void *);
-
-public:
-	xr_vector<_REG_INFO> R;
-	// constructor
 	struct
 	{
 		u32 in_process : 1;
 		u32 changed : 1;
 	};
+
+	struct RegistratorClient
+	{
+		void* Object;
+		int Priority;
+	};
+
+	xr_vector<RegistratorClient> m_Subscribers;
+
+public:
+
 	CRegistrator()
 	{
 		in_process = false;
 		changed = false;
 	}
 
-	//
-	void Add(T *obj, int priority = REG_PRIORITY_NORMAL, u32 flags = 0)
+	// Добавить нового подписавшегося на событие
+	void Add(ClientType *obj, int priority = REG_PRIORITY_NORMAL)
 	{
 #ifdef DEBUG
 		VERIFY(priority != REG_PRIORITY_INVALID);
 		VERIFY(obj);
-		for (u32 i = 0; i < R.size(); i++)
-			VERIFY(!((R[i].Prio != REG_PRIORITY_INVALID) && (R[i].Object == (void *)obj)));
+		for (u32 i = 0; i < m_Subscribers.size(); i++)
+			VERIFY(!((m_Subscribers[i].Priority != REG_PRIORITY_INVALID) && (m_Subscribers[i].Object == (void *)obj)));
 #endif
-		_REG_INFO I;
-		I.Object = obj;
-		I.Prio = priority;
-		I.Flags = flags;
-		R.push_back(I);
+
+		RegistratorClient newObject;
+		newObject.Object = obj;
+		newObject.Priority = priority;
+		m_Subscribers.push_back(newObject);
 
 		if (in_process)
 			changed = true;
 		else
 			Resort();
-	};
-	void Remove(T *obj)
+	}
+
+	// Убрать конкретного подписавшегося на событие
+	void Remove(ClientType *obj)
 	{
-		for (u32 i = 0; i < R.size(); i++)
+		for (u32 i = 0; i < m_Subscribers.size(); i++)
 		{
-			if (R[i].Object == obj)
-				R[i].Prio = REG_PRIORITY_INVALID;
+			if (m_Subscribers[i].Object == obj)
+				m_Subscribers[i].Priority = REG_PRIORITY_INVALID;
 		}
+
 		if (in_process)
 			changed = true;
 		else
 			Resort();
-	};
+	}
+
+	// Вызвать функцию у всех подписавшихся
 	void Process(RP_FUNC *f)
 	{
 		in_process = true;
-		if (R.empty())
+
+		if (m_Subscribers.empty())
 			return;
-		if (R[0].Prio == REG_PRIORITY_CAPTURE)
-			f(R[0].Object);
-		else
-		{
-			for (u32 i = 0; i < R.size(); i++)
-				if (R[i].Prio != REG_PRIORITY_INVALID)
-					f(R[i].Object);
-		}
+
+		for (u32 i = 0; i < m_Subscribers.size(); i++)
+			if (m_Subscribers[i].Priority != REG_PRIORITY_INVALID)
+				f(m_Subscribers[i].Object);
+
 		if (changed)
 			Resort();
-		in_process = false;
-	};
-	void Resort(void)
-	{
-		qsort(&*R.begin(), R.size(), sizeof(_REG_INFO), _REG_Compare);
-		while ((R.size()) && (R[R.size() - 1].Prio == REG_PRIORITY_INVALID))
-			R.pop_back();
-		if (R.empty())
-			R.clear();
-		changed = false;
-	};
-};
 
-#endif
+		in_process = false;
+	}
+
+	// Пересортировать по приоритетам
+	void Resort(void)
+	{		
+		sort(m_Subscribers.begin(), m_Subscribers.end(),
+			[](const RegistratorClient &reg1, const RegistratorClient &reg2) -> bool
+			{
+				return reg1.Priority > reg2.Priority;
+			});
+
+		while ((m_Subscribers.size()) && (m_Subscribers[m_Subscribers.size() - 1].Priority == REG_PRIORITY_INVALID))
+			m_Subscribers.pop_back();
+
+		if (m_Subscribers.empty())
+			m_Subscribers.clear();
+
+		changed = false;
+	}
+
+	// Очистить список подписавшихся
+	void Clear()
+	{
+		m_Subscribers.clear();
+	}
+};
