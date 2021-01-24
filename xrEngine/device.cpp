@@ -181,19 +181,18 @@ void CRenderDevice::Run()
 
 	// Startup timers and calculate timer delta
 	dwTimeGlobal = 0;
-	Timer_MM_Delta = 0;
+
 	{
+		// —истемное врем€ (врем€ с момента запуска системы)
 		u32 time_mm = timeGetTime();
 		while (timeGetTime() == time_mm)
 			; // wait for next tick
 		u32 time_system = timeGetTime();
 		u32 time_local = TimerAsync();
-		Timer_MM_Delta = time_system - time_local;
+		m_SystemLocalTimersDelta = time_system - time_local;
 	}
 
 	// Start all threads
-	//	InitializeCriticalSection	(&mt_csEnter);
-	//	InitializeCriticalSection	(&mt_csLeave);
 	mt_csEnter.Enter();
 	mt_bMustExit = FALSE;
 	thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
@@ -219,7 +218,7 @@ void CRenderDevice::Run()
 			{
 
 #ifdef DEDICATED_SERVER
-				u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
+				u32 FrameStartTime = m_GlobalTimer.GetElapsed_ms();
 #endif
 				if (psDeviceFlags.test(rsStatistic))
 					g_bEnableStatGather = TRUE;
@@ -295,7 +294,7 @@ void CRenderDevice::Run()
 					seqFrameMT.Process(rp_Frame);
 				}
 #ifdef DEDICATED_SERVER
-				u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
+				u32 FrameEndTime = m_GlobalTimer.GetElapsed_ms();
 				u32 FrameTime = (FrameEndTime - FrameStartTime);
 				/*
 				string1024 FPS_str = "";
@@ -338,10 +337,9 @@ void CRenderDevice::Run()
 	// Stop Balance-Thread
 	mt_bMustExit = TRUE;
 	mt_csEnter.Leave();
+
 	while (mt_bMustExit)
 		Sleep(0);
-	//	DeleteCriticalSection	(&mt_csEnter);
-	//	DeleteCriticalSection	(&mt_csLeave);
 }
 
 void ProcessLoading(RP_FUNC *f);
@@ -361,8 +359,8 @@ void CRenderDevice::FrameMove()
 	else
 	{
 		// Timer
-		float fPreviousFrameTime = Timer.GetElapsed_sec();
-		Timer.Start();												// previous frame
+		float fPreviousFrameTime = m_FrameTimer.GetElapsed_sec();
+		m_FrameTimer.Start();												// previous frame
 		fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime; // smooth random system activity - worst case ~7% error
 		if (fTimeDelta > .1f)
 			fTimeDelta = .1f; // limit to 15fps minimum
@@ -370,10 +368,10 @@ void CRenderDevice::FrameMove()
 		if (Paused())
 			fTimeDelta = 0.0f;
 
-		//		u64	qTime		= TimerGlobal.GetElapsed_clk();
-		fTimeGlobal = TimerGlobal.GetElapsed_sec(); //float(qTime)*CPU::cycles2seconds;
+		//		u64	qTime		= m_GlobalTimer.GetElapsed_clk();
+		fTimeGlobal = m_GlobalTimer.GetElapsed_sec(); //float(qTime)*CPU::cycles2seconds;
 		u32 _old_global = dwTimeGlobal;
-		dwTimeGlobal = TimerGlobal.GetElapsed_ms(); //u32((qTime*u64(1000))/CPU::cycles_per_second);
+		dwTimeGlobal = m_GlobalTimer.GetElapsed_ms(); //u32((qTime*u64(1000))/CPU::cycles_per_second);
 		dwTimeDelta = dwTimeGlobal - _old_global;
 	}
 

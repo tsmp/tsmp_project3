@@ -6,7 +6,7 @@ extern LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 void CRenderDevice::Initialize()
 {
     Log("Initializing Engine...");
-    TimerGlobal.Start();
+    m_GlobalTimer.Start();
     TimerMM.Start();
 
     // Unless a substitute hWnd has been specified, create a window to render into
