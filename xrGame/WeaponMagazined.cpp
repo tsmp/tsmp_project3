@@ -462,10 +462,10 @@ void CWeaponMagazined::UpdateCL()
 
 void CWeaponMagazined::UpdateSounds()
 {
-	if (Device.dwFrame == dwUpdateSounds_Frame)
+	if (Device.CurrentFrameNumber == dwUpdateSounds_Frame)
 		return;
 
-	dwUpdateSounds_Frame = Device.dwFrame;
+	dwUpdateSounds_Frame = Device.CurrentFrameNumber;
 
 	// ref_sound positions
 	if (sndShow.playing())

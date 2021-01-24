@@ -335,7 +335,7 @@ void CBurer::StopTeleObjectParticle(CGameObject *pO)
 //void CBurer::Hit(float P,Fvector &dir,CObject*who,s16 element,Fvector p_in_object_space,float impulse, ALife::EHitType hit_type)
 void CBurer::Hit(SHit *pHDS)
 {
-	if (m_shield_active && (pHDS->hit_type == ALife::eHitTypeFireWound) && (Device.dwFrame != last_hit_frame))
+	if (m_shield_active && (pHDS->hit_type == ALife::eHitTypeFireWound) && (Device.CurrentFrameNumber != last_hit_frame))
 	{
 
 		// вычислить позицию и направленность партикла
@@ -353,7 +353,7 @@ void CBurer::Hit(SHit *pHDS)
 		//				inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
 		inherited::Hit(pHDS);
 
-	last_hit_frame = Device.dwFrame;
+	last_hit_frame = Device.CurrentFrameNumber;
 }
 
 void CBurer::Die(CObject *who)

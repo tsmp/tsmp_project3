@@ -11,13 +11,13 @@ bool xrServer::Process_event_reject(NET_Packet &P, const ClientID sender, const 
     CSE_Abstract *e_entity = game->get_entity_from_eid(id_entity);
 
 #ifdef DEBUG
-    Msg("sv reject. id_parent %s id_entity %s [%d]", ent_name_safe(id_parent).c_str(), ent_name_safe(id_entity).c_str(), Device.dwFrame);
+    Msg("sv reject. id_parent %s id_entity %s [%d]", ent_name_safe(id_parent).c_str(), ent_name_safe(id_entity).c_str(), Device.CurrentFrameNumber);
 #endif
 
     if (!e_entity)
     {
         Msg("! ERROR on rejecting: entity not found. parent_id = [%d], entity_id = [%d], frame = [%d].", id_parent,
-            id_entity, Device.dwFrame);
+            id_entity, Device.CurrentFrameNumber);
 
         return false;
     }
@@ -25,7 +25,7 @@ bool xrServer::Process_event_reject(NET_Packet &P, const ClientID sender, const 
     if (!e_parent)
     {
         Msg("! ERROR on rejecting: parent not found. parent_id = [%d], entity_id = [%d], frame = [%d].", id_parent,
-            id_entity, Device.dwFrame);
+            id_entity, Device.CurrentFrameNumber);
 
         return false;
     }
@@ -59,7 +59,7 @@ bool xrServer::Process_event_reject(NET_Packet &P, const ClientID sender, const 
     if (e_entity->ID_Parent != id_parent)
     {
         Msg("! ERROR: e_entity->ID_Parent = [%d]  parent = [%d][%s]  entity_id = [%d]  frame = [%d]",
-            e_entity->ID_Parent, id_parent, e_parent->name_replace(), id_entity, Device.dwFrame);
+            e_entity->ID_Parent, id_parent, e_parent->name_replace(), id_entity, Device.CurrentFrameNumber);
 
         CSE_Abstract *e_parent_from_entity = game->get_entity_from_eid(e_entity->ID_Parent);
 

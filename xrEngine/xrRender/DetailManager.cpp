@@ -214,7 +214,7 @@ void CDetailManager::UpdateVisibleM()
 					continue; // invisible-occlusion
 
 				// Add to visibility structures
-				if (Device.dwFrame > S.frame)
+				if (Device.CurrentFrameNumber > S.frame)
 				{
 					// Calc fade factor	(per slot)
 					float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
@@ -224,7 +224,7 @@ void CDetailManager::UpdateVisibleM()
 					float alpha_i = 1.f - alpha;
 					float dist_sq_rcp = 1.f / dist_sq;
 
-					S.frame = Device.dwFrame + Random.randI(15, 30);
+					S.frame = Device.CurrentFrameNumber + Random.randI(15, 30);
 					for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
 					{
 						SlotPart &sp = S.G[sp_id];
@@ -298,7 +298,7 @@ void CDetailManager::Render()
 		soft_Render();
 	RCache.set_CullMode(CULL_CCW);
 	Device.Statistic->RenderDUMP_DT_Render.End();
-	m_frame_rendered = Device.dwFrame;
+	m_frame_rendered = Device.CurrentFrameNumber;
 }
 
 void __stdcall CDetailManager::MT_CALC()
@@ -312,8 +312,8 @@ void __stdcall CDetailManager::MT_CALC()
 		return;
 
 	MT.Enter();
-	if (m_frame_calc != Device.dwFrame)
-		if ((m_frame_rendered + 1) == Device.dwFrame) //already rendered
+	if (m_frame_calc != Device.CurrentFrameNumber)
+		if ((m_frame_rendered + 1) == Device.CurrentFrameNumber) //already rendered
 		{
 			Fvector EYE = Device.vCameraPosition;
 			int s_x = iFloor(EYE.x / dm_slot_size + .5f);
@@ -324,7 +324,7 @@ void __stdcall CDetailManager::MT_CALC()
 			Device.Statistic->RenderDUMP_DT_Cache.End();
 
 			UpdateVisibleM();
-			m_frame_calc = Device.dwFrame;
+			m_frame_calc = Device.CurrentFrameNumber;
 		}
 	MT.Leave();
 }

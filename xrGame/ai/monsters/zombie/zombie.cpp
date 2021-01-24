@@ -146,7 +146,7 @@ void CZombie::Hit(SHit *pHDS)
 	if (!g_Alive())
 		return;
 
-	if ((pHDS->hit_type == ALife::eHitTypeFireWound) && (Device.dwFrame != last_hit_frame))
+	if ((pHDS->hit_type == ALife::eHitTypeFireWound) && (Device.CurrentFrameNumber != last_hit_frame))
 	{
 		if (!com_man().ta_is_active() && (time_resurrect + TIME_RESURRECT_RESTORE < Device.dwTimeGlobal) && (conditions().GetHealth() < health_death_threshold))
 		{
@@ -164,7 +164,7 @@ void CZombie::Hit(SHit *pHDS)
 		}
 	}
 
-	last_hit_frame = Device.dwFrame;
+	last_hit_frame = Device.CurrentFrameNumber;
 }
 
 void CZombie::shedule_Update(u32 dt)

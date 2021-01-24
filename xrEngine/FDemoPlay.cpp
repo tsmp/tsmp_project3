@@ -82,7 +82,7 @@ void CDemoPlay::stat_Start()
 		return;
 	stat_started = TRUE;
 	Sleep(1);
-	stat_StartFrame = Device.dwFrame;
+	stat_StartFrame = Device.CurrentFrameNumber;
 	stat_Timer_frame.Start();
 	stat_Timer_total.Start();
 	stat_table.clear();
@@ -102,7 +102,7 @@ void CDemoPlay::stat_Stop()
 	float rfps_min, rfps_max, rfps_middlepoint, rfps_average;
 
 	// total
-	u32 dwFramesTotal = Device.dwFrame - stat_StartFrame;
+	u32 dwFramesTotal = Device.CurrentFrameNumber - stat_StartFrame;
 	rfps_average = float(dwFramesTotal) / stat_total;
 
 	// min/max/average

@@ -34,7 +34,7 @@ class cl_fog_plane : public R_constant_setup
 	Fvector4 result;
 	virtual void setup(R_constant *C)
 	{
-		if (marker != Device.dwFrame)
+		if (marker != Device.CurrentFrameNumber)
 		{
 			// Plane
 			Fvector4 plane;
@@ -64,7 +64,7 @@ class cl_fog_params : public R_constant_setup
 	Fvector4 result;
 	virtual void setup(R_constant *C)
 	{
-		if (marker != Device.dwFrame)
+		if (marker != Device.CurrentFrameNumber)
 		{
 			// Near/Far
 			float n = g_pGamePersistent->Environment().CurrentEnv.fog_near;
@@ -84,7 +84,7 @@ class cl_fog_color : public R_constant_setup
 	Fvector4 result;
 	virtual void setup(R_constant *C)
 	{
-		if (marker != Device.dwFrame)
+		if (marker != Device.CurrentFrameNumber)
 		{
 			CEnvDescriptor &desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc.fog_color.x, desc.fog_color.y, desc.fog_color.z, 0);
@@ -145,7 +145,7 @@ class cl_sun0_color : public R_constant_setup
 	Fvector4 result;
 	virtual void setup(R_constant *C)
 	{
-		if (marker != Device.dwFrame)
+		if (marker != Device.CurrentFrameNumber)
 		{
 			CEnvDescriptor &desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc.sun_color.x, desc.sun_color.y, desc.sun_color.z, 0);
@@ -160,7 +160,7 @@ class cl_sun0_dir_w : public R_constant_setup
 	Fvector4 result;
 	virtual void setup(R_constant *C)
 	{
-		if (marker != Device.dwFrame)
+		if (marker != Device.CurrentFrameNumber)
 		{
 			CEnvDescriptor &desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc.sun_dir.x, desc.sun_dir.y, desc.sun_dir.z, 0);
@@ -175,7 +175,7 @@ class cl_sun0_dir_e : public R_constant_setup
 	Fvector4 result;
 	virtual void setup(R_constant *C)
 	{
-		if (marker != Device.dwFrame)
+		if (marker != Device.CurrentFrameNumber)
 		{
 			Fvector D;
 			CEnvDescriptor &desc = g_pGamePersistent->Environment().CurrentEnv;
@@ -195,7 +195,7 @@ class cl_amb_color : public R_constant_setup
 	Fvector4 result;
 	virtual void setup(R_constant *C)
 	{
-		if (marker != Device.dwFrame)
+		if (marker != Device.CurrentFrameNumber)
 		{
 			CEnvDescriptorMixer &desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc.ambient.x, desc.ambient.y, desc.ambient.z, desc.weight);
@@ -210,7 +210,7 @@ class cl_hemi_color : public R_constant_setup
 	Fvector4 result;
 	virtual void setup(R_constant *C)
 	{
-		if (marker != Device.dwFrame)
+		if (marker != Device.CurrentFrameNumber)
 		{
 			CEnvDescriptor &desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc.hemi_color.x, desc.hemi_color.y, desc.hemi_color.z, desc.hemi_color.w);

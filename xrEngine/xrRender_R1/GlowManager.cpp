@@ -154,9 +154,9 @@ IC bool glow_compare(ref_glow g1, ref_glow g2)
 void CGlowManager::add(ref_glow G_)
 {
 	CGlow *G = (CGlow *)G_._get();
-	if (G->dwFrame == Device.dwFrame)
+	if (G->dwFrame == Device.CurrentFrameNumber)
 		return;
-	G->dwFrame = Device.dwFrame;
+	G->dwFrame = Device.CurrentFrameNumber;
 #ifdef DEBUG
 	Device.Statistic->RenderDUMP_Glows.Begin();
 #endif

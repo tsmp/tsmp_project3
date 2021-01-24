@@ -96,9 +96,9 @@ void CWeapon::Hit(SHit *pHDS)
 
 void CWeapon::UpdateXForm()
 {
-	if (Device.dwFrame != dwXF_Frame)
+	if (Device.CurrentFrameNumber != dwXF_Frame)
 	{
-		dwXF_Frame = Device.dwFrame;
+		dwXF_Frame = Device.CurrentFrameNumber;
 
 		if (0 == H_Parent())
 			return;
@@ -161,9 +161,9 @@ void CWeapon::UpdateXForm()
 
 void CWeapon::UpdateFireDependencies_internal()
 {
-	if (Device.dwFrame != dwFP_Frame)
+	if (Device.CurrentFrameNumber != dwFP_Frame)
 	{
-		dwFP_Frame = Device.dwFrame;
+		dwFP_Frame = Device.CurrentFrameNumber;
 
 		UpdateXForm();
 
@@ -944,7 +944,7 @@ int CWeapon::GetAmmoCurrent(bool use_item_to_spawn) const
 	if (m_pCurrentInventory->ModifyFrame() <= m_dwAmmoCurrentCalcFrame)
 		return l_count + iAmmoCurrent;
 
-	m_dwAmmoCurrentCalcFrame = Device.dwFrame;
+	m_dwAmmoCurrentCalcFrame = Device.CurrentFrameNumber;
 	iAmmoCurrent = 0;
 
 	for (int i = 0; i < (int)m_ammoTypes.size(); ++i)

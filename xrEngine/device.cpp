@@ -129,7 +129,7 @@ void mt_Thread(void *ptr)
 			return;
 		}
 		// we has granted permission to execute
-		mt_Thread_marker = Device.dwFrame;
+		mt_Thread_marker = Device.CurrentFrameNumber;
 
 		for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
 			Device.seqParallel[pit]();
@@ -286,7 +286,7 @@ void CRenderDevice::Run()
 				mt_csLeave.Leave();
 
 				// Ensure, that second thread gets chance to execute anyway
-				if (dwFrame != mt_Thread_marker)
+				if (CurrentFrameNumber != mt_Thread_marker)
 				{
 					for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
 						Device.seqParallel[pit]();
@@ -345,7 +345,7 @@ void CRenderDevice::Run()
 void ProcessLoading(RP_FUNC *f);
 void CRenderDevice::FrameMove()
 {
-	dwFrame++;
+	CurrentFrameNumber++;
 
 	dwTimeContinual = TimerMM.GetElapsed_ms();
 	if (psDeviceFlags.test(rsConstantFPS))

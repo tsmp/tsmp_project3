@@ -204,13 +204,13 @@ IC void blend_lerp(float &cur, float tgt, float speed, float dt)
 
 void CLensFlare::OnFrame(int id)
 {
-	if (dwFrame == Device.dwFrame)
+	if (dwFrame == Device.CurrentFrameNumber)
 		return;
 
 	if (!g_pGameLevel)
 		return;
 
-	dwFrame = Device.dwFrame;
+	dwFrame = Device.CurrentFrameNumber;
 
 	vSunDir.mul(g_pGamePersistent->Environment().CurrentEnv.sun_dir, -1);
 

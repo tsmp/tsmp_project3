@@ -96,19 +96,19 @@ void CObjectList::o_sleep(CObject *O)
 
 void CObjectList::SingleUpdate(CObject *O)
 {
-	if (O->processing_enabled() && (Device.dwFrame != O->dwFrame_UpdateCL))
+	if (O->processing_enabled() && (Device.CurrentFrameNumber != O->dwFrame_UpdateCL))
 	{
 		if (O->H_Parent())
 			SingleUpdate(O->H_Parent());
 		Device.Statistic->UpdateClient_updated++;
-		O->dwFrame_UpdateCL = Device.dwFrame;
+		O->dwFrame_UpdateCL = Device.CurrentFrameNumber;
 		O->IAmNotACrowAnyMore();
 		O->UpdateCL();
-		VERIFY3(O->dbg_update_cl == Device.dwFrame, "Broken sequence of calls to 'UpdateCL'", *O->cName());
+		VERIFY3(O->dbg_update_cl == Device.CurrentFrameNumber, "Broken sequence of calls to 'UpdateCL'", *O->cName());
 		//		if (O->getDestroy())
 		//		{
 		//			destroy_queue.push_back(O);
-		//.			Msg				("- destroy_queue.push_back %s[%d] frame [%d]",O->cName().c_str(), O->ID(), Device.dwFrame);
+		//.			Msg				("- destroy_queue.push_back %s[%d] frame [%d]",O->cName().c_str(), O->ID(), Device.CurrentFrameNumber);
 		//		}
 		//		else
 		if (O->H_Parent() && (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy()))
@@ -119,10 +119,10 @@ void CObjectList::SingleUpdate(CObject *O)
 			//				destroy_queue.push_back	(O);
 		}
 	}
-	if (O->getDestroy() && (Device.dwFrame != O->dwFrame_UpdateCL))
+	if (O->getDestroy() && (Device.CurrentFrameNumber != O->dwFrame_UpdateCL))
 	{
 		//		destroy_queue.push_back(O);
-		Msg("- !!!processing_enabled ->destroy_queue.push_back %s[%d] frame [%d]", O->cName().c_str(), O->ID(), Device.dwFrame);
+		Msg("- !!!processing_enabled ->destroy_queue.push_back %s[%d] frame [%d]", O->cName().c_str(), O->ID(), Device.CurrentFrameNumber);
 	}
 }
 
@@ -217,7 +217,7 @@ void CObjectList::Update(bool bForce)
 			CObject *O = destroy_queue[it];
 //			Msg				("Object [%x]", O);
 #ifdef DEBUG
-			Msg("Destroying object[%x] [%d][%s] frame[%d]", O, O->ID(), *O->cName(), Device.dwFrame);
+			Msg("Destroying object[%x] [%d][%s] frame[%d]", O, O->ID(), *O->cName(), Device.CurrentFrameNumber);
 #endif // DEBUG
 			O->net_Destroy();
 			Destroy(O);
@@ -456,7 +456,7 @@ void CObjectList::register_object_to_destroy(CObject *object_to_destroy)
 		CObject *O = *it;
 		if (!O->getDestroy() && O->H_Parent() == object_to_destroy)
 		{
-			Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
+			Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]", object_to_destroy->ID(), O->ID(), Device.CurrentFrameNumber);
 			O->setDestroy(TRUE);
 		}
 	}
@@ -468,7 +468,7 @@ void CObjectList::register_object_to_destroy(CObject *object_to_destroy)
 		CObject *O = *it;
 		if (!O->getDestroy() && O->H_Parent() == object_to_destroy)
 		{
-			Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
+			Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]", object_to_destroy->ID(), O->ID(), Device.CurrentFrameNumber);
 			O->setDestroy(TRUE);
 		}
 	}

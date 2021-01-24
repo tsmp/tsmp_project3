@@ -38,9 +38,8 @@ private:
 
 public:
 	HWND m_hWnd;
-	//LRESULT MsgProc(HWND, UINT, WPARAM, LPARAM);
 
-	u32 dwFrame;
+	u32 CurrentFrameNumber;
 	u32 dwPrecacheFrame;
 	u32 dwPrecacheTotal;
 

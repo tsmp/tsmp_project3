@@ -88,7 +88,7 @@ void CRenderDevice::_Create(LPCSTR shName)
 	DU.OnDeviceCreate();
 #endif
 
-	dwFrame = 0;
+	CurrentFrameNumber = 0;
 }
 
 void CRenderDevice::Create()

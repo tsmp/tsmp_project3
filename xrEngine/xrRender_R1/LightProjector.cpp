@@ -54,7 +54,7 @@ void CLightProjector::set_object(IRenderable *O)
 		current = 0;
 	else
 	{
-		if (!O->renderable_ShadowReceive() || RImplementation.val_bInvisible || ((CROS_impl *)O->renderable_ROS())->shadow_recv_frame == Device.dwFrame)
+		if (!O->renderable_ShadowReceive() || RImplementation.val_bInvisible || ((CROS_impl *)O->renderable_ROS())->shadow_recv_frame == Device.CurrentFrameNumber)
 		{
 			current = 0;
 			return;
@@ -90,7 +90,7 @@ void CLightProjector::set_object(IRenderable *O)
 		if (current)
 		{
 			CROS_impl *LT = (CROS_impl *)current->renderable_ROS();
-			LT->shadow_recv_frame = Device.dwFrame;
+			LT->shadow_recv_frame = Device.CurrentFrameNumber;
 			receivers.push_back(current);
 		}
 	}
@@ -164,7 +164,7 @@ void CLightProjector::calculate()
 		if (bValid)
 		{
 			// Ok, use cached version
-			cache[slot].dwFrame = Device.dwFrame;
+			cache[slot].dwFrame = Device.CurrentFrameNumber;
 		}
 		else
 		{
@@ -186,7 +186,7 @@ void CLightProjector::calculate()
 	{
 		if (taskid.empty())
 			break;
-		if (Device.dwFrame == cache[c_it].dwFrame)
+		if (Device.CurrentFrameNumber == cache[c_it].dwFrame)
 			continue;
 
 		// found not used slot
@@ -268,7 +268,7 @@ void CLightProjector::calculate()
 		{
 			// invalidate record, so that object will be unshadowed, but doesn't crash
 			R.dwTimeValid = Device.dwTimeGlobal;
-			LT->shadow_recv_frame = Device.dwFrame - 1;
+			LT->shadow_recv_frame = Device.CurrentFrameNumber - 1;
 			LT->shadow_recv_slot = -1;
 			continue;
 		}

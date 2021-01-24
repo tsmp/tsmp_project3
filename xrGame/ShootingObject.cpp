@@ -155,9 +155,9 @@ void CShootingObject::Light_Start()
 	if (!light_render)
 		Light_Create();
 
-	if (Device.dwFrame != light_frame)
+	if (Device.CurrentFrameNumber != light_frame)
 	{
-		light_frame = Device.dwFrame;
+		light_frame = Device.CurrentFrameNumber;
 		light_time = light_lifetime;
 
 		light_build_color.set(Random.randFs(light_var_color, light_base_color.r), Random.randFs(light_var_color, light_base_color.g), Random.randFs(light_var_color, light_base_color.b), 1);

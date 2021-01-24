@@ -26,7 +26,7 @@ void CBackend::OnFrameEnd()
 void CBackend::OnFrameBegin()
 {
 #ifndef DEDICATED_SERVER
-	PGO(Msg("PGO:*****frame[%d]*****", Device.dwFrame));
+	PGO(Msg("PGO:*****frame[%d]*****", Device.CurrentFrameNumber));
 	Memory.mem_fill(&stat, 0, sizeof(stat));
 	Vertex.Flush();
 	Index.Flush();

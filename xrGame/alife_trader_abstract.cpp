@@ -179,7 +179,7 @@ void add_online_impl(CSE_ALifeDynamicObject *object, const bool &update_registri
 		//			Msg					("[LSS] Spawning item [%s][%s][%d]",l_tpALifeInventoryItem->base()->name_replace(),*l_tpALifeInventoryItem->base()->s_name,l_tpALifeDynamicObject->ID);
 		Msg(
 			"[LSS][%d] Going online [%d][%s][%d] with parent [%d][%s] on '%s'",
-			Device.dwFrame,
+			Device.CurrentFrameNumber,
 			Device.dwTimeGlobal,
 			l_tpALifeInventoryItem->base()->name_replace(),
 			l_tpALifeInventoryItem->base()->ID,
@@ -226,7 +226,7 @@ void add_offline_impl(CSE_ALifeDynamicObject *object, const xr_vector<ALife::_OB
 		//			Msg					("[LSS] Destroying item [%s][%s][%d]",inventory_item->base()->name_replace(),*inventory_item->base()->s_name,inventory_item->base()->ID);
 		Msg(
 			"[LSS][%d] Going offline [%d][%s][%d] with parent [%d][%s] on '%s'",
-			Device.dwFrame,
+			Device.CurrentFrameNumber,
 			Device.dwTimeGlobal,
 			inventory_item->base()->name_replace(),
 			inventory_item->base()->ID,

@@ -407,7 +407,7 @@ void CCar::UpdateEx(float fov)
 	DbgUbdateCl();
 #endif
 
-	//	Log("UpdateCL",Device.dwFrame);
+	//	Log("UpdateCL",Device.CurrentFrameNumber);
 	//XFORM().set(m_pPhysicsShell->mXFORM);
 	VisualUpdate(fov);
 	if (OwnerActor() && OwnerActor()->IsMyCamera())

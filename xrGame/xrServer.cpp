@@ -284,7 +284,7 @@ void xrServer::Update()
 	Flush_Clients_Buffers();
 	csPlayers.Leave();
 
-	if (0 == (Device.dwFrame % 100)) //once per 100 frames
+	if (0 == (Device.CurrentFrameNumber % 100)) //once per 100 frames
 	{
 		UpdateBannedList();
 	}

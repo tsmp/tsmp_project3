@@ -182,7 +182,7 @@ void CStats::Show()
 		return;
 	////////////////////////////////////////////////
 	int frm = 2000;
-	div_t ddd = div(Device.dwFrame, frm);
+	div_t ddd = div(Device.CurrentFrameNumber, frm);
 	if (ddd.rem < frm / 2.0f)
 	{
 		pFont->SetColor(0xFFFFFFFF);

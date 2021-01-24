@@ -350,9 +350,9 @@ void CSheduler::ProcessStep()
 		{
 #endif // DEBUG            \
 	   // Real update call \
-	   // Msg						("------- %d:",Device.dwFrame);
+	   // Msg						("------- %d:",Device.CurrentFrameNumber);
 #ifdef DEBUG
-			T.Object->dbg_startframe = Device.dwFrame;
+			T.Object->dbg_startframe = Device.CurrentFrameNumber;
 			eTimer.Start();
 			LPCSTR _obj_name = T.Object->shedule_Name().c_str();
 #endif // DEBUG
@@ -450,7 +450,7 @@ void CSheduler::Update()
 	g_bSheduleInProgress = TRUE;
 
 #ifdef DEBUG_SCHEDULER
-	Msg("SCHEDULER: PROCESS STEP %d", Device.dwFrame);
+	Msg("SCHEDULER: PROCESS STEP %d", Device.CurrentFrameNumber);
 #endif // DEBUG_SCHEDULER
 	// Realtime priority
 	m_processing_now = true;
@@ -473,8 +473,8 @@ void CSheduler::Update()
 
 		u32 Elapsed = dwTime - T.dwTimeOfLastExecute;
 #ifdef DEBUG
-		VERIFY(T.Object->dbg_startframe != Device.dwFrame);
-		T.Object->dbg_startframe = Device.dwFrame;
+		VERIFY(T.Object->dbg_startframe != Device.CurrentFrameNumber);
+		T.Object->dbg_startframe = Device.CurrentFrameNumber;
 #endif
 		T.Object->shedule_Update(Elapsed);
 		T.dwTimeOfLastExecute = dwTime;
@@ -484,7 +484,7 @@ void CSheduler::Update()
 	ProcessStep();
 	m_processing_now = false;
 #ifdef DEBUG_SCHEDULER
-	Msg("SCHEDULER: PROCESS STEP FINISHED %d", Device.dwFrame);
+	Msg("SCHEDULER: PROCESS STEP FINISHED %d", Device.CurrentFrameNumber);
 #endif // DEBUG_SCHEDULER
 	clamp(psShedulerTarget, 3.f, 66.f);
 	psShedulerCurrent = 0.9f * psShedulerCurrent + 0.1f * psShedulerTarget;

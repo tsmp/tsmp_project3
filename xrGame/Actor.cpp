@@ -467,7 +467,7 @@ void CActor::Hit(SHit *pHDS)
 		if (ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
 		{
 			bPlaySound = false;
-			if (Device.dwFrame != last_hit_frame &&
+			if (Device.CurrentFrameNumber != last_hit_frame &&
 				HDS.bone() != BI_NONE)
 			{
 				// вычислить позицию и направленность партикла
@@ -488,7 +488,7 @@ void CActor::Hit(SHit *pHDS)
 			};
 		};
 
-		last_hit_frame = Device.dwFrame;
+		last_hit_frame = Device.CurrentFrameNumber;
 	};
 
 	if (!g_dedicated_server &&

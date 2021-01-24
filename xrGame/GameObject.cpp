@@ -212,7 +212,7 @@ void CGameObject::OnEvent(NET_Packet &P, u16 type)
 		if (H_Parent())
 		{
 			Msg("! ERROR (GameObject): GE_DESTROY arrived to object[%d][%s], that has parent[%d][%s], frame[%d]", ID(),
-				cNameSect().c_str(), H_Parent()->ID(), H_Parent()->cName().c_str(), Device.dwFrame);
+				cNameSect().c_str(), H_Parent()->ID(), H_Parent()->cName().c_str(), Device.CurrentFrameNumber);
 
 			// This object will be destroy on call function <H_Parent::Destroy>
 			// or it will be call <H_Parent::Reject>  ==>  H_Parent = NULL
@@ -235,7 +235,7 @@ BOOL CGameObject::net_Spawn(CSE_Abstract *DC)
 {
 	VERIFY(!m_spawned);
 	m_spawned = true;
-	m_spawn_time = Device.dwFrame;
+	m_spawn_time = Device.CurrentFrameNumber;
 	CSE_Abstract *E = (CSE_Abstract *)DC;
 	VERIFY(E);
 
@@ -848,7 +848,7 @@ void CGameObject::shedule_Update(u32 dt)
 	if (!IsGameTypeSingle() && OnServer() && NeedToDestroyObject())
 	{
 #ifdef DEBUG
-		Msg("--NeedToDestroyObject for [%d][%d]", ID(), Device.dwFrame);
+		Msg("--NeedToDestroyObject for [%d][%d]", ID(), Device.CurrentFrameNumber);
 #endif
 		DestroyObject();
 	}

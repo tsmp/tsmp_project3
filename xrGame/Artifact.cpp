@@ -252,7 +252,7 @@ void CArtefact::shedule_Update(u32 dt)
 	{
 		Fvector center;
 		Center(center);
-		BOOL rendering = (Device.dwFrame == o_render_frame);
+		BOOL rendering = (Device.CurrentFrameNumber == o_render_frame);
 		float cam_distance = Device.vCameraPosition.distance_to(center) - Radius();
 		if (rendering || (cam_distance < FASTMODE_DISTANCE))
 			o_switch_2_fast();
@@ -336,9 +336,9 @@ void CArtefact::Show()
 #include "Entity_alive.h"
 void CArtefact::UpdateXForm()
 {
-	if (Device.dwFrame != dwXF_Frame)
+	if (Device.CurrentFrameNumber != dwXF_Frame)
 	{
-		dwXF_Frame = Device.dwFrame;
+		dwXF_Frame = Device.CurrentFrameNumber;
 
 		if (0 == H_Parent())
 			return;

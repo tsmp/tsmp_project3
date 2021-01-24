@@ -299,7 +299,7 @@ void CIKLimb::Destroy()
 }
 IC bool state_valide(const calculate_state &prev_state)
 {
-	return (Device.dwFrame - prev_state.frame) == 1; //prev_state.state !=calculate_state::not_definite &&
+	return (Device.CurrentFrameNumber - prev_state.frame) == 1; //prev_state.state !=calculate_state::not_definite &&
 }
 
 IC void CIKLimb::GetPickDir(Fvector &v, const Fmatrix &gl_bone)
@@ -609,7 +609,7 @@ void CIKLimb::SetNewGoal(const SIKCollideData &cld, SCalculateData &cd)
 	sv_state.anim_pos.set(anim_local);
 	sv_state.goal.mul_43(obj, cd.goal);
 	sv_state.obj_pos.set(obj);
-	sv_state.frame = Device.dwFrame;
+	sv_state.frame = Device.CurrentFrameNumber;
 	sv_state.blending = blending;
 }
 

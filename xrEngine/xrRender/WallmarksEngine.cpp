@@ -334,7 +334,7 @@ void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 		// no similar - register _new_
 		slot->skeleton_items.push_back(wm);
 #ifdef DEBUG
-		wm->used_in_render = Device.dwFrame;
+		wm->used_in_render = Device.CurrentFrameNumber;
 #endif
 		lock.Leave();
 	}
@@ -445,11 +445,11 @@ void CWallmarksEngine::Render()
 			}
 
 #ifdef DEBUG
-			if (W->used_in_render != Device.dwFrame)
+			if (W->used_in_render != Device.CurrentFrameNumber)
 			{
 				Log("W->used_in_render", W->used_in_render);
-				Log("Device.dwFrame", Device.dwFrame);
-				VERIFY(W->used_in_render == Device.dwFrame);
+				Log("Device.CurrentFrameNumber", Device.CurrentFrameNumber);
+				VERIFY(W->used_in_render == Device.CurrentFrameNumber);
 			}
 #endif
 
