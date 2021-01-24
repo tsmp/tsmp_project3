@@ -12,9 +12,6 @@
 int g_ErrorLineCount = 15;
 Flags32 g_stats_flags = {0};
 
-// stats
-DECLARE_RP(Stats);
-
 class optimizer
 {
 	float average_;
@@ -337,7 +334,6 @@ void CStats::Show()
 		//////////////////////////////////////////////////////////////////////////
 		// process PURE STATS
 		F.SetHeightI(f_base_size);
-		seqStats.Process(rp_Stats);
 		pFont->OnRender();
 	};
 
