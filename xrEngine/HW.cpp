@@ -454,7 +454,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 		// changed to 1024x768, because windows cannot be larger than the
 		// desktop.
 
-		RECT m_rcWindowBounds;
+		RECT rcWindowBounds;
 		BOOL bCenter = FALSE;
 		if (strstr(Core.Params, "-center_screen"))
 			bCenter = TRUE;
@@ -469,7 +469,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 
 			GetClientRect(GetDesktopWindow(), &DesktopRect);
 
-			SetRect(&m_rcWindowBounds,
+			SetRect(&rcWindowBounds,
 					(DesktopRect.right - DevPP.BackBufferWidth) / 2,
 					(DesktopRect.bottom - DevPP.BackBufferHeight) / 2,
 					(DesktopRect.right + DevPP.BackBufferWidth) / 2,
@@ -477,21 +477,21 @@ void CHW::updateWindowProps(HWND m_hWnd)
 		}
 		else
 		{
-			SetRect(&m_rcWindowBounds,
+			SetRect(&rcWindowBounds,
 					0,
 					0,
 					DevPP.BackBufferWidth,
 					DevPP.BackBufferHeight);
 		};
 
-		AdjustWindowRect(&m_rcWindowBounds, dwWindowStyle, FALSE);
+		AdjustWindowRect(&rcWindowBounds, dwWindowStyle, FALSE);
 
 		SetWindowPos(m_hWnd,
 					 HWND_TOP,
-					 m_rcWindowBounds.left,
-					 m_rcWindowBounds.top,
-					 (m_rcWindowBounds.right - m_rcWindowBounds.left),
-					 (m_rcWindowBounds.bottom - m_rcWindowBounds.top),
+					 rcWindowBounds.left,
+					 rcWindowBounds.top,
+					 (rcWindowBounds.right - rcWindowBounds.left),
+					 (rcWindowBounds.bottom - rcWindowBounds.top),
 					 SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_DRAWFRAME);
 	}
 	else
