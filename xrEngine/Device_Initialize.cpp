@@ -38,10 +38,6 @@ void CRenderDevice::Initialize()
                               0, hInstance, 0L);
     }
 
-    // Save window properties
-    GetWindowRect(m_hWnd, &m_rcWindowBounds);
-    GetClientRect(m_hWnd, &m_rcWindowClient);
-
     // Command line
     char *lpCmdLine = Core.Params;
     if (strstr(lpCmdLine, "-gpu_sw") != NULL)

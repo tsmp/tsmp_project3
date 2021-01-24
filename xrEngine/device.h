@@ -26,9 +26,6 @@ class ENGINE_API CRenderDevice
 {
 private:
 	// Main objects used for creating and rendering the 3D scene
-	RECT m_rcWindowBounds;
-	RECT m_rcWindowClient;
-
 	u32 Timer_MM_Delta;
 	CTimer_paused Timer;
 	CTimer_paused TimerGlobal;
