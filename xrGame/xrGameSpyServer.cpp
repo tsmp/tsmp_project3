@@ -325,7 +325,7 @@ void xrGameSpyServer::GetServerInfo(CServerInfo *si)
 	si->AddItem("Players", tmp, RGB(255, 128, 255));
 
 	string256 res;
-	si->AddItem("Game version", QR2()->GetGameVersion(res), RGB(0, 158, 255));
+	//si->AddItem("Game version", QR2()->GetGameVersion(res), RGB(0, 158, 255));
 
 	strcpy_s(res, "");
 	if (HasProtected() || Password.size() > 0 || HasBattlEye())
