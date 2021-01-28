@@ -51,8 +51,6 @@ public:
 	void LoadBegin();
 	void LoadEnd();
 	void LoadTitleInt(LPCSTR str);
-	void SetLoadLogo(ref_shader NewLoadLogo);
-	void LoadSwitch();
 	void LoadDraw();
 
 	virtual void OnEvent(EVENT E, u64 P1, u64 P2);

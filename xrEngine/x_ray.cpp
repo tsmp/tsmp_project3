@@ -1,10 +1,9 @@
-//-----------------------------------------------------------------------------
 // File: x_ray.cpp
 //
 // Programmers:
 //	Oles		- Oles Shishkovtsov
 //	AlexMX		- Alexander Maksimchuk
-//-----------------------------------------------------------------------------
+
 #include "stdafx.h"
 #include "igame_level.h"
 #include "igame_persistent.h"
@@ -21,13 +20,14 @@
 #include <process.h>
 
 #include "..\TSMP3_Build_Config.h"
+#include "Console_commands.h"
 
-//---------------------------------------------------------------------
-ENGINE_API CInifile *pGameIni = NULL;
+#define TRIVIAL_ENCRYPTOR_DECODER
+#include "trivial_encryptor.h"
+#include "..\xrCustomRes\resource.h"
+
+ENGINE_API CInifile *pGameIni = nullptr;
 BOOL g_bIntroFinished = FALSE;
-extern void Intro(void *fn);
-extern void Intro_DSHOW(void *fn);
-extern int PASCAL IntroDSHOW_wnd(HINSTANCE hInstC, HINSTANCE hInstP, LPSTR lpCmdLine, int nCmdShow);
 int max_load_stage = 0;
 
 // computing build id
@@ -46,19 +46,6 @@ static int days_in_month[12] = {
 static int start_day = 31;	  // 31
 static int start_month = 1;	  // January
 static int start_year = 1999; // 1999
-
-#ifdef NDEBUG
-
-/*
-namespace std {
-	void terminate()
-	{
-		abort();
-	}
-}
-*/
-
-#endif // #ifdef NDEBUG
 
 void compute_build_id()
 {
@@ -89,40 +76,37 @@ void compute_build_id()
 	for (int i = 0; i < start_month - 1; ++i)
 		build_id -= days_in_month[i];
 }
-//---------------------------------------------------------------------
-// 2446363
-// umbt@ukr.net
-//////////////////////////////////////////////////////////////////////////
+
+
 struct _SoundProcessor : public pureFrame
 {
 	virtual void OnFrame()
 	{
-		//Msg							("------------- sound: %d [%3.2f,%3.2f,%3.2f]",u32(Device.CurrentFrameNumber),VPUSH(Device.vCameraPosition));
 		Device.Statistic->Sound.Begin();
 		::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
 		Device.Statistic->Sound.End();
 	}
 } SoundProcessor;
 
-//////////////////////////////////////////////////////////////////////////
 // global variables
-ENGINE_API CApplication *pApp = NULL;
+ENGINE_API CApplication *pApp = nullptr;
 static HWND logoWindow = NULL;
 
-int doLauncher();
 void doBenchmark(LPCSTR name);
 ENGINE_API bool g_bBenchmark = false;
 string512 g_sBenchmarkName;
 
 ENGINE_API string512 g_sLaunchOnExit_params;
 ENGINE_API string512 g_sLaunchOnExit_app;
-// -------------------------------------------
+
 // startup point
 void InitEngine()
 {
 	Engine.Initialize();
+
 	while (!g_bIntroFinished)
 		Sleep(100);
+
 	Device.Initialize();
 }
 
@@ -137,21 +121,18 @@ void InitSettings()
 	pGameIni = xr_new<CInifile>(fname, TRUE);
 	CHECK_OR_EXIT(!pGameIni->sections().empty(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
 }
+
 void InitConsole()
 {
-#ifdef DEDICATED_SERVER
-	{
-		Console = xr_new<CDedicatedSrvConsole>();
-	}
+#ifdef DEDICATED_SERVER	
+		Console = xr_new<CDedicatedSrvConsole>();	
 #else
-	//	else
-	{
-		Console = xr_new<CConsole>();
-	}
+		Console = xr_new<CConsole>();	
 #endif
-	Console->Initialize();
 
+	Console->Initialize();
 	strcpy_s(Console->ConfigFile, "user.ltx");
+
 	if (strstr(Core.Params, "-ltx "))
 	{
 		string64 c_name;
@@ -163,35 +144,40 @@ void InitConsole()
 void InitInput()
 {
 	BOOL bCaptureInput = !strstr(Core.Params, "-i");
+
 	if (g_dedicated_server)
 		bCaptureInput = FALSE;
 
 	pInput = xr_new<CInput>(bCaptureInput);
 }
+
 void destroyInput()
 {
 	xr_delete(pInput);
 }
+
 void InitSound()
 {
 	CSound_manager_interface::_create(u64(Device.m_hWnd));
-	//	Msg				("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-	//	ref_sound*	x	=
 }
+
 void destroySound()
 {
 	CSound_manager_interface::_destroy();
 }
+
 void destroySettings()
 {
 	xr_delete(pSettings);
 	xr_delete(pGameIni);
 }
+
 void destroyConsole()
 {
 	Console->Destroy();
 	xr_delete(Console);
 }
+
 void destroyEngine()
 {
 	Device.Destroy();
@@ -205,6 +191,7 @@ void execUserScript()
 	Console->Execute("unbindall");
 	Console->ExecuteScript(Console->ConfigFile);
 }
+
 void slowdownthread(void *)
 {
 	//	Sleep		(30*1000);
@@ -224,6 +211,7 @@ void slowdownthread(void *)
 			return;
 	}
 }
+
 void CheckPrivilegySlowdown()
 {
 #ifdef DEBUG
@@ -242,7 +230,6 @@ void CheckPrivilegySlowdown()
 void Startup()
 {
 	execUserScript();
-	//.	InitInput		();
 	InitSound();
 
 	// ...command line for auto start
@@ -258,11 +245,11 @@ void Startup()
 	}
 
 	// Initialize APP
-	//#ifndef DEDICATED_SERVER
+	
 	ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
 	Device.Create();
-	//#endif
 	LALib.OnCreate();
+
 	pApp = xr_new<CApplication>();
 	g_pGamePersistent = (IGame_Persistent *)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
 	g_SpatialSpace = xr_new<ISpatial_DB>();
@@ -318,73 +305,7 @@ static BOOL CALLBACK logDlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
 	}
 	return TRUE;
 }
-/*
-void	test_rtc	()
-{
-	CStatTimer		tMc,tM,tC,tD;
-	u32				bytes=0;
-	tMc.FrameStart	();
-	tM.FrameStart	();
-	tC.FrameStart	();
-	tD.FrameStart	();
-	::Random.seed	(0x12071980);
-	for		(u32 test=0; test<10000; test++)
-	{
-		u32			in_size			= ::Random.randI(1024,256*1024);
-		u32			out_size_max	= rtc_csize		(in_size);
-		u8*			p_in			= xr_alloc<u8>	(in_size);
-		u8*			p_in_tst		= xr_alloc<u8>	(in_size);
-		u8*			p_out			= xr_alloc<u8>	(out_size_max);
-		for (u32 git=0; git<in_size; git++)			p_in[git] = (u8)::Random.randI	(8);	// garbage
-		bytes		+= in_size;
 
-		tMc.Begin	();
-		memcpy		(p_in_tst,p_in,in_size);
-		tMc.End		();
-
-		tM.Begin	();
-		CopyMemory(p_in_tst,p_in,in_size);
-		tM.End		();
-
-		tC.Begin	();
-		u32			out_size		= rtc_compress	(p_out,out_size_max,p_in,in_size);
-		tC.End		();
-
-		tD.Begin	();
-		u32			in_size_tst		= rtc_decompress(p_in_tst,in_size,p_out,out_size);
-		tD.End		();
-
-		// sanity check
-		R_ASSERT	(in_size == in_size_tst);
-		for (u32 tit=0; tit<in_size; tit++)			R_ASSERT(p_in[tit] == p_in_tst[tit]);	// garbage
-
-		xr_free		(p_out);
-		xr_free		(p_in_tst);
-		xr_free		(p_in);
-	}
-	tMc.FrameEnd	();	float rMc		= 1000.f*(float(bytes)/tMc.result)/(1024.f*1024.f);
-	tM.FrameEnd		(); float rM		= 1000.f*(float(bytes)/tM.result)/(1024.f*1024.f);
-	tC.FrameEnd		(); float rC		= 1000.f*(float(bytes)/tC.result)/(1024.f*1024.f);
-	tD.FrameEnd		(); float rD		= 1000.f*(float(bytes)/tD.result)/(1024.f*1024.f);
-	Msg				("* memcpy:        %5.2f M/s (%3.1f%%)",rMc,100.f*rMc/rMc);
-	Msg				("* mm-memcpy:     %5.2f M/s (%3.1f%%)",rM,100.f*rM/rMc);
-	Msg				("* compression:   %5.2f M/s (%3.1f%%)",rC,100.f*rC/rMc);
-	Msg				("* decompression: %5.2f M/s (%3.1f%%)",rD,100.f*rD/rMc);
-}
-*/
-extern void testbed(void);
-
-// video
-/*
-static	HINSTANCE	g_hInstance		;
-static	HINSTANCE	g_hPrevInstance	;
-static	int			g_nCmdShow		;
-void	__cdecl		intro_dshow_x	(void*)
-{
-	IntroDSHOW_wnd		(g_hInstance,g_hPrevInstance,"GameData\\Stalker_Intro.avi",g_nCmdShow);
-	g_bIntroFinished	= TRUE	;
-}
-*/
 #define dwStickyKeysStructSize sizeof(STICKYKEYS)
 #define dwFilterKeysStructSize sizeof(FILTERKEYS)
 #define dwToggleKeysStructSize sizeof(TOGGLEKEYS)
@@ -529,26 +450,16 @@ BOOL IsOutOfVirtualMemory()
 	return 1;
 }
 
-#include "Console_commands.h"
-
 typedef void DUMMY_STUFF(const void *, const u32 &, void *);
 XRCORE_API DUMMY_STUFF *g_temporary_stuff;
 
-#define TRIVIAL_ENCRYPTOR_DECODER
-#include "trivial_encryptor.h"
-
-//#define RUSSIAN_BUILD
-
 ENGINE_API bool g_dedicated_server = false;
-
-#include "..\xrCustomRes\resource.h"
 
 int APIENTRY WinMain_impl(HINSTANCE hInstance,
 						  HINSTANCE hPrevInstance,
 						  char *lpCmdLine,
 						  int nCmdShow)
 {
-//	foo();
 #ifndef DEDICATED_SERVER
 
 	// Check for virtual memory
@@ -649,13 +560,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 			return 0;
 		}
 
-		if (strstr(lpCmdLine, "-launcher"))
-		{
-			int l_res = doLauncher();
-			if (l_res != 0)
-				return 0;
-		};
-
 		if (strstr(Core.Params, "-r2a"))
 			Console->Execute("renderer renderer_r2a");
 		else if (strstr(Core.Params, "-r2"))
@@ -675,7 +579,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 
 		char *_args[3];
 		// check for need to execute something external
-		if (/*xr_strlen(g_sLaunchOnExit_params) && */ xr_strlen(g_sLaunchOnExit_app))
+		if (xr_strlen(g_sLaunchOnExit_app))
 		{
 			string4096 ModuleFileName = "";
 			GetModuleFileName(NULL, ModuleFileName, 4096);
@@ -747,13 +651,6 @@ LPCSTR _GetFontTexName(LPCSTR section)
 	int def_idx = 1; //default 1024x768
 	int idx = def_idx;
 
-#if 0
-	u32 w = Device.dwWidth;
-
-	if(w<=800)		idx = 0;
-	else if(w<=1280)idx = 1;
-	else 			idx = 2;
-#else
 	u32 h = Device.dwHeight;
 
 	if (h <= 600)
@@ -762,7 +659,6 @@ LPCSTR _GetFontTexName(LPCSTR section)
 		idx = 1;
 	else
 		idx = 2;
-#endif
 
 	while (idx >= 0)
 	{
@@ -770,6 +666,7 @@ LPCSTR _GetFontTexName(LPCSTR section)
 			return pSettings->r_string(section, tex_names[idx]);
 		--idx;
 	}
+
 	return pSettings->r_string(section, tex_names[def_idx]);
 }
 
@@ -789,11 +686,13 @@ void _InitializeFont(CGameFont *&F, LPCSTR section, u32 flags)
 	if (pSettings->line_exist(section, "size"))
 	{
 		float sz = pSettings->r_float(section, "size");
+
 		if (flags & CGameFont::fsDeviceIndependent)
 			F->SetHeightI(sz);
 		else
 			F->SetHeight(sz);
 	}
+
 	if (pSettings->line_exist(section, "interval"))
 		F->SetInterval(pSettings->r_fvector2(section, "interval"));
 }
@@ -880,15 +779,16 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 			Console->Execute("main_menu off");
 			Console->Hide();
 			Device.Reset(false);
-			//-----------------------------------------------------------
+
 			g_pGamePersistent->PreStart(op_server);
-			//-----------------------------------------------------------
+
 			g_pGameLevel = (IGame_Level *)NEW_INSTANCE(CLSID_GAME_LEVEL);
 			pApp->LoadBegin();
 			g_pGamePersistent->Start(op_server);
 			g_pGameLevel->net_Start(op_server, op_client);
 			pApp->LoadEnd();
 		}
+
 		xr_free(op_server);
 		xr_free(op_client);
 	}
@@ -907,6 +807,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 				Console->Execute("main_menu on");
 			}
 		}
+
 		R_ASSERT(0 != g_pGamePersistent);
 		g_pGamePersistent->Disconnect();
 	}
@@ -920,7 +821,6 @@ void CApplication::LoadBegin()
 	ll_dwReference++;
 	if (1 == ll_dwReference)
 	{
-
 		g_appLoaded = FALSE;
 
 #ifndef DEDICATED_SERVER
@@ -944,7 +844,6 @@ void CApplication::LoadEnd()
 		Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
 		Console->Execute("stat_memory");
 		g_appLoaded = TRUE;
-		//		DUMP_PHASE;
 	}
 }
 
@@ -952,7 +851,6 @@ void CApplication::destroy_loading_shaders()
 {
 	hLevelLogo.destroy();
 	sh_progress.destroy();
-	//.	::Sound->mute			(false);
 }
 
 u32 calc_progress_color(u32, u32, int, int);
@@ -961,6 +859,7 @@ void CApplication::LoadDraw()
 {
 	if (g_appLoaded)
 		return;
+
 	Device.CurrentFrameNumber += 1;
 
 	if (!Device.Begin())
@@ -984,7 +883,6 @@ void CApplication::LoadTitleInt(LPCSTR str)
 	Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());
 	phase_timer.Start();
 	Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
-	//.	Console->Execute			("stat_memory");
 	Log(app_title);
 
 	if (g_pGamePersistent->GameType() == 1 && strstr(Core.Params, "alife"))
@@ -995,21 +893,13 @@ void CApplication::LoadTitleInt(LPCSTR str)
 	LoadDraw();
 }
 
-void CApplication::LoadSwitch()
-{
-}
-
-void CApplication::SetLoadLogo(ref_shader NewLoadLogo){
-	//	hLevelLogo = NewLoadLogo;
-	//	R_ASSERT(0);
-};
-
 // Sequential
 void CApplication::OnFrame()
 {
 	Engine.Event.OnFrame();
 	g_SpatialSpace->update();
 	g_SpatialSpacePhysic->update();
+
 	if (g_pGameLevel)
 		g_pGameLevel->SoundEvent_Dispatch();
 }
@@ -1021,6 +911,7 @@ void CApplication::Level_Append(LPCSTR folder)
 	strconcat(sizeof(N2), N2, folder, "level.ltx");
 	strconcat(sizeof(N3), N3, folder, "level.geom");
 	strconcat(sizeof(N4), N4, folder, "level.cform");
+
 	if (
 		FS.exist("$game_levels$", N1) &&
 		FS.exist("$game_levels$", N2) &&
@@ -1039,9 +930,12 @@ void CApplication::Level_Scan()
 #pragma todo("container is created in stack!")
 	xr_vector<char *> *folder = FS.file_list_open("$game_levels$", FS_ListFolders | FS_RootOnly);
 	R_ASSERT(folder && folder->size());
+
 	for (u32 i = 0; i < folder->size(); i++)
 		Level_Append((*folder)[i]);
+
 	FS.file_list_close(folder);
+
 #ifdef DEBUG
 	folder = FS.file_list_open("$game_levels$", "$debug$\\", FS_ListFolders | FS_RootOnly);
 	if (folder)
@@ -1062,6 +956,7 @@ void CApplication::Level_Set(u32 L)
 {
 	if (L >= Levels.size())
 		return;
+
 	Level_Current = L;
 	FS.get_path("$level$")->_set(Levels[L].folder);
 
@@ -1069,6 +964,7 @@ void CApplication::Level_Set(u32 L)
 	string_path temp2;
 	strconcat(sizeof(temp), temp, "intro\\intro_", Levels[L].folder);
 	temp[xr_strlen(temp) - 1] = 0;
+
 	if (FS.exist(temp2, "$game_textures$", temp, ".dds"))
 		hLevelLogo.create("font", temp);
 	else
@@ -1079,72 +975,14 @@ int CApplication::Level_ID(LPCSTR name)
 {
 	char buffer[256];
 	strconcat(sizeof(buffer), buffer, name, "\\");
+
 	for (u32 I = 0; I < Levels.size(); I++)
 	{
 		if (0 == stricmp(buffer, Levels[I].folder))
 			return int(I);
 	}
+
 	return -1;
-}
-
-//launcher stuff----------------------------
-extern "C"
-{
-	typedef int __cdecl LauncherFunc(int);
-}
-HMODULE hLauncher = NULL;
-LauncherFunc *pLauncher = NULL;
-
-void InitLauncher()
-{
-	if (hLauncher)
-		return;
-	hLauncher = LoadLibrary("xrLauncher.dll");
-	if (0 == hLauncher)
-		R_CHK(GetLastError());
-	R_ASSERT2(hLauncher, "xrLauncher DLL raised exception during loading or there is no xrLauncher.dll at all");
-
-	pLauncher = (LauncherFunc *)GetProcAddress(hLauncher, "RunXRLauncher");
-	R_ASSERT2(pLauncher, "Cannot obtain RunXRLauncher function from xrLauncher.dll");
-};
-
-void FreeLauncher()
-{
-	if (hLauncher)
-	{
-		FreeLibrary(hLauncher);
-		hLauncher = NULL;
-		pLauncher = NULL;
-	};
-}
-
-int doLauncher()
-{
-	/*
-	execUserScript();
-	InitLauncher();
-	int res = pLauncher(0);
-	FreeLauncher();
-	if(res == 1) // do benchmark
-		g_bBenchmark = true;
-
-	if(g_bBenchmark){ //perform benchmark cycle
-		doBenchmark();
-	
-		// InitLauncher	();
-		// pLauncher	(2);	//show results
-		// FreeLauncher	();
-
-		Core._destroy			();
-		return					(1);
-
-	};
-	if(res==8){//Quit
-		Core._destroy			();
-		return					(1);
-	}
-*/
-	return 0;
 }
 
 void doBenchmark(LPCSTR name)
@@ -1156,6 +994,7 @@ void doBenchmark(LPCSTR name)
 	int test_count = ini.line_count("benchmark");
 	LPCSTR test_name, t;
 	shared_str test_command;
+
 	for (int i = 0; i < test_count; ++i)
 	{
 		ini.r_line("benchmark", i, &test_name, &t);
@@ -1166,6 +1005,7 @@ void doBenchmark(LPCSTR name)
 		_strlwr_s(Core.Params);
 
 		InitInput();
+
 		if (i)
 		{
 			ZeroMemory(&HW, sizeof(CHW));
@@ -1175,6 +1015,7 @@ void doBenchmark(LPCSTR name)
 		Engine.External.Initialize();
 
 		strcpy_s(Console->ConfigFile, "user.ltx");
+
 		if (strstr(Core.Params, "-ltx "))
 		{
 			string64 c_name;
@@ -1185,6 +1026,7 @@ void doBenchmark(LPCSTR name)
 		Startup();
 	}
 }
+
 #pragma optimize("g", off)
 void CApplication::load_draw_internal()
 {
