@@ -92,10 +92,6 @@ struct _SoundProcessor : public pureFrame
 ENGINE_API CApplication *pApp = nullptr;
 static HWND logoWindow = NULL;
 
-void doBenchmark(LPCSTR name);
-ENGINE_API bool g_bBenchmark = false;
-string512 g_sBenchmarkName;
-
 ENGINE_API string512 g_sLaunchOnExit_params;
 ENGINE_API string512 g_sLaunchOnExit_app;
 
@@ -273,17 +269,11 @@ void Startup()
 	// Destroying
 	destroySound();
 	destroyInput();
-
-	if (!g_bBenchmark)
-		destroySettings();
+	destroySettings();
 
 	LALib.OnDestroy();
 
-	if (!g_bBenchmark)
-		destroyConsole();
-	else
-		Console->Reset();
-
+	destroyConsole();
 	destroyEngine();
 }
 
@@ -549,16 +539,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 		FPU::m24r();
 		InitEngine();
 		InitConsole();
-
-		LPCSTR benchName = "-batch_benchmark ";
-		if (strstr(lpCmdLine, benchName))
-		{
-			int sz = xr_strlen(benchName);
-			string64 b_name;
-			sscanf(strstr(Core.Params, benchName) + sz, "%[^ ] ", b_name);
-			doBenchmark(b_name);
-			return 0;
-		}
 
 		if (strstr(Core.Params, "-r2a"))
 			Console->Execute("renderer renderer_r2a");
@@ -983,48 +963,6 @@ int CApplication::Level_ID(LPCSTR name)
 	}
 
 	return -1;
-}
-
-void doBenchmark(LPCSTR name)
-{
-	g_bBenchmark = true;
-	string_path in_file;
-	FS.update_path(in_file, "$app_data_root$", name);
-	CInifile ini(in_file);
-	int test_count = ini.line_count("benchmark");
-	LPCSTR test_name, t;
-	shared_str test_command;
-
-	for (int i = 0; i < test_count; ++i)
-	{
-		ini.r_line("benchmark", i, &test_name, &t);
-		strcpy_s(g_sBenchmarkName, test_name);
-
-		test_command = ini.r_string_wb("benchmark", test_name);
-		strcpy_s(Core.Params, *test_command);
-		_strlwr_s(Core.Params);
-
-		InitInput();
-
-		if (i)
-		{
-			ZeroMemory(&HW, sizeof(CHW));
-			InitEngine();
-		}
-
-		Engine.External.Initialize();
-
-		strcpy_s(Console->ConfigFile, "user.ltx");
-
-		if (strstr(Core.Params, "-ltx "))
-		{
-			string64 c_name;
-			sscanf(strstr(Core.Params, "-ltx ") + 5, "%[^ ] ", c_name);
-			strcpy_s(Console->ConfigFile, c_name);
-		}
-
-		Startup();
-	}
 }
 
 #pragma optimize("g", off)

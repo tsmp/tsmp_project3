@@ -18,8 +18,6 @@ CDemoPlay::CDemoPlay(const char *name, float ms, u32 cycles, float life_time) : 
 {
 	Msg("*** Playing demo: %s", name);
 	Console->Execute("hud_weapon 0");
-	if (g_bBenchmark)
-		Console->Execute("hud_draw 0");
 
 	fSpeed = ms;
 	dwCyclesLeft = cycles ? cycles : 1;
@@ -72,8 +70,6 @@ CDemoPlay::~CDemoPlay()
 	xr_delete(m_pMotion);
 	xr_delete(m_MParam);
 	Console->Execute("hud_weapon 1");
-	if (g_bBenchmark)
-		Console->Execute("hud_draw 1");
 }
 
 void CDemoPlay::stat_Start()
@@ -90,12 +86,11 @@ void CDemoPlay::stat_Start()
 	fStartTime = 0;
 }
 
-extern string512 g_sBenchmarkName;
-
 void CDemoPlay::stat_Stop()
 {
 	if (!stat_started)
 		return;
+
 	stat_started = FALSE;
 	float stat_total = stat_Timer_total.GetElapsed_sec();
 
@@ -109,6 +104,7 @@ void CDemoPlay::stat_Stop()
 	rfps_min = flt_max;
 	rfps_max = flt_min;
 	rfps_middlepoint = 0;
+
 	for (u32 it = 1; it < stat_table.size(); it++)
 	{
 		float fps = 1.f / stat_table[it];
@@ -118,38 +114,9 @@ void CDemoPlay::stat_Stop()
 			rfps_max = fps;
 		rfps_middlepoint += fps;
 	}
+
 	rfps_middlepoint /= float(stat_table.size() - 1);
-
 	Msg("* [DEMO] FPS: average[%f], min[%f], max[%f], middle[%f]", rfps_average, rfps_min, rfps_max, rfps_middlepoint);
-
-	if (g_bBenchmark)
-	{
-		string_path fname;
-
-		if (xr_strlen(g_sBenchmarkName))
-			sprintf_s(fname, sizeof(fname), "%s.result", g_sBenchmarkName);
-		else
-			strcpy_s(fname, sizeof(fname), "benchmark.result");
-
-		FS.update_path(fname, "$app_data_root$", fname);
-		CInifile res(fname, FALSE, FALSE, TRUE);
-		res.w_float("general", "renderer", float(::Render->get_generation()) / 10.f, "dx-level required");
-		res.w_float("general", "min", rfps_min, "absolute minimum");
-		res.w_float("general", "max", rfps_max, "absolute maximum");
-		res.w_float("general", "average", rfps_average, "average for this run");
-		res.w_float("general", "middle", rfps_middlepoint, "per-frame middle-point");
-		for (u32 it = 1; it < stat_table.size(); it++)
-		{
-			string32 id;
-			sprintf_s(id, sizeof(id), "%7d", it);
-			for (u32 c = 0; id[c]; c++)
-				if (' ' == id[c])
-					id[c] = '0';
-			res.w_float("per_frame_stats", id, 1.f / stat_table[it]);
-		}
-
-		Console->Execute("quit");
-	}
 }
 
 #define FIX(a)           \
