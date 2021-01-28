@@ -27,15 +27,11 @@
 #include "..\xrCustomRes\resource.h"
 
 ENGINE_API CInifile *pGameIni = nullptr;
-BOOL g_bIntroFinished = FALSE;
 int max_load_stage = 0;
 
 // computing build id
 XRCORE_API LPCSTR build_date;
 XRCORE_API u32 build_id;
-
-//#define NO_SINGLE
-//#define NO_MULTI_INSTANCES
 
 static LPSTR month_id[12] = {
 	"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
@@ -77,6 +73,48 @@ void compute_build_id()
 		build_id -= days_in_month[i];
 }
 
+// Класс для проверки наличия нескольких запущенных копий игры
+class GameInstancesChecker
+{
+	HANDLE m_PresenceMutex;
+	const char* m_MutexName = "STALKER-SoC";
+
+public:
+
+#ifdef NO_MULTI_INSTANCES // Запрещено запускать несколько экземпляров игры
+
+	bool IsAnotherGameInstanceLaunched()
+	{
+		HANDLE presenceMutex = OpenMutex(READ_CONTROL, FALSE, m_MutexName);
+
+		// Мьютекс с таким именем уже существует в системе
+		if (presenceMutex != NULL)
+		{
+			CloseHandle(presenceMutex);
+			return true;
+		}
+
+		return false;
+	}
+
+	void RegisterThisInstanceLaunched()
+	{
+		m_PresenceMutex = CreateMutex(NULL, FALSE, m_MutexName);
+	}
+
+	void UnregisterThisInstanceLaunched()
+	{
+		CloseHandle(m_PresenceMutex);
+	}
+
+#else // Можно запускать несколько экземпляров
+
+	bool IsAnotherGameInstanceLaunched() { return false; }
+	void RegisterThisInstanceLaunched() {}
+	void UnregisterThisInstanceLaunched() {}
+
+#endif // NO_MULTI_INSTANCES
+};
 
 struct _SoundProcessor : public pureFrame
 {
@@ -99,10 +137,6 @@ ENGINE_API string512 g_sLaunchOnExit_app;
 void InitEngine()
 {
 	Engine.Initialize();
-
-	while (!g_bIntroFinished)
-		Sleep(100);
-
 	Device.Initialize();
 }
 
@@ -186,41 +220,6 @@ void execUserScript()
 
 	Console->Execute("unbindall");
 	Console->ExecuteScript(Console->ConfigFile);
-}
-
-void slowdownthread(void *)
-{
-	//	Sleep		(30*1000);
-	for (;;)
-	{
-		if (Device.Statistic->fFPS < 30)
-			Sleep(1);
-		if (Device.mt_bMustExit)
-			return;
-		if (0 == pSettings)
-			return;
-		if (0 == Console)
-			return;
-		if (0 == pInput)
-			return;
-		if (0 == pApp)
-			return;
-	}
-}
-
-void CheckPrivilegySlowdown()
-{
-#ifdef DEBUG
-	if (strstr(Core.Params, "-slowdown"))
-	{
-		thread_spawn(slowdownthread, "slowdown", 0, 0);
-	}
-	if (strstr(Core.Params, "-slowdown2x"))
-	{
-		thread_spawn(slowdownthread, "slowdown", 0, 0);
-		thread_spawn(slowdownthread, "slowdown", 0, 0);
-	}
-#endif // DEBUG
 }
 
 void Startup()
@@ -445,41 +444,20 @@ XRCORE_API DUMMY_STUFF *g_temporary_stuff;
 
 ENGINE_API bool g_dedicated_server = false;
 
-int APIENTRY WinMain_impl(HINSTANCE hInstance,
-						  HINSTANCE hPrevInstance,
-						  char *lpCmdLine,
-						  int nCmdShow)
+int APIENTRY WinMainImplementation(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
 {
-#ifndef DEDICATED_SERVER
-
-	// Check for virtual memory
-
-	if ((strstr(lpCmdLine, "--skipmemcheck") == NULL) && IsOutOfVirtualMemory())
+#ifdef DEDICATED_SERVER
+	g_dedicated_server = true;
+#else
+	if ((strstr(lpCmdLine, "-skipmemcheck") == NULL) && IsOutOfVirtualMemory())
 		return 0;
 
-		// Check for another instance
-#ifdef NO_MULTI_INSTANCES
-#define STALKER_PRESENCE_MUTEX "STALKER-SoC"
+	GameInstancesChecker gameInstances;
 
-	HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
-	hCheckPresenceMutex = OpenMutex(READ_CONTROL, FALSE, STALKER_PRESENCE_MUTEX);
-	if (hCheckPresenceMutex == NULL)
-	{
-		// New mutex
-		hCheckPresenceMutex = CreateMutex(NULL, FALSE, STALKER_PRESENCE_MUTEX);
-		if (hCheckPresenceMutex == NULL)
-			// Shit happens
-			return 2;
-	}
-	else
-	{
-		// Already running
-		CloseHandle(hCheckPresenceMutex);
-		return 1;
-	}
-#endif
-#else  // DEDICATED_SERVER
-	g_dedicated_server = true;
+	if (gameInstances.IsAnotherGameInstanceLaunched())
+		return 0;
+
+	gameInstances.RegisterThisInstanceLaunched();		
 #endif // DEDICATED_SERVER
 
 	//SetThreadAffinityMask		(GetCurrentThread(),1);
@@ -509,9 +487,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 		HBITMAP hBmp = LoadBitmap(hCustomRes, MAKEINTRESOURCE(IDB_LOGO_BITMAP));
 		SendMessage(hStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);
 	}
-
-	// AVI
-	g_bIntroFinished = TRUE;
 
 	g_sLaunchOnExit_app[0] = NULL;
 	g_sLaunchOnExit_params[0] = NULL;
@@ -576,10 +551,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 			_spawnv(_P_NOWAIT, _args[0], _args); //, _envvar);
 		}
 #ifndef DEDICATED_SERVER
-#ifdef NO_MULTI_INSTANCES
-		// Delete application presence mutex
-		CloseHandle(hCheckPresenceMutex);
-#endif
+		gameInstances.UnregisterThisInstanceLaunched();
 	}
 	// here damn_keys_filter class instanse will be destroyed
 #endif // DEDICATED_SERVER
@@ -606,15 +578,15 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					 char *lpCmdLine,
 					 int nCmdShow)
 {
+#if defined(DEDICATED_SERVER) || defined(SAVE_ERROR_REPORTS)
+	Debug._initialize(true);
+#else  
+	Debug._initialize(false);
+#endif
+
 	__try
 	{
-#if defined(DEDICATED_SERVER) || defined(SAVE_ERROR_REPORTS)
-		Debug._initialize(true);
-#else  // DEDICATED_SERVER
-		Debug._initialize(false);
-#endif // DEDICATED_SERVER
-
-		WinMain_impl(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+		WinMainImplementation(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 	}
 	__except (stack_overflow_exception_filter(GetExceptionCode()))
 	{
@@ -622,7 +594,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		FATAL("stack overflow");
 	}
 
-	return (0);
+	return 0;
 }
 
 LPCSTR _GetFontTexName(LPCSTR section)
