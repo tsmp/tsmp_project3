@@ -29,7 +29,6 @@
 
 // global variables
 ENGINE_API CApplication* pApp = nullptr;
-static HWND logoWindow = NULL;
 
 ENGINE_API string512 g_sLaunchOnExit_params;
 ENGINE_API string512 g_sLaunchOnExit_app;
@@ -139,37 +138,41 @@ struct _SoundProcessor : public pureFrame
 	}
 } SoundProcessor;
 
-// startup point
-void InitEngine()
+namespace Logo
 {
-	Engine.Initialize();
-	Device.Initialize();
-}
+	static HWND logoWindow = NULL;
 
-void CreateLogo()
-{
+	void Create()
+	{
 #ifdef DEBUG
-	bool isTopMost = false;
+		bool isTopMost = false;
 #else
-	bool isTopMost = !IsDebuggerPresent();
+		bool isTopMost = !IsDebuggerPresent();
 #endif
 
-	HWND topMost = isTopMost ? HWND_TOPMOST : HWND_NOTOPMOST;	
-	logoWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_STARTUP), 0, 0);
+		HWND topMost = isTopMost ? HWND_TOPMOST : HWND_NOTOPMOST;
+		logoWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_STARTUP), 0, 0);
 
-	UINT flags = SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW;
-	SetWindowPos(logoWindow, topMost, 0, 0, 0, 0, flags);
-	
-	if (HMODULE hCustomRes = LoadLibraryA("xrCustomRes.dll"))
+		UINT flags = SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW;
+		SetWindowPos(logoWindow, topMost, 0, 0, 0, 0, flags);
+
+		if (HMODULE hCustomRes = LoadLibraryA("xrCustomRes.dll"))
+		{
+			// меняем логотип на картинку, загруженную из xrCustomRes.dll
+			HWND hStatic = GetDlgItem(logoWindow, IDC_STATIC_PICTURE);
+			HBITMAP hBmp = LoadBitmap(hCustomRes, MAKEINTRESOURCE(IDB_LOGO_BITMAP));
+			SendMessage(hStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);
+		}
+	}
+
+	void Destroy()
 	{
-		// меняем логотип на картинку, загруженную из xrCustomRes.dll
-		HWND hStatic = GetDlgItem(logoWindow, IDC_STATIC_PICTURE);
-		HBITMAP hBmp = LoadBitmap(hCustomRes, MAKEINTRESOURCE(IDB_LOGO_BITMAP));
-		SendMessage(hStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);
+		DestroyWindow(logoWindow);
+		logoWindow = NULL;
 	}
 }
 
-void InitSettings()
+void InitializeSettings()
 {
 	string_path fname;
 	FS.update_path(fname, "$game_config$", "system.ltx");
@@ -203,7 +206,7 @@ void LaunchOnExit()
 	}
 }
 
-void InitConsole()
+void InitializeConsole()
 {
 #ifdef DEDICATED_SERVER	
 		Console = xr_new<CDedicatedSrvConsole>();	
@@ -290,60 +293,6 @@ void InitializeCore(char* lpCmdLine)
 	Core._initialize("xray", NULL, TRUE, fsgame[0] ? fsgame : NULL);
 }
 
-void Startup()
-{
-	execUserScript();
-	InitSound();
-
-	// ...command line for auto start
-	{
-		LPCSTR pStartup = strstr(Core.Params, "-start ");
-		if (pStartup)
-			Console->Execute(pStartup + 1);
-	}
-	{
-		LPCSTR pStartup = strstr(Core.Params, "-load ");
-		if (pStartup)
-			Console->Execute(pStartup + 1);
-	}
-
-	// Initialize APP
-	
-	ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
-	Device.Create();
-	LALib.OnCreate();
-
-	pApp = xr_new<CApplication>();
-	g_pGamePersistent = (IGame_Persistent *)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
-	g_SpatialSpace = xr_new<ISpatial_DB>();
-	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
-
-	// Destroy LOGO
-	DestroyWindow(logoWindow);
-	logoWindow = NULL;
-
-	// Main cycle
-	Memory.mem_usage();
-	Device.Run();
-
-	// Destroy APP
-	xr_delete(g_SpatialSpacePhysic);
-	xr_delete(g_SpatialSpace);
-	DEL_INSTANCE(g_pGamePersistent);
-	xr_delete(pApp);
-	Engine.Event.Dump();
-
-	// Destroying
-	destroySound();
-	destroyInput();
-	destroySettings();
-
-	LALib.OnDestroy();
-
-	destroyConsole();
-	destroyEngine();
-}
-
 // Фунция для тупых требований THQ и тупых американских пользователей
 BOOL IsOutOfVirtualMemory()
 {
@@ -382,11 +331,99 @@ BOOL IsOutOfVirtualMemory()
 	return 1;
 }
 
+void InitializeApplication()
+{
+	ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
+	Device.Create();
+	LALib.OnCreate();
+
+	pApp = xr_new<CApplication>();
+	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
+	g_SpatialSpace = xr_new<ISpatial_DB>();
+	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
+}
+
+void EngineInitialize(char* lpCmdLine)
+{
+	Logo::Create();	
+	SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
+	
+	g_sLaunchOnExit_app[0] = g_sLaunchOnExit_params[0] = '\0';
+
+	InitializeCore(lpCmdLine);
+	InitializeSettings();
+
+	FPU::m24r();	
+	Engine.Initialize();
+	Device.Initialize();
+
+	InitializeConsole();
+
+	if (strstr(Core.Params, "-r2a"))
+		Console->Execute("renderer renderer_r2a");
+	else if (strstr(Core.Params, "-r2"))
+		Console->Execute("renderer renderer_r2");
+	else
+	{
+		CCC_LoadCFG_custom* pTmp = xr_new<CCC_LoadCFG_custom>("renderer ");
+		pTmp->Execute(Console->ConfigFile);
+		xr_delete(pTmp);
+	}
+
+	InitInput();
+	Engine.External.Initialize();
+	Console->Execute("stat_memory");
+
+	execUserScript();
+	InitSound();
+
+	// ...command line for auto start
+	if(LPCSTR pStartup = strstr(Core.Params, "-start "))
+		Console->Execute(pStartup + 1);
+	
+	if(LPCSTR pStartup = strstr(Core.Params, "-load "))
+		Console->Execute(pStartup + 1);
+
+	InitializeApplication();
+	Logo::Destroy();
+}
+
+void EngineRoutine()
+{
+	// Main cycle
+	Memory.mem_usage();
+	Device.Run();
+}
+
+void EngineDestroy()
+{
+	// Destroy APP
+	xr_delete(g_SpatialSpacePhysic);
+	xr_delete(g_SpatialSpace);
+	DEL_INSTANCE(g_pGamePersistent);
+	xr_delete(pApp);
+	Engine.Event.Dump();
+
+	// Destroying
+	destroySound();
+	destroyInput();
+	destroySettings();
+
+	LALib.OnDestroy();
+
+	destroyConsole();
+	destroyEngine();
+
+	Core._destroy();
+	LaunchOnExit();
+}
+
 int APIENTRY WinMainImplementation(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
 {
 #ifdef DEDICATED_SERVER
 	g_dedicated_server = true;
 #else
+
 	if ((strstr(lpCmdLine, "-skipmemcheck") == NULL) && IsOutOfVirtualMemory())
 		return 0;
 
@@ -395,42 +432,14 @@ int APIENTRY WinMainImplementation(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	if (gameInstances.IsAnotherGameInstanceLaunched())
 		return 0;
 
-	gameInstances.RegisterThisInstanceLaunched();		
+	gameInstances.RegisterThisInstanceLaunched();
+
 #endif // DEDICATED_SERVER
 
-	//SetThreadAffinityMask		(GetCurrentThread(),1);
-	SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
+	EngineInitialize(lpCmdLine);
+	EngineRoutine();
+	EngineDestroy();
 
-	CreateLogo();
-
-	g_sLaunchOnExit_app[0] = '\0';
-	g_sLaunchOnExit_params[0] = '\0';
-
-	InitializeCore(lpCmdLine);
-	InitSettings();
-
-	FPU::m24r();
-	InitEngine();
-	InitConsole();
-
-	if (strstr(Core.Params, "-r2a"))
-		Console->Execute("renderer renderer_r2a");
-	else if (strstr(Core.Params, "-r2"))
-		Console->Execute("renderer renderer_r2");
-	else
-	{
-		CCC_LoadCFG_custom *pTmp = xr_new<CCC_LoadCFG_custom>("renderer ");
-		pTmp->Execute(Console->ConfigFile);
-		xr_delete(pTmp);
-	}
-
-	InitInput();
-	Engine.External.Initialize();
-	Console->Execute("stat_memory");
-	Startup();
-	Core._destroy();
-
-	LaunchOnExit();
 #ifndef DEDICATED_SERVER
 	gameInstances.UnregisterThisInstanceLaunched();
 #endif // DEDICATED_SERVER
