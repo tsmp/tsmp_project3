@@ -25,6 +25,19 @@
 #define TRIVIAL_ENCRYPTOR_DECODER
 #include "trivial_encryptor.h"
 #include "..\xrCustomRes\resource.h"
+#include <debugapi.h>
+
+// global variables
+ENGINE_API CApplication* pApp = nullptr;
+static HWND logoWindow = NULL;
+
+ENGINE_API string512 g_sLaunchOnExit_params;
+ENGINE_API string512 g_sLaunchOnExit_app;
+
+typedef void DUMMY_STUFF(const void*, const u32&, void*);
+XRCORE_API DUMMY_STUFF* g_temporary_stuff;
+
+ENGINE_API bool g_dedicated_server = false;
 
 ENGINE_API CInifile *pGameIni = nullptr;
 int max_load_stage = 0;
@@ -126,18 +139,34 @@ struct _SoundProcessor : public pureFrame
 	}
 } SoundProcessor;
 
-// global variables
-ENGINE_API CApplication *pApp = nullptr;
-static HWND logoWindow = NULL;
-
-ENGINE_API string512 g_sLaunchOnExit_params;
-ENGINE_API string512 g_sLaunchOnExit_app;
-
 // startup point
 void InitEngine()
 {
 	Engine.Initialize();
 	Device.Initialize();
+}
+
+void CreateLogo()
+{
+#ifdef DEBUG
+	bool isTopMost = false;
+#else
+	bool isTopMost = !IsDebuggerPresent();
+#endif
+
+	HWND topMost = isTopMost ? HWND_TOPMOST : HWND_NOTOPMOST;	
+	logoWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_STARTUP), 0, 0);
+
+	UINT flags = SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW;
+	SetWindowPos(logoWindow, topMost, 0, 0, 0, 0, flags);
+	
+	if (HMODULE hCustomRes = LoadLibraryA("xrCustomRes.dll"))
+	{
+		// меняем логотип на картинку, загруженную из xrCustomRes.dll
+		HWND hStatic = GetDlgItem(logoWindow, IDC_STATIC_PICTURE);
+		HBITMAP hBmp = LoadBitmap(hCustomRes, MAKEINTRESOURCE(IDB_LOGO_BITMAP));
+		SendMessage(hStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);
+	}
 }
 
 void InitSettings()
@@ -150,6 +179,28 @@ void InitSettings()
 	FS.update_path(fname, "$game_config$", "game.ltx");
 	pGameIni = xr_new<CInifile>(fname, TRUE);
 	CHECK_OR_EXIT(!pGameIni->sections().empty(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
+}
+
+void LaunchOnExit()
+{
+	char* _args[3];
+	// check for need to execute something external
+	if (xr_strlen(g_sLaunchOnExit_app))
+	{
+		string4096 ModuleFileName = "";
+		GetModuleFileName(NULL, ModuleFileName, 4096);
+
+		string4096 ModuleFilePath = "";
+		char* ModuleName = NULL;
+		GetFullPathName(ModuleFileName, 4096, ModuleFilePath, &ModuleName);
+		ModuleName[0] = 0;
+		strcat(ModuleFilePath, g_sLaunchOnExit_app);
+		_args[0] = g_sLaunchOnExit_app;
+		_args[1] = g_sLaunchOnExit_params;
+		_args[2] = NULL;
+
+		_spawnv(_P_NOWAIT, _args[0], _args); //, _envvar);
+	}
 }
 
 void InitConsole()
@@ -222,6 +273,23 @@ void execUserScript()
 	Console->ExecuteScript(Console->ConfigFile);
 }
 
+void InitializeCore(char* lpCmdLine)
+{
+	LPCSTR fsgame_ltx_name = "-fsltx ";
+	string_path fsgame = "";
+
+	if (strstr(lpCmdLine, fsgame_ltx_name))
+	{
+		int sz = xr_strlen(fsgame_ltx_name);
+		sscanf(strstr(lpCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
+	}
+
+	g_temporary_stuff = &trivial_encryptor::decode;
+
+	compute_build_id();
+	Core._initialize("xray", NULL, TRUE, fsgame[0] ? fsgame : NULL);
+}
+
 void Startup()
 {
 	execUserScript();
@@ -276,131 +344,6 @@ void Startup()
 	destroyEngine();
 }
 
-static BOOL CALLBACK logDlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
-{
-	switch (msg)
-	{
-	case WM_DESTROY:
-		break;
-	case WM_CLOSE:
-		DestroyWindow(hw);
-		break;
-	case WM_COMMAND:
-		if (LOWORD(wp) == IDCANCEL)
-			DestroyWindow(hw);
-		break;
-	default:
-		return FALSE;
-	}
-	return TRUE;
-}
-
-#define dwStickyKeysStructSize sizeof(STICKYKEYS)
-#define dwFilterKeysStructSize sizeof(FILTERKEYS)
-#define dwToggleKeysStructSize sizeof(TOGGLEKEYS)
-
-struct damn_keys_filter
-{
-	BOOL bScreenSaverState;
-
-	// Sticky & Filter & Toggle keys
-
-	STICKYKEYS StickyKeysStruct;
-	FILTERKEYS FilterKeysStruct;
-	TOGGLEKEYS ToggleKeysStruct;
-
-	DWORD dwStickyKeysFlags;
-	DWORD dwFilterKeysFlags;
-	DWORD dwToggleKeysFlags;
-
-	damn_keys_filter()
-	{
-		// Screen saver stuff
-
-		bScreenSaverState = FALSE;
-
-		// Saveing current state
-		SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, (PVOID)&bScreenSaverState, 0);
-
-		if (bScreenSaverState)
-			// Disable screensaver
-			SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
-
-		dwStickyKeysFlags = 0;
-		dwFilterKeysFlags = 0;
-		dwToggleKeysFlags = 0;
-
-		ZeroMemory(&StickyKeysStruct, dwStickyKeysStructSize);
-		ZeroMemory(&FilterKeysStruct, dwFilterKeysStructSize);
-		ZeroMemory(&ToggleKeysStruct, dwToggleKeysStructSize);
-
-		StickyKeysStruct.cbSize = dwStickyKeysStructSize;
-		FilterKeysStruct.cbSize = dwFilterKeysStructSize;
-		ToggleKeysStruct.cbSize = dwToggleKeysStructSize;
-
-		// Saving current state
-		SystemParametersInfo(SPI_GETSTICKYKEYS, dwStickyKeysStructSize, (PVOID)&StickyKeysStruct, 0);
-		SystemParametersInfo(SPI_GETFILTERKEYS, dwFilterKeysStructSize, (PVOID)&FilterKeysStruct, 0);
-		SystemParametersInfo(SPI_GETTOGGLEKEYS, dwToggleKeysStructSize, (PVOID)&ToggleKeysStruct, 0);
-
-		if (StickyKeysStruct.dwFlags & SKF_AVAILABLE)
-		{
-			// Disable StickyKeys feature
-			dwStickyKeysFlags = StickyKeysStruct.dwFlags;
-			StickyKeysStruct.dwFlags = 0;
-			SystemParametersInfo(SPI_SETSTICKYKEYS, dwStickyKeysStructSize, (PVOID)&StickyKeysStruct, 0);
-		}
-
-		if (FilterKeysStruct.dwFlags & FKF_AVAILABLE)
-		{
-			// Disable FilterKeys feature
-			dwFilterKeysFlags = FilterKeysStruct.dwFlags;
-			FilterKeysStruct.dwFlags = 0;
-			SystemParametersInfo(SPI_SETFILTERKEYS, dwFilterKeysStructSize, (PVOID)&FilterKeysStruct, 0);
-		}
-
-		if (ToggleKeysStruct.dwFlags & TKF_AVAILABLE)
-		{
-			// Disable FilterKeys feature
-			dwToggleKeysFlags = ToggleKeysStruct.dwFlags;
-			ToggleKeysStruct.dwFlags = 0;
-			SystemParametersInfo(SPI_SETTOGGLEKEYS, dwToggleKeysStructSize, (PVOID)&ToggleKeysStruct, 0);
-		}
-	}
-
-	~damn_keys_filter()
-	{
-		if (bScreenSaverState)
-			// Restoring screen saver
-			SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, TRUE, NULL, 0);
-
-		if (dwStickyKeysFlags)
-		{
-			// Restore StickyKeys feature
-			StickyKeysStruct.dwFlags = dwStickyKeysFlags;
-			SystemParametersInfo(SPI_SETSTICKYKEYS, dwStickyKeysStructSize, (PVOID)&StickyKeysStruct, 0);
-		}
-
-		if (dwFilterKeysFlags)
-		{
-			// Restore FilterKeys feature
-			FilterKeysStruct.dwFlags = dwFilterKeysFlags;
-			SystemParametersInfo(SPI_SETFILTERKEYS, dwFilterKeysStructSize, (PVOID)&FilterKeysStruct, 0);
-		}
-
-		if (dwToggleKeysFlags)
-		{
-			// Restore FilterKeys feature
-			ToggleKeysStruct.dwFlags = dwToggleKeysFlags;
-			SystemParametersInfo(SPI_SETTOGGLEKEYS, dwToggleKeysStructSize, (PVOID)&ToggleKeysStruct, 0);
-		}
-	}
-};
-
-#undef dwStickyKeysStructSize
-#undef dwFilterKeysStructSize
-#undef dwToggleKeysStructSize
-
 // Фунция для тупых требований THQ и тупых американских пользователей
 BOOL IsOutOfVirtualMemory()
 {
@@ -439,11 +382,6 @@ BOOL IsOutOfVirtualMemory()
 	return 1;
 }
 
-typedef void DUMMY_STUFF(const void *, const u32 &, void *);
-XRCORE_API DUMMY_STUFF *g_temporary_stuff;
-
-ENGINE_API bool g_dedicated_server = false;
-
 int APIENTRY WinMainImplementation(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
 {
 #ifdef DEDICATED_SERVER
@@ -463,97 +401,38 @@ int APIENTRY WinMainImplementation(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	//SetThreadAffinityMask		(GetCurrentThread(),1);
 	SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
 
-	// Title window
-	logoWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_STARTUP), 0, logDlgProc);
-	SetWindowPos(
-		logoWindow,
-#ifndef DEBUG
-		HWND_TOPMOST,
-#else
-		HWND_NOTOPMOST,
-#endif // NDEBUG
-		0,
-		0,
-		0,
-		0,
-		SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+	CreateLogo();
 
-	HMODULE hCustomRes = LoadLibraryA("xrCustomRes.dll");
-	
-	if (hCustomRes)
-	{
-		// меняем логотип на картинку, загруженную из xrCustomRes.dll
-		HWND hStatic = GetDlgItem(logoWindow, IDC_STATIC_PICTURE);
-		HBITMAP hBmp = LoadBitmap(hCustomRes, MAKEINTRESOURCE(IDB_LOGO_BITMAP));
-		SendMessage(hStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);
-	}
+	g_sLaunchOnExit_app[0] = '\0';
+	g_sLaunchOnExit_params[0] = '\0';
 
-	g_sLaunchOnExit_app[0] = NULL;
-	g_sLaunchOnExit_params[0] = NULL;
-
-	LPCSTR fsgame_ltx_name = "-fsltx ";
-	string_path fsgame = "";
-	if (strstr(lpCmdLine, fsgame_ltx_name))
-	{
-		int sz = xr_strlen(fsgame_ltx_name);
-		sscanf(strstr(lpCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
-	}
-
-	g_temporary_stuff = &trivial_encryptor::decode;
-
-	compute_build_id();
-	Core._initialize("xray", NULL, TRUE, fsgame[0] ? fsgame : NULL);
+	InitializeCore(lpCmdLine);
 	InitSettings();
 
-#ifndef DEDICATED_SERVER
+	FPU::m24r();
+	InitEngine();
+	InitConsole();
+
+	if (strstr(Core.Params, "-r2a"))
+		Console->Execute("renderer renderer_r2a");
+	else if (strstr(Core.Params, "-r2"))
+		Console->Execute("renderer renderer_r2");
+	else
 	{
-		damn_keys_filter filter;
-		(void)filter;
-#endif // DEDICATED_SERVER
-
-		FPU::m24r();
-		InitEngine();
-		InitConsole();
-
-		if (strstr(Core.Params, "-r2a"))
-			Console->Execute("renderer renderer_r2a");
-		else if (strstr(Core.Params, "-r2"))
-			Console->Execute("renderer renderer_r2");
-		else
-		{
-			CCC_LoadCFG_custom *pTmp = xr_new<CCC_LoadCFG_custom>("renderer ");
-			pTmp->Execute(Console->ConfigFile);
-			xr_delete(pTmp);
-		}
-
-		InitInput();
-		Engine.External.Initialize();
-		Console->Execute("stat_memory");
-		Startup();
-		Core._destroy();
-
-		char *_args[3];
-		// check for need to execute something external
-		if (xr_strlen(g_sLaunchOnExit_app))
-		{
-			string4096 ModuleFileName = "";
-			GetModuleFileName(NULL, ModuleFileName, 4096);
-
-			string4096 ModuleFilePath = "";
-			char *ModuleName = NULL;
-			GetFullPathName(ModuleFileName, 4096, ModuleFilePath, &ModuleName);
-			ModuleName[0] = 0;
-			strcat(ModuleFilePath, g_sLaunchOnExit_app);
-			_args[0] = g_sLaunchOnExit_app;
-			_args[1] = g_sLaunchOnExit_params;
-			_args[2] = NULL;
-
-			_spawnv(_P_NOWAIT, _args[0], _args); //, _envvar);
-		}
-#ifndef DEDICATED_SERVER
-		gameInstances.UnregisterThisInstanceLaunched();
+		CCC_LoadCFG_custom *pTmp = xr_new<CCC_LoadCFG_custom>("renderer ");
+		pTmp->Execute(Console->ConfigFile);
+		xr_delete(pTmp);
 	}
-	// here damn_keys_filter class instanse will be destroyed
+
+	InitInput();
+	Engine.External.Initialize();
+	Console->Execute("stat_memory");
+	Startup();
+	Core._destroy();
+
+	LaunchOnExit();
+#ifndef DEDICATED_SERVER
+	gameInstances.UnregisterThisInstanceLaunched();
 #endif // DEDICATED_SERVER
 
 	return 0;
