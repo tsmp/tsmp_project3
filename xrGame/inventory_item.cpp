@@ -115,7 +115,7 @@ CInventoryItem::~CInventoryItem()
 			object().ID(),
 			p ? p->cName().c_str() : "none",
 			p ? p->ID() : -1,
-			Device.dwFrame);
+			Device.CurrentFrameNumber);
 	}
 }
 

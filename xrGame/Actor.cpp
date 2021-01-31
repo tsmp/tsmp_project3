@@ -419,6 +419,7 @@ void CActor::Load(LPCSTR section)
 	m_sInventoryBoxUseAction = "inventory_box_use";
 	//---------------------------------------------------------------------
 	m_sHeadShotParticle = READ_IF_EXISTS(pSettings, r_string, section, "HeadShotParticle", 0);
+	m_dontAllowLookouts = READ_IF_EXISTS(pSettings, r_bool, "lookout_settings", "disable_lookout", false);
 }
 
 void CActor::PHHit(float P, Fvector &dir, CObject *who, s16 element, Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* = ALife::eHitTypeWound */)
@@ -466,7 +467,7 @@ void CActor::Hit(SHit *pHDS)
 		if (ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
 		{
 			bPlaySound = false;
-			if (Device.dwFrame != last_hit_frame &&
+			if (Device.CurrentFrameNumber != last_hit_frame &&
 				HDS.bone() != BI_NONE)
 			{
 				// вычислить позицию и направленность партикла
@@ -487,7 +488,7 @@ void CActor::Hit(SHit *pHDS)
 			};
 		};
 
-		last_hit_frame = Device.dwFrame;
+		last_hit_frame = Device.CurrentFrameNumber;
 	};
 
 	if (!g_dedicated_server &&

@@ -307,7 +307,7 @@ void CRender::apply_object(IRenderable *O)
 		float o_sun = 0.5f * LT.get_sun();
 		RCache.set_c(c_ldynamic_props, o_sun, o_sun, o_sun, o_hemi);
 		// shadowing
-		if ((LT.shadow_recv_frame == Device.dwFrame) && O->renderable_ShadowReceive())
+		if ((LT.shadow_recv_frame == Device.CurrentFrameNumber) && O->renderable_ShadowReceive())
 			RImplementation.L_Projector->setup(LT.shadow_recv_slot);
 	}
 }

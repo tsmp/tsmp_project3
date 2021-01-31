@@ -676,8 +676,8 @@ struct zero_wm_pred : public std::unary_function<intrusive_ptr<CSkeletonWallmark
 
 void CKinematics::CalculateWallmarks()
 {
-	if (!wallmarks.empty()&&(wm_frame!=Device.dwFrame)){
-		wm_frame			= Device.dwFrame;
+	if (!wallmarks.empty()&&(wm_frame!=Device.CurrentFrameNumber)){
+		wm_frame			= Device.CurrentFrameNumber;
 		bool need_remove	= false; 
 		for (SkeletonWMVecIt it=wallmarks.begin(); it!=wallmarks.end(); it++){
 			intrusive_ptr<CSkeletonWallmark>& wm = *it;

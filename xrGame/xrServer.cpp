@@ -39,7 +39,8 @@ void xrClientData::Clear()
 	m_ping_warn.m_dwLastMaxPingWarningTime = 0;
 	m_admin_rights.m_has_admin_rights = FALSE;
 	bMutedChat = false;
-};
+	verificationStepsCompleted = 0;
+}
 
 xrClientData::~xrClientData()
 {
@@ -283,7 +284,7 @@ void xrServer::Update()
 	Flush_Clients_Buffers();
 	csPlayers.Leave();
 
-	if (0 == (Device.dwFrame % 100)) //once per 100 frames
+	if (0 == (Device.CurrentFrameNumber % 100)) //once per 100 frames
 	{
 		UpdateBannedList();
 	}
@@ -1016,6 +1017,16 @@ void xrServer::GetServerInfo(CServerInfo *si)
 
 	si->AddItem("Server port", itoa(GetPort(), tmp, 10), RGB(128, 128, 255));
 	LPCSTR time = InventoryUtilities::GetTimeAsString(Device.dwTimeGlobal, InventoryUtilities::etpTimeToSecondsAndDay).c_str();
+
+	int iFps = -1;
+	if (Device.fTimeDelta > EPS_S)
+	{
+		float fps = 1.f / Device.fTimeDelta;
+		iFps = fps;
+	}
+
+	si->AddItem("Server FPS: ", itoa(iFps, tmp, 10), RGB(255, 228, 0));
+
 	si->AddItem("Uptime", time, RGB(255, 228, 0));
 
 	strcpy_s(tmp256, get_token_name(game_types, game->Type()));

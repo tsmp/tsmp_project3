@@ -26,13 +26,10 @@ class ENGINE_API CRenderDevice
 {
 private:
 	// Main objects used for creating and rendering the 3D scene
-	u32 m_dwWindowStyle;
-	RECT m_rcWindowBounds;
-	RECT m_rcWindowClient;
 
-	u32 Timer_MM_Delta;
-	CTimer_paused Timer;
-	CTimer_paused TimerGlobal;
+	u32 m_SystemLocalTimersDelta;
+	CTimer_paused m_FrameTimer;
+	CTimer_paused m_GlobalTimer;
 	CTimer TimerMM;
 
 	void _Create(LPCSTR shName);
@@ -41,9 +38,8 @@ private:
 
 public:
 	HWND m_hWnd;
-	LRESULT MsgProc(HWND, UINT, WPARAM, LPARAM);
 
-	u32 dwFrame;
+	u32 CurrentFrameNumber;
 	u32 dwPrecacheFrame;
 	u32 dwPrecacheTotal;
 
@@ -117,7 +113,7 @@ public:
 		m_hWnd = NULL;
 		b_is_Active = FALSE;
 		b_is_Ready = FALSE;
-		Timer.Start();
+		m_FrameTimer.Start();
 		m_bNearer = FALSE;
 	};
 
@@ -136,9 +132,9 @@ public:
 
 	// Mode control
 	void DumpFlags();
-	IC CTimer_paused *GetTimerGlobal() { return &TimerGlobal; }
-	u32 TimerAsync() { return TimerGlobal.GetElapsed_ms(); }
-	u32 TimerAsync_MMT() { return TimerMM.GetElapsed_ms() + Timer_MM_Delta; }
+	IC CTimer_paused *GetTimerGlobal() { return &m_GlobalTimer; }
+	u32 TimerAsync() { return m_GlobalTimer.GetElapsed_ms(); }
+	u32 TimerAsync_MMT() { return TimerMM.GetElapsed_ms() + m_SystemLocalTimersDelta; }
 
 	// Creation & Destroying
 	void Create(void);
@@ -150,17 +146,6 @@ public:
 	void ShutDown(void);
 
 public:
-	void time_factor(const float &time_factor)
-	{
-		Timer.time_factor(time_factor);
-		TimerGlobal.time_factor(time_factor);
-	}
-
-	IC const float &time_factor() const
-	{
-		VERIFY(Timer.time_factor() == TimerGlobal.time_factor());
-		return (Timer.time_factor());
-	}
 
 	// Multi-threading
 	xrCriticalSection mt_csEnter;
@@ -179,7 +164,6 @@ public:
 };
 
 extern ENGINE_API CRenderDevice Device;
-extern ENGINE_API bool g_bBenchmark;
 
 typedef fastdelegate::FastDelegate0<bool> LOADING_EVENT;
 extern ENGINE_API xr_list<LOADING_EVENT> g_loading_events;

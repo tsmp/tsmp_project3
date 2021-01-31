@@ -294,10 +294,12 @@ void CActor::IR_OnKeyboardHold(int cmd)
 		mstate_wishful |= mcRStrafe;
 		break;
 	case kL_LOOKOUT:
-		mstate_wishful |= mcLLookout;
+		if(!m_dontAllowLookouts)
+			mstate_wishful |= mcLLookout;
 		break;
 	case kR_LOOKOUT:
-		mstate_wishful |= mcRLookout;
+		if(!m_dontAllowLookouts)
+			mstate_wishful |= mcRLookout;
 		break;
 	case kFWD:
 		mstate_wishful |= mcFwd;

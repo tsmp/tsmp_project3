@@ -41,14 +41,14 @@ void CROS_impl::add(light *source)
 	for (xr_vector<Item>::iterator I = track.begin(); I != track.end(); I++)
 		if (source == I->source)
 		{
-			I->frame_touched = Device.dwFrame;
+			I->frame_touched = Device.CurrentFrameNumber;
 			return;
 		}
 
 	// Register _new_
 	track.push_back(Item());
 	Item &L = track.back();
-	L.frame_touched = Device.dwFrame;
+	L.frame_touched = Device.CurrentFrameNumber;
 	L.source = source;
 	L.cache.verts[0].set(0, 0, 0);
 	L.cache.verts[1].set(0, 0, 0);
@@ -95,9 +95,9 @@ const float hdir[lt_hemisamples][3] =
 void CROS_impl::update(IRenderable *O)
 {
 	// clip & verify
-	if (dwFrame == Device.dwFrame)
+	if (dwFrame == Device.CurrentFrameNumber)
 		return;
-	dwFrame = Device.dwFrame;
+	dwFrame = Device.CurrentFrameNumber;
 	if (0 == O)
 		return;
 	if (0 == O->renderable.visual)
@@ -201,7 +201,7 @@ void CROS_impl::update(IRenderable *O)
 		{
 			// remove untouched lights
 			xr_vector<CROS_impl::Item>::iterator I = track.begin() + id;
-			if (I->frame_touched != Device.dwFrame)
+			if (I->frame_touched != Device.CurrentFrameNumber)
 			{
 				track.erase(I);
 				id--;
@@ -303,10 +303,10 @@ extern float ps_r2_lt_smooth;
 // hemi & sun: update and smooth
 void CROS_impl::update_smooth(IRenderable *O)
 {
-	if (dwFrameSmooth == Device.dwFrame)
+	if (dwFrameSmooth == Device.CurrentFrameNumber)
 		return;
 
-	dwFrameSmooth = Device.dwFrame;
+	dwFrameSmooth = Device.CurrentFrameNumber;
 	if (O && (0 == result_count))
 		update(O); // First time only
 	float l_f = Device.fTimeDelta * ps_r2_lt_smooth;

@@ -412,6 +412,7 @@ protected:
 
 	//режим подбирания предметов
 	bool m_bPickupMode;
+	bool m_dontAllowLookouts;
 	//расстояние подсветки предметов
 	float m_fPickupInfoRadius;
 

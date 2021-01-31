@@ -368,9 +368,9 @@ void CMissile::UpdatePosition(const Fmatrix &trans)
 
 void CMissile::UpdateXForm()
 {
-	if (Device.dwFrame != dwXF_Frame)
+	if (Device.CurrentFrameNumber != dwXF_Frame)
 	{
-		dwXF_Frame = Device.dwFrame;
+		dwXF_Frame = Device.CurrentFrameNumber;
 
 		if (0 == H_Parent())
 			return;
@@ -586,9 +586,9 @@ void CMissile::UpdateFireDependencies_internal()
 	if (0 == H_Parent())
 		return;
 
-	if (Device.dwFrame != dwFP_Frame)
+	if (Device.CurrentFrameNumber != dwFP_Frame)
 	{
-		dwFP_Frame = Device.dwFrame;
+		dwFP_Frame = Device.CurrentFrameNumber;
 
 		UpdateXForm();
 

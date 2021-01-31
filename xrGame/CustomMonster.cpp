@@ -331,7 +331,7 @@ void CCustomMonster::shedule_Update(u32 DT)
 			ProcessScripts();
 		else
 		{
-			if (Device.dwFrame > spawn_time() + g_AI_inactive_time)
+			if (Device.CurrentFrameNumber > spawn_time() + g_AI_inactive_time)
 				Think();
 		}
 

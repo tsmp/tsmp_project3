@@ -119,9 +119,9 @@ light *CLight_DB::Create()
 #if RENDER == R_R1
 void CLight_DB::add_light(light *L)
 {
-	if (Device.dwFrame == L->frame_render)
+	if (Device.CurrentFrameNumber == L->frame_render)
 		return;
-	L->frame_render = Device.dwFrame;
+	L->frame_render = Device.CurrentFrameNumber;
 	if (L->flags.bStatic)
 		return; // skip static lighting, 'cause they are in lmaps
 	if (ps_r1_flags.test(R1FLAG_DLIGHTS))
@@ -132,9 +132,9 @@ void CLight_DB::add_light(light *L)
 #if RENDER == R_R2
 void CLight_DB::add_light(light *L)
 {
-	if (Device.dwFrame == L->frame_render)
+	if (Device.CurrentFrameNumber == L->frame_render)
 		return;
-	L->frame_render = Device.dwFrame;
+	L->frame_render = Device.CurrentFrameNumber;
 	if (RImplementation.o.noshadows)
 		L->flags.bShadow = FALSE;
 	if (L->flags.bStatic && !ps_r2_ls_flags.test(R2FLAG_R1LIGHTS))

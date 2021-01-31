@@ -3,7 +3,7 @@
 void CRenderTarget::phase_accumulator()
 {
 	// Targets
-	if (dwAccumulatorClearMark == Device.dwFrame)
+	if (dwAccumulatorClearMark == Device.CurrentFrameNumber)
 	{
 		// normal operation - setup
 		if (RImplementation.o.fp16_blend)
@@ -14,7 +14,7 @@ void CRenderTarget::phase_accumulator()
 	else
 	{
 		// initial setup
-		dwAccumulatorClearMark = Device.dwFrame;
+		dwAccumulatorClearMark = Device.CurrentFrameNumber;
 
 		// clear
 		u_setrt(rt_Accumulator, NULL, NULL, HW.pBaseZB);

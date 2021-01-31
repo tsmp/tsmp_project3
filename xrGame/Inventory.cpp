@@ -198,7 +198,7 @@ bool CInventory::DropItem(CGameObject *pObj)
 
 	if (pIItem->m_pCurrentInventory != this)
 	{
-		Msg("ahtung !!! [%d]", Device.dwFrame);
+		Msg("ahtung !!! [%d]", Device.CurrentFrameNumber);
 		Msg("CInventory::DropItem pIItem->m_pCurrentInventory!=this");
 		Msg("this = [%d]", GetOwner()->object_id());
 		Msg("pIItem->m_pCurrentInventory = [%d]", pIItem->m_pCurrentInventory->GetOwner()->object_id());
@@ -442,7 +442,7 @@ bool CInventory::Activate(u32 slot, EActivationReason reason, bool bForce)
 
 	bool res = false;
 
-	if (Device.dwFrame == m_iLoadActiveSlotFrame)
+	if (Device.CurrentFrameNumber == m_iLoadActiveSlotFrame)
 	{
 		if ((m_iLoadActiveSlot == slot) && m_slots[slot].m_pIItem)
 			m_iLoadActiveSlotFrame = u32(-1);

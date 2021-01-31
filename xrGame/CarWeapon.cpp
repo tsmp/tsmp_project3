@@ -188,7 +188,7 @@ void CCarWeapon::UpdateBarrelDir()
 		m_allow_fire = FALSE;
 
 #if (0)
-	if (Device.dwFrame % 200 == 0)
+	if (Device.CurrentFrameNumber % 200 == 0)
 	{
 		Msg("m_cur_x_rot=[%f]", m_cur_x_rot);
 		Msg("m_cur_y_rot=[%f]", m_cur_y_rot);

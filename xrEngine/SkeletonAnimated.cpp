@@ -446,9 +446,9 @@ void CKinematicsAnimated::UpdateTracks()
 		for (; I != E; I++)
 		{
 			CBlend &B = *(*I);
-			if (B.dwFrame == Device.dwFrame)
+			if (B.dwFrame == Device.CurrentFrameNumber)
 				continue;
-			B.dwFrame = Device.dwFrame;
+			B.dwFrame = Device.CurrentFrameNumber;
 			UpdateBlendTime(B, dt);
 			switch (B.blend)
 			{
@@ -854,7 +854,7 @@ IC void Dequantize(CKey &K, const CBlend &BD, const CMotion &M)
 		Log("blend", B->blend);
 
 		Log("dwFrame", B->dwFrame);
-		Log("Device.dwFrame", Device.dwFrame);
+		Log("Device.CurrentFrameNumber", Device.CurrentFrameNumber);
 		Log("Blend-------end");
 
 		Log("Bone",LL_BoneName_dbg(SelfID));

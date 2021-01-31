@@ -12,9 +12,6 @@
 int g_ErrorLineCount = 15;
 Flags32 g_stats_flags = {0};
 
-// stats
-DECLARE_RP(Stats);
-
 class optimizer
 {
 	float average_;
@@ -182,7 +179,7 @@ void CStats::Show()
 		return;
 	////////////////////////////////////////////////
 	int frm = 2000;
-	div_t ddd = div(Device.dwFrame, frm);
+	div_t ddd = div(Device.CurrentFrameNumber, frm);
 	if (ddd.rem < frm / 2.0f)
 	{
 		pFont->SetColor(0xFFFFFFFF);
@@ -337,7 +334,6 @@ void CStats::Show()
 		//////////////////////////////////////////////////////////////////////////
 		// process PURE STATS
 		F.SetHeightI(f_base_size);
-		seqStats.Process(rp_Stats);
 		pFont->OnRender();
 	};
 

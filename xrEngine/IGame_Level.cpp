@@ -79,7 +79,6 @@ BOOL IGame_Level::Load(u32 dwNum)
 	// CForms
 	g_pGamePersistent->LoadTitle("st_loading_cform");
 	ObjectSpace.Load();
-	pApp->LoadSwitch();
 
 	// HUD + Environment
 	//.	pHUD						= (CCustomHUD*)NEW_INSTANCE	(CLSID_HUDMANAGER);
@@ -138,7 +137,7 @@ void IGame_Level::OnRender()
 
 void IGame_Level::OnFrame()
 {
-	// Log				("- level:on-frame: ",u32(Device.dwFrame));
+	// Log				("- level:on-frame: ",u32(Device.CurrentFrameNumber));
 	//	if (_abs(Device.fTimeDelta)<EPS_S) return;
 
 	// Update all objects

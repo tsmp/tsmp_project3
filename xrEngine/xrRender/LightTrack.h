@@ -74,19 +74,19 @@ public:
 
 	ICF float get_hemi()
 	{
-		if (dwFrameSmooth != Device.dwFrame)
+		if (dwFrameSmooth != Device.CurrentFrameNumber)
 			update_smooth();
 		return hemi_smooth;
 	}
 	ICF float get_sun()
 	{
-		if (dwFrameSmooth != Device.dwFrame)
+		if (dwFrameSmooth != Device.CurrentFrameNumber)
 			update_smooth();
 		return sun_smooth;
 	}
 	ICF Fvector3 &get_approximate()
 	{
-		if (dwFrameSmooth != Device.dwFrame)
+		if (dwFrameSmooth != Device.CurrentFrameNumber)
 			update_smooth();
 		return approximate;
 	}

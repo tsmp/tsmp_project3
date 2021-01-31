@@ -106,7 +106,6 @@ void IGame_Persistent::Disconnect()
 
 void IGame_Persistent::OnGameStart()
 {
-
 	LoadTitle("st_prefetching_objects");
 	if (strstr(Core.Params, "-noprefetch"))
 		return;
@@ -130,14 +129,12 @@ void IGame_Persistent::OnGameStart()
 
 void IGame_Persistent::OnGameEnd()
 {
-
 	ObjectPool.clear();
 	Render->models_Clear(TRUE);
 }
 
 void IGame_Persistent::OnFrame()
 {
-
 #ifndef DEDICATED_SERVER
 	if (!Device.Paused() || Device.dwPrecacheFrame)
 		Environment().OnFrame();
@@ -172,7 +169,6 @@ void IGame_Persistent::OnFrame()
 
 void IGame_Persistent::destroy_particles(const bool &all_particles)
 {
-
 	ps_needtoplay.clear();
 
 	while (ps_destroy.size())

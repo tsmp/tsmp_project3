@@ -44,6 +44,6 @@ public:
 
 	virtual bool use_parent_ai_locations() const
 	{
-		return (Device.dwFrame != dwXF_Frame);
+		return (Device.CurrentFrameNumber != dwXF_Frame);
 	}
 };

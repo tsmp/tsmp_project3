@@ -54,18 +54,19 @@ void xrGameSpyServer::OnCDKey_Validation(int LocalID, int res, char *errormsg)
 	ClientID ID;
 	ID.set(u32(LocalID));
 	xrGameSpyClientData *CL = (xrGameSpyClientData *)ID_to_client(ID);
-	if (0 != res)
+
+	if (res)
 	{
 		CL->m_bCDKeyAuth = true;
-		Msg("xrGS::CDKey: Validation successful - <%s>", errormsg);
-		Check_GameSpy_CDKey_Success(CL);
+		Msg("CDKey: Validation successful - <%s>", errormsg);
+		OnConnectionVerificationStepComplete(CL);
 	}
 	else
 	{
-		Msg("xrGS::CDKey: Validation failed - <%s>", errormsg);
+		Msg("CDKey: Validation failed - <%s>", errormsg);
 		SendConnectResult(CL, u8(res), u8(1), errormsg);
 	}
-};
+}
 
 void xrGameSpyServer::OnCDKey_ReValidation(int LocalID, int hint, char *challenge)
 {

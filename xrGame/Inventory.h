@@ -125,7 +125,7 @@ public:
 	friend class CInventoryOwner;
 
 	u32 ModifyFrame() const { return m_dwModifyFrame; }
-	void InvalidateState() { m_dwModifyFrame = Device.dwFrame; }
+	void InvalidateState() { m_dwModifyFrame = Device.CurrentFrameNumber; }
 	void Items_SetCurrentEntityHud(bool current_entity);
 	bool isBeautifulForActiveSlot(CInventoryItem *pIItem);
 

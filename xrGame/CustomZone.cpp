@@ -1003,9 +1003,9 @@ void CCustomZone::UpdateBlowoutLight()
 
 void CCustomZone::AffectObjects()
 {
-	if (m_dwAffectFrameNum == Device.dwFrame)
+	if (m_dwAffectFrameNum == Device.CurrentFrameNumber)
 		return;
-	m_dwAffectFrameNum = Device.dwFrame;
+	m_dwAffectFrameNum = Device.CurrentFrameNumber;
 
 	if (Device.dwPrecacheFrame)
 		return;

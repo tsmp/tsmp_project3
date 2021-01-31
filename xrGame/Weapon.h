@@ -305,7 +305,7 @@ protected:
 	virtual void UpdateHudAdditonal(Fmatrix &);
 	IC void UpdateFireDependencies()
 	{
-		if (dwFP_Frame == Device.dwFrame)
+		if (dwFP_Frame == Device.CurrentFrameNumber)
 			return;
 		UpdateFireDependencies_internal();
 	};

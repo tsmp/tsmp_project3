@@ -310,10 +310,10 @@ bool CUIWindow::OnMouse(float x, float y, EUIMessages mouse_action)
 		static u32 _last_db_click_frame = 0;
 		u32 dwCurTime = Device.dwTimeContinual;
 
-		if ((_last_db_click_frame != Device.dwFrame) && (dwCurTime - m_dwLastClickTime < DOUBLE_CLICK_TIME))
+		if ((_last_db_click_frame != Device.CurrentFrameNumber) && (dwCurTime - m_dwLastClickTime < DOUBLE_CLICK_TIME))
 		{
 			mouse_action = WINDOW_LBUTTON_DB_CLICK;
-			_last_db_click_frame = Device.dwFrame;
+			_last_db_click_frame = Device.CurrentFrameNumber;
 		}
 
 		m_dwLastClickTime = dwCurTime;

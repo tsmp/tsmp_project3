@@ -28,20 +28,20 @@ void xrServer::Process_event_ownership(NET_Packet &P, ClientID sender, u32 time,
     if (!e_parent)
     {
         Msg("! ERROR on ownership: parent not found. parent_id = [%d], entity_id = [%d], frame = [%d].", id_parent,
-            id_entity, Device.dwFrame);
+            id_entity, Device.CurrentFrameNumber);
         return;
     }
 
     if (!e_entity)
     {
         Msg("! ERROR on ownership: entity not found. parent_id = [%d], entity_id = [%d], frame = [%d].",
-            id_parent, id_entity, Device.dwFrame);
+            id_parent, id_entity, Device.CurrentFrameNumber);
         return;
     }
 
     if (0xffff != e_entity->ID_Parent)
     {
-        Msg("! WARNING: ownership: (entity already has parent) new_parent %s id_parent %s id_entity %s [%d]", ent_name_safe(e_entity->ID_Parent).c_str(), ent_name_safe(id_parent).c_str(), ent_name_safe(id_entity).c_str(), Device.dwFrame);
+        Msg("! WARNING: ownership: (entity already has parent) new_parent %s id_parent %s id_entity %s [%d]", ent_name_safe(e_entity->ID_Parent).c_str(), ent_name_safe(id_parent).c_str(), ent_name_safe(id_entity).c_str(), Device.CurrentFrameNumber);
         return;
     }
 

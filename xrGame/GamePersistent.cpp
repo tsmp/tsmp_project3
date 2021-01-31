@@ -327,7 +327,7 @@ void CGamePersistent::start_game_intro()
 			VERIFY(NULL == m_intro);
 			m_intro = xr_new<CUISequencer>();
 			m_intro->Start("intro_game");
-			Log("Intro start", Device.dwFrame);
+			Log("Intro start", Device.CurrentFrameNumber);
 		}
 	}
 }

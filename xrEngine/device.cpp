@@ -66,7 +66,6 @@ void CRenderDevice::Clear()
 							 D3DCOLOR_XRGB(0, 0, 0), 1, 0));
 }
 
-extern void CheckPrivilegySlowdown();
 #include "resourcemanager.h"
 
 void CRenderDevice::End(void)
@@ -97,7 +96,6 @@ void CRenderDevice::End(void)
 			Resources->DestroyNecessaryTextures();
 			Memory.mem_compact();
 			Msg("* MEMORY USAGE: %d K", Memory.mem_usage() / 1024);
-			CheckPrivilegySlowdown();
 		}
 	}
 
@@ -129,7 +127,7 @@ void mt_Thread(void *ptr)
 			return;
 		}
 		// we has granted permission to execute
-		mt_Thread_marker = Device.dwFrame;
+		mt_Thread_marker = Device.CurrentFrameNumber;
 
 		for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
 			Device.seqParallel[pit]();
@@ -181,19 +179,18 @@ void CRenderDevice::Run()
 
 	// Startup timers and calculate timer delta
 	dwTimeGlobal = 0;
-	Timer_MM_Delta = 0;
+
 	{
+		// —истемное врем€ (врем€ с момента запуска системы)
 		u32 time_mm = timeGetTime();
 		while (timeGetTime() == time_mm)
 			; // wait for next tick
 		u32 time_system = timeGetTime();
 		u32 time_local = TimerAsync();
-		Timer_MM_Delta = time_system - time_local;
+		m_SystemLocalTimersDelta = time_system - time_local;
 	}
 
 	// Start all threads
-	//	InitializeCriticalSection	(&mt_csEnter);
-	//	InitializeCriticalSection	(&mt_csLeave);
 	mt_csEnter.Enter();
 	mt_bMustExit = FALSE;
 	thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
@@ -219,7 +216,7 @@ void CRenderDevice::Run()
 			{
 
 #ifdef DEDICATED_SERVER
-				u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
+				u32 FrameStartTime = m_GlobalTimer.GetElapsed_ms();
 #endif
 				if (psDeviceFlags.test(rsStatistic))
 					g_bEnableStatGather = TRUE;
@@ -287,7 +284,7 @@ void CRenderDevice::Run()
 				mt_csLeave.Leave();
 
 				// Ensure, that second thread gets chance to execute anyway
-				if (dwFrame != mt_Thread_marker)
+				if (CurrentFrameNumber != mt_Thread_marker)
 				{
 					for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
 						Device.seqParallel[pit]();
@@ -295,7 +292,7 @@ void CRenderDevice::Run()
 					seqFrameMT.Process(rp_Frame);
 				}
 #ifdef DEDICATED_SERVER
-				u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
+				u32 FrameEndTime = m_GlobalTimer.GetElapsed_ms();
 				u32 FrameTime = (FrameEndTime - FrameStartTime);
 				/*
 				string1024 FPS_str = "";
@@ -338,16 +335,15 @@ void CRenderDevice::Run()
 	// Stop Balance-Thread
 	mt_bMustExit = TRUE;
 	mt_csEnter.Leave();
+
 	while (mt_bMustExit)
 		Sleep(0);
-	//	DeleteCriticalSection	(&mt_csEnter);
-	//	DeleteCriticalSection	(&mt_csLeave);
 }
 
 void ProcessLoading(RP_FUNC *f);
 void CRenderDevice::FrameMove()
 {
-	dwFrame++;
+	CurrentFrameNumber++;
 
 	dwTimeContinual = TimerMM.GetElapsed_ms();
 	if (psDeviceFlags.test(rsConstantFPS))
@@ -361,8 +357,8 @@ void CRenderDevice::FrameMove()
 	else
 	{
 		// Timer
-		float fPreviousFrameTime = Timer.GetElapsed_sec();
-		Timer.Start();												// previous frame
+		float fPreviousFrameTime = m_FrameTimer.GetElapsed_sec();
+		m_FrameTimer.Start();												// previous frame
 		fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime; // smooth random system activity - worst case ~7% error
 		if (fTimeDelta > .1f)
 			fTimeDelta = .1f; // limit to 15fps minimum
@@ -370,10 +366,10 @@ void CRenderDevice::FrameMove()
 		if (Paused())
 			fTimeDelta = 0.0f;
 
-		//		u64	qTime		= TimerGlobal.GetElapsed_clk();
-		fTimeGlobal = TimerGlobal.GetElapsed_sec(); //float(qTime)*CPU::cycles2seconds;
+		//		u64	qTime		= m_GlobalTimer.GetElapsed_clk();
+		fTimeGlobal = m_GlobalTimer.GetElapsed_sec(); //float(qTime)*CPU::cycles2seconds;
 		u32 _old_global = dwTimeGlobal;
-		dwTimeGlobal = TimerGlobal.GetElapsed_ms(); //u32((qTime*u64(1000))/CPU::cycles_per_second);
+		dwTimeGlobal = m_GlobalTimer.GetElapsed_ms(); //u32((qTime*u64(1000))/CPU::cycles_per_second);
 		dwTimeDelta = dwTimeGlobal - _old_global;
 	}
 
@@ -398,9 +394,6 @@ ENGINE_API BOOL bShowPauseString = TRUE;
 void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 {
 	static int snd_emitters_ = -1;
-
-	if (g_bBenchmark)
-		return;
 
 #ifdef DEBUG
 	Msg("pause [%s] timer=[%s] sound=[%s] reason=%s", bOn ? "ON" : "OFF", bTimer ? "ON" : "OFF", bSound ? "ON" : "OFF", reason);

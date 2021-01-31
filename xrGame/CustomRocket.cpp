@@ -85,7 +85,7 @@ BOOL CCustomRocket::net_Spawn(CSE_Abstract *DC)
 
 void CCustomRocket::net_Destroy()
 {
-	//	Msg("---------net_Destroy [%d] frame[%d]",ID(), Device.dwFrame);
+	//	Msg("---------net_Destroy [%d] frame[%d]",ID(), Device.CurrentFrameNumber);
 	inherited::net_Destroy();
 	CPHUpdateObject::Deactivate();
 
@@ -362,13 +362,13 @@ void CCustomRocket::OnH_B_Chield()
 {
 	VERIFY(m_eState == eInactive);
 	inherited::OnH_B_Chield();
-	//	Msg("! CCustomRocket::OnH_B_Chield called, id[%d] frame[%d]",ID(),Device.dwFrame);
+	//	Msg("! CCustomRocket::OnH_B_Chield called, id[%d] frame[%d]",ID(),Device.CurrentFrameNumber);
 }
 void CCustomRocket::OnH_A_Chield()
 {
 	VERIFY(m_eState == eInactive);
 	inherited::OnH_A_Chield();
-	//	Msg("! CCustomRocket::OnH_A_Chield called, id[%d] frame[%d]",ID(),Device.dwFrame);
+	//	Msg("! CCustomRocket::OnH_A_Chield called, id[%d] frame[%d]",ID(),Device.CurrentFrameNumber);
 }
 
 void CCustomRocket::OnH_B_Independent(bool just_before_destroy)
@@ -388,7 +388,7 @@ void CCustomRocket::OnH_A_Independent()
 	setVisible(true);
 	StartFlying();
 	StartEngine();
-	//	Msg("! CCustomRocket::OnH_A_Independent called, id[%d] frame[%d]",ID(),Device.dwFrame);
+	//	Msg("! CCustomRocket::OnH_A_Independent called, id[%d] frame[%d]",ID(),Device.CurrentFrameNumber);
 }
 
 void CCustomRocket::UpdateCL()
@@ -484,7 +484,7 @@ void CCustomRocket::UpdateEngine()
 
 	if (!getVisible())
 	{
-		Msg("! CCustomRocket::UpdateEngine called, but false==getVisible() id[%d] frame[%d]", ID(), Device.dwFrame);
+		Msg("! CCustomRocket::UpdateEngine called, but false==getVisible() id[%d] frame[%d]", ID(), Device.CurrentFrameNumber);
 	}
 
 	if (m_dwEngineTime <= 0)

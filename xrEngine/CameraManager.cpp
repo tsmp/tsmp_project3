@@ -204,8 +204,8 @@ void CCameraManager::Update(const CCameraBase *C)
 void CCameraManager::Update(const Fvector &P, const Fvector &D, const Fvector &N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags)
 {
 #ifdef DEBUG
-	VERIFY(dbg_upd_frame != Device.dwFrame); // already updated !!!
-	dbg_upd_frame = Device.dwFrame;
+	VERIFY(dbg_upd_frame != Device.CurrentFrameNumber); // already updated !!!
+	dbg_upd_frame = Device.CurrentFrameNumber;
 #endif
 	// camera
 	if (flags & CCameraBase::flPositionRigid)

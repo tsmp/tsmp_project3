@@ -570,7 +570,6 @@
     <ClInclude Include="CameraDefs.h" />
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="cl_intersect.h" />
-    <ClInclude Include="CopyProtection.h" />
     <ClInclude Include="CustomHUD.h" />
     <ClInclude Include="D3DUtils.h" />
     <ClInclude Include="defines.h" />

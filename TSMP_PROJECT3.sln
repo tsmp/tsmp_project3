@@ -63,6 +63,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvorbisfile_static", "Com
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libeax", "Components\eax\eax.vs2013.vcxproj", "{BE4B091F-B59B-4C98-88B5-CD15A1E6CBAB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrCustomRes", "xrCustomRes\xrCustomRes.vcxproj", "{B58A4BD0-A82B-4436-8080-9C062782B646}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -389,6 +391,18 @@ Global
 		{BE4B091F-B59B-4C98-88B5-CD15A1E6CBAB}.Release|Win32.Build.0 = Release|Win32
 		{BE4B091F-B59B-4C98-88B5-CD15A1E6CBAB}.Release|x64.ActiveCfg = Release|x64
 		{BE4B091F-B59B-4C98-88B5-CD15A1E6CBAB}.Release|x64.Build.0 = Release|x64
+		{B58A4BD0-A82B-4436-8080-9C062782B646}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B58A4BD0-A82B-4436-8080-9C062782B646}.Debug|x64.ActiveCfg = Debug|x64
+		{B58A4BD0-A82B-4436-8080-9C062782B646}.Debug|x64.Build.0 = Debug|x64
+		{B58A4BD0-A82B-4436-8080-9C062782B646}.Mixed|Win32.ActiveCfg = Debug|Win32
+		{B58A4BD0-A82B-4436-8080-9C062782B646}.Mixed|x64.ActiveCfg = Debug|x64
+		{B58A4BD0-A82B-4436-8080-9C062782B646}.Mixed|x64.Build.0 = Debug|x64
+		{B58A4BD0-A82B-4436-8080-9C062782B646}.Release_without_optimizations|Win32.ActiveCfg = Release_without_optimizations|Win32
+		{B58A4BD0-A82B-4436-8080-9C062782B646}.Release_without_optimizations|x64.ActiveCfg = Release|x64
+		{B58A4BD0-A82B-4436-8080-9C062782B646}.Release_without_optimizations|x64.Build.0 = Release|x64
+		{B58A4BD0-A82B-4436-8080-9C062782B646}.Release|Win32.ActiveCfg = Release|Win32
+		{B58A4BD0-A82B-4436-8080-9C062782B646}.Release|x64.ActiveCfg = Release|x64
+		{B58A4BD0-A82B-4436-8080-9C062782B646}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

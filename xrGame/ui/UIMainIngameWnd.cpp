@@ -368,7 +368,7 @@ void CUIMainIngameWnd::Update()
 		return;
 	}
 
-	if (!(Device.dwFrame % 30) && IsGameTypeSingle())
+	if (!(Device.CurrentFrameNumber % 30) && IsGameTypeSingle())
 	{
 		string256 text_str;
 		CPda *_pda = m_pActor->GetPDA();
@@ -384,10 +384,10 @@ void CUIMainIngameWnd::Update()
 		}
 	};
 
-	if (!(Device.dwFrame % 5))
+	if (!(Device.CurrentFrameNumber % 5))
 	{
 
-		if (!(Device.dwFrame % 30))
+		if (!(Device.CurrentFrameNumber % 30))
 		{
 			bool b_God = (GodMode() || (!Game().local_player)) ? true : Game().local_player->testFlag(GAME_PLAYER_FLAG_INVINCIBLE);
 			if (b_God)
@@ -396,7 +396,7 @@ void CUIMainIngameWnd::Update()
 				SetWarningIconColor(ewiInvincible, 0x00ffffff);
 		}
 		// ewiArtefact
-		if ((GameID() == GAME_ARTEFACTHUNT) && !(Device.dwFrame % 30))
+		if ((GameID() == GAME_ARTEFACTHUNT) && !(Device.CurrentFrameNumber % 30))
 		{
 			bool b_Artefact = (NULL != m_pActor->inventory().ItemFromSlot(ARTEFACT_SLOT));
 			if (b_Artefact)

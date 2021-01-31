@@ -219,15 +219,15 @@ void CUITradeWnd::Update()
 {
 	EListType et = eNone;
 
-	if (m_pInv->ModifyFrame() == Device.dwFrame && m_pOthersInv->ModifyFrame() == Device.dwFrame)
+	if (m_pInv->ModifyFrame() == Device.CurrentFrameNumber && m_pOthersInv->ModifyFrame() == Device.CurrentFrameNumber)
 	{
 		et = eBoth;
 	}
-	else if (m_pInv->ModifyFrame() == Device.dwFrame)
+	else if (m_pInv->ModifyFrame() == Device.CurrentFrameNumber)
 	{
 		et = e1st;
 	}
-	else if (m_pOthersInv->ModifyFrame() == Device.dwFrame)
+	else if (m_pOthersInv->ModifyFrame() == Device.CurrentFrameNumber)
 	{
 		et = e2nd;
 	}

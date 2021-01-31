@@ -109,37 +109,31 @@ void xrServer::SendConnectResult(IClient *CL, u8 res, u8 res1, char *ResultStr)
 		P.w_u8(1);
 	else
 		P.w_u8(0);
+
 	P.w_stringZ(Level().m_caServerOptions);
-
 	SendTo(CL->ID, P);
-};
-
-void xrServer::Check_GameSpy_CDKey_Success(IClient *CL)
-{
-	if (NeedToCheckClient_BuildVersion(CL))
-		return;
-	//-------------------------------------------------------------
-	Check_BuildVersion_Success(CL);
-};
+}
 
 BOOL g_SV_Disable_Auth_Check = TRUE;
 
-bool xrServer::NeedToCheckClient_BuildVersion(IClient *CL)
+void xrServer::CheckClientBuildVersion(IClient *CL)
 {
-	//#ifdef DEBUG
-	//return false;
-	//#else
-
 	if (g_SV_Disable_Auth_Check)
-		return false;
-	CL->flags.bVerified = FALSE;
+	{
+		OnConnectionVerificationStepComplete(CL);
+		return;
+	}
+	
 	NET_Packet P;
 	P.w_begin(M_AUTH_CHALLENGE);
 	SendTo(CL->ID, P);
-	return true;
+}
 
-	//#endif
-};
+void xrServer::CheckClientHWID(IClient* CL)
+{
+	// Пока заглушка
+	OnConnectionVerificationStepComplete(CL);
+}
 
 void xrServer::OnBuildVersionRespond(IClient *CL, NET_Packet &P)
 {
@@ -153,26 +147,22 @@ void xrServer::OnBuildVersionRespond(IClient *CL, NET_Packet &P)
 	Msg("_him = %d", _him);
 #endif // DEBUG
 
-	if (_our != _him)
-	{
-		SendConnectResult(CL, 0, 0, "Data verification failed. Cheater? [3]");
-	}
+	if (_our != _him)	
+		SendConnectResult(CL, 0, 0, "Data verification failed. Cheater? [3]");	
 	else
 	{
 		bool bAccessUser = false;
 		string512 res_check;
 
-		if (!CL->flags.bLocal)
-		{
-			bAccessUser = Check_ServerAccess(CL, res_check);
-		}
+		if (!CL->flags.bLocal)		
+			bAccessUser = Check_ServerAccess(CL, res_check);		
 
-		if (CL->flags.bLocal || bAccessUser)
-		{
-			Check_BuildVersion_Success(CL);
-		}
+		if (CL->flags.bLocal || bAccessUser)		
+			OnConnectionVerificationStepComplete(CL);
 		else
 		{
+#pragma TODO("TSMP: Турнирный сервер не будет проверять логин/пароль если отключена проверка ресурсов!")
+
 			Msg(res_check);
 			strcat_s(res_check, "Invalid login/password. Client \"");
 			strcat_s(res_check, CL->name.c_str());
@@ -181,10 +171,16 @@ void xrServer::OnBuildVersionRespond(IClient *CL, NET_Packet &P)
 			SendConnectResult(CL, 0, 2, res_check);
 		}
 	}
-};
+}
 
-void xrServer::Check_BuildVersion_Success(IClient *CL)
+void xrServer::OnConnectionVerificationStepComplete(IClient *CL)
 {
-	CL->flags.bVerified = TRUE;
-	SendConnectResult(CL, 1, 0, "All Ok");
-};
+	CL->verificationStepsCompleted++;
+
+	// проверяем ключ, билд, hwid, поэтому 3
+	if (CL->verificationStepsCompleted == 3)
+	{
+		CL->flags.bVerified = TRUE;
+		SendConnectResult(CL, 1, 0, "All Ok");
+	}
+}

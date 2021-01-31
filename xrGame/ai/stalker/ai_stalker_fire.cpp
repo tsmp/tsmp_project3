@@ -644,10 +644,10 @@ float CAI_Stalker::pick_distance()
 
 void CAI_Stalker::update_can_kill_info()
 {
-	if (m_pick_frame_id == Device.dwFrame)
+	if (m_pick_frame_id == Device.CurrentFrameNumber)
 		return;
 
-	m_pick_frame_id = Device.dwFrame;
+	m_pick_frame_id = Device.CurrentFrameNumber;
 	m_can_kill_member = false;
 	m_can_kill_enemy = false;
 

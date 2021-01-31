@@ -809,7 +809,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 			ProcessScripts();
 		else
 #ifdef DEBUG
-			if (Device.dwFrame > (spawn_time() + g_AI_inactive_time))
+			if (Device.CurrentFrameNumber > (spawn_time() + g_AI_inactive_time))
 #endif
 			Think();
 		m_dwLastUpdateTime = Device.dwTimeGlobal;

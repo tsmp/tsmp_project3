@@ -162,7 +162,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 
 Fvector2 CMapLocation::Position()
 {
-	if (m_cached.m_updatedFrame == Device.dwFrame)
+	if (m_cached.m_updatedFrame == Device.CurrentFrameNumber)
 		return m_cached.m_Position;
 
 	Fvector2 pos;
@@ -202,7 +202,7 @@ Fvector2 CMapLocation::Position()
 
 Fvector2 CMapLocation::Direction()
 {
-	if (m_cached.m_updatedFrame == Device.dwFrame)
+	if (m_cached.m_updatedFrame == Device.CurrentFrameNumber)
 		return m_cached.m_Direction;
 
 	Fvector2 res;
@@ -243,7 +243,7 @@ Fvector2 CMapLocation::Direction()
 
 shared_str CMapLocation::LevelName()
 {
-	if (m_cached.m_updatedFrame == Device.dwFrame)
+	if (m_cached.m_updatedFrame == Device.CurrentFrameNumber)
 		return m_cached.m_LevelName;
 
 	if (ai().get_alife() && ai().get_game_graph())
@@ -276,7 +276,7 @@ shared_str CMapLocation::LevelName()
 
 bool CMapLocation::Update() //returns actual
 {
-	if (m_cached.m_updatedFrame == Device.dwFrame)
+	if (m_cached.m_updatedFrame == Device.CurrentFrameNumber)
 		return m_cached.m_Actuality;
 
 	if (m_flags.test(eTTL))
@@ -284,7 +284,7 @@ bool CMapLocation::Update() //returns actual
 		if (m_actual_time < Device.dwTimeGlobal)
 		{
 			m_cached.m_Actuality = false;
-			m_cached.m_updatedFrame = Device.dwFrame;
+			m_cached.m_updatedFrame = Device.CurrentFrameNumber;
 			return m_cached.m_Actuality;
 		}
 	}
@@ -298,7 +298,7 @@ bool CMapLocation::Update() //returns actual
 		Position();
 		Direction();
 		LevelName();
-		m_cached.m_updatedFrame = Device.dwFrame;
+		m_cached.m_updatedFrame = Device.CurrentFrameNumber;
 		return m_cached.m_Actuality;
 	}
 
@@ -309,7 +309,7 @@ bool CMapLocation::Update() //returns actual
 		Position();
 		Direction();
 		LevelName();
-		m_cached.m_updatedFrame = Device.dwFrame;
+		m_cached.m_updatedFrame = Device.CurrentFrameNumber;
 		return m_cached.m_Actuality;
 	}
 
@@ -322,12 +322,12 @@ bool CMapLocation::Update() //returns actual
 			Direction();
 			LevelName();
 		}
-		m_cached.m_updatedFrame = Device.dwFrame;
+		m_cached.m_updatedFrame = Device.CurrentFrameNumber;
 		return m_cached.m_Actuality;
 	}
 
 	m_cached.m_Actuality = false;
-	m_cached.m_updatedFrame = Device.dwFrame;
+	m_cached.m_updatedFrame = Device.CurrentFrameNumber;
 	return m_cached.m_Actuality;
 }
 

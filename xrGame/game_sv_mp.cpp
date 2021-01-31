@@ -69,12 +69,12 @@ void game_sv_mp::Update()
 		if (!pCorpseObj)
 		{
 			m_CorpseList.erase(m_CorpseList.begin() + i);
-			Msg("corpse [%d] not found [%d]", CorpseID, Device.dwFrame);
+			Msg("corpse [%d] not found [%d]", CorpseID, Device.CurrentFrameNumber);
 			continue;
 		}
 		if (!pCorpseObj->children.empty())
 		{
-			Msg("corpse [%d] childern not empty [%d]", CorpseID, Device.dwFrame);
+			Msg("corpse [%d] childern not empty [%d]", CorpseID, Device.CurrentFrameNumber);
 			i++;
 			continue;
 		}
@@ -84,7 +84,7 @@ void game_sv_mp::Update()
 		u_EventGen(P, GE_DESTROY, CorpseID);
 		Level().Send(P, net_flags(TRUE, TRUE));
 		m_CorpseList.erase(m_CorpseList.begin() + i);
-		Msg("corpse [%d] send destroy [%d]", CorpseID, Device.dwFrame);
+		Msg("corpse [%d] send destroy [%d]", CorpseID, Device.CurrentFrameNumber);
 	}
 
 	if (IsVotingEnabled() && IsVotingActive())
