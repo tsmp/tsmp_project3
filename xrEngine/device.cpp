@@ -112,7 +112,17 @@ void CRenderDevice::End(void)
 #endif
 }
 
+// ¬ыполн€ютс€ задачи то в основном то во втором потоке
+void ProcessTasksForMT()
+{
+	for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
+		Device.seqParallel[pit]();
+	Device.seqParallel.clear_not_free();
+	Device.seqFrameMT.Process(rp_Frame);
+}
+
 volatile u32 mt_Thread_marker = 0x12345678;
+
 void mt_Thread(void *ptr)
 {
 	while (true)
@@ -129,10 +139,7 @@ void mt_Thread(void *ptr)
 		// we has granted permission to execute
 		mt_Thread_marker = Device.CurrentFrameNumber;
 
-		for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
-			Device.seqParallel[pit]();
-		Device.seqParallel.clear_not_free();
-		Device.seqFrameMT.Process(rp_Frame);
+		ProcessTasksForMT();
 
 		// now we give control to device - signals that we are ended our work
 		Device.mt_csEnter.Leave();
@@ -168,34 +175,60 @@ int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
 
-void CRenderDevice::Run()
+void CRenderDevice::ProcessRender()
+{
+	Statistic->RenderTOTAL_Real.FrameStart();
+	Statistic->RenderTOTAL_Real.Begin();
+
+	if (b_is_Active)
+	{
+		if (Begin())
+		{
+			seqRender.Process(rp_Render);
+			if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
+				Statistic->Show();
+			End();
+		}
+	}
+	Statistic->RenderTOTAL_Real.End();
+	Statistic->RenderTOTAL_Real.FrameEnd();
+	Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
+}
+
+void CRenderDevice::PrepareToRun()
 {
 	//	DUMP_PHASE;
 	g_bLoaded = FALSE;
-	MSG msg;
-	BOOL bGotMsg;
+
 	Log("Starting engine...");
 	thread_name("X-RAY Primary thread");
 
 	// Startup timers and calculate timer delta
 	dwTimeGlobal = 0;
+		
+	// —истемное врем€ (врем€ с момента запуска системы)
+	u32 time_mm = timeGetTime();
 
-	{
-		// —истемное врем€ (врем€ с момента запуска системы)
-		u32 time_mm = timeGetTime();
-		while (timeGetTime() == time_mm)
-			; // wait for next tick
-		u32 time_system = timeGetTime();
-		u32 time_local = TimerAsync();
-		m_SystemLocalTimersDelta = time_system - time_local;
-	}
-
+	while (timeGetTime() == time_mm)
+		; // wait for next tick
+	
+	u32 time_system = timeGetTime();
+	u32 time_local = TimerAsync();
+	m_SystemLocalTimersDelta = time_system - time_local;
+	
 	// Start all threads
 	mt_csEnter.Enter();
 	mt_bMustExit = FALSE;
 	thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
+}
+
+void CRenderDevice::Run()
+{
+	PrepareToRun();
 
 	// Message cycle
+	BOOL bGotMsg;
+	MSG msg;
 	PeekMessage(&msg, NULL, 0U, 0U, PM_NOREMOVE);
 
 	seqAppStart.Process(rp_AppStart);
@@ -214,14 +247,15 @@ void CRenderDevice::Run()
 		{
 			if (b_is_Ready)
 			{
-
 #ifdef DEDICATED_SERVER
-				u32 FrameStartTime = m_GlobalTimer.GetElapsed_ms();
+				u32 frameStartTime = m_GlobalTimer.GetElapsed_ms();
 #endif
+
 				if (psDeviceFlags.test(rsStatistic))
 					g_bEnableStatGather = TRUE;
 				else
 					g_bEnableStatGather = FALSE;
+
 				if (g_loading_events.size())
 				{
 					if (g_loading_events.front()())
@@ -260,23 +294,9 @@ void CRenderDevice::Run()
 				Sleep(0);
 
 #ifndef DEDICATED_SERVER
-				Statistic->RenderTOTAL_Real.FrameStart();
-				Statistic->RenderTOTAL_Real.Begin();
-				if (b_is_Active)
-				{
-					if (Begin())
-					{
-
-						seqRender.Process(rp_Render);
-						if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
-							Statistic->Show();
-						End();
-					}
-				}
-				Statistic->RenderTOTAL_Real.End();
-				Statistic->RenderTOTAL_Real.FrameEnd();
-				Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
+				ProcessRender();
 #endif
+
 				// *** Suspend threads
 				// Capture startup point
 				// Release end point - allow thread to wait for startup point
@@ -285,47 +305,21 @@ void CRenderDevice::Run()
 
 				// Ensure, that second thread gets chance to execute anyway
 				if (CurrentFrameNumber != mt_Thread_marker)
-				{
-					for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
-						Device.seqParallel[pit]();
-					Device.seqParallel.clear_not_free();
-					seqFrameMT.Process(rp_Frame);
-				}
+					ProcessTasksForMT();				
+
 #ifdef DEDICATED_SERVER
-				u32 FrameEndTime = m_GlobalTimer.GetElapsed_ms();
-				u32 FrameTime = (FrameEndTime - FrameStartTime);
-				/*
-				string1024 FPS_str = "";
-				string64 tmp;
-				strcat(FPS_str, "FPS Real - ");
-				if (dwTimeDelta != 0)
-					strcat(FPS_str, ltoa(1000/dwTimeDelta, tmp, 10));
-				else
-					strcat(FPS_str, "~~~");
+				u32 frameEndTime = m_GlobalTimer.GetElapsed_ms();
+				u32 frameTime = (frameEndTime - frameStartTime);
+				u32 dedicatedSrvUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
 
-				strcat(FPS_str, ", FPS Proj - ");
-				if (FrameTime != 0)
-					strcat(FPS_str, ltoa(1000/FrameTime, tmp, 10));
-				else
-					strcat(FPS_str, "~~~");
-				
-*/
-				u32 DSUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
-				if (FrameTime < DSUpdateDelta)
-				{
-					Sleep(DSUpdateDelta - FrameTime);
-					//					Msg("sleep for %d", DSUpdateDelta - FrameTime);
-					//					strcat(FPS_str, ", sleeped for ");
-					//					strcat(FPS_str, ltoa(DSUpdateDelta - FrameTime, tmp, 10));
-				}
-
-//				Msg(FPS_str);
+				if (frameTime < dedicatedSrvUpdateDelta)
+					Sleep(dedicatedSrvUpdateDelta - frameTime);
 #endif
+
 			}
 			else
-			{
 				Sleep(100);
-			}
+			
 			if (!b_is_Active)
 				Sleep(1);
 		}
@@ -340,7 +334,12 @@ void CRenderDevice::Run()
 		Sleep(0);
 }
 
-void ProcessLoading(RP_FUNC *f);
+void ProcessLoading(RP_FUNC* f)
+{
+	Device.seqFrame.Process(rp_Frame);
+	g_bLoaded = TRUE;
+}
+
 void CRenderDevice::FrameMove()
 {
 	CurrentFrameNumber++;
@@ -360,6 +359,7 @@ void CRenderDevice::FrameMove()
 		float fPreviousFrameTime = m_FrameTimer.GetElapsed_sec();
 		m_FrameTimer.Start();												// previous frame
 		fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime; // smooth random system activity - worst case ~7% error
+
 		if (fTimeDelta > .1f)
 			fTimeDelta = .1f; // limit to 15fps minimum
 
@@ -375,17 +375,13 @@ void CRenderDevice::FrameMove()
 
 	// Frame move
 	Statistic->EngineTOTAL.Begin();
+
 	if (!g_bLoaded)
 		ProcessLoading(rp_Frame);
 	else
 		seqFrame.Process(rp_Frame);
-	Statistic->EngineTOTAL.End();
-}
 
-void ProcessLoading(RP_FUNC *f)
-{
-	Device.seqFrame.Process(rp_Frame);
-	g_bLoaded = TRUE;
+	Statistic->EngineTOTAL.End();
 }
 
 ENGINE_API BOOL bShowPauseString = TRUE;

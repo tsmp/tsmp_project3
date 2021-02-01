@@ -35,8 +35,10 @@ private:
 	void _Create(LPCSTR shName);
 	void _Destroy(BOOL bKeepTextures);
 	void _SetupStates();
+	void ProcessRender();
+	void PrepareToRun();
 
-public:
+public:	
 	HWND m_hWnd;
 
 	u32 CurrentFrameNumber;
@@ -143,7 +145,6 @@ public:
 	void Reset(bool precache = true);
 
 	void Initialize(void);
-	void ShutDown(void);
 
 public:
 
