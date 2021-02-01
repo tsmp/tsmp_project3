@@ -216,10 +216,12 @@ void CRenderDevice::PrepareToRun()
 	u32 time_local = TimerAsync();
 	m_SystemLocalTimersDelta = time_system - time_local;
 	
+#ifndef DEDICATED_SERVER
 	// Start all threads
 	mt_csEnter.Enter();
 	mt_bMustExit = FALSE;
 	thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
+#endif
 }
 
 void CRenderDevice::Run()
@@ -286,6 +288,7 @@ void CRenderDevice::Run()
 				RCache.set_xform_project(mProject);
 				D3DXMatrixInverse((D3DXMATRIX *)&mInvFullTransform, 0, (D3DXMATRIX *)&mFullTransform);
 
+#ifndef DEDICATED_SERVER
 				// *** Resume threads
 				// Capture end point - thread must run only ONE cycle
 				// Release start point - allow thread to run
@@ -293,9 +296,7 @@ void CRenderDevice::Run()
 				mt_csEnter.Leave();
 				Sleep(0);
 
-#ifndef DEDICATED_SERVER
 				ProcessRender();
-#endif
 
 				// *** Suspend threads
 				// Capture startup point
@@ -305,6 +306,7 @@ void CRenderDevice::Run()
 
 				// Ensure, that second thread gets chance to execute anyway
 				if (CurrentFrameNumber != mt_Thread_marker)
+#endif
 					ProcessTasksForMT();				
 
 #ifdef DEDICATED_SERVER
@@ -326,11 +328,13 @@ void CRenderDevice::Run()
 	}
 	seqAppEnd.Process(rp_AppEnd);
 
+#ifndef DEDICATED_SERVER
 	// Stop Balance-Thread
 	mt_bMustExit = TRUE;
 	mt_csEnter.Leave();
 
 	while (mt_bMustExit)
+#endif
 		Sleep(0);
 }
 

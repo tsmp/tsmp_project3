@@ -35,7 +35,7 @@ private:
 	void _Create(LPCSTR shName);
 	void _Destroy(BOOL bKeepTextures);
 	void _SetupStates();
-	void ProcessRender();
+	ICF void ProcessRender();
 	void PrepareToRun();
 
 public:	
