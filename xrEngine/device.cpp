@@ -70,27 +70,27 @@ void CRenderDevice::Clear()
 
 void CRenderDevice::End(void)
 {
-#ifndef DEDICATED_SERVER
-
 	VERIFY(HW.pDevice);
 
 	if (HW.Caps.SceneMode)
 		overdrawEnd();
 
-	//
 	if (dwPrecacheFrame)
 	{
 		::Sound->set_master_volume(0.f);
 		dwPrecacheFrame--;
 		pApp->load_draw_internal();
-		if (0 == dwPrecacheFrame)
+
+		if (!dwPrecacheFrame)
 		{
 			Gamma.Update();
 
 			if (precache_light)
 				precache_light->set_active(false);
+
 			if (precache_light)
 				precache_light.destroy();
+
 			::Sound->set_master_volume(1.f);
 			pApp->destroy_loading_shaders();
 			Resources->DestroyNecessaryTextures();
@@ -105,15 +105,11 @@ void CRenderDevice::End(void)
 	Memory.dbg_check();
 	CHK_DX(HW.pDevice->EndScene());
 
-	HRESULT _hr = HW.pDevice->Present(NULL, NULL, NULL, NULL);
-	if (D3DERR_DEVICELOST == _hr)
-		return; // we will handle this later
-			//R_ASSERT2		(SUCCEEDED(_hr),	"Presentation failed. Driver upgrade needed?");
-#endif
+	HW.pDevice->Present(NULL, NULL, NULL, NULL);
 }
 
 // ¬ыполн€ютс€ задачи то в основном то во втором потоке
-void ProcessTasksForMT()
+ICF void ProcessTasksForMT()
 {
 	for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
 		Device.seqParallel[pit]();
@@ -269,6 +265,7 @@ void CRenderDevice::Run()
 				else
 					FrameMove();
 
+#ifndef DEDICATED_SERVER
 				// Precache
 				if (dwPrecacheFrame)
 				{
@@ -288,7 +285,6 @@ void CRenderDevice::Run()
 				RCache.set_xform_project(mProject);
 				D3DXMatrixInverse((D3DXMATRIX *)&mInvFullTransform, 0, (D3DXMATRIX *)&mFullTransform);
 
-#ifndef DEDICATED_SERVER
 				// *** Resume threads
 				// Capture end point - thread must run only ONE cycle
 				// Release start point - allow thread to run
