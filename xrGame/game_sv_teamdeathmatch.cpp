@@ -255,9 +255,14 @@ void game_sv_TeamDeathmatch::OnPlayerChangeTeam(ClientID id_who, s16 team)
 	s16 OldTeam = ps_who->team;
 	ps_who->team = u8(team & 0x00ff);
 	TeamStruct *pTS = GetTeamData(team);
+
 	if (pTS)
 	{
-		if ((ps_who->money_for_round < pTS->m_iM_Start) || (OldTeam == 0))
+		s32 temp = ps_who->money_for_round_team2;
+		ps_who->money_for_round_team2 = ps_who->money_for_round;
+		ps_who->money_for_round = temp;
+		
+		if ((ps_who->money_for_round == -1) || (OldTeam == 0))
 			Money_SetStart(id_who);
 	}
 

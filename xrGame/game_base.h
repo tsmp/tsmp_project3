@@ -63,6 +63,7 @@ struct game_PlayerState
 	s16 m_iKillsInRowMax;
 	s16 m_iDeaths;
 	s32 money_for_round;
+	s32 money_for_round_team2;
 
 	float experience_Real;
 	float experience_New;
