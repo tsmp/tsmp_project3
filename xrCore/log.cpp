@@ -49,15 +49,16 @@ void AddOne(const char *split)
 
 	logCS.Enter();
 
-#ifdef DEBUG
-	OutputDebugString(split);
-	OutputDebugString("\n");
+#ifndef DEBUG
+	if (IsDebuggerPresent())
 #endif
-
-	//	DUMP_PHASE;
+	{
+		OutputDebugString(split);
+		OutputDebugString("\n");
+	}
+	
 	{
 		shared_str temp = shared_str(split);
-		//		DUMP_PHASE;
 		LogFile->push_back(temp);
 	}
 
