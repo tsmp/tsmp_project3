@@ -108,7 +108,7 @@ void try_change_current_entity()
 	Engine.Sheduler.Register(actor);
 
 	Engine.Sheduler.Unregister(nearest_agent);
-	Engine.Sheduler.Register(nearest_agent, TRUE);
+	Engine.Sheduler.Register(nearest_agent, true);
 }
 
 void restore_actor()
@@ -122,7 +122,7 @@ void restore_actor()
 	Level().SetEntity(g_debug_actor);
 
 	Engine.Sheduler.Unregister(g_debug_actor);
-	Engine.Sheduler.Register(g_debug_actor, TRUE);
+	Engine.Sheduler.Register(g_debug_actor, true);
 
 	g_debug_actor->inventory().Items_SetCurrentEntityHud(true);
 

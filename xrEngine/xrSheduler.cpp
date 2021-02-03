@@ -69,19 +69,19 @@ void CSheduler::internal_Registration()
 			if (!bFoundAndErased)
 			{
 #ifdef DEBUG_SCHEDULER
-				Msg("SCHEDULER: internal register [%s][%x][%s]", *R.Object->shedule_Name(), R.Object, R.RT ? "true" : "false");
+				Msg("SCHEDULER: internal register [%s][%x][%s]", *R.Object->shedule_Name(), R.Object, R.realtime ? "true" : "false");
 #endif // DEBUG_SCHEDULER
-				internal_Register(R.Object, R.RT);
+				internal_Register(R.Object, R.realtime);
 			}
 #ifdef DEBUG_SCHEDULER
 			else
-				Msg("SCHEDULER: internal register skipped, because unregister found [%s][%x][%s]", "unknown", R.Object, R.RT ? "true" : "false");
+				Msg("SCHEDULER: internal register skipped, because unregister found [%s][%x][%s]", "unknown", R.Object, R.realtime ? "true" : "false");
 #endif // DEBUG_SCHEDULER
 		}
 		else
 		{
 			// unregister
-			internal_Unregister(R.Object, R.RT);
+			internal_Unregister(R.Object, R.realtime);
 		}
 	}
 	Registration.clear();
@@ -228,15 +228,15 @@ bool CSheduler::Registered(ISheduled *object) const
 }
 #endif // DEBUG
 
-void CSheduler::Register(ISheduled *A, BOOL RT)
+void CSheduler::Register(ISheduled *A, bool realtime)
 {
 	VERIFY(!Registered(A));
 
 	ItemReg R;
 	R.OP = TRUE;
-	R.RT = RT;
+	R.realtime = realtime;
 	R.Object = A;
-	R.Object->shedule.b_RT = RT;
+	R.Object->shedule.b_RT = realtime;
 
 #ifdef DEBUG_SCHEDULER
 	Msg("SCHEDULER: register [%s][%x]", *A->shedule_Name(), A);
@@ -261,7 +261,7 @@ void CSheduler::Unregister(ISheduled *A)
 
 	ItemReg R;
 	R.OP = FALSE;
-	R.RT = A->shedule.b_RT;
+	R.realtime = A->shedule.b_RT;
 	R.Object = A;
 
 	Registration.push_back(R);
@@ -429,16 +429,7 @@ void CSheduler::ProcessStep()
 	// always try to decrease target
 	psShedulerTarget -= psShedulerReaction;
 }
-/*
-void CSheduler::Switch				()
-{
-	if (fibered)	
-	{
-		fibered						= FALSE;
-		SwitchToFiber				(fiber_main);
-	}
-}
-*/
+
 void CSheduler::Update()
 {
 	R_ASSERT(Device.Statistic);

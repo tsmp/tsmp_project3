@@ -304,27 +304,30 @@ void CSpectator::IR_OnMouseMove(int dx, int dy)
 void CSpectator::FirstEye_ToPlayer(CObject *pObject)
 {
 	CObject *pCurViewEntity = Level().CurrentEntity();
+
 	if (pCurViewEntity)
 	{
 		CActor *pOldActor = smart_cast<CActor *>(pCurViewEntity);
-		if (pOldActor)
-		{
+
+		if (pOldActor)		
 			pOldActor->inventory().Items_SetCurrentEntityHud(false);
-		};
+		
 		if (pCurViewEntity->CLS_ID != CLSID_SPECTATOR)
 		{
 			Engine.Sheduler.Unregister(pCurViewEntity);
-			Engine.Sheduler.Register(pCurViewEntity, TRUE);
-		};
-	};
+			Engine.Sheduler.Register(pCurViewEntity, true);
+		}
+	}
+
 	if (pObject)
 	{
 		Level().SetEntity(pObject);
 
 		Engine.Sheduler.Unregister(pObject);
-		Engine.Sheduler.Register(pObject, TRUE);
+		Engine.Sheduler.Register(pObject, true);
 
 		CActor *pActor = smart_cast<CActor *>(pObject);
+
 		if (pActor)
 		{
 			pActor->inventory().Items_SetCurrentEntityHud(true);
@@ -335,8 +338,8 @@ void CSpectator::FirstEye_ToPlayer(CObject *pObject)
 				pHudItem->OnStateSwitch(pHudItem->GetState());
 			}
 		}
-	};
-};
+	}
+}
 
 void CSpectator::cam_Set(EActorCameras style)
 {
