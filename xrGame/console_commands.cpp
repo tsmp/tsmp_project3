@@ -341,7 +341,8 @@ public:
 	{
 		float time_factor = (float)atof(args);
 		clamp(time_factor, .001f, 1000.f);
-		Device.time_factor(time_factor);
+		//Device.time_factor(time_factor);
+		R_ASSERT(false, "TSMP: вырезано в 41c9dfddfcd82cd144fbfa6f0f87a8687d7b4d04");
 	}
 };
 #endif // MASTER_GOLD
