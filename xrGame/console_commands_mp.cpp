@@ -1694,7 +1694,7 @@ void register_mp_console_commands()
 	CMD4(CCC_Integer, "net_cl_update_rate", &psNET_ClientUpdate, 20, 100);
 	CMD4(CCC_Integer, "net_cl_pending_lim", &psNET_ClientPending, 0, 10);
 #endif
-	CMD4(CCC_Integer, "net_sv_update_rate", &psNET_ServerUpdate, 1, 100);
+	CMD4(CCC_Integer, "net_sv_update_rate", &psNET_ServerUpdate, 1, 1000000);
 	CMD4(CCC_Integer, "net_sv_pending_lim", &psNET_ServerPending, 0, 10);
 	CMD4(CCC_Integer, "net_sv_gpmode", &psNET_GuaranteedPacketMode, 0, 2);
 	CMD3(CCC_Mask, "net_sv_log_data", &psNET_Flags, NETFLAG_LOG_SV_PACKETS);
@@ -1785,14 +1785,14 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Float, "sv_vote_time", &g_sv_mp_fVoteTime, 0.5f, 10.0f);
 
 	CMD4(CCC_SV_Integer, "sv_forcerespawn", (int *)&g_sv_dm_dwForceRespawn, 0, 3600); //sec
-	CMD4(CCC_SV_Integer, "sv_fraglimit", &g_sv_dm_dwFragLimit, 0, 100);
-	CMD4(CCC_SV_Integer, "sv_timelimit", &g_sv_dm_dwTimeLimit, 0, 180); //min
+	CMD4(CCC_SV_Integer, "sv_fraglimit", &g_sv_dm_dwFragLimit, 0, 1000000);
+	CMD4(CCC_SV_Integer, "sv_timelimit", &g_sv_dm_dwTimeLimit, 0, 1000000); //min
 	CMD4(CCC_SV_Integer, "sv_dmgblockindicator", (int *)&g_sv_dm_bDamageBlockIndicators, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_dmgblocktime", (int *)&g_sv_dm_dwDamageBlockTime, 0, 600); //sec
 	CMD4(CCC_SV_Integer, "sv_anomalies_enabled", (int *)&g_sv_dm_bAnomaliesEnabled, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_anomalies_length", (int *)&g_sv_dm_dwAnomalySetLengthTime, 0, 180); //min
 	CMD4(CCC_SV_Integer, "sv_pda_hunt", (int *)&g_sv_dm_bPDAHunt, 0, 1);
-	CMD4(CCC_SV_Integer, "sv_warm_up", (int *)&g_sv_dm_dwWarmUp_MaxTime, 0, 3600); //sec
+	CMD4(CCC_SV_Integer, "sv_warm_up", (int *)&g_sv_dm_dwWarmUp_MaxTime, 0, 1000000); //sec
 
 	CMD4(CCC_Integer, "sv_max_ping_limit", (int *)&g_sv_dwMaxClientPing, 1, 2000);
 
@@ -1805,7 +1805,7 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer, "sv_teamkill_punish", (int *)&g_sv_tdm_bTeamKillPunishment, 0, 1);
 
 	CMD4(CCC_SV_Integer, "sv_artefact_respawn_delta", (int *)&g_sv_ah_dwArtefactRespawnDelta, 0, 600); //sec
-	CMD4(CCC_SV_Integer, "sv_artefacts_count", (int *)&g_sv_ah_dwArtefactsNum, 1, 100);
+	CMD4(CCC_SV_Integer, "sv_artefacts_count", (int *)&g_sv_ah_dwArtefactsNum, 1, 1000000);
 	CMD4(CCC_SV_Integer, "sv_artefact_stay_time", (int *)&g_sv_ah_dwArtefactStayTime, 0, 180);	 //min
 	CMD4(CCC_SV_Integer, "sv_reinforcement_time", (int *)&g_sv_ah_iReinforcementTime, -1, 3600); //sec
 	CMD4(CCC_SV_Integer, "sv_bearercantsprint", (int *)&g_sv_ah_bBearerCantSprint, 0, 1);
