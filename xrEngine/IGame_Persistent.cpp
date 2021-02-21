@@ -63,6 +63,8 @@ void IGame_Persistent::OnAppEnd()
 
 void IGame_Persistent::PreStart(LPCSTR op)
 {
+	SinglePlayerGame = !!strstr(op, "/single/") || !!strstr(op, "/sp/");
+
 	string256 prev_type;
 	params new_game_params;
 	strcpy_s(prev_type, m_game_params.m_game_type);

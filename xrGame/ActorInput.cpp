@@ -74,6 +74,10 @@ void CActor::IR_OnKeyboardPress(int cmd)
 
 	switch (cmd)
 	{
+	case kJUMP:	
+		mstate_wishful |= mcJump;		
+		break;
+
 	case kCROUCH_TOGGLE:
 	{
 		g_bAutoClearCrouch = !g_bAutoClearCrouch;

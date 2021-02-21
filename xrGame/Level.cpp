@@ -117,8 +117,8 @@ CLevel::CLevel() : IPureClient(Device.GetTimerGlobal())
 		m_level_sound_manager = xr_new<CLevelSoundManager>();
 		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
 		m_client_spawn_manager = xr_new<CClientSpawnManager>();
-
-		if (!xr_strcmp(Core.Params, "/single/"))
+				
+		if(IsGameTypeSingle());
 			m_autosave_manager = xr_new<CAutosaveManager>();			
 
 #ifdef DEBUG
@@ -1089,7 +1089,7 @@ u32 GameID()
 
 bool IsGameTypeSingle()
 {
-	return g_pGamePersistent->GameType() == GAME_SINGLE || g_pGamePersistent->GameType() == GAME_ANY;
+	return g_pGamePersistent->SinglePlayerGame;
 }
 
 GlobalFeelTouch::GlobalFeelTouch() {}

@@ -292,14 +292,13 @@ IPureServer::EConnect IPureServer::Connect(LPCSTR options)
 {
 	connect_options = options;
 	psNET_direct_connect = FALSE;
+	bool singlePlayer = !!strstr(options, "/single/") || !!strstr(options, "/sp/");
 
-	if (strstr(options, "/single") && !strstr(Core.Params, "-no_direct_connect"))
+	if (singlePlayer && !strstr(Core.Params, "-no_direct_connect"))
 		psNET_direct_connect = TRUE;
-	else
-	{
+	else	
 		gen_auth_code();
-	}
-
+	
 	// Parse options
 	string4096 session_name;
 	string4096 session_options = "";
@@ -307,18 +306,23 @@ IPureServer::EConnect IPureServer::Connect(LPCSTR options)
 	u32 dwMaxPlayers = 0;
 
 	strcpy(session_name, options);
+
 	if (strchr(session_name, '/'))
 		*strchr(session_name, '/') = 0;
+
 	if (strchr(options, '/'))
 		strcpy(session_options, strchr(options, '/') + 1);
+
 	if (strstr(options, "psw="))
 	{
 		const char* PSW = strstr(options, "psw=") + 4;
+
 		if (strchr(PSW, '/'))
 			strncpy(password_str, PSW, strchr(PSW, '/') - PSW);
 		else
 			strncpy(password_str, PSW, 63);
 	}
+
 	if (strstr(options, "maxplayers="))
 	{
 		const char* sMaxPlayers = strstr(options, "maxplayers=") + 11;
@@ -329,13 +333,14 @@ IPureServer::EConnect IPureServer::Connect(LPCSTR options)
 			strncpy(tmpStr, sMaxPlayers, 63);
 		dwMaxPlayers = atol(tmpStr);
 	}
+
 	if (dwMaxPlayers > 32 || dwMaxPlayers < 1)
 		dwMaxPlayers = 32;
-	Msg("MaxPlayers = %d", dwMaxPlayers);
 
-	//-------------------------------------------------------------------
+	Msg("MaxPlayers = %d", dwMaxPlayers);	
 	BOOL bPortWasSet = FALSE;
 	u32 dwServerPort = BASE_PORT_LAN_SV;
+
 	if (strstr(options, "portsv="))
 	{
 		const char* ServerPort = strstr(options, "portsv=") + 7;
