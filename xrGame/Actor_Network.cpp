@@ -619,7 +619,7 @@ BOOL CActor::net_Spawn(CSE_Abstract *DC)
 
 	setEnabled(E->s_flags.is(M_SPAWN_OBJECT_LOCAL));
 
-	Engine.Sheduler.Register(this, TRUE);
+	Engine.Sheduler.Register(this, true);
 
 	if (!IsGameTypeSingle())
 	{

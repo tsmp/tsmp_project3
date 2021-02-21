@@ -110,8 +110,8 @@ enum
 	GE_ZONE_STATE_CHANGE,
 
 	GE_MOVE_ACTOR,	  //move actor to desired position instantly
-	GE_ACTOR_JUMPING, //actor press jump key
-	GE_ACTOR_MAX_POWER,
+	
+	GE_ACTOR_MAX_POWER=28,
 
 	GE_CHANGE_POS,
 

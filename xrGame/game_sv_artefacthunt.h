@@ -26,17 +26,17 @@ protected:
 	u16 m_dwArtefactID;
 
 	ARTEFACT_STATE m_eAState;
-	bool m_bArtefactWasTaken;
+
+	bool m_bArtefactWasTakenAlready;
 	bool m_bArtefactWasDropped;
 
 	xr_vector<RPoint> Artefact_rpoints;
-	//.	xr_vector<u8>					ArtefactsRPoints_ID;
-	//.	u8								m_LastRespawnPointID;
 	CRandom ArtefactChooserRandom;
 
 	u16 artefactBearerID; //ah,ZoneMap
 	u16 m_iAfBearerMenaceID;
 	u8 teamInPossession; //ah,ZoneMap
+	shared_str m_ArthuntSpecialArtefactType;
 
 	bool bNoLostMessage;
 	bool m_bArtefactWasBringedToBase;
@@ -60,6 +60,9 @@ protected:
 	virtual void ReadOptions(shared_str &options);
 	virtual void ConsoleCommands_Create();
 	virtual void ConsoleCommands_Clear();
+
+	void OnArtefactTaken(u16 playerId);
+	void OnArtefactDropped(u16 playerId);
 
 	virtual bool Player_Check_Rank(game_PlayerState *ps);
 
@@ -99,7 +102,7 @@ public:
 	virtual void OnObjectEnterTeamBase(u16 id, u16 zone_team);
 	virtual void OnObjectLeaveTeamBase(u16 id, u16 zone_team);
 
-	void OnArtefactOnBase(ClientID id_who);
+	void OnArtefactOnBase(ClientID id_who);	
 
 	virtual BOOL OnTouch(u16 eid_who, u16 eid_what, BOOL bForced = FALSE);
 	virtual void OnDetach(u16 eid_who, u16 eid_what);
@@ -113,7 +116,7 @@ public:
 
 	virtual void net_Export_State(NET_Packet &P, ClientID id_to); // full state
 	bool ArtefactSpawn_Allowed();
-	//-------------------------------------------------------------------------------
+
 	virtual void RespawnAllNotAlivePlayers();
 	virtual bool CheckAlivePlayersInTeam(s16 Team);
 	virtual void MoveAllAlivePlayers();
@@ -121,7 +124,6 @@ public:
 	virtual void CheckForTeamWin();
 	virtual BOOL CanHaveFriendlyFire() { return TRUE; }
 
-	//-----------------------------------------------------------------------------
 	virtual int Get_ArtefactsCount();
 	virtual u32 Get_ArtefactsRespawnDelta();
 	virtual u32 Get_ArtefactsStayTime();
@@ -132,11 +134,10 @@ public:
 
 	void SwapTeams();
 
-	//  [7/5/2005]
 #ifdef DEBUG
 	virtual void OnRender();
 #endif
-	//  [7/5/2005]
+
 protected:
 	virtual void WriteGameState(CInifile &ini, LPCSTR sect, bool bRoundResult);
 };

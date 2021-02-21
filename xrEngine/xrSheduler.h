@@ -2,9 +2,20 @@
 
 #include "ISheduled.h"
 
+// Планировщик обновления игровых объектов
 class ENGINE_API CSheduler
 {
+public:	
+	void Update();
+
+	void Register(ISheduled* A, bool realtime = false);
+	void Unregister(ISheduled* A);
+
+	void Initialize();
+	void Destroy();
+
 private:
+
 	struct Item
 	{
 		u32 dwTimeForExecute;
@@ -18,46 +29,52 @@ private:
 			return dwTimeForExecute > I.dwTimeForExecute;
 		}
 	};
-	struct ItemReg
-	{
-		BOOL OP;
-		BOOL RT;
-		ISheduled *Object;
-	};
 
-private:
 	xr_vector<Item> ItemsRT;
 	xr_vector<Item> Items;
 	xr_vector<Item> ItemsProcessed;
-	xr_vector<ItemReg> Registration;
-	bool m_processing_now;
 
-	IC void Push(Item &I);
-	IC void Pop();
-	IC Item &Top()
-	{
-		return Items.front();
-	}
-	void internal_Register(ISheduled *A, BOOL RT = FALSE);
-	bool internal_Unregister(ISheduled *A, BOOL RT, bool warn_on_not_found = true);
-	void internal_Registration();
-
-public:
 	u64 cycles_start;
 	u64 cycles_limit;
-
-public:
-	void ProcessStep();
-	void Process();
-	void Update();
+	
+	bool m_processing_now;
 
 #ifdef DEBUG
-	bool Registered(ISheduled *object) const;
+	friend class ISheduled;
+	bool Registered(ISheduled* object) const;	
 #endif // DEBUG
-	void Register(ISheduled *A, BOOL RT = FALSE);
-	void Unregister(ISheduled *A);
-	void EnsureOrder(ISheduled *Before, ISheduled *After);
 
-	void Initialize();
-	void Destroy();
+	void ProcessStep();
+
+	// Регистрация объектов в планировщике
+	struct RegistratorItem
+	{
+		ISheduled* objectPtr;
+		bool unregister;
+		bool realtime;
+	};
+
+	xr_vector<RegistratorItem> m_RegistrationVector;
+
+	void internal_Register(ISheduled* A, BOOL RT = FALSE);
+	bool internal_Unregister(ISheduled* A, BOOL RT, bool warn_on_not_found = true);
+	void internal_ProcessRegistration();
+
+	// Очередь
+	IC void Push(Item& I)
+	{
+		Items.push_back(I);
+		std::push_heap(Items.begin(), Items.end());
+	}
+
+	IC void Pop()
+	{
+		std::pop_heap(Items.begin(), Items.end());
+		Items.pop_back();
+	}
+
+	IC Item& Top() 
+	{ 
+		return Items.front(); 
+	}
 };

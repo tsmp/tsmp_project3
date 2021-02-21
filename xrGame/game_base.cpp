@@ -20,7 +20,8 @@ game_PlayerState::game_PlayerState()
 	skin = 0;
 	m_online_time = 0;
 	team = 0;
-	money_for_round = 0;
+	money_for_round = -1;
+	money_for_round_team2 = -1;
 	flags__ = 0;
 	m_bCurrentVoteAgreed = 2;
 	RespawnTime = 0;

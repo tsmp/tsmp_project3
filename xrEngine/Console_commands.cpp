@@ -506,6 +506,7 @@ void CCC_Register()
 
 	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
+	CMD3(CCC_Mask, "rs_cam_pos", &psDeviceFlags, rsCameraPos);
 
 	RegisterDebugCommands();
 }
@@ -646,8 +647,7 @@ void RegisterDebugCommands()
 	CMD3(CCC_Mask, "rs_render_dynamics", &psDeviceFlags, rsDrawDynamic);
 
 	CMD3(CCC_Mask, "rs_disable_objects_as_crows", &psDeviceFlags, rsDisableObjectsAsCrows);
-
-	CMD3(CCC_Mask, "rs_cam_pos", &psDeviceFlags, rsCameraPos);
+		
 	CMD3(CCC_Mask, "rs_occ_draw", &psDeviceFlags, rsOcclusionDraw);
 	CMD3(CCC_Mask, "rs_occ_stats", &psDeviceFlags, rsOcclusionStats);
 	CMD4(CCC_Integer, "rs_skeleton_update", &psSkeletonUpdate, 2, 128);

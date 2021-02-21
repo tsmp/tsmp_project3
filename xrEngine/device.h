@@ -35,8 +35,10 @@ private:
 	void _Create(LPCSTR shName);
 	void _Destroy(BOOL bKeepTextures);
 	void _SetupStates();
+	ICF void ProcessRender();
+	void PrepareToRun();
 
-public:
+public:	
 	HWND m_hWnd;
 
 	u32 CurrentFrameNumber;
@@ -101,7 +103,6 @@ public:
 	Fmatrix mView;
 	Fmatrix mProject;
 	Fmatrix mFullTransform;
-	Fmatrix mInvFullTransform;
 	float fFOV;
 	float fASPECT;
 
@@ -143,7 +144,6 @@ public:
 	void Reset(bool precache = true);
 
 	void Initialize(void);
-	void ShutDown(void);
 
 public:
 

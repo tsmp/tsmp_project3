@@ -32,18 +32,16 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	if (Remote())
 		return;
 
-	//	if (conditions().IsSleeping())	return;
 	if (IsTalking())
 		return;
+
 	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
 		return;
 
-	switch (cmd)
-	{
-	case kWPN_FIRE:
+	if (cmd == kWPN_FIRE)
 	{
 		mstate_wishful &= ~mcSprint;
-		//-----------------------------
+
 		if (OnServer())
 		{
 			NET_Packet P;
@@ -52,12 +50,6 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			u_EventSend(P);
 		}
 	}
-	break;
-	default:
-	{
-	}
-	break;
-	}
 
 	if (!g_Alive())
 		return;
@@ -65,8 +57,10 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	if (m_holder && kUSE != cmd)
 	{
 		m_holder->OnKeyboardPress(cmd);
+
 		if (m_holder->allowWeapon() && inventory().Action(cmd, CMD_START))
 			return;
+
 		return;
 	}
 	else if (inventory().Action(cmd, CMD_START))
@@ -80,23 +74,15 @@ void CActor::IR_OnKeyboardPress(int cmd)
 
 	switch (cmd)
 	{
-	case kJUMP:
-	{
-		mstate_wishful |= mcJump;
-		{
-			//				NET_Packet	P;
-			//				u_EventGen(P, GE_ACTOR_JUMPING, ID());
-			//				u_EventSend(P);
-		}
-	}
-	break;
 	case kCROUCH_TOGGLE:
 	{
 		g_bAutoClearCrouch = !g_bAutoClearCrouch;
+
 		if (!g_bAutoClearCrouch)
 			mstate_wishful |= mcCrouch;
 	}
 	break;
+
 	case kSPRINT_TOGGLE:
 	{
 		if (mstate_wishful & mcSprint)
@@ -105,20 +91,25 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			mstate_wishful |= mcSprint;
 	}
 	break;
+
 	case kCAM_1:
 		cam_Set(eacFirstEye);
 		break;
+
 	case kCAM_2:
 		cam_Set(eacLookAt);
 		break;
+
 	case kCAM_3:
 		cam_Set(eacFreeLook);
 		break;
+
 	case kNIGHT_VISION:
 	{
 		const xr_vector<CAttachableItem *> &all = CAttachmentOwner::attached_objects();
 		xr_vector<CAttachableItem *>::const_iterator it = all.begin();
 		xr_vector<CAttachableItem *>::const_iterator it_e = all.end();
+
 		for (; it != it_e; ++it)
 		{
 			CTorch *torch = smart_cast<CTorch *>(*it);
@@ -130,14 +121,17 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		}
 	}
 	break;
+
 	case kTORCH:
 	{
 		const xr_vector<CAttachableItem *> &all = CAttachmentOwner::attached_objects();
 		xr_vector<CAttachableItem *>::const_iterator it = all.begin();
 		xr_vector<CAttachableItem *>::const_iterator it_e = all.end();
+
 		for (; it != it_e; ++it)
 		{
 			CTorch *torch = smart_cast<CTorch *>(*it);
+
 			if (torch)
 			{
 				torch->Switch();
@@ -146,32 +140,23 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		}
 	}
 	break;
-	case kWPN_1:
-	case kWPN_2:
-	case kWPN_3:
-	case kWPN_4:
-	case kWPN_5:
-	case kWPN_6:
-	case kWPN_RELOAD:
-		//Weapons->ActivateWeaponID	(cmd-kWPN_1);
-		break;
+
 	case kUSE:
 		ActorUse();
 		break;
+
 	case kDROP:
 		b_DropActivated = TRUE;
 		f_DropPower = 0;
 		break;
-	case kNEXT_SLOT:
-	{
+
+	case kNEXT_SLOT:	
 		OnNextWeaponSlot();
-	}
-	break;
-	case kPREV_SLOT:
-	{
+		break;
+
+	case kPREV_SLOT:	
 		OnPrevWeaponSlot();
-	}
-	break;
+		break;
 
 	case kUSE_BANDAGE:
 	case kUSE_MEDKIT:
@@ -179,6 +164,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		if (IsGameTypeSingle())
 		{
 			PIItem itm = inventory().item((cmd == kUSE_BANDAGE) ? CLSID_IITEM_BANDAGE : CLSID_IITEM_MEDKIT);
+			
 			if (itm)
 			{
 				inventory().Eat(itm);
@@ -193,6 +179,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	break;
 	}
 }
+
 void CActor::IR_OnMouseWheel(int direction)
 {
 	if (inventory().Action((direction > 0) ? kWPN_ZOOM_DEC : kWPN_ZOOM_INC, CMD_START))
@@ -203,6 +190,7 @@ void CActor::IR_OnMouseWheel(int direction)
 	else
 		OnPrevWeaponSlot();
 }
+
 void CActor::IR_OnKeyboardRelease(int cmd)
 {
 	if (Remote())

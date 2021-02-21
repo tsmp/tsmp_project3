@@ -286,10 +286,10 @@ void CLevel::IR_OnKeyboardPress(int key)
 				if (tpObject)
 				{
 					Engine.Sheduler.Unregister(tpObject);
-					Engine.Sheduler.Register(tpObject, TRUE);
+					Engine.Sheduler.Register(tpObject, true);
 				};
 				Engine.Sheduler.Unregister(*I);
-				Engine.Sheduler.Register(*I, TRUE);
+				Engine.Sheduler.Register(*I, true);
 
 				CActor *pActor = smart_cast<CActor *>(*I);
 				if (pActor)
