@@ -118,7 +118,7 @@ CLevel::CLevel() : IPureClient(Device.GetTimerGlobal())
 		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
 		m_client_spawn_manager = xr_new<CClientSpawnManager>();
 				
-		if(IsGameTypeSingle());
+		if(IsGameTypeSingle())
 			m_autosave_manager = xr_new<CAutosaveManager>();			
 
 #ifdef DEBUG
