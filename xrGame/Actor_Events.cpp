@@ -51,6 +51,7 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 		}
 
 		CGameObject *_GO = smart_cast<CGameObject *>(Obj);
+
 		if (!IsGameTypeSingle() && !g_Alive())
 		{
 			Msg("! WARNING: dead player [%d][%s] can't take items [%d][%s]", ID(), Name(), _GO->ID(),
@@ -58,33 +59,28 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 			break;
 		}
 
-		CFoodItem *pFood = smart_cast<CFoodItem *>(Obj);
-		if (pFood)
+		if (CFoodItem *pFood = smart_cast<CFoodItem *>(Obj))
 			pFood->m_eItemPlace = eItemPlaceRuck;
 
 		if (inventory().CanTakeItem(smart_cast<CInventoryItem *>(_GO)))
 		{
 			Obj->H_SetParent(smart_cast<CObject *>(this));
-
 			inventory().Take(_GO, false, true);
 
 			CUIGameSP *pGameSP = NULL;
 			CUI *ui = HUD().GetUI();
+
 			if (ui && ui->UIGame())
 			{
 				pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
+
 				if (Level().CurrentViewEntity() == this)
 					HUD().GetUI()->UIGame()->ReInitShownUI();
-			};
+			}
 
 			//добавить отсоединенный аддон в инвентарь
-			if (pGameSP)
-			{
-				if (pGameSP->MainInputReceiver() == pGameSP->InventoryMenu)
-				{
-					pGameSP->InventoryMenu->AddItemToBag(smart_cast<CInventoryItem *>(Obj));
-				}
-			}
+			if (pGameSP && pGameSP->MainInputReceiver() == pGameSP->InventoryMenu)				
+				pGameSP->InventoryMenu->AddItemToBag(smart_cast<CInventoryItem *>(Obj));			
 
 			SelectBestWeapon(Obj);
 		}
@@ -105,6 +101,7 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 		}
 	}
 	break;
+
 	case GE_TRADE_SELL:
 	case GE_OWNERSHIP_REJECT:
 	{
@@ -155,6 +152,7 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 			HUD().GetUI()->UIGame()->ReInitShownUI();
 	}
 	break;
+
 	case GE_INV_ACTION:
 	{
 		s32 cmd;
@@ -174,14 +172,17 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 		{
 			if (cmd == kWPN_ZOOM)
 				SetZoomRndSeed(ZoomRndSeed);
+
 			if (cmd == kWPN_FIRE)
 				SetShotRndSeed(ShotRndSeed);
+
 			IR_OnKeyboardPress(cmd);
 		}
 		else
 			IR_OnKeyboardRelease(cmd);
 	}
 	break;
+
 	case GEG_PLAYER_ITEM2SLOT:
 	case GEG_PLAYER_ITEM2BELT:
 	case GEG_PLAYER_ITEM2RUCK:
@@ -190,6 +191,7 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 	{
 		P.r_u16(id);
 		CObject *Obj = Level().Objects.net_Find(id);
+		CGameObject* GO = smart_cast<CGameObject*>(Obj);
 
 		if (!Obj)
 		{
@@ -209,6 +211,21 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 #ifdef DEBUG
 			Msg("! something to destroyed object - %s[%d]0x%X", *Obj->cName(), id, smart_cast<CInventoryItem *>(Obj));
 #endif
+			break;
+		}
+
+		if (!GO->H_Parent())
+		{
+			Msg("! ERROR: Actor [%d][%s] tries to manipulate with item [%d][%s] that has no parent", ID(), Name(), GO->ID(),
+				GO->cNameSect().c_str());
+			break;
+		}
+
+		if (GO->H_Parent()->ID() != ID())
+		{
+			CActor* real_parent = smart_cast<CActor*>(GO->H_Parent());
+			Msg("! ERROR: Actor [%d][%s] tries to manipulate with item he doesnt own [%d][%s], his parent is [%d][%s]", ID(), Name(),
+				GO->ID(), GO->cNameSect().c_str(), real_parent->ID(), real_parent->Name());
 			break;
 		}
 
@@ -258,6 +275,7 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 		inventory().SetSlotsBlocked((u16)State, !!Set);
 	}
 	break;
+
 	case GE_MOVE_ACTOR:
 	{
 		Fvector NewPos, NewRot;
@@ -267,6 +285,7 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 		MoveActor(NewPos, NewRot);
 	}
 	break;
+
 	case GE_ACTOR_MAX_POWER:
 	{
 		conditions().MaxPower();
@@ -274,10 +293,12 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 		ClearBloodWounds();
 	}
 	break;
+
 	case GEG_PLAYER_ATTACH_HOLDER:
 	{
 		u32 id = P.r_u32();
 		CObject *O = Level().Objects.net_Find(id);
+
 		if (!O)
 		{
 			Msg("! Error: No object to attach holder [%d]", id);
@@ -289,21 +310,22 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 			use_Holder(holder);
 	}
 	break;
+
 	case GEG_PLAYER_DETACH_HOLDER:
 	{
 		if (!m_holder)
 			break;
+
 		u32 id = P.r_u32();
 		CGameObject *GO = smart_cast<CGameObject *>(m_holder);
 		VERIFY(id == GO->ID());
 		use_Holder(NULL);
 	}
 	break;
-	case GEG_PLAYER_PLAY_HEADSHOT_PARTICLE:
-	{
+
+	case GEG_PLAYER_PLAY_HEADSHOT_PARTICLE:	
 		OnPlayHeadShotParticle(P);
-	}
-	break;
+		break;
 	}
 }
 

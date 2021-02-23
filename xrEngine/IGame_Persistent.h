@@ -66,6 +66,7 @@ public:
 	IGame_ObjectPool ObjectPool;
 
 	IMainMenu *m_pMainMenu;
+	bool SinglePlayerGame;
 
 	CEnvironment *pEnvironment;
 	CEnvironment &Environment() { return *pEnvironment; };
