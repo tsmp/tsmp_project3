@@ -44,7 +44,7 @@
 		if (!ignore_always && !(expr))                                                \
 			::Debug.fail(_TRE(#expr), _TRE(e2), _TRE(e3), DEBUG_INFO, ignore_always); \
 	} while (0)
-#define R_ASSERT4(expr, e2, e3)                                                                 \
+#define R_ASSERT4(expr, e2, e3, e4)                                                                 \
 	do                                                                                          \
 	{                                                                                           \
 		static bool ignore_always = false;                                                      \
