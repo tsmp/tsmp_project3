@@ -336,10 +336,12 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate *dn)
 void CPHDestroyable::NotificateDestroy(CPHDestroyableNotificate *dn)
 {
 	VERIFY(m_depended_objects);
-	VERIFY(!ph_world->Processing());
+	DEBUG_VERIFY(!ph_world->Processing());
+
 	m_depended_objects--;
 	PhysicallyRemovePart(dn);
 	m_notificate_objects.push_back(dn);
+
 	if (!m_depended_objects)
 	{
 		xr_vector<CPHDestroyableNotificate *>::iterator i = m_notificate_objects.begin(), e = m_notificate_objects.end();

@@ -23,7 +23,7 @@ bool CCar::HUDView() const
 
 void CCar::cam_Update(float dt, float fov)
 {
-	VERIFY(!ph_world->Processing());
+	DEBUG_VERIFY(!ph_world->Processing());
 	Fvector P, Da;
 	Da.set(0, 0, 0);
 	//bool							owner = !!Owner();

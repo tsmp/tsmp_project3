@@ -416,5 +416,5 @@ void CObject::setDestroy(BOOL _destroy)
 #endif
 	}
 	else
-		VERIFY(!g_pGameLevel->Objects.registered_object_to_destroy(this));
+		DEBUG_VERIFY(!g_pGameLevel->Objects.registered_object_to_destroy(this));
 }

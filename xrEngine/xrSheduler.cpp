@@ -47,7 +47,7 @@ void CSheduler::Destroy()
 
 void CSheduler::Register(ISheduled* A, bool realtime)
 {
-	VERIFY(!Registered(A));
+	DEBUG_VERIFY(!Registered(A));
 
 	RegistratorItem R;
 	R.unregister = false;
@@ -64,7 +64,7 @@ void CSheduler::Register(ISheduled* A, bool realtime)
 
 void CSheduler::Unregister(ISheduled* A)
 {
-	VERIFY(Registered(A));
+	//VERIFY(Registered(A));
 
 #ifdef DEBUG_SCHEDULER
 	Msg("SCHEDULER: unregister [%s][%x]", *A->shedule_Name(), A);

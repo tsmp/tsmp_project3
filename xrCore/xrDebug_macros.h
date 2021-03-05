@@ -1,8 +1,7 @@
-#ifndef xrDebug_macrosH
-#define xrDebug_macrosH
 #pragma once
 
-//. #define _ANONYMOUS_BUILD
+//#define _ANONYMOUS_BUILD
+#define ENABLE_VERIFICATIONS_ON_RELEASE
 
 #ifndef _ANONYMOUS_BUILD
 #define DEBUG_INFO __FILE__, __LINE__, __FUNCTION__
@@ -82,6 +81,9 @@
 		if (!ignore_always && !(expr))                      \
 			::Debug.fail(#expr, DEBUG_INFO, ignore_always); \
 	} while (0)
+
+#define DEBUG_VERIFY VERIFY
+
 #define VERIFY2(expr, e2)                                       \
 	do                                                          \
 	{                                                           \
@@ -115,10 +117,17 @@
 
 #define NODEFAULT __assume(0)
 
-#define VERIFY(expr) \
+#define DEBUG_VERIFY(expr) \
 	do               \
 	{                \
 	} while (0)
+
+#ifdef ENABLE_VERIFICATIONS_ON_RELEASE
+#define VERIFY(expr) if(!(expr)) Debug.assertion_message(#expr, DEBUG_INFO);
+#else
+#define VERIFY DEBUG_VERIFY
+#endif
+
 #define VERIFY2(expr, e2) \
 	do                    \
 	{                     \
@@ -166,4 +175,3 @@ struct CompileTimeError<true>
 		CompileTimeError<((expr) != 0)> ERROR_##msg; \
 		(void)ERROR_##msg;                           \
 	}
-#endif // xrDebug_macrosH
