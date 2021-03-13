@@ -49,43 +49,45 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 	if (mstate_real & (mcLanding | mcLanding2))
 	{
 		m_fLandingTime -= dt;
+
 		if (m_fLandingTime <= 0.f)
 		{
 			mstate_real &= ~(mcLanding | mcLanding2);
 			mstate_real &= ~(mcFall | mcJump);
 		}
 	}
+
 	// закончить падение
 	if (character_physics_support()->movement()->gcontact_Was)
 	{
-		if (mstate_real & mcFall)
+		if (mstate_real & mcFall && character_physics_support()->movement()->GetContactSpeed() > 4.f)
 		{
-			if (character_physics_support()->movement()->GetContactSpeed() > 4.f)
+			if (fis_zero(character_physics_support()->movement()->gcontact_HealthLost))
 			{
-				if (fis_zero(character_physics_support()->movement()->gcontact_HealthLost))
-				{
-					m_fLandingTime = s_fLandingTime1;
-					mstate_real |= mcLanding;
-				}
-				else
-				{
-					m_fLandingTime = s_fLandingTime2;
-					mstate_real |= mcLanding2;
-				}
+				m_fLandingTime = s_fLandingTime1;
+				mstate_real |= mcLanding;
 			}
+			else
+			{
+				m_fLandingTime = s_fLandingTime2;
+				mstate_real |= mcLanding2;
+			}			
 		}
+
 		m_bJumpKeyPressed = TRUE;
 		m_fJumpTime = s_fJumpTime;
 		mstate_real &= ~(mcFall | mcJump);
 	}
+
 	if ((mstate_wf & mcJump) == 0)
 		m_bJumpKeyPressed = FALSE;
 
+	m_VelocityIsNonZero = character_physics_support()->movement()->GetVelocityActual() > 0.2f;
+
 	// Зажало-ли меня/уперся - не двигаюсь
-	if (((character_physics_support()->movement()->GetVelocityActual() < 0.2f) && (!(mstate_real & (mcFall | mcJump)))) || character_physics_support()->movement()->bSleep)
-	{
+	if (((!m_VelocityIsNonZero) && (!(mstate_real & (mcFall | mcJump)))) || character_physics_support()->movement()->bSleep)	
 		mstate_real &= ~mcAnyMove;
-	}
+	
 	if (character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround || character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
 	{
 		// если на земле гарантированно снимать флажок Jump
@@ -95,6 +97,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 			m_fJumpTime = s_fJumpTime;
 		}
 	}
+
 	if (character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
 	{
 		if (!(mstate_real & mcClimb))
@@ -106,12 +109,11 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 	}
 	else
 	{
-		if (mstate_real & mcClimb)
-		{
+		if (mstate_real & mcClimb)		
 			cam_UnsetLadder();
-		}
+		
 		mstate_real &= ~mcClimb;
-	};
+	}
 
 	if (mstate_wf != mstate_real)
 	{
@@ -124,28 +126,17 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 		}
 	}
 
-	if (!CanAccelerate() && isActorAccelerated(mstate_real, IsZoomAimingMode()))
-	{
-		mstate_real ^= mcAccel;
-	};
+	if (!CanAccelerate() && isActorAccelerated(mstate_real, IsZoomAimingMode()))	
+		mstate_real ^= mcAccel;	
 
 	if (this == Level().CurrentControlEntity())
 	{
 		bool bOnClimbNow = !!(mstate_real & mcClimb);
 		bool bOnClimbOld = !!(mstate_old & mcClimb);
 
-		if (bOnClimbNow != bOnClimbOld)
-		{
-			SetWeaponHideState(INV_STATE_LADDER, bOnClimbNow);
-		};
-		/*
-	if ((mstate_real&mcSprint) != (mstate_old&mcSprint))
-	{
-		CHudItem* pHudItem = smart_cast<CHudItem*>(inventory().ActiveItem());	
-		if (pHudItem) pHudItem->onMovementChanged(mcSprint);
-	};
-	*/
-	};
+		if (bOnClimbNow != bOnClimbOld)		
+			SetWeaponHideState(INV_STATE_LADDER, bOnClimbNow);		
+	}
 };
 
 void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Jump, float dt)
@@ -226,11 +217,6 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 				conditions().ConditionJump(inventory().TotalWeight() / MaxCarryWeight());
 		}
 
-		/*
-		if(m_bJumpKeyPressed)
-		Jump				= m_fJumpSpeed;
-		*/
-
 		// mask input into "real" state
 		u32 move = mcAnyMove | mcAccel;
 
@@ -251,10 +237,8 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			}
 		}
 
-		if ((mstate_wf & mcSprint) && !CanSprint())
-		{
-			mstate_wf &= ~mcSprint;
-		}
+		if ((mstate_wf & mcSprint) && !CanSprint())		
+			mstate_wf &= ~mcSprint;		
 
 		mstate_real &= (~move);
 		mstate_real |= (mstate_wf & move);
@@ -263,6 +247,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			mstate_real |= mcSprint;
 		else
 			mstate_real &= ~mcSprint;
+
 		if (!(mstate_real & (mcFwd | mcLStrafe | mcRStrafe)) || mstate_real & (mcCrouch | mcClimb) || !isActorAccelerated(mstate_wf, IsZoomAimingMode()))
 		{
 			mstate_real &= ~mcSprint;
@@ -277,26 +262,33 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			// correct "mstate_real" if opposite keys pressed
 			if (_abs(vControlAccel.z) < EPS)
 				mstate_real &= ~(mcFwd + mcBack);
+
 			if (_abs(vControlAccel.x) < EPS)
 				mstate_real &= ~(mcLStrafe + mcRStrafe);
 
 			// normalize and analyze crouch and run
 			float scale = vControlAccel.magnitude();
+
 			if (scale > EPS)
 			{
 				scale = m_fWalkAccel / scale;
+
 				if (bAccelerated)
+				{
 					if (mstate_real & mcBack)
 						scale *= m_fRunBackFactor;
 					else
 						scale *= m_fRunFactor;
+				}
 				else if (mstate_real & mcBack)
-					scale *= m_fWalkBackFactor;
+					scale *= m_fWalkBackFactor;				
 
 				if (mstate_real & mcCrouch)
 					scale *= m_fCrouchFactor;
+
 				if (mstate_real & mcClimb)
 					scale *= m_fClimbFactor;
+
 				if (mstate_real & mcSprint)
 					scale *= m_fSprintFactor;
 
@@ -310,33 +302,13 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 
 				vControlAccel.mul(scale);
 			}
-			else
-			{
-				//				mstate_real	&= ~mcAnyMove;
-			}
 		}
 	}
-	else
-	{
-		//		mstate_real			&=~ mcAnyMove;
-	}
-
-	//-------------------------------------------------------------------------------
 
 	//transform local dir to world dir
 	Fmatrix mOrient;
 	mOrient.rotateY(-r_model_yaw);
 	mOrient.transform_dir(vControlAccel);
-	//XFORM().transform_dir(vControlAccel);
-
-	/*
-	if(mstate_real&mcClimb&&mstate_real&mcAnyMove&&
-	inventory().ActiveItem()&&inventory().ActiveItem()->HandDependence()==hd2Hand)
-	{
-		//inventory().ActiveItem()->Deactivate();
-		inventory().Activate(NO_ACTIVE_SLOT);
-	}
-*/
 }
 
 #define ACTOR_ANIM_SECT "actor_animation"

@@ -66,7 +66,7 @@ void IGame_Persistent::PreStart(LPCSTR op)
 	if (op)
 		SinglePlayerGame = !!strstr(op, "/single/") || !!strstr(op, "/sp/");
 	else
-		SinglePlayerGame = false;
+		SinglePlayerGame = false; // будет на клиенте
 
 	string256 prev_type;
 	params new_game_params;
