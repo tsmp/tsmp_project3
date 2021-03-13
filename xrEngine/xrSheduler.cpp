@@ -86,20 +86,41 @@ void CSheduler::Unregister(ISheduled* A)
 
 void CSheduler::internal_ProcessRegistration()
 {
-	for (RegistratorItem& item : m_RegistrationVector)
+	for (u32 it = 0; it < m_RegistrationVector.size(); it++)
 	{
-		if (item.unregister)
-			internal_Unregister(item.objectPtr, item.realtime);
+		RegistratorItem& item = m_RegistrationVector[it];
+		
+		if (!item.unregister)
+		{
+			// ищем пару на удаление. нельзя удалять этот код
+			// иначе будет ломаться на самом первом апдейте
+			bool foundUnregisterPair = false;
+
+			for (u32 pairIt = it + 1; pairIt < m_RegistrationVector.size(); pairIt++)
+			{
+				RegistratorItem& itemPair = m_RegistrationVector[pairIt];
+
+				if (itemPair.unregister && itemPair.objectPtr == item.objectPtr)
+				{
+					foundUnregisterPair = true;
+					m_RegistrationVector.erase(m_RegistrationVector.begin() + pairIt);
+					break;
+				}
+			}
+
+			if (!foundUnregisterPair)
+				internal_Register(item.objectPtr, item.realtime);
+		}
 		else
-			internal_Register(item.objectPtr, item.realtime);
+			internal_Unregister(item.objectPtr, item.realtime);
 	}
 
 	m_RegistrationVector.clear();
 }
 
-void CSheduler::internal_Register(ISheduled *O, BOOL RT)
+void CSheduler::internal_Register(ISheduled *Obj, BOOL RT)
 {
-	VERIFY(!O->shedule.b_locked);
+	VERIFY(!Obj->shedule.b_locked);
 
 #ifdef DEBUG_SCHEDULER
 	Msg("SCHEDULER: internal register [%s][%x][%s]", O->shedule_Name(), O, RT ? "true" : "false");
@@ -111,9 +132,9 @@ void CSheduler::internal_Register(ISheduled *O, BOOL RT)
 		Item TNext;
 		TNext.dwTimeForExecute = Device.dwTimeGlobal;
 		TNext.dwTimeOfLastExecute = Device.dwTimeGlobal;
-		TNext.Object = O;
-		TNext.scheduled_name = O->shedule_Name();
-		O->shedule.b_RT = TRUE;
+		TNext.Object = Obj;
+		TNext.scheduled_name = Obj->shedule_Name();
+		Obj->shedule.b_RT = TRUE;
 
 		ItemsRT.push_back(TNext);
 	}
@@ -123,9 +144,9 @@ void CSheduler::internal_Register(ISheduled *O, BOOL RT)
 		Item TNext;
 		TNext.dwTimeForExecute = Device.dwTimeGlobal;
 		TNext.dwTimeOfLastExecute = Device.dwTimeGlobal;
-		TNext.Object = O;
-		TNext.scheduled_name = O->shedule_Name();
-		O->shedule.b_RT = FALSE;
+		TNext.Object = Obj;
+		TNext.scheduled_name = Obj->shedule_Name();
+		Obj->shedule.b_RT = FALSE;
 
 		// Insert into priority Queue
 		Push(TNext);
