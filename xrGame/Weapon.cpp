@@ -475,6 +475,14 @@ BOOL CWeapon::net_Spawn(CSE_Abstract *DC)
 	SetState(E->wpn_state);
 	SetNextState(E->wpn_state);
 
+#ifdef ALIFE_MP
+	if (m_ammoType >= m_ammoTypes.size())
+	{
+		Msg("! ERROR: invalid ammo type!");
+		m_ammoType = 0;
+	}
+#endif
+
 	m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
 	if (iAmmoElapsed)
 	{

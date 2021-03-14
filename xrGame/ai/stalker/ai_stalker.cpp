@@ -368,12 +368,22 @@ BOOL CAI_Stalker::net_Spawn(CSE_Abstract *DC)
 	if (ai().game_graph().valid_vertex_id(tpHuman->m_tNextGraphID) && movement().restrictions().accessible(ai().game_graph().vertex(tpHuman->m_tNextGraphID)->level_point()))
 		movement().set_game_dest_vertex(tpHuman->m_tNextGraphID);
 
-	R_ASSERT2(
-		ai().get_game_graph() &&
-			ai().get_level_graph() &&
-			ai().get_cross_table() &&
-			(ai().level_graph().level_id() != u32(-1)),
-		"There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
+	if (IsGameTypeSingle())
+	{
+		R_ASSERT2(
+			ai().get_game_graph() &&
+				ai().get_level_graph() &&
+				ai().get_cross_table() &&
+				(ai().level_graph().level_id() != u32(-1)),
+			"There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
+	}
+	else
+	{
+		if (ai().get_game_graph())
+			Msg("- spawn stalker on server");
+		else
+			Msg("- spawn stalker on client");
+	}
 
 	setEnabled(TRUE);
 
@@ -493,7 +503,20 @@ BOOL CAI_Stalker::net_SaveRelevant()
 	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell() != NULL));
 }
 
-void CAI_Stalker::net_Export(NET_Packet &P)
+void CAI_Stalker::net_Export(NET_Packet& P)
+{
+	if (IsGameTypeSingle())
+		net_Export_Single(P);
+	else
+		net_Export_MP(P);
+}
+
+void CAI_Stalker::net_Export_MP(NET_Packet& P)
+{
+	P.w_vec3(Position());
+}
+
+void CAI_Stalker::net_Export_Single(NET_Packet &P)
 {
 	R_ASSERT(Local());
 
@@ -538,7 +561,22 @@ void CAI_Stalker::net_Export(NET_Packet &P)
 	P.w_stringZ(m_sStartDialog);
 }
 
-void CAI_Stalker::net_Import(NET_Packet &P)
+void CAI_Stalker::net_Import(NET_Packet& P)
+{
+	if (IsGameTypeSingle())
+		net_Import_Single(P);
+	else
+		net_Import_MP(P);
+}
+
+void CAI_Stalker::net_Import_MP(NET_Packet& P)
+{
+	Fvector vec;
+	P.r_vec3(vec);
+	renderable.xform.c = vec;
+}
+
+void CAI_Stalker::net_Import_Single(NET_Packet &P)
 {
 	R_ASSERT(Remote());
 	net_update N;
@@ -786,7 +824,8 @@ void CAI_Stalker::shedule_Update(u32 DT)
 		STOP_PROFILE
 
 		START_PROFILE("stalker/schedule_update/memory/update")
-		memory().update(dt);
+			if(!Remote())
+				memory().update(dt);
 		STOP_PROFILE
 
 		STOP_PROFILE

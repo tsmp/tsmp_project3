@@ -292,7 +292,7 @@ void CEntityAlive::Hit(SHit *pHDS)
 	inherited::Hit(&HDS);
 
 #ifdef ALIFE_MP
-	if (g_Alive())
+	if (g_Alive() && !Remote())
 #else
 	if (g_Alive() && IsGameTypeSingle())
 #endif

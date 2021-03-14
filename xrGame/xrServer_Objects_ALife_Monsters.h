@@ -478,6 +478,13 @@ add_to_type_list(CSE_ALifeHumanAbstract)
 CSE_ALifeHumanStalker(LPCSTR caSection);
 virtual ~CSE_ALifeHumanStalker();
 virtual void load(NET_Packet &tNetPacket);
+void UPDATE_Write_Original(NET_Packet& tNetPacket);
+void UPDATE_Read_Original(NET_Packet& tNetPacket);
+void UPDATE_Write_MP(NET_Packet& tNetPacket);
+void UPDATE_Read_MP(NET_Packet& tNetPacket);
+
+Fvector coord;
+
 virtual CSE_Abstract *cast_abstract() { return this; }
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeHumanStalker)

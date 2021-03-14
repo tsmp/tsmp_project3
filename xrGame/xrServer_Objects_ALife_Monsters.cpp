@@ -1892,16 +1892,49 @@ void CSE_ALifeHumanStalker::STATE_Read(NET_Packet &tNetPacket, u16 size)
 
 void CSE_ALifeHumanStalker::UPDATE_Write(NET_Packet &tNetPacket)
 {
+	if (IsGameTypeSingle())
+		UPDATE_Write_Original(tNetPacket);
+	else
+		UPDATE_Write_MP(tNetPacket);
+}
+
+void CSE_ALifeHumanStalker::UPDATE_Write_Original(NET_Packet& tNetPacket)
+{
 	inherited1::UPDATE_Write(tNetPacket);
 	inherited2::UPDATE_Write(tNetPacket);
 	tNetPacket.w_stringZ(m_start_dialog);
 }
 
+void CSE_ALifeHumanStalker::UPDATE_Write_MP(NET_Packet& tNetPacket)
+{
+	tNetPacket.w_vec3(coord);
+}
+
 void CSE_ALifeHumanStalker::UPDATE_Read(NET_Packet &tNetPacket)
+{
+	if (IsGameTypeSingle())
+		UPDATE_Read_Original(tNetPacket);
+	else
+		UPDATE_Read_MP(tNetPacket);
+}
+
+void CSE_ALifeHumanStalker::UPDATE_Read_Original(NET_Packet& tNetPacket)
 {
 	inherited1::UPDATE_Read(tNetPacket);
 	inherited2::UPDATE_Read(tNetPacket);
 	tNetPacket.r_stringZ(m_start_dialog);
+}
+
+void CSE_ALifeHumanStalker::UPDATE_Read_MP(NET_Packet& tNetPacket)
+{
+	if (firstUpdate)
+	{
+		UPDATE_Read_Original(tNetPacket);
+		firstUpdate = false;
+		return;
+	}
+
+	tNetPacket.r_vec3(coord);
 }
 
 void CSE_ALifeHumanStalker::load(NET_Packet &tNetPacket)
