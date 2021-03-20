@@ -1927,12 +1927,14 @@ void CSE_ALifeHumanStalker::UPDATE_Read_Original(NET_Packet& tNetPacket)
 
 void CSE_ALifeHumanStalker::UPDATE_Read_MP(NET_Packet& tNetPacket)
 {
+#ifdef ALIFE_MP
 	if (firstUpdate)
 	{
 		UPDATE_Read_Original(tNetPacket);
 		firstUpdate = false;
 		return;
 	}
+#endif
 
 	tNetPacket.r_vec3(coord);
 }
