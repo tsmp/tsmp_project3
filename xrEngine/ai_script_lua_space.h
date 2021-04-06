@@ -11,6 +11,7 @@ namespace Lua
 		eLuaMessageTypeHookReturn,
 		eLuaMessageTypeHookLine,
 		eLuaMessageTypeHookCount,
+		eLuaMessageTypeMessageShowAlways,
 		eLuaMessageTypeHookTailReturn = u32(-1),
 	};
 
