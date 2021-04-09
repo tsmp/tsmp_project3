@@ -34,6 +34,7 @@ void CSheduler::Destroy()
 		_objects[0] = 0;
 
 		Msg("! Sheduler work-list is not empty");
+
 		for (u32 it = 0; it < Items.size(); it++)
 			Msg("%s", *Items[it].Object->shedule_Name().c_str());
 	}
@@ -126,70 +127,43 @@ void CSheduler::internal_Register(ISheduled *Obj, BOOL RT)
 	Msg("SCHEDULER: internal register [%s][%x][%s]", O->shedule_Name(), O, RT ? "true" : "false");
 #endif // DEBUG_SCHEDULER
 
+	// Fill item structure
+	Item TNext;
+	TNext.dwTimeForExecute = Device.dwTimeGlobal;
+	TNext.dwTimeOfLastExecute = Device.dwTimeGlobal;
+	TNext.Object = Obj;
+	TNext.scheduled_name = Obj->shedule_Name();
+	Obj->shedule.b_RT = RT;
+
 	if (RT)
-	{
-		// Fill item structure
-		Item TNext;
-		TNext.dwTimeForExecute = Device.dwTimeGlobal;
-		TNext.dwTimeOfLastExecute = Device.dwTimeGlobal;
-		TNext.Object = Obj;
-		TNext.scheduled_name = Obj->shedule_Name();
-		Obj->shedule.b_RT = TRUE;
-
 		ItemsRT.push_back(TNext);
-	}
 	else
-	{
-		// Fill item structure
-		Item TNext;
-		TNext.dwTimeForExecute = Device.dwTimeGlobal;
-		TNext.dwTimeOfLastExecute = Device.dwTimeGlobal;
-		TNext.Object = Obj;
-		TNext.scheduled_name = Obj->shedule_Name();
-		Obj->shedule.b_RT = FALSE;
-
-		// Insert into priority Queue
 		Push(TNext);
-	}
 }
 
-bool CSheduler::internal_Unregister(ISheduled *O, BOOL RT, bool warn_on_not_found)
+bool CSheduler::internal_Unregister(ISheduled *Obj, BOOL RT, bool warn_on_not_found)
 {
-	if (RT)
+	auto &itemsVector = RT ? ItemsRT : Items;
+
+	for (u32 i = 0; i < itemsVector.size(); i++)
 	{
-		for (u32 i = 0; i < ItemsRT.size(); i++)
+		if (itemsVector[i].Object == Obj)
 		{
-			if (ItemsRT[i].Object == O)
-			{
 #ifdef DEBUG_SCHEDULER
-				Msg("SCHEDULER: internal unregister [%s][%x][%s]", "unknown", O, "true");
+			Msg("SCHEDULER: internal unregister [%s][%x][%s]", "unknown", Obj, "true");
 #endif // DEBUG_SCHEDULER
-				ItemsRT.erase(ItemsRT.begin() + i);
-				return (true);
-			}
-		}
-	}
-	else
-	{
-		for (u32 i = 0; i < Items.size(); i++)
-		{
-			if (Items[i].Object == O)
-			{
-#ifdef DEBUG_SCHEDULER
-				Msg("SCHEDULER: internal unregister [%s][%x][%s]", *Items[i].scheduled_name, O, "false");
-#endif // DEBUG_SCHEDULER
-				Items[i].Object = NULL;
-				return (true);
-			}
+
+			itemsVector.erase(itemsVector.begin() + i);
+			return true;
 		}
 	}
 
-#ifdef DEBUG
+#ifdef DEBUG_SCHEDULER
 	if (warn_on_not_found)
-		Msg("! scheduled object %s tries to unregister but is not registered", *O->shedule_Name());
-#endif // DEBUG
+		Msg("! scheduled object %s tries to unregister but is not registered", *Obj->shedule_Name());
+#endif // DEBUG_SCHEDULER
 
-	return (false);
+	return false;
 }
 
 void CSheduler::ProcessStep()
@@ -197,24 +171,24 @@ void CSheduler::ProcessStep()
 	// Normal priority
 	u32 dwTime = Device.dwTimeGlobal;
 	CTimer eTimer;
+
 	for (int i = 0; !Items.empty() && Top().dwTimeForExecute < dwTime; ++i)
 	{
-		u32 delta_ms = dwTime - Top().dwTimeForExecute;
-
-		// Update
 		Item T = Top();
+
 #ifdef DEBUG_SCHEDULER
 		Msg("SCHEDULER: process step [%s][%x][false]", *T.scheduled_name, T.Object);
 #endif // DEBUG_SCHEDULER
+
 		u32 Elapsed = dwTime - T.dwTimeOfLastExecute;
 		bool condition;
 
-#ifndef DEBUG
+#ifdef DEBUG
+		condition = (NULL == T.Object || !T.Object->shedule_Needed());
+#else
 		__try
 		{
-#endif // DEBUG
 			condition = (NULL == T.Object || !T.Object->shedule_Needed());
-#ifndef DEBUG
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER)
 		{
@@ -231,10 +205,7 @@ void CSheduler::ProcessStep()
 #ifdef DEBUG_SCHEDULER
 			Msg("SCHEDULER: process unregister [%s][%x][%s]", *T.scheduled_name, T.Object, "false");
 #endif		// DEBUG_SCHEDULER
-			//			if (T.Object)
-			//				Msg					("0x%08x UNREGISTERS because shedule_Needed() returned false",T.Object);
-			//			else
-			//				Msg					("UNREGISTERS unknown object");
+
 			Pop();
 			continue;
 		}
@@ -245,9 +216,8 @@ void CSheduler::ProcessStep()
 #ifndef DEBUG
 		__try
 		{
-#endif // DEBUG            \
-	   // Real update call \
-	   // Msg						("------- %d:",Device.CurrentFrameNumber);
+#endif // DEBUG
+
 #ifdef DEBUG
 			T.Object->dbg_startframe = Device.CurrentFrameNumber;
 			eTimer.Start();
@@ -275,19 +245,13 @@ void CSheduler::ProcessStep()
 			TNext.scheduled_name = T.Object->shedule_Name();
 
 			ItemsProcessed.push_back(TNext);
+
 #ifdef DEBUG
-			//		u32	execTime				= eTimer.GetElapsed_ms		();
-			// VERIFY3					(T.Object->dbg_update_shedule == T.Object->dbg_startframe, "Broken sequence of calls to 'shedule_Update'", _obj_name );
-			if (delta_ms > 3 * dwUpdate)
-			{
-				//Msg	("! xrSheduler: failed to shedule object [%s] (%dms)",	_obj_name, delta_ms	);
-			}
 			if (execTime > 15)
 			{
 				Msg("* xrSheduler: too much time consumed by object [%s] (%dms)", _obj_name, execTime);
 			}
-#endif
-#ifndef DEBUG
+#else
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER)
 		{
@@ -390,70 +354,54 @@ void CSheduler::Update()
 #ifdef DEBUG
 bool CSheduler::Registered(ISheduled* object) const
 {
-	u32 count = 0;
-	typedef xr_vector<Item> ITEMS;
+	u32 foundCount = 0;
 
+	for (const Item &it: ItemsRT)
 	{
-		ITEMS::const_iterator I = ItemsRT.begin();
-		ITEMS::const_iterator E = ItemsRT.end();
-		for (; I != E; ++I)
-			if ((*I).Object == object)
-			{
-				//				Msg				("0x%8x found in RT",object);
-				count = 1;
-				break;
-			}
-	}
-	{
-		ITEMS::const_iterator I = Items.begin();
-		ITEMS::const_iterator E = Items.end();
-		for (; I != E; ++I)
-			if ((*I).Object == object)
-			{
-				//				Msg				("0x%8x found in non-RT",object);
-				VERIFY(!count);
-				count = 1;
-				break;
-			}
-	}
-
-	{
-		ITEMS::const_iterator I = ItemsProcessed.begin();
-		ITEMS::const_iterator E = ItemsProcessed.end();
-		for (; I != E; ++I)
-			if ((*I).Object == object)
-			{
-				//				Msg				("0x%8x found in process items",object);
-				VERIFY(!count);
-				count = 1;
-				break;
-			}
-	}
-
-	typedef xr_vector<RegistratorItem> ITEMS_REG;
-	ITEMS_REG::const_iterator I = m_RegistrationVector.begin();
-	ITEMS_REG::const_iterator E = m_RegistrationVector.end();
-
-	for (; I != E; ++I)
-	{
-		if ((*I).objectPtr == object)
+		if (it.Object == object)
 		{
-			if (!(*I).unregister)
+			foundCount++;
+			break;
+		}
+	}
+
+	for (const Item &it : Items)
+	{
+		if (it.Object == object)
+		{
+			foundCount++;
+			break;
+		}
+	}
+
+	for (const Item &it : ItemsProcessed)
+	{
+		if (it.Object == object)
+		{
+			VERIFY(!foundCount);
+			foundCount++;
+			break;
+		}
+	}
+
+	for (const RegistratorItem &it : m_RegistrationVector)
+	{
+		if (it.objectPtr == object)
+		{
+			if (it.unregister)
 			{
-				//				Msg				("0x%8x found in registration on register",object);
-				VERIFY(!count);
-				++count;
+				VERIFY(foundCount == 1);
+				--foundCount;
 			}
 			else
 			{
-				//				Msg				("0x%8x found in registration on UNregister",object);
-				VERIFY(count == 1);
-				--count;
+				VERIFY(!foundCount);
+				++foundCount;
 			}
 		}
 	}
 
-	VERIFY(!count || (count == 1));
-	return (count == 1);
+	VERIFY(!foundCount || (foundCount == 1));
+	return (foundCount == 1);
 }
 #endif // DEBUG
