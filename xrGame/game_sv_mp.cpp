@@ -110,10 +110,8 @@ void game_sv_mp::OnRoundStart()
 {
 	inherited::OnRoundStart();
 
-	if (g_pGameLevel && Level().game)
-	{
-		Game().m_WeaponUsageStatistic->Clear();
-	}
+	if (g_pGameLevel && Level().game)	
+		Game().m_WeaponUsageStatistic->Clear();	
 
 	m_CorpseList.clear();
 
@@ -158,49 +156,44 @@ void game_sv_mp::OnRoundEnd()
 	OnVoteStop();
 
 	switch_Phase(GAME_PHASE_PENDING);
+
 	//send "RoundOver" Message To All clients
 	NET_Packet P;
-	//	P.w_begin			(M_GAMEMESSAGE);
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_ROUND_END);
 	P.w_stringZ(res_str);
 	u_EventSend(P);
-	//-------------------------------------------------------
 }
 
 void game_sv_mp::KillPlayer(ClientID id_who, u16 GameID)
 {
 	CObject *pObject = Level().Objects.net_Find(GameID);
+
 	if (!pObject || pObject->CLS_ID != CLSID_OBJECT_ACTOR)
 		return;
-	// Remove everything
+
 	xrClientData *xrCData = m_server->ID_to_client(id_who);
 
 	if (xrCData && xrCData->ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 		return;
+
 	if (xrCData)
 	{
-		//-------------------------------------------------------
 		OnPlayerKillPlayer(xrCData->ps, xrCData->ps, KT_HIT, SKT_NONE, NULL);
 		xrCData->ps->m_bClearRun = false;
-	};
-	//-------------------------------------------------------
-	CActor *pActor = smart_cast<CActor *>(pObject);
-	if (pActor)
-	{
-		if (!pActor->g_Alive())
-		{
-			return;
-		}
-		pActor->set_death_time();
-		pActor->m_bAllowDeathRemove = true;
-		m_CorpseList.push_back(pActor->ID());
 	}
-	//-------------------------------------------------------
+
+	if(CActor *pActor = smart_cast<CActor *>(pObject))
+	{
+		if (!pActor->g_Alive())		
+			return;		
+
+		AllowDeadBodyRemove(GameID,false);
+	}
+
 	u16 PlayerID = (xrCData != 0) ? xrCData->ps->GameID : GameID;
-	//-------------------------------------------------------
 	SendPlayerKilledMessage(PlayerID, KT_HIT, PlayerID, 0, SKT_NONE);
-	//-------------------------------------------------------
+
 	// Kill Player on all clients
 	NET_Packet P;
 	u_EventGen(P, GE_DIE, PlayerID);
@@ -211,79 +204,63 @@ void game_sv_mp::KillPlayer(ClientID id_who, u16 GameID)
 
 	if (xrCData)
 		SetPlayersDefItems(xrCData->ps);
+
 	signal_Syncronize();
-	//-------------------------------------------------------
-};
+}
 
 void game_sv_mp::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID sender)
 {
 	switch (type)
 	{
-	case GAME_EVENT_PLAYER_KILLED: //playerKillPlayer
-	{
+	case GAME_EVENT_PLAYER_KILLED: //playerKillPlayer	
 		OnPlayerKilled(P);
-	}
-	break;
-	case GAME_EVENT_PLAYER_HITTED:
-	{
+		break;
+
+	case GAME_EVENT_PLAYER_HITTED:	
 		OnPlayerHitted(P);
-	}
-	break;
-	case GAME_EVENT_PLAYER_READY: // cs & dm
-	{
-		xrClientData *l_pC = m_server->ID_to_client(sender);
-		if (!l_pC)
-			break;
-		OnPlayerReady(l_pC->ID);
-	}
-	break;
-	case GAME_EVENT_PLAYER_BUY_SPAWN:
-	{
-		xrClientData *l_pC = m_server->ID_to_client(sender);
-		if (!l_pC)
-			break;
-		OnPlayerBuySpawn(l_pC->ID);
-	}
-	break;
-	case GAME_EVENT_VOTE_START:
-	{
-		if (!IsVotingEnabled())
-			break;
-		string1024 VoteCommand;
-		P.r_stringZ(VoteCommand);
-		OnVoteStart(VoteCommand, sender);
-	}
-	break;
-	case GAME_EVENT_VOTE_YES:
-	{
-		if (!IsVotingEnabled())
-			break;
-		OnVoteYes(sender);
-	}
-	break;
-	case GAME_EVENT_VOTE_NO:
-	{
-		if (!IsVotingEnabled())
-			break;
-		OnVoteNo(sender);
-	}
-	break;
-	case GAME_EVENT_PLAYER_NAME:
-	{
+		break;
+
+	case GAME_EVENT_PLAYER_READY: 		
+		if (xrClientData* l_pC = m_server->ID_to_client(sender))
+			OnPlayerReady(l_pC->ID);
+		break;
+
+	case GAME_EVENT_PLAYER_BUY_SPAWN:		
+		if (xrClientData* l_pC = m_server->ID_to_client(sender))
+			OnPlayerBuySpawn(l_pC->ID);
+		break;
+
+	case GAME_EVENT_VOTE_START:	
+		if (IsVotingEnabled())
+		{
+			string1024 VoteCommand;
+			P.r_stringZ(VoteCommand);
+			OnVoteStart(VoteCommand, sender);
+		}
+		break;
+
+	case GAME_EVENT_VOTE_YES:	
+		if (IsVotingEnabled())
+			OnVoteYes(sender);
+		break;
+
+	case GAME_EVENT_VOTE_NO:	
+		if (IsVotingEnabled())
+			OnVoteNo(sender);
+		break;
+
+	case GAME_EVENT_PLAYER_NAME:	
 		OnPlayerChangeName(P, sender);
-	}
-	break;
+		break;
+
 	case GAME_EVENT_SPEECH_MESSAGE:
-	{
 		OnPlayerSpeechMessage(P, sender);
-	}
-	break;
-	case GAME_EVENT_PLAYER_GAME_MENU:
-	{
-		OnPlayerGameMenu(P, sender);
-		//			OnPlayerSelectSpectator(P, sender);
-	}
-	break;
+		break;
+
+	case GAME_EVENT_PLAYER_GAME_MENU:	
+		OnPlayerGameMenu(P, sender);		
+		break;
+
 	default:
 		inherited::OnEvent(P, type, time, sender);
 	}; //switch
@@ -291,21 +268,18 @@ void game_sv_mp::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID sender)
 
 bool g_bConsoleCommandsCreated = false;
 extern float g_fTimeFactor;
+
 void game_sv_mp::Create(shared_str &options)
 {
 	SetVotingActive(false);
 	inherited::Create(options);
-	//-------------------------------------------------------------------
-	if (!g_bConsoleCommandsCreated)
-	{
-		g_bConsoleCommandsCreated = true;
-	}
 
-	//------------------------------------------------------------------
+	if (!g_bConsoleCommandsCreated)	
+		g_bConsoleCommandsCreated = true;	
+
 	LoadRanks();
-	//------------------------------------------------------------------
 	Set_RankUp_Allowed(false);
-};
+}
 
 u8 game_sv_mp::SpectatorModes_Pack()
 {
@@ -348,29 +322,16 @@ void game_sv_mp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 	CSE_ALifeCreatureActor *pA = smart_cast<CSE_ALifeCreatureActor *>(pOwner);
 	CSE_Spectator *pS = smart_cast<CSE_Spectator *>(pOwner);
 
-	if (pA)
-	{
-		//------------------------------------------------------------
-		AllowDeadBodyRemove(id_who, xrCData->ps->GameID);
-		//------------------------------------------------------------
-		m_CorpseList.push_back(pOwner->ID);
-		//------------------------------------------------------------
-	};
-
-	if (pA && !NoSpectator)
-	{
-		//------------------------------------------------------------
-		SpawnPlayer(id_who, "spectator");
-		//------------------------------------------------------------
-	}
+	if (pA)	
+		AllowDeadBodyRemove(xrCData->ps->GameID);	
+	
+	if (pA && !NoSpectator)	
+		SpawnPlayer(id_who, "spectator");	
 	else
 	{
-		//------------------------------------------------------------
-		if (pOwner->owner != m_server->GetServerClient())
-		{
+		if (pOwner->owner != m_server->GetServerClient())		
 			pOwner->owner = (xrClientData *)m_server->GetServerClient();
-		};
-		//------------------------------------------------------------
+
 		//remove spectator entity
 		if (pS)
 		{
@@ -441,11 +402,11 @@ void game_sv_mp::SpawnPlayer(ClientID id, LPCSTR N)
 	signal_Syncronize();
 }
 
-void game_sv_mp::AllowDeadBodyRemove(ClientID id, u16 GameID)
+void game_sv_mp::AllowDeadBodyRemove(u16 GameID, bool changeOwner)
 {
 	CSE_Abstract *pSObject = get_entity_from_eid(GameID);
 
-	if (pSObject)
+	if (changeOwner && pSObject)
 		pSObject->owner = (xrClientData *)m_server->GetServerClient();
 
 	CObject *pObject = Level().Objects.net_Find(GameID);
@@ -453,10 +414,11 @@ void game_sv_mp::AllowDeadBodyRemove(ClientID id, u16 GameID)
 	if (pObject && pObject->CLS_ID == CLSID_OBJECT_ACTOR)
 	{
 		CActor *pActor = smart_cast<CActor *>(pObject);
-		if (pActor)
+		if (pActor && !pActor->m_bAllowDeathRemove)
 		{
 			pActor->set_death_time();
 			pActor->m_bAllowDeathRemove = true;
+			m_CorpseList.push_back(GameID);
 		};
 	};
 };
@@ -474,11 +436,9 @@ void game_sv_mp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 	P.w_u32(GAME_EVENT_PLAYER_DISCONNECTED);
 	P.w_stringZ(Name);
 	u_EventSend(P);
-	//---------------------------------------------------
 	KillPlayer(id_who, GameID);
 
-	AllowDeadBodyRemove(id_who, GameID);
-	m_CorpseList.push_back(GameID);
+	AllowDeadBodyRemove(GameID);
 
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
 }
@@ -1202,6 +1162,7 @@ void game_sv_mp::OnPlayerSelectSpectator(NET_Packet &P, ClientID sender)
 		CSE_ALifeCreatureActor *pA = smart_cast<CSE_ALifeCreatureActor *>(pClient->owner);
 		if (pA)
 		{
+			AllowDeadBodyRemove(ps->GameID);
 			SpawnPlayer(sender, "spectator");
 		};
 	}

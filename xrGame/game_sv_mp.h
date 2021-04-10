@@ -68,7 +68,7 @@ protected:
 	void SpawnPlayer(ClientID id, LPCSTR N);
 	virtual void SetSkin(CSE_Abstract *E, u16 Team, u16 ID);
 	bool GetPosAngleFromActor(ClientID id, Fvector &Pos, Fvector &Angle);
-	void AllowDeadBodyRemove(ClientID id, u16 GameID);
+	void AllowDeadBodyRemove(u16 GameID, bool changeOwner = true);
 	void SpawnWeapon4Actor(u16 actorId, LPCSTR N, u8 Addons);
 	void SpawnWeaponForActor(u16 actorId, LPCSTR N, bool isScope, bool isGrenadeLauncher, bool isSilencer);
 
