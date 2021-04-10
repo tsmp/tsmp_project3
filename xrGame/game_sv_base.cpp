@@ -745,22 +745,31 @@ void game_sv_GameState::OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, Clie
 	break;
 	case GAME_EVENT_ON_HIT:
 	{
-		u16 id_dest = tNetPacket.r_u16();
-		u16 id_src = tNetPacket.r_u16();
-		CSE_Abstract *e_src = get_entity_from_eid(id_src);
+		u16 idHitted = tNetPacket.r_u16();
+		u16 idHitter = tNetPacket.r_u16();
+		CSE_Abstract *hitterEntity = get_entity_from_eid(idHitter);
 
-		if (!e_src) // && !IsGameTypeSingle() added by andy because of Phantom does not have server entity
+		if (!hitterEntity) // added by andy because of Phantom does not have server entity
 		{
 			if (IsGameTypeSingle())
 				break;
 
-			game_PlayerState *ps = get_eid(id_src);
+			game_PlayerState *ps = get_eid(idHitter);
+
 			if (!ps)
 				break;
-			id_src = ps->GameID;
+
+			idHitter = ps->GameID;
+
+			// TSMP: Актер, нанесший хит успел удалиться, id в пакете не валиден. Но у игрока, нанесшего хит есть новый id
+			// обновим его в пакете, чтобы не было вылетов или рассинхронов
+			u32 packetSize = tNetPacket.B.count;
+			tNetPacket.B.count = tNetPacket.r_pos - sizeof(u16);
+			tNetPacket.w_u16(idHitter);
+			tNetPacket.B.count = packetSize;
 		}
 
-		OnHit(id_src, id_dest, tNetPacket);
+		OnHit(idHitter, idHitted, tNetPacket);
 		m_server->SendBroadcast(BroadcastCID, tNetPacket, net_flags(TRUE, TRUE));
 	}
 	break;
