@@ -83,7 +83,7 @@ void game_sv_mp::Update()
 		NET_Packet P;
 		u_EventGen(P, GE_DESTROY, CorpseID);
 		Level().Send(P, net_flags(TRUE, TRUE));
-		m_CorpseList.erase(m_CorpseList.begin() + i);
+		//m_CorpseList.erase(m_CorpseList.begin() + i);
 		Msg("corpse [%d] send destroy [%d]", CorpseID, Device.CurrentFrameNumber);
 	}
 
