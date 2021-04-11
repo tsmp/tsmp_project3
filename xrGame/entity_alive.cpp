@@ -532,8 +532,12 @@ ALife::ERelationType CEntityAlive::tfGetRelationType(const CEntityAlive *tpEntit
 
 bool CEntityAlive::is_relation_enemy(const CEntityAlive *tpEntityAlive) const
 {
+#ifdef EVERYBODY_IS_ENEMY
+	return true;
+#else
 	return ((tfGetRelationType(tpEntityAlive) == ALife::eRelationTypeEnemy) ||
-			(tfGetRelationType(tpEntityAlive) == ALife::eRelationTypeWorstEnemy));
+		(tfGetRelationType(tpEntityAlive) == ALife::eRelationTypeWorstEnemy));
+#endif
 }
 
 void CEntityAlive::StartBloodDrops(CWound *pWound)

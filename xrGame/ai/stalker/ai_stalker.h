@@ -283,6 +283,12 @@ private:
 	u32 m_pick_frame_id;
 	collide::rq_results rq_storage;
 
+	//For MP sync
+	u16				u_last_torso_motion_idx;
+	u16				u_last_legs_motion_idx;
+	u16				u_last_head_motion_idx;
+	u16				u_last_script_motion_idx;
+
 private:
 	void can_kill_entity(const Fvector &position, const Fvector &direction, float distance, collide::rq_results &rq_storage);
 	void can_kill_entity_from(const Fvector &position, Fvector direction, float distance);

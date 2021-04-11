@@ -7,3 +7,4 @@
 //#define FZ_MOD_CLIENT // Мод, скачиваемый игроку с помощью fz
 //#define NO_SINGLE // Запретить запускать сингл
 //#define NO_MULTI_INSTANCES // Запретить запускать несколько экземпляров игры
+#define EVERYBODY_IS_ENEMY

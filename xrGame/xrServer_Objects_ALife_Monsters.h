@@ -483,7 +483,21 @@ void UPDATE_Read_Original(NET_Packet& tNetPacket);
 void UPDATE_Write_MP(NET_Packet& tNetPacket);
 void UPDATE_Read_MP(NET_Packet& tNetPacket);
 
-Fvector coord;
+float f_health;
+float f_head_dir_pitch;
+float f_head_dir_yaw;
+u32	u_active_slot;
+
+u16	u_torso_anm_idx;
+u8 u_torso_anm_slot;
+u16 u_legs_anm_idx;
+u8 u_legs_anm_slot;
+u16 u_head_anm_idx;
+u8 u_head_anm_slot;
+u16 u_script_anm_idx;
+u8 u_script_anm_slot;
+
+virtual BOOL Net_Relevant();
 
 virtual CSE_Abstract *cast_abstract() { return this; }
 SERVER_ENTITY_DECLARE_END

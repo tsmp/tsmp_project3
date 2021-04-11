@@ -513,7 +513,35 @@ void CAI_Stalker::net_Export(NET_Packet& P)
 
 void CAI_Stalker::net_Export_MP(NET_Packet& P)
 {
+	P.w_float(GetfHealth());
 	P.w_vec3(Position());
+	P.w_angle8(movement().m_body.current.pitch);
+	P.w_angle8(movement().m_body.current.roll);
+	P.w_angle8(movement().m_body.current.yaw);
+	P.w_angle8(movement().m_head.current.pitch);
+	P.w_angle8(movement().m_head.current.yaw);
+
+	if (inventory().ActiveItem())
+	{
+		CWeapon* weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+
+		if (weapon && !weapon->strapped_mode())
+			P.w_u32(inventory().GetActiveSlot());
+		else		
+			P.w_u32(NO_ACTIVE_SLOT);		
+	}
+	else
+		P.w_u32(NO_ACTIVE_SLOT);
+
+	P.w_u16(m_animation_manager->torso().animation().idx);
+	P.w_u8(m_animation_manager->torso().animation().slot);
+	P.w_u16(m_animation_manager->legs().animation().idx);
+	P.w_u8(m_animation_manager->legs().animation().slot);
+	P.w_u16(m_animation_manager->head().animation().idx);
+	P.w_u8(m_animation_manager->head().animation().slot);
+
+	P.w_u16(m_animation_manager->script().animation().idx);
+	P.w_u8(m_animation_manager->script().animation().slot);
 }
 
 void CAI_Stalker::net_Export_Single(NET_Packet &P)
@@ -571,9 +599,116 @@ void CAI_Stalker::net_Import(NET_Packet& P)
 
 void CAI_Stalker::net_Import_MP(NET_Packet& P)
 {
-	Fvector vec;
-	P.r_vec3(vec);
-	renderable.xform.c = vec;
+	float f_health;
+	Fvector fv_position;
+	Fvector fv_direction;
+	Fvector fv_head_orientation;
+
+	u32	u_active_weapon_slot;
+
+	u16 u_torso_motion_idx;
+	u8 u_torso_motion_slot;
+	u16 u_legs_motion_idx;
+	u8 u_legs_motion_slot;
+	u16 u_head_motion_idx;
+	u8 u_head_motion_slot;
+	u16 u_script_motion_idx;
+	u8 u_script_motion_slot;
+
+	P.r_float(f_health);
+	P.r_vec3(fv_position);
+	P.r_angle8(fv_direction.x);
+	P.r_angle8(fv_direction.y);
+	P.r_angle8(fv_direction.z);
+	P.r_angle8(fv_head_orientation.x);
+	P.r_angle8(fv_head_orientation.z);
+
+	P.r_u32(u_active_weapon_slot);
+
+	P.r_u16(u_torso_motion_idx);
+	P.r_u8(u_torso_motion_slot);
+	P.r_u16(u_legs_motion_idx);
+	P.r_u8(u_legs_motion_slot);
+	P.r_u16(u_head_motion_idx);
+	P.r_u8(u_head_motion_slot);
+
+	P.r_u16(u_script_motion_idx);
+	P.r_u8(u_script_motion_slot);
+
+	SetfHealth(f_health);
+	Position().set(fv_position);
+	movement().m_body.current.pitch = fv_direction.x;
+	movement().m_body.current.roll = fv_direction.y;
+	movement().m_body.current.yaw = fv_direction.z;
+	movement().m_head.current.pitch = fv_head_orientation.x;
+	movement().m_head.current.yaw = fv_head_orientation.z;
+
+	SPHNetState	State;
+	State.position = fv_position;
+	State.previous_position = fv_position;
+	CPHSynchronize* pSyncObj = NULL;
+	pSyncObj = PHGetSyncItem(0);
+	if (pSyncObj)
+	{
+//		pSyncObj->set_State(State);
+	}
+
+	inventory().SetActiveSlot(u_active_weapon_slot);
+
+	MotionID motion;
+	CKinematicsAnimated* ik_anim_obj = smart_cast<CKinematicsAnimated*>(Visual());
+	if (u_last_torso_motion_idx != u_torso_motion_idx)
+	{
+		u_last_torso_motion_idx = u_torso_motion_idx;
+		motion.idx = u_torso_motion_idx;
+		motion.slot = u_torso_motion_slot;
+		if (motion.valid())
+		{
+			ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_PartID("torso"), motion, TRUE,
+				ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
+				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0);
+		}
+	}
+	if (u_last_legs_motion_idx != u_legs_motion_idx)
+	{
+		u_last_legs_motion_idx = u_legs_motion_idx;
+		motion.idx = u_legs_motion_idx;
+		motion.slot = u_legs_motion_slot;
+		if (motion.valid())
+		{
+			CStepManager::on_animation_start(motion, ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_PartID("legs"), motion,
+				TRUE, ik_anim_obj->LL_GetMotionDef(motion)->Accrue(),
+				ik_anim_obj->LL_GetMotionDef(motion)->Falloff(), ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0));
+		}
+	}
+	if (u_last_head_motion_idx != u_head_motion_idx)
+	{
+		u_last_head_motion_idx = u_head_motion_idx;
+		motion.idx = u_head_motion_idx;
+		motion.slot = u_head_motion_slot;
+		if (motion.valid())
+		{
+			ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_PartID("head"), motion, TRUE,
+				ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
+				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0);
+		}
+	}
+
+	if (u_last_script_motion_idx != u_script_motion_idx) 
+	{
+		motion.idx = u_script_motion_idx;
+		motion.slot = u_script_motion_slot;
+		u_last_script_motion_idx = u_script_motion_idx;
+		if (motion.valid())
+		{
+			ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part, motion, TRUE,
+				ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
+				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), ik_anim_obj->LL_GetMotionDef(motion)->StopAtEnd(), 0, 0, 0);
+		}
+	}
+
+	setVisible(TRUE);
+	setEnabled(TRUE);
 }
 
 void CAI_Stalker::net_Import_Single(NET_Packet &P)
@@ -787,7 +922,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	// Queue shrink
 	VERIFY(_valid(Position()));
 	u32 dwTimeCL = Level().timeServer() - NET_Latency;
-	VERIFY(!NET.empty());
+//	VERIFY(!NET.empty());
 	while ((NET.size() > 2) && (NET[1].dwTimeStamp < dwTimeCL))
 		NET.pop_front();
 
