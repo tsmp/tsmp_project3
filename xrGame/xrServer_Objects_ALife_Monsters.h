@@ -488,6 +488,9 @@ float f_head_dir_pitch;
 float f_head_dir_yaw;
 u32	u_active_slot;
 
+net_physics_state				physics_state;
+u8								phSyncFlag = 0;
+
 u16	u_torso_anm_idx;
 u8 u_torso_anm_slot;
 u16 u_legs_anm_idx;

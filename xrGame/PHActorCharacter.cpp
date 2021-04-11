@@ -301,6 +301,10 @@ void CPHActorCharacter::ChooseRestrictionType(CPHCharacter::ERestrictionType my_
 {
 	if (my_type != rtStalker || (ch->RestrictionType() != rtStalker && ch->RestrictionType() != rtStalkerSmall))
 		return;
+
+	if (OnClient())
+		return;
+
 	float checkR = m_restrictors[rtStalkerSmall]->m_restrictor_radius * 1.5f; //+m_restrictors[rtStalker]->m_restrictor_radius)/2.f;
 
 	switch (ch->RestrictionType())

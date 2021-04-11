@@ -1918,8 +1918,18 @@ void CSE_ALifeHumanStalker::UPDATE_Write_Original(NET_Packet& tNetPacket)
 
 void CSE_ALifeHumanStalker::UPDATE_Write_MP(NET_Packet& tNetPacket)
 {
+	tNetPacket.w_u8(phSyncFlag);
+	if (phSyncFlag)
+	{
+		physics_state.write(tNetPacket);
+	}
+	else
+	{
+		tNetPacket.w_vec3(o_Position);
+	}
+
 	tNetPacket.w_float(fHealth);
-	tNetPacket.w_vec3(o_Position);
+	//tNetPacket.w_vec3(o_Position);
 	tNetPacket.w_angle8(o_torso.pitch);
 	tNetPacket.w_angle8(o_torso.roll);
 	tNetPacket.w_angle8(o_torso.yaw);
@@ -1962,8 +1972,18 @@ void CSE_ALifeHumanStalker::UPDATE_Read_MP(NET_Packet& tNetPacket)
 	}
 #endif
 
+	tNetPacket.r_u8(phSyncFlag);
+	if (phSyncFlag)
+	{
+		physics_state.read(tNetPacket);
+		o_Position.set(physics_state.physics_position);
+	}
+	else
+	{
+		o_Position.set(tNetPacket.r_vec3());
+	}
+
 	tNetPacket.r_float(f_health);
-	tNetPacket.r_vec3(o_Position);
 	tNetPacket.r_angle8(o_torso.pitch);
 	tNetPacket.r_angle8(o_torso.roll);
 	tNetPacket.r_angle8(o_torso.yaw);
@@ -1979,6 +1999,7 @@ void CSE_ALifeHumanStalker::UPDATE_Read_MP(NET_Packet& tNetPacket)
 	tNetPacket.r_u16(u_script_anm_idx);
 	tNetPacket.r_u8(u_script_anm_slot);
 	fHealth = f_health;
+	o_model = o_torso.yaw;
 }
 
 void CSE_ALifeHumanStalker::load(NET_Packet &tNetPacket)
