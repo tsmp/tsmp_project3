@@ -131,7 +131,34 @@ void xrServer::CheckClientBuildVersion(IClient *CL)
 
 void xrServer::CheckClientHWID(IClient* CL)
 {
-	// Пока заглушка
+	if (SV_Client && SV_Client == CL)
+	{
+		OnConnectionVerificationStepComplete(CL);
+		return;
+	}
+
+	NET_Packet P;
+	P.w_begin(M_HW_CHALLENGE);
+	SendTo(CL->ID, P);
+}
+
+void xrServer::OnHardwareVerifyRespond(IClient* CL, NET_Packet& P)
+{
+	char ch[10];
+	P.r(ch, 10);
+
+	short hw1;
+	memcpy(&hw1, &Core.hardwareId[0], sizeof(hw1));
+	short hw2;
+	memcpy(&hw2, &Core.hardwareId[2], sizeof(hw1));
+	short hw3;
+	memcpy(&hw3, &Core.hardwareId[4], sizeof(hw1));
+	short hw4;
+	memcpy(&hw4, &Core.hardwareId[6], sizeof(hw1));
+	short hw5;
+	memcpy(&hw5, &Core.hardwareId[8], sizeof(hw1));
+	Msg("His hwid: %hu-%hu-%hu-%hu-%hu", hw1, hw2, hw3, hw4, hw5);
+
 	OnConnectionVerificationStepComplete(CL);
 }
 

@@ -720,29 +720,24 @@ void game_sv_GameState::OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, Clie
 {
 	switch (type)
 	{
-	case GAME_EVENT_PLAYER_CONNECTED:
-	{
+	case GAME_EVENT_PLAYER_CONNECTED:	
 		ClientID ID;
 		tNetPacket.r_clientID(ID);
 		OnPlayerConnect(ID);
-	}
-	break;
+		break;
 
 	case GAME_EVENT_PLAYER_DISCONNECTED:
-	{
 		ClientID ID;
 		tNetPacket.r_clientID(ID);
 		string1024 PlayerName;
 		tNetPacket.r_stringZ(PlayerName);
 		u16 GameID = tNetPacket.r_u16();
 		OnPlayerDisconnect(ID, PlayerName, GameID);
-	}
-	break;
+		break;
 
 	case GAME_EVENT_PLAYER_KILLED:
-	{
-	}
-	break;
+		break;
+
 	case GAME_EVENT_ON_HIT:
 	{
 		u16 idHitted = tNetPacket.r_u16();
@@ -773,30 +768,35 @@ void game_sv_GameState::OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, Clie
 		m_server->SendBroadcast(BroadcastCID, tNetPacket, net_flags(TRUE, TRUE));
 	}
 	break;
+
 	case GAME_EVENT_CREATE_CLIENT:
 	{
 		IClient *CL = (IClient *)m_server->ID_to_client(sender);
-		if (CL == NULL)
-		{
+		
+		if (!CL)		
 			break;
-		}
-
+		
 		CL->flags.bConnected = TRUE;
 		m_server->AttachNewClient(CL);
 	}
 	break;
-	case GAME_EVENT_PLAYER_AUTH:
-	{
+
+	case GAME_EVENT_PLAYER_AUTH:	
 		IClient *CL = m_server->ID_to_client(sender);
 		m_server->OnBuildVersionRespond(CL, tNetPacket);
-	}
-	break;
+		break;
+
+	case GAME_EVENT_PLAYER_AUTH_HW:	
+		IClient* CL = m_server->ID_to_client(sender);
+		m_server->OnHardwareVerifyRespond(CL, tNetPacket);
+		break;
+
 	default:
 	{
 		string16 tmp;
 		R_ASSERT3(0, "Game Event not implemented!!!", itoa(type, tmp, 10));
-	};
-	};
+	}
+	}
 }
 
 bool game_sv_GameState::NewPlayerName_Exists(void *pClient, LPCSTR NewName)

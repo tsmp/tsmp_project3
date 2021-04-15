@@ -375,6 +375,14 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 	return TRUE;
 };
 
+void CLevel::OnHardwareVerification()
+{
+	NET_Packet P;
+	P.w_begin(M_HW_RESPOND);
+	P.w(&Core.hardwareId, 10);
+	Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
+}
+
 void CLevel::OnBuildVersionChallenge()
 {
 	NET_Packet P;

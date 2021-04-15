@@ -236,6 +236,7 @@ public:
 	string64 UserName;
 	string64 CompName;
 	string512 Params;
+	char hardwareId[10];
 
 public:
 	void _initialize(LPCSTR ApplicationName, LogCallback cb = 0, BOOL init_fs = TRUE, LPCSTR fs_fname = 0);
