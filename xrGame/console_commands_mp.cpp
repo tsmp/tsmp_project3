@@ -1498,6 +1498,12 @@ public:
 	{
 		if (!OnServer())
 			return;
+		
+		if (!pSettings->section_exist(args))
+		{
+			Msg("! cant find section %s", args);
+			return;
+		}		
 
 		if (Level().Server && Level().Server->game)
 		{
