@@ -147,19 +147,32 @@ void xrServer::OnHardwareVerifyRespond(IClient* CL, NET_Packet& P)
 	char ch[10];
 	P.r(ch, 10);
 
-	short hw1;
-	memcpy(&hw1, &Core.hardwareId[0], sizeof(hw1));
-	short hw2;
-	memcpy(&hw2, &Core.hardwareId[2], sizeof(hw1));
-	short hw3;
-	memcpy(&hw3, &Core.hardwareId[4], sizeof(hw1));
-	short hw4;
-	memcpy(&hw4, &Core.hardwareId[6], sizeof(hw1));
-	short hw5;
-	memcpy(&hw5, &Core.hardwareId[8], sizeof(hw1));
+	unsigned short hw1;
+	memcpy(&hw1, &ch[0], sizeof(hw1));
+	unsigned short hw2;
+	memcpy(&hw2, &ch[2], sizeof(hw1));
+	unsigned short hw3;
+	memcpy(&hw3, &ch[4], sizeof(hw1));
+	unsigned short hw4;
+	memcpy(&hw4, &ch[6], sizeof(hw1));
+	unsigned short hw5;
+	memcpy(&hw5, &ch[8], sizeof(hw1));
+	
 	Msg("His hwid: %hu-%hu-%hu-%hu-%hu", hw1, hw2, hw3, hw4, hw5);
 
-	OnConnectionVerificationStepComplete(CL);
+	CL->s1 = hw1;
+	CL->s2 = hw2;
+	CL->s3 = hw3;
+	CL->s4 = hw4;
+	CL->s5 = hw5;
+
+	if (GetBannedHW(hw1, hw2, hw3, hw4, hw5))
+	{
+		Msg("! Player banned by hwid tried to connect");
+		SendConnectResult(CL, 0, 0, "You are banned.");
+	}
+	else
+		OnConnectionVerificationStepComplete(CL);
 }
 
 void xrServer::OnBuildVersionRespond(IClient *CL, NET_Packet &P)

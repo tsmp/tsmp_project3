@@ -460,6 +460,159 @@ public:
 	virtual void Info(TInfo &I) { strcpy(I, "Ban Player by IP"); }
 };
 
+class CCC_BanPlayerByHW : public IConsole_Command
+{
+public:
+	CCC_BanPlayerByHW(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!g_pGameLevel || !Level().Server)
+			return;
+
+		unsigned short s1, s2, s3, s4, s5;
+		std::string hwstr = args_;
+		int delimiters[4] = { 0 };
+		int delimsCounter = 0;
+
+		for (int i = 0; i < hwstr.size(); i++)
+		{
+			if (hwstr[i] == '-')
+			{
+				delimiters[delimsCounter] = i;
+				delimsCounter++;
+			}
+		}
+
+		if (delimsCounter != 4)
+		{
+			Msg("! invalid hwid");
+			return;
+		}
+
+		std::string str1(hwstr.begin(), hwstr.end() - hwstr.size() + delimiters[0]);
+		s1 = atoi(str1.c_str());
+
+		std::string str2(hwstr.begin() + delimiters[0] + 1, hwstr.end() - hwstr.size() + delimiters[1]);
+		s2 = atoi(str2.c_str());
+
+		std::string str3(hwstr.begin() + delimiters[1] + 1, hwstr.end() - hwstr.size() + delimiters[2]);
+		s3 = atoi(str3.c_str());
+
+		std::string str4(hwstr.begin() + delimiters[2] + 1, hwstr.end() - hwstr.size() + delimiters[3]);
+		s4 = atoi(str4.c_str());
+
+		std::string str5(hwstr.begin() + delimiters[3] + 1, hwstr.end());
+		s5 = atoi(str5.c_str());
+
+		Level().Server->clients_Lock();
+
+		u32 cnt = Level().Server->game->get_players_count();
+		u32 it;
+		
+		for (it = 0; it < cnt; it++)
+		{
+			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+
+			if (l_pC && ((l_pC->s1 == s1 && l_pC->s2 == s2) || (l_pC->s3 == s3 && l_pC->s4 == s4 && l_pC->s5 == s5)))
+			{
+				Level().Server->BanClientHW(l_pC, 999999999);
+
+				if (Level().Server->GetServerClient() != l_pC)
+				{	
+						Level().Server->DisconnectClient(l_pC);
+						break;
+				}
+				else
+				{
+					Msg("! Can't disconnect server's client");
+					break;
+				}
+			}
+		}
+
+		Level().Server->clients_Unlock();
+	};
+
+	virtual void Info(TInfo& I) { strcpy(I, "Ban Player by IP"); }
+};
+
+class CCC_UnBanPlayerByHW : public IConsole_Command
+{
+public:
+	CCC_UnBanPlayerByHW(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!g_pGameLevel || !Level().Server)
+			return;
+
+		unsigned short s1, s2, s3, s4, s5;
+		std::string hwstr = args_;
+		int delimiters[4] = { 0 };
+		int delimsCounter = 0;
+
+		for (int i = 0; i < hwstr.size(); i++)
+		{
+			if (hwstr[i] == '-')
+			{
+				delimiters[delimsCounter] = i;
+				delimsCounter++;
+			}
+		}
+
+		if (delimsCounter != 4)
+		{
+			Msg("! invalid hwid");
+			return;
+		}
+
+		std::string str1(hwstr.begin(), hwstr.end() - hwstr.size() + delimiters[0]);
+		s1 = atoi(str1.c_str());
+
+		std::string str2(hwstr.begin() + delimiters[0] + 1, hwstr.end() - hwstr.size() + delimiters[1]);
+		s2 = atoi(str2.c_str());
+
+		std::string str3(hwstr.begin() + delimiters[1] + 1, hwstr.end() - hwstr.size() + delimiters[2]);
+		s3 = atoi(str3.c_str());
+
+		std::string str4(hwstr.begin() + delimiters[2] + 1, hwstr.end() - hwstr.size() + delimiters[3]);
+		s4 = atoi(str4.c_str());
+
+		std::string str5(hwstr.begin() + delimiters[3] + 1, hwstr.end());
+		s5 = atoi(str5.c_str());
+
+		Level().Server->clients_Lock();
+
+		u32 cnt = Level().Server->game->get_players_count();
+		u32 it;
+
+		Level().Server->UnBanHW(s1, s2, s3, s4, s5);
+
+		for (it = 0; it < cnt; it++)
+		{
+			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+
+			if (l_pC && ((l_pC->s1 == s1 && l_pC->s2 == s2) || (l_pC->s3 == s3 && l_pC->s4 == s4 && l_pC->s5 && s5)))
+			{
+				if (Level().Server->GetServerClient() != l_pC)
+				{
+					Level().Server->DisconnectClient(l_pC);
+					break;
+				}
+				else
+				{
+					Msg("! Can't disconnect server's client");
+					break;
+				}
+			}
+		}
+
+		Level().Server->clients_Unlock();
+	
+	};
+
+	virtual void Info(TInfo& I) { strcpy(I, "Ban Player by IP"); }
+};
+
 class CCC_UnBanPlayerByIP : public IConsole_Command
 {
 public:
@@ -514,6 +667,49 @@ public:
 				, l_pC->ID.value()
 				, Address.to_string().c_str()
 				, l_pC->ps->ping);
+		}
+
+		Level().Server->clients_Unlock();
+		Msg("------------------------");
+	};
+
+	virtual void Info(TInfo& I) { strcpy(I, "List Players"); }
+};
+
+class CCC_ListPlayersHW : public IConsole_Command
+{
+public:
+	CCC_ListPlayersHW(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void Execute(LPCSTR args)
+	{
+		if (!OnServer())
+			return;
+
+		Msg("------------------------");
+
+		Level().Server->clients_Lock();
+		u32	cnt = Level().Server->game->get_players_count();
+
+		Msg("- Total Players : %d", cnt);
+
+		for (u32 it = 0; it < cnt; it++)
+		{
+			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+			ip_address Address;
+
+			if (!l_pC)
+				continue;
+
+			Level().Server->GetClientAddress(l_pC->ID, Address, nullptr);
+
+			Msg("%d (name: %s), (session_id: %u), (hash: @), (ip: %s), (ping: %u);"
+				, it + 1
+				, l_pC->ps->getName()
+				, l_pC->ID.value()
+				, Address.to_string().c_str()
+				, l_pC->ps->ping);
+
+			Msg("His hwid: %hu-%hu-%hu-%hu-%hu", l_pC->s1, l_pC->s2, l_pC->s3, l_pC->s4, l_pC->s5);
 		}
 
 		Level().Server->clients_Unlock();
@@ -1709,12 +1905,15 @@ void register_mp_console_commands()
 
 	CMD1(CCC_KickPlayerByName, "sv_kick");
 
+	CMD1(CCC_BanPlayerByHW, "sv_banplayer_hw");
+	CMD1(CCC_UnBanPlayerByHW, "sv_unbanplayer_hw");
 	CMD1(CCC_BanPlayerByName, "sv_banplayer");
 	CMD1(CCC_BanPlayerByIP, "sv_banplayer_ip");
 
 	CMD1(CCC_UnBanPlayerByIP, "sv_unbanplayer_ip");
 
 	CMD1(CCC_ListPlayers, "sv_listplayers");
+	CMD1(CCC_ListPlayersHW, "sv_listplayers_hw");
 	CMD1(CCC_ListPlayersOld, "sv_listplayers_old");
 	CMD1(CCC_ListPlayers_Banned, "sv_listplayers_banned");
 

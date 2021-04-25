@@ -720,20 +720,24 @@ void game_sv_GameState::OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, Clie
 {
 	switch (type)
 	{
-	case GAME_EVENT_PLAYER_CONNECTED:	
+	case GAME_EVENT_PLAYER_CONNECTED:
+	{
 		ClientID ID;
 		tNetPacket.r_clientID(ID);
 		OnPlayerConnect(ID);
-		break;
+	}
+	break;
 
 	case GAME_EVENT_PLAYER_DISCONNECTED:
+	{
 		ClientID ID;
 		tNetPacket.r_clientID(ID);
 		string1024 PlayerName;
 		tNetPacket.r_stringZ(PlayerName);
 		u16 GameID = tNetPacket.r_u16();
 		OnPlayerDisconnect(ID, PlayerName, GameID);
-		break;
+	}
+	break;
 
 	case GAME_EVENT_PLAYER_KILLED:
 		break;
@@ -781,15 +785,19 @@ void game_sv_GameState::OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, Clie
 	}
 	break;
 
-	case GAME_EVENT_PLAYER_AUTH:	
-		IClient *CL = m_server->ID_to_client(sender);
+	case GAME_EVENT_PLAYER_AUTH:
+	{
+		IClient* CL = m_server->ID_to_client(sender);
 		m_server->OnBuildVersionRespond(CL, tNetPacket);
-		break;
+	}
+	break;	
 
-	case GAME_EVENT_PLAYER_AUTH_HW:	
+	case GAME_EVENT_PLAYER_AUTH_HW:
+	{
 		IClient* CL = m_server->ID_to_client(sender);
 		m_server->OnHardwareVerifyRespond(CL, tNetPacket);
-		break;
+	}
+	break;
 
 	default:
 	{

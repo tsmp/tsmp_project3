@@ -76,6 +76,7 @@ public:
 	ip_address m_cAddress;
 	DWORD m_dwPort;
 	u32 process_id;
+	unsigned short s1, s2, s3, s4, s5;
 
 	IPureServer *server;
 
@@ -110,13 +111,16 @@ class XRNETWORK_API IBannedClient
 {
 public:
 	ip_address HAddr;
+	unsigned short s1, s2, s3, s4, s5;
 	time_t BanTime;
 
 	IBannedClient()
 	{
 		HAddr.m_data.data = 0;
 		BanTime = 0;
-	};
+		s1 = s2 = s3 = s4 = s5 = 0;
+	}
+
 	void Load(CInifile &ini, const shared_str &sect);
 	void Save(CInifile &ini);
 
@@ -173,6 +177,7 @@ protected:
 	bool GetClientAddress(IDirectPlay8Address *pClientAddress, ip_address &Address, DWORD *pPort = NULL);
 
 	IBannedClient *GetBannedClient(const ip_address &Address);
+	IBannedClient *GetBannedHW(unsigned short s1, unsigned short s2, unsigned short s3, unsigned short s4, unsigned short s5);
 	void BannedList_Save();
 	void BannedList_Load();
 	LPCSTR GetBannedListName();
@@ -225,8 +230,10 @@ public:
 	virtual bool DisconnectClient(IClient *C, string512 &Reason);
 	virtual bool DisconnectAddress(const ip_address &Address);
 	virtual void BanClient(IClient *C, u32 BanTime);
+	virtual void BanClientHW(IClient *C, u32 BanTime);
 	virtual void BanAddress(const ip_address &Address, u32 BanTime);
 	virtual void UnBanAddress(const ip_address &Address);
+	virtual void UnBanHW(unsigned short s1, unsigned short s2, unsigned short s3, unsigned short s4, unsigned short s5);
 	void Print_Banned_Addreses();
 
 	virtual bool Check_ServerAccess(IClient *CL, string512 &reason) { return true; }
