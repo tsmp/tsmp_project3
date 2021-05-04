@@ -11,6 +11,13 @@
 #include "ai_space.h"
 #include "object_factory.h"
 #include "script_process.h"
+#include "..\TSMP3_Build_Config.h"
+
+#ifdef USE_ORIGINAL_SCRIPTS_EXTENSION
+#define SCRIPTS_EXTENSION ".script"
+#else
+#define SCRIPTS_EXTENSION ".lua"
+#endif
 
 #ifdef USE_DEBUGGER
 #include "script_debugger.h"
@@ -246,14 +253,14 @@ void CScriptEngine::process_file_if_exists(LPCSTR file_name, bool warn_if_not_ex
 	if (m_reload_modules || (*file_name && !namespace_loaded(file_name)))
 	{
 		string_path S, S1;
-		FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, file_name, ".lua"));
+		FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, file_name, SCRIPTS_EXTENSION));
 
 		if (!FS.exist(S))
 		{
 			if (IsGameTypeSingle())
-				FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, "singleplayer\\", file_name, ".lua"));
+				FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, "singleplayer\\", file_name, SCRIPTS_EXTENSION));
 			else
-				FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, "multiplayer\\", file_name, ".lua"));
+				FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, "multiplayer\\", file_name, SCRIPTS_EXTENSION));
 		}
 
 		if (!warn_if_not_exist && !FS.exist(S))
