@@ -294,7 +294,7 @@ namespace luabind
 	template<class F>
 	scope def(const char* name, F f)
 	{
-		return scope(std::auto_ptr<detail::registration>(
+		return scope(std::unique_ptr<detail::registration>(
 			new detail::function_commiter<F,detail::null_type>(
 				name, f, detail::null_type())));
 	}

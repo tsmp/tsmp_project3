@@ -34,7 +34,7 @@
 #include "stdlib.h"
 
 #include <algorithm>
-
+#include <random>
 
 
 #define ALLOCA dALLOCA16
@@ -424,17 +424,8 @@ static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *
 		qsort (order,m,sizeof(IndexError),&compare_index_error);
 #endif
 #ifdef RANDOMLY_REORDER_CONSTRAINTS
-		if ((iteration & 3) == 0) {
-			std::random_shuffle	(order,order+m);
-			/*
-			for (i=1; i<m; ++i) {
-				IndexError tmp = order[i];
-				int swapi = dRandInt(i+1);
-				order[i] = order[swapi];
-				order[swapi] = tmp;
-			}
-			*/
-		}
+		if ((iteration & 3) == 0)	
+			std::shuffle(order, order + m, std::default_random_engine{});	
 #endif
 
 		//@@@ potential optimization: swap lambda and last_lambda pointers rather
