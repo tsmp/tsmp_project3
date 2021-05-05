@@ -15,7 +15,7 @@ class ENGINE_API CConsole : public IInputReceiver,
 {
 public:
 	//t-defs
-	struct str_pred : public std::binary_function<char *, char *, bool>
+	struct str_pred
 	{
 		IC bool operator()(const char *x, const char *y) const
 		{
