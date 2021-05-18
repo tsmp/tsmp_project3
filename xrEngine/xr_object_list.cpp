@@ -446,7 +446,7 @@ bool CObjectList::dump_all_objects()
 
 void CObjectList::register_object_to_destroy(CObject *object_to_destroy)
 {
-	VERIFY(!registered_object_to_destroy(object_to_destroy));
+	DEBUG_VERIFY(!registered_object_to_destroy(object_to_destroy));
 	destroy_queue.push_back(object_to_destroy);
 
 	xr_vector<CObject *>::iterator it = objects_active.begin();

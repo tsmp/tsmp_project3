@@ -123,12 +123,12 @@ bool CAttachableItem::can_be_attached() const
 }
 void CAttachableItem::afterAttach()
 {
-	VERIFY(m_valid);
+	DEBUG_VERIFY(m_valid);
 	object().processing_activate();
 }
 
 void CAttachableItem::afterDetach()
 {
-	VERIFY(m_valid);
+	DEBUG_VERIFY(m_valid);
 	object().processing_deactivate();
 }

@@ -25,6 +25,17 @@ void LuaLog(LPCSTR caMessage)
 #endif
 }
 
+void LuaLogAlways(LPCSTR caMessage)
+{
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeMessageShowAlways, "%s", caMessage);
+#ifdef USE_DEBUGGER
+	if (ai().script_engine().debugger())
+	{
+		ai().script_engine().debugger()->Write(caMessage);
+	}
+#endif
+}
+
 void ErrorLog(LPCSTR caMessage)
 {
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "%s", caMessage);
@@ -204,6 +215,7 @@ void CScriptEngine::script_register(lua_State *L)
 				  .def("time", &profile_timer_script::time)];
 
 	function(L, "log", LuaLog);
+	function(L, "log_always", LuaLogAlways);
 	function(L, "error_log", ErrorLog);
 	function(L, "flush", FlushLogs);
 	function(L, "prefetch", prefetch_module);

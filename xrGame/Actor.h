@@ -219,6 +219,7 @@ protected:
 	float m_fOldTimeFactor;
 	float m_fOldOnlineRadius;
 	float m_fSleepTimeFactor;
+	bool m_VelocityIsNonZero;
 
 	/////////////////////////////////////////////////////////////////
 	// misc properties

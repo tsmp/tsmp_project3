@@ -40,6 +40,28 @@ typedef CActionPlanner<
 	script_planner;
 #endif
 
+#include "..\..\PHNetState.h"
+
+namespace stalker_interpolation 
+{
+	struct InterpData
+	{
+		Fvector Pos;
+		Fvector Vel;
+		SRotation o_torso;
+		SRotation head;
+		float o_model;
+	};
+
+	struct net_update_A
+	{
+		SPHNetState State;
+		SRotation o_torso;
+		SRotation head;
+		u32 dwTimeStamp = 0;
+	};
+};
+
 namespace MonsterSpace
 {
 	enum EMovementDirection;
@@ -117,6 +139,30 @@ private:
 	float m_power_fx_factor;
 
 private:
+	// for interpolation
+	SPHNetState						LastState;
+	SPHNetState						RecalculatedState;
+	SPHNetState						PredictedState;
+
+	float							SCoeff[3][4];			//коэффициэнты для сплайна Бизье
+	float							HCoeff[3][4];			//коэффициэнты для сплайна Эрмита
+	Fvector							IPosS, IPosH, IPosL;	//положение актера после интерполяции Бизье, Эрмита, линейной
+
+	xr_deque<stalker_interpolation::net_update_A>	NET_A;
+
+	stalker_interpolation::net_update_A				NET_A_Last;
+
+	stalker_interpolation::InterpData		IStart;
+	//stalker_interpolation::InterpData		IRec;
+	stalker_interpolation::InterpData		IEnd;
+
+	bool							m_bInInterpolation;
+	bool							m_bInterpolate;
+	u32								m_dwIStartTime;
+	u32								m_dwIEndTime;
+	u32								m_dwILastUpdateTime;
+
+private:
 	float m_fRankDisperison;
 	float m_fRankVisibility;
 	float m_fRankImmunity;
@@ -174,9 +220,22 @@ public:
 	virtual void reload(LPCSTR section);
 	virtual void LoadSounds(LPCSTR section);
 
+
+
+	virtual void PH_B_CrPr(); // actions & operations before physic correction-prediction steps
+	virtual void PH_I_CrPr(); // actions & operations after correction before prediction steps
+	virtual void PH_A_CrPr(); // actions & operations after phisic correction-prediction steps
+
+	void postprocess_packet(stalker_interpolation::net_update_A& packet);
+
+
 	virtual BOOL net_Spawn(CSE_Abstract *DC);
 	virtual void net_Export(NET_Packet &P);
+	void net_Export_Single(NET_Packet& P);
+	void net_Export_MP(NET_Packet& P);
 	virtual void net_Import(NET_Packet &P);
+	void net_Import_Single(NET_Packet& P);
+	void net_Import_MP(NET_Packet& P);
 	virtual void net_Destroy();
 	virtual void net_Save(NET_Packet &P);
 	virtual BOOL net_SaveRelevant();
@@ -278,6 +337,16 @@ private:
 	float m_pick_distance;
 	u32 m_pick_frame_id;
 	collide::rq_results rq_storage;
+
+	//For MP sync
+	u16				u_last_torso_motion_idx;
+	u16				u_last_legs_motion_idx;
+	u16				u_last_head_motion_idx;
+	u16				u_last_script_motion_idx;
+
+private:
+		void						CalculateInterpolationParams();
+		virtual void				make_Interpolation();
 
 private:
 	void can_kill_entity(const Fvector &position, const Fvector &direction, float distance, collide::rq_results &rq_storage);

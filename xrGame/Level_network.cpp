@@ -87,7 +87,7 @@ void CLevel::remove_objects()
 	if (!g_dedicated_server)
 #endif
 	{
-		VERIFY(client_spawn_manager().registry().empty());
+		DEBUG_VERIFY(client_spawn_manager().registry().empty());
 		client_spawn_manager().clear();
 	}
 
@@ -374,6 +374,14 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 	//---------------------------------------------------------------------------
 	return TRUE;
 };
+
+void CLevel::OnHardwareVerification()
+{
+	NET_Packet P;
+	P.w_begin(M_HW_RESPOND);
+	P.w(&Core.hardwareId, 10);
+	Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
+}
 
 void CLevel::OnBuildVersionChallenge()
 {

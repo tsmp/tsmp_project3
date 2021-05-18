@@ -11,6 +11,13 @@
 #include "ai_space.h"
 #include "object_factory.h"
 #include "script_process.h"
+#include "..\TSMP3_Build_Config.h"
+
+#ifdef USE_ORIGINAL_SCRIPTS_EXTENSION
+#define SCRIPTS_EXTENSION ".script"
+#else
+#define SCRIPTS_EXTENSION ".lua"
+#endif
 
 #ifdef USE_DEBUGGER
 #include "script_debugger.h"
@@ -22,6 +29,7 @@ extern Flags32 psAI_Flags;
 #endif
 
 extern void export_classes(lua_State *L);
+extern bool IsGameTypeSingle();
 
 CScriptEngine::CScriptEngine()
 {
@@ -238,13 +246,23 @@ void CScriptEngine::load_common_scripts()
 void CScriptEngine::process_file_if_exists(LPCSTR file_name, bool warn_if_not_exist)
 {
 	u32 string_length = xr_strlen(file_name);
+
 	if (!warn_if_not_exist && no_file_exists(file_name, string_length))
 		return;
-
-	string_path S, S1;
+	
 	if (m_reload_modules || (*file_name && !namespace_loaded(file_name)))
 	{
-		FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, file_name, ".script"));
+		string_path S, S1;
+		FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, file_name, SCRIPTS_EXTENSION));
+
+		if (!FS.exist(S))
+		{
+			if (IsGameTypeSingle())
+				FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, "singleplayer\\", file_name, SCRIPTS_EXTENSION));
+			else
+				FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, "multiplayer\\", file_name, SCRIPTS_EXTENSION));
+		}
+
 		if (!warn_if_not_exist && !FS.exist(S))
 		{
 #ifdef DEBUG
@@ -260,9 +278,11 @@ void CScriptEngine::process_file_if_exists(LPCSTR file_name, bool warn_if_not_ex
 			add_no_file(file_name, string_length);
 			return;
 		}
+
 #ifndef MASTER_GOLD
 		Msg("* loading script %s", S1);
 #endif // MASTER_GOLD
+
 		m_reload_modules = false;
 		load_file_into_namespace(S, *file_name ? file_name : "_G");
 	}

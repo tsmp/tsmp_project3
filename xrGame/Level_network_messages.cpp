@@ -255,6 +255,7 @@ void CLevel::ClientReceive()
 			Engine.Event.Defer("KERNEL:start", size_t(xr_strdup(*m_caServerOptions)), size_t(xr_strdup(*m_caClientOptions)));
 		}
 		break;
+
 		case M_SAVE_GAME:
 		{
 			ClientSave();
@@ -270,6 +271,11 @@ void CLevel::ClientReceive()
 			OnBuildVersionChallenge();
 		}
 		break;
+
+		case M_HW_CHALLENGE:
+			OnHardwareVerification();
+			break;
+
 		case M_CLIENT_CONNECT_RESULT:
 		{
 			OnConnectResult(P);

@@ -260,12 +260,15 @@ void CSE_ALifeTraderAbstract::OnChangeProfile(PropValue *sender)
 
 shared_str CSE_ALifeTraderAbstract::specific_character()
 {
+	if (m_community_index != -1) // tsmp
+	{
 #ifdef XRGAME_EXPORTS
 #pragma todo("Dima to Yura, MadMax : Remove that hacks, please!")
-	if (g_pGameLevel && Level().game && (GameID() != GAME_SINGLE))
-		return m_SpecificCharacter;
+		if (g_pGameLevel && Level().game && (GameID() != GAME_SINGLE))
+			return m_SpecificCharacter;
 #endif
-
+	}
+	
 	if (m_SpecificCharacter.size())
 		return m_SpecificCharacter;
 
@@ -1890,18 +1893,113 @@ void CSE_ALifeHumanStalker::STATE_Read(NET_Packet &tNetPacket, u16 size)
 		tNetPacket.r_u8();
 }
 
+BOOL CSE_ALifeHumanStalker::Net_Relevant()
+{
+	if (IsGameTypeSingle())
+		return inherited1::Net_Relevant();
+	else
+		return g_Alive();
+}
+
 void CSE_ALifeHumanStalker::UPDATE_Write(NET_Packet &tNetPacket)
+{
+	if (IsGameTypeSingle())
+		UPDATE_Write_Original(tNetPacket);
+	else
+		UPDATE_Write_MP(tNetPacket);
+}
+
+void CSE_ALifeHumanStalker::UPDATE_Write_Original(NET_Packet& tNetPacket)
 {
 	inherited1::UPDATE_Write(tNetPacket);
 	inherited2::UPDATE_Write(tNetPacket);
 	tNetPacket.w_stringZ(m_start_dialog);
 }
 
+void CSE_ALifeHumanStalker::UPDATE_Write_MP(NET_Packet& tNetPacket)
+{
+	tNetPacket.w_u8(phSyncFlag);
+	if (phSyncFlag)
+	{
+		physics_state.write(tNetPacket);
+	}
+	else
+	{
+		tNetPacket.w_vec3(o_Position);
+	}
+
+	tNetPacket.w_float(fHealth);
+	//tNetPacket.w_vec3(o_Position);
+	tNetPacket.w_angle8(o_torso.pitch);
+	tNetPacket.w_angle8(o_torso.roll);
+	tNetPacket.w_angle8(o_torso.yaw);
+	tNetPacket.w_angle8(f_head_dir_pitch);
+	tNetPacket.w_angle8(f_head_dir_yaw);
+	tNetPacket.w_u32(u_active_slot);
+	tNetPacket.w_u16(u_torso_anm_idx);
+	tNetPacket.w_u8(u_torso_anm_slot);
+	tNetPacket.w_u16(u_legs_anm_idx);
+	tNetPacket.w_u8(u_legs_anm_slot);
+	tNetPacket.w_u16(u_head_anm_idx);
+	tNetPacket.w_u8(u_head_anm_slot);
+	tNetPacket.w_u16(u_script_anm_idx);
+	tNetPacket.w_u8(u_script_anm_slot);
+}
+
 void CSE_ALifeHumanStalker::UPDATE_Read(NET_Packet &tNetPacket)
+{
+	if (IsGameTypeSingle())
+		UPDATE_Read_Original(tNetPacket);
+	else
+		UPDATE_Read_MP(tNetPacket);
+}
+
+void CSE_ALifeHumanStalker::UPDATE_Read_Original(NET_Packet& tNetPacket)
 {
 	inherited1::UPDATE_Read(tNetPacket);
 	inherited2::UPDATE_Read(tNetPacket);
 	tNetPacket.r_stringZ(m_start_dialog);
+}
+
+void CSE_ALifeHumanStalker::UPDATE_Read_MP(NET_Packet& tNetPacket)
+{
+#ifdef ALIFE_MP
+	if (firstUpdate)
+	{
+		UPDATE_Read_Original(tNetPacket);
+		firstUpdate = false;
+		return;
+	}
+#endif
+
+	tNetPacket.r_u8(phSyncFlag);
+	if (phSyncFlag)
+	{
+		physics_state.read(tNetPacket);
+		o_Position.set(physics_state.physics_position);
+	}
+	else
+	{
+		o_Position.set(tNetPacket.r_vec3());
+	}
+
+	tNetPacket.r_float(f_health);
+	tNetPacket.r_angle8(o_torso.pitch);
+	tNetPacket.r_angle8(o_torso.roll);
+	tNetPacket.r_angle8(o_torso.yaw);
+	tNetPacket.r_angle8(f_head_dir_pitch);
+	tNetPacket.r_angle8(f_head_dir_yaw);
+	tNetPacket.r_u32(u_active_slot);
+	tNetPacket.r_u16(u_torso_anm_idx);
+	tNetPacket.r_u8(u_torso_anm_slot);
+	tNetPacket.r_u16(u_legs_anm_idx);
+	tNetPacket.r_u8(u_legs_anm_slot);
+	tNetPacket.r_u16(u_head_anm_idx);
+	tNetPacket.r_u8(u_head_anm_slot);
+	tNetPacket.r_u16(u_script_anm_idx);
+	tNetPacket.r_u8(u_script_anm_slot);
+	fHealth = f_health;
+	o_model = o_torso.yaw;
 }
 
 void CSE_ALifeHumanStalker::load(NET_Packet &tNetPacket)

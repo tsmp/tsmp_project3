@@ -24,6 +24,7 @@ public:
 
 	LPCSTR error2string(long code);
 
+	void assertion_message(const char* e1, const char* file, int line, const char* function);
 	void fail(const char *e1, const char *file, int line, const char *function, bool &ignore_always);
 	void fail(const char *e1, const std::string &e2, const char *file, int line, const char *function, bool &ignore_always);
 	void fail(const char *e1, const char *e2, const char *file, int line, const char *function, bool &ignore_always);

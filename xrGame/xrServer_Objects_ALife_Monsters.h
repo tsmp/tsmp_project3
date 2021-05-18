@@ -478,6 +478,30 @@ add_to_type_list(CSE_ALifeHumanAbstract)
 CSE_ALifeHumanStalker(LPCSTR caSection);
 virtual ~CSE_ALifeHumanStalker();
 virtual void load(NET_Packet &tNetPacket);
+void UPDATE_Write_Original(NET_Packet& tNetPacket);
+void UPDATE_Read_Original(NET_Packet& tNetPacket);
+void UPDATE_Write_MP(NET_Packet& tNetPacket);
+void UPDATE_Read_MP(NET_Packet& tNetPacket);
+
+float f_health;
+float f_head_dir_pitch;
+float f_head_dir_yaw;
+u32	u_active_slot;
+
+net_physics_state				physics_state;
+u8								phSyncFlag = 0;
+
+u16	u_torso_anm_idx;
+u8 u_torso_anm_slot;
+u16 u_legs_anm_idx;
+u8 u_legs_anm_slot;
+u16 u_head_anm_idx;
+u8 u_head_anm_slot;
+u16 u_script_anm_idx;
+u8 u_script_anm_slot;
+
+virtual BOOL Net_Relevant();
+
 virtual CSE_Abstract *cast_abstract() { return this; }
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeHumanStalker)

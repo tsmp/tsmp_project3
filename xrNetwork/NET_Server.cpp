@@ -53,34 +53,90 @@ xr_string ip_address::to_string() const
 	return res;
 }
 
-// ==================================================================================================
+bool IsIpAdress(const char* str)
+{
+	int pointsCount = 0;
+
+	for (int i = 0; str[i] != '\0'; i++)
+		if (str[i] == '.')
+			pointsCount++;
+
+	return pointsCount == 3;
+}
+
 void IBannedClient::Load(CInifile& ini, const shared_str& sect)
 {
-	HAddr.set(sect.c_str());
+	if (IsIpAdress(sect.c_str()))	
+		HAddr.set(sect.c_str());
+	else
+	{
+		std::string hwstr = sect.c_str();
+		int delimiters[4] = { 0 };
+		int delimsCounter = 0;
 
-	tm _tm_banned;
-	const shared_str& time_to = ini.r_string(sect, "time_to");
-	int res_t = sscanf(time_to.c_str(),
-		"%02d.%02d.%d_%02d:%02d:%02d",
-		&_tm_banned.tm_mday,
-		&_tm_banned.tm_mon,
-		&_tm_banned.tm_year,
-		&_tm_banned.tm_hour,
-		&_tm_banned.tm_min,
-		&_tm_banned.tm_sec);
-	VERIFY(res_t == 6);
+		for (int i = 0; i < hwstr.size(); i++)
+		{
+			if (hwstr[i] == '-')
+			{
+				delimiters[delimsCounter] = i;
+				delimsCounter++;
+			}
+		}
 
-	_tm_banned.tm_mon -= 1;
-	_tm_banned.tm_year -= 1900;
+		std::string str1(hwstr.begin(), hwstr.end()-hwstr.size()+delimiters[0]);
+		s1 = atoi(str1.c_str());
 
-	BanTime = mktime(&_tm_banned);
+		std::string str2(hwstr.begin()+delimiters[0]+1, hwstr.end() - hwstr.size() + delimiters[1]);
+		s2 = atoi(str2.c_str());
 
-	Msg("- loaded banned client %s to %s", HAddr.to_string().c_str(), BannedTimeTo().c_str());
+		std::string str3(hwstr.begin() + delimiters[1] + 1, hwstr.end() - hwstr.size() + delimiters[2]);
+		s3 = atoi(str3.c_str());
+
+		std::string str4(hwstr.begin() + delimiters[2] + 1, hwstr.end() - hwstr.size() + delimiters[3]);
+		s4 = atoi(str4.c_str());
+
+		std::string str5(hwstr.begin() + delimiters[3] + 1, hwstr.end());
+		s5 = atoi(str5.c_str());
+	}
+
+		tm _tm_banned;
+		const shared_str& time_to = ini.r_string(sect, "time_to");
+		int res_t = sscanf(time_to.c_str(),
+			"%02d.%02d.%d_%02d:%02d:%02d",
+			&_tm_banned.tm_mday,
+			&_tm_banned.tm_mon,
+			&_tm_banned.tm_year,
+			&_tm_banned.tm_hour,
+			&_tm_banned.tm_min,
+			&_tm_banned.tm_sec);
+		VERIFY(res_t == 6);
+
+		_tm_banned.tm_mon -= 1;
+		_tm_banned.tm_year -= 1900;
+
+		BanTime = mktime(&_tm_banned);
+
+		if (!s1 && !s2 && !s3)
+			Msg("- loaded banned client %s to %s", HAddr.to_string().c_str(), BannedTimeTo().c_str());
+		else
+		{
+			char ch[32];
+			sprintf(ch, "%hu-%hu-%hu-%hu-%hu", s1, s2, s3, s4, s5);
+
+			Msg("- loaded banned client %s to %s", ch, BannedTimeTo().c_str());
+		}
 }
 
 void IBannedClient::Save(CInifile& ini)
 {
-	ini.w_string(HAddr.to_string().c_str(), "time_to", BannedTimeTo().c_str());
+	if (!s1 && !s2 && !s3)
+		ini.w_string(HAddr.to_string().c_str(), "time_to", BannedTimeTo().c_str());
+	else
+	{
+		char buf[32];		
+		sprintf(buf, "%hu-%hu-%hu-%hu-%hu", s1, s2, s3, s4, s5);
+		ini.w_string(buf, "time_to", BannedTimeTo().c_str());
+	}
 }
 
 xr_string IBannedClient::BannedTimeTo() const
@@ -147,6 +203,7 @@ IClient::IClient(CTimer* timer)
 	flags.bConnected = FALSE;
 	flags.bReconnect = FALSE;
 	flags.bVerified = TRUE;
+	s1 = s2 = s3 = s4 = s5 = 0;
 }
 
 IClient::~IClient()
@@ -923,9 +980,27 @@ IBannedClient* IPureServer::GetBannedClient(const ip_address& Address)
 	for (u32 it = 0; it < BannedAddresses.size(); it++)
 	{
 		IBannedClient* pBClient = BannedAddresses[it];
-		if (pBClient->HAddr == Address)
+		if (pBClient->HAddr == Address && !pBClient->s1 && !pBClient->s2 && !pBClient->s3)
 			return pBClient;
 	}
+	return NULL;
+};
+
+IBannedClient* IPureServer::GetBannedHW(unsigned short s1, unsigned short s2, unsigned short s3, unsigned short s4, unsigned short s5)
+{
+	for (u32 it = 0; it < BannedAddresses.size(); it++)
+	{
+		IBannedClient* pBClient = BannedAddresses[it];
+
+		if (!pBClient)
+			continue;
+		
+		//Msg("His hwid: %hu-%hu-%hu-%hu-%hu", s1, s2, s3, s4, s5);
+
+		if ((pBClient->s1 == s1 && pBClient->s2 == s2) || (pBClient->s3 == s3 && pBClient->s4 == s4 && pBClient->s5 == s5))
+			return pBClient;			
+	}
+
 	return NULL;
 };
 
@@ -935,6 +1010,45 @@ void IPureServer::BanClient(IClient* C, u32 BanTime)
 	GetClientAddress(C->ID, ClAddress);
 	BanAddress(ClAddress, BanTime);
 };
+
+void IPureServer::BanClientHW(IClient* C, u32 BanTime)
+{
+	IBannedClient* cl = new IBannedClient();
+	
+	cl->s1 = C->s1;
+	cl->s2 = C->s2;
+	cl->s3 = C->s3;
+	cl->s4 = C->s4;
+	cl->s5 = C->s5;
+
+	time(&cl->BanTime);
+	cl->BanTime += BanTime;
+
+	BannedAddresses.push_back(cl);
+	BannedList_Save();
+};
+
+void IPureServer::UnBanHW(unsigned short s1, unsigned short s2, unsigned short s3, unsigned short s4, unsigned short s5)
+{
+	for (u32 it = 0; it < BannedAddresses.size(); it++)
+	{
+		IBannedClient* pBClient = BannedAddresses[it];
+
+		if (!pBClient)
+			continue;
+
+		if (pBClient->s1 == s1 && pBClient->s2 == s2 && pBClient->s3 == s3 && pBClient->s4 == s4 && pBClient->s5 == s5)
+		{
+			xr_delete(BannedAddresses[it]);
+			BannedAddresses.erase(BannedAddresses.begin() + it);
+			Msg("Unbanned");
+			BannedList_Save();
+			return;
+		}
+	}
+
+	Msg("! cant unban, this wasnt banned");
+}
 
 void IPureServer::BanAddress(const ip_address& Address, u32 BanTimeSec)
 {
@@ -1040,8 +1154,13 @@ void IPureServer::UpdateBannedList()
 	IBannedClient* Cl = BannedAddresses.back();
 	if (Cl->BanTime < T)
 	{
-		ip_address Address = Cl->HAddr;
-		UnBanAddress(Address);
+		if (!Cl->s1 && !Cl->s2 && !Cl->s3)
+		{
+			ip_address Address = Cl->HAddr;
+			UnBanAddress(Address);
+		}
+		else
+			UnBanHW(Cl->s1, Cl->s2, Cl->s3, Cl->s4, Cl->s5);
 	}
 }
 

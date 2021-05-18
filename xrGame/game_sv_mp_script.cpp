@@ -67,11 +67,8 @@ void game_sv_mp_script::SpawnPlayer(ClientID id, LPCSTR N, LPCSTR SkinName, RPoi
 		CSE_ALifeCreatureActor *pOldActor = smart_cast<CSE_ALifeCreatureActor *>(pOldOwner);
 		CSE_Spectator *pOldSpectator = smart_cast<CSE_Spectator *>(pOldOwner);
 
-		if (pOldActor)
-		{
-			AllowDeadBodyRemove(id, pOldActor->ID);
-			m_CorpseList.push_back(pOldOwner->ID);
-		};
+		if (pOldActor)		
+			AllowDeadBodyRemove(pOldActor->ID);		
 		if (pOldSpectator)
 		{
 			pOldSpectator->owner = (xrClientData *)m_server->GetServerClient();

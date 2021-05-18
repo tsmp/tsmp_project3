@@ -390,19 +390,17 @@ void CWeapon::Load(LPCSTR section)
 
 	InitAddons();
 
-	//////////////////////////////////////
 	//время убирания оружия с уровня
 	if (pSettings->line_exist(section, "weapon_remove_time"))
 		m_dwWeaponRemoveTime = pSettings->r_u32(section, "weapon_remove_time");
 	else
 		m_dwWeaponRemoveTime = WEAPON_REMOVE_TIME;
-	//////////////////////////////////////
+	
 	if (pSettings->line_exist(section, "auto_spawn_ammo"))
 		m_bAutoSpawnAmmo = pSettings->r_bool(section, "auto_spawn_ammo");
 	else
 		m_bAutoSpawnAmmo = TRUE;
-	//////////////////////////////////////
-
+	
 	m_bHideCrosshairInZoom = true;
 	if (pSettings->line_exist(hud_sect, "zoom_hide_crosshair"))
 		m_bHideCrosshairInZoom = !!pSettings->r_bool(hud_sect, "zoom_hide_crosshair");
@@ -411,6 +409,7 @@ void CWeapon::Load(LPCSTR section)
 
 	m_bHasTracers = READ_IF_EXISTS(pSettings, r_bool, section, "tracers", true);
 	m_u8TracerColorID = READ_IF_EXISTS(pSettings, r_u8, section, "tracers_color_ID", u8(-1));
+	m_bDontHideModelWhenZoomWithTexture = READ_IF_EXISTS(pSettings, r_bool, section, "zoom_dont_hide_model", false);
 
 	string256 temp;
 	for (int i = egdNovice; i < egdCount; ++i)
@@ -474,6 +473,14 @@ BOOL CWeapon::net_Spawn(CSE_Abstract *DC)
 	m_ammoType = E->ammo_type;
 	SetState(E->wpn_state);
 	SetNextState(E->wpn_state);
+
+#ifdef ALIFE_MP
+	if (m_ammoType >= m_ammoTypes.size())
+	{
+		Msg("! ERROR: invalid ammo type!");
+		m_ammoType = 0;
+	}
+#endif
 
 	m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
 	if (iAmmoElapsed)
@@ -748,7 +755,7 @@ void CWeapon::renderable_Render()
 	RenderLight();
 
 	//если мы в режиме снайперки, то сам HUD рисовать не надо
-	if (IsZoomed() && !IsRotatingToZoom() && ZoomTexture())
+	if (IsZoomed() && !IsRotatingToZoom() && ZoomTexture() && !m_bDontHideModelWhenZoomWithTexture)
 		m_bRenderHud = false;
 	else
 		m_bRenderHud = true;

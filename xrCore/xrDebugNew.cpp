@@ -318,6 +318,14 @@ void xrDebug::fail(const char *e1, const char *file, int line, const char *funct
 	backend("assertion failed", e1, 0, 0, file, line, function, ignore_always);
 }
 
+void xrDebug::assertion_message(const char* e1, const char* file, int line, const char* function)
+{
+	Msg("! Обнаружена ошибка, пожалуйста сообщите об этом разработчикам мода. Подробности: ");
+	Msg("! expr: %s", e1);
+	Msg("! file: %s, line: %u",file, line);
+	Msg("! func: %s", function);
+}
+
 void xrDebug::fail(const char *e1, const std::string &e2, const char *file, int line, const char *function, bool &ignore_always)
 {
 	backend(e1, e2.c_str(), 0, 0, file, line, function, ignore_always);

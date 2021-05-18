@@ -145,6 +145,7 @@ public:
 
 	void AttachNewClient(IClient *CL);
 	virtual void OnBuildVersionRespond(IClient *CL, NET_Packet &P);
+	void OnHardwareVerifyRespond(IClient* CL, NET_Packet& P);
 
 protected:
 	bool CheckAdminRights(const shared_str &user, const shared_str &pass, string512 reason);
@@ -153,7 +154,7 @@ protected:
 	virtual bool Check_ServerAccess(IClient *CL, string512 &reason) { return true; }
 
 	virtual void CheckClientGameSpyCDKey(IClient* CL) {};
-	virtual void CheckClientBuildVersion(IClient *CL);
+	virtual void CheckClientBuildVersion(IClient *CL);	
 	virtual void CheckClientHWID(IClient* CL);
 
 	virtual void OnConnectionVerificationStepComplete(IClient *CL);

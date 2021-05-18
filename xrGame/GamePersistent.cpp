@@ -207,7 +207,7 @@ void CGamePersistent::UpdateGameType()
 	if (!xr_strcmp(m_game_params.m_game_type, "artefacthunt"))
 		m_game_params.m_e_game_type = GAME_ARTEFACTHUNT;
 
-	R_ASSERT3(m_game_params.m_e_game_type != GAME_ANY, "Unknown game type:", m_game_params.m_game_type);
+	// На клиенте может остаться GAME_ANY если мы не знаем тип игры еще
 	
 	if (SinglePlayerGame)
 		g_current_keygroup = _sp;
