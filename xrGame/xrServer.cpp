@@ -157,8 +157,7 @@ void xrServer::client_Destroy(IClient *C)
 	csPlayers.Enter();
 
 	// Delete assosiated entity
-	// xrClientData*	D = (xrClientData*)C;
-	// CSE_Abstract* E = D->owner;
+
 	for (u32 DI = 0; DI < net_Players_disconnected.size(); DI++)
 	{
 		if (net_Players_disconnected[DI] == C)
@@ -166,8 +165,8 @@ void xrServer::client_Destroy(IClient *C)
 			xr_delete(C);
 			net_Players_disconnected.erase(net_Players_disconnected.begin() + DI);
 			break;
-		};
-	};
+		}
+	}
 
 	for (u32 I = 0; I < net_Players.size(); I++)
 	{
@@ -175,8 +174,8 @@ void xrServer::client_Destroy(IClient *C)
 		{
 			//has spectator ?
 			CSE_Abstract *pOwner = ((xrClientData *)C)->owner;
-			CSE_Spectator *pS = smart_cast<CSE_Spectator *>(pOwner);
-			if (pS)
+			
+			if (CSE_Spectator* pS = smart_cast<CSE_Spectator*>(pOwner))
 			{
 				NET_Packet P;
 				P.w_begin(M_EVENT);
@@ -204,25 +203,23 @@ void xrServer::client_Destroy(IClient *C)
 				} while (true);
 			}
 
-			if (!g_sv_Client_Reconnect_Time || !C->flags.bVerified)
-			{
-				xr_delete(C);
-			}
+			if (!g_sv_Client_Reconnect_Time)			
+				xr_delete(C);			
 			else
 			{
 				C->dwTime_LastUpdate = Device.dwTimeGlobal;
 				net_Players_disconnected.push_back(C);
 				((xrClientData *)C)->Clear();
-			};
+			}
+
 			net_Players.erase(net_Players.begin() + I);
 			break;
-		};
+		}
 	}
 
 	csPlayers.Leave();
 }
 
-//--------------------------------------------------------------------
 int g_Dump_Update_Write = 0;
 
 #ifdef DEBUG
