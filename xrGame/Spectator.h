@@ -57,6 +57,7 @@ public:
 	virtual void UpdateCL();
 	virtual BOOL net_Spawn(CSE_Abstract *DC);
 	virtual void net_Destroy();
+	virtual BOOL UsedAI_Locations() override;
 
 	virtual void Center(Fvector &C) const { C.set(Position()); }
 	virtual float Radius() const { return EPS; }

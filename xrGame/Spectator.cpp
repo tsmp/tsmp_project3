@@ -426,8 +426,13 @@ void CSpectator::cam_Update(CActor *A)
 	};
 }
 
-BOOL CSpectator::net_Spawn(CSE_Abstract *DC)
+BOOL CSpectator::UsedAI_Locations()
 {
+	return FALSE;
+}
+
+BOOL CSpectator::net_Spawn(CSE_Abstract *DC)
+{	
 	BOOL res = inherited::net_Spawn(DC);
 	if (!res)
 		return FALSE;
