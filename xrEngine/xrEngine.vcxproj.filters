@@ -872,6 +872,9 @@
     <ClCompile Include="DedicatedSrvConsole.cpp">
       <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
     </ClCompile>
+    <ClCompile Include="xrCustomResImport.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="OutOfVirtError.RES">

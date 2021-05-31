@@ -24,7 +24,6 @@
 
 #define TRIVIAL_ENCRYPTOR_DECODER
 #include "trivial_encryptor.h"
-#include "..\xrCustomRes\resource.h"
 #include <debugapi.h>
 
 // global variables
@@ -138,9 +137,12 @@ struct _SoundProcessor : public pureFrame
 	}
 } SoundProcessor;
 
+extern void TryLoadXrCustomResDll();
+extern void TryToChangeLogoImageToCustom(HWND logoWindow);
+
 namespace Logo
 {
-	static HWND logoWindow = NULL;
+	static HWND logoWindow = nullptr;
 
 	void Create()
 	{
@@ -154,21 +156,14 @@ namespace Logo
 		logoWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_STARTUP), 0, 0);
 
 		UINT flags = SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW;
-		SetWindowPos(logoWindow, topMost, 0, 0, 0, 0, flags);
-
-		if (HMODULE hCustomRes = LoadLibraryA("xrCustomRes.dll"))
-		{
-			// меняем логотип на картинку, загруженную из xrCustomRes.dll
-			HWND hStatic = GetDlgItem(logoWindow, IDC_STATIC_PICTURE);
-			HBITMAP hBmp = LoadBitmap(hCustomRes, MAKEINTRESOURCE(IDB_LOGO_BITMAP));
-			SendMessage(hStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);
-		}
+		SetWindowPos(logoWindow, topMost, 0, 0, 0, 0, flags);				
+		TryToChangeLogoImageToCustom(logoWindow);
 	}
 
 	void Destroy()
 	{
 		DestroyWindow(logoWindow);
-		logoWindow = NULL;
+		logoWindow = nullptr;
 	}
 }
 
@@ -420,6 +415,8 @@ void EngineDestroy()
 
 int APIENTRY WinMainImplementation(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
 {
+	TryLoadXrCustomResDll();
+
 #ifdef DEDICATED_SERVER
 	g_dedicated_server = true;
 #else
@@ -435,7 +432,7 @@ int APIENTRY WinMainImplementation(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	gameInstances.RegisterThisInstanceLaunched();
 
 #endif // DEDICATED_SERVER
-
+		
 	EngineInitialize(lpCmdLine);
 	EngineRoutine();
 	EngineDestroy();
