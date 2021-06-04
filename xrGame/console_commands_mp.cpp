@@ -186,19 +186,21 @@ public:
 
 		u32 SVObjNum = (OnServer()) ? Level().Server->GetEntitiesNum() : 0;
 		xr_vector<u16> SObjID;
+
 		for (u32 i = 0; i < SVObjNum; i++)
 		{
 			CSE_Abstract *pEntity = Level().Server->GetEntity(i);
 			SObjID.push_back(pEntity->ID);
-		};
+		}
+
 		std::sort(SObjID.begin(), SObjID.end());
 
 		u32 CLObjNum = Level().Objects.o_count();
 		xr_vector<u16> CObjID;
-		for (i = 0; i < CLObjNum; i++)
-		{
+
+		for (u32 i = 0; i < CLObjNum; i++)		
 			CObjID.push_back(Level().Objects.o_get_by_iterator(i)->ID());
-		};
+		
 		std::sort(CObjID.begin(), CObjID.end());
 
 		Msg("Client Objects : %d", CLObjNum);
