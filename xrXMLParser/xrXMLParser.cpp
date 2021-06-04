@@ -30,6 +30,7 @@ void ParseFile(LPCSTR path, CMemoryWriter &W, IReader *F, CXml *xml)
 		if (str[0] && (str[0] == '#') && strstr(str, "#include"))
 		{
 			string256 inc_name;
+
 			if (_GetItem(str, 1, inc_name, '"'))
 			{
 				IReader *I = NULL;
@@ -46,10 +47,11 @@ void ParseFile(LPCSTR path, CMemoryWriter &W, IReader *F, CXml *xml)
 
 				if (!I)
 				{
-					string1024 str;
-					sprintf(str, "XML file[%s] parsing failed. Can't find include file:[%s]", path, inc_name);
-					R_ASSERT2(false, str);
+					string1024 tempStr;
+					sprintf(tempStr, "XML file[%s] parsing failed. Can't find include file:[%s]", path, inc_name);
+					R_ASSERT2(false, tempStr);
 				}
+
 				ParseFile(path, W, I, xml);
 				FS.r_close(I);
 			}
