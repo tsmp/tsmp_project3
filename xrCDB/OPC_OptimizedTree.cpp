@@ -441,14 +441,15 @@ AABBQuantizedTree::~AABBQuantizedTree()
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool AABBQuantizedTree::Build(AABBTree *tree)
-{
-	udword i;
+{	
 	// Checkings
 	if (!tree)
 		return false;
+
 	// Check the input tree is complete
 	udword NbTriangles = tree->GetNbPrimitives();
 	udword NbNodes = tree->GetNbNodes();
+
 	if (NbNodes != NbTriangles * 2 - 1)
 		return false;
 
@@ -476,7 +477,8 @@ bool AABBQuantizedTree::Build(AABBTree *tree)
 
 		// Quantize
 		uintptr_t Data;
-		for (i = 0; i < mNbNodes; i++)
+
+		for (udword i = 0; i < mNbNodes; i++)
 		{
 			PERFORM_QUANTIZATION
 			REMAP_DATA(mData)
@@ -519,8 +521,7 @@ AABBQuantizedNoLeafTree::~AABBQuantizedNoLeafTree()
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool AABBQuantizedNoLeafTree::Build(AABBTree *tree)
-{
-	udword i;
+{	
 	// Checkings
 	if (!tree)
 		return false;
@@ -555,7 +556,8 @@ bool AABBQuantizedNoLeafTree::Build(AABBTree *tree)
 
 		// Quantize
 		uintptr_t Data;
-		for (i = 0; i < mNbNodes; i++)
+
+		for (udword i = 0; i < mNbNodes; i++)
 		{
 			PERFORM_QUANTIZATION
 			REMAP_DATA(mData)
