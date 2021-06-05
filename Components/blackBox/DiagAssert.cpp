@@ -3,7 +3,7 @@
 Copyright (c) 1997-2000 John Robbins -- All rights reserved.
 ----------------------------------------------------------------------*/
 
-#include "stdafx_.h"
+#include "pch.h"
 #include "BugslayerUtil.h"
 #include "DiagAssert.h"
 
@@ -222,7 +222,7 @@ BOOL __stdcall RealAssert(DWORD dwOverrideOpts,
     }
     else
     {
-        szRealLastErr = "**Last error code does not exist!!!!";
+        szRealLastErr = (LPSTR)"**Last error code does not exist!!!!";
     }
 
     // Get the module name.

@@ -1,8 +1,8 @@
-// stdafx.cpp : source file that includes just the standard includes
+﻿// stdafx.cpp : source file that includes just the standard includes
 //	BlackBox.pch will be the pre-compiled header
 //	stdafx.obj will contain the pre-compiled type information
 
-#include "stdafx_.h"
+#include "pch.h"
 
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file
@@ -13,20 +13,20 @@ namespace BlackBox
 	bool isspace(int ch)
 	{
 		return ((ch == 0x09) || (ch == 0x0A) || (ch == 0x0B) ||
-				(ch == 0x0B) || (ch == 0x0C) || (ch == 0x0D) || (ch == 0x20))
-				   ? true
-				   : false;
+			(ch == 0x0B) || (ch == 0x0C) || (ch == 0x0D) || (ch == 0x20))
+			? true
+			: false;
 	}
 
 	bool isdigit(int ch)
 	{
 		return ((ch == '0') || (ch == '1') || (ch == '2') || (ch == '3') || (ch == '4') ||
-				(ch == '5') || (ch == '6') || (ch == '7') || (ch == '8') || (ch == '9'))
-				   ? true
-				   : false;
+			(ch == '5') || (ch == '6') || (ch == '7') || (ch == '8') || (ch == '9'))
+			? true
+			: false;
 	}
 
-	long atol(const char *nptr)
+	long atol(const char* nptr)
 	{
 		int c;			/* current char */
 		long total = 0; /* current total */

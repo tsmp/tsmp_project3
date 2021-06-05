@@ -3,7 +3,7 @@
 Copyright (c) 1997-2000 John Robbins -- All rights reserved.
 ----------------------------------------------------------------------*/
 
-#include "stdafx_.h"
+#include "pch.h"
 #include "BugslayerUtil.h"
 //#include "Internal.h"
 

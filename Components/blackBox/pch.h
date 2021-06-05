@@ -1,4 +1,4 @@
-#ifndef AFX_STDAFX_H__
+﻿#ifndef AFX_STDAFX_H__
 #define AFX_STDAFX_H__
 
 #if _MSC_VER > 1000
@@ -21,7 +21,7 @@ namespace BlackBox
 
     bool isdigit(int ch);
 
-    long atol(const char *nptr);
+    long atol(const char* nptr);
 
 }; // namespace BlackBox
 

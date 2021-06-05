@@ -8,6 +8,7 @@
 #include "xrCore.h"
 
 #pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "blackBox.lib")
 
 #ifdef DEBUG
 #include <malloc.h>
