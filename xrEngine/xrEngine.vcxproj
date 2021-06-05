@@ -680,7 +680,7 @@
     <ClInclude Include="xr_object.h" />
     <ClInclude Include="xr_object_list.h" />
     <ClInclude Include="x_ray.h" />
-    <ClInclude Include="_d3d_extensions.h" />
+    <ClInclude Include="flight.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ai_script_lua_debug.cpp" />

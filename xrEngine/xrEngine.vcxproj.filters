@@ -141,7 +141,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="_d3d_extensions.h">
+    <ClInclude Include="flight.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="defines.h">
