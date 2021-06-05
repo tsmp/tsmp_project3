@@ -4,4 +4,5 @@
 #include "stdafx.h"
 
 #pragma comment(lib, "xrCore")
+#pragma comment(lib, "lzo")
 #pragma comment(lib, "dxguid.lib")

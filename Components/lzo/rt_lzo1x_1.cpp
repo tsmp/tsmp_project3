@@ -1,7 +1,7 @@
-#include "stdafx.h"
+#include "pch.h"
 #pragma hdrstop
 
-/* lzo1x_d2.c -- LZO1X decompression with overrun testing
+/* lzo1x_1.c -- LZO1X-1 compression
 
    This file is part of the LZO real-time data compression library.
 
@@ -36,10 +36,13 @@
    http://www.oberhumer.com/opensource/lzo/
  */
 
+#define LZO_NEED_DICT_H
+#define D_BITS 14
+#define D_INDEX1(d, p) d = DM(DMUL(0x21, DX3(p, 5, 5, 6)) >> 5)
+#define D_INDEX2(d, p) d = (d & (D_MASK & 0x7ff)) ^ (D_HIGH | 0x1f)
 
 #include "rt_config1x.h"
 
-#define LZO_TEST_OVERRUN
-#define DO_DECOMPRESS       lzo1x_decompress_safe
+#define DO_COMPRESS lzo1x_1_compress
 
-#include "rt_lzo1x_d.ch"
+#include "rt_lzo1x_c.ch"

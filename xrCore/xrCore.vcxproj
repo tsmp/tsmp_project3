@@ -152,7 +152,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;XRCORE_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling />
+      <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -198,8 +198,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;XRCORE_EXPORTS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
+      <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -289,14 +288,6 @@
     <ClCompile Include="memory_allocation_stats.cpp" />
     <ClCompile Include="memory_monitor.cpp" />
     <ClCompile Include="memory_usage.cpp" />
-    <ClCompile Include="rt_compressor.cpp" />
-    <ClCompile Include="rt_compressor9.cpp" />
-    <ClCompile Include="rt_lzo1x_1.cpp" />
-    <ClCompile Include="rt_lzo1x_9x.cpp" />
-    <ClCompile Include="rt_lzo1x_d1.cpp" />
-    <ClCompile Include="rt_lzo1x_d2.cpp" />
-    <ClCompile Include="rt_lzo1x_d3.cpp" />
-    <ClCompile Include="rt_lzo_init.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>
@@ -357,16 +348,6 @@
     <ClInclude Include="log.h" />
     <ClInclude Include="lzhuf.h" />
     <ClInclude Include="memory_monitor.h" />
-    <ClInclude Include="rt_compressor.h" />
-    <ClInclude Include="rt_config1x.h" />
-    <ClInclude Include="rt_lzo1x.h" />
-    <ClInclude Include="rt_lzoconf.h" />
-    <ClInclude Include="rt_lzodefs.h" />
-    <ClInclude Include="rt_lzo_conf.h" />
-    <ClInclude Include="rt_lzo_config.h" />
-    <ClInclude Include="rt_lzo_dict.h" />
-    <ClInclude Include="rt_lzo_ptr.h" />
-    <ClInclude Include="rt_miniacc.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="stream_reader.h" />
     <ClInclude Include="stream_reader_inline.h" />

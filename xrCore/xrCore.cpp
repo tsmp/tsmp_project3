@@ -9,6 +9,7 @@
 
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "blackBox.lib")
+#pragma comment(lib, "lzo.lib")
 
 #ifdef DEBUG
 #include <malloc.h>
