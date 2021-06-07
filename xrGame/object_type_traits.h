@@ -243,8 +243,8 @@ namespace object_type_traits
 		enum
 		{
 			value =
-				is_class<T1>::result &&
-				is_class<T2>::result &&
+				std::is_class_v<T1> &&
+				std::is_class_v<T2> &&
 				!is_same<T1, T2>::value &&
 				sizeof(detail::yes) == sizeof(select((T2 *)(0)))
 		};

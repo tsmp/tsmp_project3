@@ -336,7 +336,6 @@
     <CustomBuild Include="FileSystem.h" />
     <ClInclude Include="file_stream_reader.h" />
     <ClInclude Include="FixedMap.h" />
-    <ClInclude Include="FixedSet.h" />
     <ClInclude Include="FixedVector.h" />
     <ClInclude Include="FS.h" />
     <ClInclude Include="FS_internal.h" />
@@ -390,7 +389,6 @@
     <ClInclude Include="_std_extensions.h" />
     <ClInclude Include="_stl_extensions.h" />
     <ClInclude Include="_types.h" />
-    <ClInclude Include="_type_traits.h" />
     <ClInclude Include="_vector2.h" />
     <ClInclude Include="_vector3d.h" />
     <ClInclude Include="_vector4.h" />

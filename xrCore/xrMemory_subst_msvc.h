@@ -168,7 +168,7 @@ IC void xr_delete(T *&ptr)
 {
 	if (ptr)
 	{
-		xr_special_free<is_polymorphic<T>::result, T>()(ptr);
+		xr_special_free<std::is_polymorphic_v<T>, T>()(ptr);
 		ptr = NULL;
 	}
 }

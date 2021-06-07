@@ -243,9 +243,6 @@
     <ClInclude Include="FixedMap.h">
       <Filter>Math\STLext</Filter>
     </ClInclude>
-    <ClInclude Include="FixedSet.h">
-      <Filter>Math\STLext</Filter>
-    </ClInclude>
     <ClInclude Include="FixedVector.h">
       <Filter>Math\STLext</Filter>
     </ClInclude>
@@ -256,9 +253,6 @@
       <Filter>Math\Extensions</Filter>
     </ClInclude>
     <ClInclude Include="_stl_extensions.h">
-      <Filter>Math\Extensions</Filter>
-    </ClInclude>
-    <ClInclude Include="_type_traits.h">
       <Filter>Math\Extensions</Filter>
     </ClInclude>
     <ClInclude Include="clsid.h">

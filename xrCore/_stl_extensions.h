@@ -1,9 +1,6 @@
-#ifndef _STL_EXT_internal
-#define _STL_EXT_internal
+#pragma once
 
 using std::swap;
-
-#include "_type_traits.h"
 
 #ifdef _M_AMD64
 #define M_DONTDEFERCLEAR_EXT
@@ -358,5 +355,3 @@ DEFINE_VECTOR(float, FloatVec, FloatIt);
 DEFINE_VECTOR(float *, LPFloatVec, LPFloatIt);
 DEFINE_VECTOR(int, IntVec, IntIt);
 DEFINE_VECTOR(int *, LPIntVec, LPIntIt);
-
-#endif
