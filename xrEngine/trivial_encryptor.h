@@ -1,10 +1,4 @@
-#ifndef TRIVIAL_ENCRYPTOR_H
-#define TRIVIAL_ENCRYPTOR_H
-
-// before including this file
-// you should define at least one of the following macro:
-// #define TRIVIAL_ENCRYPTOR_ENCODER
-// #define TRIVIAL_ENCRYPTOR_DECODER
+#pragma once
 
 #pragma warning(push)
 #pragma warning(disable : 4995)
@@ -54,10 +48,8 @@ public:
 	static u32 m_table_seed;
 	static u32 m_encrypt_seed;
 
-#ifdef TRIVIAL_ENCRYPTOR_DECODER
 private:
 	static type m_alphabet_back[alphabet_size];
-#endif // TRIVIAL_ENCRYPTOR_DECODER
 
 private:
 	IC static void initialize()
@@ -81,13 +73,10 @@ private:
 			std::swap(m_alphabet[j], m_alphabet[k]);
 		}
 
-#ifdef TRIVIAL_ENCRYPTOR_DECODER
 		for (u32 i = 0; i < alphabet_size; ++i)
 			m_alphabet_back[m_alphabet[i]] = (type)i;
-#endif // TRIVIAL_ENCRYPTOR_DECODER
 	}
 
-#ifdef TRIVIAL_ENCRYPTOR_DECODER
 public:
 	IC static void decode(pcvoid source, const u32 &source_size, pvoid destination)
 	{
@@ -104,10 +93,10 @@ public:
 		const u8 *I = (const u8 *)source;
 		const u8 *E = (const u8 *)source + source_size;
 		u8 *J = (u8 *)destination;
+
 		for (; I != E; ++I, ++J)
 			*J = m_alphabet_back[(*I) ^ type(temp.random(256) & 0xff)];
 	}
-#endif // TRIVIAL_ENCRYPTOR_DECODER
 };
 
 #ifdef RUSSIAN_BUILD
@@ -120,8 +109,4 @@ u32 trivial_encryptor::m_table_seed = 6011979;
 u32 trivial_encryptor::m_encrypt_seed = 24031979;
 #endif // RUSSIAN_BUILD
 
-#ifdef TRIVIAL_ENCRYPTOR_DECODER
 trivial_encryptor::type trivial_encryptor::m_alphabet_back[trivial_encryptor::alphabet_size];
-#endif // TRIVIAL_ENCRYPTOR_DECODER
-
-#endif // TRIVIAL_ENCRYPTOR_H

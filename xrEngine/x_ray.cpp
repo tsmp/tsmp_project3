@@ -22,7 +22,6 @@
 #include "..\TSMP3_Build_Config.h"
 #include "Console_commands.h"
 
-#define TRIVIAL_ENCRYPTOR_DECODER
 #include "trivial_encryptor.h"
 #include <debugapi.h>
 
