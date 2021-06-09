@@ -2,7 +2,6 @@
 #pragma hdrstop
 
 #include <time.h>
-#include "resource.h"
 #include "log.h"
 
 extern BOOL LogExecCB = TRUE;

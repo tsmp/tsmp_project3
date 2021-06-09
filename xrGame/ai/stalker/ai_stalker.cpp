@@ -702,7 +702,7 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 
 	setVisible(TRUE);
 	setEnabled(TRUE);
-
+	
 	inventory().SetActiveSlot(u_active_weapon_slot);
 
 	MotionID motion;
@@ -871,7 +871,7 @@ void CAI_Stalker::UpdateCL()
 	if (g_Alive() && Remote() && !IsGameTypeSingle()) 
 		make_Interpolation();	
 
-	if (g_Alive())
+	if (g_Alive() && OnServer())
 	{
 		if (g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
 		{

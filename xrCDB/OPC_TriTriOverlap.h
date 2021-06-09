@@ -3,12 +3,12 @@
 #define LOCAL_EPSILON 0.000001f
 
 //! sort so that a<=b
-#define SORT(a, b)         \
-	if (a > b)             \
-	{                      \
-		const float c = a; \
-		a = b;             \
-		b = c;             \
+#define SORT(a, b)			\
+	if (a > b)				\
+	{						\
+		const float c1 = a; \
+		a = b;				\
+		b = c1;             \
 	}
 
 //! Edge to edge test based on Franlin Antonio's gem: "Faster Line Segment Intersection", in Graphics Gems III, pp. 199-202

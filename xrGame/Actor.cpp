@@ -976,6 +976,11 @@ void CActor::UpdateCL()
 
 float NET_Jump = 0;
 
+BOOL CActor::UsedAI_Locations()
+{
+	return FALSE;
+}
+
 void CActor::shedule_Update(u32 DT)
 {
 	setSVU(OnServer());

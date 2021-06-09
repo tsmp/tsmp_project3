@@ -585,7 +585,7 @@ void save_mini_dump(_EXCEPTION_POINTERS *pExceptionInfo)
 
 void format_message(LPSTR buffer, const u32 &buffer_size)
 {
-	LPVOID message;
+	LPSTR message = nullptr;
 	DWORD error_code = GetLastError();
 
 	if (!error_code)
@@ -600,7 +600,7 @@ void format_message(LPSTR buffer, const u32 &buffer_size)
 		NULL,
 		error_code,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPSTR)&message,
+		message,
 		0,
 		NULL);
 

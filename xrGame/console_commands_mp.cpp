@@ -186,19 +186,21 @@ public:
 
 		u32 SVObjNum = (OnServer()) ? Level().Server->GetEntitiesNum() : 0;
 		xr_vector<u16> SObjID;
+
 		for (u32 i = 0; i < SVObjNum; i++)
 		{
 			CSE_Abstract *pEntity = Level().Server->GetEntity(i);
 			SObjID.push_back(pEntity->ID);
-		};
+		}
+
 		std::sort(SObjID.begin(), SObjID.end());
 
 		u32 CLObjNum = Level().Objects.o_count();
 		xr_vector<u16> CObjID;
-		for (i = 0; i < CLObjNum; i++)
-		{
+
+		for (u32 i = 0; i < CLObjNum; i++)		
 			CObjID.push_back(Level().Objects.o_get_by_iterator(i)->ID());
-		};
+		
 		std::sort(CObjID.begin(), CObjID.end());
 
 		Msg("Client Objects : %d", CLObjNum);
@@ -1974,7 +1976,7 @@ void register_mp_console_commands()
 
 	//. CMD4(CCC_Integer,		"sv_pending_wait_time",		&g_sv_Pending_Wait_Time, 0, 60000);
 
-	CMD4(CCC_Integer, "sv_client_reconnect_time", &g_sv_Client_Reconnect_Time, 0, 60);
+	CMD4(CCC_Integer, "sv_client_reconnect_time", &g_sv_Client_Reconnect_Time, 0, 1000000000);
 
 	CMD4(CCC_SV_Integer, "sv_rpoint_freeze_time", (int *)&g_sv_base_dwRPointFreezeTime, 0, 60000);
 	CMD4(CCC_SV_Integer, "sv_vote_enabled", &g_sv_base_iVotingEnabled, 0, 0x00FF);

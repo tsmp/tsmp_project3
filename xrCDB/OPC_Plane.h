@@ -42,16 +42,16 @@ public:
 		d = 0.0f;
 		return *this;
 	}
-	inline_ Plane &Set(float nx, float ny, float nz, float d)
+	inline_ Plane &Set(float nx, float ny, float nz, float dd)
 	{
 		n.Set(nx, ny, nz);
-		this->d = d;
+		this->d = dd;
 		return *this;
 	}
-	inline_ Plane &Set(const Point &p, const Point &n)
+	inline_ Plane &Set(const Point &p, const Point &nn)
 	{
-		this->n = n;
-		d = -p | n;
+		this->n = nn;
+		d = -p | nn;
 		return *this;
 	}
 	Plane &Set(const Point &p0, const Point &p1, const Point &p2);

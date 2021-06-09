@@ -141,16 +141,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="_d3d_extensions.h">
+    <ClInclude Include="flight.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="defines.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
-      <Filter>General</Filter>
-    </ClInclude>
-    <ClInclude Include="trivial_encryptor.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="x_ray.h">
@@ -871,6 +868,9 @@
     </ClCompile>
     <ClCompile Include="DedicatedSrvConsole.cpp">
       <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
+    </ClCompile>
+    <ClCompile Include="xrCustomResImport.cpp">
+      <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

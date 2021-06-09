@@ -22,19 +22,18 @@ const u32 BIG_FILE_READER_WINDOW_SIZE = 1024 * 1024;
 #define PROTECTED_BUILD
 
 typedef void DUMMY_STUFF(const void *, const u32 &, void *);
-XRCORE_API DUMMY_STUFF *g_temporary_stuff = 0;
+DUMMY_STUFF *g_temporary_stuff = 0;
+
+extern bool _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz, size_t totalSize = -1);
 
 #ifdef PROTECTED_BUILD
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <malloc.h>
 #pragma warning(pop)
-//#	define TRIVIAL_ENCRYPTOR_DECODER
-//#	include "trivial_encryptor.h"
-//#	undef TRIVIAL_ENCRYPTOR_DECODER
 #endif // PROTECTED_BUILD
 
-CLocatorAPI *xr_FS = NULL;
+CLocatorAPI* xr_FS = nullptr;
 
 #define FSLTX "fsgame.ltx"
 
@@ -62,6 +61,7 @@ struct eq_pointer<IReader>
 		return (_val == itm._reader);
 	}
 };
+
 template <>
 struct eq_pointer<CStreamReader>
 {
@@ -72,6 +72,7 @@ struct eq_pointer<CStreamReader>
 		return (_val == itm._stream_reader);
 	}
 };
+
 struct eq_fname_free
 {
 	shared_str _val;
@@ -81,6 +82,7 @@ struct eq_fname_free
 		return (_val == itm._fn && itm._reader == NULL);
 	}
 };
+
 struct eq_fname_check
 {
 	shared_str _val;
@@ -96,6 +98,7 @@ XRCORE_API xr_vector<_open_file> g_open_files;
 void _check_open_file(const shared_str &_fname)
 {
 	xr_vector<_open_file>::iterator it = std::find_if(g_open_files.begin(), g_open_files.end(), eq_fname_check(_fname));
+	
 	if (it != g_open_files.end())
 		Log("file opened at least twice", _fname.c_str());
 }
@@ -103,6 +106,7 @@ void _check_open_file(const shared_str &_fname)
 _open_file &find_free_item(const shared_str &_fname)
 {
 	xr_vector<_open_file>::iterator it = std::find_if(g_open_files.begin(), g_open_files.end(), eq_fname_free(_fname));
+	
 	if (it == g_open_files.end())
 	{
 		g_open_files.resize(g_open_files.size() + 1);
@@ -111,6 +115,7 @@ _open_file &find_free_item(const shared_str &_fname)
 		_of._used = 0;
 		return _of;
 	}
+
 	return *it;
 }
 
@@ -159,11 +164,13 @@ XRCORE_API void _dump_open_files(int mode)
 	xr_vector<_open_file>::iterator it_e = g_open_files.end();
 
 	bool bShow = false;
+
 	if (mode == 1)
 	{
 		for (; it != it_e; ++it)
 		{
 			_open_file &_of = *it;
+
 			if (_of._reader != NULL)
 			{
 				if (!bShow)
@@ -177,13 +184,16 @@ XRCORE_API void _dump_open_files(int mode)
 	else
 	{
 		Log("----un-used");
+
 		for (it = g_open_files.begin(); it != it_e; ++it)
 		{
 			_open_file &_of = *it;
+
 			if (_of._reader == NULL)
 				Msg("[%d] fname:%s", _of._used, _of._fn.c_str());
 		}
 	}
+
 	if (bShow)
 		Log("----total count=", g_open_files.size());
 }
@@ -227,6 +237,7 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 	//	Msg("registering file %s - %d", name, size_real);
 	//	if file already exist - update info
 	files_it I = files.find(desc);
+
 	if (I != files.end())
 	{
 		desc.name = I->name;
@@ -249,10 +260,12 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 	strcpy_s(temp, sizeof(temp), desc.name);
 	string_path path;
 	string_path folder;
+
 	while (temp[0])
 	{
 		_splitpath(temp, path, folder, 0, 0);
 		strcat(path, folder);
+
 		if (!exist(path))
 		{
 			desc.name = xr_strdup(path);
@@ -261,11 +274,13 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 			desc.size_real = 0;
 			desc.size_compressed = 0;
 			desc.modif = u32(-1);
-			std::pair<files_it, bool> I = files.insert(desc);
 
-			R_ASSERT(I.second);
+			std::pair<files_it, bool> Ins = files.insert(desc);
+			R_ASSERT(Ins.second);
 		}
+
 		strcpy_s(temp, sizeof(temp), folder);
+
 		if (xr_strlen(temp))
 			temp[xr_strlen(temp) - 1] = 0;
 	}
@@ -278,35 +293,39 @@ IReader *open_chunk(void *ptr, u32 ID)
 	DWORD read_byte;
 	u32 pt = SetFilePointer(ptr, 0, 0, FILE_BEGIN);
 	VERIFY(pt != INVALID_SET_FILE_POINTER);
+
 	while (true)
 	{
 		res = ReadFile(ptr, &dwType, 4, &read_byte, 0);
 		VERIFY(res && (read_byte == 4));
 		res = ReadFile(ptr, &dwSize, 4, &read_byte, 0);
 		VERIFY(res && (read_byte == 4));
+
 		if ((dwType & (~CFS_CompressMark)) == ID)
 		{
 			u8 *src_data = xr_alloc<u8>(dwSize);
 			res = ReadFile(ptr, src_data, dwSize, &read_byte, 0);
 			VERIFY(res && (read_byte == dwSize));
+
 			if (dwType & CFS_CompressMark)
 			{
 				BYTE *dest;
 				unsigned dest_sz;
+
 				if (g_temporary_stuff)
 					g_temporary_stuff(src_data, dwSize, src_data);
+
 				_decompressLZ(&dest, &dest_sz, src_data, dwSize);
 				xr_free(src_data);
 				return xr_new<CTempReader>(dest, dest_sz, 0);
 			}
-			else
-			{
-				return xr_new<CTempReader>(src_data, dwSize, 0);
-			}
+			else			
+				return xr_new<CTempReader>(src_data, dwSize, 0);			
 		}
 		else
 		{
 			pt = SetFilePointer(ptr, dwSize, 0, FILE_CURRENT);
+
 			if (pt == INVALID_SET_FILE_POINTER)
 				return 0;
 		}
@@ -331,11 +350,13 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 			return;
 
 	DUMMY_STUFF *g_temporary_stuff_subst = NULL;
+
 	if (strstr(_path, ".xdb"))
 	{
 		g_temporary_stuff_subst = g_temporary_stuff;
 		g_temporary_stuff = NULL;
 	}
+
 	// open archive
 	archives.push_back(archive());
 	archive &A = archives.back();
@@ -350,22 +371,24 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 
 	// Create base path
 	string_path base;
+
 	if (!base_path)
 	{
 		strcpy_s(base, sizeof(base), *path);
+
 		if (strext(base))
 			*strext(base) = 0;
 	}
-	else
-	{
-		strcpy_s(base, sizeof(base), base_path);
-	}
+	else	
+		strcpy_s(base, sizeof(base), base_path);	
+
 	strcat(base, "\\");
 
 	// Read headers
 	IReader *hdr = open_chunk(A.hSrcFile, 1);
 	R_ASSERT(hdr);
 	RStringVec fv;
+
 	while (!hdr->eof())
 	{
 		string_path name, full;

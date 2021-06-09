@@ -1,16 +1,11 @@
-#ifndef FS_internalH
-#define FS_internalH
 #pragma once
 
-#include "lzhuf.h"
 #include <io.h>
 #include <fcntl.h>
 #include <sys\stat.h>
 #include <share.h>
 
 void *FileDownload(LPCSTR fn, u32 *pdwSize = NULL);
-void FileCompress(const char *fn, const char *sign, void *data, u32 size);
-void *FileDecompress(const char *fn, const char *sign, u32 *size = NULL);
 
 class CFileWriter : public IWriter
 {
@@ -87,6 +82,7 @@ public:
 	CTempReader(void *_data, int _size, int _iterpos) : IReader(_data, _size, _iterpos) {}
 	virtual ~CTempReader();
 };
+
 class CPackReader : public IReader
 {
 	void *base_address;
@@ -95,18 +91,14 @@ public:
 	CPackReader(void *_base, void *_data, int _size) : IReader(_data, _size) { base_address = _base; }
 	virtual ~CPackReader();
 };
+
 class CFileReader : public IReader
 {
 public:
 	CFileReader(const char *name);
 	virtual ~CFileReader();
 };
-class CCompressedReader : public IReader
-{
-public:
-	CCompressedReader(const char *name, const char *sign);
-	virtual ~CCompressedReader();
-};
+
 class CVirtualFileReader : public IReader
 {
 private:
@@ -116,5 +108,3 @@ public:
 	CVirtualFileReader(const char *cFileName);
 	virtual ~CVirtualFileReader();
 };
-
-#endif

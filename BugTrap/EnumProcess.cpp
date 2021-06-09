@@ -80,6 +80,7 @@ CEnumProcess::CEnumProcess(void) :
 		OSVERSIONINFO osvi;
 		osvi.dwOSVersionInfoSize = sizeof(osvi);
 		GetVersionEx(&osvi);
+
 		if (osvi.dwMajorVersion >= 5) // Windows 2000 and newer
 			if (osvi.dwMinorVersion == 0)
 				m_dwSystemID = 2; // Windows 2000

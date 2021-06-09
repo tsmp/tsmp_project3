@@ -21,7 +21,6 @@
 #include "..\resourcemanager.h"
 #include "..\vis_common.h"
 #include "..\render.h"
-#include "..\_d3d_extensions.h"
 #include "..\igame_level.h"
 #include "..\blenders\blender.h"
 #include "..\blenders\blender_clsid.h"

@@ -117,35 +117,39 @@ namespace CDB
 
 		edge *edges = (edge *)_alloca(edge_count * sizeof(edge));
 		edge *i = edges;
-		xr_vector<TRI>::const_iterator B = faces.begin(), I = B;
-		xr_vector<TRI>::const_iterator E = faces.end();
-		for (; I != E; ++I)
+
 		{
-			u32 face_id = u32(I - B);
+			xr_vector<TRI>::const_iterator B = faces.begin(), I = B;
+			xr_vector<TRI>::const_iterator E = faces.end();
 
-			(*i).face_id = face_id;
-			(*i).edge_id = 0;
-			(*i).vertex_id0 = (u16)(*I).verts[0];
-			(*i).vertex_id1 = (u16)(*I).verts[1];
-			if ((*i).vertex_id0 > (*i).vertex_id1)
-				std::swap((*i).vertex_id0, (*i).vertex_id1);
-			++i;
+			for (; I != E; ++I)
+			{
+				u32 face_id = u32(I - B);
 
-			(*i).face_id = face_id;
-			(*i).edge_id = 1;
-			(*i).vertex_id0 = (u16)(*I).verts[1];
-			(*i).vertex_id1 = (u16)(*I).verts[2];
-			if ((*i).vertex_id0 > (*i).vertex_id1)
-				std::swap((*i).vertex_id0, (*i).vertex_id1);
-			++i;
+				(*i).face_id = face_id;
+				(*i).edge_id = 0;
+				(*i).vertex_id0 = (u16)(*I).verts[0];
+				(*i).vertex_id1 = (u16)(*I).verts[1];
+				if ((*i).vertex_id0 > (*i).vertex_id1)
+					std::swap((*i).vertex_id0, (*i).vertex_id1);
+				++i;
 
-			(*i).face_id = face_id;
-			(*i).edge_id = 2;
-			(*i).vertex_id0 = (u16)(*I).verts[2];
-			(*i).vertex_id1 = (u16)(*I).verts[0];
-			if ((*i).vertex_id0 > (*i).vertex_id1)
-				std::swap((*i).vertex_id0, (*i).vertex_id1);
-			++i;
+				(*i).face_id = face_id;
+				(*i).edge_id = 1;
+				(*i).vertex_id0 = (u16)(*I).verts[1];
+				(*i).vertex_id1 = (u16)(*I).verts[2];
+				if ((*i).vertex_id0 > (*i).vertex_id1)
+					std::swap((*i).vertex_id0, (*i).vertex_id1);
+				++i;
+
+				(*i).face_id = face_id;
+				(*i).edge_id = 2;
+				(*i).vertex_id0 = (u16)(*I).verts[2];
+				(*i).vertex_id1 = (u16)(*I).verts[0];
+				if ((*i).vertex_id0 > (*i).vertex_id1)
+					std::swap((*i).vertex_id0, (*i).vertex_id1);
+				++i;
+			}
 		}
 
 		std::sort(edges, edges + edge_count, sort_predicate());

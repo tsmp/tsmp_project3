@@ -10,8 +10,8 @@
 #include <sys\stat.h>
 #pragma warning(default : 4995)
 
-typedef void DUMMY_STUFF(const void *, const u32 &, void *);
-XRCORE_API DUMMY_STUFF *g_dummy_stuff = 0;
+extern bool _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz, size_t totalSize = -1);
+extern void _compressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz);
 
 #ifdef DEBUG
 XRCORE_API u32 g_file_mapped_memory = 0;
@@ -56,6 +56,7 @@ XRCORE_API void dump_file_mappings()
 
 	FILE_MAPPINGS::const_iterator I = g_file_mappings.begin();
 	FILE_MAPPINGS::const_iterator E = g_file_mappings.end();
+
 	for (; I != E; ++I)
 		Msg(
 			"* [0x%08x][%d][%s]",
@@ -64,10 +65,8 @@ XRCORE_API void dump_file_mappings()
 			(*I).second.second.c_str());
 }
 #endif // DEBUG
-//////////////////////////////////////////////////////////////////////
+
 // Tools
-//////////////////////////////////////////////////////////////////////
-//---------------------------------------------------
 void VerifyPath(LPCSTR path)
 {
 	string1024 tmp;
@@ -80,6 +79,7 @@ void VerifyPath(LPCSTR path)
 		_mkdir(tmp);
 	}
 }
+
 void *FileDownload(LPCSTR fn, u32 *pdwSize)
 {
 	int hFile;
@@ -112,52 +112,6 @@ void *FileDownload(LPCSTR fn, u32 *pdwSize)
 	return buf;
 }
 
-typedef char MARK[9];
-IC void mk_mark(MARK &M, const char *S)
-{
-	strncpy(M, S, 8);
-}
-
-void FileCompress(const char *fn, const char *sign, void *data, u32 size)
-{
-	MARK M;
-	mk_mark(M, sign);
-
-	int H = open(fn, O_BINARY | O_CREAT | O_WRONLY | O_TRUNC, S_IREAD | S_IWRITE);
-	R_ASSERT2(H > 0, fn);
-	_write(H, &M, 8);
-	_writeLZ(H, data, size);
-	_close(H);
-}
-
-void *FileDecompress(const char *fn, const char *sign, u32 *size)
-{
-	MARK M, F;
-	mk_mark(M, sign);
-
-	int H = open(fn, O_BINARY | O_RDONLY);
-	R_ASSERT2(H > 0, fn);
-	_read(H, &F, 8);
-	if (strncmp(M, F, 8) != 0)
-	{
-		F[8] = 0;
-		Msg("FATAL: signatures doesn't match, file(%s) / requested(%s)", F, sign);
-	}
-	R_ASSERT(strncmp(M, F, 8) == 0);
-
-	void *ptr = 0;
-	u32 SZ;
-	SZ = _readLZ(H, ptr, filelength(H) - 8);
-	_close(H);
-	if (size)
-		*size = SZ;
-	return ptr;
-}
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-//---------------------------------------------------
 // memory
 CMemoryWriter::~CMemoryWriter()
 {
@@ -194,7 +148,6 @@ void CMemoryWriter::w(const void *ptr, u32 count)
 		file_size = position;
 }
 
-//static const u32 mb_sz = 0x1000000;
 bool CMemoryWriter::save_to(LPCSTR fn)
 {
 	IWriter *F = FS.w_open(fn);
@@ -213,6 +166,7 @@ void IWriter::open_chunk(u32 type)
 	chunk_pos.push(tell());
 	w_u32(0); // the place for 'size'
 }
+
 void IWriter::close_chunk()
 {
 	VERIFY(!chunk_pos.empty());
@@ -223,6 +177,7 @@ void IWriter::close_chunk()
 	seek(pos);
 	chunk_pos.pop();
 }
+
 u32 IWriter::chunk_size() // returns size of currently opened chunk, 0 otherwise
 {
 	if (chunk_pos.empty())
@@ -236,39 +191,41 @@ void IWriter::w_compressed(void *ptr, u32 count)
 	unsigned dest_sz = 0;
 	_compressLZ(&dest, &dest_sz, ptr, count);
 
-	if (g_dummy_stuff)
-		g_dummy_stuff(dest, dest_sz, dest);
-
 	if (dest && dest_sz)
 		w(dest, dest_sz);
+
 	xr_free(dest);
 }
 
 void IWriter::w_chunk(u32 type, void *data, u32 size)
 {
 	open_chunk(type);
+
 	if (type & CFS_CompressMark)
 		w_compressed(data, size);
 	else
 		w(data, size);
+
 	close_chunk();
 }
+
 void IWriter::w_sdir(const Fvector &D)
 {
 	Fvector C;
 	float mag = D.magnitude();
-	if (mag > EPS_S)
-	{
-		C.div(D, mag);
-	}
+
+	if (mag > EPS_S)	
+		C.div(D, mag);	
 	else
 	{
 		C.set(0, 0, 1);
 		mag = 0;
 	}
+
 	w_dir(C);
 	w_float(mag);
 }
+
 void IWriter::w_printf(const char *format, ...)
 {
 	va_list mark;
@@ -278,7 +235,6 @@ void IWriter::w_printf(const char *format, ...)
 	w(buf, xr_strlen(buf));
 }
 
-//---------------------------------------------------
 // base stream
 IReader *IReader::open_chunk(u32 ID)
 {
@@ -300,7 +256,8 @@ IReader *IReader::open_chunk(u32 ID)
 	}
 	else
 		return 0;
-};
+}
+
 void IReader::close()
 {
 	xr_delete((IReader *)this);
@@ -323,8 +280,10 @@ IReader *IReader::open_chunk_iterator(u32 &ID, IReader *_prev)
 	//	open
 	if (elapsed() < 8)
 		return NULL;
+
 	ID = r_u32();
 	u32 _size = r_u32();
+
 	if (ID & CFS_CompressMark)
 	{
 		// compressed
@@ -356,9 +315,10 @@ void IReader::r(void *p, int cnt)
 		FS.dwOpenCounter++;
 	}
 #endif
-};
+}
 
 IC BOOL is_term(char a) { return (a == 13) || (a == 10); };
+
 IC u32 IReader::advance_term_string()
 {
 	u32 sz = 0;
@@ -376,6 +336,7 @@ IC u32 IReader::advance_term_string()
 	}
 	return sz;
 }
+
 void IReader::r_string(char *dest, u32 tgt_sz)
 {
 	char *src = (char *)data + Pos;
@@ -384,12 +345,14 @@ void IReader::r_string(char *dest, u32 tgt_sz)
 	strncpy(dest, src, sz);
 	dest[sz] = 0;
 }
+
 void IReader::r_string(xr_string &dest)
 {
 	char *src = (char *)data + Pos;
 	u32 sz = advance_term_string();
 	dest.assign(src, sz);
 }
+
 void IReader::r_stringZ(char *dest, u32 tgt_sz)
 {
 	char *src = (char *)data;
@@ -400,16 +363,18 @@ void IReader::r_stringZ(char *dest, u32 tgt_sz)
 	*dest = 0;
 	Pos++;
 }
+
 void IReader::r_stringZ(shared_str &dest)
 {
 	dest = (char *)(data + Pos);
 	Pos += (dest.size() + 1);
 }
+
 void IReader::r_stringZ(xr_string &dest)
 {
 	dest = (char *)(data + Pos);
 	Pos += int(dest.size() + 1);
-};
+}
 
 void IReader::skip_stringZ()
 {
@@ -417,15 +382,14 @@ void IReader::skip_stringZ()
 	while ((src[Pos] != 0) && (!eof()))
 		Pos++;
 	Pos++;
-};
+}
 
-//---------------------------------------------------
 // temp stream
 CTempReader::~CTempReader()
 {
 	xr_free(data);
-};
-//---------------------------------------------------
+}
+
 // pack stream
 CPackReader::~CPackReader()
 {
@@ -434,29 +398,19 @@ CPackReader::~CPackReader()
 #endif // DEBUG
 
 	UnmapViewOfFile(base_address);
-};
-//---------------------------------------------------
+}
+
 // file stream
 CFileReader::CFileReader(const char *name)
 {
 	data = (char *)FileDownload(name, (u32 *)&Size);
 	Pos = 0;
-};
+}
+
 CFileReader::~CFileReader()
 {
 	xr_free(data);
-};
-//---------------------------------------------------
-// compressed stream
-CCompressedReader::CCompressedReader(const char *name, const char *sign)
-{
-	data = (char *)FileDecompress(name, sign, (u32 *)&Size);
-	Pos = 0;
 }
-CCompressedReader::~CCompressedReader()
-{
-	xr_free(data);
-};
 
 CVirtualFileRW::CVirtualFileRW(const char *cFileName)
 {

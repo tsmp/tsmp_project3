@@ -18,13 +18,8 @@
 #include "ispatial.h"
 #include "DedicatedSrvConsole.h"
 #include <process.h>
-
 #include "..\TSMP3_Build_Config.h"
 #include "Console_commands.h"
-
-#define TRIVIAL_ENCRYPTOR_DECODER
-#include "trivial_encryptor.h"
-#include "..\xrCustomRes\resource.h"
 #include <debugapi.h>
 
 // global variables
@@ -32,9 +27,6 @@ ENGINE_API CApplication* pApp = nullptr;
 
 ENGINE_API string512 g_sLaunchOnExit_params;
 ENGINE_API string512 g_sLaunchOnExit_app;
-
-typedef void DUMMY_STUFF(const void*, const u32&, void*);
-XRCORE_API DUMMY_STUFF* g_temporary_stuff;
 
 ENGINE_API bool g_dedicated_server = false;
 
@@ -138,9 +130,12 @@ struct _SoundProcessor : public pureFrame
 	}
 } SoundProcessor;
 
+extern void TryLoadXrCustomResDll();
+extern void TryToChangeLogoImageToCustom(HWND logoWindow);
+
 namespace Logo
 {
-	static HWND logoWindow = NULL;
+	static HWND logoWindow = nullptr;
 
 	void Create()
 	{
@@ -154,21 +149,14 @@ namespace Logo
 		logoWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_STARTUP), 0, 0);
 
 		UINT flags = SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW;
-		SetWindowPos(logoWindow, topMost, 0, 0, 0, 0, flags);
-
-		if (HMODULE hCustomRes = LoadLibraryA("xrCustomRes.dll"))
-		{
-			// меняем логотип на картинку, загруженную из xrCustomRes.dll
-			HWND hStatic = GetDlgItem(logoWindow, IDC_STATIC_PICTURE);
-			HBITMAP hBmp = LoadBitmap(hCustomRes, MAKEINTRESOURCE(IDB_LOGO_BITMAP));
-			SendMessage(hStatic, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBmp);
-		}
+		SetWindowPos(logoWindow, topMost, 0, 0, 0, 0, flags);				
+		TryToChangeLogoImageToCustom(logoWindow);
 	}
 
 	void Destroy()
 	{
 		DestroyWindow(logoWindow);
-		logoWindow = NULL;
+		logoWindow = nullptr;
 	}
 }
 
@@ -286,8 +274,6 @@ void InitializeCore(char* lpCmdLine)
 		int sz = xr_strlen(fsgame_ltx_name);
 		sscanf(strstr(lpCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
 	}
-
-	g_temporary_stuff = &trivial_encryptor::decode;
 
 	compute_build_id();
 	Core._initialize("xray", NULL, TRUE, fsgame[0] ? fsgame : NULL);
@@ -420,6 +406,8 @@ void EngineDestroy()
 
 int APIENTRY WinMainImplementation(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
 {
+	TryLoadXrCustomResDll();
+
 #ifdef DEDICATED_SERVER
 	g_dedicated_server = true;
 #else
@@ -435,7 +423,7 @@ int APIENTRY WinMainImplementation(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	gameInstances.RegisterThisInstanceLaunched();
 
 #endif // DEDICATED_SERVER
-
+		
 	EngineInitialize(lpCmdLine);
 	EngineRoutine();
 	EngineDestroy();

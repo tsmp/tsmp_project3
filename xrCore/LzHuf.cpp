@@ -185,7 +185,7 @@ public:
 		}
 	}
 };
-static LZfs fs;
+static LZfs lzfs;
 //************************** Internal FS
 IC void InitTree(void) /* initialize trees */
 {
@@ -982,7 +982,7 @@ void EncodeChar(unsigned c)
 		j++;
 		k = prnt[k];
 	} while (k != R);
-	fs.PutCode(j, i);
+	lzfs.PutCode(j, i);
 	code = i;
 	len = j;
 	update(c);
@@ -994,10 +994,10 @@ void EncodePosition(unsigned c)
 
 	/* output upper 6 bits by table lookup */
 	i = c >> 6;
-	fs.PutCode(p_len[i], (unsigned)p_code[i] << 8);
+	lzfs.PutCode(p_len[i], (unsigned)p_code[i] << 8);
 
 	/* output lower 6 bits verbatim */
-	fs.PutCode(6, (c & 0x3f) << 10);
+	lzfs.PutCode(6, (c & 0x3f) << 10);
 }
 
 int DecodeChar(void)
@@ -1011,7 +1011,7 @@ int DecodeChar(void)
 	/* the bigger (son[]+1} if 1 */
 	while (c < T)
 	{
-		c += fs.GetBit();
+		c += lzfs.GetBit();
 		c = son[c];
 	}
 	c -= T;
@@ -1024,7 +1024,7 @@ int DecodePosition(void)
 	unsigned i, j, c;
 
 	/* recover upper 6 bits from table */
-	i = fs.GetByte();
+	i = lzfs.GetByte();
 	c = (unsigned)d_code[i] << 6;
 	j = d_len[i];
 
@@ -1032,7 +1032,7 @@ int DecodePosition(void)
 	j -= 2;
 	while (j--)
 	{
-		i = (i << 1) + fs.GetBit();
+		i = (i << 1) + lzfs.GetBit();
 	}
 	return (int)(c | (i & 0x3f));
 }
@@ -1040,14 +1040,14 @@ int DecodePosition(void)
 /* compression */
 void Encode(void) /* compression */
 {
-	int i, c, len, r, s, last_match_length;
+	int i, c, len1, r, s, last_match_length;
 
-	textsize = fs.InputSize();
-	fs.Init_Output(textsize);
-	fs._putb((textsize & 0xff));
-	fs._putb((textsize & 0xff00) >> 8);
-	fs._putb((textsize & 0xff0000L) >> 16);
-	fs._putb((textsize & 0xff000000L) >> 24);
+	textsize = lzfs.InputSize();
+	lzfs.Init_Output(textsize);
+	lzfs._putb((textsize & 0xff));
+	lzfs._putb((textsize & 0xff00) >> 8);
+	lzfs._putb((textsize & 0xff0000L) >> 16);
+	lzfs._putb((textsize & 0xff000000L) >> 24);
 	if (textsize == 0)
 		return;
 	textsize = 0; /* rewind and re-read */
@@ -1057,16 +1057,16 @@ void Encode(void) /* compression */
 	r = N - F;
 	for (i = s; i < r; i++)
 		text_buf[i] = 0x20;
-	for (len = 0; len < F && (c = fs._getb()) != EOF; len++)
-		text_buf[r + len] = (unsigned char)c;
-	textsize = len;
+	for (len1 = 0; len1 < F && (c = lzfs._getb()) != EOF; len1++)
+		text_buf[r + len1] = (unsigned char)c;
+	textsize = len1;
 	for (i = 1; i <= F; i++)
 		InsertNode(r - i);
 	InsertNode(r);
 	do
 	{
-		if (match_length > len)
-			match_length = len;
+		if (match_length > len1)
+			match_length = len1;
 		if (match_length <= THRESHOLD)
 		{
 			match_length = 1;
@@ -1080,7 +1080,7 @@ void Encode(void) /* compression */
 		}
 		last_match_length = match_length;
 		for (i = 0; i < last_match_length &&
-					(c = fs._getb()) != EOF;
+					(c = lzfs._getb()) != EOF;
 			 i++)
 		{
 			DeleteNode(s);
@@ -1097,38 +1097,45 @@ void Encode(void) /* compression */
 			DeleteNode(s);
 			s = (s + 1) & (N - 1);
 			r = (r + 1) & (N - 1);
-			if (--len)
+			if (--len1)
 				InsertNode(r);
 		}
-	} while (len > 0);
-	fs.PutFlush();
+	} while (len1 > 0);
+	lzfs.PutFlush();
 	tim_size = textsize;
 }
 
-void Decode(void) /* recover */
+bool Decode(size_t totalSize) /* recover */
 {
 	int i, j, k, r, c;
 	unsigned int count;
 
-	textsize = (fs._getb());
-	textsize |= (fs._getb() << 8);
-	textsize |= (fs._getb() << 16);
-	textsize |= (fs._getb() << 24);
+	textsize = (lzfs._getb());
+	textsize |= (lzfs._getb() << 8);
+	textsize |= (lzfs._getb() << 16);
+	textsize |= (lzfs._getb() << 24);
+
 	if (textsize == 0)
-		return;
+		return false;
 
-	fs.Init_Output(textsize);
+	if (totalSize != -1 && textsize > totalSize)
+		return false;
 
+	lzfs.Init_Output(textsize);
 	StartHuff();
+	
 	for (i = 0; i < N - F; i++)
 		text_buf[i] = 0x20;
+	
 	r = N - F;
+
 	for (count = 0; count < textsize;)
 	{
 		c = DecodeChar();
+
 		if (c < 256)
 		{
-			fs._putb(c);
+			lzfs._putb(c);
 			text_buf[r++] = (unsigned char)c;
 			r &= (N - 1);
 			count++;
@@ -1137,65 +1144,40 @@ void Decode(void) /* recover */
 		{
 			i = (r - DecodePosition() - 1) & (N - 1);
 			j = c - 255 + THRESHOLD;
+
 			for (k = 0; k < j; k++)
 			{
 				c = text_buf[(i + k) & (N - 1)];
-				fs._putb(c);
+				lzfs._putb(c);
 				text_buf[r++] = (unsigned char)c;
 				r &= (N - 1);
 				count++;
 			}
 		}
 	}
+
 	tim_size = count;
-}
-
-unsigned _writeLZ(int hf, void *d, unsigned size)
-{
-	u8 *start = (u8 *)d;
-	fs.Init_Input(start, start + size);
-
-	// Actual compression
-	Encode();
-	// Flush cache
-	int size_out = fs.OutSize();
-	if (size_out)
-		_write(hf, fs.OutPointer(), size_out);
-	fs.OutRelease();
-	return size_out;
+	return true;
 }
 
 void _compressLZ(u8 **dest, unsigned *dest_sz, void *src, unsigned src_sz)
 {
 	u8 *start = (u8 *)src;
-	fs.Init_Input(start, start + src_sz);
+	lzfs.Init_Input(start, start + src_sz);
 	Encode();
-	*dest = fs.OutPointer();
-	*dest_sz = fs.OutSize();
+	*dest = lzfs.OutPointer();
+	*dest_sz = lzfs.OutSize();
 }
 
-void _decompressLZ(u8 **dest, unsigned *dest_sz, void *src, unsigned src_sz)
+bool _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz, size_t totalSize = -1)
 {
 	u8 *start = (u8 *)src;
-	fs.Init_Input(start, start + src_sz);
-	Decode();
-	*dest = fs.OutPointer();
-	*dest_sz = fs.OutSize();
-}
-
-unsigned _readLZ(int hf, void *&d, unsigned size)
-{
-	// Read file in memory
-	u8 *data = (u8 *)xr_malloc(size);
-	_read(hf, data, size);
-
-	fs.Init_Input(data, data + size);
-
-	// Actual compression
-	Decode();
-
-	// Flush cache
-	xr_free(data);
-	d = fs.OutPointer();
-	return fs.OutSize();
+	lzfs.Init_Input(start, start + src_sz);
+	
+	if (!Decode(totalSize))
+		return false;
+	
+	*dest = lzfs.OutPointer();
+	*dest_sz = lzfs.OutSize();
+	return true;
 }

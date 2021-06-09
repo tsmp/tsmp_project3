@@ -260,7 +260,7 @@ void CSE_ALifeTraderAbstract::OnChangeProfile(PropValue *sender)
 
 shared_str CSE_ALifeTraderAbstract::specific_character()
 {
-	if (m_community_index != -1) // tsmp
+	if (smart_cast<CSE_ALifeCreatureActor*>(this))
 	{
 #ifdef XRGAME_EXPORTS
 #pragma todo("Dima to Yura, MadMax : Remove that hacks, please!")
