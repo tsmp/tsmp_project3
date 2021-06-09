@@ -1105,7 +1105,7 @@ void Encode(void) /* compression */
 	tim_size = textsize;
 }
 
-void Decode(void) /* recover */
+bool Decode(size_t totalSize) /* recover */
 {
 	int i, j, k, r, c;
 	unsigned int count;
@@ -1114,18 +1114,25 @@ void Decode(void) /* recover */
 	textsize |= (lzfs._getb() << 8);
 	textsize |= (lzfs._getb() << 16);
 	textsize |= (lzfs._getb() << 24);
+
 	if (textsize == 0)
-		return;
+		return false;
+
+	if (totalSize != -1 && textsize > totalSize)
+		return false;
 
 	lzfs.Init_Output(textsize);
-
 	StartHuff();
+	
 	for (i = 0; i < N - F; i++)
 		text_buf[i] = 0x20;
+	
 	r = N - F;
+
 	for (count = 0; count < textsize;)
 	{
 		c = DecodeChar();
+
 		if (c < 256)
 		{
 			lzfs._putb(c);
@@ -1137,6 +1144,7 @@ void Decode(void) /* recover */
 		{
 			i = (r - DecodePosition() - 1) & (N - 1);
 			j = c - 255 + THRESHOLD;
+
 			for (k = 0; k < j; k++)
 			{
 				c = text_buf[(i + k) & (N - 1)];
@@ -1147,7 +1155,9 @@ void Decode(void) /* recover */
 			}
 		}
 	}
+
 	tim_size = count;
+	return true;
 }
 
 void _compressLZ(u8 **dest, unsigned *dest_sz, void *src, unsigned src_sz)
@@ -1159,11 +1169,15 @@ void _compressLZ(u8 **dest, unsigned *dest_sz, void *src, unsigned src_sz)
 	*dest_sz = lzfs.OutSize();
 }
 
-void _decompressLZ(u8 **dest, unsigned *dest_sz, void *src, unsigned src_sz)
+bool _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz, size_t totalSize = -1)
 {
 	u8 *start = (u8 *)src;
 	lzfs.Init_Input(start, start + src_sz);
-	Decode();
+	
+	if (!Decode(totalSize))
+		return false;
+	
 	*dest = lzfs.OutPointer();
 	*dest_sz = lzfs.OutSize();
+	return true;
 }

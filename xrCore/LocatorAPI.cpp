@@ -24,7 +24,7 @@ const u32 BIG_FILE_READER_WINDOW_SIZE = 1024 * 1024;
 typedef void DUMMY_STUFF(const void *, const u32 &, void *);
 DUMMY_STUFF *g_temporary_stuff = 0;
 
-extern void _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz);
+extern bool _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz, size_t totalSize = -1);
 
 #ifdef PROTECTED_BUILD
 #pragma warning(push)

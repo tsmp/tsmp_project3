@@ -10,7 +10,7 @@
 #include <sys\stat.h>
 #pragma warning(default : 4995)
 
-extern void _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz);
+extern bool _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz, size_t totalSize = -1);
 extern void _compressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz);
 
 #ifdef DEBUG
