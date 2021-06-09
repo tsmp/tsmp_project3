@@ -6,6 +6,10 @@
 #include <mmsystem.h>
 #include <objbase.h>
 #include "xrCore.h"
+#include "trivial_encryptor.h"
+
+typedef void DUMMY_STUFF(const void*, const u32&, void*);
+extern DUMMY_STUFF* g_temporary_stuff;
 
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "blackBox.lib")
@@ -108,6 +112,7 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
 			flags |= CLocatorAPI::flDumpFileActivity;
 #endif
 
+		g_temporary_stuff = &trivial_encryptor::decode;
 		FS._initialize(flags, 0, fs_fname);
 		Msg("'%s' build %d, %s\n", "xrCore", build_id, build_date);
 		EFS._initialize();

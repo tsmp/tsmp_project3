@@ -22,7 +22,7 @@ const u32 BIG_FILE_READER_WINDOW_SIZE = 1024 * 1024;
 #define PROTECTED_BUILD
 
 typedef void DUMMY_STUFF(const void *, const u32 &, void *);
-XRCORE_API DUMMY_STUFF *g_temporary_stuff = 0;
+DUMMY_STUFF *g_temporary_stuff = 0;
 
 extern void _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz);
 
@@ -300,25 +300,27 @@ IReader *open_chunk(void *ptr, u32 ID)
 		VERIFY(res && (read_byte == 4));
 		res = ReadFile(ptr, &dwSize, 4, &read_byte, 0);
 		VERIFY(res && (read_byte == 4));
+
 		if ((dwType & (~CFS_CompressMark)) == ID)
 		{
 			u8 *src_data = xr_alloc<u8>(dwSize);
 			res = ReadFile(ptr, src_data, dwSize, &read_byte, 0);
 			VERIFY(res && (read_byte == dwSize));
+
 			if (dwType & CFS_CompressMark)
 			{
 				BYTE *dest;
 				unsigned dest_sz;
+
 				if (g_temporary_stuff)
 					g_temporary_stuff(src_data, dwSize, src_data);
+
 				_decompressLZ(&dest, &dest_sz, src_data, dwSize);
 				xr_free(src_data);
 				return xr_new<CTempReader>(dest, dest_sz, 0);
 			}
-			else
-			{
-				return xr_new<CTempReader>(src_data, dwSize, 0);
-			}
+			else			
+				return xr_new<CTempReader>(src_data, dwSize, 0);			
 		}
 		else
 		{
@@ -354,6 +356,7 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 		g_temporary_stuff_subst = g_temporary_stuff;
 		g_temporary_stuff = NULL;
 	}
+
 	// open archive
 	archives.push_back(archive());
 	archive &A = archives.back();
@@ -372,13 +375,13 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 	if (!base_path)
 	{
 		strcpy_s(base, sizeof(base), *path);
+
 		if (strext(base))
 			*strext(base) = 0;
 	}
-	else
-	{
-		strcpy_s(base, sizeof(base), base_path);
-	}
+	else	
+		strcpy_s(base, sizeof(base), base_path);	
+
 	strcat(base, "\\");
 
 	// Read headers

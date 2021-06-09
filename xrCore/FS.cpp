@@ -10,9 +10,6 @@
 #include <sys\stat.h>
 #pragma warning(default : 4995)
 
-typedef void DUMMY_STUFF(const void *, const u32 &, void *);
-XRCORE_API DUMMY_STUFF *g_dummy_stuff = 0;
-
 extern void _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz);
 extern void _compressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz);
 
@@ -194,9 +191,6 @@ void IWriter::w_compressed(void *ptr, u32 count)
 	unsigned dest_sz = 0;
 	_compressLZ(&dest, &dest_sz, ptr, count);
 
-	if (g_dummy_stuff)
-		g_dummy_stuff(dest, dest_sz, dest);
-
 	if (dest && dest_sz)
 		w(dest, dest_sz);
 
@@ -214,6 +208,7 @@ void IWriter::w_chunk(u32 type, void *data, u32 size)
 
 	close_chunk();
 }
+
 void IWriter::w_sdir(const Fvector &D)
 {
 	Fvector C;

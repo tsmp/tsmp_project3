@@ -18,11 +18,8 @@
 #include "ispatial.h"
 #include "DedicatedSrvConsole.h"
 #include <process.h>
-
 #include "..\TSMP3_Build_Config.h"
 #include "Console_commands.h"
-
-#include "trivial_encryptor.h"
 #include <debugapi.h>
 
 // global variables
@@ -30,9 +27,6 @@ ENGINE_API CApplication* pApp = nullptr;
 
 ENGINE_API string512 g_sLaunchOnExit_params;
 ENGINE_API string512 g_sLaunchOnExit_app;
-
-typedef void DUMMY_STUFF(const void*, const u32&, void*);
-XRCORE_API DUMMY_STUFF* g_temporary_stuff;
 
 ENGINE_API bool g_dedicated_server = false;
 
@@ -280,8 +274,6 @@ void InitializeCore(char* lpCmdLine)
 		int sz = xr_strlen(fsgame_ltx_name);
 		sscanf(strstr(lpCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
 	}
-
-	g_temporary_stuff = &trivial_encryptor::decode;
 
 	compute_build_id();
 	Core._initialize("xray", NULL, TRUE, fsgame[0] ? fsgame : NULL);
