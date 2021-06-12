@@ -147,3 +147,13 @@ STRING_VALUE CStringTable::translate(const STRING_ID &str_id) const
 	}
 	return pData->m_StringTable[str_id];
 }
+
+bool CStringTable::HasTranslation(const STRING_ID& str_id) const
+{
+	STRING_VALUE res = pData->m_StringTable[str_id];
+
+	if (!res)
+		return false;
+	else
+		return true;
+}
