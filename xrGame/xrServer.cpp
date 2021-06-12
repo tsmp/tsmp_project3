@@ -860,25 +860,44 @@ CSE_Abstract *xrServer::GetEntity(u32 Num)
 
 void xrServer::OnChatMessage(NET_Packet *P, xrClientData *CL)
 {
-	s16 team = P->r_s16();
+	s16 teamReceiver = P->r_s16();
 	game_PlayerState* Cps = CL->ps;
 	
 	if (!CL->net_Ready || CL->bMutedChat)
 		return;	
+	
+	string128 playerName;
+	P->r_stringZ(playerName);
+	
+	char* pChatMessage = reinterpret_cast<char*>(&P->B.data[P->r_pos]);
+	int chatMessageLength = strlen(pChatMessage);
+
+	for (int i = 0; i < chatMessageLength; i++)
+	{
+		if (pChatMessage[i] == '%')
+		{
+			pChatMessage[i] = '_';
+			Msg("! WARNING: player [%s] tried to use %% in chat!", playerName);
+		}
+	}
 
 	for (u32 client = 0; client < net_Players.size(); ++client)
 	{
 		// Initialize process and check for available bandwidth
 		xrClientData *Client = (xrClientData *)net_Players[client];
 		game_PlayerState *ps = Client->ps;
+
 		if (!Client->net_Ready)
 			continue;
-		if (team != 0 && ps->team != team)
+
+		if (teamReceiver != 0 && ps->team != teamReceiver)
 			continue;
+
 		if (Cps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) && !ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 			continue;
+
 		SendTo(Client->ID, *P);
-	};
+	}
 };
 
 #ifdef DEBUG

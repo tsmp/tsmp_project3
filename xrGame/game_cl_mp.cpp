@@ -406,8 +406,6 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 void game_cl_mp::ChatSayAll(const shared_str &phrase)
 {
 	NET_Packet P;
@@ -419,11 +417,8 @@ void game_cl_mp::ChatSayAll(const shared_str &phrase)
 	u_EventSend(P);
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 void game_cl_mp::ChatSayTeam(const shared_str &phrase)
 {
-
 	NET_Packet P;
 	P.w_begin(M_CHAT_MESSAGE);
 	P.w_s16(local_player->team);

@@ -1074,7 +1074,7 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID sender)
 		if (NewName[i] == '%')
 		{
 			NewName[i] = '_';
-			Msg("! WARNING: player tried to use % in nickname!");
+			Msg("! WARNING: player tried to use %% in nickname!");
 		}
 	}
 

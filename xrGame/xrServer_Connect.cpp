@@ -73,7 +73,7 @@ IClient *xrServer::new_client(SClientConnectData *cl_data)
 		if (new_name[i] == '%')
 		{
 			new_name[i] = '_';
-			Msg("! WARNING: player tried to use % in nickname!");
+			Msg("! WARNING: player tried to use %% in nickname!");
 		}
 	}
 
