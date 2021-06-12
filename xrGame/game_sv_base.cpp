@@ -811,11 +811,19 @@ bool game_sv_GameState::NewPlayerName_Exists(void *pClient, LPCSTR NewName)
 {
 	if (!pClient || !NewName)
 		return false;
+
 	IClient *CL = (IClient *)pClient;
+
 	if (!CL->name || xr_strlen(CL->name.c_str()) == 0)
 		return false;
 
+	CStringTable st;
+
+	if (st.HasTranslation(NewName))
+		return true;
+
 	u32 cnt = get_players_count();
+	
 	for (u32 it = 0; it < cnt; ++it)
 	{
 		IClient *pIC = m_server->client_Get(it);
@@ -825,7 +833,7 @@ bool game_sv_GameState::NewPlayerName_Exists(void *pClient, LPCSTR NewName)
 		strcpy(xName, pIC->name.c_str());
 		if (!xr_strcmp(NewName, xName))
 			return true;
-	};
+	}
 	return false;
 }
 

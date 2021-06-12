@@ -456,9 +456,10 @@ u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID sender) // Non-Zero means
 			SetLogCB(console_log_cb);
 			_tmp_log.clear();
 			Console->Execute(buff);
-			SetLogCB(NULL);
-
+			SetLogCB(nullptr);
+			Msg("# radmin %s is running command: %s", CL->m_admin_rights.m_Login.c_str(), buff);
 			NET_Packet P_answ;
+
 			for (u32 i = 0; i < _tmp_log.size(); ++i)
 			{
 				P_answ.w_begin(M_REMOTE_CONTROL_CMD);
@@ -681,25 +682,29 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID sender) // Non-Zero means broadc
 		shared_str user;
 		shared_str pass;
 		P.r_stringZ(user);
+
 		if (0 == stricmp(user.c_str(), "logoff"))
 		{
 			CL->m_admin_rights.m_has_admin_rights = FALSE;
 			strcpy(reason, "logged off");
-			Msg("# Remote administrator logged off.");
+			Msg("# Remote administrator [%s] logged off.", CL->m_admin_rights.m_Login.c_str());
 		}
 		else
 		{
 			P.r_stringZ(pass);
 			bool res = CheckAdminRights(user, pass, reason);
+
 			if (res)
 			{
 				CL->m_admin_rights.m_has_admin_rights = TRUE;
 				CL->m_admin_rights.m_dwLoginTime = Device.dwTimeGlobal;
-				Msg("# User [%s] logged as remote administrator.", user.c_str());
+				CL->m_admin_rights.m_Login = user;
+				Msg("# Player [%s] logged as remote administrator with login [%s].", CL->ps->getName(), user.c_str());
 			}
 			else
-				Msg("# User [%s] tried to login as remote administrator. Access denied.", user.c_str());
+				Msg("! Player [%s] tried to login as remote administrator with login [%s]. Access denied.", CL->ps->getName(), user.c_str());
 		}
+
 		NET_Packet P_answ;
 		P_answ.w_begin(M_REMOTE_CONTROL_CMD);
 		P_answ.w_stringZ(reason);
@@ -855,25 +860,44 @@ CSE_Abstract *xrServer::GetEntity(u32 Num)
 
 void xrServer::OnChatMessage(NET_Packet *P, xrClientData *CL)
 {
-	s16 team = P->r_s16();
+	s16 teamReceiver = P->r_s16();
 	game_PlayerState* Cps = CL->ps;
 	
 	if (!CL->net_Ready || CL->bMutedChat)
 		return;	
+	
+	string128 playerName;
+	P->r_stringZ(playerName);
+	
+	char* pChatMessage = reinterpret_cast<char*>(&P->B.data[P->r_pos]);
+	int chatMessageLength = strlen(pChatMessage);
+
+	for (int i = 0; i < chatMessageLength; i++)
+	{
+		if (pChatMessage[i] == '%')
+		{
+			pChatMessage[i] = '_';
+			Msg("! WARNING: player [%s] tried to use %% in chat!", playerName);
+		}
+	}
 
 	for (u32 client = 0; client < net_Players.size(); ++client)
 	{
 		// Initialize process and check for available bandwidth
 		xrClientData *Client = (xrClientData *)net_Players[client];
 		game_PlayerState *ps = Client->ps;
+
 		if (!Client->net_Ready)
 			continue;
-		if (team != 0 && ps->team != team)
+
+		if (teamReceiver != 0 && ps->team != teamReceiver)
 			continue;
+
 		if (Cps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) && !ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 			continue;
+
 		SendTo(Client->ID, *P);
-	};
+	}
 };
 
 #ifdef DEBUG

@@ -14,15 +14,13 @@
 #include "FS_internal.h"
 #include "stream_reader.h"
 #include "file_stream_reader.h"
+#include "trivial_encryptor.h"
 
 #include "..\TSMP3_Build_Config.h"
 
 const u32 BIG_FILE_READER_WINDOW_SIZE = 1024 * 1024;
 
 #define PROTECTED_BUILD
-
-typedef void DUMMY_STUFF(const void *, const u32 &, void *);
-DUMMY_STUFF *g_temporary_stuff = 0;
 
 extern bool _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz, size_t totalSize = -1);
 
@@ -286,7 +284,7 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 	}
 }
 
-IReader *open_chunk(void *ptr, u32 ID)
+IReader *open_chunk(void *ptr, u32 ID, u32 archiveSize, bool needToDecrypt)
 {
 	BOOL res;
 	u32 dwType, dwSize;
@@ -312,10 +310,21 @@ IReader *open_chunk(void *ptr, u32 ID)
 				BYTE *dest;
 				unsigned dest_sz;
 
-				if (g_temporary_stuff)
-					g_temporary_stuff(src_data, dwSize, src_data);
+				if(needToDecrypt)
+					trivial_encryptor::decode(src_data, dwSize, src_data, false);
 
-				_decompressLZ(&dest, &dest_sz, src_data, dwSize);
+				bool result = _decompressLZ(&dest, &dest_sz, src_data, dwSize,archiveSize);
+
+				if (!result && needToDecrypt)
+				{
+					trivial_encryptor::encode(src_data, dwSize, src_data); // rollback
+					trivial_encryptor::decode(src_data, dwSize, src_data, true);
+					result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
+				}
+
+				if (!result)
+					return nullptr;
+
 				xr_free(src_data);
 				return xr_new<CTempReader>(dest, dest_sz, 0);
 			}
@@ -349,14 +358,11 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 		if (it->path == path)
 			return;
 
-	DUMMY_STUFF *g_temporary_stuff_subst = NULL;
+	bool needToDecrypt = true;
 
 	if (strstr(_path, ".xdb"))
-	{
-		g_temporary_stuff_subst = g_temporary_stuff;
-		g_temporary_stuff = NULL;
-	}
-
+		needToDecrypt = false;
+	
 	// open archive
 	archives.push_back(archive());
 	archive &A = archives.back();
@@ -385,7 +391,7 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 	strcat(base, "\\");
 
 	// Read headers
-	IReader *hdr = open_chunk(A.hSrcFile, 1);
+	IReader* hdr = open_chunk(A.hSrcFile, 1, A.size, needToDecrypt);
 	R_ASSERT(hdr);
 	RStringVec fv;
 
@@ -430,8 +436,6 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 	}
 	hdr->close();
 
-	if (g_temporary_stuff_subst)
-		g_temporary_stuff = g_temporary_stuff_subst;
 }
 
 void CLocatorAPI::ProcessOne(const char *path, void *_F)

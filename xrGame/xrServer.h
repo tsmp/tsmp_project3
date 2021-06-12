@@ -34,15 +34,18 @@ public:
 	bool bMutedChat;
 
 	game_PlayerState *ps;
+
 	struct
 	{
 		u8 m_maxPingWarnings;
 		u32 m_dwLastMaxPingWarningTime;
 	} m_ping_warn;
+
 	struct
 	{
 		BOOL m_has_admin_rights;
 		u32 m_dwLoginTime;
+		shared_str m_Login;
 	} m_admin_rights;
 
 	xrClientData();

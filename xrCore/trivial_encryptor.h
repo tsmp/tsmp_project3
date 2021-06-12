@@ -5,12 +5,6 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-//#define trivial_encryptor	temp_stuff
-
-/**/
-#define RUSSIAN_BUILD
-/**/
-
 class trivial_encryptor
 {
 private:
@@ -43,26 +37,53 @@ private:
 		}
 	};
 
-public:
-	static u32 m_table_iterations;
-	static u32 m_table_seed;
-	static u32 m_encrypt_seed;
-
 private:
-	static type m_alphabet_back[alphabet_size];
 
-private:
-	IC static void initialize()
+	struct ArchiveFormat
 	{
-		type* m_alphabet = (type*)_alloca(sizeof(type) * alphabet_size);
+		u32 m_table_iterations;
+		u32 m_table_seed;
+		u32 m_encrypt_seed;
+	};
 
+	static inline ArchiveFormat m_FormatRussian;
+	static inline ArchiveFormat m_FormatWorldWide;
+	static inline ArchiveFormat m_CurrentFormat;
+
+	static inline bool m_CurrentFormatWW;
+	static inline type m_alphabet_back[alphabet_size];
+	static inline type m_alphabet[alphabet_size];
+		
+public:
+	IC static void FirstInitialize()
+	{
+		m_FormatRussian.m_table_iterations = 2048;
+		m_FormatRussian.m_table_seed = 20091958;
+		m_FormatRussian.m_encrypt_seed = 20031955;
+				
+		m_FormatWorldWide.m_table_iterations = 1024;
+		m_FormatWorldWide.m_table_seed = 6011979;
+		m_FormatWorldWide.m_encrypt_seed = 24031979;
+
+		Initialize(false);
+	}
+private:
+	IC static void Initialize(bool worldWide)
+	{
+		if (worldWide)
+			m_CurrentFormat = m_FormatWorldWide;
+		else
+			m_CurrentFormat = m_FormatRussian;
+
+		m_CurrentFormatWW = worldWide;
+		
 		for (u32 i = 0; i < alphabet_size; ++i)
 			m_alphabet[i] = (type)i;
 
 		random32 temp;
-		temp.seed(m_table_seed);
+		temp.seed(m_CurrentFormat.m_table_seed);
 
-		for (u32 i = 0; i < m_table_iterations; ++i)
+		for (u32 i = 0; i < m_CurrentFormat.m_table_iterations; ++i)
 		{
 			u32 j = temp.random(alphabet_size);
 			u32 k = temp.random(alphabet_size);
@@ -78,18 +99,25 @@ private:
 	}
 
 public:
-	IC static void decode(pcvoid source, const u32& source_size, pvoid destination)
+
+	IC static void encode(pcvoid source, const u32& source_size, pvoid destination)
 	{
-		static bool m_initialized = false;
-
-		if (!m_initialized)
-		{
-			initialize();
-			m_initialized = true;
-		}
-
 		random32 temp;
-		temp.seed(m_encrypt_seed);
+		temp.seed(m_CurrentFormat.m_encrypt_seed);
+		const u8* I = (const u8*)source;
+		const u8* E = (const u8*)source + source_size;
+		u8* J = (u8*)destination;
+		for (; I != E; ++I, ++J)
+			*J = m_alphabet[*I] ^ type(temp.random(256) & 0xff);
+	}
+
+	IC static void decode(pcvoid source, const u32& source_size, pvoid destination,bool worldWide)
+	{
+		if (m_CurrentFormatWW != worldWide)
+			Initialize(worldWide);
+		
+		random32 temp;
+		temp.seed(m_CurrentFormat.m_encrypt_seed);
 		const u8* I = (const u8*)source;
 		const u8* E = (const u8*)source + source_size;
 		u8* J = (u8*)destination;
@@ -98,15 +126,3 @@ public:
 			*J = m_alphabet_back[(*I) ^ type(temp.random(256) & 0xff)];
 	}
 };
-
-#ifdef RUSSIAN_BUILD
-u32 trivial_encryptor::m_table_iterations = 2048;
-u32 trivial_encryptor::m_table_seed = 20091958;
-u32 trivial_encryptor::m_encrypt_seed = 20031955;
-#else  // RUSSIAN_BUILD
-u32 trivial_encryptor::m_table_iterations = 1024;
-u32 trivial_encryptor::m_table_seed = 6011979;
-u32 trivial_encryptor::m_encrypt_seed = 24031979;
-#endif // RUSSIAN_BUILD
-
-trivial_encryptor::type trivial_encryptor::m_alphabet_back[trivial_encryptor::alphabet_size];
