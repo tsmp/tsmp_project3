@@ -653,12 +653,14 @@ void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID sender)
 {
 	if (!IsVotingEnabled())
 		return;
+
 	char CommandName[256];
 	CommandName[0] = 0;
 	char CommandParams[256];
 	CommandParams[0] = 0;
 	string1024 resVoteCommand = "";
 	sscanf(VoteCommand, "%s ", CommandName);
+
 	if (xr_strlen(CommandName) + 1 < xr_strlen(VoteCommand))
 	{
 		strcpy(CommandParams, VoteCommand + xr_strlen(CommandName) + 1);
@@ -669,27 +671,32 @@ void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID sender)
 
 	int i = 0;
 	m_bVotingReal = false;
+
 	while (votecommands[i].command)
 	{
 		if (!stricmp(votecommands[i].name, CommandName))
 		{
 			m_bVotingReal = true;
+
 			if (!IsVotingEnabled(votecommands[i].flag))
 				return;
+
 			break;
-		};
+		}
+
 		i++;
-	};
+	}
+
 	if (!m_bVotingReal && CommandName[0] != '$')
 	{
 		Msg("Unknown Vote Command - %s", CommandName);
 		return;
-	};
+	}
 
-	//-----------------------------------------------------------------------------
 	SetVotingActive(true);
 	u32 CurTime = Level().timeServer();
 	m_uVoteStartTime = CurTime;
+
 	if (m_bVotingReal)
 	{
 		if (!stricmp(votecommands[i].name, "changeweather"))
@@ -706,18 +713,19 @@ void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID sender)
 			strcpy(resVoteCommand, VoteCommand);
 		}
 	}
-	else
-	{
+	else	
 		m_pVoteCommand.sprintf("%s", VoteCommand + 1);
-	};
-
-	xrClientData *pStartedPlayer = NULL;
+	
+	xrClientData *pStartedPlayer = nullptr;
 	u32 cnt = get_players_count();
+	
 	for (u32 it = 0; it < cnt; it++)
 	{
 		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+
 		if (!l_pC)
 			continue;
+
 		if (l_pC->ID == sender)
 		{
 			l_pC->ps->m_bCurrentVoteAgreed = 1;
@@ -725,21 +733,23 @@ void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID sender)
 		}
 		else
 			l_pC->ps->m_bCurrentVoteAgreed = 2;
-	};
+	}
 
 	signal_Syncronize();
-	//-----------------------------------------------------------------------------
 	NET_Packet P;
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_VOTE_START);
+
 	if (m_bVotingReal)
 		P.w_stringZ(resVoteCommand);
 	else
 		P.w_stringZ(VoteCommand + 1);
-	P.w_stringZ(pStartedPlayer ? pStartedPlayer->ps->getName() : "");
+
+	LPCSTR playerName = pStartedPlayer ? pStartedPlayer->ps->getName() : "";
+	Msg("- Player %s started voting [ %s ]", playerName, resVoteCommand);
+	P.w_stringZ(playerName);
 	P.w_u32(u32(g_sv_mp_fVoteTime * 60000));
 	u_EventSend(P);
-	//-----------------------------------------------------------------------------
 };
 
 void game_sv_mp::UpdateVote()
