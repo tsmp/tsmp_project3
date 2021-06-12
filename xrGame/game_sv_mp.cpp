@@ -1067,6 +1067,17 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID sender)
 		return;
 	}
 
+	int nameLength = strlen(NewName);
+
+	for (int i = 0; i < nameLength; i++)
+	{
+		if (NewName[i] == '%')
+		{
+			NewName[i] = '_';
+			Msg("! WARNING: player tried to use % in nickname!");
+		}
+	}
+
 	if (NewPlayerName_Exists(pClient, NewName))	
 		NewPlayerName_Generate(pClient, NewName);	
 

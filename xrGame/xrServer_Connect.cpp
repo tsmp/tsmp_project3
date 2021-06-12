@@ -60,9 +60,23 @@ IClient *xrServer::new_client(SClientConnectData *cl_data)
 	// copy entity
 	CL->ID = cl_data->clientID;
 	CL->process_id = cl_data->process_id;
-
+	
 	string64 new_name;
 	strcpy_s(new_name, cl_data->name);
+	new_name[63] = '\0';
+	Msg("- Connecting player - %s", new_name);
+
+	int nameLength = strlen(new_name);
+	
+	for (int i = 0; i < nameLength; i++)
+	{
+		if (new_name[i] == '%')
+		{
+			new_name[i] = '_';
+			Msg("! WARNING: player tried to use % in nickname!");
+		}
+	}
+
 	CL->name._set(new_name);
 
 	if (!HasProtected() && game->NewPlayerName_Exists(CL, new_name))
