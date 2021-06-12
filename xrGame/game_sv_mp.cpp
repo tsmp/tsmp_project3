@@ -1049,7 +1049,9 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID sender)
 
 	if (!pClient || !pClient->net_Ready)
 		return;
+
 	game_PlayerState *ps = pClient->ps;
+
 	if (!ps)
 		return;
 
@@ -1065,10 +1067,8 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID sender)
 		return;
 	}
 
-	if (NewPlayerName_Exists(pClient, NewName))
-	{
-		NewPlayerName_Generate(pClient, NewName);
-	};
+	if (NewPlayerName_Exists(pClient, NewName))	
+		NewPlayerName_Generate(pClient, NewName);	
 
 	if (pClient->owner)
 	{
@@ -1079,26 +1079,29 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID sender)
 		P.w_s16(ps->team);
 		P.w_stringZ(ps->getName());
 		P.w_stringZ(NewName);
-		//---------------------------------------------------
+
 		u32 cnt = get_players_count();
+
 		for (u32 it = 0; it < cnt; it++)
 		{
 			xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
 			game_PlayerState *ps = l_pC->ps;
+
 			if (!l_pC || !l_pC->net_Ready || !ps)
 				continue;
 			m_server->SendTo(l_pC->ID, P);
-		};
-		//---------------------------------------------------
+		}
+
 		pClient->owner->set_name_replace(NewName);
 		NewPlayerName_Replace(pClient, NewName);
-	};
+	}
 
+	Msg("- Player - [ %s ] changed name to [ %s ]", ps->name, NewName);
 	Game().m_WeaponUsageStatistic->ChangePlayerName(ps->name, NewName);
 	ps->setName(NewName);
 
 	signal_Syncronize();
-};
+}
 
 void game_sv_mp::OnPlayerSpeechMessage(NET_Packet &P, ClientID sender)
 {
