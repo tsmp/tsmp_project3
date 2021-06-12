@@ -282,7 +282,7 @@ void game_cl_GameState::TranslateGameMessage(u32 msg, NET_Packet &P)
 		Msg("%s connected", PlayerName);
 
 		if (g_dedicated_server)
-			Console->Execute("sv_listplayers");
+			Console->Execute("sv_listplayers_hw");
 	}
 	break;
 	case GAME_EVENT_PLAYER_DISCONNECTED:
