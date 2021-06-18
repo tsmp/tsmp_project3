@@ -2,7 +2,7 @@
 #include "alife_space.h"
 #include "hit.h"
 #include "ode_include.h"
-#include "..\bone.h"
+#include "../bone.h"
 #include "../../xrNetwork/net_utils.h"
 #include "xrMessages.h"
 #include "Level.h"
@@ -12,10 +12,12 @@ SHit::SHit(float aPower, Fvector &adir, CObject *awho, u16 aelement, Fvector ap_
 	power = aPower;
 	dir.set(adir);
 	who = awho;
+
 	if (awho)
 		whoID = awho->ID();
 	else
 		whoID = 0;
+
 	boneID = aelement;
 	p_in_bone_space.set(ap_in_bone_space);
 	impulse = aimpulse;
@@ -31,6 +33,7 @@ SHit::SHit()
 {
 	invalidate();
 }
+
 void SHit::invalidate()
 {
 	Time = 0;
@@ -65,9 +68,9 @@ void SHit::GenHeader(u16 PacketType, u16 ID)
 	DestID = ID;
 	PACKET_TYPE = PacketType;
 	Time = Level().timeServer();
-};
+}
 
-void SHit::Read_Packet(NET_Packet Packet)
+void SHit::Read_Packet(NET_Packet &Packet)
 {
 	u16 type_dummy;
 	Packet.r_begin(type_dummy);
@@ -75,11 +78,10 @@ void SHit::Read_Packet(NET_Packet Packet)
 	Packet.r_u16(PACKET_TYPE);
 	Packet.r_u16(DestID);
 	Read_Packet_Cont(Packet);
-};
+}
 
-void SHit::Read_Packet_Cont(NET_Packet Packet)
+void SHit::Read_Packet_Cont(NET_Packet &Packet)
 {
-
 	Packet.r_u16(whoID);
 	Packet.r_u16(weaponID);
 	Packet.r_dir(dir);
@@ -87,16 +89,17 @@ void SHit::Read_Packet_Cont(NET_Packet Packet)
 	Packet.r_u16(boneID);
 	Packet.r_vec3(p_in_bone_space);
 	Packet.r_float(impulse);
+
 	if (IsGameTypeSingle())
 		aim_bullet = Packet.r_u16() != 0;
 	else
 		aim_bullet = false;
+
 	hit_type = (ALife::EHitType)Packet.r_u16(); //hit type
 
-	if (hit_type == ALife::eHitTypeFireWound)
-	{
+	if (hit_type == ALife::eHitTypeFireWound)	
 		Packet.r_float(ap);
-	}
+	
 	if (PACKET_TYPE == GE_HIT_STATISTIC)
 	{
 		Packet.r_u32(BulletID);
@@ -113,19 +116,22 @@ void SHit::Write_Packet_Cont(NET_Packet &Packet)
 	Packet.w_u16(boneID);
 	Packet.w_vec3(p_in_bone_space);
 	Packet.w_float(impulse);
+
 	if (IsGameTypeSingle())
 		Packet.w_u16(aim_bullet != 0);
+
 	Packet.w_u16(u16(hit_type & 0xffff));
-	if (hit_type == ALife::eHitTypeFireWound)
-	{
+
+	if (hit_type == ALife::eHitTypeFireWound)	
 		Packet.w_float(ap);
-	}
+	
 	if (PACKET_TYPE == GE_HIT_STATISTIC)
 	{
 		Packet.w_u32(BulletID);
 		Packet.w_u32(SenderID);
 	}
 }
+
 void SHit::Write_Packet(NET_Packet &Packet)
 {
 	Packet.w_begin(M_EVENT);
@@ -134,7 +140,7 @@ void SHit::Write_Packet(NET_Packet &Packet)
 	Packet.w_u16(u16(DestID & 0xffff));
 
 	Write_Packet_Cont(Packet);
-};
+}
 
 #ifdef DEBUG
 void SHit::_dump()

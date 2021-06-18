@@ -180,7 +180,7 @@ public:
 	virtual void OnItemDrop(CInventoryItem *inventory_item);
 	virtual void OnItemDropUpdate();
 
-	virtual void OnPlayHeadShotParticle(NET_Packet P);
+	virtual void OnPlayHeadShotParticle(NET_Packet &P);
 
 	virtual void Die(CObject *who);
 	virtual void Hit(SHit *pHDS);
