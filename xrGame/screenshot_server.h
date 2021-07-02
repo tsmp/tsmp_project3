@@ -14,6 +14,13 @@ enum clientdata_event_t
 	e_configs_error_notif
 };
 
+LPCSTR make_file_name(LPCSTR session_id, string_path& dest);
+
+void generate_file_name(
+	string_path& file_name,
+	LPCSTR file_suffix,
+	SYSTEMTIME const& date_time);
+
 class clientdata_proxy : boost::noncopyable
 {
 private:

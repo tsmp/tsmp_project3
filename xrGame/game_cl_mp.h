@@ -102,6 +102,9 @@ class CUIVotingCategory;
 class CUIVote;
 class CUIMessageBoxEx;
 
+#include "screenshot_manager.h"
+#include "screenshot_server.h"
+
 class game_cl_mp : public game_cl_GameState
 {
 	typedef game_cl_GameState inherited;
@@ -162,7 +165,15 @@ protected:
 	bool m_bSpectator_FreeLook;
 	bool m_bSpectator_TeamCamera;
 
+	screenshot_manager ss_manager;
+
 	virtual void LoadBonuses();
+
+	u8* buffer_for_compress;
+	u32					buffer_for_compress_size;
+	CMemoryWriter		upload_memory_writer;
+	void				reinit_compress_buffer(u32 need_size);
+	void				deinit_compress_buffer();
 
 public:
 	game_cl_mp();
@@ -222,10 +233,30 @@ public:
 	virtual u8 GetTeamCount() { return 0; };
 	virtual s16 ModifyTeam(s16 Team) { return Team; };
 
+	void draw_downloads(bool draw);
 	virtual bool Is_Spectator_TeamCamera_Allowed() { return m_bSpectator_TeamCamera; };
 	virtual bool Is_Spectator_Camera_Allowed(CSpectator::EActorCameras Camera);
 
-//-------------------------------------------------------------------------------------------------
+	void decompress_and_save_screenshot(LPCSTR file_name, u8* data, u32 data_size, u32 file_size);
+
+	void __stdcall		SendCollectedData(u8 const* buffer, u32 buffer_size, u32 uncompressed_size);
+	void				PrepareToReceiveFile(ClientID const& from_client, shared_str const& client_session_id, clientdata_event_t response_event);
+
+	struct fr_callback_binder
+	{
+		file_transfer::filereceiver_node* m_frnode;
+		shared_str							m_file_name;
+		clientdata_event_t					m_response_type;
+		bool								m_active;
+		u32									m_downloaded_size;
+		u32									m_max_size;
+		game_cl_mp* m_owner;
+		CMemoryWriter						m_writer;
+		fr_callback_binder() : m_frnode(NULL), m_active(false) {};
+		void __stdcall		receiving_file_callback(file_transfer::receiving_status_t status, u32 bytes_received, u32 data_size);
+		//void __stdcall		receiving_serverinfo_callback(file_transfer::receiving_status_t status, u32 bytes_received, u32 data_size);
+	};
+
 #include "game_cl_mp_messages_menu.h"
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

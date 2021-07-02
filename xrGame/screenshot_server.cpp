@@ -7,10 +7,10 @@
 #include "game_cl_mp.h"
 #include "../xrCore/fastdelegate.h"
 
-extern BOOL g_sv_mp_save_proxy_screenshots;
-extern BOOL g_sv_mp_save_proxy_configs;
+BOOL g_sv_mp_save_proxy_screenshots = 1;
+BOOL g_sv_mp_save_proxy_configs = 1;
 
-clientdata_proxy::clientdata_proxy(file_transfer::server_site *ft_server) : m_ft_server(ft_server)
+clientdata_proxy::clientdata_proxy(file_transfer::server_site *ft_server) : m_ft_server(ft_server) 
 {
 }
 
@@ -29,20 +29,24 @@ void clientdata_proxy::make_screenshot(ClientID const &admin_id, ClientID const 
 {
 	m_admin_id = admin_id;
 	m_chearer_id = cheater_id;
-	xrClientData *tmp_cheater = static_cast<xrClientData *>(
-		Level().Server->ID_to_client(m_chearer_id));
+
+	xrClientData *tmp_cheater = static_cast<xrClientData *>(Level().Server->ID_to_client(m_chearer_id));
+	
 	if (!tmp_cheater)
 	{
 		Msg("! ERROR: SV: client [%u] not found ...", cheater_id.value());
 		return;
 	}
+	
 	if (m_ft_server->is_receiving_active(cheater_id))
 	{
 		Msg("! Receiving from client [%u] already active, please try later", cheater_id.value());
 		return;
 	}
+
 	m_cheater_digest = "TSMP: here should be digest"; //tmp_cheater->m_cdkey_digest;
 	m_cheater_name = tmp_cheater->ps ? tmp_cheater->ps->getName() : "unknown";
+
 	NET_Packet ssr_packet;
 	ssr_packet.w_begin(M_GAMEMESSAGE);
 	ssr_packet.w_u32(GAME_EVENT_MAKE_DATA);
@@ -57,10 +61,11 @@ void clientdata_proxy::make_screenshot(ClientID const &admin_id, ClientID const 
 	//Level().Server->SecureSendTo(tmp_cheater, ssr_packet, net_flags(TRUE, TRUE));
 	Level().Server->SendTo(cheater_id, ssr_packet, net_flags(TRUE, TRUE));
 
-	file_transfer::receiving_state_callback_t receiving_cb =
-		fastdelegate::MakeDelegate(this, &clientdata_proxy::download_screenshot_callback);
+	file_transfer::receiving_state_callback_t receiving_cb = fastdelegate::MakeDelegate(this, &clientdata_proxy::download_screenshot_callback);
+	
 	if (my_proxy_mem_file.size())
 		my_proxy_mem_file.clear();
+
 	m_first_receive = true;
 	m_receiver = m_ft_server->start_receive_file(my_proxy_mem_file, m_chearer_id, receiving_cb);
 }
@@ -69,20 +74,24 @@ void clientdata_proxy::make_config_dump(ClientID const &admin_id, ClientID const
 {
 	m_admin_id = admin_id;
 	m_chearer_id = cheater_id;
-	xrClientData *tmp_cheater = static_cast<xrClientData *>(
-		Level().Server->ID_to_client(m_chearer_id));
+
+	xrClientData *tmp_cheater = static_cast<xrClientData *>(Level().Server->ID_to_client(m_chearer_id));
+	
 	if (!tmp_cheater)
 	{
 		Msg("! ERROR: SV: client [%u] not found ...", cheater_id.value());
-		return;
+		return;	
 	}
+
 	if (m_ft_server->is_receiving_active(cheater_id))
 	{
 		Msg("! Receiving from client [%u] already active, please try later", cheater_id.value());
 		return;
 	}
-	m_cheater_digest = "TSMP: here must be digest!"; //tmp_cheater->m_cdkey_digest;
+
+	m_cheater_digest = "TSMP: here must be digest"; //tmp_cheater->m_cdkey_digest;
 	m_cheater_name = tmp_cheater->ps ? tmp_cheater->ps->getName() : "unknown";
+
 	NET_Packet ssr_packet;
 	ssr_packet.w_begin(M_GAMEMESSAGE);
 	ssr_packet.w_u32(GAME_EVENT_MAKE_DATA);
@@ -97,18 +106,18 @@ void clientdata_proxy::make_config_dump(ClientID const &admin_id, ClientID const
 	//Level().Server->SecureSendTo(tmp_cheater, ssr_packet, net_flags(TRUE, TRUE));
 	Level().Server->SendTo(cheater_id, ssr_packet, net_flags(TRUE, TRUE));
 
-	file_transfer::receiving_state_callback_t receiving_cb =
-		fastdelegate::MakeDelegate(this, &clientdata_proxy::download_config_callback);
+	file_transfer::receiving_state_callback_t receiving_cb = fastdelegate::MakeDelegate(this, &clientdata_proxy::download_config_callback);
+	
 	if (my_proxy_mem_file.size())
 		my_proxy_mem_file.clear();
+
 	m_first_receive = true;
 	m_receiver = m_ft_server->start_receive_file(my_proxy_mem_file, m_chearer_id, receiving_cb);
 }
 
 bool clientdata_proxy::is_active()
 {
-	return (m_ft_server->is_receiving_active(m_chearer_id) ||
-			m_ft_server->is_transfer_active(m_admin_id, m_chearer_id));
+	return (m_ft_server->is_receiving_active(m_chearer_id) || m_ft_server->is_transfer_active(m_admin_id, m_chearer_id));
 }
 
 void clientdata_proxy::notify_admin(clientdata_event_t event_for_admin, char const *reason)
@@ -119,18 +128,13 @@ void clientdata_proxy::notify_admin(clientdata_event_t event_for_admin, char con
 	ssr_packet.w_u8(static_cast<u8>(event_for_admin)); //receive data
 	ssr_packet.w_u32(m_chearer_id.value());
 
-	if ((event_for_admin == e_screenshot_response) ||
-		(event_for_admin == e_configs_response))
-	{
-		ssr_packet.w_stringZ(m_cheater_name);
-	}
-	else
-	{
+	if ((event_for_admin == e_screenshot_response) || (event_for_admin == e_configs_response))	
+		ssr_packet.w_stringZ(m_cheater_name);	
+	else	
 		ssr_packet.w_stringZ(reason ? reason : "failed to download screenshot");
-	}
+	
 	Level().Server->SendTo(m_admin_id, ssr_packet, net_flags(TRUE, TRUE));
 }
-
 
 LPCSTR make_file_name(LPCSTR session_id, string_path& dest)
 {
@@ -139,6 +143,7 @@ LPCSTR make_file_name(LPCSTR session_id, string_path& dest)
 	size_t tmp_length = xr_strlen(dest);
 	size_t start_pos = 0;
 	size_t char_pos;
+
 	while ((char_pos = strcspn(dest + start_pos, denied_symbols)) < (tmp_length - start_pos))
 	{
 		char_pos += start_pos;
@@ -184,12 +189,11 @@ void clientdata_proxy::save_proxy_screenshot()
 	GetLocalTime(&date_time);
 	generate_file_name(screenshot_fn, dest_file_name, date_time);
 
-#pragma TODO(FIX ME!)
-	//clgame->decompress_and_save_screenshot(
-	//	screenshot_fn,
-	//	my_proxy_mem_file.pointer(),
-	//	my_proxy_mem_file.size(),
-	//	m_receiver->get_user_param());
+	clgame->decompress_and_save_screenshot(
+		screenshot_fn,
+		my_proxy_mem_file.pointer(),
+		my_proxy_mem_file.size(),
+		m_receiver->get_user_param());
 }
 
 void clientdata_proxy::save_proxy_config()

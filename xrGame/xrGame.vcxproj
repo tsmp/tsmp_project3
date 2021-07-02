@@ -577,6 +577,9 @@
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="damage_manager_inline.h" />
     <ClInclude Include="DamageSource.h" />
+    <ClInclude Include="screenshots_common.h" />
+    <ClInclude Include="screenshots_writer.h" />
+    <ClInclude Include="screenshot_manager.h" />
     <ClInclude Include="screenshot_server.h" />
     <ClInclude Include="wrapper_abstract.h" />
     <ClInclude Include="wrapper_abstract_inline.h" />
@@ -2023,6 +2026,9 @@
     <ClCompile Include="filetransfer\file_transfer.cpp" />
     <ClCompile Include="fz\fz_downloader.cpp" />
     <ClCompile Include="net_physics_state.cpp" />
+    <ClCompile Include="screenshots_common.cpp" />
+    <ClCompile Include="screenshots_writer.cpp" />
+    <ClCompile Include="screenshot_manager.cpp" />
     <ClCompile Include="screenshot_server.cpp" />
     <ClCompile Include="script_action_wrapper.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>
