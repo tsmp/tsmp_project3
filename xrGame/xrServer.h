@@ -83,8 +83,8 @@ private:
 	xrCriticalSection DelayedPackestCS;
 	xr_deque<DelayedPacket> m_aDelayedPackets;
 	void ProceedDelayedPackets();
-	void AddDelayedPacket(NET_Packet &Packet, ClientID Sender);
-	u32 OnDelayedMessage(NET_Packet &P, ClientID sender); // Non-Zero means broadcasting with "flags" as returned
+	void AddDelayedPacket(NET_Packet &Packet, ClientID &Sender);
+	u32 OnDelayedMessage(NET_Packet &P, ClientID &sender); // Non-Zero means broadcasting with "flags" as returned
 
 	void SendUpdatesToAll();
 
@@ -150,6 +150,8 @@ public:
 	virtual void OnBuildVersionRespond(IClient *CL, NET_Packet &P);
 	void OnHardwareVerifyRespond(IClient* CL, NET_Packet& P);
 
+	void MakeScreenshot(ClientID const& admin_id, ClientID const& cheater_id);
+
 protected:
 	bool CheckAdminRights(const shared_str &user, const shared_str &pass, string512 reason);
 	virtual IClient *new_client(SClientConnectData *cl_data);
@@ -163,7 +165,7 @@ protected:
 	virtual void OnConnectionVerificationStepComplete(IClient *CL);
 
 	void SendConnectionData(IClient *CL);
-	void OnChatMessage(NET_Packet *P, xrClientData *CL);
+	void OnChatMessage(NET_Packet *P, xrClientData *CL);	
 
 public:
 	// constr / destr

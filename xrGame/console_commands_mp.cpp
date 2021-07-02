@@ -82,6 +82,49 @@ void XRNETWORK_API DumpNetCompressorStats(bool brief);
 BOOL XRNETWORK_API g_net_compressor_enabled;
 BOOL XRNETWORK_API g_net_compressor_gather_stats;
 
+const char* RadminIdPrefix = "raid:";
+
+static xrClientData* GetCommandInitiator(LPCSTR commandLine)
+{
+	LPCSTR tmp_str = strrchr(commandLine, ' ');
+
+	if (!tmp_str)
+		tmp_str = commandLine;
+	
+	LPCSTR clientidstr = strstr(tmp_str, RadminIdPrefix);
+
+	if (!clientidstr)
+		return nullptr;
+	
+	clientidstr += sizeof(RadminIdPrefix) - 1;
+	u32 client_id = static_cast<u32>(strtoul(clientidstr, NULL, 10));
+
+	ClientID tmp_id;
+	tmp_id.set(client_id);
+
+	if (g_pGameLevel && Level().Server)
+		return Level().Server->ID_to_client(tmp_id);	
+}
+
+static void ExcludeRadminIdFromCommandArguments(LPCSTR args, LPSTR dest, size_t destSize)
+{
+	strncpy_s(dest, destSize, args, destSize - 1);
+	char* tempString = strrchr(dest, ' ');
+	
+	if (!tempString)
+		tempString = dest;
+	
+	if(char* raidStr = strstr(tempString, RadminIdPrefix))
+	{
+		if (raidStr <= tempString)
+			*raidStr = '\0';
+		else
+			*(raidStr - 1) = '\0';	//with ' '
+	}
+
+	dest[destSize - 1] = '\0';
+}
+
 class CCC_Restart : public IConsole_Command
 {
 public:
@@ -319,6 +362,49 @@ public:
 
 	virtual void Info(TInfo &I) { strcpy(I, "Kick Player by name"); }
 };
+
+class CCC_MakeScreenshot : public IConsole_Command 
+{
+public:
+	CCC_MakeScreenshot(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!g_pGameLevel || !Level().Server || !Level().Server->game)
+			return;
+
+		u32 len = xr_strlen(args_);
+		if ((len == 0) || (len >= 32))
+			return;
+
+		ClientID idCL;
+		u32 tmpId;
+
+		if (sscanf_s(args_, "%u", &tmpId) != 1)
+		{
+			Msg("! ERROR: bad command parameters.");
+			Msg("Make screenshot. Format: \"make_screenshot <player session id | \'%s\'> <ban_time_in_sec>\".");
+			Msg("To receive list of players ids see sv_listplayers");
+			return;
+		}
+
+		idCL.set(tmpId);		
+		xrClientData* clientAdmin = GetCommandInitiator(args_);
+
+		if (!clientAdmin)
+		{
+			Msg("! ERROR: only radmin can make screenshots ...");
+			return;
+		}
+
+		Level().Server->MakeScreenshot(clientAdmin->ID, idCL);
+	}
+
+	virtual void	Info(TInfo& I)
+	{
+		strcpy(I,"Make screenshot. Format: \"make_screenshot <player session id | \'%s\'> <ban_time_in_sec>\". To receive list of players ids see sv_listplayers");
+	}
+
+}; //class CCC_MakeScreenshot
 
 class CCC_BanPlayerByName : public IConsole_Command
 {
@@ -1912,6 +1998,7 @@ void register_mp_console_commands()
 	CMD4(CCC_Integer, "g_corpsenum", (int *)&g_dwMaxCorpses, 0, 100);
 
 	CMD1(CCC_KickPlayerByName, "sv_kick");
+	CMD1(CCC_MakeScreenshot, "make_screenshot");
 
 	CMD1(CCC_BanPlayerByHW, "sv_banplayer_hw");
 	CMD1(CCC_UnBanPlayerByHW, "sv_unbanplayer_hw");

@@ -20,6 +20,8 @@
 #include <malloc.h>
 #pragma warning(pop)
 
+extern const char* RadminIdPrefix;
+
 xrClientData::xrClientData() : IClient(Device.GetTimerGlobal())
 {
 	ps = Level().Server->game->createPlayerState();
@@ -90,14 +92,12 @@ CSE_Abstract *xrServer::ID_to_entity(u16 ID)
 		return 0;
 }
 
-//--------------------------------------------------------------------
 IClient *xrServer::client_Create()
 {
 	return xr_new<xrClientData>();
 }
-void xrServer::client_Replicate()
-{
-}
+
+void xrServer::client_Replicate() {}
 
 IClient *xrServer::client_Find_Get(ClientID ID)
 {
@@ -427,7 +427,7 @@ void console_log_cb(LPCSTR text)
 	_tmp_log.push_back(text);
 }
 
-u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID sender) // Non-Zero means broadcasting with "flags" as returned
+u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID &sender) // Non-Zero means broadcasting with "flags" as returned
 {
 	if (g_pGameLevel && Level().IsDemoSave())
 		Level().Demo_StoreServerData(P.B.data, P.B.count);
@@ -451,13 +451,19 @@ u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID sender) // Non-Zero means
 	{
 		if (CL->m_admin_rights.m_has_admin_rights)
 		{
-			string1024 buff;
-			P.r_stringZ(buff);
-			SetLogCB(console_log_cb);
+			string128 buffer;
+			P.r_stringZ(buffer);
+
+			string128 command;
+			sprintf_s(command, 128, "%s %s%u", buffer, RadminIdPrefix, sender.value());
+
+			Msg("# radmin %s is running command: %s", CL->m_admin_rights.m_Login.c_str(), buffer);
 			_tmp_log.clear();
-			Console->Execute(buff);
+
+			SetLogCB(console_log_cb);			
+			Console->Execute(command);
 			SetLogCB(nullptr);
-			Msg("# radmin %s is running command: %s", CL->m_admin_rights.m_Login.c_str(), buff);
+			
 			NET_Packet P_answ;
 
 			for (u32 i = 0; i < _tmp_log.size(); ++i)
@@ -856,7 +862,12 @@ CSE_Abstract *xrServer::GetEntity(u32 Num)
 			return I->second;
 	};
 	return NULL;
-};
+}
+
+void xrServer::MakeScreenshot(ClientID const& admin_id, ClientID const& cheater_id)
+{
+
+}
 
 void xrServer::OnChatMessage(NET_Packet *P, xrClientData *CL)
 {
@@ -983,7 +994,7 @@ void xrServer::ProceedDelayedPackets()
 	DelayedPackestCS.Leave();
 };
 
-void xrServer::AddDelayedPacket(NET_Packet &Packet, ClientID Sender)
+void xrServer::AddDelayedPacket(NET_Packet &Packet, ClientID &Sender)
 {
 	DelayedPackestCS.Enter();
 
