@@ -161,7 +161,6 @@ void CBaseMonster::Die(CObject *who)
 		m_controlled->on_die();
 }
 
-//void CBaseMonster::Hit(float P,Fvector &dir,CObject*who,s16 element,Fvector p_in_object_space,float impulse, ALife::EHitType hit_type)
 void CBaseMonster::Hit(SHit *pHDS)
 {
 	if (ignore_collision_hit && (pHDS->hit_type == ALife::eHitTypeStrike))
@@ -194,8 +193,8 @@ bool CBaseMonster::useful(const CItemManager *manager, const CGameObject *object
 		return (false);
 
 	if (!movement().restrictions().accessible(object->ai_location().level_vertex_id()))
-		return (false);
-
+		return false;
+	
 	const CEntityAlive *pCorpse = smart_cast<const CEntityAlive *>(object);
 	if (!pCorpse)
 		return false;
