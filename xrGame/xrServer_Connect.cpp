@@ -40,6 +40,9 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 	if (!game)
 		return ErrConnect;
 
+	if (game->Type() != GAME_SINGLE)
+		initialize_screenshot_proxies();
+
 	csPlayers.Enter();
 
 #ifdef DEBUG

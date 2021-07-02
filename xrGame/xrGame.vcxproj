@@ -569,10 +569,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="filetransfer\filereceiver_node.h" />
+    <ClInclude Include="filetransfer\filetransfer_common.h" />
+    <ClInclude Include="filetransfer\filetransfer_node.h" />
+    <ClInclude Include="filetransfer\file_transfer.h" />
     <ClInclude Include="mt_config.h" />
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="damage_manager_inline.h" />
     <ClInclude Include="DamageSource.h" />
+    <ClInclude Include="screenshot_server.h" />
     <ClInclude Include="wrapper_abstract.h" />
     <ClInclude Include="wrapper_abstract_inline.h" />
     <ClInclude Include="action_management_config.h" />
@@ -2013,8 +2018,12 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="filetransfer\filereceiver_node.cpp" />
+    <ClCompile Include="filetransfer\filetransfer_node.cpp" />
+    <ClCompile Include="filetransfer\file_transfer.cpp" />
     <ClCompile Include="fz\fz_downloader.cpp" />
     <ClCompile Include="net_physics_state.cpp" />
+    <ClCompile Include="screenshot_server.cpp" />
     <ClCompile Include="script_action_wrapper.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>

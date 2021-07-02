@@ -10,6 +10,7 @@
 #include "game_cl_base.h"
 #include "ai_space.h"
 #include "../IGame_Persistent.h"
+#include "screenshot_server.h"
 
 #include "../Console.h"
 //#include "script_engine.h"
@@ -864,9 +865,38 @@ CSE_Abstract *xrServer::GetEntity(u32 Num)
 	return NULL;
 }
 
+void xrServer::initialize_screenshot_proxies()
+{
+	for (int i = 0; i < sizeof(m_screenshot_proxies) / sizeof(clientdata_proxy*); ++i)
+	{
+		m_screenshot_proxies[i] = xr_new<clientdata_proxy>(m_file_transfers);
+	}
+}
+
+void xrServer::deinitialize_screenshot_proxies()
+{
+	for (int i = 0; i < sizeof(m_screenshot_proxies) / sizeof(clientdata_proxy*); ++i)
+	{
+		xr_delete(m_screenshot_proxies[i]);
+	}
+}
+
 void xrServer::MakeScreenshot(ClientID const& admin_id, ClientID const& cheater_id)
 {
+	if ((cheater_id == SV_Client->ID) && g_dedicated_server)	
+		return;
+	
+	for (int i = 0; i < sizeof(m_screenshot_proxies) / sizeof(clientdata_proxy*); ++i)
+	{
+		if (!m_screenshot_proxies[i]->is_active())
+		{
+			m_screenshot_proxies[i]->make_screenshot(admin_id, cheater_id);
+			Msg("* admin [%d] is making screeshot of client [%d]", admin_id, cheater_id);
+			return;
+		}
+	}
 
+	Msg("! ERROR: SV: not enough file transfer proxies for downloading screenshot, please try later ...");
 }
 
 void xrServer::OnChatMessage(NET_Packet *P, xrClientData *CL)

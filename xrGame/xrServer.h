@@ -15,7 +15,10 @@
 //. #define SLOW_VERIFY_ENTITIES
 #endif
 
+#include "filetransfer/file_transfer.h"
+
 class CSE_Abstract;
+class clientdata_proxy;
 
 const u32 NET_Latency = 50; // time in (ms)
 
@@ -69,6 +72,9 @@ private:
 
 	u16 m_iCurUpdatePacket;
 	xr_vector<NET_Packet> m_aUpdatePackets;
+
+	file_transfer::server_site* m_file_transfers;
+	clientdata_proxy* m_screenshot_proxies[/*MAX_PLAYERS_COUNT*/ 32 * 2];
 
 	struct DelayedPacket
 	{
@@ -151,6 +157,9 @@ public:
 	void OnHardwareVerifyRespond(IClient* CL, NET_Packet& P);
 
 	void MakeScreenshot(ClientID const& admin_id, ClientID const& cheater_id);
+
+	void initialize_screenshot_proxies();
+	void deinitialize_screenshot_proxies();
 
 protected:
 	bool CheckAdminRights(const shared_str &user, const shared_str &pass, string512 reason);

@@ -2293,6 +2293,9 @@
     <Filter Include="UI\Tutorial">
       <UniqueIdentifier>{e1e8426a-2878-4445-988a-dd79284a49a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Server\FileTransfer">
+      <UniqueIdentifier>{7323fa8d-5117-40f5-8de0-a03d685aa45a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6546,6 +6549,21 @@
     <ClInclude Include="ui\UIGameTutorial.h">
       <Filter>UI\Tutorial</Filter>
     </ClInclude>
+    <ClInclude Include="screenshot_server.h">
+      <Filter>Core\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="filetransfer\file_transfer.h">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClInclude>
+    <ClInclude Include="filetransfer\filereceiver_node.h">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClInclude>
+    <ClInclude Include="filetransfer\filetransfer_common.h">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClInclude>
+    <ClInclude Include="filetransfer\filetransfer_node.h">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9688,5 +9706,17 @@
     </ClCompile>
     <ClCompile Include="net_physics_state.cpp" />
     <ClCompile Include="fz\fz_downloader.cpp" />
+    <ClCompile Include="screenshot_server.cpp">
+      <Filter>Core\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="filetransfer\file_transfer.cpp">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClCompile>
+    <ClCompile Include="filetransfer\filereceiver_node.cpp">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClCompile>
+    <ClCompile Include="filetransfer\filetransfer_node.cpp">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
