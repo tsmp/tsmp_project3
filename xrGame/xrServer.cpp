@@ -52,6 +52,7 @@ xrClientData::~xrClientData()
 
 xrServer::xrServer() : IPureServer(Device.GetTimerGlobal(), g_dedicated_server)
 {
+	m_file_transfers = nullptr;
 	m_iCurUpdatePacket = 0;
 	m_aUpdatePackets.push_back(NET_Packet());
 	m_aDelayedPackets.clear();
@@ -416,6 +417,12 @@ void xrServer::SendUpdatesToAll()
 	g_sv_SendUpdate = 0;
 #endif
 
+	if (m_file_transfers)
+	{
+		m_file_transfers->update_transfer();
+		m_file_transfers->stop_obsolete_receivers();
+	}
+
 	if (game->sv_force_sync)
 		Perform_game_export();
 
@@ -483,6 +490,10 @@ u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID &sender) // Non-Zero mean
 		}
 	}
 	break;
+	case M_FILE_TRANSFER:
+	{
+		m_file_transfers->on_message(&P, sender);
+	}break;
 	}
 	DEBUG_VERIFY(verify_entities());
 
@@ -525,6 +536,10 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID sender) // Non-Zero means broadc
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+	case M_FILE_TRANSFER:
+	{
+		AddDelayedPacket(P, sender);
+	}break;
 	case M_EVENT_PACK:
 	{
 		NET_Packet tmpP;

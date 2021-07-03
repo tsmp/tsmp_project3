@@ -66,6 +66,9 @@ game_cl_mp::game_cl_mp()
 	m_bSpectator_TeamCamera = true;
 	//-------------------------------------
 	LoadBonuses();
+
+	buffer_for_compress = nullptr;
+	buffer_for_compress_size = 0;
 };
 
 game_cl_mp::~game_cl_mp()
@@ -334,12 +337,12 @@ void game_cl_mp::decompress_and_save_screenshot(LPCSTR file_name, u8* data, u32 
 void game_cl_mp::draw_all_active_binder_states()
 {
 	//drawing download states ..
-	CGameFont* F = UI().Font().pFontDI;
+	CGameFont* F = UI()->Font()->pFontDI;
 	F->SetHeightI(0.015f);
 	F->OutSetI(0.1f, 0.2f);
 	F->SetColor(D3DCOLOR_XRGB(0, 255, 0));
 
-	for (u32 i = 0; i < MAX_PLAYERS_COUNT; ++i)
+	for (u32 i = 0; i < /*MAX_PLAYERS_COUNT*/32; ++i)
 	{
 		if (m_client_receiver_cbs[i].m_active)
 		{
@@ -352,7 +355,7 @@ void game_cl_mp::draw_all_active_binder_states()
 		}
 	}
 	F->SetColor(D3DCOLOR_XRGB(255, 0, 0));
-	for (cheaters_collection_t::iterator i = m_detected_cheaters.begin(),
+	/*for (cheaters_collection_t::iterator i = m_detected_cheaters.begin(),
 		ie = m_detected_cheaters.end(); i != ie; ++i)
 	{
 		F->OutNext("%s : cheater suspect ...",
@@ -366,7 +369,7 @@ void game_cl_mp::draw_all_active_binder_states()
 			old_detected_cheater()
 		),
 		m_detected_cheaters.end()
-	);
+	);*/
 }
 
 void __stdcall game_cl_mp::sending_screenshot_callback(file_transfer::sending_status_t status, u32 bytes_sent, u32 data_size)
@@ -694,40 +697,40 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 	case GAME_EVENT_MAKE_DATA:
 	{
 		clientdata_event_t etype = static_cast<clientdata_event_t>(P.r_u8());
-#pragma TODO(FIX ME!)
-		//if (etype == e_screenshot_request)
-		//{
-		//	screenshot_manager::complete_callback_t compl_cb =
-		//		fastdelegate::MakeDelegate(this, &game_cl_mp::SendCollectedData);
-		//	ss_manager.make_screenshot(compl_cb);
-		//}
-		//else if (etype == e_configs_request)
-		//{
-		//	//mp_anticheat::configs_dumper::complete_callback_t compl_cb =
-		//	//	fastdelegate::MakeDelegate(this, &game_cl_mp::SendCollectedData);
-		//	//cd_manager.dump_config(compl_cb);
-		//}
-		//else if (etype == e_screenshot_response)
-		//{
-		//	ClientID tmp_client(P.r_u32());
-		//	shared_str client_name;
-		//	P.r_stringZ(client_name);
-		//	PrepareToReceiveFile(tmp_client, client_name, e_screenshot_response);
-		//}
-		//else if (etype == e_configs_response)
-		//{
-		//	//ClientID tmp_client(P.r_u32());
-		//	//shared_str client_name;
-		//	//P.r_stringZ(client_name);
-		//	//PrepareToReceiveFile(tmp_client, client_name, e_configs_response);
-		//}
-		//else
-		//{
-		//	ClientID tmp_client(P.r_u32());
-		//	shared_str error_msg;
-		//	P.r_stringZ(error_msg);
-		//	Msg("! File transfer error: from client [%u]: %s", tmp_client.value(), error_msg.c_str());
-		//}
+
+		if (etype == e_screenshot_request)
+		{
+			screenshot_manager::complete_callback_t compl_cb =
+				fastdelegate::MakeDelegate(this, &game_cl_mp::SendCollectedData);
+			ss_manager.make_screenshot(compl_cb);
+		}
+		else if (etype == e_configs_request)
+		{
+			//mp_anticheat::configs_dumper::complete_callback_t compl_cb =
+			//	fastdelegate::MakeDelegate(this, &game_cl_mp::SendCollectedData);
+			//cd_manager.dump_config(compl_cb);
+		}
+		else if (etype == e_screenshot_response)
+		{
+			ClientID tmp_client(P.r_u32());
+			shared_str client_name;
+			P.r_stringZ(client_name);
+			PrepareToReceiveFile(tmp_client, client_name, e_screenshot_response);
+		}
+		else if (etype == e_configs_response)
+		{
+			//ClientID tmp_client(P.r_u32());
+			//shared_str client_name;
+			//P.r_stringZ(client_name);
+			//PrepareToReceiveFile(tmp_client, client_name, e_configs_response);
+		}
+		else
+		{
+			ClientID tmp_client(P.r_u32());
+			shared_str error_msg;
+			P.r_stringZ(error_msg);
+			Msg("! File transfer error: from client [%u]: %s", tmp_client.value(), error_msg.c_str());
+		}
 	}break;
 
 	default:

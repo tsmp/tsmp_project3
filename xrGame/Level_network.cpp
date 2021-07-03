@@ -116,6 +116,9 @@ void CLevel::net_Stop()
 	m_bGameConfigStarted = FALSE;
 	game_configured = FALSE;
 
+	if (m_file_transfer)
+		xr_delete(m_file_transfer);
+
 	remove_objects();
 
 	IGame_Level::net_Stop();
@@ -176,6 +179,12 @@ void CLevel::ClientSend()
 					Send(P, net_flags(FALSE));
 			}
 		}
+	}
+
+	if (m_file_transfer)
+	{
+		m_file_transfer->update_transfer();
+		m_file_transfer->stop_obsolete_receivers();
 	}
 
 	if (OnClient())

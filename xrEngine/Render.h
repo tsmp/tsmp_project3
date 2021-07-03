@@ -197,6 +197,9 @@ public:
 	virtual IRender_Sector *detectSector(const Fvector &P) = 0;
 	virtual IRender_Target *getTarget() = 0;
 
+	virtual void ScreenshotAsyncBegin() = 0;
+	virtual void ScreenshotAsyncEnd(CMemoryWriter& memory_writer) = 0;
+
 	// Main
 	IC void set_Frustum(CFrustum *O)
 	{

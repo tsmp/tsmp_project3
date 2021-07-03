@@ -14,11 +14,11 @@
 #include "alife_space.h"
 #include "xrDebug.h"
 #include "xrServer.h"
+#include "game_cl_base.h"
 
 class CHUDManager;
 class CParticlesObject;
 class xrServer;
-class game_cl_GameState;
 class NET_Queue_Event;
 class CSE_Abstract;
 class CSpaceRestrictionManager;

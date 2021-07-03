@@ -74,7 +74,7 @@ private:
 	xr_vector<NET_Packet> m_aUpdatePackets;
 
 	file_transfer::server_site* m_file_transfers;
-	clientdata_proxy* m_screenshot_proxies[/*MAX_PLAYERS_COUNT*/ 32 * 2];
+	clientdata_proxy* m_screenshot_proxies[/*MAX_PLAYERS_COUNT*/ 32];
 
 	struct DelayedPacket
 	{

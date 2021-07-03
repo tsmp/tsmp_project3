@@ -41,7 +41,10 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 		return ErrConnect;
 
 	if (game->Type() != GAME_SINGLE)
+	{
+		m_file_transfers = xr_new<file_transfer::server_site>();
 		initialize_screenshot_proxies();
+	}
 
 	csPlayers.Enter();
 
