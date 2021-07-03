@@ -10,8 +10,8 @@
 #endif
 
 #include <ddraw.h>
-#include "../3rd party/cximage/cximage/ximage.h"
-#include "../3rd party/cximage/cximage/xmemfile.h"
+#include "..\Components\cximage\CxImage\ximage.h"
+#include "..\Components\cximage\CxImage\xmemfile.h"
 
 #pragma comment(lib,"cximage.lib")
 #pragma comment(lib,"jpeg.lib")
@@ -156,7 +156,7 @@ void screenshot_manager::sign_jpeg_file()
 	screenshots::writer	tmp_writer		(m_jpeg_buffer, m_jpeg_buffer_size, m_jpeg_buffer_capacity);
 	game_cl_mp*	tmp_cl_game				= smart_cast<game_cl_mp*>(&Game());
 	tmp_writer.set_player_name			(tmp_cl_game->local_player->getName());
-	shared_str tmp_cdkey_digest			= Level().get_cdkey_digest();
+	shared_str tmp_cdkey_digest = "TSMP: cd key digest";//Level().get_cdkey_digest();
 	if (tmp_cdkey_digest.size() == 0)
 		tmp_cdkey_digest = "null";
 	tmp_writer.set_player_cdkey_digest	(tmp_cdkey_digest);

@@ -331,6 +331,84 @@ void game_cl_mp::decompress_and_save_screenshot(LPCSTR file_name, u8* data, u32 
 	FS.w_close(ftosave);
 }
 
+void game_cl_mp::draw_all_active_binder_states()
+{
+	//drawing download states ..
+	CGameFont* F = UI().Font().pFontDI;
+	F->SetHeightI(0.015f);
+	F->OutSetI(0.1f, 0.2f);
+	F->SetColor(D3DCOLOR_XRGB(0, 255, 0));
+
+	for (u32 i = 0; i < MAX_PLAYERS_COUNT; ++i)
+	{
+		if (m_client_receiver_cbs[i].m_active)
+		{
+			fr_callback_binder& tmp_br = m_client_receiver_cbs[i];
+			F->OutNext("%s : %02u %% ", tmp_br.m_file_name.c_str(),
+				int(
+					(float(tmp_br.m_downloaded_size) / tmp_br.m_max_size) * 100
+					)
+			);
+		}
+	}
+	F->SetColor(D3DCOLOR_XRGB(255, 0, 0));
+	for (cheaters_collection_t::iterator i = m_detected_cheaters.begin(),
+		ie = m_detected_cheaters.end(); i != ie; ++i)
+	{
+		F->OutNext("%s : cheater suspect ...",
+			i->m_file_name.c_str());
+	}
+
+	m_detected_cheaters.erase(
+		std::remove_if(
+			m_detected_cheaters.begin(),
+			m_detected_cheaters.end(),
+			old_detected_cheater()
+		),
+		m_detected_cheaters.end()
+	);
+}
+
+void __stdcall game_cl_mp::sending_screenshot_callback(file_transfer::sending_status_t status, u32 bytes_sent, u32 data_size)
+{
+	switch (status)
+	{
+	case file_transfer::sending_data:
+	{
+#ifdef DEBUG
+		Msg("* screenshot: %d of %d bytes sent ...", bytes_sent, data_size);
+#endif
+	}break;
+	case file_transfer::sending_aborted_by_user:
+	{
+		Msg("* screenshot: sending aborted by user...");
+	}break;
+	case file_transfer::sending_rejected_by_peer:
+	{
+		Msg("* screenshot: sending rejected by peer ...");
+	}break;
+	case file_transfer::sending_complete:
+	{
+#ifdef DEBUG
+		Msg("* screenshot: sending complete successfully !");
+#endif
+	}break;
+	};
+}
+
+
+game_cl_mp::fr_callback_binder* game_cl_mp::get_receiver_cb_binder()
+{
+	for (u32 i = 0; i < 32/*MAX_PLAYERS_COUNT*/; ++i)
+	{
+		if (!m_client_receiver_cbs[i].m_active)
+		{
+			return &m_client_receiver_cbs[i];
+		}
+	}
+	return NULL;
+}
+
 void game_cl_mp::PrepareToReceiveFile(ClientID const& from_client, shared_str const& client_session_id, clientdata_event_t response_event)
 {
 	string_path screen_shot_fn;
@@ -438,12 +516,12 @@ void __stdcall	game_cl_mp::fr_callback_binder::receiving_file_callback(
 		}break;
 		case e_configs_response:
 		{
-			m_owner->decompress_and_process_config(
+			/*m_owner->decompress_and_process_config(
 				m_file_name.c_str(),
 				m_writer.pointer(),
 				m_writer.size(),
 				m_frnode->get_user_param()
-			);
+			);*/
 		}break;
 		default:
 			NODEFAULT;

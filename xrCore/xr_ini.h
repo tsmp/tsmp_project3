@@ -62,6 +62,7 @@ public:
 	CInifile(LPCSTR szFileName, BOOL ReadOnly = TRUE, BOOL bLoadAtStart = TRUE, BOOL SaveAtEnd = TRUE);
 	virtual ~CInifile();
 	bool save_as(LPCSTR new_fname = 0);
+	void save_as(IWriter& writer, bool bcheck = false) const;
 
 	LPCSTR fname() { return fName; };
 

@@ -18,6 +18,8 @@
 
 #include "../Fmesh.h"
 
+class CMemoryWriter;
+
 // definition
 class CRender : public R_dsgraph_structure
 {
@@ -51,6 +53,15 @@ public:
 	xrXRC Sectors_xrc;
 	CDB::MODEL *rmPortals;
 	CHOM HOM;
+
+	//	Igor: for async screenshots
+	IDirect3DSurface9* pFB;				//32bit		(r,g,b,a) is situated in the system memory
+
+	bool														m_bMakeAsyncSS;
+
+	virtual void					ScreenshotAsyncBegin();
+	virtual void					ScreenshotAsyncEnd(CMemoryWriter& memory_writer);
+
 	//.	R_occlusion													HWOCC;
 
 	// Global containers

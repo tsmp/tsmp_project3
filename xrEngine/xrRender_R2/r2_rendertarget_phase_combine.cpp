@@ -394,6 +394,28 @@ void CRenderTarget::phase_combine()
 #endif
 }
 
+void CRenderTarget::DoAsyncScreenshot()
+{
+	if (RImplementation.m_bMakeAsyncSS)
+	{
+		HRESULT hr;
+
+		IDirect3DSurface9* pFBSrc = HW.pBaseRT;
+
+		//	Don't addref, no need to release.
+	//	ID3DTexture2D *pTex = rt_Color->pSurface;
+
+	//	hr = pTex->GetSurfaceLevel(0, &pFBSrc);
+
+		//	SHould be async function
+		hr = HW.pDevice->GetRenderTargetData(pFBSrc, pFB);
+
+		//	pFBSrc->Release();
+
+		RImplementation.m_bMakeAsyncSS = false;
+	}
+}
+
 void CRenderTarget::phase_wallmarks()
 {
 	// Targets

@@ -61,6 +61,9 @@ public:
 	ref_texture t_envmap_0; // env-0
 	ref_texture t_envmap_1; // env-1
 
+	//	Igor: for async screenshots
+	IDirect3DSurface9* pFB;				//32bit		(r,g,b,a) is situated in the system memory
+
 	// smap
 	ref_rt rt_smap_surf;		   // 32bit,		color
 	ref_rt rt_smap_depth;		   // 24(32) bit,	depth
@@ -207,6 +210,8 @@ public:
 
 	virtual u32 get_width() { return dwWidth; }
 	virtual u32 get_height() { return dwHeight; }
+
+	void DoAsyncScreenshot();
 
 #ifdef DEBUG
 	IC void dbg_addline(Fvector &P0, Fvector &P1, u32 c)

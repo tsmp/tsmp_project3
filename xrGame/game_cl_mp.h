@@ -241,7 +241,7 @@ public:
 
 	void __stdcall		SendCollectedData(u8 const* buffer, u32 buffer_size, u32 uncompressed_size);
 	void				PrepareToReceiveFile(ClientID const& from_client, shared_str const& client_session_id, clientdata_event_t response_event);
-
+	
 	struct fr_callback_binder
 	{
 		file_transfer::filereceiver_node* m_frnode;
@@ -256,6 +256,11 @@ public:
 		void __stdcall		receiving_file_callback(file_transfer::receiving_status_t status, u32 bytes_received, u32 data_size);
 		//void __stdcall		receiving_serverinfo_callback(file_transfer::receiving_status_t status, u32 bytes_received, u32 data_size);
 	};
+
+	void				draw_all_active_binder_states();
+	fr_callback_binder m_client_receiver_cbs[/*MAX_PLAYERS_COUNT*/ 32];
+	fr_callback_binder* get_receiver_cb_binder();
+	void __stdcall		sending_screenshot_callback(file_transfer::sending_status_t status, u32 bytes_sent, u32 data_size);
 
 #include "game_cl_mp_messages_menu.h"
 

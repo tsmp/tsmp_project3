@@ -183,6 +183,8 @@ public:
 	xrServer *Server;
 	GlobalFeelTouch m_feel_deny;
 
+	file_transfer::client_site* m_file_transfer;
+
 private:
 	// preload sounds registry
 	DEFINE_MAP(shared_str, ref_sound, SoundRegistryMap, SoundRegistryMapIt);

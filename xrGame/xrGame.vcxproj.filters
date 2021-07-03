@@ -6567,6 +6567,7 @@
     <ClInclude Include="screenshot_manager.h" />
     <ClInclude Include="screenshots_common.h" />
     <ClInclude Include="screenshots_writer.h" />
+    <ClInclude Include="xr_dsa_signer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9724,5 +9725,6 @@
     <ClCompile Include="screenshot_manager.cpp" />
     <ClCompile Include="screenshots_common.cpp" />
     <ClCompile Include="screenshots_writer.cpp" />
+    <ClCompile Include="xr_dsa_signer.cpp" />
   </ItemGroup>
 </Project>
