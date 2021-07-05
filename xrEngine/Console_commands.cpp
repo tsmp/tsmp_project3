@@ -14,6 +14,27 @@
 #include "xr_object.h"
 #include "..\TSMP3_Build_Config.h"
 
+extern ENGINE_API const char* RadminIdPrefix = "raid:";
+
+void ExcludeRadminIdFromCommandArguments(LPCSTR args, LPSTR dest, size_t destSize)
+{
+	strncpy_s(dest, destSize, args, destSize - 1);
+	char* tempString = strrchr(dest, ' ');
+
+	if (!tempString)
+		tempString = dest;
+
+	if (char* raidStr = strstr(tempString, RadminIdPrefix))
+	{
+		if (raidStr <= tempString)
+			*raidStr = '\0';
+		else
+			*(raidStr - 1) = '\0';	//with ' '
+	}
+
+	dest[destSize - 1] = '\0';
+}
+
 extern xr_token *vid_mode_token;
 
 xr_token renderer_type_token[] =
@@ -85,6 +106,10 @@ public:
 		for (it = Console->Commands.begin(); it != Console->Commands.end(); it++)
 		{
 			IConsole_Command &C = *(it->second);
+
+			if (C.bHidden)
+				continue;
+
 			TStatus _S;
 			C.Status(_S);
 			TInfo _I;

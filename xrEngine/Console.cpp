@@ -261,8 +261,19 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 		if (I != Commands.end())
 		{
 			IConsole_Command &O = *(I->second);
+
+			while(O.bHidden)
+			{
+				I++;
+
+				if (I == Commands.end())
+					return;
+
+				O = *(I->second);
+			}			
+			
 			strcpy_s(editor + offset, sizeof(editor) - offset, O.Name());
-			strcat(editor + offset, " ");
+			strcat(editor + offset, " ");			
 		}
 	}
 	break;
@@ -550,38 +561,47 @@ outloop:
 
 	// search
 	vecCMD_IT I = Commands.find(first_word);
+	command[0] = '\0';
 
-	if (I != Commands.end())
+	if (I == Commands.end())
 	{
-		IConsole_Command &C = *(I->second);
-		if (C.bEnabled)
-		{
-			if (C.bLowerCaseArgs)
-				strlwr(last_word);
+		Log("! Unknown command: ", first_word);		
+		return;
+	}
 
-			if (last_word[0] == 0)
-			{
-				if (C.bEmptyArgsHandled)
-					C.Execute(last_word);
-				else
-				{
-					IConsole_Command::TStatus S;
-					C.Status(S);
-					Msg("- %s %s", C.Name(), S);
-				}
-			}
-			else
-				C.Execute(last_word);
-		}
+	IConsole_Command& C = *(I->second);
+
+	if (!C.bEnabled)
+	{
+		Log("! Command disabled.");
+		return;
+	}
+
+	if (C.bLowerCaseArgs)
+		strlwr(last_word);
+
+	if (!last_word[0])
+	{
+		if (C.bEmptyArgsHandled)
+			C.Execute("\0");
 		else
 		{
-			Log("! Command disabled.");
+			IConsole_Command::TStatus S;
+			C.Status(S);
+			Msg("- %s %s", C.Name(), S);
 		}
-	}
-	else
-		Log("! Unknown command: ", first_word);
 
-	command[0] = 0;
+		return;
+	}
+
+	char args[MAX_LEN];
+
+	if (!C.bForRadminsOnly)
+		ExcludeRadminIdFromCommandArguments(last_word, args, MAX_LEN);
+	else
+		strcpy_s(args, last_word);
+
+	C.Execute(args);
 }
 
 void CConsole::Show()

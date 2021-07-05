@@ -170,7 +170,7 @@ void CRenderTarget::phase_combine()
 	}
 
 	// PP enabled ?
-	BOOL PP_Complex = u_need_PP();
+	BOOL PP_Complex = u_need_PP() | (BOOL)RImplementation.m_bMakeAsyncSS;
 	if (_menu_pp)
 		PP_Complex = FALSE;
 

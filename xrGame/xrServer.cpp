@@ -21,7 +21,7 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-extern const char* RadminIdPrefix;
+ENGINE_API const char* RadminIdPrefix;
 
 xrClientData::xrClientData() : IClient(Device.GetTimerGlobal())
 {

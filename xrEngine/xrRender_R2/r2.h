@@ -103,10 +103,10 @@ public:
 	//	Igor: for async screenshots
 	IDirect3DSurface9* pFB;				//32bit		(r,g,b,a) is situated in the system memory
 
-	bool														m_bMakeAsyncSS;
+	bool m_bMakeAsyncSS;
 
-	virtual void					ScreenshotAsyncBegin();
-	virtual void					ScreenshotAsyncEnd(CMemoryWriter& memory_writer);
+	virtual void ScreenshotAsyncBegin();
+	virtual void ScreenshotAsyncEnd(CMemoryWriter& memory_writer);
 
 	CDetailManager *Details;
 	CModelPool *Models;

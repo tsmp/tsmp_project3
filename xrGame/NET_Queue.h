@@ -35,6 +35,11 @@ public:
 			P.r_u16(destination);
 		}
 		break;
+
+		case M_FILE_TRANSFER:
+		{
+		}break;
+
 		default:
 		{
 			VERIFY(0);

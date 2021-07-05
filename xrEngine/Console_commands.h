@@ -30,6 +30,7 @@ class ENGINE_API IConsole_Command
 {
 public:
 	friend class CConsole;
+	friend class CCC_Help;
 	typedef char TInfo[256];
 	typedef char TStatus[256];
 
@@ -38,14 +39,15 @@ protected:
 	bool bEnabled;
 	bool bLowerCaseArgs;
 	bool bEmptyArgsHandled;
+	bool bForRadminsOnly;
+	bool bHidden;
 
 	IC bool EQ(LPCSTR S1, LPCSTR S2) { return xr_strcmp(S1, S2) == 0; }
 
 public:
-	IConsole_Command(LPCSTR N) : cName(N),
-								 bEnabled(TRUE),
-								 bLowerCaseArgs(TRUE),
-								 bEmptyArgsHandled(FALSE){};
+	IConsole_Command(LPCSTR N) : cName(N), bEnabled(true), bLowerCaseArgs(true), bEmptyArgsHandled(false),
+		bForRadminsOnly(false), bHidden(false) {};
+
 	virtual ~IConsole_Command()
 	{
 		if (Console)
@@ -352,3 +354,6 @@ public:
 	CCC_LoadCFG_custom(LPCSTR cmd);
 	virtual bool allow(LPCSTR cmd);
 };
+
+extern ENGINE_API const char* RadminIdPrefix;
+ENGINE_API void ExcludeRadminIdFromCommandArguments(LPCSTR args, LPSTR dest, size_t destSize);
