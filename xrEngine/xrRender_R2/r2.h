@@ -100,13 +100,7 @@ public:
 	xr_vector<IRender_Visual *> Visuals;
 	CPSLibrary PSLibrary;
 
-	//	Igor: for async screenshots
-	IDirect3DSurface9* pFB;				//32bit		(r,g,b,a) is situated in the system memory
-
 	bool m_bMakeAsyncSS;
-
-	virtual void ScreenshotAsyncBegin();
-	virtual void ScreenshotAsyncEnd(CMemoryWriter& memory_writer);
 
 	CDetailManager *Details;
 	CModelPool *Models;
@@ -289,6 +283,10 @@ public:
 	virtual void rmNear();
 	virtual void rmFar();
 	virtual void rmNormal();
+
+	// Screenshots in mp to send
+	virtual void ScreenshotAsyncBegin();
+	virtual void ScreenshotAsyncEnd(CMemoryWriter& memory_writer);
 
 	// Constructor/destructor/loader
 	CRender();

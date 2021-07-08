@@ -1,6 +1,4 @@
-#ifndef FILETRANSFER_NODE
-#define FILETRANSFER_NODE
-
+#pragma once 
 #include "buffer_vector.h"
 #include "filetransfer_common.h"
 #include <boost/noncopyable.hpp>
@@ -75,7 +73,7 @@ namespace file_transfer
 	class memory_writer_reader : public file_reader
 	{
 		CMemoryWriter *m_writer_as_src;
-		u32 m_writer_pointer; // to read ..
+		u32 m_writer_pointer; // to read
 		u32 const m_writer_max_size;
 
 	public:
@@ -115,12 +113,8 @@ namespace file_transfer
 		bool is_complete();
 		bool is_ready_to_send();
 
-		//inline	shared_str const &	get_file_name	() { return m_file_name; };
 		bool opened() const;
-		//inline	IReader*			get_reader		() { return m_reader; };
 		inline u32 const get_chunk_size() const { return m_chunk_size; };
 	}; //class filetransfer_node
 
 } //namespace file_transfer
-
-#endif //#ifndef FILETRANSFER_NODE

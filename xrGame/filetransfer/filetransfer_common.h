@@ -1,11 +1,8 @@
-#ifndef FILETRANSFER_COMMON
-#define FILETRANSFER_COMMON
-
+#pragma once 
 class ClientID;
 
 namespace file_transfer
 {
-
 	u32 const data_max_chunk_size = 4096; //4Kb on update ~	80		Kb/sec
 	u32 const data_min_chunk_size = 128;  //					2.5		Kb/sec
 
@@ -16,6 +13,7 @@ namespace file_transfer
 		sending_rejected_by_peer = 0x02,
 		sending_complete = 0x03
 	};
+
 	enum receiving_status_t //state for callback
 	{
 		receiving_data = 0x00,
@@ -32,15 +30,13 @@ namespace file_transfer
 		receive_rejected = 0x02 //this command send by dest site, if he doesn't want file..
 	};
 
-	typedef fastdelegate::FastDelegate3<sending_status_t, u32, u32> sending_state_callback_t;
-	typedef fastdelegate::FastDelegate3<receiving_status_t, u32, u32> receiving_state_callback_t;
+	using sending_state_callback_t = fastdelegate::FastDelegate3<sending_status_t, u32, u32>;
+	using receiving_state_callback_t = fastdelegate::FastDelegate3<receiving_status_t, u32, u32>;
 
-	typedef std::pair<u8 *, u32 const> mutable_buffer_t;
-	typedef std::pair<u8 const *, u32 const> const_buffer_t;
+	using mutable_buffer_t = std::pair<u8*, u32 const>;
+	using const_buffer_t = std::pair<u8 const*, u32 const>;
 
 	void make_reject_packet(NET_Packet &packet, ClientID const &client);
 	void make_abort_packet(NET_Packet &packet, ClientID const &client);
 
 } //namespace file_transfer
-
-#endif //#ifndef FILETRANSFER_COMMON

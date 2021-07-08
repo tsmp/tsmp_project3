@@ -187,18 +187,16 @@ void CRender::ScreenshotAsyncBegin()
 
 void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
 {
-	if (!Device.b_is_Ready)			return;
+	if (!Device.b_is_Ready)			
+		return;
 
 	VERIFY(!m_bMakeAsyncSS);
 
-	D3DLOCKED_RECT		D;
-	HRESULT				hr;
-	IDirect3DSurface9* pFB;
-
-	pFB = Target->pFB;
-
-	hr = pFB->LockRect(&D, 0, D3DLOCK_NOSYSLOCK);
-	if (hr != D3D_OK)		return;
+	D3DLOCKED_RECT D;
+	IDirect3DSurface9* pFB = Target->pFB;
+	
+	if (pFB->LockRect(&D, 0, D3DLOCK_NOSYSLOCK) != D3D_OK)
+		return;
 
 #if	RENDER == R_R1
 	u32 rtWidth = Target->get_width();
@@ -219,12 +217,11 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
 	{
 		static const int iMaxPixelsInARow = 1024;
 		D3DXFLOAT16* pPixelElement16 = (D3DXFLOAT16*)pPixel;
+		FLOAT tmpArray[4 * iMaxPixelsInARow];
 
-		FLOAT	tmpArray[4 * iMaxPixelsInARow];
 		while (pPixel != pEnd)
 		{
 			const int iProcessPixels = _min(iMaxPixelsInARow, (s32)(pEnd - pPixel));
-
 			D3DXFloat16To32Array(tmpArray, pPixelElement16, iProcessPixels * 4);
 
 			for (int i = 0; i < iProcessPixels; ++i)
@@ -256,11 +253,9 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
 		}
 	}
 
-	{
-		memory_writer.w(&rtWidth, sizeof(rtWidth));
-		memory_writer.w(&rtHeight, sizeof(rtHeight));
-		memory_writer.w(pOrigin, (rtWidth * rtHeight) * 4);
-	}
+	memory_writer.w(&rtWidth, sizeof(rtWidth));
+	memory_writer.w(&rtHeight, sizeof(rtHeight));
+	memory_writer.w(pOrigin, (rtWidth * rtHeight) * 4);
 
-	hr = pFB->UnlockRect();
+	pFB->UnlockRect();
 }

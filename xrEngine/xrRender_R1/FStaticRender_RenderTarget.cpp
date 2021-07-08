@@ -253,19 +253,10 @@ void CRenderTarget::DoAsyncScreenshot()
 	//	TODO: fox that later
 	if (RImplementation.m_bMakeAsyncSS)
 	{
-		HRESULT hr;
-
 		IDirect3DSurface9* pFBSrc = HW.pBaseRT;
-		//	Don't addref, no need to release.
-		//ID3DTexture2D *pTex = RT->pSurface;
-
-		//hr = pTex->GetSurfaceLevel(0, &pFBSrc);
 
 		//	SHould be async function
-		hr = HW.pDevice->GetRenderTargetData(pFBSrc, pFB);
-
-		//pFBSrc->Release();
-
+		HW.pDevice->GetRenderTargetData(pFBSrc, pFB);
 		RImplementation.m_bMakeAsyncSS = false;
 	}
 }
