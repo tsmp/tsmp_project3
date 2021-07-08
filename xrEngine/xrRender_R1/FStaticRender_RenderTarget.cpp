@@ -11,6 +11,7 @@ CRenderTarget::CRenderTarget()
 	RT = 0;
 	pTempZB = 0;
 	ZB = 0;
+	pFB = 0;
 
 	param_blur = 0.f;
 	param_gray = 0.f;
@@ -64,6 +65,12 @@ BOOL CRenderTarget::Create()
 	// Temp ZB, used by some of the shadowing code
 	R_CHK(HW.pDevice->CreateDepthStencilSurface(512, 512, HW.Caps.fDepth, D3DMULTISAMPLE_NONE, 0, TRUE, &pTempZB, NULL));
 
+	//	Igor: TMP
+	//	Create an RT for online screenshot makining
+	//u32		w = Device.dwWidth, h = Device.dwHeight;
+	//HW.pDevice->CreateOffscreenPlainSurface(Device.dwWidth,Device.dwHeight,D3DFMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&pFB,NULL);
+	HW.pDevice->CreateOffscreenPlainSurface(rtWidth, rtHeight, HW.Caps.fTarget, D3DPOOL_SYSTEMMEM, &pFB, NULL);
+
 	// Shaders and stream
 	s_postprocess.create("postprocess");
 	if (RImplementation.o.distortion)
@@ -74,6 +81,7 @@ BOOL CRenderTarget::Create()
 
 CRenderTarget::~CRenderTarget()
 {
+	_RELEASE(pFB);
 	_RELEASE(pTempZB);
 	_RELEASE(ZB);
 	s_postprocess_D.destroy();
@@ -176,7 +184,7 @@ BOOL CRenderTarget::NeedPostProcess()
 
 BOOL CRenderTarget::Perform()
 {
-	return Available() && (NeedPostProcess() || (ps_r__Supersample > 1) || (frame_distort == (Device.CurrentFrameNumber - 1)));
+	return Available() && (((BOOL)RImplementation.m_bMakeAsyncSS)|| NeedPostProcess() || (ps_r__Supersample > 1) || (frame_distort == (Device.CurrentFrameNumber - 1)));
 }
 
 #include <dinput.h>
@@ -237,6 +245,21 @@ struct TL_2c3uv
 		uv[2].set(u2, v2);
 	}
 };
+
+
+void CRenderTarget::DoAsyncScreenshot()
+{
+	//	Igor: screenshot will not have postprocess applied.
+	//	TODO: fox that later
+	if (RImplementation.m_bMakeAsyncSS)
+	{
+		IDirect3DSurface9* pFBSrc = HW.pBaseRT;
+
+		//	SHould be async function
+		HW.pDevice->GetRenderTargetData(pFBSrc, pFB);
+		RImplementation.m_bMakeAsyncSS = false;
+	}
+}
 
 void CRenderTarget::End()
 {

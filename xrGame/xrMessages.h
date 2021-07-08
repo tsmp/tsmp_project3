@@ -70,6 +70,7 @@ enum
 	M_MAP_SYNC,
 	M_HW_CHALLENGE,
 	M_HW_RESPOND,
+	M_FILE_TRANSFER,
 	MSG_FORCEDWORD = u32(-1)
 };
 
@@ -201,6 +202,7 @@ enum EGameMessages
 	GAME_EVENT_SERVER_STRING_MESSAGE,
 	GAME_EVENT_SERVER_DIALOG_MESSAGE,
 	GAME_EVENT_PLAYER_AUTH_HW,
+	GAME_EVENT_MAKE_DATA,
 
 	//-----------------------------------------
 	GAME_EVENT_SCRIPT_BEGINS_FROM, // don't add messages after this

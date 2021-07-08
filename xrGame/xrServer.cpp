@@ -10,6 +10,7 @@
 #include "game_cl_base.h"
 #include "ai_space.h"
 #include "../IGame_Persistent.h"
+#include "screenshot_server.h"
 
 #include "../Console.h"
 //#include "script_engine.h"
@@ -19,6 +20,8 @@
 #pragma warning(disable : 4995)
 #include <malloc.h>
 #pragma warning(pop)
+
+ENGINE_API const char* RadminIdPrefix;
 
 xrClientData::xrClientData() : IClient(Device.GetTimerGlobal())
 {
@@ -49,6 +52,7 @@ xrClientData::~xrClientData()
 
 xrServer::xrServer() : IPureServer(Device.GetTimerGlobal(), g_dedicated_server)
 {
+	m_file_transfers = nullptr;
 	m_iCurUpdatePacket = 0;
 	m_aUpdatePackets.push_back(NET_Packet());
 	m_aDelayedPackets.clear();
@@ -90,14 +94,12 @@ CSE_Abstract *xrServer::ID_to_entity(u16 ID)
 		return 0;
 }
 
-//--------------------------------------------------------------------
 IClient *xrServer::client_Create()
 {
 	return xr_new<xrClientData>();
 }
-void xrServer::client_Replicate()
-{
-}
+
+void xrServer::client_Replicate() {}
 
 IClient *xrServer::client_Find_Get(ClientID ID)
 {
@@ -415,6 +417,12 @@ void xrServer::SendUpdatesToAll()
 	g_sv_SendUpdate = 0;
 #endif
 
+	if (m_file_transfers)
+	{
+		m_file_transfers->update_transfer();
+		m_file_transfers->stop_obsolete_receivers();
+	}
+
 	if (game->sv_force_sync)
 		Perform_game_export();
 
@@ -427,7 +435,7 @@ void console_log_cb(LPCSTR text)
 	_tmp_log.push_back(text);
 }
 
-u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID sender) // Non-Zero means broadcasting with "flags" as returned
+u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID &sender) // Non-Zero means broadcasting with "flags" as returned
 {
 	if (g_pGameLevel && Level().IsDemoSave())
 		Level().Demo_StoreServerData(P.B.data, P.B.count);
@@ -451,13 +459,19 @@ u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID sender) // Non-Zero means
 	{
 		if (CL->m_admin_rights.m_has_admin_rights)
 		{
-			string1024 buff;
-			P.r_stringZ(buff);
-			SetLogCB(console_log_cb);
+			string128 buffer;
+			P.r_stringZ(buffer);
+
+			string128 command;
+			sprintf_s(command, 128, "%s %s%u", buffer, RadminIdPrefix, sender.value());
+
+			Msg("# radmin %s is running command: %s", CL->m_admin_rights.m_Login.c_str(), buffer);
 			_tmp_log.clear();
-			Console->Execute(buff);
+
+			SetLogCB(console_log_cb);			
+			Console->Execute(command);
 			SetLogCB(nullptr);
-			Msg("# radmin %s is running command: %s", CL->m_admin_rights.m_Login.c_str(), buff);
+			
 			NET_Packet P_answ;
 
 			for (u32 i = 0; i < _tmp_log.size(); ++i)
@@ -476,6 +490,10 @@ u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID sender) // Non-Zero means
 		}
 	}
 	break;
+	case M_FILE_TRANSFER:
+	{
+		m_file_transfers->on_message(&P, sender);
+	}break;
 	}
 	DEBUG_VERIFY(verify_entities());
 
@@ -518,6 +536,10 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID sender) // Non-Zero means broadc
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+	case M_FILE_TRANSFER:
+	{
+		AddDelayedPacket(P, sender);
+	}break;
 	case M_EVENT_PACK:
 	{
 		NET_Packet tmpP;
@@ -856,7 +878,41 @@ CSE_Abstract *xrServer::GetEntity(u32 Num)
 			return I->second;
 	};
 	return NULL;
-};
+}
+
+void xrServer::initialize_screenshot_proxies()
+{
+	for (int i = 0; i < sizeof(m_screenshot_proxies) / sizeof(clientdata_proxy*); ++i)
+	{
+		m_screenshot_proxies[i] = xr_new<clientdata_proxy>(m_file_transfers);
+	}
+}
+
+void xrServer::deinitialize_screenshot_proxies()
+{
+	for (int i = 0; i < sizeof(m_screenshot_proxies) / sizeof(clientdata_proxy*); ++i)
+	{
+		xr_delete(m_screenshot_proxies[i]);
+	}
+}
+
+void xrServer::MakeScreenshot(ClientID const& admin_id, ClientID const& cheater_id)
+{
+	if ((cheater_id == SV_Client->ID) && g_dedicated_server)	
+		return;
+	
+	for (int i = 0; i < sizeof(m_screenshot_proxies) / sizeof(clientdata_proxy*); ++i)
+	{
+		if (!m_screenshot_proxies[i]->is_active())
+		{
+			m_screenshot_proxies[i]->make_screenshot(admin_id, cheater_id);
+			Msg("* admin [%d] is making screeshot of client [%d]", admin_id, cheater_id);
+			return;
+		}
+	}
+
+	Msg("! ERROR: SV: not enough file transfer proxies for downloading screenshot, please try later ...");
+}
 
 void xrServer::OnChatMessage(NET_Packet *P, xrClientData *CL)
 {
@@ -983,7 +1039,7 @@ void xrServer::ProceedDelayedPackets()
 	DelayedPackestCS.Leave();
 };
 
-void xrServer::AddDelayedPacket(NET_Packet &Packet, ClientID Sender)
+void xrServer::AddDelayedPacket(NET_Packet &Packet, ClientID &Sender)
 {
 	DelayedPackestCS.Enter();
 

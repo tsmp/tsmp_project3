@@ -14,11 +14,11 @@
 #include "alife_space.h"
 #include "xrDebug.h"
 #include "xrServer.h"
+#include "game_cl_base.h"
 
 class CHUDManager;
 class CParticlesObject;
 class xrServer;
-class game_cl_GameState;
 class NET_Queue_Event;
 class CSE_Abstract;
 class CSpaceRestrictionManager;
@@ -182,6 +182,8 @@ public:
 	xr_deque<CSE_Abstract *> game_spawn_queue;
 	xrServer *Server;
 	GlobalFeelTouch m_feel_deny;
+
+	file_transfer::client_site* m_file_transfer;
 
 private:
 	// preload sounds registry

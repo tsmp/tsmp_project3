@@ -100,6 +100,8 @@ public:
 	xr_vector<IRender_Visual *> Visuals;
 	CPSLibrary PSLibrary;
 
+	bool m_bMakeAsyncSS;
+
 	CDetailManager *Details;
 	CModelPool *Models;
 	CWallmarksEngine *Wallmarks;
@@ -281,6 +283,10 @@ public:
 	virtual void rmNear();
 	virtual void rmFar();
 	virtual void rmNormal();
+
+	// Screenshots in mp to send
+	virtual void ScreenshotAsyncBegin();
+	virtual void ScreenshotAsyncEnd(CMemoryWriter& memory_writer);
 
 	// Constructor/destructor/loader
 	CRender();

@@ -18,6 +18,8 @@
 
 #include "../Fmesh.h"
 
+class CMemoryWriter;
+
 // definition
 class CRender : public R_dsgraph_structure
 {
@@ -51,7 +53,8 @@ public:
 	xrXRC Sectors_xrc;
 	CDB::MODEL *rmPortals;
 	CHOM HOM;
-	//.	R_occlusion													HWOCC;
+
+	bool m_bMakeAsyncSS;
 
 	// Global containers
 	xr_vector<FSlideWindowItem> SWIs;
@@ -201,6 +204,10 @@ public:
 	virtual void rmNear();
 	virtual void rmFar();
 	virtual void rmNormal();
+
+	// Screenshots in mp to send
+	virtual void ScreenshotAsyncBegin();
+	virtual void ScreenshotAsyncEnd(CMemoryWriter& memory_writer);
 
 	// Constructor/destructor/loader
 	CRender();

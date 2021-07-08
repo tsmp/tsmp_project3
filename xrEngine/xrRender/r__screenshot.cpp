@@ -178,3 +178,84 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 _end_:
 	_RELEASE(pFB);
 }
+
+void CRender::ScreenshotAsyncBegin()
+{
+	VERIFY(!m_bMakeAsyncSS);
+	m_bMakeAsyncSS = true;
+}
+
+void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
+{
+	if (!Device.b_is_Ready)			
+		return;
+
+	VERIFY(!m_bMakeAsyncSS);
+
+	D3DLOCKED_RECT D;
+	IDirect3DSurface9* pFB = Target->pFB;
+	
+	if (pFB->LockRect(&D, 0, D3DLOCK_NOSYSLOCK) != D3D_OK)
+		return;
+
+#if	RENDER == R_R1
+	u32 rtWidth = Target->get_width();
+	u32 rtHeight = Target->get_height();
+#else	//	RENDER != R_R1
+	u32 rtWidth = Device.dwWidth;
+	u32 rtHeight = Device.dwHeight;
+#endif	//	RENDER != R_R1
+
+	// Image processing (gamma-correct)
+	u32* pPixel = (u32*)D.pBits;
+	u32* pOrigin = pPixel;
+	u32* pEnd = pPixel + (rtWidth * rtHeight);
+
+	//	Kill alpha
+#if	RENDER != R_R1
+	if (Target->rt_Color->fmt == D3DFMT_A16B16G16R16F)
+	{
+		static const int iMaxPixelsInARow = 1024;
+		D3DXFLOAT16* pPixelElement16 = (D3DXFLOAT16*)pPixel;
+		FLOAT tmpArray[4 * iMaxPixelsInARow];
+
+		while (pPixel != pEnd)
+		{
+			const int iProcessPixels = _min(iMaxPixelsInARow, (s32)(pEnd - pPixel));
+			D3DXFloat16To32Array(tmpArray, pPixelElement16, iProcessPixels * 4);
+
+			for (int i = 0; i < iProcessPixels; ++i)
+			{
+				*pPixel = color_argb_f(
+					1.0f,
+					tmpArray[i * 4],
+					tmpArray[i * 4 + 1],
+					tmpArray[i * 4 + 2]
+				);
+
+				++pPixel;
+			}
+
+			pPixelElement16 += iProcessPixels * 4;
+		}
+	}
+	else
+#endif	//	RENDER != R_R1
+	{
+		for (; pPixel != pEnd; pPixel++)
+		{
+			u32 p = *pPixel;
+			*pPixel = color_xrgb(
+				color_get_R(p),
+				color_get_G(p),
+				color_get_B(p)
+			);
+		}
+	}
+
+	memory_writer.w(&rtWidth, sizeof(rtWidth));
+	memory_writer.w(&rtHeight, sizeof(rtHeight));
+	memory_writer.w(pOrigin, (rtWidth * rtHeight) * 4);
+
+	pFB->UnlockRect();
+}

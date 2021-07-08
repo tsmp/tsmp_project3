@@ -2293,6 +2293,15 @@
     <Filter Include="UI\Tutorial">
       <UniqueIdentifier>{e1e8426a-2878-4445-988a-dd79284a49a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Server\FileTransfer">
+      <UniqueIdentifier>{7323fa8d-5117-40f5-8de0-a03d685aa45a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Common\NET Shared\SecureMessages">
+      <UniqueIdentifier>{f20b8707-d6ef-4959-bd02-48d18e83e210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Server\Games\client\mp\screenshots">
+      <UniqueIdentifier>{29d908c5-e1c9-4cea-8551-1130b03cf167}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6546,6 +6555,33 @@
     <ClInclude Include="ui\UIGameTutorial.h">
       <Filter>UI\Tutorial</Filter>
     </ClInclude>
+    <ClInclude Include="screenshot_server.h">
+      <Filter>Core\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="filetransfer\file_transfer.h">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClInclude>
+    <ClInclude Include="filetransfer\filereceiver_node.h">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClInclude>
+    <ClInclude Include="filetransfer\filetransfer_common.h">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClInclude>
+    <ClInclude Include="filetransfer\filetransfer_node.h">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClInclude>
+    <ClInclude Include="xr_dsa_signer.h">
+      <Filter>Core\Common\NET Shared\SecureMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="screenshot_manager.h">
+      <Filter>Core\Server\Games\client\mp\screenshots</Filter>
+    </ClInclude>
+    <ClInclude Include="screenshots_common.h">
+      <Filter>Core\Server\Games\client\mp\screenshots</Filter>
+    </ClInclude>
+    <ClInclude Include="screenshots_writer.h">
+      <Filter>Core\Server\Games\client\mp\screenshots</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9688,5 +9724,29 @@
     </ClCompile>
     <ClCompile Include="net_physics_state.cpp" />
     <ClCompile Include="fz\fz_downloader.cpp" />
+    <ClCompile Include="screenshot_server.cpp">
+      <Filter>Core\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="filetransfer\file_transfer.cpp">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClCompile>
+    <ClCompile Include="filetransfer\filereceiver_node.cpp">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClCompile>
+    <ClCompile Include="filetransfer\filetransfer_node.cpp">
+      <Filter>Core\Server\FileTransfer</Filter>
+    </ClCompile>
+    <ClCompile Include="xr_dsa_signer.cpp">
+      <Filter>Core\Common\NET Shared\SecureMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="screenshot_manager.cpp">
+      <Filter>Core\Server\Games\client\mp\screenshots</Filter>
+    </ClCompile>
+    <ClCompile Include="screenshots_common.cpp">
+      <Filter>Core\Server\Games\client\mp\screenshots</Filter>
+    </ClCompile>
+    <ClCompile Include="screenshots_writer.cpp">
+      <Filter>Core\Server\Games\client\mp\screenshots</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

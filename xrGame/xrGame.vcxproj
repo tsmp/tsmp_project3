@@ -392,6 +392,7 @@
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ImportLibrary>$(SolutionDir)\output\libraries_$(Configuration)\$(ProjectName).lib</ImportLibrary>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">
@@ -569,10 +570,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="filetransfer\filereceiver_node.h" />
+    <ClInclude Include="filetransfer\filetransfer_common.h" />
+    <ClInclude Include="filetransfer\filetransfer_node.h" />
+    <ClInclude Include="filetransfer\file_transfer.h" />
     <ClInclude Include="mt_config.h" />
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="damage_manager_inline.h" />
     <ClInclude Include="DamageSource.h" />
+    <ClInclude Include="screenshots_common.h" />
+    <ClInclude Include="screenshots_writer.h" />
+    <ClInclude Include="screenshot_manager.h" />
+    <ClInclude Include="screenshot_server.h" />
     <ClInclude Include="wrapper_abstract.h" />
     <ClInclude Include="wrapper_abstract_inline.h" />
     <ClInclude Include="action_management_config.h" />
@@ -1377,6 +1386,7 @@
     <ClInclude Include="pp_effector_custom.h" />
     <ClInclude Include="pp_effector_distance.h" />
     <ClInclude Include="PostprocessAnimator.h" />
+    <ClInclude Include="xr_dsa_signer.h" />
     <ClInclude Include="zone_effector.h" />
     <ClInclude Include="EffectorShot.h" />
     <ClInclude Include="EffectorShotX.h" />
@@ -2013,8 +2023,15 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="filetransfer\filereceiver_node.cpp" />
+    <ClCompile Include="filetransfer\filetransfer_node.cpp" />
+    <ClCompile Include="filetransfer\file_transfer.cpp" />
     <ClCompile Include="fz\fz_downloader.cpp" />
     <ClCompile Include="net_physics_state.cpp" />
+    <ClCompile Include="screenshots_common.cpp" />
+    <ClCompile Include="screenshots_writer.cpp" />
+    <ClCompile Include="screenshot_manager.cpp" />
+    <ClCompile Include="screenshot_server.cpp" />
     <ClCompile Include="script_action_wrapper.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
@@ -4614,6 +4631,7 @@
     <ClCompile Include="pp_effector_custom.cpp" />
     <ClCompile Include="pp_effector_distance.cpp" />
     <ClCompile Include="PostprocessAnimator.cpp" />
+    <ClCompile Include="xr_dsa_signer.cpp" />
     <ClCompile Include="zone_effector.cpp" />
     <ClCompile Include="EffectorShot.cpp" />
     <ClCompile Include="EffectorShotX.cpp" />

@@ -1,21 +1,15 @@
 #pragma once
-// xrServer.h: interface for the xrServer class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_XRSERVER_H__65728A25_16FC_4A7B_8CCE_D798CA5EC64E__INCLUDED_)
-#define AFX_XRSERVER_H__65728A25_16FC_4A7B_8CCE_D798CA5EC64E__INCLUDED_
-#pragma once
-
 #include "../../xrNetwork/net_server.h"
 #include "game_sv_base.h"
 #include "id_generator.h"
+#include "filetransfer/file_transfer.h"
 
 #ifdef DEBUG
 //. #define SLOW_VERIFY_ENTITIES
 #endif
 
 class CSE_Abstract;
+class clientdata_proxy;
 
 const u32 NET_Latency = 50; // time in (ms)
 
@@ -70,6 +64,9 @@ private:
 	u16 m_iCurUpdatePacket;
 	xr_vector<NET_Packet> m_aUpdatePackets;
 
+	file_transfer::server_site* m_file_transfers;
+	clientdata_proxy* m_screenshot_proxies[/*MAX_PLAYERS_COUNT*/ 32];
+
 	struct DelayedPacket
 	{
 		ClientID SenderID;
@@ -83,8 +80,8 @@ private:
 	xrCriticalSection DelayedPackestCS;
 	xr_deque<DelayedPacket> m_aDelayedPackets;
 	void ProceedDelayedPackets();
-	void AddDelayedPacket(NET_Packet &Packet, ClientID Sender);
-	u32 OnDelayedMessage(NET_Packet &P, ClientID sender); // Non-Zero means broadcasting with "flags" as returned
+	void AddDelayedPacket(NET_Packet &Packet, ClientID &Sender);
+	u32 OnDelayedMessage(NET_Packet &P, ClientID &sender); // Non-Zero means broadcasting with "flags" as returned
 
 	void SendUpdatesToAll();
 
@@ -121,10 +118,12 @@ public:
 	{
 		m_tID_Generator = id_generator_type();
 	}
+
 	IC u16 PerformIDgen(u16 ID)
 	{
 		return (m_tID_Generator.tfGetID(ID));
 	}
+
 	IC void FreeID(u16 ID, u32 time)
 	{
 		return (m_tID_Generator.vfFreeID(ID, time));
@@ -150,6 +149,10 @@ public:
 	virtual void OnBuildVersionRespond(IClient *CL, NET_Packet &P);
 	void OnHardwareVerifyRespond(IClient* CL, NET_Packet& P);
 
+	void MakeScreenshot(ClientID const &admin_id, ClientID const &cheater_id);
+	void initialize_screenshot_proxies();
+	void deinitialize_screenshot_proxies();
+
 protected:
 	bool CheckAdminRights(const shared_str &user, const shared_str &pass, string512 reason);
 	virtual IClient *new_client(SClientConnectData *cl_data);
@@ -163,7 +166,7 @@ protected:
 	virtual void OnConnectionVerificationStepComplete(IClient *CL);
 
 	void SendConnectionData(IClient *CL);
-	void OnChatMessage(NET_Packet *P, xrClientData *CL);
+	void OnChatMessage(NET_Packet *P, xrClientData *CL);	
 
 public:
 	// constr / destr
@@ -221,5 +224,3 @@ public:
 	void verify_entity(const CSE_Abstract *entity) const;
 #endif
 };
-
-#endif // !defined(AFX_XRSERVER_H__65728A25_16FC_4A7B_8CCE_D798CA5EC64E__INCLUDED_)
