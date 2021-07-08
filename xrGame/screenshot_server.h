@@ -1,6 +1,4 @@
-#ifndef SCREENSHOT_SERVER
-#define SCREENSHOT_SERVER
-
+#pragma once 
 #include "filetransfer/file_transfer.h"
 #include <boost/noncopyable.hpp>
 
@@ -15,11 +13,7 @@ enum clientdata_event_t
 };
 
 LPCSTR make_file_name(LPCSTR session_id, string_path& dest);
-
-void generate_file_name(
-	string_path& file_name,
-	LPCSTR file_suffix,
-	SYSTEMTIME const& date_time);
+void generate_file_name(string_path& file_name, LPCSTR file_suffix, SYSTEMTIME const& date_time);
 
 class clientdata_proxy : boost::noncopyable
 {
@@ -37,7 +31,7 @@ private:
 	file_transfer::server_site *m_ft_server;
 	//memory file
 	void notify_admin(clientdata_event_t event_for_admin, char const *reason);
-	clientdata_proxy(){};
+	clientdata_proxy() {};
 
 public:
 	clientdata_proxy(file_transfer::server_site *ft_server);
@@ -48,12 +42,7 @@ public:
 
 	bool is_active();
 
-	void __stdcall download_screenshot_callback(file_transfer::receiving_status_t status,
-												u32 downloaded, u32 total);
-	void __stdcall download_config_callback(file_transfer::receiving_status_t status,
-											u32 downloaded, u32 total);
-	void __stdcall upload_file_callback(file_transfer::sending_status_t status,
-										u32 uploaded, u32 total);
+	void __stdcall download_screenshot_callback(file_transfer::receiving_status_t status, u32 downloaded, u32 total);
+	void __stdcall download_config_callback(file_transfer::receiving_status_t status, u32 downloaded, u32 total);
+	void __stdcall upload_file_callback(file_transfer::sending_status_t status, u32 uploaded, u32 total);
 }; //class clientdata_proxy
-
-#endif //#ifndef SCREENSHOT_SERVER

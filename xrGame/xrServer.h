@@ -1,21 +1,12 @@
 #pragma once
-// xrServer.h: interface for the xrServer class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_XRSERVER_H__65728A25_16FC_4A7B_8CCE_D798CA5EC64E__INCLUDED_)
-#define AFX_XRSERVER_H__65728A25_16FC_4A7B_8CCE_D798CA5EC64E__INCLUDED_
-#pragma once
-
 #include "../../xrNetwork/net_server.h"
 #include "game_sv_base.h"
 #include "id_generator.h"
+#include "filetransfer/file_transfer.h"
 
 #ifdef DEBUG
 //. #define SLOW_VERIFY_ENTITIES
 #endif
-
-#include "filetransfer/file_transfer.h"
 
 class CSE_Abstract;
 class clientdata_proxy;
@@ -127,10 +118,12 @@ public:
 	{
 		m_tID_Generator = id_generator_type();
 	}
+
 	IC u16 PerformIDgen(u16 ID)
 	{
 		return (m_tID_Generator.tfGetID(ID));
 	}
+
 	IC void FreeID(u16 ID, u32 time)
 	{
 		return (m_tID_Generator.vfFreeID(ID, time));
@@ -156,8 +149,7 @@ public:
 	virtual void OnBuildVersionRespond(IClient *CL, NET_Packet &P);
 	void OnHardwareVerifyRespond(IClient* CL, NET_Packet& P);
 
-	void MakeScreenshot(ClientID const& admin_id, ClientID const& cheater_id);
-
+	void MakeScreenshot(ClientID const &admin_id, ClientID const &cheater_id);
 	void initialize_screenshot_proxies();
 	void deinitialize_screenshot_proxies();
 
@@ -232,5 +224,3 @@ public:
 	void verify_entity(const CSE_Abstract *entity) const;
 #endif
 };
-
-#endif // !defined(AFX_XRSERVER_H__65728A25_16FC_4A7B_8CCE_D798CA5EC64E__INCLUDED_)

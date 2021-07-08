@@ -1,6 +1,4 @@
-#ifndef FILETRANSFER
-#define FILETRANSFER
-
+#pragma once
 #include "..\xrNetwork\client_id.h"
 #include "..\associative_vector.h"
 #include "..\xrEngine\StatGraph.h"
@@ -109,5 +107,3 @@ namespace file_transfer
 	};
 
 }; //namespace file_transfer
-
-#endif //#ifndef FILETRANSFER

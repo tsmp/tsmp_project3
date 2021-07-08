@@ -1,33 +1,27 @@
-#ifndef XR_DSA_SIGNER_INCLUDED
-#define XR_DSA_SIGNER_INCLUDED
-
+#pragma once 
 #include "..\Components\crypto\crypto.h"
 
-typedef fastdelegate::FastDelegate1< long >	sha_process_yielder;
+using sha_process_yielder = fastdelegate::FastDelegate1<long>;
+using dsa = crypto::xr_dsa;
 
 class xr_dsa_signer
 {
 public:
-						xr_dsa_signer			(u8 const p_number[crypto::xr_dsa::public_key_length],
-												 u8 const q_number[crypto::xr_dsa::private_key_length],
-												 u8 const g_number[crypto::xr_dsa::public_key_length]);
-						~xr_dsa_signer			();
+	xr_dsa_signer(u8 const p_number[dsa::public_key_length], u8 const q_number[dsa::private_key_length], u8 const g_number[dsa::public_key_length]);
+	~xr_dsa_signer();
 
-	shared_str const	sign					(u8 const * data,
-												 u32 data_size);
-	shared_str const	sign_mt					(u8 const * data,
-												 u32 data_size,
-												 sha_process_yielder yielder);
+	shared_str const sign(u8 const* data, u32 data_size);
+	shared_str const sign_mt(u8 const* data, u32 data_size, sha_process_yielder yielder);
+
 protected:
-	crypto::xr_dsa::private_key_t	m_private_key;
+	dsa::private_key_t m_private_key;
+
 private:
 	xr_dsa_signer() : m_dsa(NULL, NULL, NULL) {};
-	
-	crypto::xr_dsa					m_dsa;
-	crypto::xr_sha256				m_sha;
-	
+
+	dsa m_dsa;
+	crypto::xr_sha256 m_sha;
+
 }; //xr_dsa_signer
 
-char const * current_time(string64 & dest_time);
-
-#endif //#ifndef XR_DSA_SIGNER_INCLUDED
+char const* current_time(string64& dest_time);
