@@ -90,7 +90,7 @@ void CUISpawnWnd::InitTeamLogo()
 	R_ASSERT(pSettings->line_exist("team_logo", "team1"));
 	R_ASSERT(pSettings->line_exist("team_logo", "team2"));
 
-#pragma todo("Satan -> Satan : adopt to fixed texture size")
+	//#pragma todo("Satan -> Satan : adopt to fixed texture size")
 
 	m_pImage1->InitTexture(pSettings->r_string("team_logo", "team1"));
 	m_pImage1->RescaleRelative2Rect(m_pImage1->GetStaticItem()->GetOriginalRect());

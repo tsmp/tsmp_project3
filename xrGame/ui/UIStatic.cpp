@@ -547,7 +547,7 @@ u32 CUIStatic::GetTextAlign_script()
 
 void CUIStatic::Elipsis(const Frect &rect, EElipsisPosition elipsisPos)
 {
-#pragma todo("Satan->Satan : need adaptation")
+	//#pragma todo("Satan->Satan : need adaptation")
 	//if (eepNone == elipsisPos) return;
 
 	//CUIStatic::Elipsis(m_sEdit, rect, elipsisPos, GetFont());
@@ -560,7 +560,7 @@ void CUIStatic::Elipsis(const Frect &rect, EElipsisPosition elipsisPos)
 
 void CUIStatic::SetElipsis(EElipsisPosition pos, int indent)
 {
-#pragma todo("Satan->Satan : need adaptation")
+	//#pragma todo("Satan->Satan : need adaptation")
 	m_ElipsisPos = pos;
 	m_iElipsisIndent = indent;
 }

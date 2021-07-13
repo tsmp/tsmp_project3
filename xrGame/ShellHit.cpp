@@ -13,8 +13,10 @@
 void CPHShell::applyHit(const Fvector &pos, const Fvector &dir, float val, const u16 id, ALife::EHitType hit_type)
 {
 	if (id == u16(-1))
-		return; //
-#pragma todo("Kosya to kosya:this code shold treat all hit types")
+		return;
+	
+	//#pragma todo("Kosya to kosya:this code shold treat all hit types")
+	
 	if (!m_pKinematics)
 	{
 		applyImpulseTrace(pos, dir, val);

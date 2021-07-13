@@ -304,7 +304,7 @@ bool CBulletManager::CalcBullet(collide::rq_results &rq_storage, xr_vector<ISpat
 		VERIFY(_valid(bullet->speed));
 		VERIFY(!fis_zero(bullet->speed));
 		//вместо normalize(),	 чтоб не считать 2 раза magnitude()
-#pragma todo("а как насчет bullet->speed==0")
+		//#pragma todo("а как насчет bullet->speed==0")
 		bullet->dir.x /= bullet->speed;
 		bullet->dir.y /= bullet->speed;
 		bullet->dir.z /= bullet->speed;

@@ -253,7 +253,7 @@ void CAI_Stalker::Hit(SHit *pHDS)
 				float yaw, pitch;
 				D.getHP(yaw, pitch);
 
-#pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
+				//#pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
 				float power_factor = m_power_fx_factor * pHDS->damage() / 100.f;
 				clamp(power_factor, 0.f, 1.f);
 
