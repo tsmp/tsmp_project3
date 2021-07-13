@@ -273,7 +273,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h" />
-    <ClInclude Include="MusicStream.h" />
     <ClInclude Include="OpenALDeviceList.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundRender.h" />
@@ -288,8 +287,6 @@
     <ClInclude Include="SoundRender_TargetA.h" />
     <ClInclude Include="SoundRender_TargetD.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="xr_cda.h" />
-    <ClInclude Include="xr_streamsnd.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="guids.cpp">
@@ -301,12 +298,6 @@
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">
       </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="MusicStream.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="OpenALDeviceList.cpp" />
     <ClCompile Include="sound.cpp" />
@@ -335,18 +326,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="xr_cda.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="xr_streamsnd.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">true</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
