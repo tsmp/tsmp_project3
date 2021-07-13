@@ -43,7 +43,10 @@
 #include "MainMenu.h"
 #include "..\Console.h"
 
+#pragma warning(push)
+#pragma warning(disable:4995)
 #include <functional>
+#pragma warning(pop)
 
 #ifdef DEBUG
 #include "level_debug.h"

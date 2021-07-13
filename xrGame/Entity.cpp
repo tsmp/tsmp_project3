@@ -200,7 +200,7 @@ BOOL CEntity::net_Spawn(CSE_Abstract *DC)
 		id_Squad = E->g_squad();
 		id_Group = E->g_group();
 				
-		if (CSE_ALifeMonsterBase* monster = smart_cast<CSE_ALifeMonsterBase*>(E);)
+		if (CSE_ALifeMonsterBase* monster = smart_cast<CSE_ALifeMonsterBase*>(E))
 		{
 			MONSTER_COMMUNITY monster_community;
 			monster_community.set(pSettings->r_string(*cNameSect(), "species"));
