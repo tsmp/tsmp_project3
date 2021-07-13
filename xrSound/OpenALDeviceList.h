@@ -1,8 +1,8 @@
 #ifndef ALDEVICELIST_H
 #define ALDEVICELIST_H
 
-#define AL_GENERIC_HARDWARE "Generic Hardware"
-#define AL_GENERIC_SOFTWARE "Generic Software"
+#define AL_GENERIC_HARDWARE "Generic blablabla"//"Generic Hardware"
+#define AL_GENERIC_SOFTWARE "Generic blablabla"//"Generic Software"
 
 struct ALDeviceDesc
 {
