@@ -222,31 +222,31 @@ bool CBaseMonster::bfAssignSound(CScriptEntityAction *tpEntityAction)
 	switch (l_tAction.m_monster_sound)
 	{
 	case eMonsterSoundIdle:
-		sound().play(eMonsterSoundIdle, 0, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwIdleSndDelay : l_tAction.m_monster_sound_delay);
+		set_state_sound(eMonsterSoundIdle, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwIdleSndDelay : l_tAction.m_monster_sound_delay);
 		break;
 	case eMonsterSoundEat:
-		sound().play(eMonsterSoundEat, 0, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwEatSndDelay : l_tAction.m_monster_sound_delay);
+		set_state_sound(eMonsterSoundEat, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwEatSndDelay : l_tAction.m_monster_sound_delay);
 		break;
 	case eMonsterSoundAggressive:
-		sound().play(eMonsterSoundAggressive, 0, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwAttackSndDelay : l_tAction.m_monster_sound_delay);
+		set_state_sound(eMonsterSoundAggressive,0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwAttackSndDelay : l_tAction.m_monster_sound_delay);
 		break;
 	case eMonsterSoundAttackHit:
-		sound().play(eMonsterSoundAttackHit);
+		set_state_sound(eMonsterSoundAttackHit);
 		break;
 	case eMonsterSoundTakeDamage:
-		sound().play(eMonsterSoundTakeDamage);
+		set_state_sound(eMonsterSoundTakeDamage);
 		break;
 	case eMonsterSoundDie:
-		sound().play(eMonsterSoundDie);
+		set_state_sound(eMonsterSoundDie);
 		break;
 	case eMonsterSoundThreaten:
-		sound().play(eMonsterSoundThreaten, 0, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwAttackSndDelay : l_tAction.m_monster_sound_delay);
+		set_state_sound(eMonsterSoundThreaten, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwAttackSndDelay : l_tAction.m_monster_sound_delay);
 		break;
 	case eMonsterSoundSteal:
-		sound().play(eMonsterSoundSteal, 0, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwAttackSndDelay : l_tAction.m_monster_sound_delay);
+		set_state_sound(eMonsterSoundSteal, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwAttackSndDelay : l_tAction.m_monster_sound_delay);
 		break;
 	case eMonsterSoundPanic:
-		sound().play(eMonsterSoundPanic, 0, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwAttackSndDelay : l_tAction.m_monster_sound_delay);
+		set_state_sound(eMonsterSoundPanic, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwAttackSndDelay : l_tAction.m_monster_sound_delay);
 		break;
 	}
 

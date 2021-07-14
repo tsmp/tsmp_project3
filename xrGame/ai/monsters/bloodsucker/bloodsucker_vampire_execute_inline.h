@@ -125,7 +125,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_prepare()
 	object->com_man().ta_activate(object->anim_triple_vampire);
 	time_vampire_started = Device.dwTimeGlobal;
 
-	object->sound().play(CAI_Bloodsucker::eVampireGrasp);
+	object->set_state_sound(CAI_Bloodsucker::eVampireGrasp);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -138,7 +138,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_continue()
 		return;
 	}
 
-	object->sound().play(CAI_Bloodsucker::eVampireSucking);
+	object->set_state_sound(CAI_Bloodsucker::eVampireSucking);
 
 	// проверить на грави удар
 	if (time_vampire_started + VAMPIRE_TIME_HOLD < Device.dwTimeGlobal)
@@ -151,7 +151,7 @@ TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_hit()
 {
 	object->com_man().ta_pointbreak();
-	object->sound().play(CAI_Bloodsucker::eVampireHit);
+	object->set_state_sound(CAI_Bloodsucker::eVampireHit);
 	object->SatisfyVampire();
 }
 

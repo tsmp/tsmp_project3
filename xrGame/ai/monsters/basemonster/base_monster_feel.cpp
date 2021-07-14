@@ -115,7 +115,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		HS.power = (fDamage);
 		HS.boneID = (smart_cast<CKinematics *>(pEntityNC->Visual())->LL_GetBoneRoot());
 		HS.p_in_bone_space = (position_in_bone_space);
-		HS.impulse = (impulse)
+		HS.impulse = (impulse);
 		HS.hit_type = (ALife::eHitTypeWound);
 		HS.Write_Packet(l_P);
 		u_EventSend(l_P);
@@ -246,8 +246,9 @@ void CBaseMonster::HitSignal(float amount, Fvector &vLocalDir, CObject *who, s16
 		return;
 
 	feel_sound_new(who, SOUND_TYPE_WEAPON_SHOOTING, 0, who->Position(), 1.f);
+
 	if (g_Alive())
-		sound().play(MonsterSound::eMonsterSoundTakeDamage);
+		set_state_sound(MonsterSound::eMonsterSoundTakeDamage);
 
 	if (element < 0)
 		return;

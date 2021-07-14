@@ -151,9 +151,9 @@ void CBaseMonster::Die(CObject *who)
 	inherited::Die(who);
 
 	if (is_special_killer(who))
-		sound().play(MonsterSound::eMonsterSoundDieInAnomaly);
+		set_state_sound(MonsterSound::eMonsterSoundDieInAnomaly);
 	else
-		sound().play(MonsterSound::eMonsterSoundDie);
+		set_state_sound(MonsterSound::eMonsterSoundDie);
 
 	monster_squad().remove_member((u8)g_Team(), (u8)g_Squad(), (u8)g_Group(), this);
 
@@ -235,64 +235,64 @@ void CBaseMonster::SetTurnAnimation(bool turn_left)
 	(turn_left) ? anim().SetCurAnim(eAnimStandTurnLeft) : anim().SetCurAnim(eAnimStandTurnRight);
 }
 
-void CBaseMonster::set_state_sound(u32 type, bool once)
+void CBaseMonster::set_state_sound(u32 type, u32 SoundDelay, bool once)
 {
 	if (once)
 	{
+		if (SoundDelay)
+			sound().play(type, 0, 0, SoundDelay);
+		else
+			sound().play(type);
 
-		sound().play(type);
+		m_prev_sound_type = type;
+		return;
+	}
+
+	// handle situation, when monster want to play attack sound for the first time
+	if ((type == MonsterSound::eMonsterSoundAggressive) && (m_prev_sound_type != MonsterSound::eMonsterSoundAggressive))
+	{
+		sound().play(MonsterSound::eMonsterSoundAttackHit);
 	}
 	else
 	{
+		// get count of monsters in squad
+		u8 objects_count = monster_squad().get_squad(this)->get_count(this, 20.f);
 
-		// handle situation, when monster want to play attack sound for the first time
-		if ((type == MonsterSound::eMonsterSoundAggressive) &&
-			(m_prev_sound_type != MonsterSound::eMonsterSoundAggressive))
+		// include myself
+		objects_count++;
+		VERIFY(objects_count > 0);
+
+		u32 delay = 0;
+		switch (type)
 		{
-
-			sound().play(MonsterSound::eMonsterSoundAttackHit);
-		}
-		else
-		{
-			// get count of monsters in squad
-			u8 objects_count = monster_squad().get_squad(this)->get_count(this, 20.f);
-
-			// include myself
-			objects_count++;
-			VERIFY(objects_count > 0);
-
-			u32 delay = 0;
-			switch (type)
-			{
-			case MonsterSound::eMonsterSoundIdle:
-				// check distance to actor
+		case MonsterSound::eMonsterSoundIdle:
+			// check distance to actor
 
 #ifndef ALIFE_MP
-				if (Actor()->Position().distance_to(Position()) > db().m_fDistantIdleSndRange)
-				{
-					delay = u32(float(db().m_dwDistantIdleSndDelay) * _sqrt(float(objects_count)));
-					type = MonsterSound::eMonsterSoundIdleDistant;
-				}
-				else
-				{
-					delay = u32(float(db().m_dwIdleSndDelay) * _sqrt(float(objects_count)));
-				}
-#else
+			if (Actor()->Position().distance_to(Position()) > db().m_fDistantIdleSndRange)
+			{
+				delay = u32(float(db().m_dwDistantIdleSndDelay) * _sqrt(float(objects_count)));
+				type = MonsterSound::eMonsterSoundIdleDistant;
+			}
+			else
+			{
 				delay = u32(float(db().m_dwIdleSndDelay) * _sqrt(float(objects_count)));
+			}
+#else
+			delay = u32(float(db().m_dwIdleSndDelay) * _sqrt(float(objects_count)));
 #endif
 
-				break;
-			case MonsterSound::eMonsterSoundEat:
-				delay = u32(float(db().m_dwEatSndDelay) * _sqrt(float(objects_count)));
-				break;
-			case MonsterSound::eMonsterSoundAggressive:
-			case MonsterSound::eMonsterSoundPanic:
-				delay = u32(float(db().m_dwAttackSndDelay) * _sqrt(float(objects_count)));
-				break;
-			}
-
-			sound().play(type, 0, 0, delay);
+			break;
+		case MonsterSound::eMonsterSoundEat:
+			delay = u32(float(db().m_dwEatSndDelay) * _sqrt(float(objects_count)));
+			break;
+		case MonsterSound::eMonsterSoundAggressive:
+		case MonsterSound::eMonsterSoundPanic:
+			delay = u32(float(db().m_dwAttackSndDelay) * _sqrt(float(objects_count)));
+			break;
 		}
+
+		sound().play(type, 0, 0, delay);
 	}
 
 	m_prev_sound_type = type;

@@ -36,7 +36,7 @@ void CStatePoltergeistAttackHiddenAbstract::execute()
 	object->anim().m_tAction = ACT_RUN;
 	object->anim().accel_activate(eAT_Aggressive);
 	object->anim().accel_set_braking(false);
-	object->sound().play(MonsterSound::eMonsterSoundAggressive, 0, 0, object->db().m_dwAttackSndDelay);
+	object->set_state_sound(MonsterSound::eMonsterSoundAggressive, object->db().m_dwAttackSndDelay);
 }
 
 TEMPLATE_SPECIALIZATION
