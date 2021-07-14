@@ -30,7 +30,7 @@ CScriptBinder::~CScriptBinder()
 
 void CScriptBinder::init()
 {
-	m_object = 0;
+	m_object = nullptr;
 }
 
 void CScriptBinder::clear()
@@ -185,7 +185,7 @@ void CScriptBinder::net_Destroy()
 
 void CScriptBinder::set_object(CScriptBinderObject *object)
 {
-	if (IsGameTypeSingle())
+	if(strstr(Core.Params,"-usebinder") || IsGameTypeSingle())
 	{
 		VERIFY2(!m_object, "Cannot bind to the object twice!");
 #ifdef _DEBUG

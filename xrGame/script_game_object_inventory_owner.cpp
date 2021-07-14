@@ -104,6 +104,9 @@ bool _give_news(LPCSTR text, LPCSTR texture_name, const Frect &tex_rect, int del
 
 bool CScriptGameObject::HasInfo(LPCSTR info_id)
 {
+	if (!IsGameTypeSingle())
+		return false;
+
 	CInventoryOwner *pInventoryOwner = smart_cast<CInventoryOwner *>(&object());
 	if (!pInventoryOwner)
 		return false;
