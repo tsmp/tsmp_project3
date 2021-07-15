@@ -580,7 +580,14 @@ outloop:
 	if (C.bLowerCaseArgs)
 		strlwr(last_word);
 
-	if (!last_word[0])
+	char args[MAX_LEN];
+
+	if (!C.bForRadminsOnly)
+		ExcludeRadminIdFromCommandArguments(last_word, args, MAX_LEN);
+	else
+		strcpy_s(args, last_word);
+
+	if (args[0] == '\0')
 	{
 		if (C.bEmptyArgsHandled)
 			C.Execute("\0");
@@ -593,13 +600,6 @@ outloop:
 
 		return;
 	}
-
-	char args[MAX_LEN];
-
-	if (!C.bForRadminsOnly)
-		ExcludeRadminIdFromCommandArguments(last_word, args, MAX_LEN);
-	else
-		strcpy_s(args, last_word);
 
 	C.Execute(args);
 }
