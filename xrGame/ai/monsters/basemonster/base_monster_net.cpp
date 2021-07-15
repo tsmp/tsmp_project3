@@ -8,6 +8,7 @@
 #include "../../../hit.h"
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
+#include "../../../sound_player.h"
 
 #include "..\..\..\..\TSMP3_Build_Config.h"
 
@@ -30,6 +31,25 @@ void CBaseMonster::net_Save(NET_Packet &P)
 BOOL CBaseMonster::net_SaveRelevant()
 {
 	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell() != NULL));
+}
+
+void CBaseMonster::net_Export_Sounds(NET_Packet& P)
+{
+	P.w_u32(m_MpSoundSyncDelay);
+	P.w_u32(m_MpSoundSyncType);
+
+	m_MpSoundSyncDelay = static_cast<u32>(-1);
+	m_MpSoundSyncType = static_cast<u32>(-1);
+}
+
+void CBaseMonster::net_Import_Sounds(NET_Packet& P)
+{
+	u32 soundDelay, soundType;
+	P.r_u32(soundDelay);
+	P.r_u32(soundType);
+
+	if (soundDelay != static_cast<u32>(-1))
+		sound().play(soundType, 0, 0, soundDelay);	
 }
 
 #ifdef ALIFE_MP
@@ -57,6 +77,8 @@ void CBaseMonster::net_Export(NET_Packet &P)
 	P.w_angle8(movement().m_body.current.pitch);
 	P.w_angle8(movement().m_body.current.yaw);
 	P.w_u16(control().animation().currentAnim);
+
+	net_Export_Sounds(P);
 }
 
 #else
@@ -159,6 +181,8 @@ void CBaseMonster::net_Import(NET_Packet &P)
 		data->globalClientMP.actual = false;
 		data->globalClientMP.motion = motion;
 	}
+
+	net_Import_Sounds(P);
 }
 
 #else

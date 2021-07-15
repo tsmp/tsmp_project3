@@ -1705,6 +1705,17 @@ void CSE_ALifeMonsterBase::UPDATE_Read(NET_Packet &tNetPacket)
 	tNetPacket.r_angle8(o_torso.pitch);
 	tNetPacket.r_angle8(o_torso.yaw);
 	tNetPacket.r_u16(motionIdx);
+
+	u32 delay, type;
+
+	tNetPacket.r_u32(delay);
+	tNetPacket.r_u32(type);
+
+	if ((type != u32(-1)) && (m_SoundTypes.empty() || m_SoundTypes.back() != type))
+	{
+		m_SoundTypes.push_back(type);
+		m_SoundDelays.push_back(delay);
+	}
 }
 #else
 void CSE_ALifeMonsterBase::UPDATE_Read(NET_Packet &tNetPacket)
@@ -1728,6 +1739,19 @@ void CSE_ALifeMonsterBase::UPDATE_Write(NET_Packet &tNetPacket)
 	tNetPacket.w_angle8(o_torso.pitch);
 	tNetPacket.w_angle8(o_torso.yaw);
 	tNetPacket.w_u16(motionIdx);
+
+	if (m_SoundTypes.empty())
+	{
+		tNetPacket.w_u32(static_cast<u32>(-1));
+		tNetPacket.w_u32(static_cast<u32>(-1));
+	}
+	else
+	{
+		tNetPacket.w_u32(m_SoundDelays.front());
+		tNetPacket.w_u32(m_SoundTypes.front());
+		m_SoundDelays.pop_front();
+		m_SoundTypes.pop_front();
+	}
 }
 #else
 void CSE_ALifeMonsterBase::UPDATE_Write(NET_Packet &tNetPacket)

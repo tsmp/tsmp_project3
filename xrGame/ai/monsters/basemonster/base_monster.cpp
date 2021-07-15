@@ -48,11 +48,9 @@
 CBaseMonster::CBaseMonster()
 {
 	m_pPhysics_support = xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etBitting, this);
-
 	m_pPhysics_support->in_Init();
 
 	// Components external init
-
 	m_control_manager = xr_new<CControl_Manager>(this);
 
 	EnemyMemory.init_external(this, 20000);
@@ -63,14 +61,16 @@ CBaseMonster::CBaseMonster()
 	EnemyMan.init_external(this);
 	CorpseMan.init_external(this);
 
-	// Инициализация параметров анимации
+	m_MpSoundSyncType = 0;
+	m_MpSoundSyncDelay = 0;
 
-	StateMan = 0;
+	// Инициализация параметров анимации
+	StateMan = nullptr;
 
 	MeleeChecker.init_external(this);
 	Morale.init_external(this);
 
-	m_controlled = 0;
+	m_controlled = nullptr;
 
 	control().add(&m_com_manager, ControlCom::eControlCustom);
 
@@ -237,6 +237,12 @@ void CBaseMonster::SetTurnAnimation(bool turn_left)
 
 void CBaseMonster::set_state_sound(u32 type, u32 SoundDelay, bool once)
 {
+	if (OnClient())
+		return;
+
+	m_MpSoundSyncDelay = SoundDelay;
+	m_MpSoundSyncType = type;
+
 	if (once)
 	{
 		if (SoundDelay)
@@ -249,10 +255,8 @@ void CBaseMonster::set_state_sound(u32 type, u32 SoundDelay, bool once)
 	}
 
 	// handle situation, when monster want to play attack sound for the first time
-	if ((type == MonsterSound::eMonsterSoundAggressive) && (m_prev_sound_type != MonsterSound::eMonsterSoundAggressive))
-	{
-		sound().play(MonsterSound::eMonsterSoundAttackHit);
-	}
+	if ((type == MonsterSound::eMonsterSoundAggressive) && (m_prev_sound_type != MonsterSound::eMonsterSoundAggressive))	
+		sound().play(MonsterSound::eMonsterSoundAttackHit);	
 	else
 	{
 		// get count of monsters in squad
@@ -261,14 +265,14 @@ void CBaseMonster::set_state_sound(u32 type, u32 SoundDelay, bool once)
 		// include myself
 		objects_count++;
 		VERIFY(objects_count > 0);
-
 		u32 delay = 0;
+
 		switch (type)
 		{
-		case MonsterSound::eMonsterSoundIdle:
-			// check distance to actor
+		case MonsterSound::eMonsterSoundIdle:			
 
 #ifndef ALIFE_MP
+			// check distance to actor
 			if (Actor()->Position().distance_to(Position()) > db().m_fDistantIdleSndRange)
 			{
 				delay = u32(float(db().m_dwDistantIdleSndDelay) * _sqrt(float(objects_count)));
@@ -283,9 +287,11 @@ void CBaseMonster::set_state_sound(u32 type, u32 SoundDelay, bool once)
 #endif
 
 			break;
+
 		case MonsterSound::eMonsterSoundEat:
 			delay = u32(float(db().m_dwEatSndDelay) * _sqrt(float(objects_count)));
 			break;
+
 		case MonsterSound::eMonsterSoundAggressive:
 		case MonsterSound::eMonsterSoundPanic:
 			delay = u32(float(db().m_dwAttackSndDelay) * _sqrt(float(objects_count)));
@@ -293,6 +299,7 @@ void CBaseMonster::set_state_sound(u32 type, u32 SoundDelay, bool once)
 		}
 
 		sound().play(type, 0, 0, delay);
+		m_MpSoundSyncDelay = delay;
 	}
 
 	m_prev_sound_type = type;
@@ -457,6 +464,7 @@ void CBaseMonster::net_Relcase(CObject *O)
 
 		monster_squad().remove_links(O);
 	}
+
 	m_pPhysics_support->in_NetRelcase(O);
 }
 

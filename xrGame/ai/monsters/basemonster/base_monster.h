@@ -189,6 +189,9 @@ public:
 
 	virtual void SetScriptControl(const bool bScriptControl, shared_str caSciptName);
 
+	u32 m_MpSoundSyncType;
+	u32 m_MpSoundSyncDelay;
+
 	bool m_force_real_speed;
 	bool m_script_processing_active;
 	bool m_script_state_must_execute;
@@ -245,6 +248,8 @@ protected:
 
 protected:
 	virtual CMovementManager *create_movement_manager();
+	void net_Export_Sounds(NET_Packet& P);
+	void net_Import_Sounds(NET_Packet& P);	
 
 	// members
 public:
