@@ -2,15 +2,20 @@
 
 #include "MPPlayersBag.h"
 #include "Level.h"
-//#include "xrMessages.h"
 #include "game_base_space.h"
 #include "..\..\TSMP3_Build_Config.h"
 
 #define BAG_REMOVE_TIME 60000
+extern INT g_iWeaponRemove;
 
 CMPPlayersBag::CMPPlayersBag(){};
-
 CMPPlayersBag::~CMPPlayersBag(){};
+
+void CMPPlayersBag::Load(LPCSTR section)
+{
+	inherited::Load(section);
+	m_RemoveTime = READ_IF_EXISTS(pSettings, r_u32, section, "remove_time", BAG_REMOVE_TIME);
+}
 
 void CMPPlayersBag::OnEvent(NET_Packet &P, u16 type)
 {
@@ -48,14 +53,16 @@ void CMPPlayersBag::OnEvent(NET_Packet &P, u16 type)
 	}
 }
 
-extern INT g_iWeaponRemove;
 bool CMPPlayersBag::NeedToDestroyObject() const
 {
 	if (H_Parent())
 		return false;
+
 	if (g_iWeaponRemove == -1)
 		return false;
+
 	if (g_iWeaponRemove == 0)
 		return true;
-	return (TimePassedAfterIndependant() > BAG_REMOVE_TIME);
+
+	return (TimePassedAfterIndependant() > m_RemoveTime);
 }
