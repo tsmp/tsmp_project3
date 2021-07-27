@@ -54,7 +54,7 @@ game_cl_TeamDeathmatch::game_cl_TeamDeathmatch()
 	m_bTeamSelected = FALSE;
 	m_game_ui = NULL;
 
-	m_bShowPlayersNames = false;
+	m_bShowPlayersNames = true;
 	m_bFriendlyIndicators = false;
 	m_bFriendlyNames = false;
 
@@ -87,6 +87,10 @@ void game_cl_TeamDeathmatch::net_import_state(NET_Packet &P)
 	inherited::net_import_state(P);
 	m_bFriendlyIndicators = !!P.r_u8();
 	m_bFriendlyNames = !!P.r_u8();
+
+	if (!m_bFriendlyNames && m_bShowPlayersNames)
+		m_bShowPlayersNames = false;
+
 	if (!teams.empty())
 	{
 		if (teamsEqual)
@@ -470,9 +474,7 @@ void game_cl_TeamDeathmatch::SetScore()
 				m_game_ui->SetScoreCaption(teams[0].score, teams[1].score);
 		}
 	}
-};
-
-//BOOL	g_bShowPlayerNames = FALSE;
+}
 
 bool game_cl_TeamDeathmatch::OnKeyboardPress(int key)
 {
@@ -497,12 +499,12 @@ bool game_cl_TeamDeathmatch::IsEnemy(game_PlayerState *ps)
 	if (!local_player)
 		return false;
 	return local_player->team != ps->team;
-};
+}
 
 bool game_cl_TeamDeathmatch::IsEnemy(CEntityAlive *ea1, CEntityAlive *ea2)
 {
 	return (ea1->g_Team() != ea2->g_Team());
-};
+}
 
 #define PLAYER_NAME_COLOR 0xff40ff40
 
