@@ -178,6 +178,9 @@ bool CLevel::net_start_client6()
 		if (g_hud)
 			g_hud->OnConnected();
 
+		if (game && game->Type() != GAME_SINGLE)
+			m_file_transfer = xr_new<file_transfer::client_site>();	
+
 		g_pGamePersistent->LoadTitle("st_client_synchronising");
 		Device.PreCache(30);
 		net_start_result_total = TRUE;

@@ -1127,7 +1127,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1,
   return ret;
 }
 
-#pragma todo(optimize factor == 0.f)
+//#pragma todo(optimize factor == 0.f)
 //****************************************************************************
 
 int dCollideCylS(dxGeom *o1, dxGeom *o2, int flags,

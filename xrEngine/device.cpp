@@ -67,6 +67,7 @@ void CRenderDevice::Clear()
 }
 
 #include "resourcemanager.h"
+extern void DoAsyncScreenshot();
 
 void CRenderDevice::End(void)
 {
@@ -74,6 +75,8 @@ void CRenderDevice::End(void)
 
 	if (HW.Caps.SceneMode)
 		overdrawEnd();
+
+	Render->getTarget()->DoAsyncScreenshot();	
 
 	if (dwPrecacheFrame)
 	{

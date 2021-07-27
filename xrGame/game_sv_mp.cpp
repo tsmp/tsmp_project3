@@ -838,19 +838,21 @@ void game_sv_mp::OnVoteStop()
 {
 	if (!IsVotingActive())
 		return;
+
 	SetVotingActive(false);
-	//-----------------------------------------------------------------
+
 	NET_Packet P;
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_VOTE_STOP);
 	u_EventSend(P);
-	//-----------------------------------------------------------------
+
 	signal_Syncronize();
-};
+}
 
 void game_sv_mp::OnPlayerEnteredGame(ClientID id_who)
 {
 	xrClientData *xrCData = m_server->ID_to_client(id_who);
+
 	if (!xrCData)
 		return;
 
@@ -859,98 +861,96 @@ void game_sv_mp::OnPlayerEnteredGame(ClientID id_who)
 	P.w_u32(GAME_EVENT_PLAYER_ENTERED_GAME);
 	P.w_stringZ(xrCData->name.c_str());
 	u_EventSend(P);
-};
+}
 
 void game_sv_mp::ClearPlayerItems(game_PlayerState *ps)
 {
 	ps->pItemList.clear();
 	ps->LastBuyAcount = 0;
-	//	ps->m_bClearRun = false;
-};
+}
 
 void game_sv_mp::SetPlayersDefItems(game_PlayerState *ps)
 {
 	ClearPlayerItems(ps);
+
 	if (ps->team < 0)
 		return;
-	//-------------------------------------------
+	
 	//fill player with default items
 	if (ps->team < s16(TeamList.size()))
 	{
 		DEF_ITEMS_LIST aDefItems = TeamList[ps->team].aDefaultItems;
 
-		for (u16 i = 0; i < aDefItems.size(); i++)
-		{
-			ps->pItemList.push_back(aDefItems[i]);
-		}
-	};
-	//---------------------------------------------------
+		for (u16 i = 0; i < aDefItems.size(); i++)		
+			ps->pItemList.push_back(aDefItems[i]);		
+	}
+
 	string16 RankStr;
 	string256 ItemStr;
 	string256 NewItemStr;
 	char tmp[5];
+
 	for (int i = 1; i <= ps->rank; i++)
 	{
 		strconcat(sizeof(RankStr), RankStr, "rank_", itoa(i, tmp, 10));
+
 		if (!pSettings->section_exist(RankStr))
 			continue;
+
 		for (u32 it = 0; it < ps->pItemList.size(); it++)
 		{
 			u16 *pItemID = &(ps->pItemList[it]);
-			//			WeaponDataStruct* pWpnS = NULL;
-			//			if (!GetTeamItem_ByID(&pWpnS, &(TeamList[ps->team].aWeapons), *pItemID)) continue;
+
 			if (m_strWeaponsData->GetItemsCount() <= *pItemID)
 				continue;
+
 			shared_str WeaponName = m_strWeaponsData->GetItemName((*pItemID) & 0x00FF);
-			//			strconcat(ItemStr, "def_item_repl_", pWpnS->WeaponName.c_str());
 			strconcat(sizeof(ItemStr), ItemStr, "def_item_repl_", *WeaponName);
+
 			if (!pSettings->line_exist(RankStr, ItemStr))
 				continue;
 
 			strcpy_s(NewItemStr, sizeof(NewItemStr), pSettings->r_string(RankStr, ItemStr));
-			//			if (!GetTeamItem_ByName(&pWpnS, &(TeamList[ps->team].aWeapons), NewItemStr)) continue;
+
 			if (m_strWeaponsData->GetItemIdx(NewItemStr) == u32(-1))
 				continue;
 
-			//			*pItemID = pWpnS->SlotItem_ID;
 			*pItemID = u16(m_strWeaponsData->GetItemIdx(NewItemStr) & 0xffff);
 		}
 	}
-	//---------------------------------------------------
+
 	for (u32 it = 0; it < ps->pItemList.size(); it++)
 	{
 		u16 *pItemID = &(ps->pItemList[it]);
-		//		WeaponDataStruct* pWpnS = NULL;
-		//		if (!GetTeamItem_ByID(&pWpnS, &(TeamList[ps->team].aWeapons), *pItemID)) continue;
+
 		if (m_strWeaponsData->GetItemsCount() <= *pItemID)
 			continue;
 
 		shared_str WeaponName = m_strWeaponsData->GetItemName((*pItemID) & 0x00FF);
+
 		if (!xr_strcmp(*WeaponName, "mp_wpn_knife"))
 			continue;
+
 		u16 AmmoID = u16(-1);
+
 		if (pSettings->line_exist(WeaponName, "ammo_class"))
 		{
 			string1024 wpnAmmos, BaseAmmoName;
 			std::strcpy(wpnAmmos, pSettings->r_string(WeaponName, "ammo_class"));
 			_GetItem(wpnAmmos, 0, BaseAmmoName);
 			AmmoID = u16(m_strWeaponsData->GetItemIdx(BaseAmmoName) & 0xffff);
-		};
-		//		if (!pWpnS->WeaponBaseAmmo.size()) continue;
-		//		WeaponDataStruct* pWpnAmmo = NULL;
-		//		if (!GetTeamItem_ByName(&pWpnAmmo, &(TeamList[ps->team].aWeapons), *(pWpnS->WeaponBaseAmmo))) continue;
+		}
+
 		if (AmmoID == u16(-1))
 			continue;
 
-		//		ps->pItemList.push_back(pWpnAmmo->SlotItem_ID);
-		//		ps->pItemList.push_back(pWpnAmmo->SlotItem_ID);
 		if (Type() == GAME_ARTEFACTHUNT)
 		{
 			ps->pItemList.push_back(AmmoID);
 			ps->pItemList.push_back(AmmoID);
 		}
-	};
-};
+	}
+}
 
 void game_sv_mp::ClearPlayerState(game_PlayerState *ps)
 {
@@ -969,9 +969,9 @@ void game_sv_mp::ClearPlayerState(game_PlayerState *ps)
 	ps->lasthitweapon = 0;
 
 	ClearPlayerItems(ps);
-};
+}
 
-void game_sv_mp::OnPlayerKilled(NET_Packet P)
+void game_sv_mp::OnPlayerKilled(NET_Packet &P)
 {
 	u16 KilledID = P.r_u16();
 	KILL_TYPE KillType = KILL_TYPE(P.r_u8());
@@ -991,32 +991,37 @@ void game_sv_mp::OnPlayerKilled(NET_Packet P)
 #endif
 		return;
 	}
+
 	CSE_Abstract *pWeaponA = get_entity_from_eid(WeaponID);
 
 	OnPlayerKillPlayer(ps_killer, ps_killed, KillType, SpecialKill, pWeaponA);
-	//---------------------------------------------------
 	SendPlayerKilledMessage((ps_killed) ? ps_killed->GameID : KilledID, KillType, (ps_killer) ? ps_killer->GameID : KillerID, WeaponID, SpecialKill);
-};
+}
 
-void game_sv_mp::OnPlayerHitted(NET_Packet P)
+void game_sv_mp::OnPlayerHitted(NET_Packet &P)
 {
 	u16 id_hitted = P.r_u16();
 	u16 id_hitter = P.r_u16();
 	float dHealth = P.r_float() * 100;
 	game_PlayerState *PSHitter = get_eid(id_hitter);
+
 	if (!PSHitter)
 		return;
+	
 	game_PlayerState *PSHitted = get_eid(id_hitted);
+	
 	if (!PSHitted)
 		return;
+	
 	if (PSHitted == PSHitter)
 		return;
+	
 	if (!CheckTeams() || (PSHitted->team != PSHitter->team))
 	{
 		Rank_Struct *pCurRank = &(m_aRanks[PSHitter->rank]);
 		Player_AddExperience(PSHitter, dHealth * pCurRank->m_aRankDiff_ExpBonus[PSHitted->rank]);
-	};
-};
+	}
+}
 
 void game_sv_mp::SendPlayerKilledMessage(u16 KilledID, KILL_TYPE KillType, u16 KillerID, u16 WeaponID, SPECIAL_KILL_TYPE SpecialKill)
 {
@@ -1031,15 +1036,18 @@ void game_sv_mp::SendPlayerKilledMessage(u16 KilledID, KILL_TYPE KillType, u16 K
 	P.w_u8(u8(SpecialKill));
 
 	u32 cnt = get_players_count();
+
 	for (u32 it = 0; it < cnt; it++)
 	{
 		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
 		game_PlayerState *ps = l_pC->ps;
+
 		if (!l_pC || !l_pC->net_Ready || !ps)
 			continue;
+
 		m_server->SendTo(l_pC->ID, P);
-	};
-};
+	}
+}
 
 void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID sender)
 {

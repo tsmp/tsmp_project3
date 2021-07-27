@@ -160,7 +160,7 @@ void CStateBurerAttackGraviAbstract::ExecuteGraviFire()
 	object->m_gravi_object.activate(object->EnemyMan.get_enemy(), from_pos, target_pos);
 
 	object->StopGraviPrepare();
-	object->sound().play(CBurer::eMonsterSoundGraviAttack);
+	object->set_state_sound(CBurer::eMonsterSoundGraviAttack);
 	object->DeactivateShield();
 }
 

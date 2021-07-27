@@ -156,12 +156,10 @@ void CEntity::Load(LPCSTR section)
 	id_Squad = READ_IF_EXISTS(pSettings, r_s32, section, "squad", -1);
 	id_Group = READ_IF_EXISTS(pSettings, r_s32, section, "group", -1);
 
-#pragma todo("Jim to Dima: no specific figures or comments needed")
 	m_fMorale = 66.f;
 
 	//время убирания тела с уровня
 	m_dwBodyRemoveTime = READ_IF_EXISTS(pSettings, r_u32, section, "body_remove_time", BODY_REMOVE_TIME);
-	//////////////////////////////////////
 }
 
 BOOL CEntity::net_Spawn(CSE_Abstract *DC)
@@ -201,9 +199,8 @@ BOOL CEntity::net_Spawn(CSE_Abstract *DC)
 		id_Team = E->g_team();
 		id_Squad = E->g_squad();
 		id_Group = E->g_group();
-
-		CSE_ALifeMonsterBase *monster = smart_cast<CSE_ALifeMonsterBase *>(E);
-		if (monster)
+				
+		if (CSE_ALifeMonsterBase* monster = smart_cast<CSE_ALifeMonsterBase*>(E))
 		{
 			MONSTER_COMMUNITY monster_community;
 			monster_community.set(pSettings->r_string(*cNameSect(), "species"));
@@ -228,7 +225,6 @@ BOOL CEntity::net_Spawn(CSE_Abstract *DC)
 	{
 		m_level_death_time = Device.dwTimeGlobal;
 		m_game_death_time = E->m_game_death_time;
-		;
 	}
 
 	if (!inherited::net_Spawn(DC))
@@ -240,6 +236,7 @@ BOOL CEntity::net_Spawn(CSE_Abstract *DC)
 
 	if (pKinematics)
 		ini = pKinematics->LL_UserData();
+
 	if (ini)
 	{
 		if (ini->section_exist("damage_section") && !use_simplified_visual())
@@ -247,6 +244,7 @@ BOOL CEntity::net_Spawn(CSE_Abstract *DC)
 
 		CParticlesPlayer::LoadParticles(pKinematics);
 	}
+
 	return TRUE;
 }
 

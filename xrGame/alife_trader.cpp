@@ -20,13 +20,15 @@ void CSE_ALifeTrader::spawn_supplies()
 
 u32 CSE_ALifeTrader::dwfGetItemCost(CSE_ALifeInventoryItem *tpALifeInventoryItem)
 {
-#pragma todo("Dima to Dima : correct price for non-artefact objects")
+	//#pragma todo("Dima to Dima : correct price for non-artefact objects")
 	CSE_ALifeItemArtefact *l_tpALifeItemArtefact = smart_cast<CSE_ALifeItemArtefact *>(tpALifeInventoryItem);
+	
 	if (!l_tpALifeItemArtefact)
 		return (tpALifeInventoryItem->m_dwCost);
 
 	u32 l_dwPurchasedCount = 0;
-#pragma todo("Dima to Dima : optimize this cycle by keeping additional data structure with bought items")
+
+	//#pragma todo("Dima to Dima : optimize this cycle by keeping additional data structure with bought items")
 	{
 		ALife::OBJECT_IT i = children.begin();
 		ALife::OBJECT_IT e = children.end();

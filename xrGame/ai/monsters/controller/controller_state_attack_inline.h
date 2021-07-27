@@ -141,31 +141,11 @@ void CStateControllerAttackAbstract::execute()
 TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::setup_substates()
 {
-	//state_ptr state = get_state_current();
-
-	//if (current_substate == eStateFaceEnemy) {
-	//	SStateDataLookToPoint data;
-
-	//	data.point				= object->EnemyMan.get_enemy_position();
-	//	data.action.action		= ACT_STAND_IDLE;
-
-	//	state->fill_data_with(&data, sizeof(SStateDataLookToPoint));
-	//
-	//	object->sound().play(MonsterSound::eMonsterSoundAggressive, 0,0,object->db().m_dwAttackSndDelay);
-	//	return;
-	//}
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::check_force_state()
 {
-	//if (current_substate == eStateRun) {
-	//	float dist_to_enemy = object->Position().distance_to(object->EnemyMan.get_enemy_position());
-	//	if (dist_to_enemy > 10.f) {
-	//		get_state_current()->critical_finalize();
-	//		current_substate = u32(-1);
-	//	}
-	//}
 }
 
 TEMPLATE_SPECIALIZATION

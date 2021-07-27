@@ -94,7 +94,6 @@ public:
 	virtual CCharacterPhysicsSupport *character_physics_support() const { return m_pPhysics_support; }
 	virtual CPHDestroyable *ph_destroyable();
 	CHolderCustom *Holder() { return m_holder; }
-	virtual BOOL UsedAI_Locations() override;
 
 public:
 	virtual void Load(LPCSTR section);
@@ -180,7 +179,7 @@ public:
 	virtual void OnItemDrop(CInventoryItem *inventory_item);
 	virtual void OnItemDropUpdate();
 
-	virtual void OnPlayHeadShotParticle(NET_Packet P);
+	virtual void OnPlayHeadShotParticle(NET_Packet &P);
 
 	virtual void Die(CObject *who);
 	virtual void Hit(SHit *pHDS);

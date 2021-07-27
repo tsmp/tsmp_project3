@@ -403,6 +403,9 @@ u8 phSyncFlag = 0;
 u16 motionIdx;
 #endif
 
+std::deque<u32> m_SoundTypes;
+std::deque<u32> m_SoundDelays;
+
 CSE_ALifeMonsterBase(LPCSTR caSection); // constructor for variable initialization
 virtual ~CSE_ALifeMonsterBase();
 virtual void load(NET_Packet &tNetPacket);

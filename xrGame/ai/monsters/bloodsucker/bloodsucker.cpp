@@ -320,7 +320,7 @@ void CAI_Bloodsucker::shedule_Update(u32 dt)
 		setVisible(TRUE);
 
 	if (m_alien_control.active())
-		sound().play(eAlien);
+		inherited::set_state_sound(eAlien);
 }
 
 void CAI_Bloodsucker::Die(CObject *who)
@@ -367,7 +367,8 @@ void CAI_Bloodsucker::predator_start()
 	control().animation().restart();
 
 	CParticlesPlayer::StartParticles(invisible_particle_name, Fvector().set(0.0f, 0.1f, 0.0f), ID());
-	sound().play(CAI_Bloodsucker::eChangeVisibility);
+
+	inherited::set_state_sound(CAI_Bloodsucker::eChangeVisibility);
 
 	m_predator = true;
 	state_invisible = false;
@@ -386,7 +387,7 @@ void CAI_Bloodsucker::predator_stop()
 	control().animation().restart();
 
 	CParticlesPlayer::StartParticles(invisible_particle_name, Fvector().set(0.0f, 0.1f, 0.0f), ID());
-	sound().play(CAI_Bloodsucker::eChangeVisibility);
+	set_state_sound(CAI_Bloodsucker::eChangeVisibility);
 	m_predator = false;
 }
 

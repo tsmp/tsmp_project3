@@ -385,7 +385,7 @@ BOOL CAI_Stalker::net_Spawn(CSE_Abstract *DC)
 	}
 	else
 	{
-		if (ai().get_game_graph())
+		if (ai().get_level_graph())
 			Msg("- spawn stalker on server");
 		else
 			Msg("- spawn stalker on client");

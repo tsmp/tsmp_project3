@@ -43,7 +43,10 @@
 #include "MainMenu.h"
 #include "..\Console.h"
 
+#pragma warning(push)
+#pragma warning(disable:4995)
 #include <functional>
+#pragma warning(pop)
 
 #ifdef DEBUG
 #include "level_debug.h"
@@ -156,6 +159,8 @@ CLevel::CLevel() : IPureClient(Device.GetTimerGlobal())
 	m_dwCL_PingLastSendTime = 0;
 	m_dwCL_PingDeltaSend = 1000;
 	m_dwRealPing = 0;
+
+	m_file_transfer = nullptr;
 
 	//---------------------------------------------------------
 	m_sDemoName[0] = 0;
@@ -429,6 +434,11 @@ void CLevel::ProcessGameEvents()
 				cl_Process_Event(dest, type, P);
 			}
 			break;
+			case M_FILE_TRANSFER:
+			{
+				if (m_file_transfer)			//in case of net_Stop
+					m_file_transfer->on_message(&P);
+			}break;
 			default:
 			{
 				VERIFY(0);

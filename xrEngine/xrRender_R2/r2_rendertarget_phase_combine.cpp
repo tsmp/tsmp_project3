@@ -170,7 +170,7 @@ void CRenderTarget::phase_combine()
 	}
 
 	// PP enabled ?
-	BOOL PP_Complex = u_need_PP();
+	BOOL PP_Complex = u_need_PP() | (BOOL)RImplementation.m_bMakeAsyncSS;
 	if (_menu_pp)
 		PP_Complex = FALSE;
 
@@ -392,6 +392,28 @@ void CRenderTarget::phase_combine()
 	dbg_lines.clear();
 	dbg_planes.clear();
 #endif
+}
+
+void CRenderTarget::DoAsyncScreenshot()
+{
+	if (RImplementation.m_bMakeAsyncSS)
+	{
+		HRESULT hr;
+
+		IDirect3DSurface9* pFBSrc = HW.pBaseRT;
+
+		//	Don't addref, no need to release.
+	//	ID3DTexture2D *pTex = rt_Color->pSurface;
+
+	//	hr = pTex->GetSurfaceLevel(0, &pFBSrc);
+
+		//	SHould be async function
+		hr = HW.pDevice->GetRenderTargetData(pFBSrc, pFB);
+
+		//	pFBSrc->Release();
+
+		RImplementation.m_bMakeAsyncSS = false;
+	}
 }
 
 void CRenderTarget::phase_wallmarks()

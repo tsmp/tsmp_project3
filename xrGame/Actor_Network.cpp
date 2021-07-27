@@ -748,7 +748,7 @@ void CActor::net_Destroy()
 	if (!g_dedicated_server)
 		Level().MapManager().RemoveMapLocationByObjectID(ID());
 
-#pragma todo("Dima to MadMax : do not comment inventory owner net_Destroy!!!")
+	//#pragma todo("Dima to MadMax : do not comment inventory owner net_Destroy!!!")
 	CInventoryOwner::net_Destroy();
 	cam_UnsetLadder();
 	character_physics_support()->movement()->DestroyCharacter();
@@ -1919,7 +1919,7 @@ void CActor::OnHitHealthLoss(float NewHealth)
 		P.w_float(m_fLastHealth - fNewHealth);
 		u_EventSend(P);
 	}
-};
+}
 
 void CActor::OnCriticalHitHealthLoss()
 {
@@ -1930,13 +1930,12 @@ void CActor::OnCriticalHitHealthLoss()
 	CObject *pLastHittingWeapon = Level().Objects.net_Find(m_iLastHittingWeaponID);
 
 #ifdef DEBUG
-
 	Msg("%s killed by hit from %s %s",
 		*cName(),
 		(pLastHitter ? *(pLastHitter->cName()) : ""),
 		((pLastHittingWeapon && pLastHittingWeapon != pLastHitter) ? *(pLastHittingWeapon->cName()) : ""));
 #endif
-	//-------------------------------------------------------------------
+
 	if (m_iLastHitterID != u16(-1))
 	{
 		NET_Packet P;
@@ -1947,13 +1946,15 @@ void CActor::OnCriticalHitHealthLoss()
 		P.w_float(m_fLastHealth);
 		u_EventSend(P);
 	}
-	//-------------------------------------------------------------------
+
 	SPECIAL_KILL_TYPE SpecialHit = SKT_NONE;
+
 	if (pLastHittingWeapon)
 	{
 		if (pLastHittingWeapon->CLS_ID == CLSID_OBJECT_W_KNIFE)
 			SpecialHit = SKT_KNIFEKILL;
 	}
+
 	if (m_s16LastHittedElement > 0)
 	{
 		if (m_s16LastHittedElement == m_head)
@@ -1962,14 +1963,12 @@ void CActor::OnCriticalHitHealthLoss()
 			if (pWeaponMagazined)
 			{
 				SpecialHit = SKT_HEADSHOT;
-				//-------------------------------
 				NET_Packet P;
 				u_EventGen(P, GEG_PLAYER_PLAY_HEADSHOT_PARTICLE, ID());
 				P.w_s16(m_s16LastHittedElement);
 				P.w_dir(m_vLastHitDir);
 				P.w_vec3(m_vLastHitPos);
 				u_EventSend(P);
-				//-------------------------------
 			}
 		}
 		else
@@ -1977,21 +1976,23 @@ void CActor::OnCriticalHitHealthLoss()
 			CKinematics *pKinematics = smart_cast<CKinematics *>(Visual());
 			VERIFY(pKinematics);
 			u16 ParentBone = u16(m_s16LastHittedElement);
+
 			while (ParentBone)
 			{
 				ParentBone = pKinematics->LL_GetData(ParentBone).GetParentID();
+
 				if (ParentBone && ParentBone == m_head)
 				{
 					SpecialHit = SKT_HEADSHOT;
 					break;
-				};
+				}
 			}
-		};
-	};
-	//-------------------------------
+		}
+	}
+
 	if (m_bWasBackStabbed)
 		SpecialHit = SKT_BACKSTAB;
-	//-------------------------------
+
 	NET_Packet P;
 	u_EventGen(P, GE_GAME_EVENT, ID());
 	P.w_u16(GAME_EVENT_PLAYER_KILLED);
@@ -2001,40 +2002,42 @@ void CActor::OnCriticalHitHealthLoss()
 	P.w_u16((m_iLastHittingWeaponID && m_iLastHitterID != m_iLastHittingWeaponID) ? u16(m_iLastHittingWeaponID & 0xffff) : 0);
 	P.w_u8(u8(SpecialHit));
 	u_EventSend(P);
-	//-------------------------------------------
+
 	if (GameID() != GAME_SINGLE)
 		Game().m_WeaponUsageStatistic->OnBullet_Check_Result(true);
-};
+}
 
-void CActor::OnPlayHeadShotParticle(NET_Packet P)
+void CActor::OnPlayHeadShotParticle(NET_Packet &P)
 {
 	Fvector HitDir, HitPos;
 	s16 element = P.r_s16();
 	P.r_dir(HitDir);
 	HitDir.invert();
 	P.r_vec3(HitPos);
-	//-----------------------------------
+
 	if (!m_sHeadShotParticle.size())
 		return;
+
 	Fmatrix pos;
 	CParticlesPlayer::MakeXFORM(this, element, HitDir, HitPos, pos);
 	// установить particles
-	CParticlesObject *ps = NULL;
+	CParticlesObject *ps = nullptr;
 
 	ps = CParticlesObject::Create(m_sHeadShotParticle.c_str(), TRUE);
 
 	ps->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
 	GamePersistent().ps_needtoplay.push_back(ps);
-};
+}
 
 void CActor::OnCriticalWoundHealthLoss()
 {
 	if (GameID() == GAME_SINGLE || !OnServer())
 		return;
+
 #ifdef DEBUG
 ///	Msg("%s is bleed out, thanks to %s", *cName(), (m_pLastHitter ? *(m_pLastHitter->cName()) : ""));
 #endif
-	//-------------------------------
+
 	NET_Packet P;
 	u_EventGen(P, GE_GAME_EVENT, ID());
 	P.w_u16(GAME_EVENT_PLAYER_KILLED);
@@ -2044,7 +2047,7 @@ void CActor::OnCriticalWoundHealthLoss()
 	P.w_u16((m_iLastHittingWeaponID && m_iLastHitterID != m_iLastHittingWeaponID) ? u16(m_iLastHittingWeaponID & 0xffff) : 0);
 	P.w_u8(SKT_NONE);
 	u_EventSend(P);
-};
+}
 
 void CActor::OnCriticalRadiationHealthLoss()
 {

@@ -126,6 +126,7 @@ public:
 	virtual void set_color_add(u32 f) = 0;
 	virtual u32 get_width() = 0;
 	virtual u32 get_height() = 0;
+	virtual void DoAsyncScreenshot() = 0;
 	virtual ~IRender_Target(){};
 };
 
@@ -196,6 +197,9 @@ public:
 	virtual IRender_Visual *getVisual(int id) = 0;
 	virtual IRender_Sector *detectSector(const Fvector &P) = 0;
 	virtual IRender_Target *getTarget() = 0;
+
+	virtual void ScreenshotAsyncBegin() = 0;
+	virtual void ScreenshotAsyncEnd(CMemoryWriter& memory_writer) = 0;
 
 	// Main
 	IC void set_Frustum(CFrustum *O)

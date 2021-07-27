@@ -1,6 +1,9 @@
 #include "stdafx.h"
 
+#pragma warning(push)
+#pragma warning(disable:4995)
 #include <functional>
+#pragma warning(pop)
 
 #include "UIMainIngameWnd.h"
 #include "UIMessagesWindow.h"

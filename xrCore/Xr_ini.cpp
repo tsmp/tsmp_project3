@@ -292,6 +292,50 @@ void CInifile::Load(IReader *F, LPCSTR path)
 	}
 }
 
+void CInifile::save_as(IWriter& writer, bool bcheck) const
+{
+	string4096 temp, val;
+	for (auto r_it = DATA.begin(); r_it != DATA.end(); ++r_it)
+	{
+		sprintf_s(temp, sizeof(temp), "[%s]", (*r_it)->Name.c_str());
+		writer.w_string(temp);
+		if (bcheck)
+		{
+			sprintf_s(temp, sizeof(temp), "; %d %d %d", (*r_it)->Name._get()->dwCRC,
+				(*r_it)->Name._get()->dwReference,
+				(*r_it)->Name._get()->dwLength);
+			writer.w_string(temp);
+		}
+
+		for (SectCIt s_it = (*r_it)->Data.begin(); s_it != (*r_it)->Data.end(); ++s_it)
+		{
+			const Item& I = *s_it;
+			if (*I.first)
+			{
+				if (*I.second)
+				{
+					_decorate(val, *I.second);
+					// only name and value
+					sprintf_s(temp, sizeof(temp), "%8s%-32s = %-32s", " ", I.first.c_str(), val);
+				}
+				else
+				{
+					// only name
+					sprintf_s(temp, sizeof(temp), "%8s%-32s = ", " ", I.first.c_str());
+				}
+			}
+			else
+			{
+				// no name, so no value
+				temp[0] = 0;
+			}
+			_TrimRight(temp);
+			if (temp[0])		writer.w_string(temp);
+		}
+		writer.w_string(" ");
+	}
+}
+
 bool CInifile::save_as(LPCSTR new_fname)
 {
 	// save if needed

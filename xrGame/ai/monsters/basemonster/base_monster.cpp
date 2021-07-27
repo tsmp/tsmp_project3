@@ -48,11 +48,9 @@
 CBaseMonster::CBaseMonster()
 {
 	m_pPhysics_support = xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etBitting, this);
-
 	m_pPhysics_support->in_Init();
 
 	// Components external init
-
 	m_control_manager = xr_new<CControl_Manager>(this);
 
 	EnemyMemory.init_external(this, 20000);
@@ -63,14 +61,16 @@ CBaseMonster::CBaseMonster()
 	EnemyMan.init_external(this);
 	CorpseMan.init_external(this);
 
-	// Инициализация параметров анимации
+	m_MpSoundSyncType = 0;
+	m_MpSoundSyncDelay = 0;
 
-	StateMan = 0;
+	// Инициализация параметров анимации
+	StateMan = nullptr;
 
 	MeleeChecker.init_external(this);
 	Morale.init_external(this);
 
-	m_controlled = 0;
+	m_controlled = nullptr;
 
 	control().add(&m_com_manager, ControlCom::eControlCustom);
 
@@ -151,9 +151,9 @@ void CBaseMonster::Die(CObject *who)
 	inherited::Die(who);
 
 	if (is_special_killer(who))
-		sound().play(MonsterSound::eMonsterSoundDieInAnomaly);
+		set_state_sound(MonsterSound::eMonsterSoundDieInAnomaly);
 	else
-		sound().play(MonsterSound::eMonsterSoundDie);
+		set_state_sound(MonsterSound::eMonsterSoundDie);
 
 	monster_squad().remove_member((u8)g_Team(), (u8)g_Squad(), (u8)g_Group(), this);
 
@@ -161,7 +161,6 @@ void CBaseMonster::Die(CObject *who)
 		m_controlled->on_die();
 }
 
-//void CBaseMonster::Hit(float P,Fvector &dir,CObject*who,s16 element,Fvector p_in_object_space,float impulse, ALife::EHitType hit_type)
 void CBaseMonster::Hit(SHit *pHDS)
 {
 	if (ignore_collision_hit && (pHDS->hit_type == ALife::eHitTypeStrike))
@@ -194,8 +193,8 @@ bool CBaseMonster::useful(const CItemManager *manager, const CGameObject *object
 		return (false);
 
 	if (!movement().restrictions().accessible(object->ai_location().level_vertex_id()))
-		return (false);
-
+		return false;
+	
 	const CEntityAlive *pCorpse = smart_cast<const CEntityAlive *>(object);
 	if (!pCorpse)
 		return false;
@@ -236,64 +235,71 @@ void CBaseMonster::SetTurnAnimation(bool turn_left)
 	(turn_left) ? anim().SetCurAnim(eAnimStandTurnLeft) : anim().SetCurAnim(eAnimStandTurnRight);
 }
 
-void CBaseMonster::set_state_sound(u32 type, bool once)
+void CBaseMonster::set_state_sound(u32 type, u32 SoundDelay, bool once)
 {
+	if (OnClient())
+		return;
+
+	m_MpSoundSyncDelay = SoundDelay;
+	m_MpSoundSyncType = type;
+
 	if (once)
 	{
+		if (SoundDelay)
+			sound().play(type, 0, 0, SoundDelay);
+		else
+			sound().play(type);
 
-		sound().play(type);
+		m_prev_sound_type = type;
+		return;
 	}
+
+	// handle situation, when monster want to play attack sound for the first time
+	if ((type == MonsterSound::eMonsterSoundAggressive) && (m_prev_sound_type != MonsterSound::eMonsterSoundAggressive))	
+		sound().play(MonsterSound::eMonsterSoundAttackHit);	
 	else
 	{
+		// get count of monsters in squad
+		u8 objects_count = monster_squad().get_squad(this)->get_count(this, 20.f);
 
-		// handle situation, when monster want to play attack sound for the first time
-		if ((type == MonsterSound::eMonsterSoundAggressive) &&
-			(m_prev_sound_type != MonsterSound::eMonsterSoundAggressive))
+		// include myself
+		objects_count++;
+		VERIFY(objects_count > 0);
+		u32 delay = 0;
+
+		switch (type)
 		{
-
-			sound().play(MonsterSound::eMonsterSoundAttackHit);
-		}
-		else
-		{
-			// get count of monsters in squad
-			u8 objects_count = monster_squad().get_squad(this)->get_count(this, 20.f);
-
-			// include myself
-			objects_count++;
-			VERIFY(objects_count > 0);
-
-			u32 delay = 0;
-			switch (type)
-			{
-			case MonsterSound::eMonsterSoundIdle:
-				// check distance to actor
+		case MonsterSound::eMonsterSoundIdle:			
 
 #ifndef ALIFE_MP
-				if (Actor()->Position().distance_to(Position()) > db().m_fDistantIdleSndRange)
-				{
-					delay = u32(float(db().m_dwDistantIdleSndDelay) * _sqrt(float(objects_count)));
-					type = MonsterSound::eMonsterSoundIdleDistant;
-				}
-				else
-				{
-					delay = u32(float(db().m_dwIdleSndDelay) * _sqrt(float(objects_count)));
-				}
-#else
+			// check distance to actor
+			if (Actor()->Position().distance_to(Position()) > db().m_fDistantIdleSndRange)
+			{
+				delay = u32(float(db().m_dwDistantIdleSndDelay) * _sqrt(float(objects_count)));
+				type = MonsterSound::eMonsterSoundIdleDistant;
+			}
+			else
+			{
 				delay = u32(float(db().m_dwIdleSndDelay) * _sqrt(float(objects_count)));
+			}
+#else
+			delay = u32(float(db().m_dwIdleSndDelay) * _sqrt(float(objects_count)));
 #endif
 
-				break;
-			case MonsterSound::eMonsterSoundEat:
-				delay = u32(float(db().m_dwEatSndDelay) * _sqrt(float(objects_count)));
-				break;
-			case MonsterSound::eMonsterSoundAggressive:
-			case MonsterSound::eMonsterSoundPanic:
-				delay = u32(float(db().m_dwAttackSndDelay) * _sqrt(float(objects_count)));
-				break;
-			}
+			break;
 
-			sound().play(type, 0, 0, delay);
+		case MonsterSound::eMonsterSoundEat:
+			delay = u32(float(db().m_dwEatSndDelay) * _sqrt(float(objects_count)));
+			break;
+
+		case MonsterSound::eMonsterSoundAggressive:
+		case MonsterSound::eMonsterSoundPanic:
+			delay = u32(float(db().m_dwAttackSndDelay) * _sqrt(float(objects_count)));
+			break;
 		}
+
+		sound().play(type, 0, 0, delay);
+		m_MpSoundSyncDelay = delay;
 	}
 
 	m_prev_sound_type = type;
@@ -458,6 +464,7 @@ void CBaseMonster::net_Relcase(CObject *O)
 
 		monster_squad().remove_links(O);
 	}
+
 	m_pPhysics_support->in_NetRelcase(O);
 }
 

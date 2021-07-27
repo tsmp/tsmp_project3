@@ -29,10 +29,8 @@ void CStateMonsterHideFromPointAbstract::execute()
 		object->anim().accel_set_braking(data.braking);
 	}
 
-	if (data.action.sound_type != u32(-1))
-	{
-		object->set_state_sound(data.action.sound_type, data.action.sound_delay == u32(-1));
-	}
+	if (data.action.sound_type != u32(-1))	
+		object->set_state_sound(data.action.sound_type, 0, data.action.sound_delay == u32(-1));	
 }
 
 TEMPLATE_SPECIALIZATION

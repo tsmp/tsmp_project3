@@ -66,6 +66,8 @@ extern float psHUD_FOV;
 extern float psSqueezeVelocity;
 extern int psLUA_GCSTEP;
 
+extern BOOL g_bUseCursorAcceleration;
+
 extern int x_m_x;
 extern int x_m_z;
 extern BOOL net_cl_inputguaranteed;
@@ -1525,6 +1527,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask, "mt_level_sounds", &g_mt_config, mtLevelSounds);
 	CMD3(CCC_Mask, "mt_alife", &g_mt_config, mtALife);
 #endif // MASTER_GOLD
+
+	CMD4(CCC_Integer, "mouse_accel", &g_bUseCursorAcceleration, 0, 1);
 
 #ifdef DEBUG
 	CMD4(CCC_Integer, "lua_gcstep", &psLUA_GCSTEP, 1, 1000);

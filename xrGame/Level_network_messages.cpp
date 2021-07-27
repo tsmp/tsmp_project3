@@ -175,6 +175,11 @@ void CLevel::ClientReceive()
 			Send(PRespond, net_flags(TRUE, TRUE));
 		}
 		break;
+		case M_FILE_TRANSFER:
+		{
+			game_events->insert(*P);
+			if (g_bDebugEvents)		ProcessGameEvents();
+		}break;
 		//------------------------------------------------
 		case M_CL_INPUT:
 		{

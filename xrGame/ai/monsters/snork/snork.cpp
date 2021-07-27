@@ -255,11 +255,10 @@ void CSnork::HitEntityInJump(const CEntity *pEntity)
 	HitEntity(pEntity, params.hit_power, params.impulse, params.impulse_dir);
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CSnork::jump(const Fvector &position, float factor)
 {
 	com_man().script_jump(position, factor);
-	sound().play(MonsterSound::eMonsterSoundAggressive);
+	set_state_sound(MonsterSound::eMonsterSoundAggressive);
 }
 
 bool CSnork::check_start_conditions(ControlCom::EControlType type)

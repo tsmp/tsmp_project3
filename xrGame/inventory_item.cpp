@@ -966,9 +966,8 @@ void CInventoryItem::UpdateXForm()
 	// Get matrices
 	int boneL, boneR, boneR2;
 	E->g_WeaponBones(boneL, boneR, boneR2);
-	//	if ((HandDependence() == hd1Hand) || (STATE == eReload) || (!E->g_Alive()))
-	//		boneL = boneR2;
-#pragma todo("TO ALL: serious performance problem")
+
+	//#pragma todo("TO ALL: serious performance problem")
 	V->CalculateBones();
 	Fmatrix &mL = V->LL_GetTransform(u16(boneL));
 	Fmatrix &mR = V->LL_GetTransform(u16(boneR));
@@ -1110,7 +1109,8 @@ ALife::_TIME_ID CInventoryItem::TimePassedAfterIndependant() const
 bool CInventoryItem::CanTrade() const
 {
 	bool res = true;
-#pragma todo("Dima to Andy : why CInventoryItem::CanTrade can be called for the item, which doesn't have owner?")
+
+	//#pragma todo("Dima to Andy : why CInventoryItem::CanTrade can be called for the item, which doesn't have owner?")
 	if (m_pCurrentInventory)
 		res = inventory_owner().AllowItemToTrade(this, m_eItemPlace);
 

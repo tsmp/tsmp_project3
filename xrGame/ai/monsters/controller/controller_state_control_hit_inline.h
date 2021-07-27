@@ -59,7 +59,7 @@ void CStateControllerControlHitAbstract::execute()
 	object->anim().m_tAction = ACT_STAND_IDLE;
 	object->dir().face_target(object->EnemyMan.get_enemy(), 1200);
 
-	object->sound().play(MonsterSound::eMonsterSoundAggressive, 0, 0, object->db().m_dwAttackSndDelay);
+	object->set_state_sound(MonsterSound::eMonsterSoundAggressive, object->db().m_dwAttackSndDelay);
 }
 
 TEMPLATE_SPECIALIZATION
