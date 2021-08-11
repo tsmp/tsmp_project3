@@ -97,7 +97,7 @@ protected:
 	void __stdcall net_Relcase(CObject *O);
 
 public:
-
+	CRandom monsterResp; // для респавна монстров
 	game_sv_Deathmatch();
 	virtual ~game_sv_Deathmatch();
 	virtual void Create(shared_str &options);

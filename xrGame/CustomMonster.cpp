@@ -639,11 +639,38 @@ void CCustomMonster::HitSignal(float /**perc/**/, Fvector & /**vLocalDir/**/, CO
 {
 }
 
+#include "game_sv_deathmatch.h"
+
 void CCustomMonster::Die(CObject *who)
 {
 	inherited::Die(who);
 	//Level().RemoveMapLocationByID(this->ID());
 	Actor()->SetActorVisibility(ID(), 0.f);
+
+	// Спавним точно такого же нового взамен умершего
+	if (OnServer() && !IsGameTypeSingle())
+	{
+		// выбираем случайный рпоинт команды 0
+		game_sv_Deathmatch* game = smart_cast<game_sv_Deathmatch*>(Level().Server->game);
+		const xr_vector<RPoint>& rp = game->rpoints[0];
+		RPoint r;
+		u32 ID = game->monsterResp.randI((int)rp.size());
+		r = rp[ID];
+
+		// получаем id вертексов от актора
+		u16 game_vertex_id = 0;
+		u32 level_vertex_id = 0;
+
+		game_vertex_id = Actor()->ai_location().game_vertex_id();
+		level_vertex_id = Actor()->ai_location().level_vertex_id();
+		u16 parentId = ALife::_OBJECT_ID(-1);
+
+		CSE_Abstract* abstr = game->alife().spawn_item(cNameSect().c_str(), r.P, level_vertex_id, game_vertex_id, parentId);
+
+		// передаем новому custom data с логикой от старого
+		if (CSE_ALifeCreatureAbstract* monster = dynamic_cast<CSE_ALifeCreatureAbstract*>(abstr))		
+			monster->m_ini_string = m_ini_str;		
+	}
 }
 
 BOOL CCustomMonster::net_Spawn(CSE_Abstract *DC)

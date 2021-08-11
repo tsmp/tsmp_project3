@@ -283,6 +283,8 @@ BOOL CGameObject::net_Spawn(CSE_Abstract *DC)
 				O->m_ini_string.size()),
 			FS.get_path("$game_config$")->m_Path);
 #pragma warning(pop)
+
+		m_ini_str = O->m_ini_string;
 	}
 
 	m_story_id = ALife::_STORY_ID(-1);
