@@ -1,11 +1,9 @@
 #pragma once
-
-#include "xrSyncronize.h"
+#include "Threading\xrCriticalSection.h"
 
 class ENGINE_API CEvent;
 typedef CEvent *EVENT;
 
-//---------------------------------------------------------------------
 class ENGINE_API IEventReceiver
 {
 public:

@@ -1,8 +1,5 @@
-#if !defined(AFX_NET_COMPRESSOR_H__21E1ED1C_BF92_4BF0_94A8_18A27486EBFD__INCLUDED_)
-#define AFX_NET_COMPRESSOR_H__21E1ED1C_BF92_4BF0_94A8_18A27486EBFD__INCLUDED_
 #pragma once
-
-#include "xrSyncronize.h"
+#include "Threading\xrCriticalSection.h"
 
 class XRNETWORK_API NET_Compressor
 {
@@ -35,5 +32,3 @@ public:
 	u16 Decompress(BYTE *dest, const u32 &dest_size, BYTE *src, const u32 &count); // return size of compressed
 	void DumpStats(bool brief);
 };
-
-#endif // !defined(AFX_NET_COMPRESSOR_H__21E1ED1C_BF92_4BF0_94A8_18A27486EBFD__INCLUDED_)

@@ -138,7 +138,7 @@
 #include "vector.h"
 
 #include "clsid.h"
-#include "xrSyncronize.h"
+#include "Threading\xrCriticalSection.h"
 #include "xrMemory.h"
 #include "xrDebug.h"
 

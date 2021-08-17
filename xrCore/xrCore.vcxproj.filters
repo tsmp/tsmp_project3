@@ -28,9 +28,6 @@
     <Filter Include="Memory manager">
       <UniqueIdentifier>{57e8874a-8803-4bea-a7bb-108779af414f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Debug core">
-      <UniqueIdentifier>{0e19f5ee-5b09-4b8a-8204-828488a27f92}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shared memory/string library">
       <UniqueIdentifier>{66deabb4-1749-47f4-8702-ae3901773c9f}</UniqueIdentifier>
     </Filter>
@@ -45,6 +42,12 @@
     </Filter>
     <Filter Include="Compression\ppmd">
       <UniqueIdentifier>{5f4a2182-67d1-4548-8832-f974fe4a8e44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debug">
+      <UniqueIdentifier>{0e19f5ee-5b09-4b8a-8204-828488a27f92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Threading">
+      <UniqueIdentifier>{4b478223-0b30-441c-be50-9dbda20f5197}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -136,7 +139,7 @@
       <Filter>Memory manager</Filter>
     </ClCompile>
     <ClCompile Include="xrDebugNew.cpp">
-      <Filter>Debug core</Filter>
+      <Filter>Debug</Filter>
     </ClCompile>
     <ClCompile Include="crc32.cpp">
       <Filter>shared memory/string library</Filter>
@@ -153,7 +156,6 @@
     <ClCompile Include="memory_monitor.cpp">
       <Filter>memory_monitor</Filter>
     </ClCompile>
-    <ClCompile Include="xrSyncronize.cpp" />
     <ClCompile Include="LzHuf.cpp">
       <Filter>Compression</Filter>
     </ClCompile>
@@ -162,6 +164,9 @@
     </ClCompile>
     <ClCompile Include="PPMD\ppmd_compressor.cpp">
       <Filter>Compression\ppmd</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\xrCriticalSection.cpp">
+      <Filter>Threading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -316,10 +321,10 @@
       <Filter>Memory manager</Filter>
     </ClInclude>
     <ClInclude Include="xrDebug.h">
-      <Filter>Debug core</Filter>
+      <Filter>Debug</Filter>
     </ClInclude>
     <ClInclude Include="xrDebug_macros.h">
-      <Filter>Debug core</Filter>
+      <Filter>Debug</Filter>
     </ClInclude>
     <ClInclude Include="xr_resource.h">
       <Filter>shared memory/string library</Filter>
@@ -342,7 +347,6 @@
     <ClInclude Include="memory_monitor.h">
       <Filter>memory_monitor</Filter>
     </ClInclude>
-    <ClInclude Include="xrSyncronize.h" />
     <ClInclude Include="trivial_encryptor.h">
       <Filter>FS</Filter>
     </ClInclude>
@@ -366,6 +370,9 @@
     </ClInclude>
     <ClInclude Include="PPMD\SubAlloc.hpp">
       <Filter>Compression\ppmd</Filter>
+    </ClInclude>
+    <ClInclude Include="threading\xrCriticalSection.h">
+      <Filter>Threading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

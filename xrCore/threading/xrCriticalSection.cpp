@@ -1,7 +1,14 @@
+//  ритическа€ секци€ - класс дл€ защиты общих данных 
+// от параллельного изменени€ разными потоками
+
 #include "stdafx.h"
+#include "xrCriticalSection.h"
+
+#pragma TODO(TSMP: test profile critical sections)
 
 #ifdef PROFILE_CRITICAL_SECTIONS
 static add_profile_portion_callback add_profile_portion = 0;
+
 void set_add_profile_portion(add_profile_portion_callback callback)
 {
 	add_profile_portion = callback;
@@ -33,19 +40,19 @@ struct profiler
 #endif // PROFILE_CRITICAL_SECTIONS
 
 #ifdef PROFILE_CRITICAL_SECTIONS
-xrCriticalSection::xrCriticalSection(LPCSTR id) : m_id(id)
+xrCriticalSection::xrCriticalSection(LPCSTR id) : m_szId(id)
 #else  // PROFILE_CRITICAL_SECTIONS
 xrCriticalSection::xrCriticalSection()
 #endif // PROFILE_CRITICAL_SECTIONS
 {
-	pmutex = xr_alloc<CRITICAL_SECTION>(1);
-	InitializeCriticalSection((CRITICAL_SECTION *)pmutex);
+	m_pCritSection = xr_alloc<CRITICAL_SECTION>(1);
+	InitializeCriticalSection(m_pCritSection);
 }
 
 xrCriticalSection::~xrCriticalSection()
 {
-	DeleteCriticalSection((CRITICAL_SECTION *)pmutex);
-	xr_free(pmutex);
+	DeleteCriticalSection(m_pCritSection);
+	xr_free(m_pCritSection);
 }
 
 #ifdef DEBUG
@@ -55,22 +62,25 @@ extern void OutputDebugStackTrace(const char *header);
 void xrCriticalSection::Enter()
 {
 #ifdef PROFILE_CRITICAL_SECTIONS
+
 #if 0  //def DEBUG
 		static bool					show_call_stack = false;
 		if (show_call_stack)
 			OutputDebugStackTrace	("----------------------------------------------------");
 #endif // DEBUG
-	profiler temp(m_id);
+
+	profiler temp(m_szId);
 #endif // PROFILE_CRITICAL_SECTIONS
-	EnterCriticalSection((CRITICAL_SECTION *)pmutex);
+
+	EnterCriticalSection(m_pCritSection);
 }
 
 void xrCriticalSection::Leave()
 {
-	LeaveCriticalSection((CRITICAL_SECTION *)pmutex);
+	LeaveCriticalSection(m_pCritSection);
 }
 
-BOOL xrCriticalSection::TryEnter()
+bool xrCriticalSection::TryEnter()
 {
-	return TryEnterCriticalSection((CRITICAL_SECTION *)pmutex);
+	return !!TryEnterCriticalSection(m_pCritSection);
 }
