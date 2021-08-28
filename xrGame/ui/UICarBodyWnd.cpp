@@ -592,9 +592,11 @@ void move_item(u16 from_id, u16 to_id, u16 what_id)
 	CGameObject::u_EventSend(P);
 
 	//другому инвентарю - взять вещь
-	CGameObject::u_EventGen(P,
-							GE_OWNERSHIP_TAKE,
-							to_id);
+	if(IsGameTypeSingle())
+		CGameObject::u_EventGen(P, GE_OWNERSHIP_TAKE, to_id);
+	else // Если у нас режим dm/tdm, то forced заставит выкинуть из инвентаря другой ствол с таким же слотом
+		CGameObject::u_EventGen(P, GE_OWNERSHIP_TAKE_MP_FORCED, to_id); 
+
 	P.w_u16(what_id);
 	CGameObject::u_EventSend(P);
 }
