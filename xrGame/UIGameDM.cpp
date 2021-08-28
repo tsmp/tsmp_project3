@@ -186,6 +186,14 @@ void CUIGameDM::StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox)
 	m_game->StartStopMenu(UICarBodyMenu, true);
 }
 
+void CUIGameDM::HideShownDialogs()
+{
+	CUIDialogWnd* mir = MainInputReceiver();
+
+	if (mir && mir == UICarBodyMenu)
+		mir->GetHolder()->StartStopMenu(mir, true);
+}
+
 void CUIGameDM::SetTimeMsgCaption(LPCSTR str)
 {
 	GameCaptions()->setCaption(m_time_caption, str, TIME_MSG_COLOR, true);

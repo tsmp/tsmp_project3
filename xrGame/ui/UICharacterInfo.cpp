@@ -162,6 +162,46 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, const c
 	Init(x, y, width, height, &uiXml);
 }
 
+void CUICharacterInfo::InitCharacterMP(CInventoryOwner* player)
+{
+	m_ownerID = player->object_id();
+	CStringTable stbl;
+	string256 str;
+
+	if (m_icons[eUIName])
+	{
+		m_icons[eUIName]->SetText(player->Name());
+	}
+
+	if (m_icons[eUIRank])
+	{
+		sprintf_s(str, "%s", *stbl.translate(GetRankAsText(player->Rank())));
+		m_icons[eUIRank]->SetText(str);
+	}
+
+	if (m_icons[eUIReputation])
+	{
+		sprintf_s(str, "%s", *stbl.translate(GetReputationAsText(player->Reputation())));
+		m_icons[eUIReputation]->SetText(str);
+	}
+
+	if (m_icons[eUICommunity])
+	{
+		sprintf_s(str, "%s", *CStringTable().translate(player->CharacterInfo().Community().id()));
+		m_icons[eUICommunity]->SetText(str);
+	}
+
+	m_texture_name = "ui_npc_u_actor";
+	m_icons[eUIIcon]->InitTexture(m_texture_name.c_str());
+	m_icons[eUIIcon]->SetStretchTexture(true);
+
+	m_bForceUpdate = true;
+	for (int i = eUIName; i < eMaxCaption; ++i)
+		if (m_icons[i])
+			m_icons[i]->Show(true);
+}
+
+
 void CUICharacterInfo::InitCharacter(u16 id)
 {
 	m_ownerID = id;
@@ -280,6 +320,9 @@ void CUICharacterInfo::UpdateRelation()
 void CUICharacterInfo::Update()
 {
 	inherited::Update();
+
+	if (OnClient)
+		return;
 
 	if (hasOwner() && (m_bForceUpdate || (Device.CurrentFrameNumber % 100 == 0)))
 	{

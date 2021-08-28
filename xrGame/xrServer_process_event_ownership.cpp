@@ -49,9 +49,10 @@ void xrServer::Process_event_ownership(NET_Packet &P, ClientID sender, u32 time,
     xrClientData *c_entity = e_entity->owner;
     xrClientData *c_from = ID_to_client(sender);
 
-    if ((GetServerClient() != c_from) && (c_parent != c_from))
+    // Доверяем при передаче владения только серверному клиенту, клиенту новому владельцу если он подбирает вещь, инвентарному ящику
+    if (GetServerClient() != c_from && c_parent != c_from && !smart_cast<CSE_InventoryBox*>(e_parent))
     {
-        // trust only ServerClient or new_ownerClient
+        Msg("! WARNING: ownership: transfer called by client [%s] for item [%s], not by server!",c_from->ps->name, ent_name_safe(id_entity).c_str());
         return;
     }
 

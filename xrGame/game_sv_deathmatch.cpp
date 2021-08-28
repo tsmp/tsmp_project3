@@ -1549,14 +1549,12 @@ BOOL game_sv_Deathmatch::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 		{
 			//Possibly Addons and/or Outfits
 			return TRUE;
-		};
+		}
 
-		//---------------------------------------------------------------
 		if (e_what->m_tClassID == CLSID_OBJECT_PLAYERS_BAG)
 		{
 			if (e_what->ID_Parent == 0xffff)
 			{
-				//-------------------------------
 				//move all items from rukzak to player
 				if (!e_what->children.empty())
 				{
@@ -1593,30 +1591,30 @@ BOOL game_sv_Deathmatch::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 					if (EventPack.B.count > 2)
 						u_EventSend(EventPack);
 				}
-				//-------------------------------
+
 				//destroy the BAG
 				NET_Packet P;
 				u_EventGen(P, GE_DESTROY, e_what->ID);
 				m_server->OnMessage(P, m_server->GetServerClient()->ID);
-				//-------------------------------
 
-				game_PlayerState *pKiller = get_eid(eid_who);
-				if (pKiller)
+				
+				if (game_PlayerState* pKiller = get_eid(eid_who))
 				{
-					if (g_sv_dm_bPDAHunt)
-					{
-						Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "pda_taken", 0), SKT_PDA);
-					};
-				};
-				//-------------------------------
+					if (g_sv_dm_bPDAHunt)					
+						Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "pda_taken", 0), SKT_PDA);					
+				}
 				return FALSE;
 			}
-		};
-		//---------------------------------------------------------------
+		}
+		
 		if (IsBuyableItem(*e_what->s_name))
 			return TRUE;
-		//---------------------------------------------------------------
 	};
+
+	// кладем вещи в ящик
+	if (smart_cast<CSE_InventoryBox*>(e_who))
+		return true;
+
 	// We don't know what the hell is it, so disallow ownership just for safety
 	return FALSE;
 }

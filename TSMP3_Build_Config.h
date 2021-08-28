@@ -8,4 +8,4 @@
 //#define NO_SINGLE // Запретить запускать сингл
 //#define NO_MULTI_INSTANCES // Запретить запускать несколько экземпляров игры
 #define EVERYBODY_IS_ENEMY // Все нпс считают всех врагами
-//#define USE_ORIGINAL_SCRIPTS_EXTENSION // Использовать расширение .script для скриптов, если закомментировано, то ".lua"
+#define USE_ORIGINAL_SCRIPTS_EXTENSION // Использовать расширение .script для скриптов, если закомментировано, то ".lua"

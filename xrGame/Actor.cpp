@@ -1152,50 +1152,40 @@ void CActor::shedule_Update(u32 DT)
 		m_pVehicleWeLookingAt = smart_cast<CHolderCustom *>(game_object);
 		CEntityAlive *pEntityAlive = smart_cast<CEntityAlive *>(game_object);
 
-		if (GameID() == GAME_SINGLE)
+		if (m_pUsableObject && m_pUsableObject->tip_text())		
+			m_sDefaultObjAction = CStringTable().translate(m_pUsableObject->tip_text());		
+		else
 		{
-			if (m_pUsableObject && m_pUsableObject->tip_text())
+			if (m_pPersonWeLookingAt && pEntityAlive->g_Alive() && GameID() == GAME_SINGLE)
+				m_sDefaultObjAction = m_sCharacterUseAction;
+
+			else if (pEntityAlive && !pEntityAlive->g_Alive() && GameID() == GAME_SINGLE)
 			{
-				m_sDefaultObjAction = CStringTable().translate(m_pUsableObject->tip_text());
-			}
-			else
-			{
-				if (m_pPersonWeLookingAt && pEntityAlive->g_Alive())
-					m_sDefaultObjAction = m_sCharacterUseAction;
+				bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual());
 
-				else if (pEntityAlive && !pEntityAlive->g_Alive())
-				{
-					bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual());
-
-					if (b_allow_drag)
-						m_sDefaultObjAction = m_sDeadCharacterUseOrDragAction;
-					else
-						m_sDefaultObjAction = m_sDeadCharacterUseAction;
-				}
-				else if (m_pVehicleWeLookingAt)
-					m_sDefaultObjAction = m_sCarCharacterUseAction;
-
-				else if (inventory().m_pTarget && inventory().m_pTarget->CanTake())
-					m_sDefaultObjAction = m_sInventoryItemUseAction;
-				//.				else if (m_pInvBoxWeLookingAt)
-				//.					m_sDefaultObjAction = m_sInventoryBoxUseAction;
+				if (b_allow_drag)
+					m_sDefaultObjAction = m_sDeadCharacterUseOrDragAction;
 				else
-					m_sDefaultObjAction = NULL;
+					m_sDefaultObjAction = m_sDeadCharacterUseAction;
 			}
+			else if (m_pVehicleWeLookingAt)
+				m_sDefaultObjAction = m_sCarCharacterUseAction;
+			else if (inventory().m_pTarget && inventory().m_pTarget->CanTake())
+				m_sDefaultObjAction = m_sInventoryItemUseAction;
+			else
+				m_sDefaultObjAction = nullptr;
 		}
 	}
 	else
 	{
-		inventory().m_pTarget = NULL;
-		m_pPersonWeLookingAt = NULL;
-		m_sDefaultObjAction = NULL;
-		m_pUsableObject = NULL;
-		m_pObjectWeLookingAt = NULL;
-		m_pVehicleWeLookingAt = NULL;
-		m_pInvBoxWeLookingAt = NULL;
+		inventory().m_pTarget = nullptr;
+		m_pPersonWeLookingAt = nullptr;
+		m_sDefaultObjAction = nullptr;
+		m_pUsableObject = nullptr;
+		m_pObjectWeLookingAt = nullptr;
+		m_pVehicleWeLookingAt = nullptr;
+		m_pInvBoxWeLookingAt = nullptr;
 	}
-
-	//	UpdateSleep									();
 
 	//для свойст артефактов, находящихся на поясе
 	UpdateArtefactsOnBelt();

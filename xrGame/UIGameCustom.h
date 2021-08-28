@@ -11,6 +11,7 @@ class CUICaption;
 class CUIStatic;
 class CUIWindow;
 class CUIXml;
+class CInventoryBox;
 
 struct SDrawStaticStruct : public IPureDestroyableObject
 {
@@ -126,6 +127,9 @@ public:
 	CUIDialogWnd *MainInputReceiver();
 	virtual void ReInitShownUI() = 0;
 	virtual void HideShownDialogs(){};
+
+	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers) {};
+	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox) {};
 
 	void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color);
 	void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color, float flicker);

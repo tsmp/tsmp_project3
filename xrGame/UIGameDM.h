@@ -92,8 +92,10 @@ public:
 	virtual bool IR_OnKeyboardPress(int dik);
 	virtual bool IR_OnKeyboardRelease(int dik);
 
-	void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers);
-	void StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox);
+	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers) override;
+	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox) override;
+
+	virtual void HideShownDialogs() override;
 
 	void ShowFragList(bool bShow);
 	void ShowPlayersList(bool bShow);
