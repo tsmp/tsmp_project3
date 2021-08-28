@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "UIGameDM.h"
 
-//.#include "UIDMPlayerList.h"
-//.#include "UIDMFragList.h"
 #include "UIDMStatisticWnd.h"
 #include "ui/UISkinSelector.h"
 #include "ui/UIInventoryWnd.h"
@@ -22,6 +20,7 @@
 #include "ui/UIRankIndicator.h"
 #include "ui/UIVoteStatusWnd.h"
 
+#include "ui/UICarBodyWnd.h"
 #include "object_broker.h"
 
 #define MSGS_OFFS 510
@@ -38,10 +37,10 @@
 #define DI2PX(x) float(iFloor((x + 1) * float(UI_BASE_WIDTH) * 0.5f))
 #define DI2PY(y) float(iFloor((y + 1) * float(UI_BASE_HEIGHT) * 0.5f))
 #define SZ(x) x *UI_BASE_WIDTH
-//--------------------------------------------------------------------
+
 CUIGameDM::CUIGameDM()
 {
-	m_game = NULL;
+	m_game = nullptr;
 	m_pFragLists = xr_new<CUIWindow>();
 	m_pPlayerLists = xr_new<CUIWindow>();
 	m_pStatisticWnds = xr_new<CUIWindow>();
@@ -75,26 +74,24 @@ CUIGameDM::CUIGameDM()
 	m_pFragLimitIndicator = xr_new<CUIStatic>();
 	CUIXmlInit::InitStatic(uiXml, "fraglimit", 0, m_pFragLimitIndicator);
 
-	//.	m_voteStatusWnd					= xr_new<UIVoteStatusWnd>();
-	//.	m_voteStatusWnd->InitFromXML	(uiXml);
-	//.	m_voteStatusWnd->Show			(false);
-	m_voteStatusWnd = NULL;
+	m_voteStatusWnd = nullptr;
 
 	m_pInventoryMenu = xr_new<CUIInventoryWnd>();
 	m_pPdaMenu = xr_new<CUIPdaWnd>();
-	m_pMapDesc = NULL; //xr_new<CUIMapDesc>		();
+	m_pMapDesc = nullptr;
+
+	UICarBodyMenu = xr_new<CUICarBodyWnd>();
 }
-//--------------------------------------------------------------------
+
 void CUIGameDM::SetClGame(game_cl_GameState *g)
 {
 	inherited::SetClGame(g);
 	m_game = smart_cast<game_cl_Deathmatch *>(g);
 	R_ASSERT(m_game);
 
-	if (m_pMapDesc && m_pMapDesc->IsShown())
-	{
+	if (m_pMapDesc && m_pMapDesc->IsShown())	
 		HUD().GetUI()->StartStopMenu(m_pMapDesc, true);
-	}
+	
 	delete_data(m_pMapDesc);
 	m_pMapDesc = xr_new<CUIMapDesc>();
 }
@@ -114,7 +111,6 @@ void CUIGameDM::Init()
 
 	float ScreenW = UI_BASE_WIDTH;
 	float ScreenH = UI_BASE_HEIGHT;
-	//-----------------------------------------------------------
 	pFragList->Init(xml_doc, "stats_wnd", "frag_wnd_dm");
 	pPlayerList->Init(xml_doc, "players_wnd", "frag_wnd_dm");
 
@@ -124,22 +120,21 @@ void CUIGameDM::Init()
 	pFragList->SetWndPos((ScreenW - FrameW) / 2.0f, (ScreenH - FrameH) / 2.0f);
 
 	m_pFragLists->AttachChild(pFragList);
-	//-----------------------------------------------------------
+
 	FrameRect = pPlayerList->GetWndRect();
 	FrameW = FrameRect.right - FrameRect.left;
 	FrameH = FrameRect.bottom - FrameRect.top;
 	pPlayerList->SetWndPos((ScreenW - FrameW) / 2.0f, (ScreenH - FrameH) / 2.0f);
 
 	m_pPlayerLists->AttachChild(pPlayerList);
-	//-----------------------------------------------------------
+
 	FrameRect = pStatisticWnd->GetFrameRect();
 	FrameW = FrameRect.right - FrameRect.left;
 	FrameH = FrameRect.bottom - FrameRect.top;
 	pStatisticWnd->SetWndRect((ScreenW - FrameW) / 2.0f, (ScreenH - FrameH) / 2.0f, FrameW, FrameH);
 
 	m_pStatisticWnds->AttachChild(pStatisticWnd);
-};
-//--------------------------------------------------------------------
+}
 
 void CUIGameDM::ClearLists()
 {
@@ -147,7 +142,7 @@ void CUIGameDM::ClearLists()
 	m_pPlayerLists->DetachAll();
 	m_pStatisticWnds->DetachAll();
 }
-//--------------------------------------------------------------------
+
 CUIGameDM::~CUIGameDM()
 {
 	ClearLists();
@@ -158,20 +153,38 @@ CUIGameDM::~CUIGameDM()
 	xr_delete(m_pRankIndicator);
 	xr_delete(m_pFragLimitIndicator);
 	xr_delete(m_voteStatusWnd);
-	//---------------------------------------------------
+
 	delete_data(m_pInventoryMenu);
 	delete_data(m_pPdaMenu);
 	delete_data(m_pMapDesc);
+	delete_data(UICarBodyMenu);
 }
 
 void CUIGameDM::ReInitShownUI()
 {
-	if (m_pInventoryMenu && m_pInventoryMenu->IsShown())
-	{
-		m_pInventoryMenu->InitInventory();
-	}
-};
-//--------------------------------------------------------------------
+	if (m_pInventoryMenu && m_pInventoryMenu->IsShown())	
+		m_pInventoryMenu->InitInventory();	
+	else if (UICarBodyMenu->IsShown())
+		UICarBodyMenu->UpdateLists_delayed();
+}
+
+void CUIGameDM::StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers)
+{
+	if (MainInputReceiver())
+		return;
+
+	UICarBodyMenu->InitCarBody(pOurInv, pOthers);
+	m_game->StartStopMenu(UICarBodyMenu, true);
+}
+
+void CUIGameDM::StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox)
+{
+	if (MainInputReceiver())
+		return;
+
+	UICarBodyMenu->InitCarBody(pOurInv, pBox);
+	m_game->StartStopMenu(UICarBodyMenu, true);
+}
 
 void CUIGameDM::SetTimeMsgCaption(LPCSTR str)
 {
@@ -350,4 +363,5 @@ void CUIGameDM::reset_ui()
 	inherited::reset_ui();
 	m_pInventoryMenu->Reset();
 	m_pPdaMenu->Reset();
+	UICarBodyMenu->Reset();
 }

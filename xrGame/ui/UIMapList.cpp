@@ -195,19 +195,20 @@ const char *CUIMapList::GetCommandLine(LPCSTR player_name)
 
 	return m_command.c_str();
 }
+
 #include "../UIGameCustom.h"
+
 void CUIMapList::LoadMapList()
 {
-
 	GAME_WEATHERS game_weathers = gMapListHelper.GetGameWeathers();
-	GAME_WEATHERS_CIT it = game_weathers.begin();
-	GAME_WEATHERS_CIT it_e = game_weathers.end();
+	auto it = game_weathers.begin();
+	auto it_e = game_weathers.end();
 
 	u32 cnt = 0;
-	for (; it != it_e; ++it, ++cnt)
-	{
+
+	for (; it != it_e; ++it, ++cnt)	
 		AddWeather((*it).m_weather_name, (*it).m_start_time, cnt);
-	}
+	
 	if (game_weathers.size())
 		m_pWeatherSelector->SetItem(0);
 }

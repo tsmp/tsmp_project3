@@ -153,17 +153,12 @@ void CUISequenceSimpleItem::Update()
 	{
 		CUIGameSP *ui_game_sp = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
 
-		if (ui_game_sp)
+		if (ui_game_sp && (!m_pda_section || !xr_strlen(m_pda_section)))
 		{
-			if (!m_pda_section || 0 == xr_strlen(m_pda_section))
-				if (ui_game_sp->PdaMenu->IsShown() ||
-					ui_game_sp->InventoryMenu->IsShown() ||
-					ui_game_sp->TalkMenu->IsShown() ||
-					ui_game_sp->UICarBodyMenu->IsShown() ||
-					ui_game_sp->UIChangeLevelWnd->IsShown())
-					m_UIWindow->Show(false);
-				else
-					m_UIWindow->Show(true);
+			if (ui_game_sp->IsAnyWndActive())
+				m_UIWindow->Show(false);
+			else
+				m_UIWindow->Show(true);
 		}
 	}
 }

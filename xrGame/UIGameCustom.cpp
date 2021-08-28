@@ -316,15 +316,16 @@ const SGameTypeMaps &CMapListHelper::GetMapListFor(const shared_str &game_type)
 
 SGameTypeMaps *CMapListHelper::GetMapListInt(const shared_str &game_type)
 {
+	auto it = m_storage.begin();
+	auto it_e = m_storage.end();
 
-	TSTORAGE_CIT it = m_storage.begin();
-	TSTORAGE_CIT it_e = m_storage.end();
 	for (; it != it_e; ++it)
 	{
 		if (game_type == (*it).m_game_type_name)
 			return &(*it);
 	}
-	return NULL;
+
+	return nullptr;
 }
 
 const SGameTypeMaps &CMapListHelper::GetMapListFor(const EGameTypes game_id)
@@ -334,13 +335,16 @@ const SGameTypeMaps &CMapListHelper::GetMapListFor(const EGameTypes game_id)
 		Load();
 		R_ASSERT2(m_storage.size(), "unable to fill map list");
 	}
-	TSTORAGE_CIT it = m_storage.begin();
-	TSTORAGE_CIT it_e = m_storage.end();
+
+	auto it = m_storage.begin();
+	auto it_e = m_storage.end();
+
 	for (; it != it_e; ++it)
 	{
 		if (game_id == (*it).m_game_type_id)
 			return (*it);
 	}
+
 	return m_storage[0];
 }
 

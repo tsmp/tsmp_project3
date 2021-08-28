@@ -120,14 +120,12 @@ void CUIChangeWeather::ParseWeather()
 	weather_counter = 0;
 
 	GAME_WEATHERS game_weathers = gMapListHelper.GetGameWeathers();
-	GAME_WEATHERS_CIT it = game_weathers.begin();
-	GAME_WEATHERS_CIT it_e = game_weathers.end();
+	auto it = game_weathers.begin();
+	auto it_e = game_weathers.end();
 
-	for (; it != it_e; ++it)
-	{
-		AddWeather((*it).m_weather_name, (*it).m_start_time);
-	}
-};
+	for (; it != it_e; ++it)	
+		AddWeather((*it).m_weather_name, (*it).m_start_time);	
+}
 
 void CUIChangeWeather::AddWeather(const shared_str &weather, const shared_str &time)
 {
