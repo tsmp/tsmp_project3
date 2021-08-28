@@ -240,6 +240,11 @@ void CUICharacterInfo::InitCharacterMP(CInventoryOwner* player)
 	for (int i = eUIName; i < eMaxCaption; ++i)
 		if (m_icons[i])
 			m_icons[i]->Show(true);
+
+	if (m_icons[eUIRelationCaption])
+		m_icons[eUIRelationCaption]->Show(false);
+	if (m_icons[eUIRelation])
+		m_icons[eUIRelation]->Show(false);
 }
 
 
