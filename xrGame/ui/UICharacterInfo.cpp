@@ -168,14 +168,40 @@ void CUICharacterInfo::InitCharacterMP(CInventoryOwner* player)
 	CStringTable stbl;
 	string256 str;
 
+	game_PlayerState* ps = Game().GetPlayerByGameID(Level().CurrentViewEntity()->ID());
+
+	if (!ps)
+		return;
+
 	if (m_icons[eUIName])
 	{
-		m_icons[eUIName]->SetText(player->Name());
+		m_icons[eUIName]->SetText(ps->name);
 	}
 
 	if (m_icons[eUIRank])
 	{
-		sprintf_s(str, "%s", *stbl.translate(GetRankAsText(player->Rank())));
+		switch (ps->rank)
+		{
+		case 0:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_novice"));
+			break;
+		case 1:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_experienced"));
+			break;
+		case 2:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_professional"));
+			break;
+		case 3:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_veteran"));
+			break;
+		case 4:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_legend"));
+			break;
+		default:
+			R_ASSERT(0, "Unknown rank!!");
+			break;
+		}
+
 		m_icons[eUIRank]->SetText(str);
 	}
 
@@ -187,7 +213,22 @@ void CUICharacterInfo::InitCharacterMP(CInventoryOwner* player)
 
 	if (m_icons[eUICommunity])
 	{
-		sprintf_s(str, "%s", *CStringTable().translate(player->CharacterInfo().Community().id()));
+		switch (ps->team)
+		{
+		case 0:
+			sprintf_s(str, "%s", *CStringTable().translate("stalker"));
+			break;
+		case 1:
+			sprintf_s(str, "%s", *CStringTable().translate("ui_st_team1_name"));
+			break;
+		case 2:
+			sprintf_s(str, "%s", *CStringTable().translate("ui_st_team2_name"));
+			break;
+		default:
+			R_ASSERT(0, "Unknown community!!");
+			break;
+		}
+				
 		m_icons[eUICommunity]->SetText(str);
 	}
 
