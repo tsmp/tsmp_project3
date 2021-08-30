@@ -312,11 +312,17 @@ void xrGameSpyServer::Assign_ServerType(string512 &res)
 	Msg(res);
 }
 
+extern std::string server_name;
+
 void xrGameSpyServer::GetServerInfo(CServerInfo *si)
 {
 	string32 tmp, tmp2;
 
-	si->AddItem("Server name", HostName.c_str(), RGB(128, 128, 255));
+	if (!server_name.length())
+		si->AddItem("Server name", HostName.c_str(), RGB(128, 128, 255));
+	else
+		si->AddItem("Server name", server_name.c_str(), RGB(128, 128, 255));
+
 	si->AddItem("Map", MapName.c_str(), RGB(255, 0, 128));
 
 	strcpy_s(tmp, itoa(GetPlayersCount(), tmp2, 10));

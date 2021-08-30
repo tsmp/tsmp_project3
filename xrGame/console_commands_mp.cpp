@@ -1985,6 +1985,24 @@ public:
 	virtual void Info(TInfo& I) { strcpy(I, "Unmute chat for player by ClientID"); }
 };
 
+std::string server_name = "";
+class CCC_SV_SERVERNAME : public IConsole_Command
+{
+	public:
+	CCC_SV_SERVERNAME(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!xr_strlen(args_))
+		{
+			Msg("- set default server name");
+			server_name = "";
+			return;
+		}
+		server_name = args_;
+	}
+	virtual void Info(TInfo& I) { strcpy(I, "set server name"); }
+};
+
 void register_mp_console_commands()
 {
 	CMD1(CCC_Restart, "g_restart");
@@ -2159,4 +2177,5 @@ void register_mp_console_commands()
 	CMD1(CCC_SV_RankUp, "sv_rank_up");
 	CMD1(CCC_SV_RankDown, "sv_rank_down");
 	CMD1(CCC_SV_SetMoneyCount, "sv_set_money");
+	CMD1(CCC_SV_SERVERNAME, "sv_servername");
 }

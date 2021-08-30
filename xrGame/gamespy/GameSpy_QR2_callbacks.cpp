@@ -25,6 +25,8 @@
 			q->BufferAdd(o, "");         \
 	}
 extern u32 g_sv_dwMaxClientPing;
+extern std::string server_name;
+
 void __cdecl callback_serverkey(int keyid, void *outbuf, void *userdata)
 {
 	if (!userdata)
@@ -46,7 +48,10 @@ void __cdecl callback_serverkey(int keyid, void *outbuf, void *userdata)
 	switch (keyid)
 	{
 	case HOSTNAME_KEY:
-		pQR2->BufferAdd(outbuf, pServer->HostName.c_str());
+		if (!server_name.length())
+			pQR2->BufferAdd(outbuf, pServer->HostName.c_str());
+		else
+			pQR2->BufferAdd(outbuf, server_name.c_str());
 		break;
 	case MAPNAME_KEY:
 		if(pServer->m_bHasRusMapName)
