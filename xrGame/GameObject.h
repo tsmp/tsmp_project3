@@ -94,6 +94,7 @@ public:
 
 public:
 	CInifile *m_ini_file;
+	shared_str m_ini_str;
 
 	// Utilities
 	static void u_EventGen(NET_Packet &P, u32 type, u32 dest);

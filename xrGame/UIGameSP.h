@@ -41,10 +41,12 @@ public:
 
 	virtual void HideShownDialogs();
 
+	bool IsAnyWndActive();
+
 	CUIInventoryWnd *InventoryMenu;
 	CUIPdaWnd *PdaMenu;
 	CUITalkWnd *TalkMenu;
-	CUICarBodyWnd *UICarBodyMenu;
+	CUICarBodyWnd* UICarBodyMenu;
 	CChangeLevelWnd *UIChangeLevelWnd;
 };
 

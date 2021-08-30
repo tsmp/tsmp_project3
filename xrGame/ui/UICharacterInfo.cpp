@@ -162,6 +162,92 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, const c
 	Init(x, y, width, height, &uiXml);
 }
 
+void CUICharacterInfo::InitCharacterMP(CInventoryOwner* player)
+{
+	m_ownerID = player->object_id();
+	CStringTable stbl;
+	string256 str;
+
+	game_PlayerState* ps = Game().GetPlayerByGameID(Level().CurrentViewEntity()->ID());
+
+	if (!ps)
+		return;
+
+	if (m_icons[eUIName])
+	{
+		m_icons[eUIName]->SetText(ps->name);
+	}
+
+	if (m_icons[eUIRank])
+	{
+		switch (ps->rank)
+		{
+		case 0:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_novice"));
+			break;
+		case 1:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_experienced"));
+			break;
+		case 2:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_professional"));
+			break;
+		case 3:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_veteran"));
+			break;
+		case 4:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_legend"));
+			break;
+		default:
+			R_ASSERT(0, "Unknown rank!!");
+			break;
+		}
+
+		m_icons[eUIRank]->SetText(str);
+	}
+
+	if (m_icons[eUIReputation])
+	{
+		sprintf_s(str, "%s", *stbl.translate(GetReputationAsText(player->Reputation())));
+		m_icons[eUIReputation]->SetText(str);
+	}
+
+	if (m_icons[eUICommunity])
+	{
+		switch (ps->team)
+		{
+		case 0:
+			sprintf_s(str, "%s", *CStringTable().translate("stalker"));
+			break;
+		case 1:
+			sprintf_s(str, "%s", *CStringTable().translate("ui_st_team1_name"));
+			break;
+		case 2:
+			sprintf_s(str, "%s", *CStringTable().translate("ui_st_team2_name"));
+			break;
+		default:
+			R_ASSERT(0, "Unknown community!!");
+			break;
+		}
+				
+		m_icons[eUICommunity]->SetText(str);
+	}
+
+	m_texture_name = "ui_npc_u_actor";
+	m_icons[eUIIcon]->InitTexture(m_texture_name.c_str());
+	m_icons[eUIIcon]->SetStretchTexture(true);
+
+	m_bForceUpdate = true;
+	for (int i = eUIName; i < eMaxCaption; ++i)
+		if (m_icons[i])
+			m_icons[i]->Show(true);
+
+	if (m_icons[eUIRelationCaption])
+		m_icons[eUIRelationCaption]->Show(false);
+	if (m_icons[eUIRelation])
+		m_icons[eUIRelation]->Show(false);
+}
+
+
 void CUICharacterInfo::InitCharacter(u16 id)
 {
 	m_ownerID = id;
@@ -280,6 +366,9 @@ void CUICharacterInfo::UpdateRelation()
 void CUICharacterInfo::Update()
 {
 	inherited::Update();
+
+	if (OnClient)
+		return;
 
 	if (hasOwner() && (m_bForceUpdate || (Device.CurrentFrameNumber % 100 == 0)))
 	{

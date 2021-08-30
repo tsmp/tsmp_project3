@@ -29,6 +29,7 @@
 #define CAR_BODY_XML "carbody_new.xml"
 #define CARBODY_ITEM_XML "carbody_item.xml"
 
+extern bool IsGameTypeSingle();
 void move_item(u16 from_id, u16 to_id, u16 what_id);
 
 CUICarBodyWnd::CUICarBodyWnd()
@@ -148,7 +149,12 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner *pOur, CInventoryBox *pInvBox)
 	m_pInventoryBox->m_in_use = true;
 
 	u16 our_id = smart_cast<CGameObject *>(m_pOurObject)->ID();
-	m_pUICharacterInfoLeft->InitCharacter(our_id);
+
+	if (IsGameTypeSingle())
+		m_pUICharacterInfoLeft->InitCharacter(our_id);
+	else
+		m_pUICharacterInfoLeft->InitCharacterMP(pOur);
+
 	m_pUIOthersIcon->Show(false);
 	m_pUICharacterInfoRight->ClearInfo();
 	m_pUIPropertiesBox->Hide();
@@ -158,7 +164,6 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner *pOur, CInventoryBox *pInvBox)
 
 void CUICarBodyWnd::InitCarBody(CInventoryOwner *pOur, CInventoryOwner *pOthers)
 {
-
 	m_pOurObject = pOur;
 	m_pOthersObject = pOthers;
 	m_pInventoryBox = NULL;
@@ -166,7 +171,11 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner *pOur, CInventoryOwner *pOthers)
 	u16 our_id = smart_cast<CGameObject *>(m_pOurObject)->ID();
 	u16 other_id = smart_cast<CGameObject *>(m_pOthersObject)->ID();
 
-	m_pUICharacterInfoLeft->InitCharacter(our_id);
+	if (IsGameTypeSingle())
+		m_pUICharacterInfoLeft->InitCharacter(our_id);
+	else
+		m_pUICharacterInfoLeft->InitCharacterMP(pOur);
+
 	m_pUIOthersIcon->Show(true);
 
 	CBaseMonster *monster = NULL;
@@ -583,9 +592,11 @@ void move_item(u16 from_id, u16 to_id, u16 what_id)
 	CGameObject::u_EventSend(P);
 
 	//другому инвентарю - взять вещь
-	CGameObject::u_EventGen(P,
-							GE_OWNERSHIP_TAKE,
-							to_id);
+	if(IsGameTypeSingle())
+		CGameObject::u_EventGen(P, GE_OWNERSHIP_TAKE, to_id);
+	else // Если у нас режим dm/tdm, то forced заставит выкинуть из инвентаря другой ствол с таким же слотом
+		CGameObject::u_EventGen(P, GE_OWNERSHIP_TAKE_MP_FORCED, to_id); 
+
 	P.w_u16(what_id);
 	CGameObject::u_EventSend(P);
 }

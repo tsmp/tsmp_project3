@@ -78,7 +78,7 @@ enum
 {
 	GE_RESPAWN,
 	GE_OWNERSHIP_TAKE, // DUAL: Client request for ownership of an item
-	GE_OWNERSHIP_TAKE_MP_FORCED,
+	GE_OWNERSHIP_TAKE_MP_FORCED, // то же что и выше, но заставит в dm/tdm при подборе оружия выкинуть из инвентаря другое оружие с тем же слотом что и подбираемое
 	GE_OWNERSHIP_REJECT, // DUAL: Client request ownership rejection
 	GE_TRANSFER_AMMO,	 // DUAL: Take ammo out of weapon for our weapon
 	GE_HIT,				 //

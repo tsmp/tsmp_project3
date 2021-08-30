@@ -14,12 +14,14 @@ class UIVoteStatusWnd;
 class CUIInventoryWnd;
 class CUIPdaWnd;
 class CUIMapDesc;
+class CUICarBodyWnd;
+class CInventoryBox;
 
 class CUIGameDM : public CUIGameCustom
 {
 private:
 	game_cl_Deathmatch *m_game;
-	typedef CUIGameCustom inherited;
+	using inherited = CUIGameCustom;
 
 public:
 	CUIInventoryWnd *m_pInventoryMenu;
@@ -33,32 +35,29 @@ protected:
 		fl_force_dword = u32(-1)
 	};
 
-	//.	DEF_VECTOR			(PLAYERS_LISTS, CUIDMPlayerList*);
-
 	CUIWindow *m_pFragLists;
 	CUIWindow *m_pPlayerLists;
-	//-----------------------------------------
 	CUIWindow *m_pStatisticWnds;
-	//-----------------------------------------
+
 	shared_str m_time_caption;
 	shared_str m_spectrmode_caption;
 
 	shared_str m_spectator_caption;
 	shared_str m_pressjump_caption;
 	shared_str m_pressbuy_caption;
-	//.	shared_str					m_vote_caption0, m_vote_caption1;
-	//.	shared_str					m_votetimeresult_caption;
+
 	shared_str m_round_result_caption;
 	shared_str m_force_respawn_time_caption;
 	shared_str m_demo_play_caption;
 	shared_str m_warm_up_caption;
-
-	virtual void ClearLists();
-
+	
 	CUIMoneyIndicator *m_pMoneyIndicator;
 	CUIRankIndicator *m_pRankIndicator;
 	CUIStatic *m_pFragLimitIndicator;
 	UIVoteStatusWnd *m_voteStatusWnd;
+	CUICarBodyWnd* UICarBodyMenu;
+
+	virtual void ClearLists();
 
 public:
 	CUIGameDM();
@@ -92,6 +91,11 @@ public:
 
 	virtual bool IR_OnKeyboardPress(int dik);
 	virtual bool IR_OnKeyboardRelease(int dik);
+
+	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers) override;
+	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox) override;
+
+	virtual void HideShownDialogs() override;
 
 	void ShowFragList(bool bShow);
 	void ShowPlayersList(bool bShow);

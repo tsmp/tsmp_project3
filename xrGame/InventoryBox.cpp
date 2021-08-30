@@ -3,6 +3,7 @@
 #include "level.h"
 #include "actor.h"
 #include "game_object_space.h"
+#include "Inventory.h"
 
 #include "script_callback_ex.h"
 #include "script_game_object.h"
@@ -50,6 +51,10 @@ void CInventoryBox::OnEvent(NET_Packet &P, u16 type)
 	}
 	break;
 	};
+
+	// Это заставит перерисоваться инвентарь. Добавлено на случай если несколько игроков параллельно обыскивают один и тот же ящик
+	if (CActor* player = smart_cast<CActor*>(Level().CurrentControlEntity()))
+		player->cast_inventory_owner()->inventory().InvalidateState();
 }
 
 BOOL CInventoryBox::net_Spawn(CSE_Abstract *DC)
