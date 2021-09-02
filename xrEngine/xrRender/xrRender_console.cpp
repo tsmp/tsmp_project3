@@ -100,6 +100,8 @@ float ps_r2_sun_lumscale_amb = 1.0f;
 float ps_r2_gmaterial = 0.f; //
 float ps_r2_zfill = 0.1f;	 // .1f
 
+float ps_current_detail_scale = 1.f;
+
 float ps_r2_dhemi_scale = 1.f; // 1.5f
 int ps_r2_dhemi_count = 5;	   // 5
 int ps_r2_wait_sleep = 0;
@@ -291,6 +293,7 @@ void xrRender_initconsole()
 
 	//.	CMD4(CCC_Float,		"r__detail_density",	&ps_r__Detail_density,		.05f,	0.99f	);
 	CMD4(CCC_Float, "r__detail_density", &ps_r__Detail_density, .2f, 0.6f);
+	CMD4(CCC_Float, "r__detail_scale", &ps_current_detail_scale, 0.2f, 3.0f);
 
 #ifdef DEBUG
 	CMD4(CCC_Float, "r__detail_l_ambient", &ps_r__Detail_l_ambient, .5f, .95f);
