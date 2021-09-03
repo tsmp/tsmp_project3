@@ -72,10 +72,74 @@ CDetailManager::CDetailManager()
 	hw_BatchSize = 0;
 	hw_VB = 0;
 	hw_IB = 0;
+
+	// KD: variable detail radius
+	dm_size = dm_current_size;
+	dm_cache_line = dm_current_cache_line;
+	dm_cache1_line = dm_current_cache1_line;
+	dm_cache_size = dm_current_cache_size;
+	dm_fade = dm_current_fade;
+
+#ifdef USE_MEMORY_MONITOR
+	cache_level1 = (CacheSlot1**)Memory.mem_alloc(dm_cache1_line * sizeof(CacheSlot1*), "CDetailManager::cache_level1");
+#else
+	cache_level1 = (CacheSlot1**)Memory.mem_alloc(dm_cache1_line * sizeof(CacheSlot1*));
+#endif
+
+	for (u32 i = 0; i < dm_cache1_line; ++i)
+	{
+
+#ifdef USE_MEMORY_MONITOR
+		cache_level1[i] = (CacheSlot1*)Memory.mem_alloc(dm_cache1_line * sizeof(CacheSlot1), "CDetailManager::cache_level1 " + i);
+#else
+		cache_level1[i] = (CacheSlot1*)Memory.mem_alloc(dm_cache1_line * sizeof(CacheSlot1));
+#endif
+
+		for (u32 j = 0; j < dm_cache1_line; ++j)
+			new(&cache_level1[i][j]) CacheSlot1();
+	}
+
+#ifdef USE_MEMORY_MONITOR
+	cache = (Slot***)Memory.mem_alloc(dm_cache_line * sizeof(Slot**), "CDetailManager::cache");
+#else
+	cache = (Slot***)Memory.mem_alloc(dm_cache_line * sizeof(Slot**));
+#endif
+
+	for (u32 i = 0; i < dm_cache_line; ++i)
+#ifdef USE_MEMORY_MONITOR
+		cache[i] = (Slot**)Memory.mem_alloc(dm_cache_line * sizeof(Slot*), "CDetailManager::cache " + i);
+#else
+		cache[i] = (Slot**)Memory.mem_alloc(dm_cache_line * sizeof(Slot*));
+#endif
+
+#ifdef USE_MEMORY_MONITOR
+	cache_pool = (Slot*)Memory.mem_alloc(dm_cache_size * sizeof(Slot), "CDetailManager::cache_pool");
+#else
+	cache_pool = (Slot*)Memory.mem_alloc(dm_cache_size * sizeof(Slot));
+#endif
+
+	for (u32 i = 0; i < dm_cache_size; ++i)
+		new(&cache_pool[i]) Slot();
 }
 
 CDetailManager::~CDetailManager()
 {
+	for (u32 i = 0; i < dm_cache_size; ++i)
+		cache_pool[i].~Slot();
+	Memory.mem_free(cache_pool);
+
+	for (u32 i = 0; i < dm_cache_line; ++i)
+		Memory.mem_free(cache[i]);
+	Memory.mem_free(cache);
+
+	for (u32 i = 0; i < dm_cache1_line; ++i)
+	{
+		for (u32 j = 0; j < dm_cache1_line; ++j)
+			cache_level1[i][j].~CacheSlot1();
+		Memory.mem_free(cache_level1[i]);
+	}
+
+	Memory.mem_free(cache_level1);
 }
 
 void CDetailManager::Load()

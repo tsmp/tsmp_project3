@@ -4,13 +4,16 @@
 #include "xrRender_console.h"
 
 u32 ps_Preset = 2;
-xr_token qpreset_token[] = {
+
+xr_token qpreset_token[] = 
+{
 	{"Minimum", 0},
 	{"Low", 1},
 	{"Default", 2},
 	{"High", 3},
 	{"Extreme", 4},
-	{0, 0}};
+	{0, 0}
+};
 
 // Common
 //int		ps_r__Supersample			= 1		;
@@ -113,10 +116,24 @@ float ps_r2_slight_fade = 1.f; // 1.f
 float ps_r2_gloss_factor = 1.0f;
 //- Mad Max
 
+// detail draw radius
+u32 dm_size = 24;
+u32 dm_cache1_line = 12; // dm_size * 2 / dm_cache1_count
+u32 dm_cache_line = 49; // dm_size + 1 + dm_size
+u32 dm_cache_size = 2401; // dm_cache_line * dm_cache_line
+
+u32 dm_current_size = 24;
+u32 dm_current_cache1_line = 12; // dm_current_size * 2 / dm_cache1_count
+u32 dm_current_cache_line = 49; // dm_current_size + 1 + dm_current_size
+u32 dm_current_cache_size = 2401; //dm_current_cache_line * dm_current_cache_line
+float dm_current_fade = 47.5; // float(2 * dm_current_size) - .5f;
+float dm_fade = 47.5; // float(2 * dm_size) - .5f;
+
+int ps_r__detail_radius = 49;
+
 #include "..\Console.h"
 #include "..\Console_commands.h"
 
-//-----------------------------------------------------------------------
 class CCC_tf_Aniso : public CCC_Integer
 {
 public:
@@ -141,6 +158,7 @@ public:
 		apply();
 	}
 };
+
 class CCC_tf_MipBias : public CCC_Float
 {
 public:
@@ -164,6 +182,7 @@ public:
 		apply();
 	}
 };
+
 class CCC_R2GM : public CCC_Float
 {
 public:
@@ -193,6 +212,7 @@ public:
 		}
 	}
 };
+
 class CCC_Screenshot : public IConsole_Command
 {
 public:
@@ -206,6 +226,7 @@ public:
 		::Render->Screenshot(IRender_interface::SM_NORMAL, image);
 	}
 };
+
 class CCC_ModelPoolStat : public IConsole_Command
 {
 public:
@@ -215,7 +236,7 @@ public:
 		RImplementation.Models->dump();
 	}
 };
-//-----------------------------------------------------------------------
+
 class CCC_Preset : public CCC_Token
 {
 public:
@@ -264,7 +285,33 @@ public:
 	}
 };
 #endif
-//-----------------------------------------------------------------------
+
+class CCC_detail_radius : public CCC_Integer
+{
+public:
+	void apply()
+	{
+		dm_current_size = iFloor((float)ps_r__detail_radius / 4) * 2;
+		dm_current_cache1_line = dm_current_size * 2 / 4; // assuming cache1_count = 4
+		dm_current_cache_line = dm_current_size + 1 + dm_current_size;
+		dm_current_cache_size = dm_current_cache_line * dm_current_cache_line;
+		dm_current_fade = float(2 * dm_current_size) - .5f;
+	}
+
+	CCC_detail_radius(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max) {};
+
+	void Execute(LPCSTR args) override
+	{
+		CCC_Integer::Execute(args);
+		apply();
+	}
+
+	void Status(TStatus& S) override
+	{
+		CCC_Integer::Status(S);
+	}
+};
+
 void xrRender_initconsole()
 {
 	CMD3(CCC_Preset, "_preset", &ps_Preset, qpreset_token);
@@ -294,6 +341,7 @@ void xrRender_initconsole()
 	//.	CMD4(CCC_Float,		"r__detail_density",	&ps_r__Detail_density,		.05f,	0.99f	);
 	CMD4(CCC_Float, "r__detail_density", &ps_r__Detail_density, .2f, 0.6f);
 	CMD4(CCC_Float, "r__detail_scale", &ps_current_detail_scale, 0.2f, 3.0f);
+	CMD4(CCC_detail_radius, "r__detail_radius", &ps_r__detail_radius, 10, 300);
 
 #ifdef DEBUG
 	CMD4(CCC_Float, "r__detail_l_ambient", &ps_r__Detail_l_ambient, .5f, .95f);
