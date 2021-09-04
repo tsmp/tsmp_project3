@@ -292,7 +292,7 @@ void CCustomMonster::shedule_Update(u32 DT)
 	if (g_Alive())
 #endif
 	{
-		if (g_mt_config.test(mtAiVision))
+		if (IsGameTypeSingle() && g_mt_config.test(mtAiVision))
 #ifndef DEBUG
 			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
 #else  // DEBUG
@@ -420,7 +420,7 @@ void CCustomMonster::UpdateCL()
 	}
 	*/
 
-	if (g_mt_config.test(mtSoundPlayer))
+	if (IsGameTypeSingle() && g_mt_config.test(mtSoundPlayer))
 		Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::update_sound_player));
 	else
 	{

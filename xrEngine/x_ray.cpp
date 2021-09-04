@@ -6,22 +6,14 @@
 
 #include "stdafx.h"
 #include "igame_persistent.h"
-
-
 #include "xr_input.h"
-
 #include "std_classes.h"
 #include "ispatial.h"
-
 #include "resource.h"
 #include "LightAnimLibrary.h"
-
 #include "DedicatedSrvConsole.h"
-#include <process.h>
 #include "..\TSMP3_Build_Config.h"
 #include "Console_commands.h"
-#include <debugapi.h>
-
 #include "xrApplication.h"
 
 // global variables
@@ -31,18 +23,21 @@ ENGINE_API string512 g_sLaunchOnExit_params;
 ENGINE_API string512 g_sLaunchOnExit_app;
 
 ENGINE_API bool g_dedicated_server = false;
-
 ENGINE_API CInifile *pGameIni = nullptr;
 
 // computing build id
 XRCORE_API LPCSTR build_date;
 XRCORE_API u32 build_id;
 
-static LPSTR month_id[12] = {
-	"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+static LPSTR month_id[12] = 
+{
+	"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+};
 
-static int days_in_month[12] = {
-	31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+static int days_in_month[12] = 
+{
+	31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+};
 
 static int start_day = 31;	  // 31
 static int start_month = 1;	  // January

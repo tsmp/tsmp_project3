@@ -485,10 +485,13 @@ void CAI_Stalker::net_Destroy()
 			&CAI_Stalker::update_object_handler));
 
 #ifdef DEBUG
-	fastdelegate::FastDelegate0<> f = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
-	xr_vector<fastdelegate::FastDelegate0<>>::const_iterator I;
-	I = std::find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
-	VERIFY(I == Device.seqParallel.end());
+	if (IsGameTypeSingle())
+	{
+		fastdelegate::FastDelegate0<> f = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
+		xr_vector<fastdelegate::FastDelegate0<>>::const_iterator I;
+		I = std::find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
+		VERIFY(I == Device.seqParallel.end());
+	}
 #endif // DEBUG
 
 	xr_delete(m_ce_close);
@@ -873,7 +876,7 @@ void CAI_Stalker::UpdateCL()
 
 	if (g_Alive() && OnServer())
 	{
-		if (g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
+		if (IsGameTypeSingle() && g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
 		{
 			fastdelegate::FastDelegate0<> f = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
 #ifdef DEBUG
@@ -996,7 +999,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 #if 0 //def DEBUG
 		memory().visual().check_visibles();
 #endif
-		if (g_mt_config.test(mtAiVision))
+		if (IsGameTypeSingle() && g_mt_config.test(mtAiVision))
 			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
 		else
 		{

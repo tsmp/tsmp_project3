@@ -114,7 +114,7 @@ void CALifeUpdateManager::shedule_Update(u32 dt)
 	if (!initialized())
 		return;
 
-	if (!m_first_time && g_mt_config.test(mtALife))
+	if (IsGameTypeSingle() && !m_first_time && g_mt_config.test(mtALife))
 	{
 		Device.seqParallel.push_back(
 			fastdelegate::FastDelegate0<>(

@@ -154,12 +154,10 @@ public:
 
 	ICF void remove_from_seq_parallel(const fastdelegate::FastDelegate0<> &delegate)
 	{
-		xr_vector<fastdelegate::FastDelegate0<>>::iterator I = std::find(
-			seqParallel.begin(),
-			seqParallel.end(),
-			delegate);
-		if (I != seqParallel.end())
-			seqParallel.erase(I);
+		auto It = std::find(seqParallel.begin(), seqParallel.end(), delegate);
+
+		if (It != seqParallel.end())
+			seqParallel.erase(It);
 	}
 };
 
