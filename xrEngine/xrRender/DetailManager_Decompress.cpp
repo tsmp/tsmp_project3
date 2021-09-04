@@ -35,6 +35,8 @@ IC bool InterpolateAndDither(float *alpha255, u32 x, u32 y, u32 sx, u32 sy, u32 
 	return c > dither[col][row];
 }
 
+extern float ps_current_detail_scale;
+
 void CDetailManager::cache_Decompress(Slot *S)
 {
 	VERIFY(S);
@@ -149,6 +151,7 @@ void CDetailManager::cache_Decompress(Slot *S)
 
 			// Angles and scale
 			Item.scale = r_scale.randF(Dobj->m_fMinScale * 0.5f, Dobj->m_fMaxScale * 0.9f);
+			Item.scale *= ps_current_detail_scale;
 
 			// X-Form BBox
 			Fmatrix mScale, mXform;
