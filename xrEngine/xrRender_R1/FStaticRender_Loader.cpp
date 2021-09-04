@@ -2,7 +2,7 @@
 #include "../fbasicvisual.h"
 #include "../fmesh.h"
 #include "../xrLevel.h"
-#include "../x_ray.h"
+#include "../xrApplication.h"
 #include "../IGame_Persistent.h"
 #include "../xrCore/stream_reader.h"
 

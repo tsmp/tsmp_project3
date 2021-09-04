@@ -17,7 +17,6 @@
 #include "alife_registry_container.h"
 #include "xrserver.h"
 #include "level.h"
-#include "../x_ray.h"
 #include "saved_game_wrapper.h"
 #include "string_table.h"
 #include "../igame_persistent.h"

@@ -19,6 +19,9 @@
 #include "../CameraManager.h"
 #include "actor.h"
 
+#include "string_table.h"
+#include "../xrApplication.h"
+
 #ifndef MASTER_GOLD
 #include "custommonster.h"
 #endif // MASTER_GOLD
@@ -597,8 +600,7 @@ void CGamePersistent::OnRenderPPUI_PP()
 {
 	MainMenu()->OnRenderPPUI_PP();
 }
-#include "string_table.h"
-#include "../x_ray.h"
+
 void CGamePersistent::LoadTitle(LPCSTR str)
 {
 	string512 buff;

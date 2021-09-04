@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "igame_level.h"
 #include "xr_effgamma.h"
-#include "x_ray.h"
 #include "console.h"
 #include "console_commands.h"
 #include "fbasicvisual.h"

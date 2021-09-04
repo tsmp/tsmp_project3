@@ -150,7 +150,7 @@
     <ClInclude Include="stdafx.h">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="x_ray.h">
+    <ClInclude Include="xrApplication.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -870,6 +870,9 @@
       <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
     </ClCompile>
     <ClCompile Include="xrCustomResImport.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="xrApplication.cpp">
       <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>

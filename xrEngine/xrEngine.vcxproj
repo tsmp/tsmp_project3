@@ -677,7 +677,7 @@
     <ClInclude Include="Console_commands.h" />
     <ClInclude Include="xr_object.h" />
     <ClInclude Include="xr_object_list.h" />
-    <ClInclude Include="x_ray.h" />
+    <ClInclude Include="xrApplication.h" />
     <ClInclude Include="flight.h" />
   </ItemGroup>
   <ItemGroup>
@@ -839,6 +839,7 @@
     <ClCompile Include="thunderbolt.cpp" />
     <ClCompile Include="tntQAVI.cpp" />
     <ClCompile Include="tss_def.cpp" />
+    <ClCompile Include="xrApplication.cpp" />
     <ClCompile Include="xrCustomResImport.cpp" />
     <ClCompile Include="xrHemisphere.cpp" />
     <ClCompile Include="xrImage_Resampler.cpp" />
