@@ -56,7 +56,7 @@ extern BOOL g_sv_tdm_bAutoTeamBalance;
 extern BOOL g_sv_tdm_bAutoTeamSwap;
 extern BOOL g_sv_tdm_bFriendlyIndicators;
 extern BOOL g_sv_tdm_bFriendlyNames;
-extern float g_sv_tdm_fFriendlyFireModifier;
+extern BOOL g_sv_tdm_bFriendlyFireEnabled;
 extern BOOL g_bLeaveTDemo;
 extern int g_sv_tdm_iTeamKillLimit;
 extern int g_sv_tdm_bTeamKillPunishment;
@@ -2134,7 +2134,7 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer, "sv_auto_team_swap", (int *)&g_sv_tdm_bAutoTeamSwap, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_friendly_indicators", (int *)&g_sv_tdm_bFriendlyIndicators, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_friendly_names", (int *)&g_sv_tdm_bFriendlyNames, 0, 1);
-	CMD4(CCC_SV_Float, "sv_friendlyfire", &g_sv_tdm_fFriendlyFireModifier, 0.0f, 2.0f);
+	CMD4(CCC_SV_Integer, "sv_friendlyfire", (int*)&g_sv_tdm_bFriendlyFireEnabled, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_teamkill_limit", &g_sv_tdm_iTeamKillLimit, 0, 100);
 	CMD4(CCC_SV_Integer, "sv_teamkill_punish", (int *)&g_sv_tdm_bTeamKillPunishment, 0, 1);
 

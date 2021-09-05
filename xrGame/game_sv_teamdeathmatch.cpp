@@ -5,30 +5,31 @@
 #include "xrserver.h"
 #include "Level.h"
 #include "game_cl_base.h"
-
 #include "ui\UIBuyWndShared.h"
 
-//-------------------------------------------------------
 extern s32 g_sv_dm_dwFragLimit;
-//-------------------------------------------------------
+
 BOOL g_sv_tdm_bAutoTeamBalance = FALSE;
 BOOL g_sv_tdm_bAutoTeamSwap = TRUE;
 BOOL g_sv_tdm_bFriendlyIndicators = FALSE;
 BOOL g_sv_tdm_bFriendlyNames = FALSE;
-float g_sv_tdm_fFriendlyFireModifier = 1.0f;
-//-------------------------------------------------------
+BOOL g_sv_tdm_bFriendlyFireEnabled = FALSE;
+
 int g_sv_tdm_iTeamKillLimit = 3;
 int g_sv_tdm_bTeamKillPunishment = TRUE;
-//-------------------------------------------------------
-BOOL game_sv_TeamDeathmatch::isFriendlyFireEnabled() { return (int(g_sv_tdm_fFriendlyFireModifier * 100.0f) > 0); };
-float game_sv_TeamDeathmatch::GetFriendlyFire() { return (int(g_sv_tdm_fFriendlyFireModifier * 100.0f) > 0) ? g_sv_tdm_fFriendlyFireModifier : 0.0f; };
+
+BOOL game_sv_TeamDeathmatch::isFriendlyFireEnabled() 
+{ 
+	return g_sv_tdm_bFriendlyFireEnabled;
+}
+
 BOOL game_sv_TeamDeathmatch::Get_AutoTeamBalance() { return g_sv_tdm_bAutoTeamBalance; };
 BOOL game_sv_TeamDeathmatch::Get_AutoTeamSwap() { return g_sv_tdm_bAutoTeamSwap; };
 BOOL game_sv_TeamDeathmatch::Get_FriendlyIndicators() { return g_sv_tdm_bFriendlyIndicators; };
 BOOL game_sv_TeamDeathmatch::Get_FriendlyNames() { return g_sv_tdm_bFriendlyNames; };
 int game_sv_TeamDeathmatch::Get_TeamKillLimit() { return g_sv_tdm_iTeamKillLimit; };
 BOOL game_sv_TeamDeathmatch::Get_TeamKillPunishment() { return g_sv_tdm_bTeamKillPunishment; };
-//-------------------------------------------------------
+
 void game_sv_TeamDeathmatch::Create(shared_str &options)
 {
 	inherited::Create(options);
@@ -414,10 +415,11 @@ void game_sv_TeamDeathmatch::OnPlayerHitPlayer_Case(game_PlayerState *ps_hitter,
 	{
 		if (ps_hitter && ps_hitted)
 		{
-			if (ps_hitter->team == ps_hitted->team && ps_hitter != ps_hitted)
+			if (!isFriendlyFireEnabled() && ps_hitter->team == ps_hitted->team && ps_hitter != ps_hitted)
 			{
-				pHitS->power *= GetFriendlyFire();
-				pHitS->impulse *= (GetFriendlyFire() > 1.0f) ? GetFriendlyFire() : 1.0f;
+				pHitS->power = 0;
+				pHitS->impulse = 0;
+				pHitS->ap = 0;
 			}
 		}
 	}
@@ -485,18 +487,18 @@ void game_sv_TeamDeathmatch::OnFraglimitExceed()
 
 	OnDelayedRoundEnd(eRoundEnd_FragLimit); //"FRAG_limit"
 }
-//-----------------------------------------------
+
 void game_sv_TeamDeathmatch::ReadOptions(shared_str &options)
 {
 	inherited::ReadOptions(options);
-	//-------------------------------
+
 	g_sv_tdm_bAutoTeamBalance = get_option_i(*options, "abalance", (g_sv_tdm_bAutoTeamBalance ? 1 : 0)) != 0;
 	g_sv_tdm_bAutoTeamSwap = get_option_i(*options, "aswap", (g_sv_tdm_bAutoTeamSwap ? 1 : 0)) != 0;
 	g_sv_tdm_bFriendlyIndicators = get_option_i(*options, "fi", (g_sv_tdm_bFriendlyIndicators ? 1 : 0)) != 0;
 	g_sv_tdm_bFriendlyNames = get_option_i(*options, "fn", (g_sv_tdm_bFriendlyNames ? 1 : 0)) != 0;
 
-	float fFF = get_option_f(*options, "ffire", g_sv_tdm_fFriendlyFireModifier);
-	g_sv_tdm_fFriendlyFireModifier = fFF;
+	BOOL bFF = get_option_i(*options, "ffire", g_sv_tdm_bFriendlyFireEnabled);
+	g_sv_tdm_bFriendlyFireEnabled = bFF;
 }
 
 static bool g_bConsoleCommandsCreated_TDM = false;
