@@ -71,16 +71,16 @@ void CInventoryBox::net_Relcase(CObject *O)
 {
 	inherited::net_Relcase(O);
 }
+
 #include "inventory_item.h"
+
 void CInventoryBox::AddAvailableItems(TIItemContainer &items_container) const
 {
-	xr_vector<u16>::const_iterator it = m_items.begin();
-	xr_vector<u16>::const_iterator it_e = m_items.end();
-
-	for (; it != it_e; ++it)
+	for (const u16& itemId : m_items)	
 	{
-		PIItem itm = smart_cast<PIItem>(Level().Objects.net_Find(*it));
-		VERIFY(itm);
-		items_container.push_back(itm);
+		if (PIItem itm = smart_cast<PIItem>(Level().Objects.net_Find(itemId)))
+			items_container.push_back(itm);
+		else
+			Msg("! ERROR!!! Cant Get item with id %u from InventoryBox", itemId);
 	}
 }
