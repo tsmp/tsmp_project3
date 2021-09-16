@@ -183,7 +183,17 @@ void InitLog()
 void CreateLog(BOOL nl)
 {
 	no_log = nl;
-	strconcat(sizeof(logFName), logFName, Core.ApplicationName, "_", Core.UserName, ".log");
+
+	string64 t_stemp;
+	timestamp(t_stemp);
+
+	strcpy(logFName, Core.ApplicationName);
+	strcat(logFName, "_");
+	strcat(logFName, Core.UserName);
+	strcat(logFName, "_");
+	strcat(logFName, t_stemp);
+	strcat(logFName, ".log");
+
 	if (FS.path_exist("$logs$"))
 		FS.update_path(logFName, "$logs$", logFName);
 	if (!no_log)
