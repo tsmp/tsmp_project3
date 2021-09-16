@@ -1,5 +1,4 @@
-#ifndef __X_RAY_H__
-#define __X_RAY_H__
+#pragma once
 
 // refs
 class ENGINE_API CGameFont;
@@ -17,14 +16,12 @@ class ENGINE_API CApplication : public pureFrame,
 	string256 app_title;
 
 private:
-	//	ref_shader				ll_hLogo;
-	//	ref_shader				ll_hLogo1;
+
 	ref_shader hLevelLogo;
 	ref_geom ll_hGeom;
 	ref_geom ll_hGeom2;
 
 	ref_shader sh_progress;
-	//	ref_shader				sh_progress2;
 	int load_stage;
 
 	u32 ll_dwReference;
@@ -65,5 +62,3 @@ public:
 };
 
 extern ENGINE_API CApplication *pApp;
-
-#endif //__XR_BASE_H__

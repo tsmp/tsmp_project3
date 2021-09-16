@@ -57,7 +57,6 @@ public:
 	virtual void OnTimelimitExceed();
 
 	virtual BOOL isFriendlyFireEnabled();
-	virtual float GetFriendlyFire();
 
 	virtual BOOL Get_AutoTeamBalance();
 	virtual BOOL Get_AutoTeamSwap();

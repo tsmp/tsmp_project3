@@ -292,7 +292,7 @@ void CCustomMonster::shedule_Update(u32 DT)
 	if (g_Alive())
 #endif
 	{
-		if (g_mt_config.test(mtAiVision))
+		if (IsGameTypeSingle() && g_mt_config.test(mtAiVision))
 #ifndef DEBUG
 			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
 #else  // DEBUG
@@ -393,10 +393,7 @@ void CCustomMonster::net_update::lerp(CCustomMonster::net_update &A, CCustomMons
 
 void CCustomMonster::update_sound_player()
 {
-	if (m_sound_player)
-		sound().update(client_update_fdelta());
-	else
-		Msg("! cant update sound player");
+	sound().update(client_update_fdelta());
 }
 
 void CCustomMonster::UpdateCL()
@@ -420,7 +417,7 @@ void CCustomMonster::UpdateCL()
 	}
 	*/
 
-	if (g_mt_config.test(mtSoundPlayer))
+	if (IsGameTypeSingle() && g_mt_config.test(mtSoundPlayer))
 		Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::update_sound_player));
 	else
 	{

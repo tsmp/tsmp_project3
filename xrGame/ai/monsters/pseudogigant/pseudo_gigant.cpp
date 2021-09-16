@@ -182,21 +182,25 @@ void CPseudoGigant::reinit()
 
 void CPseudoGigant::event_on_step()
 {
-	//////////////////////////////////////////////////////////////////////////
-	// Earthquake Effector	//////////////
-	CActor *pActor = smart_cast<CActor *>(Level().CurrentEntity());
-	if (pActor)
+	CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+
+	if (!pActor)
+		return;
+
+	// Earthquake Effector
+	float distanceToActor = pActor->Position().distance_to(Position());
+	float maxEffectDistance = MAX_STEP_RADIUS;
+
+	if (distanceToActor < maxEffectDistance)
 	{
-		float dist_to_actor = pActor->Position().distance_to(Position());
-		float max_dist = MAX_STEP_RADIUS;
-		if (dist_to_actor < max_dist)
-			Actor()->Cameras().AddCamEffector(xr_new<CPseudogigantStepEffector>(
-				step_effector.time,
-				step_effector.amplitude,
-				step_effector.period_number,
-				(max_dist - dist_to_actor) / (1.2f * max_dist)));
+		float effectPower = (maxEffectDistance - distanceToActor) / (1.2f * maxEffectDistance);
+
+		pActor->Cameras().AddCamEffector(xr_new<CPseudogigantStepEffector>(
+			step_effector.time,
+			step_effector.amplitude,
+			step_effector.period_number,
+			effectPower));
 	}
-	//////////////////////////////////
 }
 
 bool CPseudoGigant::check_start_conditions(ControlCom::EControlType type)

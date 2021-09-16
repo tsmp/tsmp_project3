@@ -6,7 +6,7 @@
 #include "WallmarksEngine.h"
 
 #include "..\xr_object.h"
-#include "..\x_ray.h"
+//#include "..\x_ray.h"
 #include "..\GameFont.h"
 #include "..\SkeletonCustom.h"
 

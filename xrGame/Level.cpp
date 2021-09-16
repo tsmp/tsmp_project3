@@ -607,7 +607,7 @@ void CLevel::OnFrame()
 	if (!g_dedicated_server)
 #endif
 	{
-		if (g_mt_config.test(mtLUA_GC))
+		if (IsGameTypeSingle() && g_mt_config.test(mtLUA_GC))
 			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CLevel::script_gc));
 		else
 			script_gc();

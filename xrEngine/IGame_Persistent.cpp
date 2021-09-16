@@ -4,7 +4,6 @@
 #include "IGame_Persistent.h"
 #include "environment.h"
 
-#include "x_ray.h"
 #include "IGame_Level.h"
 #include "Console.h"
 #include "resourcemanager.h"

@@ -165,8 +165,8 @@ void __cdecl callback_serverkey(int keyid, void *outbuf, void *userdata)
 		ADD_KEY_VAL(gmTDM, pQR2, BufferAdd_Int, outbuf, Get_FriendlyNames());
 		break; //if (gmTDM)pQR2->BufferAdd_Int(outbuf, gmTDM->Get_FriendlyNames		());			break;
 	case G_FRIENDLY_FIRE_KEY:
-		ADD_KEY_VAL_INT(gmTDM, pQR2, BufferAdd_Int, outbuf, GetFriendlyFire() * 100.0f);
-		break; //if (gmTDM)pQR2->BufferAdd_Int(outbuf, int(gmTDM->GetFriendlyFire()*100.0f));		break;
+		ADD_KEY_VAL_INT(gmTDM, pQR2, BufferAdd_Int, outbuf, isFriendlyFireEnabled());
+		break;
 			   //---- game_sv_artefacthunt ----
 	case G_ARTEFACTS_COUNT_KEY:
 		ADD_KEY_VAL(gmAhunt, pQR2, BufferAdd_Int, outbuf, Get_ArtefactsCount());

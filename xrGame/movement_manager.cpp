@@ -27,6 +27,8 @@
 
 using namespace MovementManager;
 
+extern ENGINE_API bool g_dedicated_server;
+
 const float verify_distance = 15.f;
 
 CMovementManager::CMovementManager(CCustomMonster *object)
@@ -356,7 +358,7 @@ void CMovementManager::on_restrictions_change()
 
 bool CMovementManager::can_use_distributed_compuations(u32 option) const
 {
-	return (!m_build_at_once && g_mt_config.test(option) && !object().getDestroy());
+	return (!g_dedicated_server && !m_build_at_once && g_mt_config.test(option) && !object().getDestroy());
 }
 
 void CMovementManager::on_frame(CPHMovementControl *movement_control, Fvector &dest_position)

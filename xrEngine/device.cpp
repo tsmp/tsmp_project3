@@ -13,7 +13,7 @@
 #include <d3dx9.h>
 #pragma warning(default : 4995)
 
-#include "x_ray.h"
+#include "xrApplication.h"
 #include "render.h"
 
 #include "..\TSMP3_Build_Config.h"
@@ -304,17 +304,18 @@ void CRenderDevice::Run()
 
 				// Ensure, that second thread gets chance to execute anyway
 				if (CurrentFrameNumber != mt_Thread_marker)
-#endif
-					ProcessTasksForMT();				
+					ProcessTasksForMT();	
 
-#ifdef DEDICATED_SERVER
+#else // DEDICATED_SERVER
+				Device.seqFrameMT.Process(rp_Frame);
+
 				u32 frameEndTime = m_GlobalTimer.GetElapsed_ms();
 				u32 frameTime = (frameEndTime - frameStartTime);
 				u32 dedicatedSrvUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
 
 				if (frameTime < dedicatedSrvUpdateDelta)
 					Sleep(dedicatedSrvUpdateDelta - frameTime);
-#endif
+#endif // DEDICATED_SERVER
 
 			}
 			else

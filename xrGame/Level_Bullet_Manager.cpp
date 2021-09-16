@@ -449,15 +449,13 @@ void CBulletManager::Render()
 void CBulletManager::CommitRenderSet() // @ the end of frame
 {
 	m_BulletsRendered = m_Bullets;
-	if (g_mt_config.test(mtBullets))
-	{
-		Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CBulletManager::UpdateWorkload));
-	}
-	else
-	{
-		UpdateWorkload();
-	}
+
+	if (!g_dedicated_server && g_mt_config.test(mtBullets))	
+		Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CBulletManager::UpdateWorkload));	
+	else	
+		UpdateWorkload();	
 }
+
 void CBulletManager::CommitEvents() // @ the start of frame
 {
 	for (u32 _it = 0; _it < m_Events.size(); _it++)

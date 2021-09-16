@@ -146,11 +146,7 @@ void CSpaceRestrictionManager::unrestrict(ALife::_OBJECT_ID id)
 	CLIENT_RESTRICTIONS::iterator I = m_clients->find(id);
 
 	if (I == m_clients->end())
-	{
-		VERIFY(false);
-		Msg("! attempt to unrestrict without clients!");
-		return;
-	}
+		return;	
 	
 	m_clients->erase(I);
 	collect_garbage();
