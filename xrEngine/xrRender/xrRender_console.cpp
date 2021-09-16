@@ -4,6 +4,7 @@
 #include "xrRender_console.h"
 
 u32 ps_Preset = 2;
+ENGINE_API bool g_dedicated_server;
 
 xr_token qpreset_token[] = 
 {
@@ -217,8 +218,15 @@ class CCC_Screenshot : public IConsole_Command
 {
 public:
 	CCC_Screenshot(LPCSTR N) : IConsole_Command(N){};
+
 	virtual void Execute(LPCSTR args)
 	{
+		if (g_dedicated_server)
+		{
+			Msg("! Console screenshots are not available on dedicated server!");
+			return;
+		}
+
 		string_path name;
 		name[0] = 0;
 		sscanf(args, "%s", name);
