@@ -6,6 +6,7 @@
 #include "igame_persistent.h"
 #include "std_classes.h"
 #include "ispatial.h"
+#include "..\TSMP3_Build_Config.h"
 
 int max_load_stage = 0;
 

@@ -5,6 +5,7 @@
 //	AlexMX		- Alexander Maksimchuk
 
 #include "stdafx.h"
+#include <process.h>
 #include "igame_persistent.h"
 #include "xr_input.h"
 #include "std_classes.h"

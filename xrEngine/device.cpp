@@ -307,6 +307,7 @@ void CRenderDevice::Run()
 					ProcessTasksForMT();	
 
 #else // DEDICATED_SERVER
+				Device.seqFrameMT.Process(rp_Frame);
 
 				u32 frameEndTime = m_GlobalTimer.GetElapsed_ms();
 				u32 frameTime = (frameEndTime - frameStartTime);
