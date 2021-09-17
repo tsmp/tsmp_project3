@@ -9,41 +9,59 @@ void xrServer::Process_update(NET_Packet &P, ClientID sender)
 	xrClientData *CL = ID_to_client(sender);
 	R_ASSERT2(CL, "Process_update client not found");
 
+	u32 readStartPos = P.r_tell();
+	bool updateIsCorrupted = false;
+
 	if (g_Dump_Update_Read)
 		Msg("---- UPDATE_Read --- ");
 
 	R_ASSERT(CL->flags.bLocal);
+
 	// while has information
 	while (!P.r_eof())
 	{
 		// find entity
 		u16 ID;
 		u8 size;
-
 		P.r_u16(ID);
 		P.r_u8(size);
+
 		u32 _pos = P.r_tell();
 		CSE_Abstract *E = ID_to_entity(ID);
 
+		if (updateIsCorrupted)		
+			Msg("! READING UPDATE. ID: %u, entity: %s %s", ID, E ? E->name() : "unknown", E ? E->name_replace() : "unknown");		
+
 		if (E)
 		{
-			//Msg				("sv_import: %d '%s'",E->ID,E->name_replace());
 			E->net_Ready = TRUE;
 			E->UPDATE_Read(P);
+
+			// апдейт поврежден, не надо отправлять клиентам потом в UPDATE_Write
+			if (updateIsCorrupted)
+				E->net_Ready = FALSE;
 
 			if (g_Dump_Update_Read)
 				Msg("* %s : %d - %d", E->name(), size, P.r_tell() - _pos);
 
 			if ((P.r_tell() - _pos) != size)
 			{
+				if (updateIsCorrupted)
+					return;
+
 				string16 tmp;
 				CLSID2TEXT(E->m_tClassID, tmp);
-				Debug.fatal(DEBUG_INFO, "Beer from the creator of '%s'", tmp);
+				Msg("! FATAL ERROR. Beer from the creator of '%s'", tmp);
+				
+				// выведем информацию об объектах апдейта, прочтем еще раз его
+				updateIsCorrupted = true;
+				P.r_pos = readStartPos;
 			}
 		}
 		else
 			P.r_advance(size);
 	}
+
 	if (g_Dump_Update_Read)
 		Msg("-------------------- ");
 }
