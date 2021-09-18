@@ -116,7 +116,7 @@ BOOL CInventoryOwner::net_Spawn(CSE_Abstract *DC)
 		return FALSE;
 	CSE_Abstract *E = (CSE_Abstract *)(DC);
 
-	if (IsGameTypeSingle())
+	if (!smart_cast<CSE_ALifeCreatureActor*>(E) || IsGameTypeSingle())
 	{
 		CSE_ALifeTraderAbstract *pTrader = NULL;
 		if (E)
