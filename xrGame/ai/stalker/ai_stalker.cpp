@@ -273,6 +273,11 @@ void CAI_Stalker::reload(LPCSTR section)
 	m_power_fx_factor = pSettings->r_float(section, "power_fx_factor");
 }
 
+void CAI_Stalker::PlaySound(u32 soundType, u32 maxStartTime, u32 minStartTime, u32 maxStopTime, u32 minStopTime)
+{
+	sound().play(soundType, maxStartTime, minStartTime, maxStopTime, minStopTime);
+}
+
 void CAI_Stalker::Die(CObject *who)
 {
 	notify_on_wounded_or_killed(who);
@@ -281,9 +286,9 @@ void CAI_Stalker::Die(CObject *who)
 
 	sound().set_sound_mask(0);
 	if (is_special_killer(who))
-		sound().play(eStalkerSoundDieInAnomaly);
+		PlaySound(eStalkerSoundDieInAnomaly);
 	else
-		sound().play(eStalkerSoundDie);
+		PlaySound(eStalkerSoundDie);
 
 	m_hammer_is_clutched = m_clutched_hammer_enabled && !CObjectHandler::planner().m_storage.property(ObjectHandlerSpace::eWorldPropertyStrapped) && !::Random.randI(0, 2);
 
@@ -902,11 +907,7 @@ void CAI_Stalker::UpdateCL()
 				(eBodyStateStand == movement().body_state()) &&
 				(eMovementTypeRun == movement().movement_type()))
 			{
-				sound().play(eStalkerSoundRunningInDanger);
-			}
-			else
-			{
-				//				sound().play	(eStalkerSoundWalkingInDanger);
+				PlaySound(eStalkerSoundRunningInDanger);
 			}
 		}
 	}

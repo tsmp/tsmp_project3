@@ -224,18 +224,13 @@ void CStalkerActionCombatBase::select_queue_params(const float &distance, u32 &m
 	/**/
 }
 
-void CStalkerActionCombatBase::play_panic_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
+void CStalkerActionCombatBase::play_panic_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time)
 {
-	object().sound().play(
-		object().memory().enemy().selected()->human_being() ? eStalkerSoundPanicHuman : eStalkerSoundPanicMonster,
-		max_start_time,
-		min_start_time,
-		max_stop_time,
-		min_stop_time,
-		id);
+	auto soundType = object().memory().enemy().selected()->human_being() ? eStalkerSoundPanicHuman : eStalkerSoundPanicMonster;
+	object().PlaySound(soundType, max_start_time, min_start_time, max_stop_time);
 }
 
-void CStalkerActionCombatBase::play_attack_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
+void CStalkerActionCombatBase::play_attack_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time)
 {
 	if (!object().memory().enemy().selected()->human_being())
 		return;
@@ -264,16 +259,15 @@ void CStalkerActionCombatBase::play_attack_sound(u32 max_start_time, u32 min_sta
 	else
 		sound_type = eStalkerSoundAttackNoAllies;
 
-	object().sound().play(
+	object().PlaySound(
 		sound_type,
 		max_start_time,
 		min_start_time,
 		max_stop_time,
-		min_stop_time,
-		id);
+		min_stop_time);
 }
 
-void CStalkerActionCombatBase::play_start_search_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
+void CStalkerActionCombatBase::play_start_search_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time)
 {
 	if (!object().agent_manager().member().can_cry_noninfo_phrase())
 		return;
@@ -289,11 +283,10 @@ void CStalkerActionCombatBase::play_start_search_sound(u32 max_start_time, u32 m
 
 	bool search_with_allies = object().agent_manager().member().combat_members().size() > 1;
 
-	object().sound().play(
+	object().PlaySound(
 		search_with_allies ? eStalkerSoundSearch1WithAllies : eStalkerSoundSearch1NoAllies,
 		max_start_time,
 		min_start_time,
 		max_stop_time,
-		min_stop_time,
-		id);
+		min_stop_time);
 }

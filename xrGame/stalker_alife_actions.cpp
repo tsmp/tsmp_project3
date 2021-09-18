@@ -90,7 +90,7 @@ void CStalkerActionNoALife::execute()
 {
 	inherited::execute();
 #ifndef STALKER_DEBUG_MODE
-	object().sound().play(eStalkerSoundHumming, 60000, 10000);
+	object().PlaySound(eStalkerSoundHumming, 60000, 10000);
 	if (Device.dwTimeGlobal >= m_stop_weapon_handling_time)
 		if (!object().best_weapon())
 			object().CObjectHandler::set_goal(eObjectActionIdle);

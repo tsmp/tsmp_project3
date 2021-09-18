@@ -465,7 +465,7 @@ void CStalkerActionTakeCover::initialize()
 		if (object().agent_manager().member().can_cry_noninfo_phrase())
 			if (object().Position().distance_to_sqr(object().memory().enemy().selected()->Position()) < _sqr(10.f))
 				if (object().memory().visual().visible_now(object().memory().enemy().selected()) && object().agent_manager().member().group_behaviour())
-					object().sound().play(eStalkerSoundBackup, 0, 0, 6000, 4000);
+					object().PlaySound(eStalkerSoundBackup, 0, 0, 6000, 4000);
 	}
 #endif
 }
@@ -717,23 +717,18 @@ void CStalkerActionHoldPosition::execute()
 
 	if (object().agent_manager().member().cover_detouring() && fire_make_sense())
 	{
-		//		object().sound().play		(eStalkerSoundDetour,3000,3000,10000,10000);
-		object().sound().play(eStalkerSoundNeedBackup, 3000, 3000, 10000, 10000);
+		object().PlaySound(eStalkerSoundNeedBackup, 3000, 3000, 10000, 10000);
 		fire();
 	}
-	else
-	{
-		aim_ready();
-	}
+	else	
+		aim_ready();	
 
 	if (object().memory().enemy().selected())
 	{
 		CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
 
 		if (mem_object.m_object)
-		{
-			object().best_cover(mem_object.m_object_params.m_position);
-		}
+			object().best_cover(mem_object.m_object_params.m_position);		
 	}
 }
 
@@ -772,8 +767,7 @@ void CStalkerActionDetourEnemy::initialize()
 
 	//#ifndef SILENT_COMBAT
 	if (object().memory().enemy().selected()->human_being() && object().agent_manager().member().group_behaviour())
-		//		object().sound().play			(eStalkerSoundNeedBackup);
-		object().sound().play(eStalkerSoundDetour);
+		object().PlaySound(eStalkerSoundDetour);
 	//#endif
 }
 
@@ -1311,7 +1305,7 @@ void CStalkerActionCriticalHit::initialize()
 		object().CObjectHandler::set_goal(eObjectActionIdle, object().best_weapon());
 
 	object().sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection, true, true));
-	object().sound().play(eStalkerSoundInjuring);
+	object().PlaySound(eStalkerSoundInjuring);
 }
 
 void CStalkerActionCriticalHit::finalize()

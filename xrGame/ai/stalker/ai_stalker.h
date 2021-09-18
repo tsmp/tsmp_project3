@@ -220,14 +220,11 @@ public:
 	virtual void reload(LPCSTR section);
 	virtual void LoadSounds(LPCSTR section);
 
-
-
 	virtual void PH_B_CrPr(); // actions & operations before physic correction-prediction steps
 	virtual void PH_I_CrPr(); // actions & operations after correction before prediction steps
 	virtual void PH_A_CrPr(); // actions & operations after phisic correction-prediction steps
 
 	void postprocess_packet(stalker_interpolation::net_update_A& packet);
-
 
 	virtual BOOL net_Spawn(CSE_Abstract *DC);
 	virtual void net_Export(NET_Packet &P);
@@ -567,6 +564,7 @@ public:
 	virtual bool use_throw_randomness();
 	void throw_target(const Fvector &position);
 	void update_throw_params();
+	void PlaySound(u32 soundType, u32 maxStartTime = 0, u32 minStartTime = 0, u32 maxStopTime = 0, u32 minStopTime = 0);
 
 #ifdef DEBUG
 public:

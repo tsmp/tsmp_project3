@@ -215,7 +215,7 @@ void CStalkerActionSmartTerrain::execute()
 	if (completed())
 		object().CObjectHandler::set_goal(eObjectActionStrapped, object().best_weapon());
 
-	object().sound().play(eStalkerSoundHumming, 60000, 10000);
+	object().PlaySound(eStalkerSoundHumming, 60000, 10000);
 
 	CSE_ALifeHumanAbstract *stalker = smart_cast<CSE_ALifeHumanAbstract *>(ai().alife().objects().object(m_object->ID()));
 	VERIFY(stalker);
