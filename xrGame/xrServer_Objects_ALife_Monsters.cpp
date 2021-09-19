@@ -1922,7 +1922,7 @@ BOOL CSE_ALifeHumanStalker::Net_Relevant()
 	if (IsGameTypeSingle())
 		return inherited1::Net_Relevant();
 	else
-		return g_Alive();
+		return g_Alive() || !m_SoundUpdates.empty();
 }
 
 void CSE_ALifeHumanStalker::UPDATE_Write(NET_Packet &tNetPacket)
@@ -1968,6 +1968,8 @@ void CSE_ALifeHumanStalker::UPDATE_Write_MP(NET_Packet& tNetPacket)
 	tNetPacket.w_u8(u_head_anm_slot);
 	tNetPacket.w_u16(u_script_anm_idx);
 	tNetPacket.w_u8(u_script_anm_slot);
+
+	UPDATE_Write_Sounds(tNetPacket);
 }
 
 void CSE_ALifeHumanStalker::UPDATE_Read(NET_Packet &tNetPacket)
@@ -2024,6 +2026,51 @@ void CSE_ALifeHumanStalker::UPDATE_Read_MP(NET_Packet& tNetPacket)
 	tNetPacket.r_u8(u_script_anm_slot);
 	fHealth = f_health;
 	o_model = o_torso.yaw;
+
+	UPDATE_Read_Sounds(tNetPacket);
+}
+
+void CSE_ALifeHumanStalker::UPDATE_Read_Sounds(NET_Packet& tNetPacket)
+{
+	StalkerSoundUpdateHolder holder;
+
+	tNetPacket.r_u8(holder.m_mpSoundSyncType);
+	tNetPacket.r_u16(holder.m_mpSoundSyncMaxStartTime);
+	tNetPacket.r_u16(holder.m_mpSoundSyncMinStartTime);
+	tNetPacket.r_u16(holder.m_mpSoundSyncMaxStopTime);
+	tNetPacket.r_u16(holder.m_mpSoundSyncMinStopTime);
+
+	if (holder.m_mpSoundSyncType != static_cast<u8>(-1))
+	{
+		// чтобы тяжелое дыхание не забивало всю очередь
+		if (holder.m_mpSoundSyncType == 19 && !m_SoundUpdates.empty())
+			return;
+
+		m_SoundUpdates.push_back(holder);
+	}
+}
+
+void CSE_ALifeHumanStalker::UPDATE_Write_Sounds(NET_Packet& P)
+{
+	if (m_SoundUpdates.empty())
+	{
+		P.w_u8(static_cast<u8>(-1));
+		P.w_u16(0);
+		P.w_u16(0);
+		P.w_u16(0);
+		P.w_u16(0);
+	}
+	else
+	{
+		StalkerSoundUpdateHolder& holder = m_SoundUpdates.front();
+
+		P.w_u8(holder.m_mpSoundSyncType);
+		P.w_u16(holder.m_mpSoundSyncMaxStartTime);
+		P.w_u16(holder.m_mpSoundSyncMinStartTime);
+		P.w_u16(holder.m_mpSoundSyncMaxStopTime);
+		P.w_u16(holder.m_mpSoundSyncMinStopTime);
+		m_SoundUpdates.pop_front();
+	}
 }
 
 void CSE_ALifeHumanStalker::load(NET_Packet &tNetPacket)

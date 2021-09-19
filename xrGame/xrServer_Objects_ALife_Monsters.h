@@ -485,6 +485,8 @@ void UPDATE_Write_Original(NET_Packet& tNetPacket);
 void UPDATE_Read_Original(NET_Packet& tNetPacket);
 void UPDATE_Write_MP(NET_Packet& tNetPacket);
 void UPDATE_Read_MP(NET_Packet& tNetPacket);
+void UPDATE_Write_Sounds(NET_Packet& tNetPacket);
+void UPDATE_Read_Sounds(NET_Packet& tNetPacket);
 
 float f_health;
 float f_head_dir_pitch;
@@ -502,6 +504,22 @@ u16 u_head_anm_idx;
 u8 u_head_anm_slot;
 u16 u_script_anm_idx;
 u8 u_script_anm_slot;
+
+struct StalkerSoundUpdateHolder
+{
+	u8 m_mpSoundSyncType;
+	u16 m_mpSoundSyncMaxStartTime;
+	u16 m_mpSoundSyncMinStartTime;
+	u16 m_mpSoundSyncMaxStopTime;
+	u16 m_mpSoundSyncMinStopTime;
+
+	bool operator!=(StalkerSoundUpdateHolder& other)
+	{
+		return m_mpSoundSyncType != other.m_mpSoundSyncType;
+	}
+};
+
+std::deque<StalkerSoundUpdateHolder> m_SoundUpdates;
 
 virtual BOOL Net_Relevant();
 

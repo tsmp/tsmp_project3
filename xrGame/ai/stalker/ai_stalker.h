@@ -233,6 +233,8 @@ public:
 	virtual void net_Import(NET_Packet &P);
 	void net_Import_Single(NET_Packet& P);
 	void net_Import_MP(NET_Packet& P);
+	void net_Export_Sounds(NET_Packet& P);
+	void net_Import_Sounds(NET_Packet& P);
 	virtual void net_Destroy();
 	virtual void net_Save(NET_Packet &P);
 	virtual BOOL net_SaveRelevant();
@@ -393,6 +395,12 @@ private:
 	xr_vector<CTradeItem> m_temp_items;
 	u32 m_total_money;
 	bool m_sell_info_actuality;
+
+	u8 m_mpSoundSyncType;
+	u16 m_mpSoundSyncMaxStartTime;
+	u16 m_mpSoundSyncMinStartTime;
+	u16 m_mpSoundSyncMaxStopTime;
+	u16 m_mpSoundSyncMinStopTime;
 
 protected:
 	u32 fill_items(CInventory &inventory, CGameObject *old_owner, ALife::_OBJECT_ID new_owner_id);

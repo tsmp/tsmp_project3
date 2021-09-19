@@ -87,6 +87,12 @@ CAI_Stalker::CAI_Stalker()
 	m_debug_planner = 0;
 #endif // DEBUG
 	m_registered_in_combat_on_migration = false;
+
+	m_mpSoundSyncType = static_cast<u8>(-1);
+	m_mpSoundSyncMaxStartTime = 0;
+	m_mpSoundSyncMinStartTime = 0;
+	m_mpSoundSyncMaxStopTime = 0;
+	m_mpSoundSyncMinStopTime = 0;
 }
 
 CAI_Stalker::~CAI_Stalker()
@@ -275,16 +281,24 @@ void CAI_Stalker::reload(LPCSTR section)
 
 void CAI_Stalker::PlaySound(u32 soundType, u32 maxStartTime, u32 minStartTime, u32 maxStopTime, u32 minStopTime)
 {
+	if (OnClient())
+		return;
+
+	m_mpSoundSyncType = static_cast<u8>(soundType);
+	m_mpSoundSyncMaxStartTime = static_cast<u16>(maxStartTime);
+	m_mpSoundSyncMinStartTime = static_cast<u16>(minStartTime);
+	m_mpSoundSyncMaxStopTime = static_cast<u16>(maxStopTime);
+	m_mpSoundSyncMinStopTime = static_cast<u16>(minStopTime);
+
 	sound().play(soundType, maxStartTime, minStartTime, maxStopTime, minStopTime);
 }
 
 void CAI_Stalker::Die(CObject *who)
 {
 	notify_on_wounded_or_killed(who);
-
 	SelectAnimation(XFORM().k, movement().detail().direction(), movement().speed());
-
 	sound().set_sound_mask(0);
+
 	if (is_special_killer(who))
 		PlaySound(eStalkerSoundDieInAnomaly);
 	else
@@ -577,6 +591,8 @@ void CAI_Stalker::net_Export_MP(NET_Packet& P)
 
 	P.w_u16(m_animation_manager->script().animation().idx);
 	P.w_u8(m_animation_manager->script().animation().slot);
+
+	net_Export_Sounds(P);
 }
 
 void CAI_Stalker::net_Export_Single(NET_Packet &P)
@@ -767,6 +783,8 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 
 	setVisible(TRUE);
 	setEnabled(TRUE);
+
+	net_Import_Sounds(P);
 }
 
 void CAI_Stalker::net_Import_Single(NET_Packet &P)
@@ -813,6 +831,35 @@ void CAI_Stalker::net_Import_Single(NET_Packet &P)
 
 	setVisible(TRUE);
 	setEnabled(TRUE);
+}
+
+void CAI_Stalker::net_Export_Sounds(NET_Packet& P)
+{
+	P.w_u8(m_mpSoundSyncType);
+	P.w_u16(m_mpSoundSyncMaxStartTime);
+	P.w_u16(m_mpSoundSyncMinStartTime);
+	P.w_u16(m_mpSoundSyncMaxStopTime);
+	P.w_u16(m_mpSoundSyncMinStopTime);
+	m_mpSoundSyncType = static_cast<u8>(-1);
+}
+
+void CAI_Stalker::net_Import_Sounds(NET_Packet& P)
+{
+	P.r_u8(m_mpSoundSyncType);
+	P.r_u16(m_mpSoundSyncMaxStartTime);
+	P.r_u16(m_mpSoundSyncMinStartTime);
+	P.r_u16(m_mpSoundSyncMaxStopTime);
+	P.r_u16(m_mpSoundSyncMinStopTime);
+
+	if (m_mpSoundSyncType == static_cast<u8>(-1))
+		return;
+
+	sound().play(
+		static_cast<u32>(m_mpSoundSyncType)
+		, static_cast<u32>(m_mpSoundSyncMaxStartTime)
+		, static_cast<u32>(m_mpSoundSyncMinStartTime)
+		, static_cast<u32>(m_mpSoundSyncMaxStopTime)
+		, static_cast<u32>(m_mpSoundSyncMinStopTime));
 }
 
 void CAI_Stalker::update_object_handler()
