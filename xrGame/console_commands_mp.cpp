@@ -614,18 +614,17 @@ public:
 		s5 = atoi(str5.c_str());
 
 		Level().Server->clients_Lock();
-
 		u32 cnt = Level().Server->game->get_players_count();
-		u32 it;
+
+		HWID hwid(s1, s2, s3, s4, s5);
+		Level().Server->BanClientHW(hwid);
 		
-		for (it = 0; it < cnt; it++)
+		for (u32 it = 0; it < cnt; it++)
 		{
 			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
 
-			if (l_pC && ((l_pC->s1 == s1 && l_pC->s2 == s2) || (l_pC->s3 == s3 && l_pC->s4 == s4 && l_pC->s5 == s5)))
+			if (l_pC && l_pC->m_HWID == hwid)
 			{
-				Level().Server->BanClientHW(l_pC, 999999999);
-
 				if (Level().Server->GetServerClient() != l_pC)
 				{	
 						Level().Server->DisconnectClient(l_pC);
@@ -689,34 +688,8 @@ public:
 		std::string str5(hwstr.begin() + delimiters[3] + 1, hwstr.end());
 		s5 = atoi(str5.c_str());
 
-		Level().Server->clients_Lock();
-
-		u32 cnt = Level().Server->game->get_players_count();
-		u32 it;
-
-		Level().Server->UnBanHW(s1, s2, s3, s4, s5);
-
-		for (it = 0; it < cnt; it++)
-		{
-			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
-
-			if (l_pC && ((l_pC->s1 == s1 && l_pC->s2 == s2) || (l_pC->s3 == s3 && l_pC->s4 == s4 && l_pC->s5 && s5)))
-			{
-				if (Level().Server->GetServerClient() != l_pC)
-				{
-					Level().Server->DisconnectClient(l_pC);
-					break;
-				}
-				else
-				{
-					Msg("! Can't disconnect server's client");
-					break;
-				}
-			}
-		}
-
-		Level().Server->clients_Unlock();
-	
+		HWID hwid(s1, s2, s3, s4, s5);
+		Level().Server->UnBanHW(hwid);	
 	};
 
 	virtual void Info(TInfo& I) { strcpy(I, "Ban Player by IP"); }
@@ -818,7 +791,7 @@ public:
 				, Address.to_string().c_str()
 				, l_pC->ps->ping);
 
-			Msg("His hwid: %hu-%hu-%hu-%hu-%hu", l_pC->s1, l_pC->s2, l_pC->s3, l_pC->s4, l_pC->s5);
+			Msg("His hwid: %hu-%hu-%hu-%hu-%hu", l_pC->m_HWID.s1, l_pC->m_HWID.s2, l_pC->m_HWID.s3, l_pC->m_HWID.s4, l_pC->m_HWID.s5);
 		}
 
 		Level().Server->clients_Unlock();

@@ -158,15 +158,11 @@ void xrServer::OnHardwareVerifyRespond(IClient* CL, NET_Packet& P)
 	unsigned short hw5;
 	memcpy(&hw5, &ch[8], sizeof(hw1));
 	
-	Msg("His hwid: %hu-%hu-%hu-%hu-%hu", hw1, hw2, hw3, hw4, hw5);
+	//Msg("His hwid: %hu-%hu-%hu-%hu-%hu", hw1, hw2, hw3, hw4, hw5);
+	HWID hwid(hw1, hw2, hw3, hw4, hw5);
+	CL->m_HWID = hwid;
 
-	CL->s1 = hw1;
-	CL->s2 = hw2;
-	CL->s3 = hw3;
-	CL->s4 = hw4;
-	CL->s5 = hw5;
-
-	if (GetBannedHW(hw1, hw2, hw3, hw4, hw5))
+	if (GetBannedHW(hwid))
 	{
 		Msg("! Player banned by hwid tried to connect");
 		SendConnectResult(CL, 0, 0, "You are banned.");
