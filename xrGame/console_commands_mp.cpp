@@ -881,27 +881,33 @@ public:
 			sprintf_s(GameType, "artefacthunt");
 		else if (!xr_strcmp(GameType, "ah"))
 			sprintf_s(GameType, "artefacthunt");
+		else if (!xr_strcmp(GameType, "hm"))
+			sprintf_s(GameType, "hardmatch");
 
 		if (xr_strcmp(GameType, "deathmatch"))
 			if (xr_strcmp(GameType, "teamdeathmatch"))
 				if (xr_strcmp(GameType, "artefacthunt"))
-				{
-					Msg("! Unknown gametype - %s", GameType);
-					return;
-				};
-		//-----------------------------------------
+					if (xr_strcmp(GameType, "hardmatch"))
+					{
+						Msg("! Unknown gametype - %s", GameType);
+						return;
+					};
+
 		s32 GameTypeID = 0;
+
 		if (!xr_strcmp(GameType, "deathmatch"))
 			GameTypeID = GAME_DEATHMATCH;
 		else if (!xr_strcmp(GameType, "teamdeathmatch"))
 			GameTypeID = GAME_TEAMDEATHMATCH;
 		else if (!xr_strcmp(GameType, "artefacthunt"))
 			GameTypeID = GAME_ARTEFACTHUNT;
-		//-----------------------------------------
+		else if (!xr_strcmp(GameType, "hardmatch"))
+			GameTypeID = GAME_HARDMATCH;
 
 		const SGameTypeMaps &M = gMapListHelper.GetMapListFor((EGameTypes)GameTypeID);
 		u32 cnt = M.m_map_names.size();
 		bool bMapFound = false;
+
 		for (u32 i = 0; i < cnt; ++i)
 		{
 			const shared_str &_map_name = M.m_map_names[i];
@@ -911,6 +917,7 @@ public:
 				break;
 			}
 		}
+
 		if (!bMapFound)
 		{
 			Msg("! Level [%s] not registered for [%s]!", LevelName, GameType);

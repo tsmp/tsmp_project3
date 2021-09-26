@@ -22,6 +22,7 @@ class CUIGameDM : public CUIGameCustom
 private:
 	game_cl_Deathmatch *m_game;
 	using inherited = CUIGameCustom;
+	bool m_IsHardmatch;
 
 public:
 	CUIInventoryWnd *m_pInventoryMenu;

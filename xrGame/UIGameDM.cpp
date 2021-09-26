@@ -22,6 +22,7 @@
 
 #include "ui/UICarBodyWnd.h"
 #include "object_broker.h"
+#include "game_cl_hardmatch.h"
 
 #define MSGS_OFFS 510
 
@@ -41,6 +42,7 @@
 CUIGameDM::CUIGameDM()
 {
 	m_game = nullptr;
+	m_IsHardmatch = false;
 	m_pFragLists = xr_new<CUIWindow>();
 	m_pPlayerLists = xr_new<CUIWindow>();
 	m_pStatisticWnds = xr_new<CUIWindow>();
@@ -88,6 +90,9 @@ void CUIGameDM::SetClGame(game_cl_GameState *g)
 	inherited::SetClGame(g);
 	m_game = smart_cast<game_cl_Deathmatch *>(g);
 	R_ASSERT(m_game);
+
+	if (smart_cast<game_cl_Hardmatch*>(g))
+		m_IsHardmatch = true;
 
 	if (m_pMapDesc && m_pMapDesc->IsShown())	
 		HUD().GetUI()->StartStopMenu(m_pMapDesc, true);
@@ -327,8 +332,12 @@ void CUIGameDM::OnFrame()
 void CUIGameDM::Render()
 {
 	inherited::Render();
-	m_pMoneyIndicator->Draw();
-	m_pRankIndicator->Draw();
+
+	if (!m_IsHardmatch)
+	{
+		m_pMoneyIndicator->Draw();
+		m_pRankIndicator->Draw();
+	}
 
 	m_pFragLimitIndicator->Draw();
 	if (m_voteStatusWnd && m_voteStatusWnd->IsShown())

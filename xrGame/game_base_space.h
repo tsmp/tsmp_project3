@@ -7,9 +7,10 @@ enum EGameTypes
 	GAME_DEATHMATCH = 2,
 	//	GAME_CTF							= 3,
 	//	GAME_ASSAULT						= 4,	// Team1 - assaulting, Team0 - Defending
-	GAME_CS = 5,
+	//  GAME_CS = 5,
 	GAME_TEAMDEATHMATCH = 6,
 	GAME_ARTEFACTHUNT = 7,
+	GAME_HARDMATCH = 8,
 
 	//identifiers in range [100...254] are registered for script game type
 	GAME_DUMMY = 255 // temporary game type
