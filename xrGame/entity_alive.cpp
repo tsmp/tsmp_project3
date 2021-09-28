@@ -507,6 +507,9 @@ void CEntityAlive::UpdateFireParticles()
 
 ALife::ERelationType CEntityAlive::tfGetRelationType(const CEntityAlive *tpEntityAlive) const
 {
+	if (!tpEntityAlive)
+		return ALife::eRelationTypeNeutral;
+
 	int relation = MONSTER_COMMUNITY::relation(this->monster_community->index(), tpEntityAlive->monster_community->index());
 
 	switch (relation)
