@@ -196,6 +196,7 @@ protected:
 public:
 	IC const shared_str &item_to_spawn() const { return m_item_to_spawn; }
 	IC const u32 &ammo_in_box_to_spawn() const { return m_ammo_in_box_to_spawn; }
+	shared_str m_SpecificCharacterStr;
 
 public:
 	virtual void on_weapon_shot_start(CWeapon *weapon);

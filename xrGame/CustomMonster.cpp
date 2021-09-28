@@ -46,6 +46,7 @@
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "client_spawn_manager.h"
+#include "InventoryOwner.h"
 
 #include "..\TSMP3_Build_Config.h"
 
@@ -665,8 +666,19 @@ void CCustomMonster::Die(CObject *who)
 		CSE_Abstract* abstr = game->alife().spawn_item(cNameSect().c_str(), r.P, level_vertex_id, game_vertex_id, parentId);
 
 		// передаем новому custom data с логикой от старого
-		if (CSE_ALifeCreatureAbstract* monster = dynamic_cast<CSE_ALifeCreatureAbstract*>(abstr))		
-			monster->m_ini_string = m_ini_str;		
+		if (CSE_ALifeCreatureAbstract* monster = dynamic_cast<CSE_ALifeCreatureAbstract*>(abstr))
+		{
+			monster->m_ini_string = m_ini_str;
+			
+			if (CSE_ALifeTraderAbstract* pTrader = dynamic_cast<CSE_ALifeTraderAbstract*>(monster))
+			{
+				if (CInventoryOwner* io = smart_cast<CInventoryOwner*>(this))
+				{
+					pTrader->set_character_profile(io->m_SpecificCharacterStr);
+					pTrader->spawn_supplies();
+				}
+			}
+		}		
 	}
 }
 

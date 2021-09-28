@@ -125,6 +125,7 @@ BOOL CInventoryOwner::net_Spawn(CSE_Abstract *DC)
 			return FALSE;
 
 		R_ASSERT(pTrader->character_profile().size());
+		m_SpecificCharacterStr = pTrader->character_profile();
 
 		//синхронизируем параметры персонажа с серверным объектом
 		CharacterInfo().Init(pTrader);
