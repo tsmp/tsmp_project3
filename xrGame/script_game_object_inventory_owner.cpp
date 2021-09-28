@@ -37,19 +37,25 @@
 
 bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
 {
-	CInventoryOwner *pInventoryOwner = smart_cast<CInventoryOwner *>(&object());
-	if (!pInventoryOwner)
-		return false;
-	pInventoryOwner->TransferInfo(info_id, true);
+	if (IsGameTypeSingle())
+	{
+		CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
+		if (!pInventoryOwner)
+			return false;
+		pInventoryOwner->TransferInfo(info_id, true);
+	}
 	return true;
 }
 
 bool CScriptGameObject::DisableInfoPortion(LPCSTR info_id)
 {
-	CInventoryOwner *pInventoryOwner = smart_cast<CInventoryOwner *>(&object());
-	if (!pInventoryOwner)
-		return false;
-	pInventoryOwner->TransferInfo(info_id, false);
+	if (IsGameTypeSingle())
+	{
+		CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
+		if (!pInventoryOwner)
+			return false;
+		pInventoryOwner->TransferInfo(info_id, false);
+	}
 	return true;
 }
 
