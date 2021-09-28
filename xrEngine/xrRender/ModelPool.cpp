@@ -392,7 +392,13 @@ void CModelPool::Prefetch()
 	Logging(FALSE);
 	// prefetch visuals
 	string256 section;
-	strconcat(sizeof(section), section, "prefetch_visuals_", g_pGamePersistent->m_game_params.m_game_type);
+	string256 gameTypeName;
+	strcpy(gameTypeName, g_pGamePersistent->m_game_params.m_game_type);
+
+	if (!strcmp(gameTypeName, "hardmatch"))
+		strcpy(gameTypeName, "deathmatch");
+
+	strconcat(sizeof(section), section, "prefetch_visuals_", gameTypeName);
 	CInifile::Sect &sect = pSettings->r_section(section);
 	for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
 	{
