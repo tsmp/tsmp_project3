@@ -238,6 +238,9 @@ MotionID CStalkerAnimationManager::missile_animation(u32 slot, const EBodyState 
 
 MotionID CStalkerAnimationManager::assign_torso_animation()
 {
+	if (OnClient())
+		return m_MpSyncBody;
+
 	EBodyState body_state = this->body_state();
 
 	if (!object().inventory().ActiveItem())

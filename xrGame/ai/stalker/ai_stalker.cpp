@@ -582,15 +582,11 @@ void CAI_Stalker::net_Export_MP(NET_Packet& P)
 	else
 		P.w_u32(NO_ACTIVE_SLOT);
 
-	P.w_u16(m_animation_manager->torso().animation().idx);
-	P.w_u8(m_animation_manager->torso().animation().slot);
-	P.w_u16(m_animation_manager->legs().animation().idx);
-	P.w_u8(m_animation_manager->legs().animation().slot);
-	P.w_u16(m_animation_manager->head().animation().idx);
-	P.w_u8(m_animation_manager->head().animation().slot);
-
-	P.w_u16(m_animation_manager->script().animation().idx);
-	P.w_u8(m_animation_manager->script().animation().slot);
+	P.w_u16(m_animation_manager->torso().animation().val);
+	P.w_u16(m_animation_manager->legs().animation().val);
+	P.w_u16(m_animation_manager->head().animation().val);
+	P.w_u16(m_animation_manager->script().animation().val);
+	P.w_u16(m_animation_manager->global().animation().val);
 
 	net_Export_Sounds(P);
 }
@@ -673,15 +669,6 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 
 	u32	u_active_weapon_slot;
 
-	u16 u_torso_motion_idx;
-	u8 u_torso_motion_slot;
-	u16 u_legs_motion_idx;
-	u8 u_legs_motion_slot;
-	u16 u_head_motion_idx;
-	u8 u_head_motion_slot;
-	u16 u_script_motion_idx;
-	u8 u_script_motion_slot;
-
 	P.r_float(f_health);
 
 	P.r_angle8(fv_direction.pitch);
@@ -692,18 +679,25 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 
 	P.r_u32(u_active_weapon_slot);
 
-	P.r_u16(u_torso_motion_idx);
-	P.r_u8(u_torso_motion_slot);
-	P.r_u16(u_legs_motion_idx);
-	P.r_u8(u_legs_motion_slot);
-	P.r_u16(u_head_motion_idx);
-	P.r_u8(u_head_motion_slot);
+	u16 u_torso_motion_val;
+	u16 u_legs_motion_val;
+	u16 u_head_motion_val;
+	u16 u_script_motion_val;
+	u16 u_global_motion_val;
 
-	P.r_u16(u_script_motion_idx);
-	P.r_u8(u_script_motion_slot);
+	P.r_u16(u_torso_motion_val);
+	P.r_u16(u_legs_motion_val);
+	P.r_u16(u_head_motion_val);
+	P.r_u16(u_script_motion_val);
+	P.r_u16(u_global_motion_val);
+
+	m_animation_manager->m_MpSyncBody.val = u_torso_motion_val;
+	m_animation_manager->m_MpSyncLegs.val = u_legs_motion_val;
+	m_animation_manager->m_MpSyncHead.val = u_head_motion_val;
+	m_animation_manager->m_MpSyncGlobal.val = u_global_motion_val;
+	m_animation_manager->m_MpSyncScript.val = u_script_motion_val;
 
 	SetfHealth(f_health);
-
 
 	if (phSyncFlag)
 	{
@@ -727,59 +721,7 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 	setVisible(TRUE);
 	setEnabled(TRUE);
 	
-	inventory().SetActiveSlot(u_active_weapon_slot);
-
-	MotionID motion;
-	CKinematicsAnimated* ik_anim_obj = smart_cast<CKinematicsAnimated*>(Visual());
-	if (u_last_torso_motion_idx != u_torso_motion_idx)
-	{
-		u_last_torso_motion_idx = u_torso_motion_idx;
-		motion.idx = u_torso_motion_idx;
-		motion.slot = u_torso_motion_slot;
-		if (motion.valid())
-		{
-			ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_PartID("torso"), motion, TRUE,
-				ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
-				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0);
-		}
-	}
-	if (u_last_legs_motion_idx != u_legs_motion_idx)
-	{
-		u_last_legs_motion_idx = u_legs_motion_idx;
-		motion.idx = u_legs_motion_idx;
-		motion.slot = u_legs_motion_slot;
-		if (motion.valid())
-		{
-			CStepManager::on_animation_start(motion, ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_PartID("legs"), motion,
-				TRUE, ik_anim_obj->LL_GetMotionDef(motion)->Accrue(),
-				ik_anim_obj->LL_GetMotionDef(motion)->Falloff(), ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0));
-		}
-	}
-	if (u_last_head_motion_idx != u_head_motion_idx)
-	{
-		u_last_head_motion_idx = u_head_motion_idx;
-		motion.idx = u_head_motion_idx;
-		motion.slot = u_head_motion_slot;
-		if (motion.valid())
-		{
-			ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_PartID("head"), motion, TRUE,
-				ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
-				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0);
-		}
-	}
-
-	if (u_last_script_motion_idx != u_script_motion_idx) 
-	{
-		motion.idx = u_script_motion_idx;
-		motion.slot = u_script_motion_slot;
-		u_last_script_motion_idx = u_script_motion_idx;
-		if (motion.valid())
-		{
-			ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part, motion, TRUE,
-				ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
-				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), ik_anim_obj->LL_GetMotionDef(motion)->StopAtEnd(), 0, 0, 0);
-		}
-	}
+	inventory().SetActiveSlot(u_active_weapon_slot);	
 
 	setVisible(TRUE);
 	setEnabled(TRUE);
@@ -962,6 +904,9 @@ void CAI_Stalker::UpdateCL()
 	START_PROFILE("stalker/client_update/inherited")
 	inherited::UpdateCL();
 	STOP_PROFILE
+
+	if(Remote())
+		UpdatePositionAnimation();
 
 	START_PROFILE("stalker/client_update/physics")
 	m_pPhysics_support->in_UpdateCL();

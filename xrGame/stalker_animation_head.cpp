@@ -24,6 +24,9 @@ void CStalkerAnimationManager::head_play_callback(CBlend *blend)
 
 MotionID CStalkerAnimationManager::assign_head_animation()
 {
+	if (OnClient())
+		return m_MpSyncHead;
+
 	const ANIM_VECTOR &animations = m_data_storage->m_head_animations.A;
 	CSoundPlayer &sound = object().sound();
 	if (!sound.active_sound_count(true))

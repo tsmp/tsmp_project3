@@ -271,6 +271,9 @@ MotionID CStalkerAnimationManager::legs_no_move_animation()
 
 MotionID CStalkerAnimationManager::assign_legs_animation()
 {
+	if (OnClient())
+		return m_MpSyncLegs;
+
 	if (standing())
 		return (legs_no_move_animation());
 

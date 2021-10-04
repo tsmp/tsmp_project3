@@ -496,14 +496,11 @@ u32	u_active_slot;
 net_physics_state				physics_state;
 u8								phSyncFlag = 0;
 
-u16	u_torso_anm_idx;
-u8 u_torso_anm_slot;
-u16 u_legs_anm_idx;
-u8 u_legs_anm_slot;
-u16 u_head_anm_idx;
-u8 u_head_anm_slot;
-u16 u_script_anm_idx;
-u8 u_script_anm_slot;
+u16 u_torso_motion_val;
+u16 u_legs_motion_val;
+u16 u_head_motion_val;
+u16 u_script_motion_val;
+u16 u_global_motion_val;
 
 struct StalkerSoundUpdateHolder
 {

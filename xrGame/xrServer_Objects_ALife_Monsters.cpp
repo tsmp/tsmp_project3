@@ -1960,14 +1960,12 @@ void CSE_ALifeHumanStalker::UPDATE_Write_MP(NET_Packet& tNetPacket)
 	tNetPacket.w_angle8(f_head_dir_pitch);
 	tNetPacket.w_angle8(f_head_dir_yaw);
 	tNetPacket.w_u32(u_active_slot);
-	tNetPacket.w_u16(u_torso_anm_idx);
-	tNetPacket.w_u8(u_torso_anm_slot);
-	tNetPacket.w_u16(u_legs_anm_idx);
-	tNetPacket.w_u8(u_legs_anm_slot);
-	tNetPacket.w_u16(u_head_anm_idx);
-	tNetPacket.w_u8(u_head_anm_slot);
-	tNetPacket.w_u16(u_script_anm_idx);
-	tNetPacket.w_u8(u_script_anm_slot);
+
+	tNetPacket.w_u16(u_torso_motion_val);
+	tNetPacket.w_u16(u_legs_motion_val);
+	tNetPacket.w_u16(u_head_motion_val);
+	tNetPacket.w_u16(u_script_motion_val);
+	tNetPacket.w_u16(u_global_motion_val);
 
 	UPDATE_Write_Sounds(tNetPacket);
 }
@@ -2016,14 +2014,13 @@ void CSE_ALifeHumanStalker::UPDATE_Read_MP(NET_Packet& tNetPacket)
 	tNetPacket.r_angle8(f_head_dir_pitch);
 	tNetPacket.r_angle8(f_head_dir_yaw);
 	tNetPacket.r_u32(u_active_slot);
-	tNetPacket.r_u16(u_torso_anm_idx);
-	tNetPacket.r_u8(u_torso_anm_slot);
-	tNetPacket.r_u16(u_legs_anm_idx);
-	tNetPacket.r_u8(u_legs_anm_slot);
-	tNetPacket.r_u16(u_head_anm_idx);
-	tNetPacket.r_u8(u_head_anm_slot);
-	tNetPacket.r_u16(u_script_anm_idx);
-	tNetPacket.r_u8(u_script_anm_slot);
+
+	tNetPacket.r_u16(u_torso_motion_val);
+	tNetPacket.r_u16(u_legs_motion_val);
+	tNetPacket.r_u16(u_head_motion_val);
+	tNetPacket.r_u16(u_script_motion_val);
+	tNetPacket.r_u16(u_global_motion_val);
+
 	fHealth = f_health;
 	o_model = o_torso.yaw;
 
