@@ -6,12 +6,14 @@
 #include "../skeletonanimated.h"
 #include "../xr_collide_form.h"
 #include "game_object_space.h"
+#include "Level.h"
+#include "PHSynchronize.h"
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 #include "PhysicsShellAnimator.h"
 #endif
 
-CPhysicObject::CPhysicObject(void)
+CPhysicObject::CPhysicObject(void): m_net_updateData(0)
 {
 	m_type = epotBox;
 	m_mass = 10.f;
@@ -20,6 +22,7 @@ CPhysicObject::CPhysicObject(void)
 
 CPhysicObject::~CPhysicObject(void)
 {
+	xr_delete(m_net_updateData);
 }
 
 BOOL CPhysicObject::net_Spawn(CSE_Abstract *DC)
@@ -58,6 +61,22 @@ BOOL CPhysicObject::net_Spawn(CSE_Abstract *DC)
 		processing_activate();
 	}
 #endif
+
+	m_just_after_spawn = true;
+	m_activated = false;
+
+	if (DC->s_flags.is(M_SPAWN_UPDATE)) 
+	{
+		NET_Packet temp;
+		temp.B.count = 0;
+		DC->UPDATE_Write(temp);
+
+		if (temp.B.count > 0)
+		{
+			temp.r_seek(0);
+			net_Import(temp);
+		}
+	}
 
 	return TRUE;
 }
@@ -146,22 +165,24 @@ void CPhysicObject::UpdateCL()
 	}
 #endif
 
+	if (!IsGameTypeSingle())	
+		Interpolate();	
+
 	PHObjectPositionUpdate();
 }
+
 void CPhysicObject::PHObjectPositionUpdate()
 {
+	if (!m_pPhysicsShell)
+		return;
 
-	if (m_pPhysicsShell)
+	if (m_type == epotBox)
 	{
-
-		if (m_type == epotBox)
-		{
-			m_pPhysicsShell->Update();
-			XFORM().set(m_pPhysicsShell->mXFORM);
-		}
-		else
-			m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+		m_pPhysicsShell->Update();
+		XFORM().set(m_pPhysicsShell->mXFORM);
 	}
+	else
+		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
 }
 
 void CPhysicObject::AddElement(CPhysicsElement *root_e, int id)
@@ -288,26 +309,252 @@ bool CPhysicObject::set_collision_hit_callback(SCollisionHitCallback *cc)
 		return false;
 }
 
-//////////////////////////////////////////////////////////////////////////
-/*
-DEFINE_MAP_PRED	(LPCSTR,	CPhysicsJoint*,	JOINT_P_MAP,	JOINT_P_PAIR_IT,	pred_str);
+// network synchronization ----------------------------
+net_updatePhData* CPhysicObject::NetSync()
+{
+	if (!m_net_updateData)
+		m_net_updateData = xr_new<net_updatePhData>();
 
-JOINT_P_MAP			*l_tpJointMap = xr_new<JOINT_P_MAP>();
-
-l_tpJointMap->insert(mk_pair(bone_name,joint*));
-JOINT_P_PAIR_IT		I = l_tpJointMap->find(bone_name);
-if (l_tpJointMap->end()!=I){
-//bone_name is found and is an pair_iterator
-(*I).second
+	return m_net_updateData;
 }
 
-JOINT_P_PAIR_IT		I = l_tpJointMap->begin();
-JOINT_P_PAIR_IT		E = l_tpJointMap->end();
-for ( ; I != E; ++I) {
-(*I).second->joint_method();
-Msg("%s",(*I).first);
+void CPhysicObject::net_Export(NET_Packet& P)
+{
+	if (this->H_Parent() || IsGameTypeSingle())
+	{
+		P.w_u8(0);
+		return;
+	}
+
+	CPHSynchronize* pSyncObj = nullptr;
+	SPHNetState	State;
+	pSyncObj = this->PHGetSyncItem(0);
+	R_ASSERT(pSyncObj);
+	pSyncObj->get_State(State);
+
+	mask_num_items num_items;
+	num_items.mask = 0;
+	u16	temp = this->PHGetSyncItemsNumber();
+	R_ASSERT(temp < (u16(1) << 5));
+	num_items.num_items = u8(temp);
+
+	if (State.enabled)
+		num_items.mask |= CSE_ALifeObjectPhysic::inventory_item_state_enabled;
+
+	if (fis_zero(State.angular_vel.square_magnitude()))
+		num_items.mask |= CSE_ALifeObjectPhysic::inventory_item_angular_null;
+
+	if (fis_zero(State.linear_vel.square_magnitude()))
+		num_items.mask |= CSE_ALifeObjectPhysic::inventory_item_linear_null;
+
+	P.w_u8(num_items.common);
+	net_Export_PH_Params(P, State, num_items);
+
+	if (PPhysicsShell()->isEnabled())	
+		P.w_u8(1);	//not freezed	
+	else	
+		P.w_u8(0);  //freezed	
 }
 
-*/
+void CPhysicObject::net_Export_PH_Params(NET_Packet &P, SPHNetState &State, mask_num_items &num_items)
+{
+	P.w_vec3(State.force);
+	P.w_vec3(State.torque);
+	P.w_vec3(State.position);
 
-//////////////////////////////////////////////////////////////////////////
+	float magnitude = _sqrt(State.quaternion.magnitude());
+
+	if (fis_zero(magnitude)) 
+	{
+		magnitude = 1;
+		State.quaternion.x = 0.f;
+		State.quaternion.y = 0.f;
+		State.quaternion.z = 1.f;
+		State.quaternion.w = 0.f;
+	}
+	
+	P.w_float(State.quaternion.x);
+	P.w_float(State.quaternion.y);
+	P.w_float(State.quaternion.z);
+	P.w_float(State.quaternion.w);
+
+	if (!(num_items.mask & CSE_ALifeObjectPhysic::inventory_item_angular_null)) 
+	{
+		P.w_float(State.angular_vel.x);
+		P.w_float(State.angular_vel.y);
+		P.w_float(State.angular_vel.z);
+	}
+
+	if (!(num_items.mask & CSE_ALifeObjectPhysic::inventory_item_linear_null)) 
+	{
+		P.w_float(State.linear_vel.x);
+		P.w_float(State.linear_vel.y);
+		P.w_float(State.linear_vel.z);
+	}
+}
+
+void CPhysicObject::net_Import(NET_Packet &P)
+{
+	u8 NumItems = 0;
+	NumItems = P.r_u8();
+
+	if (!NumItems)
+		return;
+
+	CSE_ALifeObjectPhysic::mask_num_items num_items;
+	num_items.common = NumItems;
+	NumItems = num_items.num_items;
+
+	net_update_PItem N;
+	N.dwTimeStamp = Device.dwTimeGlobal;
+	net_Import_PH_Params(P, N, num_items);
+	P.r_u8();	// freezed or not..
+
+	if (this->cast_game_object()->Local())	
+		return;	
+		
+	Level().AddObject_To_Objects4CrPr(this);
+	net_updatePhData* p = NetSync();
+	p->NET_IItem.push_back(N);
+
+	while (p->NET_IItem.size() > 2)	
+		p->NET_IItem.pop_front();
+	
+	if (!m_activated)
+	{
+		Msg("- Activating object [%d][%s] before interpolation starts", ID(), Name());
+		processing_activate();
+		m_activated = true;
+	}
+};
+
+void CPhysicObject::net_Import_PH_Params(NET_Packet &P, net_update_PItem &N, mask_num_items &num_items)
+{
+	P.r_vec3(N.State.force);
+	P.r_vec3(N.State.torque);
+	P.r_vec3(N.State.position);
+
+	P.r_float(N.State.quaternion.x);
+	P.r_float(N.State.quaternion.y);
+	P.r_float(N.State.quaternion.z);
+	P.r_float(N.State.quaternion.w);
+
+	N.State.enabled = num_items.mask & CSE_ALifeObjectPhysic::inventory_item_state_enabled;
+
+	if (!(num_items.mask & CSE_ALifeObjectPhysic::inventory_item_angular_null)) 
+	{
+		N.State.angular_vel.x = P.r_float();
+		N.State.angular_vel.y = P.r_float();
+		N.State.angular_vel.z = P.r_float();
+	}
+	else
+		N.State.angular_vel.set(0.f, 0.f, 0.f);
+
+	if (!(num_items.mask & CSE_ALifeObjectPhysic::inventory_item_linear_null)) 
+	{
+		N.State.linear_vel.x = P.r_float();
+		N.State.linear_vel.y = P.r_float();
+		N.State.linear_vel.z = P.r_float();
+	}
+	else
+		N.State.linear_vel.set(0.f, 0.f, 0.f);
+
+#pragma TODO("TSMP: проверить нужны ли эти previous")
+	N.State.previous_position = N.State.position;
+	N.State.previous_quaternion = N.State.quaternion;
+}
+
+void CPhysicObject::PH_A_CrPr()
+{
+	if (!m_just_after_spawn)
+		return;
+
+	VERIFY(Visual());
+	CKinematics* K = Visual()->dcast_PKinematics();
+	VERIFY(K);
+
+	if (!PPhysicsShell())
+		return;
+
+	if (!PPhysicsShell()->isFullActive())
+	{
+		K->CalculateBones_Invalidate();
+		K->CalculateBones(TRUE);
+	}
+
+	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
+	K->CalculateBones_Invalidate();
+	K->CalculateBones(TRUE);
+
+	spatial_move();
+	m_just_after_spawn = false;
+
+	VERIFY(!OnServer());
+
+	PPhysicsShell()->get_ElementByStoreOrder(0)->Fix();
+	PPhysicsShell()->SetIgnoreStatic();	
+}
+
+void CPhysicObject::CalculateInterpolationParams()
+{
+	if (this->m_pPhysicsShell)
+		this->m_pPhysicsShell->NetInterpolationModeON();
+}
+
+void CPhysicObject::Interpolate()
+{
+	net_updatePhData* p = NetSync();
+	CPHSynchronize* pSyncObj = this->PHGetSyncItem(0);
+
+	if (H_Parent() || !getVisible() || !m_pPhysicsShell || OnServer() || p->NET_IItem.empty())
+		return;
+
+	//simple linear interpolation...
+	SPHNetState newState = p->NET_IItem.front().State;
+
+	if (p->NET_IItem.size() >= 2)
+	{
+		float ret_interpolate = interpolate_states(p->NET_IItem.front(), p->NET_IItem.back(), newState);
+
+		if (ret_interpolate >= 1.f)
+		{
+			p->NET_IItem.pop_front();
+
+			if (m_activated)
+			{
+				Msg("- Deactivating object [%d][%s] after interpolation finish", ID(), Name());
+				processing_deactivate();
+				m_activated = false;
+			}
+		}
+	}
+
+	pSyncObj->set_State(newState);	
+}
+
+float CPhysicObject::interpolate_states(net_update_PItem const &first, net_update_PItem const &last, SPHNetState &current)
+{
+	float ret_val = 0.f;
+	u32 CurTime = Device.dwTimeGlobal;
+
+	if (CurTime == last.dwTimeStamp)
+		return 0.f;
+
+	float factor = float(CurTime - last.dwTimeStamp) / float(last.dwTimeStamp - first.dwTimeStamp);
+	ret_val = factor;
+
+	if (factor > 1.f)	
+		factor = 1.f;	
+	else if (factor < 0.f)	
+		factor = 0.f;	
+
+	current.position.x = first.State.position.x + (factor * (last.State.position.x - first.State.position.x));
+	current.position.y = first.State.position.y + (factor * (last.State.position.y - first.State.position.y));
+	current.position.z = first.State.position.z + (factor * (last.State.position.z - first.State.position.z));
+	current.previous_position = current.position;
+
+#pragma TODO("TSMP: проверить нужны ли эти previous")
+	current.quaternion.slerp(first.State.quaternion, last.State.quaternion, factor);
+	current.previous_quaternion = current.quaternion;
+	return ret_val;
+}
