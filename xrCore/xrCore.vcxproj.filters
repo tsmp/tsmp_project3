@@ -49,6 +49,9 @@
     <Filter Include="Threading">
       <UniqueIdentifier>{4b478223-0b30-441c-be50-9dbda20f5197}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Clipboard">
+      <UniqueIdentifier>{3c620e17-aad6-4c4b-b079-e85606b05872}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FTimer.cpp">
@@ -167,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="threading\xrCriticalSection.cpp">
       <Filter>Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="clipboard\os_clipboard.cpp">
+      <Filter>Clipboard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -373,6 +379,9 @@
     </ClInclude>
     <ClInclude Include="threading\xrCriticalSection.h">
       <Filter>Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="clipboard\os_clipboard.h">
+      <Filter>Clipboard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

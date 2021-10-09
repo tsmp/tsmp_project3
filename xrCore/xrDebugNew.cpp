@@ -2,7 +2,7 @@
 #pragma hdrstop
 
 #include "xrdebug.h"
-
+#include "clipboard/os_clipboard.h"
 #include "dxerr9.h"
 
 #pragma warning(push)
@@ -44,61 +44,6 @@ static BOOL bException = FALSE;
 XRCORE_API xrDebug Debug;
 
 static bool error_after_dialog = false;
-
-extern void copy_to_clipboard(const char *string);
-
-void copy_to_clipboard(const char *string)
-{
-	if (IsDebuggerPresent())
-		return;
-
-	if (!OpenClipboard(0))
-		return;
-
-	HGLOBAL handle = GlobalAlloc(GHND | GMEM_DDESHARE, (strlen(string) + 1) * sizeof(char));
-	if (!handle)
-	{
-		CloseClipboard();
-		return;
-	}
-
-	char *memory = (char *)GlobalLock(handle);
-	strcpy(memory, string);
-	GlobalUnlock(handle);
-	EmptyClipboard();
-	SetClipboardData(CF_TEXT, handle);
-	CloseClipboard();
-}
-
-void update_clipboard(const char *string)
-{
-#ifdef DEBUG
-	if (IsDebuggerPresent())
-		return;
-
-	if (!OpenClipboard(0))
-		return;
-
-	HGLOBAL handle = GetClipboardData(CF_TEXT);
-	if (!handle)
-	{
-		CloseClipboard();
-		copy_to_clipboard(string);
-		return;
-	}
-
-	LPSTR memory = (char *)GlobalLock(handle);
-	u32 memory_length = xr_strlen(memory);
-	u32 string_length = xr_strlen(string);
-	LPSTR buffer = (LPSTR)_alloca((memory_length + string_length + 1) * sizeof(char));
-	strcpy(buffer, memory);
-	GlobalUnlock(handle);
-
-	strcat(buffer, string);
-	CloseClipboard();
-	copy_to_clipboard(buffer);
-#endif // DEBUG
-}
 
 extern void BuildStackTrace();
 extern char g_stackTrace[100][4096];
@@ -204,7 +149,7 @@ void gather_info(const char *expression, const char *description, const char *ar
 		if (shared_str_initialized)
 			FlushLog();
 
-		copy_to_clipboard(assertion_info);
+		os_clipboard::copy_to_clipboard(assertion_info);
 	}
 }
 
@@ -621,7 +566,8 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		if (shared_str_initialized)
 			Msg("stack trace:\n");
-		copy_to_clipboard("stack trace:\r\n\r\n");
+
+		os_clipboard::copy_to_clipboard("stack trace:\r\n\r\n");
 
 		string4096 buffer;
 		for (int i = 0; i < g_stackTraceCount; ++i)
@@ -629,7 +575,7 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 			if (shared_str_initialized)
 				Msg("%s", g_stackTrace[i]);
 			sprintf(buffer, "%s\r\n", g_stackTrace[i]);
-			update_clipboard(buffer);
+			os_clipboard::update_clipboard(buffer);
 		}
 
 		if (*error_message)
@@ -638,7 +584,7 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 				Msg("\n%s", error_message);
 
 			strcat(error_message, "\r\n");
-			update_clipboard(error_message);
+			os_clipboard::update_clipboard(error_message);
 		}
 	}
 
