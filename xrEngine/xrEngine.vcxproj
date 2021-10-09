@@ -615,6 +615,9 @@
     <ClInclude Include="ISheduled.h" />
     <ClInclude Include="ISpatial.h" />
     <ClInclude Include="LightAnimLibrary.h" />
+    <ClInclude Include="line_editor\edit_actions.h" />
+    <ClInclude Include="line_editor\line_editor.h" />
+    <ClInclude Include="line_editor\line_edit_control.h" />
     <ClInclude Include="MbHelpers.h" />
     <ClInclude Include="motion.h" />
     <ClInclude Include="ObjectAnimator.h" />
@@ -773,6 +776,9 @@
     </ClCompile>
     <ClCompile Include="ISpatial_verify.cpp" />
     <ClCompile Include="LightAnimLibrary.cpp" />
+    <ClCompile Include="line_editor\edit_actions.cpp" />
+    <ClCompile Include="line_editor\line_editor.cpp" />
+    <ClCompile Include="line_editor\line_edit_control.cpp" />
     <ClCompile Include="mailSlot.cpp" />
     <ClCompile Include="MbHelpers.cpp" />
     <ClCompile Include="motion.cpp" />

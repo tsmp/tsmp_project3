@@ -139,6 +139,18 @@
     <Filter Include="Engine\Noise">
       <UniqueIdentifier>{1347d5c2-6218-45d3-9995-163a49169b18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Text editor">
+      <UniqueIdentifier>{7cc4c101-ed06-4052-a663-f5d6e40f5137}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Text editor\Edit actions">
+      <UniqueIdentifier>{a043afdc-a455-4825-914e-3256989b7043}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Text editor\Line editor">
+      <UniqueIdentifier>{f1984dd8-9965-4e72-bbce-7de791d1bcab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Text editor\Line editor control">
+      <UniqueIdentifier>{40d48367-76e2-40b8-ad7c-c72122bd741c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="flight.h">
@@ -497,6 +509,15 @@
     </ClInclude>
     <ClInclude Include="DedicatedSrvConsole.h">
       <Filter>Render\Execution &amp; 3D\TextConsole</Filter>
+    </ClInclude>
+    <ClInclude Include="line_editor\edit_actions.h">
+      <Filter>Engine\Text editor\Edit actions</Filter>
+    </ClInclude>
+    <ClInclude Include="line_editor\line_edit_control.h">
+      <Filter>Engine\Text editor\Line editor control</Filter>
+    </ClInclude>
+    <ClInclude Include="line_editor\line_editor.h">
+      <Filter>Engine\Text editor\Line editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -874,6 +895,15 @@
     </ClCompile>
     <ClCompile Include="xrApplication.cpp">
       <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="line_editor\edit_actions.cpp">
+      <Filter>Engine\Text editor\Edit actions</Filter>
+    </ClCompile>
+    <ClCompile Include="line_editor\line_edit_control.cpp">
+      <Filter>Engine\Text editor\Line editor control</Filter>
+    </ClCompile>
+    <ClCompile Include="line_editor\line_editor.cpp">
+      <Filter>Engine\Text editor\Line editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
