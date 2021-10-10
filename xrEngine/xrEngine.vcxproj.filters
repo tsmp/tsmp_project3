@@ -905,6 +905,9 @@
     <ClCompile Include="line_editor\line_editor.cpp">
       <Filter>Engine\Text editor\Line editor</Filter>
     </ClCompile>
+    <ClCompile Include="Console_get.cpp">
+      <Filter>Engine\Console</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="OutOfVirtError.RES">
