@@ -137,7 +137,7 @@ void CConsole::OnRender()
 
 	if (!pFont2)
 	{
-		pFont2 = xr_new<CGameFont>("hud_font_di2", CGameFont::fsDeviceIndependent);
+		pFont2 = xr_new<CGameFont>("hud_font_di", CGameFont::fsDeviceIndependent);
 		pFont2->SetHeightI(0.025f);
 	}
 
