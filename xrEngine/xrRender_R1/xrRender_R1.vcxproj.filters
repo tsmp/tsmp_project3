@@ -43,6 +43,12 @@
     <Filter Include="Lights">
       <UniqueIdentifier>{5e8e3e90-176f-447d-a06c-fb1cbac6a3cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementation">
+      <UniqueIdentifier>{17c481f7-ddf1-45dc-a2e3-22f8fddf7feb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementation\console render">
+      <UniqueIdentifier>{bcbae5ae-bd37-4d07-be27-0d40c618d3c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -209,6 +215,12 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\LightTrack.h">
       <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\ConsoleRender.h">
+      <Filter>Interface implementation\console render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxConsoleRender.h">
+      <Filter>Interface implementation\console render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -412,6 +424,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\LightTrack.cpp">
       <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxConsoleRender.cpp">
+      <Filter>Interface implementation\console render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -266,8 +266,10 @@
     <ClInclude Include="..\xrRender\Blender_Particle.h" />
     <ClInclude Include="..\xrRender\Blender_Screen_SET.h" />
     <ClInclude Include="..\xrRender\Blender_tree.h" />
+    <ClInclude Include="..\xrRender\ConsoleRender.h" />
     <ClInclude Include="..\xrRender\DetailManager.h" />
     <ClInclude Include="..\xrRender\DetailModel.h" />
+    <ClInclude Include="..\xrRender\dxConsoleRender.h" />
     <ClInclude Include="..\xrRender\FLOD.h" />
     <ClInclude Include="..\xrRender\FProgressive.h" />
     <ClInclude Include="..\xrRender\FSkinned.h" />
@@ -352,6 +354,7 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Level2</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">Level2</WarningLevel>
     </ClCompile>
+    <ClCompile Include="..\xrRender\dxConsoleRender.cpp" />
     <ClCompile Include="..\xrRender\FLOD.cpp" />
     <ClCompile Include="..\xrRender\FProgressive.cpp" />
     <ClCompile Include="..\xrRender\FSkinned.cpp" />

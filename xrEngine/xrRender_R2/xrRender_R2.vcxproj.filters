@@ -49,6 +49,12 @@
     <Filter Include="Core_Target">
       <UniqueIdentifier>{da7a672b-2600-4fbd-bab1-fe64b4b43aaf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="interface implementation">
+      <UniqueIdentifier>{6938a2bd-566a-4219-bfdb-94d32ae37b57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interface implementation\console render">
+      <UniqueIdentifier>{cf0fd1cf-3490-4675-a6ea-adec5f00442f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -242,6 +248,12 @@
     </ClInclude>
     <ClInclude Include="r2_rendertarget_wallmarks.h">
       <Filter>Core_Target</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\ConsoleRender.h">
+      <Filter>interface implementation\console render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxConsoleRender.h">
+      <Filter>interface implementation\console render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -538,6 +550,9 @@
     </ClCompile>
     <ClCompile Include="r2_rendertarget_phase_smap_S.cpp">
       <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxConsoleRender.cpp">
+      <Filter>interface implementation\console render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
