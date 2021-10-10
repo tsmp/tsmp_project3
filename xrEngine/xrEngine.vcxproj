@@ -693,6 +693,7 @@
     <ClCompile Include="Blender_Recorder_StandartBinding.cpp" />
     <ClCompile Include="CameraBase.cpp" />
     <ClCompile Include="CameraManager.cpp" />
+    <ClCompile Include="Console_callback.cpp" />
     <ClCompile Include="Console_get.cpp" />
     <ClCompile Include="CustomHUD.cpp" />
     <ClCompile Include="D3DUtils.cpp" />

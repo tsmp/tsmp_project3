@@ -7,6 +7,7 @@
 #include "..\environment.h"
 #include "..\SkeletonCustom.h"
 #include "..\xrRender\LightTrack.h"
+#include "..\xrRender\dxConsoleRender.h"
 
 CRender RImplementation;
 
@@ -438,6 +439,8 @@ IRender_Target *CRender::getTarget() { return Target; }
 
 IRender_Light *CRender::light_create() { return Lights.Create(); }
 IRender_Glow *CRender::glow_create() { return xr_new<CGlow>(); }
+
+IConsoleRender* CRender::CreateConsoleRender() { return xr_new<dxConsoleRender>(); };
 
 void CRender::flush() { r_dsgraph_render_graph(0); }
 

@@ -4,6 +4,7 @@
 #include "frustum.h"
 #include "vis_common.h"
 #include "IRenderDetailModel.h"
+#include "xrRender/ConsoleRender.h"
 
 // refs
 class ENGINE_API IRenderable;
@@ -197,6 +198,7 @@ public:
 	virtual IRender_Visual *getVisual(int id) = 0;
 	virtual IRender_Sector *detectSector(const Fvector &P) = 0;
 	virtual IRender_Target *getTarget() = 0;
+	virtual IConsoleRender* CreateConsoleRender() = 0;
 
 	virtual void ScreenshotAsyncBegin() = 0;
 	virtual void ScreenshotAsyncEnd(CMemoryWriter& memory_writer) = 0;

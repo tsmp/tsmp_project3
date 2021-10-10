@@ -7,32 +7,21 @@
 #include "xr_input.h"
 #include "Console_commands.h"
 #include "GameFont.h"
-#include "xr_trims.h"
-#include "CustomHUD.h"
+#include "Render.h"
+#include "line_editor/line_editor.h"
 
 static u32 const default_font_color = color_rgba(250, 250, 250, 250);
 
-constexpr auto LDIST = .05f;
+constexpr auto LDIST = 0.05f;
 
 ENGINE_API CConsole *Console = nullptr;
 const char *ioc_prompt = ">>> ";
+const char* ch_cursor = "_"; //"|";
 
-static char RusSymbols[] = {'ф', 'и', 'с', 'в', 'у', 'а', 'п', 'р', 'ш', 'о', 'л', 'д', 'ь', 'т', 'щ', 'з',
-							'й', 'к', 'ы', 'е', 'г', 'м', 'ц', 'ч', 'н', 'я', 'х', 'ъ', 'ж', 'э', 'б', 'ю', '.'};
-
-static char RusSymbolsBig[] = {'Ф', 'И', 'С', 'В', 'У', 'А', 'П', 'Р', 'Ш', 'О', 'Л', 'Д', 'Ь', 'Т', 'Щ', 'З',
-							   'Й', 'К', 'Ы', 'Е', 'Г', 'М', 'Ц', 'Ч', 'Н', 'Я', 'Х', 'Ъ', 'Ж', 'Э', 'Б', 'Ю', ','};
-
-static char EngSymbols[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-							'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '[', ']', ';', '\'', ',', '.', '/'};
-
-static char EngSymbolsBig[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-							   'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '{', '}', ':', '"', '<', '>', '?'};
-
-static u32 DIKS[] = {DIK_A, DIK_B, DIK_C, DIK_D, DIK_E, DIK_F, DIK_G, DIK_H, DIK_I,
-					 DIK_J, DIK_K, DIK_L, DIK_M, DIK_N, DIK_O, DIK_P, DIK_Q, DIK_R, DIK_S, DIK_T, DIK_U, DIK_V,
-					 DIK_W, DIK_X, DIK_Y, DIK_Z, DIK_LBRACKET, DIK_RBRACKET, DIK_SEMICOLON, DIK_APOSTROPHE,
-					 DIK_COMMA, DIK_PERIOD, DIK_SLASH};
+text_editor::line_edit_control& CConsole::ec()
+{
+	return m_editor->control();
+}
 
 void CConsole::AddCommand(IConsole_Command *C)
 {
@@ -47,574 +36,298 @@ void CConsole::RemoveCommand(IConsole_Command *C)
 		Commands.erase(it);
 }
 
-void CConsole::Reset()
+CConsole::CConsole()
 {
-	if (pFont)
-		xr_delete(pFont);
+	m_editor = xr_new<text_editor::line_editor>((u32)CONSOLE_BUF_SIZE);
+	m_cmd_history_max = 64;
+	Register_callbacks();
 }
 
 void CConsole::Initialize()
 {
-	scroll_delta = cmd_delta = old_cmd_delta = 0;
-	editor[0] = 0;
-
-	bShift = false;
-	bCtrl = false;
-
-	RecordCommands = true;
-	cur_time = 0;
-	fAccel = 1.0f;
-	bVisible = false;
-	rep_time = 0;
 	pFont = nullptr;
-	last_mm_timer = 0;
-	bRussian = false;
+	pFont2 = nullptr;
+	m_pRender = nullptr;
+
+	m_mouse_pos.x = 0;
+	m_mouse_pos.y = 0;
+	m_last_cmd = nullptr;
+
+	m_cmd_history.reserve(m_cmd_history_max + 2);
+	m_cmd_history.clear();
+	reset_cmd_history_idx();
 
 	// Commands
 	extern void CCC_Register();
 	CCC_Register();
 }
 
+CConsole::~CConsole()
+{
+	xr_delete(m_editor);
+	Destroy();
+}
+
 void CConsole::Destroy()
 {
-	Execute("cfg_save");
 	xr_delete(pFont);
+	xr_delete(pFont2);
+
+	if (m_pRender)
+	{
+		xr_delete(m_pRender);
+		m_pRender = nullptr;
+	}
+
 	Commands.clear();
 }
 
 void CConsole::OnFrame()
 {
-	u32 mm_timer = Device.dwTimeContinual;
-	float fDelta = (mm_timer - last_mm_timer) / 1000.0f;
-
-	if (fDelta > .06666f)
-		fDelta = .06666f;
-
-	last_mm_timer = mm_timer;
-
-	cur_time += fDelta;
-	rep_time += fDelta * fAccel;
-
-	if (cur_time > 0.1f)
-	{
-		cur_time -= 0.1f;
-		bCursor = !bCursor;
-	}
-
-	if (rep_time > 0.2f)
-	{
-		rep_time -= 0.2f;
-		bRepeat = true;
-		fAccel += 0.2f;
-	}
+	m_editor->on_frame();
 }
 
-void out_font(CGameFont *pFont, LPCSTR text, float &pos_y)
+void CConsole::OutFont(LPCSTR text, float& pos_y)
 {
 	float str_length = pFont->SizeOf_(text);
+	float scr_width = 1.98f * Device.fWidth_2;
 
-	if (str_length > 1024.0f)
+	if (str_length > scr_width) //1024.0f
 	{
-		float _l = 0.0f;
-		int _sz = 0;
-		int _ln = 0;
-		string1024 _one_line;
+		float f = 0.0f;
+		int sz = 0;
+		int ln = 0;
+		PSTR one_line = (PSTR)_alloca((CONSOLE_BUF_SIZE + 1) * sizeof(char));
 
-		while (text[_sz])
+		while (text[sz] && (ln + sz < CONSOLE_BUF_SIZE - 5))// перенос строк
 		{
-			_one_line[_ln + _sz] = text[_sz];
-			_one_line[_ln + _sz + 1] = 0;
-			float _t = pFont->SizeOf_(_one_line + _ln);
+			one_line[ln + sz] = text[sz];
+			one_line[ln + sz + 1] = 0;
 
-			if (_t > 1024.0f)
+			float t = pFont->SizeOf_(one_line + ln);
+
+			if (t > scr_width)
 			{
-				out_font(pFont, text + _sz, pos_y);
+				OutFont(text + sz + 1, pos_y);
 				pos_y -= LDIST;
-				pFont->OutI(-1.0f, pos_y, "%s", _one_line + _ln);
-				_l = 0.0f;
-				_ln = _sz;
+				pFont->OutI(-1.0f, pos_y, "%s", one_line + ln);
+				ln = sz + 1;
+				f = 0.0f;
 			}
-			else
-				_l = _t;
+			else			
+				f = t;			
 
-			++_sz;
+			++sz;
 		}
 	}
-	else
-		pFont->OutI(-1.0f, pos_y, "%s", text);
+	else	
+		pFont->OutI(-1.0f, pos_y, "%s", text);	
 }
 
 void CConsole::OnRender()
 {
-	float fMaxY;
-	BOOL bGame;
-
-	if (!bVisible)
+	if (!bVisible)	
 		return;
-
+	
 	if (!pFont)
+	{
 		pFont = xr_new<CGameFont>("hud_font_di", CGameFont::fsDeviceIndependent);
+		pFont->SetHeightI(0.025f);
+	}
 
-	bGame = false;
+	if (!pFont2)
+	{
+		pFont2 = xr_new<CGameFont>("hud_font_di2", CGameFont::fsDeviceIndependent);
+		pFont2->SetHeightI(0.025f);
+	}
+
+	if (!m_pRender)	
+		m_pRender = Render->CreateConsoleRender();	
+
+	bool bGame = false;
 
 	if ((g_pGameLevel && g_pGameLevel->bReady) ||
 		(g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()))
+	{
 		bGame = true;
+	}
 
-	VERIFY(HW.pDevice);
+	if (g_dedicated_server)	
+		bGame = false;
+	
+	m_pRender->OnRender(bGame); //*** Shadow
 
-	//*** Shadow
-	D3DRECT R = {0, 0, Device.dwWidth, Device.dwHeight};
-
-	if (bGame)
-		R.y2 /= 2;
-
-	CHK_DX(HW.pDevice->Clear(1, &R, D3DCLEAR_TARGET, D3DCOLOR_XRGB(32, 32, 32), 1, 0));
-
-	float dwMaxY = float(Device.dwHeight);
+	float fMaxY;
+	float dwMaxY = (float)Device.dwHeight;
 
 	if (bGame)
 	{
-		fMaxY = 0.f;
+		fMaxY = 0.0f;
 		dwMaxY /= 2;
 	}
-	else
-		fMaxY = 1.f;
+	else	
+		fMaxY = 1.0f;
+	
+	float ypos = fMaxY - LDIST * 1.1f;
+	float scr_x = 1.0f / Device.fWidth_2;
 
-	char buf[MAX_LEN + 5];
-	strcpy_s(buf, ioc_prompt);
-	strcat(buf, editor);
+	float scr_width = 1.9f * Device.fWidth_2;
+	float ioc_d = pFont->SizeOf_(ioc_prompt);
 
-	if (bCursor)
-		strcat(buf, "|");
+	LPCSTR s_cursor = ec().str_before_cursor();
+	LPCSTR s_b_mark = ec().str_before_mark();
+	LPCSTR s_mark = ec().str_mark();
+	LPCSTR s_mark_a = ec().str_after_mark();
 
-	pFont->SetColor(color_rgba(128, 128, 255, 255));
-	pFont->SetHeightI(0.025f);
-	pFont->OutI(-1.f, fMaxY - LDIST, "%s", buf);
+	float str_length = ioc_d + pFont->SizeOf_(s_cursor);
+	float out_pos = 0.0f;
 
-	float ypos = fMaxY - LDIST - LDIST;
+	if (str_length > scr_width)
+	{
+		out_pos -= (str_length - scr_width);
+		str_length = scr_width;
+	}
 
-	for (int i = LogFile->size() - 1 - scroll_delta; i >= 0; i--)
+	pFont->SetColor(color_rgba(228, 228, 255, 255));
+	pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%s", ioc_prompt);
+
+	pFont->SetColor(color_rgba(138, 138, 245, 255));
+	pFont2->SetColor(color_rgba(138, 138, 245, 255));
+
+	out_pos += ioc_d;
+	pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%s", s_b_mark);		out_pos += pFont->SizeOf_(s_b_mark);
+	pFont2->OutI(-1.0f + out_pos * scr_x, ypos, "%s", s_mark);		out_pos += pFont2->SizeOf_(s_mark);
+	pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%s", s_mark_a);
+
+	if (ec().cursor_view())
+	{
+		pFont->SetColor(color_rgba(255, 255, 255, 255));
+		pFont->OutI(-1.0f + str_length * scr_x, ypos, "%s", ch_cursor);
+	}
+
+	ypos -= LDIST;
+
+	for (int i = LogFile->size() - 1 - scroll_delta; i >= 0; --i)
 	{
 		ypos -= LDIST;
 
-		if (ypos < -1.f)
+		if (ypos < -1.0f)		
 			break;
+		
+		LPCSTR ls = ((*LogFile)[i]).c_str();
 
-		LPCSTR ls = *(*LogFile)[i];
-
-		if (!ls)
+		if (!ls)		
 			continue;
-
+		
 		Console_mark cm = (Console_mark)ls[0];
 		pFont->SetColor(get_mark_color(cm));
-
 		u8 b = (is_mark(cm)) ? 2 : 0;
-		LPCSTR pOut = ls + b;
-
-		out_font(pFont, pOut, ypos);
+		OutFont(ls + b, ypos);
 	}
+
+	pFont->SetColor(color_rgba(205, 205, 25, 105));
+	u32 log_line = LogFile->size() - 1;
+	string16 q;
+	itoa(log_line, q, 10);
+	u32 qn = xr_strlen(q);
+	pFont->OutI(0.95f - 0.02f * qn, fMaxY - 2.0f * LDIST, "[%d]", log_line);
 
 	pFont->OnRender();
+	pFont2->OnRender();
 }
 
-void CConsole::OnPressKey(int dik, BOOL bHold)
+void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 {
-	if (!bHold)
-		fAccel = 1.0f;
+	u32  str_size = xr_strlen(cmd_str);
+	PSTR edt = (PSTR)_alloca((str_size + 1) * sizeof(char));
+	PSTR first = (PSTR)_alloca((str_size + 1) * sizeof(char));
+	PSTR last = (PSTR)_alloca((str_size + 1) * sizeof(char));
 
-	switch (dik)
+	strcpy_s(edt, str_size + 1, cmd_str);
+	edt[str_size] = 0;
+
+	scroll_delta = 0;
+	reset_cmd_history_idx();
+
+	text_editor::remove_spaces(edt);
+	if (edt[0] == 0)
 	{
-	case DIK_GRAVE:
-		if (bShift)
-		{
-			strcat(editor, "~");
-			break;
-		}
-	case DIK_ESCAPE:
-		if (!bHold)
-		{
-			if (g_pGameLevel ||
-				(g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()))
-				Hide();
-		}
-		break;
-	case DIK_PRIOR:
-		scroll_delta++;
-
-		if (scroll_delta > int(LogFile->size()) - 1)
-			scroll_delta = LogFile->size() - 1;
-		break;
-	case DIK_NEXT:
-		scroll_delta--;
-		if (scroll_delta < 0)
-			scroll_delta = 0;
-		break;
-	case DIK_TAB:
-	{
-		LPCSTR radmin_cmd_name = "ra ";
-		bool b_ra = (editor == strstr(editor, radmin_cmd_name));
-		int offset = (b_ra) ? xr_strlen(radmin_cmd_name) : 0;
-		vecCMD_IT I = Commands.lower_bound(editor + offset);
-
-		if (I != Commands.end())
-		{
-			IConsole_Command &O = *(I->second);
-
-			while(O.bHidden)
-			{
-				I++;
-
-				if (I == Commands.end())
-					return;
-
-				O = *(I->second);
-			}			
-			
-			strcpy_s(editor + offset, sizeof(editor) - offset, O.Name());
-			strcat(editor + offset, " ");			
-		}
-	}
-	break;
-	case DIK_UP:
-		cmd_delta--;
-		SelectCommand();
-		break;
-	case DIK_DOWN:
-		cmd_delta++;
-		SelectCommand();
-		break;
-	case DIK_BACK:
-		if (xr_strlen(editor) > 0)
-			editor[xr_strlen(editor) - 1] = 0;
-		break;
-	case DIK_LSHIFT:
-	case DIK_RSHIFT:
-		bShift = true;
-
-		if (bCtrl)
-		{
-			bRussian = !bRussian;
-			Msg("- Input language: %s", bRussian ? "Rus" : "Eng");
-		}
-
-		break;
-	case DIK_1:
-		if (bShift)
-			strcat(editor, "!");
-		else
-			strcat(editor, "1");
-		break;
-	case DIK_2:
-		if (bShift)
-			strcat(editor, bRussian ? "\"" : "@");
-		else
-			strcat(editor, "2");
-		break;
-	case DIK_3:
-		if (bShift)
-			strcat(editor, bRussian ? "№" : "#");
-		else
-			strcat(editor, "3");
-		break;
-	case DIK_4:
-		if (bShift)
-			strcat(editor, bRussian ? ";" : "$");
-		else
-			strcat(editor, "4");
-		break;
-	case DIK_5:
-		if (bShift)
-			strcat(editor, "%");
-		else
-			strcat(editor, "5");
-		break;
-	case DIK_6:
-		if (bShift)
-			strcat(editor, bRussian ? ":" : "^");
-		else
-			strcat(editor, "6");
-		break;
-	case DIK_7:
-		if (bShift)
-			strcat(editor, bRussian ? "?" : "&");
-		else
-			strcat(editor, "7");
-		break;
-	case DIK_8:
-		if (bShift)
-			strcat(editor, "*");
-		else
-			strcat(editor, "8");
-		break;
-	case DIK_9:
-		if (bShift)
-			strcat(editor, "(");
-		else
-			strcat(editor, "9");
-		break;
-	case DIK_0:
-		if (bShift)
-			strcat(editor, ")");
-		else
-			strcat(editor, "0");
-		break;
-
-	case DIK_SPACE:
-		strcat(editor, " ");
-		break;
-
-	case DIK_LCONTROL:
-	case DIK_RCONTROL:
-		bCtrl = true;
-		break;
-
-	case DIK_BACKSLASH:
-		if (bShift)
-			strcat(editor, "|");
-		else
-			strcat(editor, "\\");
-		break;
-
-	case DIK_EQUALS:
-		if (bShift)
-			strcat(editor, "+");
-		else
-			strcat(editor, "=");
-		break;
-	case DIK_MINUS:
-		if (bShift)
-			strcat(editor, "_");
-		else
-			strcat(editor, "-");
-		break;
-	case DIK_RETURN:
-		strcpy(command, editor);
-		ExecuteCommand();
-		scroll_delta = 0;
-		editor[0] = '\0';
-		break;
-	case DIK_INSERT:
-		if (OpenClipboard(0))
-		{
-			HGLOBAL hmem = GetClipboardData(CF_TEXT);
-			if (hmem)
-			{
-				LPCSTR clipdata = (LPCSTR)GlobalLock(hmem);
-				strncpy(editor, clipdata, MAX_LEN - 1);
-				editor[MAX_LEN - 1] = 0;
-
-				for (u32 i = 0; i < xr_strlen(editor); i++)
-					if (isprint(editor[i]))
-					{
-						editor[i] = char(tolower(editor[i]));
-					}
-					else
-					{
-						editor[i] = ' ';
-					}
-
-				GlobalUnlock(hmem);
-				CloseClipboard();
-			}
-		}
-		break;
-	default:
-	{
-		int num = -1;
-
-		for (int i = 0; i < sizeof(RusSymbols); i++)
-		{
-			if (dik == DIKS[i])
-				num = i;
-		}
-
-		if (num != -1)
-		{
-			char ch[2];
-			ch[1] = '\0';
-
-			if (bRussian)
-				ch[0] = bShift ? RusSymbolsBig[num] : RusSymbols[num];
-			else
-				ch[0] = bShift ? EngSymbolsBig[num] : EngSymbols[num];
-
-			strcat(editor, ch);
-		}
-	}
-	break;
-	}
-	u32 clip = MAX_LEN - 8;
-
-	if (xr_strlen(editor) >= clip)
-		editor[clip - 1] = 0;
-
-	bRepeat = false;
-	rep_time = 0;
-}
-
-void CConsole::IR_OnKeyboardPress(int dik)
-{
-	OnPressKey(dik);
-}
-
-void CConsole::IR_OnKeyboardRelease(int dik)
-{
-	fAccel = 1.0f;
-	rep_time = 0;
-
-	switch (dik)
-	{
-	case DIK_LSHIFT:
-	case DIK_RSHIFT:
-		bShift = false;
-		break;
-
-	case DIK_LCONTROL:
-	case DIK_RCONTROL:
-		bCtrl = false;
-		break;
-	}
-}
-
-void CConsole::IR_OnKeyboardHold(int dik)
-{
-	float fRep = rep_time;
-	if (bRepeat)
-	{
-		OnPressKey(dik, true);
-		bRepeat = false;
-	}
-
-	rep_time = fRep;
-}
-
-void CConsole::ExecuteCommand()
-{
-	char first_word[MAX_LEN];
-	char last_word[MAX_LEN];
-	char converted[MAX_LEN];
-	int i, j, len;
-
-	//scroll_delta = 0;
-	cmd_delta = 0;
-	old_cmd_delta = 0;
-
-	len = xr_strlen(command);
-
-	for (i = 0; i < len; i++)
-	{
-		if ((command[i] == '\n') || (command[i] == '\t'))
-			command[i] = ' ';
-	}
-
-	j = 0;
-
-	for (i = 0; i < len; i++)
-	{
-		switch (command[i])
-		{
-		case ' ':
-			if (command[i + 1] == ' ')
-				continue;
-			if (i == len - 1)
-				goto outloop;
-			break;
-		}
-		converted[j++] = command[i];
-	}
-outloop:
-	converted[j] = 0;
-
-	if (converted[0] == ' ')
-		strcpy_s(command, &(converted[1]));
-	else
-		strcpy_s(command, converted);
-
-	if (command[0] == 0)
 		return;
-
-	if (RecordCommands)
-		Log("@", command);
-
-	// split into cmd/params
-	command[j++] = ' ';
-	command[len = j] = 0;
-
-	for (i = 0; i < len; i++)
+	}
+	if (record_cmd)
 	{
-		if (command[i] != ' ')
-			first_word[i] = command[i];
-		else
+		char c[2];
+		c[0] = static_cast<char>(Console_mark::mark2);
+		c[1] = '\0';
+
+		if (m_last_cmd.c_str() == 0 || xr_strcmp(m_last_cmd, edt) != 0)
 		{
-			// last 'word' - exit
-			strcpy_s(last_word, command + i + 1);
-			break;
+			Log(c, edt);
+			add_cmd_history(edt);
+			m_last_cmd = edt;
 		}
 	}
-
-	first_word[i] = 0;
-
-	if (last_word[xr_strlen(last_word) - 1] == ' ')
-		last_word[xr_strlen(last_word) - 1] = 0;
+	text_editor::split_cmd(first, last, edt);
 
 	// search
-	vecCMD_IT I = Commands.find(first_word);
-	command[0] = '\0';
-
-	if (I == Commands.end())
+	vecCMD_IT it = Commands.find(first);
+	if (it != Commands.end())
 	{
-		Log("! Unknown command: ", first_word);		
-		return;
-	}
-
-	IConsole_Command& C = *(I->second);
-
-	if (!C.bEnabled)
-	{
-		Log("! Command disabled.");
-		return;
-	}
-
-	if (C.bLowerCaseArgs)
-		strlwr(last_word);
-
-	char args[MAX_LEN];
-
-	if (!C.bForRadminsOnly)
-		ExcludeRadminIdFromCommandArguments(last_word, args, MAX_LEN);
-	else
-		strcpy_s(args, last_word);
-
-	if (args[0] == '\0')
-	{
-		if (C.bEmptyArgsHandled)
-			C.Execute("\0");
+		IConsole_Command* cc = it->second;
+		if (cc && cc->bEnabled)
+		{
+			if (cc->bLowerCaseArgs)
+			{
+				strlwr(last);
+			}
+			if (last[0] == 0)
+			{
+				if (cc->bEmptyArgsHandled)
+				{
+					cc->Execute(last);
+				}
+				else
+				{
+					IConsole_Command::TStatus stat;
+					cc->Status(stat);
+					Msg("- %s %s", cc->Name(), stat);
+				}
+			}
+			else
+			{
+				cc->Execute(last);
+			}
+		}
 		else
 		{
-			IConsole_Command::TStatus S;
-			C.Status(S);
-			Msg("- %s %s", C.Name(), S);
+			Log("! Command disabled.");
 		}
-
-		return;
+	}
+	else
+	{
+		first[CONSOLE_BUF_SIZE - 21] = 0;
+		Log("! Unknown command: ", first);
 	}
 
-	C.Execute(args);
+	if (record_cmd)
+	{
+		ec().clear_states();
+	}
 }
 
 void CConsole::Show()
 {
-	if (bVisible)
+	if (bVisible)	
 		return;
-
+	
 	bVisible = true;
+	GetCursorPos(&m_mouse_pos);
 
-	editor[0] = 0;
-	rep_time = 0;
-	fAccel = 1.0f;
+	ec().clear_states();
+	scroll_delta = 0;
+	reset_cmd_history_idx();
 
-	IR_Capture();
+	m_editor->IR_Capture();
 	Device.seqRender.Add(this, 1);
 	Device.seqFrame.Add(this);
 }
@@ -627,58 +340,76 @@ void CConsole::Hide()
 	if (g_pGamePersistent && g_dedicated_server)
 		return;
 
+	//if (pInput->get_exclusive_mode())	
+	//	SetCursorPos(m_mouse_pos.x, m_mouse_pos.y);
+	
+
 	bVisible = false;
 	Device.seqFrame.Remove(this);
 	Device.seqRender.Remove(this);
-	IR_Release();
+	m_editor->IR_Release();
 }
 
 void CConsole::SelectCommand()
 {
-	int p, k;
-	BOOL found = false;
-
-	for (p = LogFile->size() - 1, k = 0; p >= 0; p--)
+	if (m_cmd_history.empty())
 	{
-		if (0 == *(*LogFile)[p])
-			continue;
-
-		if ((*LogFile)[p][0] == '@')
-		{
-			k--;
-
-			if (k == cmd_delta)
-			{
-				strcpy_s(editor, &(*(*LogFile)[p])[2]);
-				found = true;
-			}
-		}
+		return;
 	}
+	VERIFY(0 <= m_cmd_history_idx && m_cmd_history_idx < (int)m_cmd_history.size());
 
-	if (!found)
-	{
-		if (cmd_delta > old_cmd_delta)
-			editor[0] = 0;
-		cmd_delta = old_cmd_delta;
-	}
-	else
-		old_cmd_delta = cmd_delta;
+	xr_vector<shared_str>::reverse_iterator	it_rb = m_cmd_history.rbegin() + m_cmd_history_idx;
+	ec().set_edit((*it_rb).c_str());
 }
 
 void CConsole::Execute(LPCSTR cmd)
 {
-	strncpy(command, cmd, MAX_LEN - 1);
-	command[MAX_LEN - 1] = 0;
-	RecordCommands = false;
-	ExecuteCommand();
-	RecordCommands = true;
+	ExecuteCommand(cmd, false);
 }
 
-void CConsole::ExecuteScript(LPCSTR N)
+void CConsole::ExecuteScript(LPCSTR str)
 {
-	string128 cmd;
-	strconcat(sizeof(cmd), cmd, "cfg_load ", N);
-	Execute(cmd);
+	u32  str_size = xr_strlen(str);
+	PSTR buf = (PSTR)_alloca((str_size + 10) * sizeof(char));
+	strcpy_s(buf, str_size + 10, "cfg_load ");
+	strcat_s(buf, str_size + 10, str);
+	Execute(buf);
+}
+
+void CConsole::add_cmd_history(shared_str const& str)
+{
+	if (str.size() == 0)
+	{
+		return;
+	}
+	m_cmd_history.push_back(str);
+	if (m_cmd_history.size() > m_cmd_history_max)
+	{
+		m_cmd_history.erase(m_cmd_history.begin());
+	}
+}
+
+void CConsole::next_cmd_history_idx()
+{
+	--m_cmd_history_idx;
+	if (m_cmd_history_idx < 0)
+	{
+		m_cmd_history_idx = 0;
+	}
+}
+
+void CConsole::prev_cmd_history_idx()
+{
+	++m_cmd_history_idx;
+	if (m_cmd_history_idx >= (int)m_cmd_history.size())
+	{
+		m_cmd_history_idx = m_cmd_history.size() - 1;
+	}
+}
+
+void CConsole::reset_cmd_history_idx()
+{
+	m_cmd_history_idx = -1;
 }
 
 u32 CConsole::get_mark_color(Console_mark type)

@@ -210,11 +210,11 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 		return false;
 
 	const wchar_t *wct = keyname.wsz;
-	if (0 == wcslen(wct))
+	if (!wcslen(wct))
 		return false;
 
-	size_t cnt = wcstombs(dest_str, wct, dest_sz);
-	//.	Msg("dik_name for[%d], is w[%S] ch[%s]", dik, wct, dest_str);
+	int cnt = WideCharToMultiByte(CP_ACP, 0, keyname.wsz, -1, dest_str, dest_sz, NULL, NULL);
+
 	if (cnt == -1)
 	{
 		Msg("! cant convert dik_name for dik[%d], prop=[%S]", dik, wct);

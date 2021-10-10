@@ -908,6 +908,9 @@
     <ClCompile Include="Console_get.cpp">
       <Filter>Engine\Console</Filter>
     </ClCompile>
+    <ClCompile Include="Console_callback.cpp">
+      <Filter>Engine\Console</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="OutOfVirtError.RES">
