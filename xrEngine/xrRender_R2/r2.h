@@ -251,7 +251,6 @@ public:
 	//
 	virtual IRender_ObjectSpecific *ros_create(IRenderable *parent);
 	virtual void ros_destroy(IRender_ObjectSpecific *&);
-	virtual IConsoleRender* CreateConsoleRender() override;
 
 	// Lighting
 	virtual IRender_Light *light_create();

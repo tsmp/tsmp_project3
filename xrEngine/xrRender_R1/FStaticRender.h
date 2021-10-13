@@ -169,7 +169,6 @@ public:
 	//
 	virtual IRender_ObjectSpecific *ros_create(IRenderable *parent);
 	virtual void ros_destroy(IRender_ObjectSpecific *&);
-	virtual IConsoleRender* CreateConsoleRender() override;
 
 	// Particle library
 	virtual CPSLibrary *ps_library() { return &PSLibrary; }

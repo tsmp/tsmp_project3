@@ -11,7 +11,6 @@
 #include "..\fmesh.h"
 #include "..\SkeletonCustom.h"
 #include "..\xrRender\lighttrack.h"
-#include "..\xrRender\dxConsoleRender.h"
 
 using namespace R_dsgraph;
 
@@ -227,8 +226,6 @@ FSlideWindowItem *CRender::getSWI(int id)
 IRender_Light *CRender::light_create() { return L_DB->Create(); }
 
 IRender_Glow *CRender::glow_create() { return xr_new<CGlow>(); }
-
-IConsoleRender* CRender::CreateConsoleRender() { return xr_new<dxConsoleRender>(); };
 
 void CRender::flush() { r_dsgraph_render_graph(0); }
 
