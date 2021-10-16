@@ -31,10 +31,7 @@ static u32 const tips_scroll_pos_color = color_rgba(70, 70, 70, 240);
 
 ENGINE_API CConsole *Console = nullptr;
 
-extern char const* const ioc_prompt;
 char const* const ioc_prompt = ">>> ";
-
-extern char const* const ch_cursor;
 char const* const ch_cursor = "_";
 
 text_editor::line_edit_control& CConsole::ec()
@@ -65,6 +62,8 @@ CConsole::CConsole()
 
 void CConsole::Initialize()
 {
+	scroll_delta = 0;
+	bVisible = false;
 	pFont = nullptr;
 	pFont2 = nullptr;
 
@@ -476,26 +475,20 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 
 	// search
 	vecCMD_IT it = Commands.find(first);
+
 	if (it != Commands.end())
 	{
 		IConsole_Command* cc = it->second;
+
 		if (cc && cc->bEnabled)
 		{
-			if (cc->bLowerCaseArgs)
-			{
+			if (cc->bLowerCaseArgs)			
 				strlwr(last);
-			}
+			
 			if (last[0] == 0)
 			{
-				if (cc->bEmptyArgsHandled)
-				{
-					cc->Execute(last);
-					if (record_cmd)
-					{
-#pragma TODO("FIX ME!")
-						//cc->add_to_LRU((LPCSTR)last);
-					}
-				}
+				if (cc->bEmptyArgsHandled)				
+					cc->Execute(last);				
 				else
 				{
 					IConsole_Command::TStatus stat;
@@ -506,12 +499,16 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 			else
 			{
 				cc->Execute(last);
+
+				if (record_cmd)
+				{
+					#pragma TODO("FIX ME!")
+					//cc->add_to_LRU((LPCSTR)last);
+				}
 			}
 		}
-		else
-		{
-			Log("! Command disabled.");
-		}
+		else		
+			Log("! Command disabled.");		
 	}
 	else
 	{
@@ -519,10 +516,8 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 		Log("! Unknown command: ", first);
 	}
 
-	if (record_cmd)
-	{
-		ec().clear_states();
-	}
+	if (record_cmd)	
+		ec().clear_states();	
 }
 
 void CConsole::Show()
@@ -566,10 +561,9 @@ void CConsole::Hide()
 
 void CConsole::SelectCommand()
 {
-	if (m_cmd_history.empty())
-	{
+	if (m_cmd_history.empty())	
 		return;
-	}
+	
 	VERIFY(0 <= m_cmd_history_idx && m_cmd_history_idx < (int)m_cmd_history.size());
 
 	vecHistory::reverse_iterator it_rb = m_cmd_history.rbegin() + m_cmd_history_idx;
@@ -602,6 +596,7 @@ IConsole_Command* CConsole::find_next_cmd(LPCSTR in_str, shared_str& out_str)
 	strcat(t2, " ");
 
 	vecCMD_IT it = Commands.lower_bound(t2);
+
 	if (it != Commands.end())
 	{
 		IConsole_Command* cc = it->second;
@@ -616,12 +611,13 @@ IConsole_Command* CConsole::find_next_cmd(LPCSTR in_str, shared_str& out_str)
 		return cc;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 bool CConsole::add_next_cmds(LPCSTR in_str, vecTipsEx& out_v)
 {
 	u32 cur_count = out_v.size();
+
 	if (cur_count >= MAX_TIPS_COUNT)	
 		return false;	
 
@@ -631,33 +627,36 @@ bool CConsole::add_next_cmds(LPCSTR in_str, vecTipsEx& out_v)
 
 	shared_str temp;
 	IConsole_Command* cc = find_next_cmd(t2, temp);
+
 	if (!cc || temp.size() == 0)	
 		return false;	
 
 	bool res = false;
+
 	for (u32 i = cur_count; i < MAX_TIPS_COUNT * 2; ++i) //fake=protect
 	{
 		temp._set(cc->Name());
 		bool dup = (std::find(out_v.begin(), out_v.end(), temp) != out_v.end());
+
 		if (!dup)
 		{
 			TipString ts(temp);
 			out_v.push_back(ts);
 			res = true;
 		}
-		if (out_v.size() >= MAX_TIPS_COUNT)
-		{
-			break; // for
-		}
+
+		if (out_v.size() >= MAX_TIPS_COUNT)		
+			break; // for		
 		
 		char t3[256];
 		strcpy(t3, out_v.back().text.c_str());
 		strcat(t3, " ");
+
 		cc = find_next_cmd(t3, temp);
-		if (!cc)
-		{
+
+		if (!cc)		
 			break; // for
-		}
+		
 	} // for
 	return res;
 }
@@ -665,21 +664,21 @@ bool CConsole::add_next_cmds(LPCSTR in_str, vecTipsEx& out_v)
 bool CConsole::add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v)
 {
 	u32 cur_count = out_v.size();
-	if (cur_count >= MAX_TIPS_COUNT)
-	{
-		return false;
-	}
-	u32   in_sz = xr_strlen(in_str);
 
+	if (cur_count >= MAX_TIPS_COUNT)	
+		return false;
+	
+	u32 in_sz = xr_strlen(in_str);
 	bool res = false;
 	// word in begin
 	vecCMD_IT itb = Commands.begin();
 	vecCMD_IT ite = Commands.end();
+
 	for (; itb != ite; ++itb)
 	{
 		LPCSTR name = itb->first;
 		u32 name_sz = xr_strlen(name);
-		PSTR  name2 = (PSTR)_alloca((name_sz + 1) * sizeof(char));
+		PSTR name2 = (PSTR)_alloca((name_sz + 1) * sizeof(char));
 
 		if (name_sz >= in_sz)
 		{
@@ -691,6 +690,7 @@ bool CConsole::add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v)
 				shared_str temp;
 				temp._set(name);
 				bool dup = (std::find(out_v.begin(), out_v.end(), temp) != out_v.end());
+
 				if (!dup)
 				{
 					out_v.push_back(TipString(temp, 0, in_sz));
@@ -699,24 +699,25 @@ bool CConsole::add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v)
 			}
 		}
 
-		if (out_v.size() >= MAX_TIPS_COUNT)
-		{
-			return res;
-		}
+		if (out_v.size() >= MAX_TIPS_COUNT)		
+			return res;		
 	} // for
 
 	// word in internal
 	itb = Commands.begin();
 	ite = Commands.end();
+
 	for (; itb != ite; ++itb)
 	{
 		LPCSTR name = itb->first;
 		LPCSTR fd_str = strstr(name, in_str);
+
 		if (fd_str)
 		{
 			shared_str temp;
 			temp._set(name);
 			bool dup = (std::find(out_v.begin(), out_v.end(), temp) != out_v.end());
+
 			if (!dup)
 			{
 				u32 name_sz = xr_strlen(name);
@@ -725,10 +726,9 @@ bool CConsole::add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v)
 				res = true;
 			}
 		}
-		if (out_v.size() >= MAX_TIPS_COUNT)
-		{
-			return res;
-		}
+
+		if (out_v.size() >= MAX_TIPS_COUNT)		
+			return res;		
 	} // for
 
 	return res;
@@ -738,69 +738,62 @@ void CConsole::update_tips()
 {
 	m_temp_tips.clear_not_free();
 	m_tips.clear_not_free();
+	m_cur_cmd = nullptr;
 
-	m_cur_cmd = NULL;
-	if (!bVisible)
-	{
-		return;
-	}
+	if (!bVisible)	
+		return;	
 
 	LPCSTR cur = ec().str_edit();
-	u32    cur_length = xr_strlen(cur);
+	u32 cur_length = xr_strlen(cur);
 
-	if (cur_length == 0)
+	if (!cur_length)
 	{
 		m_prev_length_str = 0;
 		return;
 	}
 
-	if (m_prev_length_str != cur_length)
-	{
+	if (m_prev_length_str != cur_length)	
 		reset_selected_tip();
-	}
+	
 	m_prev_length_str = cur_length;
 
 	PSTR first = (PSTR)_alloca((cur_length + 1) * sizeof(char));
 	PSTR last = (PSTR)_alloca((cur_length + 1) * sizeof(char));
 	text_editor::split_cmd(first, last, cur);
-
 	u32 first_lenght = xr_strlen(first);
 
 	if ((first_lenght > 2) && (first_lenght + 1 <= cur_length)) // param
 	{
 		if (cur[first_lenght] == ' ')
 		{
-			if (m_tips_mode != 2)
-			{
-				reset_selected_tip();
-			}
+			if (m_tips_mode != 2)			
+				reset_selected_tip();			
 
 			vecCMD_IT it = Commands.find(first);
+
 			if (it != Commands.end())
 			{
 				IConsole_Command* cc = it->second;
-
 				u32 mode = 0;
+
 				if ((first_lenght + 2 <= cur_length) && (cur[first_lenght] == ' ') && (cur[first_lenght + 1] == ' '))
 				{
 					mode = 1;
 					last += 1; // fake: next char
 				}
 
-#pragma TODO("FIX")
+				#pragma TODO("FIX")
 				//cc->fill_tips(m_temp_tips, mode);
 				m_tips_mode = 2;
 				m_cur_cmd._set(first);
 				select_for_filter(last, m_temp_tips, m_tips);
 
-				if (m_tips.size() == 0)
-				{
+				if (m_tips.size() == 0)				
 					m_tips.push_back(TipString("(empty)"));
-				}
-				if ((int)m_tips.size() <= m_select_tip)
-				{
+				
+				if ((int)m_tips.size() <= m_select_tip)				
 					reset_selected_tip();
-				}
+
 				return;
 			}
 		}
@@ -818,36 +811,34 @@ void CConsole::update_tips()
 		m_tips_mode = 0;
 		reset_selected_tip();
 	}
-	if ((int)m_tips.size() <= m_select_tip)
-	{
-		reset_selected_tip();
-	}
 
+	if ((int)m_tips.size() <= m_select_tip)	
+		reset_selected_tip();
 }
 
 void CConsole::select_for_filter(LPCSTR filter_str, vecTips& in_v, vecTipsEx& out_v)
 {
 	out_v.clear_not_free();
 	u32 in_count = in_v.size();
-	if (in_count == 0 || !filter_str)
-	{
-		return;
-	}
+
+	if (in_count == 0 || !filter_str)	
+		return;	
 
 	bool all = (xr_strlen(filter_str) == 0);
 
 	vecTips::iterator itb = in_v.begin();
 	vecTips::iterator ite = in_v.end();
+
 	for (; itb != ite; ++itb)
 	{
 		shared_str const& str = (*itb);
-		if (all)
-		{
-			out_v.push_back(TipString(str));
-		}
+
+		if (all)		
+			out_v.push_back(TipString(str));		
 		else
 		{
 			LPCSTR fd_str = strstr(str.c_str(), filter_str);
+
 			if (fd_str)
 			{
 				int   fd_sz = str.size() - xr_strlen(fd_str);

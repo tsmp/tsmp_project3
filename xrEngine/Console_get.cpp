@@ -15,8 +15,8 @@ bool CConsole::GetBool(LPCSTR cmd, bool& val)
 			val = !!cf->GetValue();
 		else
 		{
-			CCC_Integer* cf = dynamic_cast<CCC_Integer*>(C);
-			val = !!cf->GetValue();
+			CCC_Integer* ci = dynamic_cast<CCC_Integer*>(C);
+			val = !!ci->GetValue();
 		}
 	}
 

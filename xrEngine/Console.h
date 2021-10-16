@@ -1,7 +1,8 @@
 #pragma once
-
 #include "iinputreceiver.h"
 
+extern char const* const ioc_prompt;
+extern char const* const ch_cursor;
 
 struct TipString
 {

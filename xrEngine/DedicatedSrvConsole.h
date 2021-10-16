@@ -9,46 +9,36 @@ class ENGINE_API CDedicatedSrvConsole final : public CConsole
 	using inherited = CConsole;
 
 private:
-	HWND hMainWnd;
-	HWND hConsoleWnd;
-	HWND hLogWnd;
+	u32 m_LastStatisticUpdateTime;
+	CServerInfo m_server_info;
 
-	HFONT hLogWndFont;
-	HFONT hPrevFont;
-	HBRUSH hBackGroundBrush;
+	HWND m_hMainWnd;
+	HWND m_hConsoleWnd;
+	HWND m_hLogWnd;
 
-	HDC hdcLogWnd;
-	HDC hdcBackBuffer;
+	HFONT m_hLogWndFont;
+	HFONT m_hPrevFont;
+	HBRUSH m_hBackGroundBrush;
 
-	HBITMAP hBitmap;
-	HBITMAP hOldBitmap;
+	HDC m_hdcLogWnd;
+	HDC m_hdcBackBuffer;
 
-	bool bNeedUpdate;
-	u32 LastUpdateTime;
-
-	CServerInfo server_info;
-	bool bScrollLog;
-
-	u32 LastStatisticsUpdate;
-
-private:
-	void CreateConsoleWnd();
-	void CreateLogWnd();
-	void DrawLog(HDC hDC, RECT *pRect);
+	HBITMAP m_hBitmap;
+	HBITMAP m_hOldBitmap;
 
 public:
 	CDedicatedSrvConsole();
 	virtual ~CDedicatedSrvConsole();
 
-	virtual void Initialize();
-	virtual void Destroy();
+	virtual void Initialize() final override;
+	virtual void Destroy() final override;
 
+	virtual void OnRender() final override {};
+	virtual void OnFrame() final override;
 	void OnPaint();
 
-	virtual void OnRender(){};
-	virtual void OnFrame();
-
-	virtual void IR_OnKeyboardPress(int dik);
-	virtual void IR_OnKeyboardHold(int dik);
-	virtual void IR_OnKeyboardRelease(int dik);
+private:
+	void CreateConsoleWnd();
+	void CreateLogWnd();
+	void DrawLog(HDC hDC, RECT* pRect);
 };

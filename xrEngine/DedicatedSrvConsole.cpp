@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "DedicatedSrvConsole.h"
-
-extern const char *ioc_prompt;
-int g_svTextConsoleUpdateRate = 1;
+#include "line_editor/line_editor.h"
 
 LRESULT CALLBACK TextConsole_LogWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -28,21 +26,17 @@ LRESULT CALLBACK TextConsole_LogWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 CDedicatedSrvConsole::CDedicatedSrvConsole()
 {
-	hMainWnd = nullptr;
-	hConsoleWnd = nullptr;
-	hLogWnd = nullptr;
-	hLogWndFont = nullptr;
+	m_hMainWnd = nullptr;
+	m_hConsoleWnd = nullptr;
+	m_hLogWnd = nullptr;
+	m_hLogWndFont = nullptr;
 
-	bScrollLog = false;
-	bNeedUpdate = false;
-
-	LastUpdateTime = 0;
-	LastStatisticsUpdate = 0;
+	m_LastStatisticUpdateTime = Device.dwTimeGlobal;
 }
 
 CDedicatedSrvConsole::~CDedicatedSrvConsole()
 {
-	hMainWnd = nullptr;
+	m_hMainWnd = nullptr;
 }
 
 void CDedicatedSrvConsole::CreateConsoleWnd()
@@ -50,7 +44,7 @@ void CDedicatedSrvConsole::CreateConsoleWnd()
 	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(0);
 
 	RECT rct;
-	GetClientRect(hMainWnd, &rct);
+	GetClientRect(m_hMainWnd, &rct);
 
 	INT lX = rct.left;
 	INT lY = rct.top;
@@ -61,8 +55,9 @@ void CDedicatedSrvConsole::CreateConsoleWnd()
 
 	// Register the windows class
 	WNDCLASS wndClass =
-		{
-			0, DefWindowProc, 0, 0, hInstance, NULL, LoadCursor(hInstance, IDC_ARROW), GetStockBrush(GRAY_BRUSH), NULL, wndClassName};
+	{
+			0, DefWindowProc, 0, 0, hInstance, NULL, LoadCursor(hInstance, IDC_ARROW), GetStockBrush(GRAY_BRUSH), NULL, wndClassName
+	};
 
 	RegisterClass(&wndClass);
 
@@ -70,9 +65,8 @@ void CDedicatedSrvConsole::CreateConsoleWnd()
 	u32 dwWindowStyle = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE;
 
 	// Create the render window
-	hConsoleWnd = CreateWindow(wndClassName, "XRAY Text Console", dwWindowStyle, lX, lY, lWidth, lHeight, hMainWnd, 0, hInstance, 0L);
-
-	R_ASSERT2(hConsoleWnd, "Unable to Create TextConsole Window!");
+	m_hConsoleWnd = CreateWindow(wndClassName, "XRAY Text Console", dwWindowStyle, lX, lY, lWidth, lHeight, m_hMainWnd, 0, hInstance, 0L);
+	R_ASSERT2(m_hConsoleWnd, "Unable to Create TextConsole Window!");
 }
 
 void CDedicatedSrvConsole::CreateLogWnd()
@@ -80,7 +74,7 @@ void CDedicatedSrvConsole::CreateLogWnd()
 	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(0);
 
 	RECT rct;
-	GetClientRect(hConsoleWnd, &rct);
+	GetClientRect(m_hConsoleWnd, &rct);
 
 	INT lX = rct.left;
 	INT lY = rct.top;
@@ -91,8 +85,9 @@ void CDedicatedSrvConsole::CreateLogWnd()
 
 	// Register the windows class
 	WNDCLASS wndClass =
-		{
-			0, TextConsole_LogWndProc, 0, 0, hInstance, NULL, LoadCursor(NULL, IDC_ARROW), GetStockBrush(BLACK_BRUSH), NULL, wndClassName};
+	{
+			0, TextConsole_LogWndProc, 0, 0, hInstance, NULL, LoadCursor(NULL, IDC_ARROW), GetStockBrush(BLACK_BRUSH), NULL, wndClassName
+	};
 
 	RegisterClass(&wndClass);
 
@@ -100,13 +95,13 @@ void CDedicatedSrvConsole::CreateLogWnd()
 	u32 dwWindowStyle = WS_OVERLAPPED | WS_CHILD | WS_VISIBLE; // | WS_CLIPSIBLINGS;
 
 	// Create the render window
-	hLogWnd = CreateWindow(wndClassName,
-						   "XRAY Text Console Log", dwWindowStyle, lX, lY, lWidth, lHeight, hConsoleWnd, 0, hInstance, 0L);
+	m_hLogWnd = CreateWindow(wndClassName,
+						   "XRAY Text Console Log", dwWindowStyle, lX, lY, lWidth, lHeight, m_hConsoleWnd, 0, hInstance, 0L);
 
-	R_ASSERT2(hLogWnd, "Unable to Create TextConsole Window!");
+	R_ASSERT2(m_hLogWnd, "Unable to Create TextConsole Window!");
 
-	ShowWindow(hLogWnd, SW_SHOW);
-	UpdateWindow(hLogWnd);
+	ShowWindow(m_hLogWnd, SW_SHOW);
+	UpdateWindow(m_hLogWnd);
 
 	LOGFONT lf;
 	lf.lfHeight = -12;
@@ -128,65 +123,64 @@ void CDedicatedSrvConsole::CreateLogWnd()
 	else
 		lf.lfPitchAndFamily = VARIABLE_PITCH | FF_SWISS;
 
-	hLogWndFont = CreateFontIndirect(&lf);
-	R_ASSERT2(hLogWndFont, "Unable to Create Font for Log Window");
+	m_hLogWndFont = CreateFontIndirect(&lf);
+	R_ASSERT2(m_hLogWndFont, "Unable to Create Font for Log Window");
 
-	hdcLogWnd = GetDC(hLogWnd); // DC - Device Context
-	R_ASSERT2(hdcLogWnd, "Unable to Get DC for Log Window!");
+	m_hdcLogWnd = GetDC(m_hLogWnd); // DC - Device Context
+	R_ASSERT2(m_hdcLogWnd, "Unable to Get DC for Log Window!");
 
-	hdcBackBuffer = CreateCompatibleDC(hdcLogWnd);
-	R_ASSERT2(hdcBackBuffer, "Unable to Create Compatible DC for Log Window!");
+	m_hdcBackBuffer = CreateCompatibleDC(m_hdcLogWnd);
+	R_ASSERT2(m_hdcBackBuffer, "Unable to Create Compatible DC for Log Window!");
 
-	hBitmap = CreateCompatibleBitmap(hdcLogWnd, lWidth, lHeight);
-	R_ASSERT2(hBitmap, "Unable to Create Compatible Bitmap for Log Window!");
+	m_hBitmap = CreateCompatibleBitmap(m_hdcLogWnd, lWidth, lHeight);
+	R_ASSERT2(m_hBitmap, "Unable to Create Compatible Bitmap for Log Window!");
 
-	hOldBitmap = (HBITMAP)SelectObject(hdcBackBuffer, hBitmap);
-	hPrevFont = (HFONT)SelectObject(hdcBackBuffer, hLogWndFont);
+	m_hOldBitmap = (HBITMAP)SelectObject(m_hdcBackBuffer, m_hBitmap);
+	m_hPrevFont = (HFONT)SelectObject(m_hdcBackBuffer, m_hLogWndFont);
 
-	SetBkColor(hdcBackBuffer, RGB(0, 0, 0));
-
-	hBackGroundBrush = GetStockBrush(BLACK_BRUSH);
+	SetBkColor(m_hdcBackBuffer, RGB(1, 1, 1));
+	m_hBackGroundBrush = GetStockBrush(BLACK_BRUSH);
 }
 
 void CDedicatedSrvConsole::Initialize()
 {
-	CConsole::Initialize();
+	inherited::Initialize();
 
-	hMainWnd = Device.m_hWnd;
+	m_LastStatisticUpdateTime = Device.dwTimeGlobal;
+	m_hMainWnd = Device.m_hWnd;
 
 	CreateConsoleWnd();
 	CreateLogWnd();
 
-	ShowWindow(hConsoleWnd, SW_SHOW);
-	UpdateWindow(hConsoleWnd);
+	ShowWindow(m_hConsoleWnd, SW_SHOW);
+	UpdateWindow(m_hConsoleWnd);
 
-	server_info.ResetData();
-	LastStatisticsUpdate = Device.dwTimeGlobal;
+	m_server_info.ResetData();
 }
 
 void CDedicatedSrvConsole::Destroy()
 {
-	CConsole::Destroy();
+	inherited::Destroy();
 
-	SelectObject(hdcBackBuffer, hPrevFont);
-	SelectObject(hdcBackBuffer, hOldBitmap);
+	SelectObject(m_hdcBackBuffer, m_hPrevFont);
+	SelectObject(m_hdcBackBuffer, m_hOldBitmap);
 
-	if (hBitmap)
-		DeleteObject(hBitmap);
-	if (hOldBitmap)
-		DeleteObject(hOldBitmap);
-	if (hLogWndFont)
-		DeleteObject(hLogWndFont);
-	if (hPrevFont)
-		DeleteObject(hPrevFont);
-	if (hBackGroundBrush)
-		DeleteObject(hBackGroundBrush);
+	if (m_hBitmap)
+		DeleteObject(m_hBitmap);
+	if (m_hOldBitmap)
+		DeleteObject(m_hOldBitmap);
+	if (m_hLogWndFont)
+		DeleteObject(m_hLogWndFont);
+	if (m_hPrevFont)
+		DeleteObject(m_hPrevFont);
+	if (m_hBackGroundBrush)
+		DeleteObject(m_hBackGroundBrush);
 
-	ReleaseDC(hLogWnd, hdcBackBuffer);
-	ReleaseDC(hLogWnd, hdcLogWnd);
+	ReleaseDC(m_hLogWnd, m_hdcBackBuffer);
+	ReleaseDC(m_hLogWnd, m_hdcLogWnd);
 
-	DestroyWindow(hLogWnd);
-	DestroyWindow(hConsoleWnd);
+	DestroyWindow(m_hLogWnd);
+	DestroyWindow(m_hConsoleWnd);
 }
 
 void CDedicatedSrvConsole::OnPaint()
@@ -194,15 +188,12 @@ void CDedicatedSrvConsole::OnPaint()
 	RECT rect;
 	PAINTSTRUCT pstruct;
 
-	BeginPaint(hLogWnd, &pstruct);
+	BeginPaint(m_hLogWnd, &pstruct);
 
-	if (bNeedUpdate)
+	if (Device.CurrentFrameNumber % 2)
 	{
-		LastUpdateTime = Device.dwTimeGlobal;
-		bNeedUpdate = false;
-
-		GetClientRect(hLogWnd, &rect);
-		DrawLog(hdcBackBuffer, &rect);
+		GetClientRect(m_hLogWnd, &rect);
+		DrawLog(m_hdcBackBuffer, &rect);
 	}
 	else
 		rect = pstruct.rcPaint;
@@ -210,10 +201,10 @@ void CDedicatedSrvConsole::OnPaint()
 	// BitBlt выполняет передачу битовых блоков данных о цвете, соответствующих прямоугольнику
 	// пикселей из заданного исходного контекста устройства в целевой контекст устройства
 
-	BitBlt(hdcLogWnd, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, hdcBackBuffer, rect.left, rect.top,
+	BitBlt(m_hdcLogWnd, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, m_hdcBackBuffer, rect.left, rect.top,
 		   SRCCOPY);
 
-	EndPaint(hLogWnd, &pstruct);
+	EndPaint(m_hLogWnd, &pstruct);
 }
 
 void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT *pRect)
@@ -222,37 +213,58 @@ void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT *pRect)
 	GetTextMetrics(hDC, &tm);
 
 	RECT wRC = *pRect;
-	GetClientRect(hLogWnd, &wRC);
+	GetClientRect(m_hLogWnd, &wRC);
 
-	FillRect(hDC, &wRC, hBackGroundBrush);
+	FillRect(hDC, &wRC, m_hBackGroundBrush);
 
-	INT Height = wRC.bottom - wRC.top;
+	int Width = wRC.right - wRC.left;
+	int Height = wRC.bottom - wRC.top;
+
 	wRC = *pRect;
-	int y_top_max = (int)(0.3f * Height);
+	int y_top_max = (int)(0.32f * Height);
 
-	char buf[MAX_LEN + 5];
-	strcpy_s(buf, ioc_prompt);
-	strcat(buf, editor);
-	//if (bCursor)
-	strcat(buf, "|");
+	LPCSTR s_edt = ec().str_edit();
+	LPCSTR s_cur = ec().str_before_cursor();
 
-	SetTextColor(hDC, RGB(128, 128, 255));
-	TextOut(hDC, 0, Height - tm.tmHeight, buf, xr_strlen(buf));
+	u32 cur_len = xr_strlen(s_cur) + xr_strlen(ch_cursor) + 1;
+	PSTR buf = (PSTR)_alloca(cur_len * sizeof(char));
+	strcpy_s(buf, cur_len, s_cur);
+	strcat_s(buf, cur_len, ch_cursor);
+	buf[cur_len - 1] = 0;
 
-	int YPos = Height - tm.tmHeight - tm.tmHeight;
+	u32 cur0_len = xr_strlen(s_cur);
+	int xb = 25;
 
-	static int last_log_size;
+	SetTextColor(hDC, RGB(255, 255, 255));
+	TextOut(hDC, xb, Height - tm.tmHeight - 1, buf, cur_len - 1);
+	buf[cur0_len] = 0;
+	
+	SetTextColor(hDC, RGB(0, 0, 0));
+	TextOut(hDC, xb, Height - tm.tmHeight - 1, buf, cur0_len);
 
-	if (scroll_delta)
-		scroll_delta += (LogFile->size() - last_log_size);
+	SetTextColor(hDC, RGB(255, 255, 255));
+	TextOut(hDC, 0, Height - tm.tmHeight - 3, ioc_prompt, xr_strlen(ioc_prompt)); // ">>> "
 
-	int startPos = LogFile->size() - 1 - scroll_delta;
+	SetTextColor(hDC, (COLORREF)bgr2rgb(get_mark_color(Console_mark::mark11)));
+	TextOut(hDC, xb, Height - tm.tmHeight - 3, s_edt, xr_strlen(s_edt));
 
-	for (int i = startPos; i >= 0; i--)
+	SetTextColor(hDC, RGB(205, 205, 225));
+	u32 log_line = LogFile->size() - 1;
+	string16 q, q2;
+	itoa(log_line, q, 10);
+	strcpy_s(q2, sizeof(q2), "[");
+	strcat_s(q2, sizeof(q2), q);
+	strcat_s(q2, sizeof(q2), "]");
+	u32 qn = xr_strlen(q2);
+
+	TextOut(hDC, Width - 8 * qn, Height - tm.tmHeight - tm.tmHeight, q2, qn);
+	int ypos = Height - tm.tmHeight - tm.tmHeight;
+
+	for (int i = LogFile->size() - 1 - scroll_delta; i >= 0; --i)
 	{
-		YPos -= tm.tmHeight;
+		ypos -= tm.tmHeight;
 
-		if (YPos < y_top_max)
+		if (ypos < y_top_max)
 			break;
 
 		LPCSTR Str = *(*LogFile)[i];
@@ -267,63 +279,35 @@ void CDedicatedSrvConsole::DrawLog(HDC hDC, RECT *pRect)
 		u8 b = (is_mark(cm)) ? 2 : 0;
 		LPCSTR pOut = Str + b;
 
-		BOOL res = TextOut(hDC, 10, YPos, pOut, xr_strlen(pOut));
+		BOOL res = TextOut(hDC, 10, ypos, pOut, xr_strlen(pOut));
 		R_ASSERT(res);
 	}
 
-	last_log_size = LogFile->size();
-
-	// update statistic every 0,8 sec
-	if (g_pGameLevel && (Device.dwTimeGlobal - LastStatisticsUpdate > 800))
+	if (g_pGameLevel && (Device.dwTimeGlobal - m_LastStatisticUpdateTime > 500))
 	{
-		LastStatisticsUpdate = Device.dwTimeGlobal;
-
-		server_info.ResetData();
-		g_pGameLevel->GetLevelInfo(&server_info);
+		m_LastStatisticUpdateTime = Device.dwTimeGlobal;
+		m_server_info.ResetData();
+		g_pGameLevel->GetLevelInfo(&m_server_info);
 	}
 
-	YPos = 5;
+	ypos = 5;
 
-	for (u32 i = 0; i < server_info.Size(); ++i)
+	for (u32 i = 0; i < m_server_info.Size(); ++i)
 	{
-		SetTextColor(hDC, server_info[i].color);
-		TextOut(hDC, 10, YPos, server_info[i].name, xr_strlen(server_info[i].name));
-		YPos += tm.tmHeight;
+		SetTextColor(hDC, m_server_info[i].color);
+		TextOut(hDC, 10, ypos, m_server_info[i].name, xr_strlen(m_server_info[i].name));
 
-		if (YPos > y_top_max)
-			break;
+		ypos += tm.tmHeight;
+
+		if (ypos > y_top_max)		
+			break;		
 	}
-}
-
-void CDedicatedSrvConsole::IR_OnKeyboardPress(int dik)
-{
-	bScrollLog = true;
-	CConsole::IR_OnKeyboardPress(dik);
-}
-
-void CDedicatedSrvConsole::IR_OnKeyboardHold(int dik)
-{
-	bScrollLog = true;
-	CConsole::IR_OnKeyboardHold(dik);
-}
-
-void CDedicatedSrvConsole::IR_OnKeyboardRelease(int dik)
-{
-	bScrollLog = false;
-	CConsole::IR_OnKeyboardRelease(dik);
 }
 
 void CDedicatedSrvConsole::OnFrame()
 {
 	inherited::OnFrame();
 
-	if (bScrollLog)
-		bNeedUpdate = true;
-
-	if (!bNeedUpdate && (LastUpdateTime + 1000 / g_svTextConsoleUpdateRate) > Device.dwTimeGlobal)
-		return;
-
-	InvalidateRect(hConsoleWnd, NULL, FALSE);
+	InvalidateRect(m_hConsoleWnd, NULL, FALSE);
 	SetCursor(LoadCursor(NULL, IDC_ARROW));
-	bNeedUpdate = true;
 }

@@ -66,7 +66,7 @@ namespace text_editor
 		{
 			c = m_char;
 			char c_shift = m_char_shift;
-			string128 buff, code_page;
+			string128 buff;
 			buff[0] = '\0';
 
 			static _locale_t current_locale = _create_locale(LC_ALL, "");
