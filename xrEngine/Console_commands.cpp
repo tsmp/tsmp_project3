@@ -443,7 +443,6 @@ extern int psNET_ClientPending;
 extern int psNET_ServerUpdate;
 extern int psNET_ServerPending;
 extern int psNET_DedicatedSleep;
-extern int g_svTextConsoleUpdateRate;
 extern int g_svDedicateServerUpdateReate;
 extern int g_Dump_Export_Obj;
 extern int g_Dump_Import_Obj;
@@ -528,7 +527,6 @@ void CCC_Register()
 	CMD1(CCC_DumpResources, "dump_resources");
 	CMD1(CCC_DumpOpenFiles, "dump_open_files");
 
-	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
 	CMD3(CCC_Mask, "rs_cam_pos", &psDeviceFlags, rsCameraPos);
 

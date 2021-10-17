@@ -49,6 +49,12 @@
     <Filter Include="Threading">
       <UniqueIdentifier>{4b478223-0b30-441c-be50-9dbda20f5197}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Clipboard">
+      <UniqueIdentifier>{3c620e17-aad6-4c4b-b079-e85606b05872}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Extensions\buffer vector">
+      <UniqueIdentifier>{c6b8941b-2166-41ad-80b9-24677addd1a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FTimer.cpp">
@@ -167,6 +173,9 @@
     </ClCompile>
     <ClCompile Include="threading\xrCriticalSection.cpp">
       <Filter>Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="clipboard\os_clipboard.cpp">
+      <Filter>Clipboard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -373,6 +382,15 @@
     </ClInclude>
     <ClInclude Include="threading\xrCriticalSection.h">
       <Filter>Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="clipboard\os_clipboard.h">
+      <Filter>Clipboard</Filter>
+    </ClInclude>
+    <ClInclude Include="buffer_vector.h">
+      <Filter>Math\Extensions\buffer vector</Filter>
+    </ClInclude>
+    <ClInclude Include="buffer_vector_inline.h">
+      <Filter>Math\Extensions\buffer vector</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

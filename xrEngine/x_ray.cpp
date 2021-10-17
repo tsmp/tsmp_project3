@@ -330,6 +330,7 @@ void EngineInitialize(char* lpCmdLine)
 	Engine.Initialize();
 	Device.Initialize();
 
+	InitInput();
 	InitializeConsole();
 
 	if (strstr(Core.Params, "-r2a"))
@@ -342,8 +343,7 @@ void EngineInitialize(char* lpCmdLine)
 		pTmp->Execute(Console->ConfigFile);
 		xr_delete(pTmp);
 	}
-
-	InitInput();
+	
 	Engine.External.Initialize();
 	Console->Execute("stat_memory");
 
