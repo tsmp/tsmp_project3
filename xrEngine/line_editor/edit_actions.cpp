@@ -66,7 +66,7 @@ namespace text_editor
 		{
 			c = m_char;
 			char c_shift = m_char_shift;
-			string128 buff;
+			string128 buff, code_page;
 			buff[0] = '\0';
 
 			static _locale_t current_locale = _create_locale(LC_ALL, "");
@@ -82,14 +82,14 @@ namespace text_editor
 				}
 			}
 			
-			if (control->get_key_state(ks_Shift))			
+			if (control->get_key_state(ks_Shift))
 				c = c_shift;			
 		}
 		else
 		{
 			c = m_char;
 
-			if (control->get_key_state(ks_Shift))			
+			if (control->get_key_state(ks_Shift))
 				c = m_char_shift;			
 		}
 

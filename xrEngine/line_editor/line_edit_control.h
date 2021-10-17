@@ -58,7 +58,6 @@ namespace text_editor
 
 		IC bool get_key_state(key_state mask) const { return (mask) ? !!(m_key_state.test(mask)) : true; }
 		IC void set_key_state(key_state mask, bool value) { m_key_state.set(mask, value); }
-		IC void reset_key_state() { m_key_state.zero(); }
 
 		IC bool cursor_view() const { return m_cursor_view; }
 		IC bool need_update() const { return m_need_update; }
@@ -75,8 +74,8 @@ namespace text_editor
 
 	private:
 		line_edit_control(line_edit_control const &);
-		line_edit_control const &operator=(line_edit_control const &);
 
+		void update_key_states();
 		void update_bufs();
 
 		void xr_stdcall undo_buf();
@@ -98,11 +97,11 @@ namespace text_editor
 		void xr_stdcall delete_selected_forward();
 		void xr_stdcall delete_word_back();
 		void xr_stdcall delete_word_forward();
+		void xr_stdcall SwitchKL();
 
 		void assign_char_pairs(init_mode mode);
 		void create_key_state(u32 const dik, key_state state);
 		void create_char_pair(u32 const dik, char c, char c_shift, bool translate = false);
-		void assign_action(u32 const dik, Base *const action);
 
 		void clear_inserted();
 		bool empty_inserted();
