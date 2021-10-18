@@ -84,7 +84,9 @@ IC void CStalkerAnimationManager::play_script_impl()
 
 bool CStalkerAnimationManager::play_script()
 {
-	if (script_animations().empty())
+	bool clientPlayScriptAnim = OnClient() && m_MpSyncScript.val != u16(-1);
+
+	if (script_animations().empty() && !clientPlayScriptAnim)
 	{
 		script().reset();
 		return (false);

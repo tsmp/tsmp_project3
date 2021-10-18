@@ -317,6 +317,12 @@ CBlend *CKinematicsAnimated::PlayCycle(LPCSTR N, BOOL bMixIn, PlayCallback Callb
 }
 CBlend *CKinematicsAnimated::PlayCycle(MotionID motion_ID, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*= 0*/)
 {
+	if (!motion_ID.valid())
+	{
+		Msg("! cant play animation!");
+		return nullptr;
+	}
+
 	VERIFY(motion_ID.valid());
 	CMotionDef *m_def = m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
 	VERIFY(m_def);
