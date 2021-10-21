@@ -15,23 +15,20 @@
 
 extern ENGINE_API const char* RadminIdPrefix = "raid:";
 
-void ExcludeRadminIdFromCommandArguments(LPCSTR args, LPSTR dest, size_t destSize)
+void ExcludeRadminIdFromCommandArguments(char* args)
 {
-	strncpy_s(dest, destSize, args, destSize - 1);
-	char* tempString = strrchr(dest, ' ');
+	char* pSearchFrom = strrchr(args, ' ');
 
-	if (!tempString)
-		tempString = dest;
+	if (!pSearchFrom)
+		pSearchFrom = args;
 
-	if (char* raidStr = strstr(tempString, RadminIdPrefix))
+	if (char* raidStr = strstr(pSearchFrom, RadminIdPrefix))
 	{
-		if (raidStr <= tempString)
+		if (raidStr <= args)
 			*raidStr = '\0';
 		else
 			*(raidStr - 1) = '\0';	//with ' '
 	}
-
-	dest[destSize - 1] = '\0';
 }
 
 extern xr_token *vid_mode_token;

@@ -356,4 +356,4 @@ public:
 };
 
 extern ENGINE_API const char* RadminIdPrefix;
-ENGINE_API void ExcludeRadminIdFromCommandArguments(LPCSTR args, LPSTR dest, size_t destSize);
+ENGINE_API void ExcludeRadminIdFromCommandArguments(char* args);

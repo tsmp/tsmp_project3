@@ -105,7 +105,6 @@ static xrClientData* GetCommandInitiator(LPCSTR commandLine)
 }
 
 ENGINE_API const char* RadminIdPrefix;
-ENGINE_API void ExcludeRadminIdFromCommandArguments(LPCSTR args, LPSTR dest, size_t destSize);
 
 class CCC_Restart : public IConsole_Command
 {

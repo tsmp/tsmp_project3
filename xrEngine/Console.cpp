@@ -447,30 +447,30 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 	PSTR last = (PSTR)_alloca((str_size + 1) * sizeof(char));
 
 	strcpy_s(edt, str_size + 1, cmd_str);
-	edt[str_size] = 0;
+	edt[str_size] = '\0';
 
 	scroll_delta = 0;
 	reset_cmd_history_idx();
 	reset_selected_tip();
-
 	text_editor::remove_spaces(edt);
-	if (edt[0] == 0)
-	{
+
+	if (edt[0] == '\0')	
 		return;
-	}
+	
 	if (record_cmd)
 	{
 		char c[2];
 		c[0] = static_cast<char>(Console_mark::mark2);
 		c[1] = '\0';
 
-		if (m_last_cmd.c_str() == 0 || xr_strcmp(m_last_cmd, edt) != 0)
+		if (!m_last_cmd.c_str() || xr_strcmp(m_last_cmd, edt))
 		{
 			Log(c, edt);
 			add_cmd_history(edt);
 			m_last_cmd = edt;
 		}
 	}
+
 	text_editor::split_cmd(first, last, edt);
 
 	// search
@@ -484,8 +484,11 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 		{
 			if (cc->bLowerCaseArgs)			
 				strlwr(last);
+
+			if (!cc->bForRadminsOnly)
+				ExcludeRadminIdFromCommandArguments(last);
 			
-			if (last[0] == 0)
+			if (last[0] == '\0')
 			{
 				if (cc->bEmptyArgsHandled)				
 					cc->Execute(last);				
