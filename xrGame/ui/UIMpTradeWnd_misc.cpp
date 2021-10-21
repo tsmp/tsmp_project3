@@ -443,7 +443,7 @@ void CUIMpTradeWnd::SetMoneyAmount(u32 money)
 
 void CUIMpTradeWnd::ResetItems()
 {
-	Msg("--ResetItems");
+	//Msg("--ResetItems");
 	ResetToOrigin();
 	CleanUserItems();
 	m_store_hierarchy->Reset();
