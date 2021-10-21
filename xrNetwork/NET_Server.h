@@ -47,6 +47,50 @@ struct XRNETWORK_API ip_address
 	}
 };
 
+class XRNETWORK_API HWID
+{
+public:
+
+	unsigned short s1, s2, s3, s4, s5;
+
+	HWID()
+	{
+		s1 = s2 = s3 = s4 = s5 = 0;
+	}
+
+	HWID(unsigned short us1, unsigned short us2, unsigned short us3, unsigned short us4, unsigned short us5) : s1(us1), s2(us2), s3(us3), s4(us4), s5(us5)
+	{
+	}
+
+	bool operator==(HWID& other)
+	{
+		return (s1 == other.s1
+			&& s2 == other.s2)
+			|| (s3 == other.s3
+				&& s4 == other.s4
+				&& s5 == other.s5);
+	}
+
+	HWID& operator=(const HWID& other)
+	{
+		if (this == &other)
+			return *this;
+
+		s1 = other.s1;
+		s2 = other.s2;
+		s3 = other.s3;
+		s4 = other.s4;
+		s5 = other.s5;
+
+		return *this;
+	}
+
+	bool isEmpty()
+	{
+		return !s1 && !s2 && !s3 && !s4 && !s5;
+	}
+};
+
 class XRNETWORK_API
 	IClient : public MultipacketSender
 {
@@ -76,8 +120,8 @@ public:
 	ip_address m_cAddress;
 	DWORD m_dwPort;
 	u32 process_id;
-	unsigned short s1, s2, s3, s4, s5;
 
+	HWID m_HWID;
 	IPureServer *server;
 
 private:
@@ -111,14 +155,13 @@ class XRNETWORK_API IBannedClient
 {
 public:
 	ip_address HAddr;
-	unsigned short s1, s2, s3, s4, s5;
+	HWID m_HWID;
 	time_t BanTime;
 
 	IBannedClient()
 	{
 		HAddr.m_data.data = 0;
 		BanTime = 0;
-		s1 = s2 = s3 = s4 = s5 = 0;
 	}
 
 	void Load(CInifile &ini, const shared_str &sect);
@@ -177,7 +220,7 @@ protected:
 	bool GetClientAddress(IDirectPlay8Address *pClientAddress, ip_address &Address, DWORD *pPort = NULL);
 
 	IBannedClient *GetBannedClient(const ip_address &Address);
-	IBannedClient *GetBannedHW(unsigned short s1, unsigned short s2, unsigned short s3, unsigned short s4, unsigned short s5);
+	IBannedClient *GetBannedHW(HWID& hwid);
 	void BannedList_Save();
 	void BannedList_Load();
 	LPCSTR GetBannedListName();
@@ -230,10 +273,10 @@ public:
 	virtual bool DisconnectClient(IClient *C, string512 &Reason);
 	virtual bool DisconnectAddress(const ip_address &Address);
 	virtual void BanClient(IClient *C, u32 BanTime);
-	virtual void BanClientHW(IClient *C, u32 BanTime);
+	virtual void BanClientHW(HWID& hwid);
 	virtual void BanAddress(const ip_address &Address, u32 BanTime);
 	virtual void UnBanAddress(const ip_address &Address);
-	virtual void UnBanHW(unsigned short s1, unsigned short s2, unsigned short s3, unsigned short s4, unsigned short s5);
+	virtual void UnBanHW(HWID& hwid);
 	void Print_Banned_Addreses();
 
 	virtual bool Check_ServerAccess(IClient *CL, string512 &reason) { return true; }

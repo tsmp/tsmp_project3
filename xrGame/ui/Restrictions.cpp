@@ -74,7 +74,7 @@ void CRestrictions::InitGroups()
 		m_names[i] = CStringTable().translate(pSettings->r_string(rank, "rank_name"));
 	}
 
-	Dump();
+	//Dump();
 
 #ifdef DEBUG
 	CMD4(CCC_Integer, "rank_for_buymenu", (int *)&m_rank, 0, 4);

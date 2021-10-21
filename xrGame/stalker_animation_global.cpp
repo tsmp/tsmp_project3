@@ -57,6 +57,9 @@ MotionID CStalkerAnimationManager::global_critical_hit()
 
 MotionID CStalkerAnimationManager::assign_global_animation()
 {
+	if (OnClient())
+		return m_MpSyncGlobal;
+
 	if (eMentalStatePanic != object().movement().mental_state())
 		return (global_critical_hit());
 

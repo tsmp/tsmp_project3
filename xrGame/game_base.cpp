@@ -172,6 +172,14 @@ game_GameState::game_GameState()
 
 CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 {
+	if (!xr_strcmp(game_type_name, "hardmatch"))
+	{
+		if(isServer)
+			return (TEXT2CLSID("SV_HM"));
+		else
+			return (TEXT2CLSID("CL_HM"));
+	}
+
 #ifndef ALIFE_MP
 	if (!g_dedicated_server)
 #endif

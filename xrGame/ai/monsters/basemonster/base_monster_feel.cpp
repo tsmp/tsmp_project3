@@ -79,9 +79,6 @@ void CBaseMonster::feel_sound_new(CObject *who, int eType, CSound_UserDataPtr us
 		SoundMemory.HearSound(who, eType, Position, power, Device.dwTimeGlobal);
 	}
 }
-#define MAX_LOCK_TIME 2.f
-
-extern bool IsGameTypeSingle();
 
 void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impulse, Fvector &dir)
 {
@@ -93,120 +90,36 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 	if (!EnemyMan.get_enemy())
 		return;
 
-	if (EnemyMan.get_enemy() == pEntity)
-	{
-		Fvector position_in_bone_space;
-		position_in_bone_space.set(0.f, 0.f, 0.f);
+	if (EnemyMan.get_enemy() != pEntity)
+		return;
 
-		// перевод из локальных координат в мировые вектора направления импульса
-		Fvector hit_dir;
-		XFORM().transform_dir(hit_dir, dir);
-		hit_dir.normalize();
+	Fvector position_in_bone_space;
+	position_in_bone_space.set(0.f, 0.f, 0.f);
 
-		CEntity *pEntityNC = const_cast<CEntity *>(pEntity);
-		VERIFY(pEntityNC);
+	// перевод из локальных координат в мировые вектора направления импульса
+	Fvector hit_dir;
+	XFORM().transform_dir(hit_dir, dir);
+	hit_dir.normalize();
 
-		NET_Packet l_P;
-		SHit HS;
-		HS.GenHeader(GE_HIT, pEntityNC->ID());
-		HS.whoID = (ID());
-		HS.weaponID = (ID());
-		HS.dir = (hit_dir);
-		HS.power = (fDamage);
-		HS.boneID = (smart_cast<CKinematics *>(pEntityNC->Visual())->LL_GetBoneRoot());
-		HS.p_in_bone_space = (position_in_bone_space);
-		HS.impulse = (impulse);
-		HS.hit_type = (ALife::eHitTypeWound);
-		HS.Write_Packet(l_P);
-		u_EventSend(l_P);
+	CEntity* pEntityNC = const_cast<CEntity*>(pEntity);
+	VERIFY(pEntityNC);
 
-		if (pEntityNC == Actor() && IsGameTypeSingle())
-		{
-			START_PROFILE("BaseMonster/Animation/HitEntity");
-			SDrawStaticStruct *s = HUD().GetUI()->UIGame()->AddCustomStatic("monster_claws", false);
-			s->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
+	NET_Packet l_P;
+	SHit HS;
+	HS.GenHeader(GE_HIT, pEntityNC->ID());
+	HS.whoID = (ID());
+	HS.weaponID = (ID());
+	HS.dir = (hit_dir);
+	HS.power = (fDamage);
+	HS.boneID = (smart_cast<CKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot());
+	HS.p_in_bone_space = (position_in_bone_space);
+	HS.impulse = (impulse);
+	HS.hit_type = (ALife::eHitTypeWound);
+	HS.Write_Packet(l_P);
+	u_EventSend(l_P);
 
-			float h1, p1;
-			Device.vCameraDirection.getHP(h1, p1);
-
-			Fvector hd = hit_dir;
-			hd.mul(-1);
-			float d = -h1 + hd.getH();
-			s->wnd()->SetHeading(d);
-			s->wnd()->SetHeadingPivot(Fvector2().set(256, 512));
-			STOP_PROFILE;
-
-			float time_to_lock = fDamage * MAX_LOCK_TIME;
-			clamp(time_to_lock, 0.f, MAX_LOCK_TIME);
-			Actor()->lock_accel_for(int(time_to_lock * 1000));
-
-			CEffectorCam *ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effBigMonsterHit);
-			if (!ce)
-			{
-				const shared_str &eff_sect = pSettings->r_string(cNameSect(), "actor_hit_effect");
-				if (eff_sect.c_str())
-				{
-					int id = -1;
-					Fvector cam_pos, cam_dir, cam_norm;
-					Actor()->cam_Active()->Get(cam_pos, cam_dir, cam_norm);
-					cam_dir.normalize_safe();
-					dir.normalize_safe();
-
-					float ang_diff = angle_difference(cam_dir.getH(), dir.getH());
-					Fvector cp;
-					cp.crossproduct(cam_dir, dir);
-					bool bUp = (cp.y > 0.0f);
-
-					Fvector cross;
-					cross.crossproduct(cam_dir, dir);
-					VERIFY(ang_diff >= 0.0f && ang_diff <= PI);
-
-					float _s1 = PI_DIV_8;
-					float _s2 = _s1 + PI_DIV_4;
-					float _s3 = _s2 + PI_DIV_4;
-					float _s4 = _s3 + PI_DIV_4;
-
-					if (ang_diff <= _s1)
-					{
-						id = 2;
-					}
-					else
-					{
-						if (ang_diff > _s1 && ang_diff <= _s2)
-						{
-							id = (bUp) ? 5 : 7;
-						}
-						else if (ang_diff > _s2 && ang_diff <= _s3)
-						{
-							id = (bUp) ? 3 : 1;
-						}
-						else if (ang_diff > _s3 && ang_diff <= _s4)
-						{
-							id = (bUp) ? 4 : 6;
-						}
-						else if (ang_diff > _s4)
-						{
-							id = 0;
-						}
-						else
-						{
-							VERIFY(0);
-						}
-					}
-
-					string64 sect_name;
-
-					sprintf_s(sect_name, "%s_%d", eff_sect.c_str(), id);
-					AddEffector(Actor(), effBigMonsterHit, sect_name, fDamage);
-				}
-			}
-			//////////////////////////////////////////////////////////////////////////
-		}
-
-		Morale.on_attack_success();
-
-		m_time_last_attack_success = Device.dwTimeGlobal;
-	}
+	Morale.on_attack_success();
+	m_time_last_attack_success = Device.dwTimeGlobal;
 }
 
 BOOL CBaseMonster::feel_vision_isRelevant(CObject *O)

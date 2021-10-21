@@ -74,7 +74,7 @@ void IBannedClient::Load(CInifile& ini, const shared_str& sect)
 		int delimiters[4] = { 0 };
 		int delimsCounter = 0;
 
-		for (int i = 0; i < hwstr.size(); i++)
+		for (unsigned i = 0; i < hwstr.size(); i++)
 		{
 			if (hwstr[i] == '-')
 			{
@@ -84,57 +84,59 @@ void IBannedClient::Load(CInifile& ini, const shared_str& sect)
 		}
 
 		std::string str1(hwstr.begin(), hwstr.end()-hwstr.size()+delimiters[0]);
-		s1 = atoi(str1.c_str());
+		m_HWID.s1 = static_cast<unsigned short>(atoi(str1.c_str()));
 
 		std::string str2(hwstr.begin()+delimiters[0]+1, hwstr.end() - hwstr.size() + delimiters[1]);
-		s2 = atoi(str2.c_str());
+		m_HWID.s2 = static_cast<unsigned short>(atoi(str2.c_str()));
 
 		std::string str3(hwstr.begin() + delimiters[1] + 1, hwstr.end() - hwstr.size() + delimiters[2]);
-		s3 = atoi(str3.c_str());
+		m_HWID.s3 = static_cast<unsigned short>(atoi(str3.c_str()));
 
 		std::string str4(hwstr.begin() + delimiters[2] + 1, hwstr.end() - hwstr.size() + delimiters[3]);
-		s4 = atoi(str4.c_str());
+		m_HWID.s4 = static_cast<unsigned short>(atoi(str4.c_str()));
 
 		std::string str5(hwstr.begin() + delimiters[3] + 1, hwstr.end());
-		s5 = atoi(str5.c_str());
+		m_HWID.s5 = static_cast<unsigned short>(atoi(str5.c_str()));
 	}
 
-		tm _tm_banned;
-		const shared_str& time_to = ini.r_string(sect, "time_to");
-		int res_t = sscanf(time_to.c_str(),
-			"%02d.%02d.%d_%02d:%02d:%02d",
-			&_tm_banned.tm_mday,
-			&_tm_banned.tm_mon,
-			&_tm_banned.tm_year,
-			&_tm_banned.tm_hour,
-			&_tm_banned.tm_min,
-			&_tm_banned.tm_sec);
-		VERIFY(res_t == 6);
+	tm _tm_banned;
+	const shared_str& time_to = ini.r_string(sect, "time_to");
 
-		_tm_banned.tm_mon -= 1;
-		_tm_banned.tm_year -= 1900;
+	int res_t = sscanf(time_to.c_str(),
+		"%02d.%02d.%d_%02d:%02d:%02d",
+		&_tm_banned.tm_mday,
+		&_tm_banned.tm_mon,
+		&_tm_banned.tm_year,
+		&_tm_banned.tm_hour,
+		&_tm_banned.tm_min,
+		&_tm_banned.tm_sec);
 
-		BanTime = mktime(&_tm_banned);
+	VERIFY(res_t == 6);
 
-		if (!s1 && !s2 && !s3)
-			Msg("- loaded banned client %s to %s", HAddr.to_string().c_str(), BannedTimeTo().c_str());
-		else
-		{
-			char ch[32];
-			sprintf(ch, "%hu-%hu-%hu-%hu-%hu", s1, s2, s3, s4, s5);
+	_tm_banned.tm_mon -= 1;
+	_tm_banned.tm_year -= 1900;
 
-			Msg("- loaded banned client %s to %s", ch, BannedTimeTo().c_str());
-		}
+	BanTime = mktime(&_tm_banned);
+
+	if (m_HWID.isEmpty())
+		Msg("- loaded banned client %s to %s", HAddr.to_string().c_str(), BannedTimeTo().c_str());
+	else
+	{
+		char ch[32];
+		sprintf(ch, "%hu-%hu-%hu-%hu-%hu", m_HWID.s1, m_HWID.s2, m_HWID.s3, m_HWID.s4, m_HWID.s5);
+
+		Msg("- loaded banned client hwid %s to %s", ch, BannedTimeTo().c_str());
+	}
 }
 
 void IBannedClient::Save(CInifile& ini)
 {
-	if (!s1 && !s2 && !s3)
+	if (m_HWID.isEmpty())
 		ini.w_string(HAddr.to_string().c_str(), "time_to", BannedTimeTo().c_str());
 	else
 	{
 		char buf[32];		
-		sprintf(buf, "%hu-%hu-%hu-%hu-%hu", s1, s2, s3, s4, s5);
+		sprintf(buf, "%hu-%hu-%hu-%hu-%hu", m_HWID.s1, m_HWID.s2, m_HWID.s3, m_HWID.s4, m_HWID.s5);
 		ini.w_string(buf, "time_to", BannedTimeTo().c_str());
 	}
 }
@@ -203,7 +205,6 @@ IClient::IClient(CTimer* timer)
 	flags.bConnected = FALSE;
 	flags.bReconnect = FALSE;
 	flags.bVerified = TRUE;
-	s1 = s2 = s3 = s4 = s5 = 0;
 }
 
 IClient::~IClient()
@@ -980,13 +981,13 @@ IBannedClient* IPureServer::GetBannedClient(const ip_address& Address)
 	for (u32 it = 0; it < BannedAddresses.size(); it++)
 	{
 		IBannedClient* pBClient = BannedAddresses[it];
-		if (pBClient->HAddr == Address && !pBClient->s1 && !pBClient->s2 && !pBClient->s3)
+		if (pBClient->HAddr == Address && pBClient->m_HWID.isEmpty())
 			return pBClient;
 	}
 	return NULL;
 };
 
-IBannedClient* IPureServer::GetBannedHW(unsigned short s1, unsigned short s2, unsigned short s3, unsigned short s4, unsigned short s5)
+IBannedClient* IPureServer::GetBannedHW(HWID &hwid)
 {
 	for (u32 it = 0; it < BannedAddresses.size(); it++)
 	{
@@ -995,14 +996,12 @@ IBannedClient* IPureServer::GetBannedHW(unsigned short s1, unsigned short s2, un
 		if (!pBClient)
 			continue;
 		
-		//Msg("His hwid: %hu-%hu-%hu-%hu-%hu", s1, s2, s3, s4, s5);
-
-		if ((pBClient->s1 == s1 && pBClient->s2 == s2) || (pBClient->s3 == s3 && pBClient->s4 == s4 && pBClient->s5 == s5))
+		if (pBClient->m_HWID == hwid)
 			return pBClient;			
 	}
 
-	return NULL;
-};
+	return nullptr;
+}
 
 void IPureServer::BanClient(IClient* C, u32 BanTime)
 {
@@ -1011,15 +1010,11 @@ void IPureServer::BanClient(IClient* C, u32 BanTime)
 	BanAddress(ClAddress, BanTime);
 };
 
-void IPureServer::BanClientHW(IClient* C, u32 BanTime)
+void IPureServer::BanClientHW(HWID &hwid)
 {
 	IBannedClient* cl = new IBannedClient();
-	
-	cl->s1 = C->s1;
-	cl->s2 = C->s2;
-	cl->s3 = C->s3;
-	cl->s4 = C->s4;
-	cl->s5 = C->s5;
+	cl->m_HWID = hwid;
+	u32 BanTime = 999999999;
 
 	time(&cl->BanTime);
 	cl->BanTime += BanTime;
@@ -1028,7 +1023,7 @@ void IPureServer::BanClientHW(IClient* C, u32 BanTime)
 	BannedList_Save();
 };
 
-void IPureServer::UnBanHW(unsigned short s1, unsigned short s2, unsigned short s3, unsigned short s4, unsigned short s5)
+void IPureServer::UnBanHW(HWID &hwid)
 {
 	for (u32 it = 0; it < BannedAddresses.size(); it++)
 	{
@@ -1037,7 +1032,7 @@ void IPureServer::UnBanHW(unsigned short s1, unsigned short s2, unsigned short s
 		if (!pBClient)
 			continue;
 
-		if (pBClient->s1 == s1 && pBClient->s2 == s2 && pBClient->s3 == s3 && pBClient->s4 == s4 && pBClient->s5 == s5)
+		if (pBClient->m_HWID == hwid)
 		{
 			xr_delete(BannedAddresses[it]);
 			BannedAddresses.erase(BannedAddresses.begin() + it);
@@ -1145,22 +1140,24 @@ bool banned_client_comparer(IBannedClient* C1, IBannedClient* C2)
 
 void IPureServer::UpdateBannedList()
 {
-	if (!BannedAddresses.size())
+	if (BannedAddresses.empty())
 		return;
+
 	std::sort(BannedAddresses.begin(), BannedAddresses.end(), banned_client_comparer);
 	time_t T;
 	time(&T);
 
 	IBannedClient* Cl = BannedAddresses.back();
+
 	if (Cl->BanTime < T)
 	{
-		if (!Cl->s1 && !Cl->s2 && !Cl->s3)
+		if (Cl->m_HWID.isEmpty())
 		{
 			ip_address Address = Cl->HAddr;
 			UnBanAddress(Address);
 		}
 		else
-			UnBanHW(Cl->s1, Cl->s2, Cl->s3, Cl->s4, Cl->s5);
+			UnBanHW(Cl->m_HWID);
 	}
 }
 

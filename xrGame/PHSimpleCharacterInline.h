@@ -28,9 +28,6 @@ void CPHSimpleCharacter::UpdateStaticDamage(dContact *c, SGameMtl *tri_material,
 
 void CPHSimpleCharacter::UpdateDynamicDamage(dContact *c, u16 obj_material_idx, dBodyID b, bool bo1)
 {
-
-	//if(ph_world ->IsFreezed())
-	//return;
 	const dReal *vel = dBodyGetLinearVel(m_body);
 	dReal c_vel;
 	dMass m;
@@ -46,19 +43,13 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact *c, u16 obj_material_idx, 
 		return;
 
 	dVector3 Pc = {vel[0] * m_mass + obj_vel[0] * m.mass, vel[1] * m_mass + obj_vel[1] * m.mass, vel[2] * m_mass + obj_vel[2] * m.mass};
-	//dVectorMul(Vc,1.f/(m_mass+m.mass));
-	//dVector3 vc_obj={obj_vel[0]-Vc[0],obj_vel[1]-Vc[1],obj_vel[2]-Vc[2]};
-	//dVector3 vc_self={vel[0]-Vc[0],vel[1]-Vc[1],vel[2]-Vc[2]};
-	//dReal vc_obj_norm=dDOT(vc_obj,norm);
-	//dReal vc_self_norm=dDOT(vc_self,norm);
-
 	dReal Kself = norm_vel * norm_vel * m_mass / 2.f;
 	dReal Kobj = norm_obj_vel * norm_obj_vel * m.mass / 2.f;
 
 	dReal Pcnorm = dDOT(Pc, norm);
 	dReal KK = Pcnorm * Pcnorm / (m_mass + m.mass) / 2.f;
 	dReal accepted_energy = Kself * m_collision_damage_factor + Kobj * object_damage_factor - KK;
-	//DeltaK=m1*m2*(v1-v2)^2/(2*(m1+m2))
+
 	if (accepted_energy > 0.f)
 	{
 		SGameMtl *obj_material = GMLib.GetMaterialByIdx(obj_material_idx);
@@ -66,6 +57,7 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact *c, u16 obj_material_idx, 
 	}
 	else
 		c_vel = 0.f;
+
 #ifdef DEBUG
 	if (ph_dbg_draw_mask.test(phDbgDispObjCollisionDammage) && c_vel > dbg_vel_collid_damage_to_display)
 	{
@@ -87,40 +79,15 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact *c, u16 obj_material_idx, 
 		Msg("cd %s -effective_acceted_e %f", *PhysicsRefObject()->cName(), accepted_energy);
 		Msg("cd %s -real_acceted_e %f", *PhysicsRefObject()->cName(), Kself + Kobj - KK);
 		Msg("cd %s -free_energy %f", *PhysicsRefObject()->cName(), dbg_free_energy);
-		Msg("-----------------------------------------------------------------------------------------");
-		/*
-		static float dbg_my_norm_vell=0.f;
-		static float dbg_obj_norm_vell=0.f;
-		static float dbg_my_kinetic_e=0.f;
-		static float dbg_obj_kinetic_e=0.f;
-		static float dbg_my_effective_e=0.f;
-		static float dbg_obj_effective_e=0.f;
-		static float dbg_free_energy=0.f;
-		if()
-			dbg_my_norm_vell=norm_vel;
-			dbg_obj_norm_vell=norm_obj_vel;
-			dbg_my_kinetic_e=Kself;
-			dbg_obj_kinetic_e=Kobj;
-			dbg_my_effective_e=Kself*m_collision_damage_factor;
-			dbg_obj_effective_e=Kobj*object_damage_factor;
-			dbg_free_energy=KK;
-		DBG_OutText("-----dbg obj collision damage-------");
-		DBG_OutText("my_norm_vell %f",dbg_my_norm_vell);
-		DBG_OutText("obj_norm_vell %f",dbg_obj_norm_vell);
-		DBG_OutText("my_kinetic_e %f",dbg_my_kinetic_e);
-		DBG_OutText("obj_kinetic_e %f", dbg_obj_kinetic_e);
-		DBG_OutText("my_effective_e %f",dbg_my_effective_e);
-		DBG_OutText("obj_effective_e %f",dbg_obj_effective_e);
-		DBG_OutText("free_energy %f",dbg_free_energy);
-		DBG_OutText("-----------------------------------");
-		*/
+		Msg("-----------------------------------------------------------------------------------------");		
 	}
 #endif
+
 	if (c_vel > m_collision_damage_info.m_contact_velocity)
 	{
 		CPhysicsShellHolder *obj = bo1 ? retrieveRefObject(c->geom.g2) : retrieveRefObject(c->geom.g1);
-		VERIFY(obj);
-		if (!obj->getDestroy())
+
+		if (obj && !obj->getDestroy())
 		{
 			m_collision_damage_info.m_contact_velocity = c_vel;
 			m_collision_damage_info.m_dmc_signum = bo1 ? 1.f : -1.f;

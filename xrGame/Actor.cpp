@@ -24,6 +24,7 @@
 #include "actorcondition.h"
 #include "UIGameCustom.h"
 #include "game_cl_base_weapon_usage_statistic.h"
+#include "ai/monsters/basemonster/base_monster.h"
 
 // breakpoints
 #include "../xr_input.h"
@@ -543,10 +544,9 @@ void CActor::Hit(SHit *pHDS)
 		//		mstate_real	&=~mcSprint;
 		mstate_wishful &= ~mcSprint;
 	};
-	if (!g_dedicated_server)
-	{
-		HitMark(HDS.damage(), HDS.dir, HDS.who, HDS.bone(), HDS.p_in_bone_space, HDS.impulse, HDS.hit_type);
-	}
+
+	if (!g_dedicated_server && g_Alive() && Local() && Level().CurrentEntity() == this)	
+		HitMark(HDS.damage(), HDS.dir, HDS.who, HDS.hit_type);	
 
 	switch (GameID())
 	{
@@ -611,73 +611,95 @@ void CActor::Hit(SHit *pHDS)
 	}
 }
 
-void CActor::HitMark(float P,
-					 Fvector dir,
-					 CObject *who,
-					 s16 element,
-					 Fvector position_in_bone_space,
-					 float impulse,
-					 ALife::EHitType hit_type)
+#define MAX_LOCK_TIME 2.f
+
+void CActor::HitMark(const float &hitPower, Fvector dir, CObject* hitter, const ALife::EHitType &hitType)
 {
-	// hit marker
-	if ((hit_type == ALife::eHitTypeFireWound || hit_type == ALife::eHitTypeWound_2) && g_Alive() && Local() && /*(this!=who) && */ (Level().CurrentEntity() == this))
+	bool isMonsterWound = !!smart_cast<CBaseMonster*>(hitter) && hitType == ALife::eHitTypeWound;
+	ECamEffectorType effType;
+
+	if (!isMonsterWound && hitType != ALife::eHitTypeFireWound && hitType != ALife::eHitTypeWound_2)
+		return;	
+
+	if (isMonsterWound)
 	{
-		HUD().Hit(0, P, dir);
+		SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("monster_claws", false);
+		s->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
 
+		float h1, p1;
+		Device.vCameraDirection.getHP(h1, p1);
+
+		Fvector hd = dir;
+		hd.mul(-1);
+		float d = -h1 + hd.getH();
+		s->wnd()->SetHeading(d);
+		s->wnd()->SetHeadingPivot(Fvector2().set(256, 512));
+
+		float time_to_lock = hitPower * MAX_LOCK_TIME;
+		clamp(time_to_lock, 0.f, MAX_LOCK_TIME);
+		lock_accel_for(int(time_to_lock * 1000));
+		effType = (ECamEffectorType)effBigMonsterHit;
+	}
+	else
+	{
+		// hit marker
+		HUD().Hit(0, hitPower, dir);
+		effType = (ECamEffectorType)effFireHit;
+	}
+
+	// Уже есть эффектор
+	if (Cameras().GetCamEffector(effType))
+		return;
+
+	int id = -1;
+	Fvector cam_pos, cam_dir, cam_norm;
+	cam_Active()->Get(cam_pos, cam_dir, cam_norm);
+	cam_dir.normalize_safe();
+	dir.normalize_safe();
+
+	float ang_diff = angle_difference(cam_dir.getH(), dir.getH());
+	Fvector cp;
+	cp.crossproduct(cam_dir, dir);
+	bool bUp = (cp.y > 0.0f);
+
+	Fvector cross;
+	cross.crossproduct(cam_dir, dir);
+	VERIFY(ang_diff >= 0.0f && ang_diff <= PI);
+
+	float _s1 = PI_DIV_8;
+	float _s2 = _s1 + PI_DIV_4;
+	float _s3 = _s2 + PI_DIV_4;
+	float _s4 = _s3 + PI_DIV_4;
+
+	if (ang_diff <= _s1)	
+		id = 2;	
+	else if (ang_diff > _s1 && ang_diff <= _s2)	
+		id = (bUp) ? 5 : 7;	
+	else if (ang_diff > _s2 && ang_diff <= _s3)	
+		id = (bUp) ? 3 : 1;	
+	else if (ang_diff > _s3 && ang_diff <= _s4)	
+		id = (bUp) ? 4 : 6;	
+	else if (ang_diff > _s4)	
+		id = 0;	
+	else	
+		VERIFY(0);	
+
+	string64 sect_name;
+
+	if (isMonsterWound)
+	{
+		const shared_str& eff_sect = pSettings->r_string(hitter->cNameSect(), "actor_hit_effect");
+
+		if(eff_sect.c_str())
 		{
-			CEffectorCam *ce = Cameras().GetCamEffector((ECamEffectorType)effFireHit);
-			if (!ce)
-			{
-				int id = -1;
-				Fvector cam_pos, cam_dir, cam_norm;
-				cam_Active()->Get(cam_pos, cam_dir, cam_norm);
-				cam_dir.normalize_safe();
-				dir.normalize_safe();
-
-				float ang_diff = angle_difference(cam_dir.getH(), dir.getH());
-				Fvector cp;
-				cp.crossproduct(cam_dir, dir);
-				bool bUp = (cp.y > 0.0f);
-
-				Fvector cross;
-				cross.crossproduct(cam_dir, dir);
-				VERIFY(ang_diff >= 0.0f && ang_diff <= PI);
-
-				float _s1 = PI_DIV_8;
-				float _s2 = _s1 + PI_DIV_4;
-				float _s3 = _s2 + PI_DIV_4;
-				float _s4 = _s3 + PI_DIV_4;
-
-				if (ang_diff <= _s1)
-				{
-					id = 2;
-				}
-				else if (ang_diff > _s1 && ang_diff <= _s2)
-				{
-					id = (bUp) ? 5 : 7;
-				}
-				else if (ang_diff > _s2 && ang_diff <= _s3)
-				{
-					id = (bUp) ? 3 : 1;
-				}
-				else if (ang_diff > _s3 && ang_diff <= _s4)
-				{
-					id = (bUp) ? 4 : 6;
-				}
-				else if (ang_diff > _s4)
-				{
-					id = 0;
-				}
-				else
-				{
-					VERIFY(0);
-				}
-
-				string64 sect_name;
-				sprintf_s(sect_name, "effector_fire_hit_%d", id);
-				AddEffector(this, effFireHit, sect_name, P / 100.0f);
-			}
+			sprintf_s(sect_name, "%s_%d", eff_sect.c_str(), id);
+			AddEffector(this, effType, sect_name, hitPower);
 		}
+	}
+	else
+	{
+		sprintf_s(sect_name, "effector_fire_hit_%d", id);
+		AddEffector(this, effType, sect_name, hitPower / 100.0f);
 	}
 }
 

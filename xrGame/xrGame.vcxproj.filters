@@ -2302,6 +2302,12 @@
     <Filter Include="Core\Server\Games\client\mp\screenshots">
       <UniqueIdentifier>{29d908c5-e1c9-4cea-8551-1130b03cf167}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Server\Games\server\hardmatch">
+      <UniqueIdentifier>{724a0423-ba6b-474e-95e6-c9587f1bf293}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Server\Games\client\hardmatch">
+      <UniqueIdentifier>{3adfbb1c-342c-4a76-98b7-895c1b1b54b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6582,6 +6588,12 @@
     <ClInclude Include="screenshots_writer.h">
       <Filter>Core\Server\Games\client\mp\screenshots</Filter>
     </ClInclude>
+    <ClInclude Include="game_sv_hardmatch.h">
+      <Filter>Core\Server\Games\server\hardmatch</Filter>
+    </ClInclude>
+    <ClInclude Include="game_cl_hardmatch.h">
+      <Filter>Core\Server\Games\client\hardmatch</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9747,6 +9759,9 @@
     </ClCompile>
     <ClCompile Include="screenshots_writer.cpp">
       <Filter>Core\Server\Games\client\mp\screenshots</Filter>
+    </ClCompile>
+    <ClCompile Include="game_sv_hardmatch.cpp">
+      <Filter>Core\Server\Games\server\hardmatch</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

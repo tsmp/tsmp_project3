@@ -21,8 +21,14 @@ void IGame_ObjectPool::prefetch()
 	::Render->model_Logging(FALSE);
 
 	string256 section;
+	string256 gameTypeName;
+	strcpy(gameTypeName, g_pGamePersistent->m_game_params.m_game_type);
+
+	if (!strcmp(gameTypeName, "hardmatch"))
+		strcpy(gameTypeName, "deathmatch");
+
 	// prefetch objects
-	strconcat(sizeof(section), section, "prefetch_objects_", g_pGamePersistent->m_game_params.m_game_type);
+	strconcat(sizeof(section), section, "prefetch_objects_", gameTypeName);
 	CInifile::Sect &sect = pSettings->r_section(section);
 	for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
 	{

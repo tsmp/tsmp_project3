@@ -574,6 +574,8 @@
     <ClInclude Include="filetransfer\filetransfer_common.h" />
     <ClInclude Include="filetransfer\filetransfer_node.h" />
     <ClInclude Include="filetransfer\file_transfer.h" />
+    <ClInclude Include="game_cl_hardmatch.h" />
+    <ClInclude Include="game_sv_hardmatch.h" />
     <ClInclude Include="mt_config.h" />
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="damage_manager_inline.h" />
@@ -2027,6 +2029,7 @@
     <ClCompile Include="filetransfer\filetransfer_node.cpp" />
     <ClCompile Include="filetransfer\file_transfer.cpp" />
     <ClCompile Include="fz\fz_downloader.cpp" />
+    <ClCompile Include="game_sv_hardmatch.cpp" />
     <ClCompile Include="net_physics_state.cpp" />
     <ClCompile Include="screenshots_common.cpp" />
     <ClCompile Include="screenshots_writer.cpp" />

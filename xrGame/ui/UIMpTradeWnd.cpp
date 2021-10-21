@@ -159,7 +159,7 @@ void CUIMpTradeWnd::UpdateShop()
 	if (b_matched_root)
 		m_root_tab_control->ResetTab();
 
-	Msg("current level=[%s]", m_store_hierarchy->CurrentLevel().m_name.c_str());
+	//Msg("current level=[%s]", m_store_hierarchy->CurrentLevel().m_name.c_str());
 	SetCurrentItem(NULL);
 	if (m_store_hierarchy->CurrentIsRoot())
 		return;

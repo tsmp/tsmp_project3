@@ -226,26 +226,20 @@ void CAI_Stalker::Hit(SHit *pHDS)
 				agent_manager().location().add(xr_new<CDangerCoverLocation>(cover, Device.dwTimeGlobal, DANGER_INTERVAL, DANGER_DISTANCE));
 		}
 
-		const CEntityAlive *entity_alive = smart_cast<const CEntityAlive *>(pHDS->initiator());
-		if (entity_alive && !wounded())
-		{
-			if (is_relation_enemy(entity_alive))
-				sound().play(eStalkerSoundInjuring);
-			//			else
-			//				sound().play		(eStalkerSoundInjuringByFriend);
-		}
+		const CEntityAlive *hitter = smart_cast<const CEntityAlive *>(pHDS->initiator());
 
+		if (hitter && !wounded() && is_relation_enemy(hitter))
+			PlaySound(eStalkerSoundInjuring);
+		
 		int weapon_type = -1;
 		if (best_weapon())
 			weapon_type = best_weapon()->object().ef_weapon_type();
 
-		if (
-			!wounded() &&
-			!already_critically_wounded)
+		if (!wounded() && !already_critically_wounded)
 		{
 			bool became_critically_wounded = update_critical_wounded(HDS.boneID, HDS.power);
-			if (
-				!became_critically_wounded &&
+
+			if (!became_critically_wounded &&
 				animation().script_animations().empty() &&
 				(pHDS->bone() != BI_NONE))
 			{
@@ -266,20 +260,13 @@ void CAI_Stalker::Hit(SHit *pHDS)
 					pHDS->_dump();
 				}
 #endif
-				//				int						fx_index = iFloor(tpKinematics->LL_GetBoneInstance(pHDS->bone()).get_param(1) + (angle_difference(movement().m_body.current.yaw,-yaw) <= PI_DIV_2 ? 0 : 1));
-				//				if (fx_index != -1)
-				//					animation().play_fx	(power_factor,fx_index);
 			}
 			else
 			{
-				if (!already_critically_wounded && became_critically_wounded)
-				{
-					if (HDS.who)
-					{
-						CAI_Stalker *stalker = smart_cast<CAI_Stalker *>(HDS.who);
-						if (stalker)
-							stalker->on_critical_wound_initiator(this);
-					}
+				if (!already_critically_wounded && became_critically_wounded && HDS.who)
+				{					
+					if (CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(HDS.who))
+						stalker->on_critical_wound_initiator(this);
 				}
 			}
 		}
@@ -1008,7 +995,7 @@ void CAI_Stalker::on_critical_wound_initiator(const CAI_Stalker *critically_woun
 	if (!can_cry_enemy_is_wounded())
 		return;
 
-	sound().play(eStalkerSoundEnemyCriticallyWounded);
+	PlaySound(eStalkerSoundEnemyCriticallyWounded);
 }
 
 void CAI_Stalker::on_enemy_wounded_or_killed(const CAI_Stalker *wounded_or_killed)
@@ -1016,7 +1003,7 @@ void CAI_Stalker::on_enemy_wounded_or_killed(const CAI_Stalker *wounded_or_kille
 	if (!can_cry_enemy_is_wounded())
 		return;
 
-	sound().play(eStalkerSoundEnemyKilledOrWounded);
+	PlaySound(eStalkerSoundEnemyKilledOrWounded);
 }
 
 bool CAI_Stalker::can_kill_member()

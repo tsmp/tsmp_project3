@@ -32,6 +32,12 @@ public:
 	typedef CStalkerAnimationPair::BLEND_ID BLEND_ID;
 	typedef BLEND_ID ANIMATION_ID;
 
+	MotionID m_MpSyncLegs;
+	MotionID m_MpSyncHead;
+	MotionID m_MpSyncBody;
+	MotionID m_MpSyncGlobal;
+	MotionID m_MpSyncScript;
+
 private:
 	const CStalkerAnimationData *m_data_storage;
 	SCRIPT_ANIMATIONS m_script_animations;

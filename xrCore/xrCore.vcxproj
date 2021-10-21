@@ -273,6 +273,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="clipboard\os_clipboard.cpp" />
     <ClCompile Include="clsid.cpp" />
     <ClCompile Include="cpuid.cpp" />
     <ClCompile Include="crc32.cpp" />
@@ -332,6 +333,9 @@
     <ClCompile Include="_std_extensions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="buffer_vector.h" />
+    <ClInclude Include="buffer_vector_inline.h" />
+    <ClInclude Include="clipboard\os_clipboard.h" />
     <ClInclude Include="clsid.h" />
     <ClInclude Include="cpuid.h" />
     <ClInclude Include="fastdelegate.h" />

@@ -54,9 +54,17 @@ IC void CStalkerAnimationManager::play_script_impl()
 	torso().reset();
 	legs().reset();
 
-	const CStalkerAnimationScript &selected = assign_script_animation();
-	script().animation(selected.animation());
-	script().play(m_skeleton_animated, script_play_callback, &object(), selected.use_movement_controller(), false, m_script_bone_part_mask);
+	if (OnClient())
+	{
+		script().animation(m_MpSyncScript);
+		script().play(m_skeleton_animated, script_play_callback, &object(), false, false, m_script_bone_part_mask);
+	}
+	else
+	{
+		const CStalkerAnimationScript& selected = assign_script_animation();
+		script().animation(selected.animation());
+		script().play(m_skeleton_animated, script_play_callback, &object(), selected.use_movement_controller(), false, m_script_bone_part_mask);
+	}
 
 	head().animation(assign_head_animation());
 	head().play(m_skeleton_animated, head_play_callback, &object(), false);
@@ -76,7 +84,9 @@ IC void CStalkerAnimationManager::play_script_impl()
 
 bool CStalkerAnimationManager::play_script()
 {
-	if (script_animations().empty())
+	bool clientPlayScriptAnim = OnClient() && m_MpSyncScript.val != u16(-1);
+
+	if (script_animations().empty() && !clientPlayScriptAnim)
 	{
 		script().reset();
 		return (false);

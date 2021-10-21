@@ -15,23 +15,20 @@
 
 extern ENGINE_API const char* RadminIdPrefix = "raid:";
 
-void ExcludeRadminIdFromCommandArguments(LPCSTR args, LPSTR dest, size_t destSize)
+void ExcludeRadminIdFromCommandArguments(char* args)
 {
-	strncpy_s(dest, destSize, args, destSize - 1);
-	char* tempString = strrchr(dest, ' ');
+	char* pSearchFrom = strrchr(args, ' ');
 
-	if (!tempString)
-		tempString = dest;
+	if (!pSearchFrom)
+		pSearchFrom = args;
 
-	if (char* raidStr = strstr(tempString, RadminIdPrefix))
+	if (char* raidStr = strstr(pSearchFrom, RadminIdPrefix))
 	{
-		if (raidStr <= tempString)
+		if (raidStr <= args)
 			*raidStr = '\0';
 		else
 			*(raidStr - 1) = '\0';	//with ' '
 	}
-
-	dest[destSize - 1] = '\0';
 }
 
 extern xr_token *vid_mode_token;
@@ -443,7 +440,6 @@ extern int psNET_ClientPending;
 extern int psNET_ServerUpdate;
 extern int psNET_ServerPending;
 extern int psNET_DedicatedSleep;
-extern int g_svTextConsoleUpdateRate;
 extern int g_svDedicateServerUpdateReate;
 extern int g_Dump_Export_Obj;
 extern int g_Dump_Import_Obj;
@@ -528,7 +524,6 @@ void CCC_Register()
 	CMD1(CCC_DumpResources, "dump_resources");
 	CMD1(CCC_DumpOpenFiles, "dump_open_files");
 
-	CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
 	CMD3(CCC_Mask, "rs_cam_pos", &psDeviceFlags, rsCameraPos);
 

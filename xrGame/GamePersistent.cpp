@@ -186,7 +186,7 @@ void CGamePersistent::UpdateGameType()
 	m_game_params.m_e_game_type = GAME_ANY;
 
 	if (!xr_strcmp(m_game_params.m_game_type, "dm"))
-		strcpy_s(m_game_params.m_game_type,"deathmatch");
+		strcpy_s(m_game_params.m_game_type, "deathmatch");
 
 	if (!xr_strcmp(m_game_params.m_game_type, "tdm"))
 		strcpy_s(m_game_params.m_game_type, "teamdeathmatch");
@@ -196,6 +196,9 @@ void CGamePersistent::UpdateGameType()
 
 	if (!xr_strcmp(m_game_params.m_game_type, "sp"))
 		strcpy_s(m_game_params.m_game_type, "single");
+
+	if (!xr_strcmp(m_game_params.m_game_type, "hm"))
+		strcpy_s(m_game_params.m_game_type, "hardmatch");
 	
 
 	if (!xr_strcmp(m_game_params.m_game_type, "single"))
@@ -209,6 +212,9 @@ void CGamePersistent::UpdateGameType()
 	
 	if (!xr_strcmp(m_game_params.m_game_type, "artefacthunt"))
 		m_game_params.m_e_game_type = GAME_ARTEFACTHUNT;
+
+	if (!xr_strcmp(m_game_params.m_game_type, "hardmatch"))
+		m_game_params.m_e_game_type = GAME_HARDMATCH;
 
 	// На клиенте может остаться GAME_ANY если мы не знаем тип игры еще
 	

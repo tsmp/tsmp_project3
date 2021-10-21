@@ -374,9 +374,10 @@ xr_token game_types[] = {
 	{"deathmatch", GAME_DEATHMATCH},
 	//	{ "CTF",			GAME_CTF		},
 	//	{ "assault",		GAME_ASSAULT	},
-	{"counterstrike", GAME_CS},
+	//  {"counterstrike", GAME_CS},
 	{"teamdeathmatch", GAME_TEAMDEATHMATCH},
 	{"artefacthunt", GAME_ARTEFACTHUNT},
+	{"hardmatch", GAME_HARDMATCH},
 	{0, 0}};
 
 void CSE_Abstract::FillProps(LPCSTR pref, PropItemVec &items)

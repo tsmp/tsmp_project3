@@ -87,6 +87,12 @@ CAI_Stalker::CAI_Stalker()
 	m_debug_planner = 0;
 #endif // DEBUG
 	m_registered_in_combat_on_migration = false;
+
+	m_mpSoundSyncType = static_cast<u8>(-1);
+	m_mpSoundSyncMaxStartTime = 0;
+	m_mpSoundSyncMinStartTime = 0;
+	m_mpSoundSyncMaxStopTime = 0;
+	m_mpSoundSyncMinStopTime = 0;
 }
 
 CAI_Stalker::~CAI_Stalker()
@@ -273,17 +279,30 @@ void CAI_Stalker::reload(LPCSTR section)
 	m_power_fx_factor = pSettings->r_float(section, "power_fx_factor");
 }
 
+void CAI_Stalker::PlaySound(u32 soundType, u32 maxStartTime, u32 minStartTime, u32 maxStopTime, u32 minStopTime)
+{
+	if (OnClient())
+		return;
+
+	m_mpSoundSyncType = static_cast<u8>(soundType);
+	m_mpSoundSyncMaxStartTime = static_cast<u16>(maxStartTime);
+	m_mpSoundSyncMinStartTime = static_cast<u16>(minStartTime);
+	m_mpSoundSyncMaxStopTime = static_cast<u16>(maxStopTime);
+	m_mpSoundSyncMinStopTime = static_cast<u16>(minStopTime);
+
+	sound().play(soundType, maxStartTime, minStartTime, maxStopTime, minStopTime);
+}
+
 void CAI_Stalker::Die(CObject *who)
 {
 	notify_on_wounded_or_killed(who);
-
 	SelectAnimation(XFORM().k, movement().detail().direction(), movement().speed());
-
 	sound().set_sound_mask(0);
+
 	if (is_special_killer(who))
-		sound().play(eStalkerSoundDieInAnomaly);
+		PlaySound(eStalkerSoundDieInAnomaly);
 	else
-		sound().play(eStalkerSoundDie);
+		PlaySound(eStalkerSoundDie);
 
 	m_hammer_is_clutched = m_clutched_hammer_enabled && !CObjectHandler::planner().m_storage.property(ObjectHandlerSpace::eWorldPropertyStrapped) && !::Random.randI(0, 2);
 
@@ -563,15 +582,13 @@ void CAI_Stalker::net_Export_MP(NET_Packet& P)
 	else
 		P.w_u32(NO_ACTIVE_SLOT);
 
-	P.w_u16(m_animation_manager->torso().animation().idx);
-	P.w_u8(m_animation_manager->torso().animation().slot);
-	P.w_u16(m_animation_manager->legs().animation().idx);
-	P.w_u8(m_animation_manager->legs().animation().slot);
-	P.w_u16(m_animation_manager->head().animation().idx);
-	P.w_u8(m_animation_manager->head().animation().slot);
+	P.w_u16(m_animation_manager->torso().animation().val);
+	P.w_u16(m_animation_manager->legs().animation().val);
+	P.w_u16(m_animation_manager->head().animation().val);
+	P.w_u16(m_animation_manager->script().animation().val);
+	P.w_u16(m_animation_manager->global().animation().val);
 
-	P.w_u16(m_animation_manager->script().animation().idx);
-	P.w_u8(m_animation_manager->script().animation().slot);
+	net_Export_Sounds(P);
 }
 
 void CAI_Stalker::net_Export_Single(NET_Packet &P)
@@ -652,15 +669,6 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 
 	u32	u_active_weapon_slot;
 
-	u16 u_torso_motion_idx;
-	u8 u_torso_motion_slot;
-	u16 u_legs_motion_idx;
-	u8 u_legs_motion_slot;
-	u16 u_head_motion_idx;
-	u8 u_head_motion_slot;
-	u16 u_script_motion_idx;
-	u8 u_script_motion_slot;
-
 	P.r_float(f_health);
 
 	P.r_angle8(fv_direction.pitch);
@@ -671,18 +679,25 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 
 	P.r_u32(u_active_weapon_slot);
 
-	P.r_u16(u_torso_motion_idx);
-	P.r_u8(u_torso_motion_slot);
-	P.r_u16(u_legs_motion_idx);
-	P.r_u8(u_legs_motion_slot);
-	P.r_u16(u_head_motion_idx);
-	P.r_u8(u_head_motion_slot);
+	u16 u_torso_motion_val;
+	u16 u_legs_motion_val;
+	u16 u_head_motion_val;
+	u16 u_script_motion_val;
+	u16 u_global_motion_val;
 
-	P.r_u16(u_script_motion_idx);
-	P.r_u8(u_script_motion_slot);
+	P.r_u16(u_torso_motion_val);
+	P.r_u16(u_legs_motion_val);
+	P.r_u16(u_head_motion_val);
+	P.r_u16(u_script_motion_val);
+	P.r_u16(u_global_motion_val);
+
+	m_animation_manager->m_MpSyncBody.val = u_torso_motion_val;
+	m_animation_manager->m_MpSyncLegs.val = u_legs_motion_val;
+	m_animation_manager->m_MpSyncHead.val = u_head_motion_val;
+	m_animation_manager->m_MpSyncGlobal.val = u_global_motion_val;
+	m_animation_manager->m_MpSyncScript.val = u_script_motion_val;
 
 	SetfHealth(f_health);
-
 
 	if (phSyncFlag)
 	{
@@ -706,62 +721,12 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 	setVisible(TRUE);
 	setEnabled(TRUE);
 	
-	inventory().SetActiveSlot(u_active_weapon_slot);
-
-	MotionID motion;
-	CKinematicsAnimated* ik_anim_obj = smart_cast<CKinematicsAnimated*>(Visual());
-	if (u_last_torso_motion_idx != u_torso_motion_idx)
-	{
-		u_last_torso_motion_idx = u_torso_motion_idx;
-		motion.idx = u_torso_motion_idx;
-		motion.slot = u_torso_motion_slot;
-		if (motion.valid())
-		{
-			ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_PartID("torso"), motion, TRUE,
-				ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
-				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0);
-		}
-	}
-	if (u_last_legs_motion_idx != u_legs_motion_idx)
-	{
-		u_last_legs_motion_idx = u_legs_motion_idx;
-		motion.idx = u_legs_motion_idx;
-		motion.slot = u_legs_motion_slot;
-		if (motion.valid())
-		{
-			CStepManager::on_animation_start(motion, ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_PartID("legs"), motion,
-				TRUE, ik_anim_obj->LL_GetMotionDef(motion)->Accrue(),
-				ik_anim_obj->LL_GetMotionDef(motion)->Falloff(), ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0));
-		}
-	}
-	if (u_last_head_motion_idx != u_head_motion_idx)
-	{
-		u_last_head_motion_idx = u_head_motion_idx;
-		motion.idx = u_head_motion_idx;
-		motion.slot = u_head_motion_slot;
-		if (motion.valid())
-		{
-			ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_PartID("head"), motion, TRUE,
-				ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
-				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0);
-		}
-	}
-
-	if (u_last_script_motion_idx != u_script_motion_idx) 
-	{
-		motion.idx = u_script_motion_idx;
-		motion.slot = u_script_motion_slot;
-		u_last_script_motion_idx = u_script_motion_idx;
-		if (motion.valid())
-		{
-			ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part, motion, TRUE,
-				ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
-				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), ik_anim_obj->LL_GetMotionDef(motion)->StopAtEnd(), 0, 0, 0);
-		}
-	}
+	inventory().SetActiveSlot(u_active_weapon_slot);	
 
 	setVisible(TRUE);
 	setEnabled(TRUE);
+
+	net_Import_Sounds(P);
 }
 
 void CAI_Stalker::net_Import_Single(NET_Packet &P)
@@ -808,6 +773,35 @@ void CAI_Stalker::net_Import_Single(NET_Packet &P)
 
 	setVisible(TRUE);
 	setEnabled(TRUE);
+}
+
+void CAI_Stalker::net_Export_Sounds(NET_Packet& P)
+{
+	P.w_u8(m_mpSoundSyncType);
+	P.w_u16(m_mpSoundSyncMaxStartTime);
+	P.w_u16(m_mpSoundSyncMinStartTime);
+	P.w_u16(m_mpSoundSyncMaxStopTime);
+	P.w_u16(m_mpSoundSyncMinStopTime);
+	m_mpSoundSyncType = static_cast<u8>(-1);
+}
+
+void CAI_Stalker::net_Import_Sounds(NET_Packet& P)
+{
+	P.r_u8(m_mpSoundSyncType);
+	P.r_u16(m_mpSoundSyncMaxStartTime);
+	P.r_u16(m_mpSoundSyncMinStartTime);
+	P.r_u16(m_mpSoundSyncMaxStopTime);
+	P.r_u16(m_mpSoundSyncMinStopTime);
+
+	if (m_mpSoundSyncType == static_cast<u8>(-1))
+		return;
+
+	sound().play(
+		static_cast<u32>(m_mpSoundSyncType)
+		, static_cast<u32>(m_mpSoundSyncMaxStartTime)
+		, static_cast<u32>(m_mpSoundSyncMinStartTime)
+		, static_cast<u32>(m_mpSoundSyncMaxStopTime)
+		, static_cast<u32>(m_mpSoundSyncMinStopTime));
 }
 
 void CAI_Stalker::update_object_handler()
@@ -902,11 +896,7 @@ void CAI_Stalker::UpdateCL()
 				(eBodyStateStand == movement().body_state()) &&
 				(eMovementTypeRun == movement().movement_type()))
 			{
-				sound().play(eStalkerSoundRunningInDanger);
-			}
-			else
-			{
-				//				sound().play	(eStalkerSoundWalkingInDanger);
+				PlaySound(eStalkerSoundRunningInDanger);
 			}
 		}
 	}
@@ -914,6 +904,9 @@ void CAI_Stalker::UpdateCL()
 	START_PROFILE("stalker/client_update/inherited")
 	inherited::UpdateCL();
 	STOP_PROFILE
+
+	if(Remote())
+		UpdatePositionAnimation();
 
 	START_PROFILE("stalker/client_update/physics")
 	m_pPhysics_support->in_UpdateCL();
@@ -933,7 +926,7 @@ void CAI_Stalker::UpdateCL()
 			sight().update();
 		}
 
-		Exec_Look(client_update_fdelta());
+		Exec_Look(Device.fTimeDelta);
 		STOP_PROFILE
 
 		START_PROFILE("stalker/client_update/step_manager")
