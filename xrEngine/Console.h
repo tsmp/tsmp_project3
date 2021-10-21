@@ -114,6 +114,8 @@ private:
 	int m_select_tip;
 	int m_start_tip;
 	u32 m_prev_length_str;
+	static LPCSTR radmin_cmd_name;
+	bool m_HasRaPrefix;
 
 public:
 
@@ -184,6 +186,7 @@ protected:
 
 	void OutFont(LPCSTR text, float& pos_y);
 	void Register_callbacks();
+	u32 GetRadminCMDOffset(const char* cmdStr);
 
 protected:
 	void xr_stdcall Prev_log();

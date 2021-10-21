@@ -70,9 +70,8 @@ void CConsole::Find_cmd() // DIK_TAB
 void CConsole::Find_cmd_back() // DIK_TAB+shift
 {
 	LPCSTR edt = ec().str_edit();
-	LPCSTR radmin_cmd_name = "ra ";
-	bool b_ra = (edt == strstr(edt, radmin_cmd_name));
-	u32 offset = (b_ra) ? xr_strlen(radmin_cmd_name) : 0;
+	u32 offset = GetRadminCMDOffset(edt);
+	bool b_ra = offset;
 
 	vecCMD_IT it = Commands.lower_bound(edt + offset);
 
@@ -156,22 +155,24 @@ void CConsole::Execute_cmd() // DIK_RETURN, DIK_NUMPADENTER
 {
 	if (0 <= m_select_tip && m_select_tip < (int)m_tips.size())
 	{
+		char buf[256];
+		strcpy(buf, m_HasRaPrefix ? radmin_cmd_name : "");
 		shared_str const& str = m_tips[m_select_tip].text;
+
 		if (m_tips_mode == 1)
 		{
-			char buf[256];
-			strcpy(buf, str.c_str());
+			strcat(buf, str.c_str());
 			strcat(buf," ");
 			ec().set_edit(buf);
 		}
 		else if (m_tips_mode == 2)
 		{
-			char buf[256];
-			strcpy(buf, m_cur_cmd.c_str());
+			strcat(buf, m_cur_cmd.c_str());
 			strcat(buf, " ");
 			strcat(buf, str.c_str());
 			ec().set_edit(buf);
 		}
+
 		reset_selected_tip();
 	}
 	else	

@@ -30,6 +30,7 @@ static u32 const tips_scroll_back_color = color_rgba(15, 15, 15, 230);
 static u32 const tips_scroll_pos_color = color_rgba(70, 70, 70, 240);
 
 ENGINE_API CConsole *Console = nullptr;
+LPCSTR CConsole::radmin_cmd_name = "ra ";
 
 char const* const ioc_prompt = ">>> ";
 char const* const ch_cursor = "_";
@@ -66,6 +67,7 @@ void CConsole::Initialize()
 	bVisible = false;
 	pFont = nullptr;
 	pFont2 = nullptr;
+	m_HasRaPrefix = false;
 
 	m_mouse_pos.x = 0;
 	m_mouse_pos.y = 0;
@@ -244,6 +246,9 @@ void CConsole::OnRender()
 			break;
 		}
 
+		if (m_HasRaPrefix)
+			shift_x += scr_x * pFont->SizeOf_(radmin_cmd_name);
+
 		vecTipsEx::iterator itb = m_tips.begin() + m_start_tip;
 		vecTipsEx::iterator ite = m_tips.end();
 
@@ -326,6 +331,9 @@ void CConsole::DrawBackgrounds(bool bGame)
 	float ioc_w = pFont->SizeOf_(ioc_prompt) - w1;
 	float cur_cmd_w = pFont->SizeOf_(m_cur_cmd.c_str());
 	cur_cmd_w += (cur_cmd_w > 0.01f) ? w1 : 0.0f;
+
+	if (m_HasRaPrefix)
+		cur_cmd_w += w1 * strlen(radmin_cmd_name);
 
 	float list_w = pFont->SizeOf_(max_str) + 2.0f * w1;
 
@@ -590,9 +598,8 @@ void CConsole::ExecuteScript(LPCSTR str)
 
 IConsole_Command* CConsole::find_next_cmd(LPCSTR in_str, shared_str& out_str)
 {
-	LPCSTR radmin_cmd_name = "ra ";
-	bool b_ra = (in_str == strstr(in_str, radmin_cmd_name));
-	u32 offset = (b_ra) ? xr_strlen(radmin_cmd_name) : 0;
+	u32 offset = GetRadminCMDOffset(in_str);
+	bool b_ra = offset;
 
 	char t2[256];
 	strcpy(t2, in_str + offset);
@@ -747,6 +754,10 @@ void CConsole::update_tips()
 		return;	
 
 	LPCSTR cur = ec().str_edit();
+	u32 offset = GetRadminCMDOffset(cur);
+	cur += offset;
+	m_HasRaPrefix = offset;
+
 	u32 cur_length = xr_strlen(cur);
 
 	if (!cur_length)
@@ -927,4 +938,12 @@ bool CConsole::is_mark(Console_mark type)
 	}
 
 	return false;
+}
+
+u32 CConsole::GetRadminCMDOffset(const char* cmdStr)
+{
+	if (strstr(cmdStr, radmin_cmd_name))
+		return xr_strlen(radmin_cmd_name);
+
+	return 0;
 }
