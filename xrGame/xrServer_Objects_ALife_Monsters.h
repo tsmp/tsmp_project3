@@ -491,10 +491,10 @@ void UPDATE_Read_Sounds(NET_Packet& tNetPacket);
 float f_health;
 float f_head_dir_pitch;
 float f_head_dir_yaw;
-u32	u_active_slot;
 
-net_physics_state				physics_state;
-u8								phSyncFlag = 0;
+net_physics_state physics_state;
+u8 phSyncFlag = 0;
+u16 u_active_item;
 
 u16 u_torso_motion_val;
 u16 u_legs_motion_val;

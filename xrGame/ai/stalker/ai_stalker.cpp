@@ -570,17 +570,17 @@ void CAI_Stalker::net_Export_MP(NET_Packet& P)
 	P.w_angle8(movement().m_head.current.pitch);
 	P.w_angle8(movement().m_head.current.yaw);
 
-	if (inventory().ActiveItem())
-	{
-		CWeapon* weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+	if (PIItem activeItem = inventory().ActiveItem())
+	{		
+		CWeapon* activeWeapon = smart_cast<CWeapon*>(activeItem);
 
-		if (weapon && !weapon->strapped_mode())
-			P.w_u32(inventory().GetActiveSlot());
+		if (activeWeapon && !activeWeapon->strapped_mode())
+			P.w_u16(activeItem->object().ID());
 		else		
-			P.w_u32(NO_ACTIVE_SLOT);		
+			P.w_u16(u16(-1));		
 	}
 	else
-		P.w_u32(NO_ACTIVE_SLOT);
+		P.w_u16(u16(-1));
 
 	P.w_u16(m_animation_manager->torso().animation().val);
 	P.w_u16(m_animation_manager->legs().animation().val);
@@ -664,10 +664,8 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 		P.r_vec3(position);
 	}
 
-
 	float f_health;
-
-	u32	u_active_weapon_slot;
+	u16 activeItemId;
 
 	P.r_float(f_health);
 
@@ -677,7 +675,7 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 	P.r_angle8(fv_head_orientation.pitch);
 	P.r_angle8(fv_head_orientation.yaw);
 
-	P.r_u32(u_active_weapon_slot);
+	P.r_u16(activeItemId);
 
 	u16 u_torso_motion_val;
 	u16 u_legs_motion_val;
@@ -721,7 +719,23 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 	setVisible(TRUE);
 	setEnabled(TRUE);
 	
-	inventory().SetActiveSlot(u_active_weapon_slot);	
+	if (activeItemId != u16(-1))
+	{
+		if (auto activeItem = smart_cast<CInventoryItem*>(Level().Objects.net_Find(activeItemId)))
+		{
+			if (!inventory().ActiveItem() || (inventory().ActiveItem()->object().ID() != activeItem->object().ID()))
+			{
+				if (PIItem itemInActiveItemSlot = inventory().m_slots[activeItem->GetSlot()].m_pIItem)
+					inventory().Ruck(itemInActiveItemSlot);
+
+				inventory().Slot(activeItem);
+			}
+		}
+		else
+			Msg("! cant find active item");
+	}
+	else
+		inventory().SetActiveSlot(NO_ACTIVE_SLOT);
 
 	setVisible(TRUE);
 	setEnabled(TRUE);
@@ -980,7 +994,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	// *** general stuff
 	float dt = float(DT) / 1000.f;
 
-	if (g_Alive())
+	if (g_Alive() && OnServer())
 	{
 		animation().play_delayed_callbacks();
 
@@ -1008,8 +1022,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 		STOP_PROFILE
 
 		START_PROFILE("stalker/schedule_update/memory/update")
-			if(!Remote())
-				memory().update(dt);
+		memory().update(dt);
 		STOP_PROFILE
 
 		STOP_PROFILE
