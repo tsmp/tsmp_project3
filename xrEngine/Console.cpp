@@ -797,7 +797,7 @@ void CConsole::update_tips()
 				}
 
 				#pragma TODO("FIX")
-				//cc->fill_tips(m_temp_tips, mode);
+				cc->fill_tips(m_temp_tips, mode);
 				m_tips_mode = 2;
 				m_cur_cmd._set(first);
 				select_for_filter(last, m_temp_tips, m_tips);
