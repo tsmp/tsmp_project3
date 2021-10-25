@@ -993,6 +993,8 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	VERIFY(_valid(Position()));
 	// *** general stuff
 	float dt = float(DT) / 1000.f;
+	if (g_Alive() && !IsGameTypeSingle())
+		Exec_Visibility();
 
 	if (g_Alive() && OnServer())
 	{
@@ -1006,13 +1008,16 @@ void CAI_Stalker::shedule_Update(u32 DT)
 #if 0 //def DEBUG
 		memory().visual().check_visibles();
 #endif
-		if (IsGameTypeSingle() && g_mt_config.test(mtAiVision))
-			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
-		else
+		if (IsGameTypeSingle())
 		{
-			START_PROFILE("stalker/schedule_update/vision")
-			Exec_Visibility();
-			STOP_PROFILE
+			if (g_mt_config.test(mtAiVision))
+				Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
+			else
+			{
+				START_PROFILE("stalker/schedule_update/vision")
+					Exec_Visibility();
+				STOP_PROFILE
+			}
 		}
 
 		START_PROFILE("stalker/schedule_update/memory")
