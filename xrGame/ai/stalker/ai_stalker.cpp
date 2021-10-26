@@ -93,6 +93,7 @@ CAI_Stalker::CAI_Stalker()
 	m_mpSoundSyncMinStartTime = 0;
 	m_mpSoundSyncMaxStopTime = 0;
 	m_mpSoundSyncMinStopTime = 0;
+	m_StrappedState = 0;
 }
 
 CAI_Stalker::~CAI_Stalker()
@@ -572,16 +573,23 @@ void CAI_Stalker::net_Export_MP(NET_Packet& P)
 
 	if (PIItem activeItem = inventory().ActiveItem())
 	{		
-		CWeapon* activeWeapon = smart_cast<CWeapon*>(activeItem);
-
-		if (activeWeapon && !activeWeapon->strapped_mode())
+		if (CWeapon* activeWeapon = smart_cast<CWeapon*>(activeItem))
+		{
 			P.w_u16(activeItem->object().ID());
-		else		
-			P.w_u16(u16(-1));		
+			P.w_u8(m_StrappedState);
+		}
+		else
+		{
+			P.w_u16(u16(-1)); // activeItemId
+			P.w_u8(0); // strappedState
+		}
 	}
 	else
-		P.w_u16(u16(-1));
-
+	{
+		P.w_u16(u16(-1)); // activeItemId
+		P.w_u8(0); // strappedState
+	}
+		
 	P.w_u16(m_animation_manager->torso().animation().val);
 	P.w_u16(m_animation_manager->legs().animation().val);
 	P.w_u16(m_animation_manager->head().animation().val);
@@ -666,6 +674,7 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 
 	float f_health;
 	u16 activeItemId;
+	u8 strapped;
 
 	P.r_float(f_health);
 
@@ -676,6 +685,7 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 	P.r_angle8(fv_head_orientation.yaw);
 
 	P.r_u16(activeItemId);
+	P.r_u8(strapped);
 
 	u16 u_torso_motion_val;
 	u16 u_legs_motion_val;
@@ -736,6 +746,14 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 	}
 	else
 		inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+
+#pragma todo("Переписать синхронизацию на ивенты")
+
+	if (strapped != m_StrappedState)
+	{
+		planner().m_storage.set_property(ObjectHandlerSpace::eWorldPropertyStrapped, static_cast<bool>(strapped));
+		m_StrappedState = strapped;
+	}
 
 	setVisible(TRUE);
 	setEnabled(TRUE);

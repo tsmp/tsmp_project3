@@ -495,6 +495,7 @@ float f_head_dir_yaw;
 net_physics_state physics_state;
 u8 phSyncFlag = 0;
 u16 u_active_item;
+u8 weaponStrapped;
 
 u16 u_torso_motion_val;
 u16 u_legs_motion_val;

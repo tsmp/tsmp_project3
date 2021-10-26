@@ -1960,6 +1960,7 @@ void CSE_ALifeHumanStalker::UPDATE_Write_MP(NET_Packet& tNetPacket)
 	tNetPacket.w_angle8(f_head_dir_pitch);
 	tNetPacket.w_angle8(f_head_dir_yaw);
 	tNetPacket.w_u16(u_active_item);
+	tNetPacket.w_u8(weaponStrapped);
 
 	tNetPacket.w_u16(u_torso_motion_val);
 	tNetPacket.w_u16(u_legs_motion_val);
@@ -2014,6 +2015,7 @@ void CSE_ALifeHumanStalker::UPDATE_Read_MP(NET_Packet& tNetPacket)
 	tNetPacket.r_angle8(f_head_dir_pitch);
 	tNetPacket.r_angle8(f_head_dir_yaw);
 	tNetPacket.r_u16(u_active_item);
+	tNetPacket.r_u8(weaponStrapped);
 
 	tNetPacket.r_u16(u_torso_motion_val);
 	tNetPacket.r_u16(u_legs_motion_val);

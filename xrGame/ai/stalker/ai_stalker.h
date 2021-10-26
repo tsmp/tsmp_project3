@@ -162,6 +162,9 @@ private:
 	u32								m_dwIEndTime;
 	u32								m_dwILastUpdateTime;
 
+public:
+	u8 m_StrappedState;
+
 private:
 	float m_fRankDisperison;
 	float m_fRankVisibility;
