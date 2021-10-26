@@ -9,6 +9,11 @@
 #include "alife_object_registry.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "xrServer_Objects_ALife_Monsters.h"
+#include "game_sv_deathmatch.h"
+#include "Level.h"
+#include "Actor.h"
+#include "ai_object_location.h"
+#include "..\TSMP3_Build_Config.h"
 
 void xrServer::Process_event(NET_Packet &P, ClientID sender)
 {
@@ -289,8 +294,36 @@ void xrServer::Process_event(NET_Packet &P, ClientID sender)
 		pTa->m_dwMoney = P.r_u32();
 	}
 	break;
+
 	case GE_FREEZE_OBJECT:
 		break;
+
+	case GE_CLIENT_SPAWN:
+	{
+		Fvector3 pos, ang;
+		shared_str name_sect;
+
+		P.r_vec3(pos);
+		P.r_stringZ(name_sect);
+
+#ifdef FZ_MOD_CLIENT
+		if (!receiver->owner->m_admin_rights.m_has_admin_rights)
+		{
+			Msg("! Attempt to spawn object is player without admin rights! Section: %s, player name: %s.", name_sect.c_str(), receiver->name_replace());
+		
+			NET_Packet P_answ;
+			P_answ.w_begin(M_REMOTE_CONTROL_CMD);
+			P_answ.w_stringZ("You dont have admin rights!");
+			SendTo(sender, P_answ, net_flags(TRUE, TRUE));
+			break;
+		}
+#endif
+				
+		if (game_sv_Deathmatch* tpGame = smart_cast<game_sv_Deathmatch*>(Level().Server->game))
+			tpGame->alife().spawn_item(name_sect.c_str(), pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+	}
+	break;
+
 	default:
 		R_ASSERT2(0, "Game Event not implemented!!!");
 		break;

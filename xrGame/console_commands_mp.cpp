@@ -1614,6 +1614,64 @@ public:
 	}
 };
 
+class CCC_ClSpawn : public IConsole_Command
+{
+public:
+	CCC_ClSpawn(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		if (!g_pGameLevel) 
+			return;
+
+		if (!Level().CurrentControlEntity()) 
+			return;
+
+		if (!pSettings->section_exist(args))
+		{
+			Msg("! Section [%s] isn`t exist...", args);
+			return;
+		}
+
+		Fvector result;
+
+		if (g_dedicated_server)		
+			result = { 0,0,0 };
+		else
+		{
+			collide::rq_result RQ;
+			//RayPick(начало луча, направление, максимальная дистанция, тип коллизии, тип столкновения, игнорируемый объект)
+			BOOL HasPick = Level().ObjectSpace.RayPick(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, collide::rqtBoth, RQ, Level().CurrentControlEntity());
+
+			if (!HasPick)
+			{
+				Msg("! Cant pick the place to spawn object");
+				return;
+			}
+
+			result = Device.vCameraPosition; //начальная позиция
+			result.add(Fvector(Device.vCameraDirection).mul(RQ.range)); //умножаем диреккцию столкновения на дистанцию до столкновения добавляем в вектор начальной позиции
+			// result == место куда смотрит камера
+		}
+
+		if (OnServer())
+		{			
+			if (game_sv_Deathmatch* tpGame = smart_cast<game_sv_Deathmatch*>(Level().Server->game))
+				tpGame->alife().spawn_item(args, result, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		}
+		else
+		{
+			NET_Packet P;
+			CGameObject::u_EventGen(P, GE_CLIENT_SPAWN, Level().CurrentControlEntity()->ID());
+
+			P.w_vec3(result);
+			P.w_stringZ(args);
+
+			CGameObject::u_EventSend(P);
+		}		
+	}
+};
+
 extern int fz_downloader_enabled;
 extern std::string fz_downloader_mod_name;
 extern std::string fz_downloader_reconnect_ip;
@@ -2136,6 +2194,7 @@ void register_mp_console_commands()
 	CMD1(CCC_SvChat, "chat");
 	CMD1(CCC_SvEventMsg, "event_msg");
 
+	CMD1(CCC_ClSpawn, "cl_spawn");
 	CMD1(CCC_SvSpawn, "sv_spawn");
 	CMD4(CCC_SV_Float, "sv_spawn_x", &vec.x, -1000000.f, 1000000.0f);
 	CMD4(CCC_SV_Float, "sv_spawn_y", &vec.y, -1000000.f, 1000000.0f);
