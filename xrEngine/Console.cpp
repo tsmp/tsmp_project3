@@ -512,10 +512,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 				cc->Execute(last);
 
 				if (record_cmd)
-				{
-					#pragma TODO("FIX ME!")
-					//cc->add_to_LRU((LPCSTR)last);
-				}
+					cc->add_to_LRU((LPCSTR)last);
 			}
 		}
 		else		
@@ -796,7 +793,6 @@ void CConsole::update_tips()
 					last += 1; // fake: next char
 				}
 
-				#pragma TODO("FIX")
 				cc->fill_tips(m_temp_tips, mode);
 				m_tips_mode = 2;
 				m_cur_cmd._set(first);

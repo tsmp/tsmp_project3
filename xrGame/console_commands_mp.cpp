@@ -27,6 +27,7 @@ extern int g_iCorpseRemove;
 extern BOOL g_bCollectStatisticData;
 //extern	BOOL	g_bStatisticSaveAuto	;
 extern BOOL g_SV_Disable_Auth_Check;
+xr_token game_types[];
 
 extern int g_sv_mp_iDumpStatsPeriod;
 extern BOOL g_SV_Force_Artefact_Spawn;
@@ -955,6 +956,28 @@ public:
 		CCC_ChangeLevelGameType::Execute((LPCSTR)argsNew);
 	};
 
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		if (g_pGameLevel && Level().Server && OnServer() && Level().Server->game)
+		{
+			u32 curType = Level().Server->game->Type();
+
+			for (int k = GAME_DEATHMATCH; game_types[k].name; k++)
+			{
+				TStatus str;
+
+				if (curType == game_types[k].id)
+					sprintf_s(str, sizeof(str), "%s  (current game type)", game_types[k].name);
+				else
+					sprintf_s(str, sizeof(str), "%s", game_types[k].name);
+				
+				tips.push_back(str);				
+			}
+		}
+
+		IConsole_Command::fill_tips(tips, mode);
+	}
+
 	virtual void Info(TInfo &I) { strcpy(I, "Changing Game Type"); };
 };
 
@@ -1582,6 +1605,17 @@ class CCC_SvSpawn : public IConsole_Command
 {
 public:
 	CCC_SvSpawn(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void fill_tips(vecTips &tips, u32 mode)
+	{
+		for (auto sect : pSettings->sections())
+		{
+			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
+				|| sect->line_exist("species"))
+				tips.push_back(sect->Name);
+		}
+	}
+
 	virtual void Execute(LPCSTR args)
 	{
 		if (!OnServer())
@@ -1618,6 +1652,16 @@ class CCC_ClSpawn : public IConsole_Command
 {
 public:
 	CCC_ClSpawn(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void fill_tips(vecTips &tips, u32 mode)
+	{
+		for (auto sect : pSettings->sections())
+		{
+			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
+				|| sect->line_exist("species"))
+				tips.push_back(sect->Name);
+		}
+	}
 
 	virtual void Execute(LPCSTR args)
 	{
