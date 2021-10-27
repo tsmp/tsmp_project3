@@ -904,6 +904,9 @@ float CActor::currentFOV()
 
 void CActor::UpdateCL()
 {
+	if (psActorFlags.test(AF_NO_CLIP))
+		character_physics_support()->movement()->SetVelocity({ 0,0,0 });
+
 	if (m_feel_touch_characters > 0)
 	{
 		for (xr_vector<CObject *>::iterator it = feel_touch.begin(); it != feel_touch.end(); it++)

@@ -51,6 +51,13 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		}
 	}
 
+	if (psActorFlags.test(AF_NO_CLIP))
+	{
+		NoClipFly(cmd);
+		inventory().Action(cmd, CMD_START);
+		return;
+	}
+
 	if (!g_Alive())
 		return;
 
@@ -65,12 +72,6 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	}
 	else if (inventory().Action(cmd, CMD_START))
 		return;
-
-	if (psActorFlags.test(AF_NO_CLIP))
-	{
-		NoClipFly(cmd);
-		return;
-	}
 
 	switch (cmd)
 	{
@@ -237,7 +238,7 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 
 void CActor::IR_OnKeyboardHold(int cmd)
 {
-	if (Remote() || !g_Alive())
+	if (Remote())
 		return;
 
 	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
@@ -258,6 +259,9 @@ void CActor::IR_OnKeyboardHold(int cmd)
 		NoClipFly(cmd);
 		return;
 	}
+
+	if (!g_Alive())
+		return;
 
 	float LookFactor = GetLookFactor();
 	switch (cmd)
@@ -584,54 +588,85 @@ void CActor::set_input_external_handler(CActorInputHandler *handler)
 	m_input_external_handler = handler;
 }
 
+#include "Weapon.h"
+#include "../xr_input.h"
 void CActor::NoClipFly(int cmd)
 {
-	Fvector cur_pos; // = Position();
+	Fvector cur_pos, right, left;
 	cur_pos.set(0, 0, 0);
-	float scale = 1.0f;
+	float scale = 5.f;
+	if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+		scale = 2.0f;
+	else if (pInput->iGetAsyncKeyState(DIK_X))
+		scale = 7.0f;
+	else if (pInput->iGetAsyncKeyState(DIK_LMENU))
+		scale = 10.0f;
+	else if (pInput->iGetAsyncKeyState(DIK_CAPSLOCK))
+		scale = 15.0f;
+	else if (pInput->iGetAsyncKeyState(DIK_DELETE))
+	{
+		Fvector result;
+		collide::rq_result RQ;
+		BOOL HasPick = Level().ObjectSpace.RayPick(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, collide::rqtBoth, RQ, Level().CurrentControlEntity());
+		result = Fvector(Device.vCameraPosition).add(Fvector(Device.vCameraDirection).mul(RQ.range));
 
-	if (Level().IR_GetKeyState(DIK_LSHIFT))
-		scale = 0.25f;
-	else if (Level().IR_GetKeyState(DIK_LALT))
-		scale = 4.0f;
+		if(HasPick)
+			SetPhPosition(XFORM().translate(result));
+	}
 
 	switch (cmd)
 	{
 	case kJUMP:
-		cur_pos.y += 0.1f;
+		cur_pos.y += 2.f;
 		break;
 	case kCROUCH:
-		cur_pos.y -= 0.1f;
+		cur_pos.y -= 2.f;
 		break;
 	case kFWD:
-		cur_pos.z += 0.1f;
+		cur_pos.mad(cam_Active()->vDirection, scale / 2.0f);
+		if (m_pPhysicsShell)
+			m_pPhysicsShell->applyImpulseTrace(cur_pos, cam_Active()->vDirection, scale * 100);
 		break;
 	case kBACK:
-		cur_pos.z -= 0.1f;
+		cur_pos.mad(cam_Active()->vDirection, -scale / 2.0f);
+		if (m_pPhysicsShell)
+			m_pPhysicsShell->applyImpulseTrace(cur_pos, Fvector(cam_Active()->vDirection).invert(), scale * 100);
 		break;
 	case kL_STRAFE:
-		cur_pos.x -= 0.1f;
+		left.crossproduct(cam_Active()->vNormal, cam_Active()->vDirection);
+		cur_pos.mad(left, -scale / 2.0f);
+		if (m_pPhysicsShell)
+			m_pPhysicsShell->applyImpulseTrace(cur_pos, left, -scale * 100);
 		break;
 	case kR_STRAFE:
-		cur_pos.x += 0.1f;
+		right.crossproduct(cam_Active()->vNormal, cam_Active()->vDirection);
+		cur_pos.mad(right, scale / 2.0f);
+		if (m_pPhysicsShell)
+			m_pPhysicsShell->applyImpulseTrace(cur_pos, right, scale * 100);
 		break;
 	case kCAM_1:
+	{
+		if (cam_active == eacFirstEye) break;
+
+		if (mstate_wishful & mcSprint)		break;
 		cam_Set(eacFirstEye);
-		break;
+		if (inventory().ActiveItem())
+		{
+			CHudItem* hi = smart_cast<CHudItem*>(inventory().ActiveItem());
+			if (hi && hi->GetState() != CWeapon::eReload) hi->OnStateSwitch(hi->GetState());
+		}
+	}
+	break;
 	case kCAM_2:
 		cam_Set(eacLookAt);
 		break;
 	case kCAM_3:
 		cam_Set(eacFreeLook);
 		break;
+	break;
 	case kUSE:
 		ActorUse();
 		break;
 	}
-	cur_pos.mul(scale);
-	Fmatrix mOrient;
-	mOrient.rotateY(-(cam_Active()->GetWorldYaw()));
-	mOrient.transform_dir(cur_pos);
-	Position().add(cur_pos);
-	character_physics_support()->movement()->SetPosition(Position());
+	SetPhPosition(XFORM().translate_add(cur_pos.mul(scale*Device.fTimeDelta)));
 }
