@@ -957,7 +957,8 @@ void CAI_Stalker::UpdateCL()
 			sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection));
 			sight().update();
 		}
-
+		if(!IsGameTypeSingle())
+			Exec_Visibility();
 		Exec_Look(Device.fTimeDelta);
 		STOP_PROFILE
 
