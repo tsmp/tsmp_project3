@@ -1597,30 +1597,20 @@ public:
 #include "Actor.h"
 #include "ai_object_location.h"
 
-Fvector vec{0, 0, 0};
-u16 game_vertex_id = 0;
-u32 level_vertex_id = 0;
+Fvector spavn_vec{0, 0, 0};
 
 class CCC_SvSpawn : public IConsole_Command
 {
 public:
 	CCC_SvSpawn(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
-
-	virtual void fill_tips(vecTips &tips, u32 mode)
-	{
-		for (auto sect : pSettings->sections())
-		{
-			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
-				|| sect->line_exist("species"))
-				tips.push_back(sect->Name);
-		}
-	}
-
 	virtual void Execute(LPCSTR args)
 	{
 		if (!OnServer())
 			return;
 		
+		if (!Actor())
+			return;
+
 		if (!pSettings->section_exist(args))
 		{
 			Msg("! cant find section %s", args);
@@ -1629,21 +1619,18 @@ public:
 
 		if (Level().Server && Level().Server->game)
 		{
-			if (game_vertex_id == 0 && level_vertex_id == 0)
-			{
-				if (!Actor())
-				{
-					Msg("! error, cant get actor");
-					return;
-				}
+			if (game_sv_GameState* game = smart_cast<game_sv_GameState*>(Level().Server->game))
+				game->alife().spawn_item(args, spavn_vec, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		}
+	}
 
-				game_vertex_id = Actor()->ai_location().game_vertex_id();
-				level_vertex_id = Actor()->ai_location().level_vertex_id();
-			}
-
-			game_sv_Deathmatch *game = smart_cast<game_sv_Deathmatch *>(Level().Server->game);
-			if (game)
-				game->alife().spawn_item(args, vec, level_vertex_id, game_vertex_id, ALife::_OBJECT_ID(-1));
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		for (auto sect : pSettings->sections())
+		{
+			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
+				|| sect->line_exist("species"))
+				tips.push_back(sect->Name);
 		}
 	}
 };
@@ -1653,22 +1640,15 @@ class CCC_ClSpawn : public IConsole_Command
 public:
 	CCC_ClSpawn(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
 
-	virtual void fill_tips(vecTips &tips, u32 mode)
-	{
-		for (auto sect : pSettings->sections())
-		{
-			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
-				|| sect->line_exist("species"))
-				tips.push_back(sect->Name);
-		}
-	}
-
 	virtual void Execute(LPCSTR args)
 	{
 		if (!g_pGameLevel) 
 			return;
 
 		if (!Level().CurrentControlEntity()) 
+			return;
+
+		if (!Actor())
 			return;
 
 		if (!pSettings->section_exist(args))
@@ -1680,39 +1660,37 @@ public:
 		Fvector result;
 
 		if (g_dedicated_server)		
-			result = { 0,0,0 };
+			result = spavn_vec;
 		else
 		{
 			collide::rq_result RQ;
-			//RayPick(начало луча, направление, максимальная дистанция, тип коллизии, тип столкновения, игнорируемый объект)
-			BOOL HasPick = Level().ObjectSpace.RayPick(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, collide::rqtBoth, RQ, Level().CurrentControlEntity());
-
-			if (!HasPick)
-			{
-				Msg("! Cant pick the place to spawn object");
-				return;
-			}
-
-			result = Device.vCameraPosition; //начальная позиция
-			result.add(Fvector(Device.vCameraDirection).mul(RQ.range)); //умножаем диреккцию столкновения на дистанцию до столкновения добавляем в вектор начальной позиции
-			// result == место куда смотрит камера
+			Level().ObjectSpace.RayPick(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, collide::rqtBoth, RQ, Level().CurrentControlEntity());
+			result = Fvector(Device.vCameraPosition).add(Fvector(Device.vCameraDirection).mul(RQ.range));
 		}
 
 		if (OnServer())
 		{			
-			if (game_sv_Deathmatch* tpGame = smart_cast<game_sv_Deathmatch*>(Level().Server->game))
+			if (game_sv_GameState* tpGame = smart_cast<game_sv_GameState*>(Level().Server->game))
 				tpGame->alife().spawn_item(args, result, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
 		}
 		else
 		{
 			NET_Packet P;
 			CGameObject::u_EventGen(P, GE_CLIENT_SPAWN, Level().CurrentControlEntity()->ID());
-
 			P.w_vec3(result);
 			P.w_stringZ(args);
-
 			CGameObject::u_EventSend(P);
 		}		
+	}
+
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		for (auto sect : pSettings->sections())
+		{
+			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
+				|| sect->line_exist("species"))
+				tips.push_back(sect->Name);
+		}
 	}
 };
 
@@ -2240,9 +2218,7 @@ void register_mp_console_commands()
 
 	CMD1(CCC_ClSpawn, "cl_spawn");
 	CMD1(CCC_SvSpawn, "sv_spawn");
-	CMD4(CCC_SV_Float, "sv_spawn_x", &vec.x, -1000000.f, 1000000.0f);
-	CMD4(CCC_SV_Float, "sv_spawn_y", &vec.y, -1000000.f, 1000000.0f);
-	CMD4(CCC_SV_Float, "sv_spawn_z", &vec.z, -1000000.f, 1000000.0f);
+	CMD4(CCC_Vector3, "sv_spawn_vec", &spavn_vec, Fvector().set(-1000000.0f, -1000000.0f, -1000000.0f ), Fvector().set(1000000.0f, 1000000.0f, 1000000.0f));
 
 	CMD4(CCC_Integer, "fz_downloader_enabled", (int *)&fz_downloader_enabled, 0, 1);
 	CMD1(CCC_fz_reconnect_ip, "fz_downloader_reconnect_ip");

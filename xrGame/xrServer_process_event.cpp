@@ -300,11 +300,13 @@ void xrServer::Process_event(NET_Packet &P, ClientID sender)
 
 	case GE_CLIENT_SPAWN:
 	{
-		Fvector3 pos, ang;
+		Fvector3 pos;
 		shared_str name_sect;
 
 		P.r_vec3(pos);
 		P.r_stringZ(name_sect);
+
+		if (!Actor())break;
 
 #ifdef FZ_MOD_CLIENT
 		if (!receiver->owner->m_admin_rights.m_has_admin_rights)
