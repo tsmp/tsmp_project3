@@ -50,6 +50,13 @@ public:
 		if (m_character)
 			m_character->SetActorMovable(v);
 	}
+
+	void update_last_material()
+	{
+		VERIFY(m_character);
+		m_character->update_last_material();
+	}
+
 	void SetForcedPhysicsControl(bool v)
 	{
 		if (m_character)

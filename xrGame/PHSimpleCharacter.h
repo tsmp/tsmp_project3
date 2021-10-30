@@ -118,6 +118,9 @@ protected:
 	bool b_foot_mtl_check;
 	dReal m_friction_factor;
 
+	Fvector m_last_env_update_pos;
+	u16 m_last_picked_material;
+
 public:
 	CPHSimpleCharacter();
 	virtual ~CPHSimpleCharacter() { Destroy(); }
@@ -147,6 +150,7 @@ public:
 	virtual EEnvironment CheckInvironment();
 	virtual void GroundNormal(Fvector &norm);
 	virtual const ICollisionDamageInfo *CollisionDamageInfo() const { return this; }
+	virtual	void update_last_material() override;
 
 private:
 	virtual float ContactVelocity() const { return m_collision_damage_info.ContactVelocity(); }
@@ -249,3 +253,9 @@ public:
 
 const dReal def_spring_rate = 0.5f;
 const dReal def_dumping_rate = 20.1f;
+
+IC bool ignore_material(u16 material_idx)
+{
+	SGameMtl* material = GMLib.GetMaterialByIdx(material_idx);
+	return !!material->Flags.test(SGameMtl::flActorObstacle);
+}
