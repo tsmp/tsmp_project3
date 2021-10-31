@@ -130,9 +130,16 @@ xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str &session_name)
 	return res;
 }
 
+s32 g_sv_visible_server = 1;
+
 void xrGameSpyServer::Update()
 {
 	inherited::Update();
+
+	if (g_sv_visible_server == 0)
+	{
+		return;
+	}
 
 	if (m_bQR2_Initialized)
 	{
@@ -147,7 +154,7 @@ void xrGameSpyServer::Update()
 	if (Device.dwTimeGlobal >= next_send_time)
 	{
 		next_send_time = Device.dwTimeGlobal + 5000;
-		NET_Packet Packet;
+		NET_Packet Packet;	
 		Packet.w_begin(M_MAP_SYNC);
 		Packet.w_stringZ(MapName);
 		SendBroadcast(BroadcastCID, Packet, net_flags(TRUE, TRUE));
