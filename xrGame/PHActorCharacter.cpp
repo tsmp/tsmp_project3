@@ -17,16 +17,11 @@ CPHActorCharacter::CPHActorCharacter()
 {
 	SetRestrictionType(CPHCharacter::rtActor);
 
-	//std::fill(m_restrictors_index,m_restrictors_index+CPHCharacter::rtNone,end(m_restrictors));
-	//m_restrictors_index[CPHCharacter::rtStalker]		=begin(m_restrictors)+0;
-	//m_restrictors_index[CPHCharacter::rtMonsterMedium]	=begin(m_restrictors)+1;
+	m_restrictors.resize(3);
+	m_restrictors[0] = (xr_new<stalker_restrictor>());
+	m_restrictors[1] = xr_new<stalker_small_restrictor>();
+	m_restrictors[2] = (xr_new<medium_monster_restrictor>());
 
-	{
-		m_restrictors.resize(3);
-		m_restrictors[0] = (xr_new<stalker_restrictor>());
-		m_restrictors[1] = xr_new<stalker_small_restrictor>();
-		m_restrictors[2] = (xr_new<medium_monster_restrictor>());
-	}
 }
 
 CPHActorCharacter::~CPHActorCharacter(void)
@@ -38,27 +33,23 @@ void CPHActorCharacter::Create(dVector3 sizes)
 {
 	if (b_exist)
 		return;
-	inherited::Create(sizes);
-	if (!IsGameTypeSingle())
-	{
-		ClearRestrictors();
-	}
-	RESTRICTOR_I i = begin(m_restrictors), e = end(m_restrictors);
-	for (; e != i; ++i)
-	{
-		(*i)->Create(this, sizes);
-	}
 
-	if (m_phys_ref_object)
-	{
-		SetPhysicsRefObject(m_phys_ref_object);
-	}
+	inherited::Create(sizes);
+
+	for (SPHCharacterRestrictor* restrictor : m_restrictors)
+		restrictor->Create(this, sizes);
+	
+	if (m_phys_ref_object)	
+		SetPhysicsRefObject(m_phys_ref_object);	
 }
+
 void SPHCharacterRestrictor::Create(CPHCharacter *ch, dVector3 sizes)
 {
 	VERIFY(ch);
+
 	if (m_character)
 		return;
+
 	m_character = ch;
 	m_restrictor = dCreateCylinder(0, m_restrictor_radius, sizes[1]);
 	dGeomSetPosition(m_restrictor, 0.f, sizes[1] / 2.f, 0.f);
@@ -72,6 +63,7 @@ void SPHCharacterRestrictor::Create(CPHCharacter *ch, dVector3 sizes)
 	dGeomSetBody(m_restrictor_transform, m_character->get_body());
 	dSpaceAdd(m_character->dSpace(), m_restrictor_transform);
 	dGeomUserDataSetPhObject(m_restrictor, (CPHObject *)m_character);
+
 	switch (m_type)
 	{
 	case CPHCharacter::rtStalker:
