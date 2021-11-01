@@ -318,16 +318,19 @@ void CUICarBodyWnd::Draw()
 
 void CUICarBodyWnd::Update()
 {
+	if (!m_pOthersObject || !m_pOthersObject->m_inventory ||
+		(smart_cast<CGameObject*>(m_pOurObject))->Position().distance_to((smart_cast<CGameObject*>(m_pOthersObject))->Position()) > 3.0f)
+	{
+		GetHolder()->StartStopMenu(this, true);
+		return;
+	}
+
 	if (m_b_need_update ||
 		m_pOurObject->inventory().ModifyFrame() == Device.CurrentFrameNumber ||
 		(m_pOthersObject && m_pOthersObject->inventory().ModifyFrame() == Device.CurrentFrameNumber))
 
 		UpdateLists();
 
-	if (m_pOthersObject && (smart_cast<CGameObject *>(m_pOurObject))->Position().distance_to((smart_cast<CGameObject *>(m_pOthersObject))->Position()) > 3.0f)
-	{
-		GetHolder()->StartStopMenu(this, true);
-	}
 	inherited::Update();
 }
 
