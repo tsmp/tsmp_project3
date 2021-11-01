@@ -1213,7 +1213,7 @@ void CActor::UpdateVisibleUsableObjects()
 	{
 		bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual());
 
-		if (b_allow_drag || GameID() == GAME_SINGLE)
+		if (b_allow_drag && GameID() == GAME_SINGLE)
 			m_sDefaultObjAction = m_sDeadCharacterUseOrDragAction;
 		else
 			m_sDefaultObjAction = m_sDeadCharacterUseAction;

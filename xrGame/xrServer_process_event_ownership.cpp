@@ -50,7 +50,7 @@ void xrServer::Process_event_ownership(NET_Packet &P, ClientID sender, u32 time,
     xrClientData *c_from = ID_to_client(sender);
 
     // Доверяем при передаче владения только серверному клиенту, клиенту новому владельцу если он подбирает вещь, инвентарному ящику
-    if (GetServerClient() != c_from && c_parent != c_from && !smart_cast<CSE_InventoryBox*>(e_parent))
+    if (GetServerClient() != c_from && c_parent != c_from && !smart_cast<CSE_InventoryBox*>(e_parent) && !smart_cast<CSE_ALifeHumanStalker*>(e_parent))
     {
         Msg("! WARNING: ownership: transfer called by client [%s] for item [%s], not by server!",c_from->ps->name, ent_name_safe(id_entity).c_str());
         return;
@@ -58,7 +58,7 @@ void xrServer::Process_event_ownership(NET_Packet &P, ClientID sender, u32 time,
 
     CSE_ALifeCreatureAbstract *alife_entity = smart_cast<CSE_ALifeCreatureAbstract *>(e_parent);
 
-    if (alife_entity && !alife_entity->g_Alive() && game->Type() != GAME_SINGLE)
+    if (alife_entity && !alife_entity->g_Alive() && !smart_cast<CSE_ALifeHumanStalker*>(alife_entity))
     {
         Msg("! WARNING: dead player [%d] tries to take item [%d]", id_parent, id_entity);
         return;

@@ -153,7 +153,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner *pOur, CInventoryBox *pInvBox)
 	if (IsGameTypeSingle())
 		m_pUICharacterInfoLeft->InitCharacter(our_id);
 	else
-		m_pUICharacterInfoLeft->InitCharacterMP(pOur);
+		m_pUICharacterInfoLeft->InitCharacterPlayerMP(pOur);
 
 	m_pUIOthersIcon->Show(false);
 	m_pUICharacterInfoRight->ClearInfo();
@@ -166,7 +166,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner *pOur, CInventoryOwner *pOthers)
 {
 	m_pOurObject = pOur;
 	m_pOthersObject = pOthers;
-	m_pInventoryBox = NULL;
+	m_pInventoryBox = nullptr;
 
 	u16 our_id = smart_cast<CGameObject *>(m_pOurObject)->ID();
 	u16 other_id = smart_cast<CGameObject *>(m_pOthersObject)->ID();
@@ -174,17 +174,19 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner *pOur, CInventoryOwner *pOthers)
 	if (IsGameTypeSingle())
 		m_pUICharacterInfoLeft->InitCharacter(our_id);
 	else
-		m_pUICharacterInfoLeft->InitCharacterMP(pOur);
+		m_pUICharacterInfoLeft->InitCharacterPlayerMP(pOur);
 
 	m_pUIOthersIcon->Show(true);
+	CBaseMonster* monster = nullptr;
 
-	CBaseMonster *monster = NULL;
 	if (m_pOthersObject)
 	{
-		monster = smart_cast<CBaseMonster *>(m_pOthersObject);
+		monster = smart_cast<CBaseMonster*>(m_pOthersObject);
+
 		if (monster || m_pOthersObject->use_simplified_visual())
 		{
 			m_pUICharacterInfoRight->ClearInfo();
+
 			if (monster)
 			{
 				shared_str monster_tex_name = pSettings->r_string(monster->cNameSect(), "icon");
@@ -194,7 +196,10 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner *pOur, CInventoryOwner *pOthers)
 		}
 		else
 		{
-			m_pUICharacterInfoRight->InitCharacter(other_id);
+			if(IsGameTypeSingle())
+				m_pUICharacterInfoRight->InitCharacter(other_id);
+			else
+				m_pUICharacterInfoRight->InitCharacterMP(pOthers);
 		}
 	}
 

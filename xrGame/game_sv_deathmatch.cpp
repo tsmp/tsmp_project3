@@ -1615,6 +1615,9 @@ BOOL game_sv_Deathmatch::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 	if (smart_cast<CSE_InventoryBox*>(e_who))
 		return true;
 
+	if (smart_cast<CSE_ALifeHumanStalker*>(e_who))
+		return true;
+
 	// We don't know what the hell is it, so disallow ownership just for safety
 	return FALSE;
 }

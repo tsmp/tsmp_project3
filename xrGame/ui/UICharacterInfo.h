@@ -50,7 +50,8 @@ public:
 	void Init(float x, float y, float width, float height, CUIXml *xml_doc);
 	void Init(float x, float y, float width, float height, const char *xml_name);
 	void InitCharacter(u16 id);
-	void InitCharacterMP(CInventoryOwner* player);
+	void InitCharacterPlayerMP(CInventoryOwner* player);
+	void InitCharacterMP(CInventoryOwner* invOowner);
 	void ClearInfo();
 
 	virtual void Update();

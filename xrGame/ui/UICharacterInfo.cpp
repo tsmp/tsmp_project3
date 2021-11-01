@@ -162,10 +162,64 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, const c
 	Init(x, y, width, height, &uiXml);
 }
 
-void CUICharacterInfo::InitCharacterMP(CInventoryOwner* player)
+void CUICharacterInfo::InitCharacterMP(CInventoryOwner* invOwner)
 {
-	m_ownerID = player->object_id();
+	ClearInfo();	
+	m_ownerID = invOwner->object_id();
+
+	CCharacterInfo chInfo = invOwner->CharacterInfo();
 	CStringTable stbl;
+	string256 str;
+
+	if (m_icons[eUIName])	
+		m_icons[eUIName]->SetText(invOwner->Name());	
+
+	if (m_icons[eUIRank])
+	{
+		sprintf_s(str, "%s", *stbl.translate(GetRankAsText(chInfo.Rank().value())));
+		m_icons[eUIRank]->SetText(str);
+	}
+
+	if (m_icons[eUIReputation])
+	{
+		sprintf_s(str, "%s", *stbl.translate(GetReputationAsText(chInfo.Reputation().value())));
+		m_icons[eUIReputation]->SetText(str);
+	}
+
+	if (m_icons[eUICommunity])
+	{
+		sprintf_s(str, "%s", *CStringTable().translate(chInfo.Community().id()));
+		m_icons[eUICommunity]->SetText(str);
+	}
+
+	m_texture_name = chInfo.IconName().c_str();
+	m_icons[eUIIcon]->InitTexture(m_texture_name.c_str());
+	m_icons[eUIIcon]->SetStretchTexture(true);
+
+	// Bio
+	if (pUIBio && pUIBio->IsEnabled())
+	{
+		pUIBio->Clear();
+		if (chInfo.Bio().size())
+		{
+			CUIStatic* pItem = xr_new<CUIStatic>();
+			pItem->SetWidth(pUIBio->GetDesiredChildWidth());
+			pItem->SetText(*(chInfo.Bio()));
+			pItem->AdjustHeightToText();
+			pUIBio->AddWindow(pItem, true);
+		}
+	}
+
+	m_bForceUpdate = true;
+	for (int i = eUIName; i < eMaxCaption; ++i)
+		if (m_icons[i])
+			m_icons[i]->Show(true);
+}
+
+void CUICharacterInfo::InitCharacterPlayerMP(CInventoryOwner* player)
+{
+	ClearInfo();
+	m_ownerID = player->object_id();
 	string256 str;
 
 	game_PlayerState* ps = Game().GetPlayerByGameID(Level().CurrentViewEntity()->ID());
@@ -173,10 +227,8 @@ void CUICharacterInfo::InitCharacterMP(CInventoryOwner* player)
 	if (!ps)
 		return;
 
-	if (m_icons[eUIName])
-	{
-		m_icons[eUIName]->SetText(ps->name);
-	}
+	if (m_icons[eUIName])	
+		m_icons[eUIName]->SetText(ps->name);	
 
 	if (m_icons[eUIRank])
 	{
@@ -207,7 +259,7 @@ void CUICharacterInfo::InitCharacterMP(CInventoryOwner* player)
 
 	if (m_icons[eUIReputation])
 	{
-		sprintf_s(str, "%s", *stbl.translate(GetReputationAsText(player->Reputation())));
+		sprintf_s(str, "%s", *CStringTable().translate(GetReputationAsText(player->Reputation())));
 		m_icons[eUIReputation]->SetText(str);
 	}
 
@@ -243,10 +295,10 @@ void CUICharacterInfo::InitCharacterMP(CInventoryOwner* player)
 
 	if (m_icons[eUIRelationCaption])
 		m_icons[eUIRelationCaption]->Show(false);
+
 	if (m_icons[eUIRelation])
 		m_icons[eUIRelation]->Show(false);
 }
-
 
 void CUICharacterInfo::InitCharacter(u16 id)
 {
