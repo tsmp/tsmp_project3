@@ -1022,7 +1022,7 @@ void CActor::shedule_Update(u32 DT)
 		inherited::shedule_Update(DT);
 		return;
 	}
-	
+
 	clamp(DT, 0u, 100u);
 	float dt = float(DT) / 1000.f;
 
@@ -1052,9 +1052,9 @@ void CActor::shedule_Update(u32 DT)
 			f_DropPower += dt * 0.1f;
 			clamp(f_DropPower, 0.f, 1.f);
 		}
-		else		
+		else
 			f_DropPower = 0.f;
-		
+
 		if (!Level().IsDemoPlay())
 		{
 			mstate_wishful &= ~mcAccel;
@@ -1162,46 +1162,21 @@ void CActor::shedule_Update(u32 DT)
 	//если в режиме HUD, то сама модель актера не рисуется
 	if (!character_physics_support()->IsRemoved())
 		setVisible(!HUDview());
+
+	UpdateVisibleUsableObjects();
+
+	//для свойст артефактов, находящихся на поясе
+	UpdateArtefactsOnBelt();
+	m_pPhysics_support->in_shedule_Update(DT);
+	Check_for_AutoPickUp();
+}
+
+void CActor::UpdateVisibleUsableObjects()
+{
 	//что актер видит перед собой
 	collide::rq_result &RQ = HUD().GetCurrentRayQuery();
 
-	if (!input_external_handler_installed() && RQ.O && RQ.range < inventory().GetTakeDist())
-	{
-		m_pObjectWeLookingAt = smart_cast<CGameObject *>(RQ.O);
-
-		CGameObject *game_object = smart_cast<CGameObject *>(RQ.O);
-		m_pUsableObject = smart_cast<CUsableScriptObject *>(game_object);
-		m_pInvBoxWeLookingAt = smart_cast<CInventoryBox *>(game_object);
-		inventory().m_pTarget = smart_cast<PIItem>(game_object);
-		m_pPersonWeLookingAt = smart_cast<CInventoryOwner *>(game_object);
-		m_pVehicleWeLookingAt = smart_cast<CHolderCustom *>(game_object);
-		CEntityAlive *pEntityAlive = smart_cast<CEntityAlive *>(game_object);
-
-		if (m_pUsableObject && m_pUsableObject->tip_text())		
-			m_sDefaultObjAction = CStringTable().translate(m_pUsableObject->tip_text());		
-		else
-		{
-			if (m_pPersonWeLookingAt && pEntityAlive->g_Alive() && GameID() == GAME_SINGLE)
-				m_sDefaultObjAction = m_sCharacterUseAction;
-
-			else if (pEntityAlive && !pEntityAlive->g_Alive() && GameID() == GAME_SINGLE)
-			{
-				bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual());
-
-				if (b_allow_drag)
-					m_sDefaultObjAction = m_sDeadCharacterUseOrDragAction;
-				else
-					m_sDefaultObjAction = m_sDeadCharacterUseAction;
-			}
-			else if (m_pVehicleWeLookingAt)
-				m_sDefaultObjAction = m_sCarCharacterUseAction;
-			else if (inventory().m_pTarget && inventory().m_pTarget->CanTake())
-				m_sDefaultObjAction = m_sInventoryItemUseAction;
-			else
-				m_sDefaultObjAction = nullptr;
-		}
-	}
-	else
+	if (input_external_handler_installed() || !RQ.O || RQ.range >= inventory().GetTakeDist())
 	{
 		inventory().m_pTarget = nullptr;
 		m_pPersonWeLookingAt = nullptr;
@@ -1210,14 +1185,56 @@ void CActor::shedule_Update(u32 DT)
 		m_pObjectWeLookingAt = nullptr;
 		m_pVehicleWeLookingAt = nullptr;
 		m_pInvBoxWeLookingAt = nullptr;
+		return;
 	}
 
-	//для свойст артефактов, находящихся на поясе
-	UpdateArtefactsOnBelt();
-	m_pPhysics_support->in_shedule_Update(DT);
-	Check_for_AutoPickUp();
-};
+	m_pObjectWeLookingAt = smart_cast<CGameObject*>(RQ.O);
+
+	m_pUsableObject = smart_cast<CUsableScriptObject*>(m_pObjectWeLookingAt);
+	m_pInvBoxWeLookingAt = smart_cast<CInventoryBox*>(m_pObjectWeLookingAt);
+	inventory().m_pTarget = smart_cast<PIItem>(m_pObjectWeLookingAt);
+	m_pPersonWeLookingAt = smart_cast<CInventoryOwner*>(m_pObjectWeLookingAt);
+	m_pVehicleWeLookingAt = smart_cast<CHolderCustom*>(m_pObjectWeLookingAt);
+	CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(m_pObjectWeLookingAt);
+
+	if (m_pUsableObject && m_pUsableObject->tip_text())
+	{
+		m_sDefaultObjAction = CStringTable().translate(m_pUsableObject->tip_text());
+		return;
+	}
+
+	if (m_pPersonWeLookingAt && pEntityAlive->g_Alive() && GameID() == GAME_SINGLE)
+	{
+		m_sDefaultObjAction = m_sCharacterUseAction; // Диалоги с нпс
+		return;
+	}
+
+	if (pEntityAlive && !pEntityAlive->g_Alive() && !pEntityAlive->cast_actor())
+	{
+		bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual());
+
+		if (b_allow_drag || GameID() == GAME_SINGLE)
+			m_sDefaultObjAction = m_sDeadCharacterUseOrDragAction;
+		else
+			m_sDefaultObjAction = m_sDeadCharacterUseAction;
+
+		return;
+	}
+	
+	if (m_pVehicleWeLookingAt)
+	{
+		m_sDefaultObjAction = m_sCarCharacterUseAction;
+		return;
+	}
+
+	if (inventory().m_pTarget && inventory().m_pTarget->CanTake())
+		m_sDefaultObjAction = m_sInventoryItemUseAction;
+	else
+		m_sDefaultObjAction = nullptr;
+}
+
 #include "debug_renderer.h"
+
 void CActor::renderable_Render()
 {
 	inherited::renderable_Render();

@@ -337,6 +337,7 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 	}
 }
 #include "HudItem.h"
+
 bool CActor::use_Holder(CHolderCustom *holder)
 {
 
@@ -396,7 +397,6 @@ bool CActor::use_Holder(CHolderCustom *holder)
 
 void CActor::ActorUse()
 {
-	//mstate_real = 0;
 	PickupModeOn();
 
 	if (m_holder)
@@ -422,67 +422,61 @@ void CActor::ActorUse()
 		return;
 	}
 
-	if (!m_pUsableObject || m_pUsableObject->nonscript_usable())
+	if (m_pUsableObject && !m_pUsableObject->nonscript_usable())
+		return;
+
+	if (m_pPersonWeLookingAt)
 	{
-		if (m_pPersonWeLookingAt)
+		CEntityAlive* pEntityAliveWeLookingAt = smart_cast<CEntityAlive*>(m_pPersonWeLookingAt);
+		VERIFY(pEntityAliveWeLookingAt);
+
+		if (pEntityAliveWeLookingAt->cast_actor())
+			return;
+
+		if (pEntityAliveWeLookingAt->g_Alive() && GameID() == GAME_SINGLE)
+			TryToTalk();
+		else if ( !Level().IR_GetKeyState(DIK_LSHIFT))
 		{
-			CEntityAlive *pEntityAliveWeLookingAt =
-				smart_cast<CEntityAlive *>(m_pPersonWeLookingAt);
-
-			VERIFY(pEntityAliveWeLookingAt);
-
-			if (GameID() == GAME_SINGLE)
-			{
-				if (pEntityAliveWeLookingAt->g_Alive())
-				{
-					TryToTalk();
-				}
-				//обыск трупа
-				else if (!Level().IR_GetKeyState(DIK_LSHIFT))
-				{
-					//только если находимся в режиме single
-					CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-					if (pGameSP)
-						pGameSP->StartCarBody(this, m_pPersonWeLookingAt);
-				}
-			}
-		}
-
-		collide::rq_result &RQ = HUD().GetCurrentRayQuery();
-		CPhysicsShellHolder *object = smart_cast<CPhysicsShellHolder *>(RQ.O);
-		u16 element = BI_NONE;
-		if (object)
-			element = (u16)RQ.element;
-
-		if (object && Level().IR_GetKeyState(DIK_LSHIFT))
-		{
-			bool b_allow = !!pSettings->line_exist("ph_capture_visuals", object->cNameVisual());
-			if (b_allow && !character_physics_support()->movement()->PHCapture())
-			{
-				character_physics_support()->movement()->PHCaptureObject(object, element);
-			}
-		}
-		else
-		{
-			if (object && smart_cast<CHolderCustom *>(object))
-			{
-				NET_Packet P;
-				CGameObject::u_EventGen(P, GEG_PLAYER_ATTACH_HOLDER, ID());
-				P.w_u32(object->ID());
-				CGameObject::u_EventSend(P);
-				return;
-			}
+			if (CUIGameCustom* pGameUi = smart_cast<CUIGameCustom*>(HUD().GetUI()->UIGame()))
+				pGameUi->StartCarBody(this, m_pPersonWeLookingAt); //обыск трупа
 		}
 	}
+
+	collide::rq_result &RQ = HUD().GetCurrentRayQuery();
+	CPhysicsShellHolder *object = smart_cast<CPhysicsShellHolder *>(RQ.O);
+	u16 element = BI_NONE;
+
+	if (object)
+		element = (u16)RQ.element;
+
+	if (object && Level().IR_GetKeyState(DIK_LSHIFT) && GameID() == GAME_SINGLE)
+	{
+		bool allowDrag = !!pSettings->line_exist("ph_capture_visuals", object->cNameVisual());
+
+		if (allowDrag && !character_physics_support()->movement()->PHCapture())		
+			character_physics_support()->movement()->PHCaptureObject(object, element);
+
+		return;
+	}
+
+	if (object && smart_cast<CHolderCustom*>(object))
+	{
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GEG_PLAYER_ATTACH_HOLDER, ID());
+		P.w_u32(object->ID());
+		CGameObject::u_EventSend(P);
+		return;
+	}
 }
+
 BOOL CActor::HUDview() const
 {
 	return IsFocused() && (cam_active == eacFirstEye) &&
 		   ((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView()));
 }
 
-//void CActor::IR_OnMousePress(int btn)
-static u32 SlotsToCheck[] = {
+static u32 SlotsToCheck[] = 
+{
 	KNIFE_SLOT,		// 0
 	PISTOL_SLOT,	// 1
 	RIFLE_SLOT,		// 2

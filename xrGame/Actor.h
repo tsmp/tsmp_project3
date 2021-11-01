@@ -139,6 +139,7 @@ protected:
 	};
 	xr_vector<SDefNewsMsg> m_defferedMessages;
 	void UpdateDefferedMessages();
+	void UpdateVisibleUsableObjects();
 
 public:
 	void AddGameNews_deffered(GAME_NEWS_DATA &news_data, u32 delay);
