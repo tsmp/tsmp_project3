@@ -167,36 +167,53 @@ void CHUDTarget::Render()
 			PIItem l_pI = smart_cast<PIItem>(RQ.O);
 
 			CInventoryOwner *our_inv_owner = smart_cast<CInventoryOwner *>(pCurEnt);
-			if (E && E->g_Alive() && !E->cast_base_monster())
+			if (E && E->g_Alive())
 			{
-				//.					CInventoryOwner* our_inv_owner		= smart_cast<CInventoryOwner*>(pCurEnt);
-				CInventoryOwner *others_inv_owner = smart_cast<CInventoryOwner *>(E);
-
-				if (our_inv_owner && others_inv_owner)
+				if (!E->cast_base_monster())
 				{
+					CInventoryOwner* others_inv_owner = smart_cast<CInventoryOwner*>(E);
 
-					switch (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
+					if (our_inv_owner && others_inv_owner)
 					{
-					case ALife::eRelationTypeEnemy:
-						C = C_ON_ENEMY;
+
+						switch (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
+						{
+						case ALife::eRelationTypeEnemy:
+							C = C_ON_ENEMY;
+							break;
+						case ALife::eRelationTypeNeutral:
+							C = C_ON_NEUTRAL;
+							break;
+						case ALife::eRelationTypeFriend:
+							C = C_ON_FRIEND;
+							break;
+						}
+
+						if (fuzzyShowInfo > 0.5f)
+						{
+							CStringTable strtbl;
+							F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
+							F->OutNext("%s", *strtbl.translate(others_inv_owner->Name()));
+							F->OutNext("%s", *strtbl.translate(others_inv_owner->CharacterInfo().Community().id()));
+						}
+					}
+				}
+				else
+				{
+					switch (pCurEnt->tfGetRelationType(E))
+					{
+					case ALife::eRelationTypeFriend:
+						C = C_ON_FRIEND;
 						break;
 					case ALife::eRelationTypeNeutral:
 						C = C_ON_NEUTRAL;
 						break;
-					case ALife::eRelationTypeFriend:
-						C = C_ON_FRIEND;
+					case ALife::eRelationTypeEnemy:
+					case ALife::eRelationTypeWorstEnemy:
+						C = C_ON_ENEMY;
 						break;
 					}
-
-					if (fuzzyShowInfo > 0.5f)
-					{
-						CStringTable strtbl;
-						F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
-						F->OutNext("%s", *strtbl.translate(others_inv_owner->Name()));
-						F->OutNext("%s", *strtbl.translate(others_inv_owner->CharacterInfo().Community().id()));
-					}
 				}
-
 				fuzzyShowInfo += SHOW_INFO_SPEED * Device.fTimeDelta;
 			}
 			else if (l_pI && our_inv_owner && RQ.range < 2.0f * our_inv_owner->inventory().GetTakeDist())
