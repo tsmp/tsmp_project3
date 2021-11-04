@@ -91,7 +91,10 @@ void CHitMemoryManager::reload(LPCSTR section)
 #endif
 	m_max_hit_count = READ_IF_EXISTS(pSettings, r_s32, section, "DynamicHitCount", 1);
 }
-
+#include "relation_registry.h"
+#include "enemy_manager.h"
+#include "visual_memory_manager.h"
+#include "ai/monsters/basemonster/base_monster.h"
 void CHitMemoryManager::add(float amount, const Fvector &vLocalDir, const CObject *who, s16 element)
 {
 #ifndef MASTER_GOLD
@@ -118,6 +121,47 @@ void CHitMemoryManager::add(float amount, const Fvector &vLocalDir, const CObjec
 
 	Fvector direction;
 	m_object->XFORM().transform_dir(direction, vLocalDir);
+
+	CEntityAlive* other_ealive = smart_cast<CEntityAlive*>(const_cast<CObject*>(who));
+	CEntityAlive* me_ealive = smart_cast<CEntityAlive*>(m_object);
+	if (other_ealive && me_ealive)
+	{
+		if (other_ealive->cast_stalker() && me_ealive->cast_stalker())
+		{
+			CInventoryOwner* our_inv_owner = smart_cast<CInventoryOwner*>(me_ealive);
+			CInventoryOwner* others_inv_owner = smart_cast<CInventoryOwner*>(other_ealive);
+			if (our_inv_owner && others_inv_owner)
+			{
+				if (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner) != ALife::eRelationTypeEnemy)
+					return;
+				else
+				{
+					if (me_ealive->cast_stalker()->visual_memory()->visible_now(other_ealive))
+					{
+						me_ealive->cast_stalker()->memory().enemy().set_enemy(other_ealive);
+						me_ealive->cast_stalker()->memory().make_object_visible_somewhen(other_ealive);
+					}
+				}
+			}
+		}
+		else
+		{
+			if (me_ealive->cast_custom_monster())
+			{
+				if (m_object->tfGetRelationType(smart_cast<const CEntityAlive*>(who)) != ALife::eRelationTypeEnemy
+					&& m_object->tfGetRelationType(smart_cast<const CEntityAlive*>(who)) != ALife::eRelationTypeWorstEnemy)
+					return;
+				else
+				{
+					if (me_ealive->cast_custom_monster()->visual_memory()->visible_now(other_ealive))
+					{
+						me_ealive->cast_custom_monster()->memory().enemy().set_enemy(other_ealive);
+						me_ealive->cast_custom_monster()->memory().make_object_visible_somewhen(other_ealive);
+					}
+				}
+			}
+		}
+	}
 
 	const CEntityAlive *entity_alive = smart_cast<const CEntityAlive *>(who);
 	if (!entity_alive || (m_object->tfGetRelationType(entity_alive) == ALife::eRelationTypeFriend))

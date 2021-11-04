@@ -261,7 +261,7 @@ float CVisualMemoryManager::object_visible_distance(const CGameObject *game_obje
 
 float CVisualMemoryManager::object_luminocity(const CGameObject *game_object) const
 {
-	if (game_object->CLS_ID != CLSID_OBJECT_ACTOR)
+	if (game_object->CLS_ID != CLSID_OBJECT_ACTOR || !IsGameTypeSingle())
 		return (1.f);
 
 	float luminocity = const_cast<CGameObject *>(game_object)->ROS()->get_luminocity();

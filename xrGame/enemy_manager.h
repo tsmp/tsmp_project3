@@ -73,7 +73,7 @@ public:
 public:
 	void wounded(const CEntityAlive *wounded_enemy);
 	IC const CEntityAlive *wounded() const;
-
+	void set_enemy(CEntityAlive const* enemy);
 public:
 	IC void enable_enemy_change(const bool &value);
 	IC bool enable_enemy_change() const;
