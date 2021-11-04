@@ -291,25 +291,18 @@ void CEntityAlive::Hit(SHit *pHDS)
 	//-------------------------------------------
 	inherited::Hit(&HDS);
 
-#ifdef ALIFE_MP
-	if (g_Alive() && !Remote())
-#else
-	if (g_Alive() && IsGameTypeSingle())
-#endif
+	CEntityAlive *EA = smart_cast<CEntityAlive *>(HDS.who);
+	if (EA && EA->g_Alive() && EA->ID() != ID())
 	{
-		CEntityAlive *EA = smart_cast<CEntityAlive *>(HDS.who);
-		if (EA && EA->g_Alive() && EA->ID() != ID())
-		{
-			RELATION_REGISTRY().FightRegister(EA->ID(), ID(), this->tfGetRelationType(EA), HDS.damage());
-			RELATION_REGISTRY().Action(EA, this, RELATION_REGISTRY::ATTACK);
-		}
+		RELATION_REGISTRY().FightRegister(EA->ID(), ID(), this->tfGetRelationType(EA), HDS.damage());
+		RELATION_REGISTRY().Action(EA, this, RELATION_REGISTRY::ATTACK);
 	}
+
 }
 
 void CEntityAlive::Die(CObject *who)
 {
-	if (IsGameTypeSingle())
-		RELATION_REGISTRY().Action(smart_cast<CEntityAlive *>(who), this, RELATION_REGISTRY::KILL);
+	RELATION_REGISTRY().Action(smart_cast<CEntityAlive *>(who), this, RELATION_REGISTRY::KILL);
 	inherited::Die(who);
 
 	const CGameObject *who_object = smart_cast<const CGameObject *>(who);
