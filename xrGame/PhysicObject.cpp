@@ -422,7 +422,7 @@ void CPhysicObject::net_Import(NET_Packet &P)
 	
 	if (!m_activated)
 	{
-		Msg("- Activating object [%d][%s] before interpolation starts", ID(), Name());
+		//Msg("- Activating object [%d][%s] before interpolation starts", ID(), Name());
 		processing_activate();
 		m_activated = true;
 	}
@@ -522,7 +522,7 @@ void CPhysicObject::Interpolate()
 
 			if (m_activated)
 			{
-				Msg("- Deactivating object [%d][%s] after interpolation finish", ID(), Name());
+				//Msg("- Deactivating object [%d][%s] after interpolation finish", ID(), Name());
 				processing_deactivate();
 				m_activated = false;
 			}
