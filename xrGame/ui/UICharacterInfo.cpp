@@ -390,7 +390,7 @@ void CUICharacterInfo::ResetAllStrings()
 
 void CUICharacterInfo::UpdateRelation()
 {
-	if (!m_icons[eUIRelation] || !m_icons[eUIRelationCaption])
+	if (!m_icons[eUIRelation] || !m_icons[eUIRelationCaption] || !Actor())
 		return;
 
 	if (Actor()->ID() == m_ownerID || !hasOwner())
@@ -407,11 +407,23 @@ void CUICharacterInfo::UpdateRelation()
 		if (m_icons[eUIRelation])
 			m_icons[eUIRelation]->Show(true);
 
-		CSE_ALifeTraderAbstract *T = ch_info_get_from_id(m_ownerID);
-		CSE_ALifeTraderAbstract *TA = ch_info_get_from_id(Actor()->ID());
+		if (OnServer())
+		{
+			CSE_ALifeTraderAbstract* T = ch_info_get_from_id(m_ownerID);
+			CSE_ALifeTraderAbstract* TA = ch_info_get_from_id(Actor()->ID());
 
-		SetRelation(RELATION_REGISTRY().GetRelationType(T, TA),
-					RELATION_REGISTRY().GetAttitude(T, TA));
+			SetRelation(RELATION_REGISTRY().GetRelationType(T, TA), RELATION_REGISTRY().GetAttitude(T, TA));
+		}
+		else
+		{
+			CInventoryOwner* ownerMe = smart_cast<CInventoryOwner*>(Level().Objects.net_Find(Actor()->ID()));
+			CInventoryOwner* ownerOther = smart_cast<CInventoryOwner*>(Level().Objects.net_Find(m_ownerID));
+
+			if (!ownerMe || !ownerOther)
+				return;
+
+			SetRelation(RELATION_REGISTRY().GetRelationType(ownerOther, ownerMe), RELATION_REGISTRY().GetAttitude(ownerOther, ownerMe));
+		}
 	}
 }
 
@@ -419,14 +431,30 @@ void CUICharacterInfo::Update()
 {
 	inherited::Update();
 
-	if (OnClient)
-		return;
-
 	if (hasOwner() && (m_bForceUpdate || (Device.CurrentFrameNumber % 100 == 0)))
 	{
 		m_bForceUpdate = false;
-		CSE_ALifeTraderAbstract *T = ch_info_get_from_id(m_ownerID);
-		if (NULL == T)
+		bool ownerDestroyed = true;
+		bool ownerAlive = false;
+
+		if (OnClient())
+		{
+			if (CEntityAlive* owner = smart_cast<CEntityAlive*>(Level().Objects.net_Find(m_ownerID)))
+			{
+				ownerDestroyed = false;
+				ownerAlive = owner->g_Alive();
+			}
+		}
+		else
+		{
+			if (CSE_ALifeCreatureAbstract* owner = smart_cast<CSE_ALifeCreatureAbstract*>(ch_info_get_from_id(m_ownerID)))
+			{
+				ownerDestroyed = false;
+				ownerAlive = owner->g_Alive();
+			}
+		}
+		
+		if(ownerDestroyed)
 		{
 			m_ownerID = u16(-1);
 			return;
@@ -434,12 +462,8 @@ void CUICharacterInfo::Update()
 		else
 			UpdateRelation();
 
-		if (m_icons[eUIIcon])
-		{
-			CSE_ALifeCreatureAbstract *pCreature = smart_cast<CSE_ALifeCreatureAbstract *>(T);
-			if (pCreature && !pCreature->g_Alive())
-				m_icons[eUIIcon]->SetColor(color_argb(255, 255, 160, 160));
-		}
+		if (m_icons[eUIIcon] && !ownerAlive)
+			m_icons[eUIIcon]->SetColor(color_argb(255, 255, 160, 160));		
 	}
 }
 
