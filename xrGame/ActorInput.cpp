@@ -433,9 +433,12 @@ void CActor::ActorUse()
 		if (pEntityAliveWeLookingAt->cast_actor())
 			return;
 
-		if (pEntityAliveWeLookingAt->g_Alive() && GameID() == GAME_SINGLE)
-			TryToTalk();
-		else if ( !Level().IR_GetKeyState(DIK_LSHIFT))
+		if (pEntityAliveWeLookingAt->g_Alive())
+		{
+			if(GameID() == GAME_SINGLE)
+				TryToTalk();
+		}
+		else if (!Level().IR_GetKeyState(DIK_LSHIFT))
 		{
 			if (CUIGameCustom* pGameUi = smart_cast<CUIGameCustom*>(HUD().GetUI()->UIGame()))
 				pGameUi->StartCarBody(this, m_pPersonWeLookingAt); //обыск трупа
