@@ -323,8 +323,8 @@ void CUICarBodyWnd::Draw()
 
 void CUICarBodyWnd::Update()
 {
-	if (!m_pOthersObject || !m_pOthersObject->m_inventory ||
-		(smart_cast<CGameObject*>(m_pOurObject))->Position().distance_to((smart_cast<CGameObject*>(m_pOthersObject))->Position()) > 3.0f)
+	if (!m_pInventoryBox && (!m_pOthersObject || !m_pOthersObject->m_inventory ||
+		(smart_cast<CGameObject*>(m_pOurObject))->Position().distance_to((smart_cast<CGameObject*>(m_pOthersObject))->Position()) > 3.0f))
 	{
 		GetHolder()->StartStopMenu(this, true);
 		return;
