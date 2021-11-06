@@ -276,9 +276,12 @@ void CInventoryOwner::StopTalk()
 
 	GetTrade()->StopTrade();
 
-	CUIGameSP *ui_sp = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-	if (ui_sp && ui_sp->TalkMenu->IsShown())
-		ui_sp->TalkMenu->Stop();
+	CUIGameCustom* pGameUi = smart_cast<CUIGameCustom*>(HUD().GetUI()->UIGame());
+	if (!pGameUi)
+		return;
+
+	if (pGameUi->TalkMenu->IsShown())
+		pGameUi->TalkMenu->Stop();
 }
 
 bool CInventoryOwner::IsTalking()

@@ -7,7 +7,6 @@
 class CUIInventoryWnd;
 class CUITradeWnd;
 class CUIPdaWnd;
-class CUITalkWnd;
 class CUICarBodyWnd;
 class CInventory;
 
@@ -45,7 +44,6 @@ public:
 
 	CUIInventoryWnd *InventoryMenu;
 	CUIPdaWnd *PdaMenu;
-	CUITalkWnd *TalkMenu;
 	CUICarBodyWnd* UICarBodyMenu;
 	CChangeLevelWnd *UIChangeLevelWnd;
 };

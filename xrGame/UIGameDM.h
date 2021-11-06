@@ -52,11 +52,11 @@ protected:
 	shared_str m_demo_play_caption;
 	shared_str m_warm_up_caption;
 	
-	CUIMoneyIndicator *m_pMoneyIndicator;
-	CUIRankIndicator *m_pRankIndicator;
-	CUIStatic *m_pFragLimitIndicator;
-	UIVoteStatusWnd *m_voteStatusWnd;
-	CUICarBodyWnd* UICarBodyMenu;
+	CUIMoneyIndicator* m_pMoneyIndicator;
+	CUIRankIndicator* m_pRankIndicator;
+	CUIStatic* m_pFragLimitIndicator;
+	UIVoteStatusWnd* m_voteStatusWnd;
+	CUICarBodyWnd* m_pUICarBodyMenu;
 
 	virtual void ClearLists();
 
@@ -95,6 +95,7 @@ public:
 
 	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers) override;
 	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox) override;
+	virtual void StartTalk() override;
 
 	virtual void HideShownDialogs() override;
 

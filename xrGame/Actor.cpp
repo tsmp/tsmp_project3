@@ -1203,7 +1203,7 @@ void CActor::UpdateVisibleUsableObjects()
 		return;
 	}
 
-	if (m_pPersonWeLookingAt && pEntityAlive->g_Alive() && GameID() == GAME_SINGLE)
+	if (m_pPersonWeLookingAt && pEntityAlive->g_Alive() && !pEntityAlive->cast_actor() && !pEntityAlive->cast_base_monster())
 	{
 		m_sDefaultObjAction = m_sCharacterUseAction; // Диалоги с нпс
 		return;

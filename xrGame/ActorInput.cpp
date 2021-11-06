@@ -435,7 +435,7 @@ void CActor::ActorUse()
 
 		if (pEntityAliveWeLookingAt->g_Alive())
 		{
-			if(GameID() == GAME_SINGLE)
+			if(!pEntityAliveWeLookingAt->cast_base_monster())
 				TryToTalk();
 		}
 		else if (!Level().IR_GetKeyState(DIK_LSHIFT))

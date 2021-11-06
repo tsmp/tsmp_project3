@@ -136,15 +136,13 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 
 	if (!HUD().GetUI())
 		return false;
-	//только если находимся в режиме single
-	CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-	if (!pGameSP)
+
+	CUIGameCustom* pGameUi = smart_cast<CUIGameCustom*>(HUD().GetUI()->UIGame());
+	if (!pGameUi)
 		return false;
 
-	if (pGameSP->TalkMenu->IsShown())
-	{
-		pGameSP->TalkMenu->NeedUpdateQuestions();
-	}
+	if (pGameUi->TalkMenu->IsShown())	
+		pGameUi->TalkMenu->NeedUpdateQuestions();	
 
 	return true;
 }
@@ -156,24 +154,22 @@ void CActor::OnDisableInfo(shared_str info_id) const
 	if (!HUD().GetUI())
 		return;
 
-	//только если находимся в режиме single
-	CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-	if (!pGameSP)
+	CUIGameCustom* pGameUi = smart_cast<CUIGameCustom*>(HUD().GetUI()->UIGame());
+	if (!pGameUi)
 		return;
 
-	if (pGameSP->TalkMenu->IsShown())
-		pGameSP->TalkMenu->NeedUpdateQuestions();
+	if (pGameUi->TalkMenu->IsShown())
+		pGameUi->TalkMenu->NeedUpdateQuestions();
 }
 
 void CActor::ReceivePhrase(DIALOG_SHARED_PTR &phrase_dialog)
 {
-	//только если находимся в режиме single
-	CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-	if (!pGameSP)
+	CUIGameCustom* pGameUi = smart_cast<CUIGameCustom*>(HUD().GetUI()->UIGame());
+	if (!pGameUi)
 		return;
 
-	if (pGameSP->TalkMenu->IsShown())
-		pGameSP->TalkMenu->NeedUpdateQuestions();
+	if (pGameUi->TalkMenu->IsShown())
+		pGameUi->TalkMenu->NeedUpdateQuestions();
 
 	CPhraseDialogManager::ReceivePhrase(phrase_dialog);
 }
@@ -223,13 +219,13 @@ void CActor::RunTalkDialog(CInventoryOwner *talk_partner)
 	if (talk_partner->OfferTalk(this))
 	{
 		StartTalk(talk_partner);
-		//только если находимся в режиме single
-		CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-		if (pGameSP)
+
+		if (CUIGameCustom* pGameUI = smart_cast<CUIGameCustom*>(HUD().GetUI()->UIGame()))
 		{
-			if (pGameSP->MainInputReceiver())
-				Game().StartStopMenu(pGameSP->MainInputReceiver(), true);
-			pGameSP->StartTalk();
+			if (pGameUI->MainInputReceiver())
+				Game().StartStopMenu(pGameUI->MainInputReceiver(), true);
+
+			pGameUI->StartTalk();
 		}
 	}
 }

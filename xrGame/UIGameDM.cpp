@@ -19,6 +19,7 @@
 #include "ui/UIMoneyIndicator.h"
 #include "ui/UIRankIndicator.h"
 #include "ui/UIVoteStatusWnd.h"
+#include "ui/UITalkWnd.h"
 
 #include "ui/UICarBodyWnd.h"
 #include "object_broker.h"
@@ -82,7 +83,8 @@ CUIGameDM::CUIGameDM()
 	m_pPdaMenu = xr_new<CUIPdaWnd>();
 	m_pMapDesc = nullptr;
 
-	UICarBodyMenu = xr_new<CUICarBodyWnd>();
+	m_pUICarBodyMenu = xr_new<CUICarBodyWnd>();
+	TalkMenu = xr_new<CUITalkWnd>();
 }
 
 void CUIGameDM::SetClGame(game_cl_GameState *g)
@@ -162,15 +164,16 @@ CUIGameDM::~CUIGameDM()
 	delete_data(m_pInventoryMenu);
 	delete_data(m_pPdaMenu);
 	delete_data(m_pMapDesc);
-	delete_data(UICarBodyMenu);
+	delete_data(m_pUICarBodyMenu);
+	delete_data(TalkMenu);
 }
 
 void CUIGameDM::ReInitShownUI()
 {
 	if (m_pInventoryMenu && m_pInventoryMenu->IsShown())	
 		m_pInventoryMenu->InitInventory();	
-	else if (UICarBodyMenu->IsShown())
-		UICarBodyMenu->UpdateLists_delayed();
+	else if (m_pUICarBodyMenu->IsShown())
+		m_pUICarBodyMenu->UpdateLists_delayed();
 }
 
 void CUIGameDM::StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers)
@@ -178,8 +181,8 @@ void CUIGameDM::StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers)
 	if (MainInputReceiver())
 		return;
 
-	UICarBodyMenu->InitCarBody(pOurInv, pOthers);
-	m_game->StartStopMenu(UICarBodyMenu, true);
+	m_pUICarBodyMenu->InitCarBody(pOurInv, pOthers);
+	m_game->StartStopMenu(m_pUICarBodyMenu, true);
 }
 
 void CUIGameDM::StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox)
@@ -187,15 +190,24 @@ void CUIGameDM::StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox)
 	if (MainInputReceiver())
 		return;
 
-	UICarBodyMenu->InitCarBody(pOurInv, pBox);
-	m_game->StartStopMenu(UICarBodyMenu, true);
+	m_pUICarBodyMenu->InitCarBody(pOurInv, pBox);
+	m_game->StartStopMenu(m_pUICarBodyMenu, true);
+}
+
+void CUIGameDM::StartTalk()
+{
+	m_game->StartStopMenu(TalkMenu, true);
 }
 
 void CUIGameDM::HideShownDialogs()
 {
 	CUIDialogWnd* mir = MainInputReceiver();
 
-	if (mir && mir == UICarBodyMenu)
+	if (!mir)
+		return;
+
+	if (mir == m_pUICarBodyMenu 
+		|| mir == TalkMenu)
 		mir->GetHolder()->StartStopMenu(mir, true);
 }
 
@@ -380,5 +392,6 @@ void CUIGameDM::reset_ui()
 	inherited::reset_ui();
 	m_pInventoryMenu->Reset();
 	m_pPdaMenu->Reset();
-	UICarBodyMenu->Reset();
+	TalkMenu->Reset();
+	m_pUICarBodyMenu->Reset();
 }

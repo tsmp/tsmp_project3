@@ -71,13 +71,14 @@ void CScriptGameObject::AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, F
 
 void _AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, const Frect &tex_rect, LPCSTR templ_name)
 {
-	CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-	if (!pGameSP)
+	CUIGameCustom* pGameUi = smart_cast<CUIGameCustom*>(HUD().GetUI()->UIGame());
+	if (!pGameUi)
 		return;
 
-	if (pGameSP->TalkMenu->IsShown())
-		pGameSP->TalkMenu->AddIconedMessage(text, texture_name, tex_rect, templ_name ? templ_name : "iconed_answer_item");
+	if (pGameUi->TalkMenu->IsShown())
+		pGameUi->TalkMenu->AddIconedMessage(text, texture_name, tex_rect, templ_name ? templ_name : "iconed_answer_item");
 }
+
 bool _give_news(LPCSTR news, LPCSTR texture_name, const Frect &tex_rect, int delay, int show_time);
 
 bool CScriptGameObject::GiveGameNews(LPCSTR news, LPCSTR texture_name, Frect tex_rect, int delay, int show_time)
@@ -628,16 +629,14 @@ void CScriptGameObject::SwitchToTrade()
 	if (!pActor)
 		return;
 
-	//только если находимся в режиме single
-	CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-	if (!pGameSP)
+	CUIGameCustom* pGameUi = smart_cast<CUIGameCustom*>(HUD().GetUI()->UIGame());
+	if (!pGameUi)
 		return;
 
-	if (pGameSP->TalkMenu->IsShown())
-	{
-		pGameSP->TalkMenu->SwitchToTrade();
-	}
+	if (pGameUi->TalkMenu->IsShown())	
+		pGameUi->TalkMenu->SwitchToTrade();	
 }
+
 void CScriptGameObject::SwitchToTalk()
 {
 	R_ASSERT("switch_to_talk called ;)");
