@@ -43,7 +43,7 @@ private:
 	_GRAPH_ID m_current_level_some_vertex_id;
 
 public:
-	IC CGameGraph();
+	IC CGameGraph(LPCSTR spawnName);
 
 public:
 	IC virtual ~CGameGraph();

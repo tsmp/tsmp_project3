@@ -48,11 +48,8 @@ void CAI_Space::init()
 	VERIFY(!m_ef_storage);
 	m_ef_storage = xr_new<CEF_Storage>();
 
-	VERIFY(!m_game_graph);
-	m_game_graph = xr_new<CGameGraph>();
-
 	VERIFY(!m_graph_engine);
-	m_graph_engine = xr_new<CGraphEngine>(game_graph().header().vertex_count());
+	m_graph_engine = xr_new<CGraphEngine>(1024);
 
 	VERIFY(!m_cover_manager);
 	m_cover_manager = xr_new<CCoverManager>();
@@ -206,4 +203,10 @@ void CAI_Space::set_alife(CALifeSimulator *alife_simulator)
 {
 	VERIFY((!m_alife_simulator && alife_simulator) || (m_alife_simulator && !alife_simulator));
 	m_alife_simulator = alife_simulator;
+}
+
+void CAI_Space::SetGameGraph(CGameGraph* graph)
+{
+	VERIFY(!m_game_graph);
+	m_game_graph = graph;
 }

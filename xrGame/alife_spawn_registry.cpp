@@ -78,18 +78,16 @@ void CALifeSpawnRegistry::load(IReader &file_stream, LPCSTR game_name)
 
 void CALifeSpawnRegistry::load(LPCSTR spawn_name)
 {
+	ai().SetGameGraph(xr_new<CGameGraph>(spawn_name));
+
 	Msg("* Loading spawn registry...");
 	m_spawn_name = spawn_name;
 	string_path file_name;
 	R_ASSERT3(FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn"), "Can't find spawn file:", *m_spawn_name);
 
-	IReader *m_file = 0;
-
-	VERIFY(!m_file);
-	m_file = FS.r_open(file_name);
-	load(*m_file);
-
-	FS.r_close(m_file);
+	IReader *spawnFile = FS.r_open(file_name);
+	load(*spawnFile);
+	FS.r_close(spawnFile);
 }
 
 struct dummy
