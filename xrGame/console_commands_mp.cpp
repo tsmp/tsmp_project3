@@ -77,6 +77,7 @@ extern int g_sv_Wait_For_Players_Ready;
 extern int G_DELAYED_ROUND_TIME;
 extern int g_sv_Pending_Wait_Time;
 extern int g_sv_Client_Reconnect_Time;
+extern int g_sv_mp_respawn_npc_after_death;
 int g_dwEventDelay = 0;
 
 void XRNETWORK_API DumpNetCompressorStats(bool brief);
@@ -2134,6 +2135,8 @@ void register_mp_console_commands()
 
 	CMD4(CCC_Integer, "sv_remove_weapon", &g_iWeaponRemove, -1, 1);
 	CMD4(CCC_Integer, "sv_remove_corpse", &g_iCorpseRemove, -1, 1);
+
+	CMD4(CCC_Integer, "sv_respawn_npc_after_death", &g_sv_mp_respawn_npc_after_death, 0, 1);
 
 	CMD4(CCC_Integer, "sv_statistic_collect", &g_bCollectStatisticData, 0, 1);
 	CMD1(CCC_SaveStatistic, "sv_statistic_save");

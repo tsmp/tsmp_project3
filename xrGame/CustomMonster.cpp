@@ -47,6 +47,7 @@
 #include "alife_object_registry.h"
 #include "client_spawn_manager.h"
 #include "InventoryOwner.h"
+#include "game_sv_deathmatch.h"
 
 #include "..\TSMP3_Build_Config.h"
 
@@ -55,6 +56,7 @@
 #endif
 
 extern int g_AI_inactive_time;
+int g_sv_mp_respawn_npc_after_death = 1;
 
 #ifndef MASTER_GOLD
 Flags32 psAI_Flags = {0};
@@ -68,15 +70,6 @@ void CCustomMonster::SAnimState::Create(CKinematicsAnimated *K, LPCSTR base)
 	ls = K->ID_Cycle_Safe(strconcat(sizeof(buf), buf, base, "_ls"));
 	rs = K->ID_Cycle_Safe(strconcat(sizeof(buf), buf, base, "_rs"));
 }
-
-//void __stdcall CCustomMonster::TorsoSpinCallback(CBoneInstance* B)
-//{
-//	CCustomMonster*		M = static_cast<CCustomMonster*> (B->Callback_Param);
-//
-//	Fmatrix					spin;
-//	spin.setXYZ				(0, M->NET_Last.o_torso.pitch, 0);
-//	B->mTransform.mulB_43	(spin);
-//}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -637,7 +630,41 @@ void CCustomMonster::HitSignal(float /**perc/**/, Fvector & /**vLocalDir/**/, CO
 {
 }
 
-#include "game_sv_deathmatch.h"
+void CCustomMonster::RespawnAfterDeath()
+{
+	// выбираем случайный рпоинт команды 0
+	game_sv_Deathmatch* game = smart_cast<game_sv_Deathmatch*>(Level().Server->game);
+	const xr_vector<RPoint>& rp = game->rpoints[0];
+	RPoint r;
+	u32 ID = game->monsterResp.randI((int)rp.size());
+	r = rp[ID];
+
+	// получаем id вертексов от актора
+	u16 game_vertex_id = 0;
+	u32 level_vertex_id = 0;
+
+	game_vertex_id = Actor()->ai_location().game_vertex_id();
+	level_vertex_id = Actor()->ai_location().level_vertex_id();
+	u16 parentId = ALife::_OBJECT_ID(-1);
+
+	// спавним нового с такой же секцией
+	CSE_Abstract* abstr = game->alife().spawn_item(cNameSect().c_str(), r.P, level_vertex_id, game_vertex_id, parentId);
+
+	// передаем новому custom data с логикой от старого
+	if (CSE_ALifeCreatureAbstract* monster = dynamic_cast<CSE_ALifeCreatureAbstract*>(abstr))
+	{
+		monster->m_ini_string = m_ini_str;
+
+		if (CSE_ALifeTraderAbstract* pTrader = dynamic_cast<CSE_ALifeTraderAbstract*>(monster))
+		{
+			if (CInventoryOwner* io = smart_cast<CInventoryOwner*>(this))
+			{
+				pTrader->set_character_profile(io->m_SpecificCharacterStr);
+				pTrader->spawn_supplies();
+			}
+		}
+	}
+}
 
 void CCustomMonster::Die(CObject *who)
 {
@@ -646,40 +673,8 @@ void CCustomMonster::Die(CObject *who)
 	Actor()->SetActorVisibility(ID(), 0.f);
 
 	// Спавним точно такого же нового взамен умершего
-	if (OnServer() && !IsGameTypeSingle())
-	{
-		// выбираем случайный рпоинт команды 0
-		game_sv_Deathmatch* game = smart_cast<game_sv_Deathmatch*>(Level().Server->game);
-		const xr_vector<RPoint>& rp = game->rpoints[0];
-		RPoint r;
-		u32 ID = game->monsterResp.randI((int)rp.size());
-		r = rp[ID];
-
-		// получаем id вертексов от актора
-		u16 game_vertex_id = 0;
-		u32 level_vertex_id = 0;
-
-		game_vertex_id = Actor()->ai_location().game_vertex_id();
-		level_vertex_id = Actor()->ai_location().level_vertex_id();
-		u16 parentId = ALife::_OBJECT_ID(-1);
-
-		CSE_Abstract* abstr = game->alife().spawn_item(cNameSect().c_str(), r.P, level_vertex_id, game_vertex_id, parentId);
-
-		// передаем новому custom data с логикой от старого
-		if (CSE_ALifeCreatureAbstract* monster = dynamic_cast<CSE_ALifeCreatureAbstract*>(abstr))
-		{
-			monster->m_ini_string = m_ini_str;
-			
-			if (CSE_ALifeTraderAbstract* pTrader = dynamic_cast<CSE_ALifeTraderAbstract*>(monster))
-			{
-				if (CInventoryOwner* io = smart_cast<CInventoryOwner*>(this))
-				{
-					pTrader->set_character_profile(io->m_SpecificCharacterStr);
-					pTrader->spawn_supplies();
-				}
-			}
-		}		
-	}
+	if (OnServer() && !IsGameTypeSingle() && g_sv_mp_respawn_npc_after_death)	
+		RespawnAfterDeath();
 }
 
 BOOL CCustomMonster::net_Spawn(CSE_Abstract *DC)
