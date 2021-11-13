@@ -137,7 +137,7 @@ void CAI_Space::unload(bool reload)
 	xr_delete(m_level_graph);
 	xr_delete(m_cross_table);
 
-	if (!reload)
+	if (!reload && m_game_graph)
 		m_graph_engine = xr_new<CGraphEngine>(game_graph().header().vertex_count());
 }
 
