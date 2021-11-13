@@ -13,6 +13,7 @@ class CUIWindow;
 class CUIXml;
 class CInventoryBox;
 class CUITalkWnd;
+class CInventoryOwner;
 
 struct SDrawStaticStruct : public IPureDestroyableObject
 {
