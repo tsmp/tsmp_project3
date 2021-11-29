@@ -70,8 +70,6 @@ extern BOOL g_bUseCursorAcceleration;
 
 extern int x_m_x;
 extern int x_m_z;
-extern BOOL net_cl_inputguaranteed;
-extern BOOL net_sv_control_hit;
 extern int g_dwInputUpdateDelta;
 #ifdef DEBUG
 extern BOOL g_ShowAnimationInfo;
