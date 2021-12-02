@@ -36,6 +36,11 @@ LPCSTR command_line()
 	return (Core.Params);
 }
 
+bool is_dedicated()
+{
+	return g_dedicated_server;
+}
+
 #ifdef DEBUG
 void check_object(CScriptGameObject *object)
 {
@@ -626,7 +631,8 @@ void CLevel::script_register(lua_State *L)
 
 	module(L)
 		[def("command_line", &command_line),
-		 def("IsGameTypeSingle", &IsGameTypeSingle)];
+		def("IsGameTypeSingle", &IsGameTypeSingle),
+		def("is_dedicated", &is_dedicated)];
 
 	module(L, "relation_registry")
 		[def("community_goodwill", &g_community_goodwill),
