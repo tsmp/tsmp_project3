@@ -28,6 +28,7 @@
 #include "map_manager.h"
 #include "map_location.h"
 #include "phworld.h"
+#include "UIGameCustom.h"
 
 using namespace luabind;
 
@@ -259,9 +260,12 @@ CUIDialogWnd *main_input_receiver()
 {
 	return HUD().GetUI()->MainInputReceiver();
 }
-#include "UIGameCustom.h"
+
 void hide_indicators()
 {
+	if (g_dedicated_server)
+		return;
+
 	HUD().GetUI()->UIGame()->HideShownDialogs();
 
 	HUD().GetUI()->HideGameIndicators();
@@ -270,6 +274,9 @@ void hide_indicators()
 
 void show_indicators()
 {
+	if (g_dedicated_server)
+		return;
+
 	HUD().GetUI()->ShowGameIndicators();
 	HUD().GetUI()->ShowCrosshair();
 }
@@ -297,19 +304,11 @@ void remove_call(const luabind::functor<bool> &condition, const luabind::functor
 
 void add_call(const luabind::object &lua_object, LPCSTR condition, LPCSTR action)
 {
-	//	try{
-	//		CPHScriptObjectCondition	*c=xr_new<CPHScriptObjectCondition>(lua_object,condition);
-	//		CPHScriptObjectAction		*a=xr_new<CPHScriptObjectAction>(lua_object,action);
 	luabind::functor<bool> _condition = object_cast<luabind::functor<bool>>(lua_object[condition]);
 	luabind::functor<void> _action = object_cast<luabind::functor<void>>(lua_object[action]);
 	CPHScriptObjectConditionN *c = xr_new<CPHScriptObjectConditionN>(lua_object, _condition);
 	CPHScriptObjectActionN *a = xr_new<CPHScriptObjectActionN>(lua_object, _action);
 	Level().ph_commander_scripts().add_call_unique(c, c, a, a);
-	//	}
-	//	catch(...)
-	//	{
-	//		Msg("add_call excepted!!");
-	//	}
 }
 
 void remove_call(const luabind::object &lua_object, LPCSTR condition, LPCSTR action)
@@ -321,7 +320,6 @@ void remove_call(const luabind::object &lua_object, LPCSTR condition, LPCSTR act
 
 void add_call(const luabind::object &lua_object, const luabind::functor<bool> &condition, const luabind::functor<void> &action)
 {
-
 	CPHScriptObjectConditionN *c = xr_new<CPHScriptObjectConditionN>(lua_object, condition);
 	CPHScriptObjectActionN *a = xr_new<CPHScriptObjectActionN>(lua_object, action);
 	Level().ph_commander_scripts().add_call(c, a);
@@ -344,6 +342,7 @@ CPHWorld *physics_world()
 {
 	return ph_world;
 }
+
 CEnvironment *environment()
 {
 	return (g_pGamePersistent->pEnvironment);
@@ -353,11 +352,14 @@ CEnvDescriptor *current_environment(CEnvironment *self)
 {
 	return (&self->CurrentEnv);
 }
+
 extern bool g_bDisableAllInput;
+
 void disable_input()
 {
 	g_bDisableAllInput = true;
 }
+
 void enable_input()
 {
 	g_bDisableAllInput = false;
