@@ -291,22 +291,24 @@ function actor_binder:update(delta)
 	end
 
 	--' Вывод сообщения о большой радиации
-	if self.object.radiation >= 0.7 then
-		local hud = get_hud()
-		local custom_static = hud:GetCustomStatic("cs_radiation_danger")
-		if custom_static == nil then
-			hud:AddCustomStatic("cs_radiation_danger", true)
-			hud:GetCustomStatic("cs_radiation_danger"):wnd():SetTextST("st_radiation_danger")
-		end
-	else
-		local hud = get_hud()
-		local custom_static = hud:GetCustomStatic("cs_radiation_danger")
-		if custom_static ~= nil then
-			hud:RemoveCustomStatic("cs_radiation_danger")
+	if is_dedicated() == false then
+		if self.object.radiation >= 0.7 then
+			local hud = get_hud()
+			local custom_static = hud:GetCustomStatic("cs_radiation_danger")
+			
+			if custom_static == nil then
+				hud:AddCustomStatic("cs_radiation_danger", true)
+				hud:GetCustomStatic("cs_radiation_danger"):wnd():SetTextST("st_radiation_danger")
+			end
+		else
+			local hud = get_hud()
+			local custom_static = hud:GetCustomStatic("cs_radiation_danger")
+
+			if custom_static ~= nil then
+				hud:RemoveCustomStatic("cs_radiation_danger")
+			end
 		end
 	end
-
-
 
  	if self.bCheckStart then
 		printf("SET DEFAULT INFOS")		
