@@ -5,7 +5,7 @@
 #pragma once
 
 #pragma warning(disable : 4995)
-#include "..\stdafx.h"
+#include "..\..\xrEngine\stdafx.h"
 #pragma warning(disable : 4995)
 #include <d3dx9.h>
 #pragma warning(default : 4995)
@@ -21,8 +21,8 @@
 #include "..\vis_common.h"
 #include "..\render.h"
 #include "..\igame_level.h"
-#include "..\blenders\blender.h"
-#include "..\blenders\blender_clsid.h"
+#include "..\xrRender\blenders\blender.h"
+#include "..\xrRender\blenders\blender_clsid.h"
 #include "..\psystem.h"
 #include "..\xrRender\xrRender_console.h"
 #include "FStaticRender.h"

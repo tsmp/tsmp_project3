@@ -11,8 +11,8 @@
 
 #include "ResourceManager.h"
 #include "tss.h"
-#include "blenders\blender.h"
-#include "blenders\blender_recorder.h"
+#include "..\Layers\xrRender\blenders\blender.h"
+#include "..\Layers\xrRender\blenders\blender_recorder.h"
 
 #include "..\TSMP3_Build_Config.h"
 
