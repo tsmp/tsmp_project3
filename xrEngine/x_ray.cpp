@@ -441,7 +441,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					 char *lpCmdLine,
 					 int nCmdShow)
 {
-#if defined(DEDICATED_SERVER) || defined(SAVE_ERROR_REPORTS)
+#ifdef DEDICATED_SERVER
 	Debug._initialize(true);
 #else  
 	Debug._initialize(false);
