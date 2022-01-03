@@ -175,7 +175,6 @@ void CHUDTarget::Render()
 
 					if (our_inv_owner && others_inv_owner)
 					{
-
 						switch (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
 						{
 						case ALife::eRelationTypeEnemy:
@@ -187,14 +186,17 @@ void CHUDTarget::Render()
 						case ALife::eRelationTypeFriend:
 							C = C_ON_FRIEND;
 							break;
-						}
+						}					
 
 						if (fuzzyShowInfo > 0.5f)
 						{
-							CStringTable strtbl;
-							F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
-							F->OutNext("%s", *strtbl.translate(others_inv_owner->Name()));
-							F->OutNext("%s", *strtbl.translate(others_inv_owner->CharacterInfo().Community().id()));
+							if (IsGameTypeSingle() || !E->cast_actor() || Game().ShowPlayersNameOnCrosshair())
+							{
+								CStringTable strtbl;
+								F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
+								F->OutNext("%s", *strtbl.translate(others_inv_owner->Name()));
+								F->OutNext("%s", *strtbl.translate(others_inv_owner->CharacterInfo().Community().id()));
+							}
 						}
 					}
 				}
