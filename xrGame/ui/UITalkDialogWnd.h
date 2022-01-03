@@ -61,6 +61,7 @@ public:
 	void ClearQuestions();
 
 	void SetOsoznanieMode(bool b);
+	bool HasNothingToAsk();
 
 private:
 	CUIScrollView *UIQuestionsList;

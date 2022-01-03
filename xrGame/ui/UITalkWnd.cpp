@@ -103,8 +103,10 @@ void CUITalkWnd::InitTalkDialog()
 
 	UITalkDialogWnd->SetOsoznanieMode(m_pOthersInvOwner->NeedOsoznanieMode());
 	UITalkDialogWnd->Show();
-
 	UITradeWnd->Hide();
+
+	if (UITalkDialogWnd->HasNothingToAsk())
+		m_pActor->StopTalk();
 }
 
 void CUITalkWnd::InitOthersStartDialog()
