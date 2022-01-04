@@ -45,6 +45,7 @@ extern float g_sv_mp_fVoteQuota;
 extern float g_sv_mp_fVoteTime;
 extern u32 g_sv_dm_dwForceRespawn;
 extern s32 g_sv_dm_dwFragLimit;
+extern s32 g_sv_visible_server;
 extern s32 g_sv_dm_dwTimeLimit;
 extern BOOL g_sv_dm_bDamageBlockIndicators;
 extern u32 g_sv_dm_dwDamageBlockTime;
@@ -2194,6 +2195,7 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer, "sv_anomalies_length", (int *)&g_sv_dm_dwAnomalySetLengthTime, 0, 180); //min
 	CMD4(CCC_SV_Integer, "sv_pda_hunt", (int *)&g_sv_dm_bPDAHunt, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_warm_up", (int *)&g_sv_dm_dwWarmUp_MaxTime, 0, 1000000); //sec
+	CMD4(CCC_SV_Integer, "sv_visible_server", &g_sv_visible_server, 0, 1);
 
 	CMD4(CCC_Integer, "sv_max_ping_limit", (int *)&g_sv_dwMaxClientPing, 1, 2000);
 
