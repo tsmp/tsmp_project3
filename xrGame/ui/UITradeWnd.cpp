@@ -242,6 +242,9 @@ void CUITradeWnd::Update()
 	if (et != eNone)
 		UpdateLists(et);
 
+	if(!IsGameTypeSingle())
+		UpdateMoneys();
+
 	inherited::Update();
 	UpdateCameraDirection(smart_cast<CGameObject *>(m_pOthersInvOwner));
 
@@ -458,6 +461,27 @@ void CUITradeWnd::EnableAll()
 	m_uidata->UIOthersTradeWnd.Enable(true);
 }
 
+void CUITradeWnd::UpdateMoneys()
+{
+	if (!IsGameTypeSingle())
+	{
+		if (auto state = Game().local_player)
+			m_pInvOwner->set_money(state->money_for_round, false);
+	}
+
+	string256 buf;
+	sprintf_s(buf, "%d RU", m_pInvOwner->get_money());
+	m_uidata->UIOurMoneyStatic.SetText(buf);
+
+	if (!m_pOthersInvOwner->InfinitiveMoney())
+	{
+		sprintf_s(buf, "%d RU", m_pOthersInvOwner->get_money());
+		m_uidata->UIOtherMoneyStatic.SetText(buf);
+	}
+	else	
+		m_uidata->UIOtherMoneyStatic.SetText("---");	
+}
+
 void CUITradeWnd::UpdatePrices()
 {
 	m_iOurTradePrice = CalcItemsPrice(&m_uidata->UIOurTradeList, m_pOthersTrade, true);
@@ -468,19 +492,7 @@ void CUITradeWnd::UpdatePrices()
 	m_uidata->UIOurPriceCaption.GetPhraseByIndex(2)->str = buf;
 	sprintf_s(buf, "%d RU", m_iOthersTradePrice);
 	m_uidata->UIOthersPriceCaption.GetPhraseByIndex(2)->str = buf;
-
-	sprintf_s(buf, "%d RU", m_pInvOwner->get_money());
-	m_uidata->UIOurMoneyStatic.SetText(buf);
-
-	if (!m_pOthersInvOwner->InfinitiveMoney())
-	{
-		sprintf_s(buf, "%d RU", m_pOthersInvOwner->get_money());
-		m_uidata->UIOtherMoneyStatic.SetText(buf);
-	}
-	else
-	{
-		m_uidata->UIOtherMoneyStatic.SetText("---");
-	}
+	UpdateMoneys();
 }
 
 void CUITradeWnd::TransferItems(CUIDragDropListEx *pSellList,

@@ -292,6 +292,14 @@ void xrServer::Process_event(NET_Packet &P, ClientID sender)
 		CSE_Abstract *e_dest = receiver;
 		CSE_ALifeTraderAbstract *pTa = smart_cast<CSE_ALifeTraderAbstract *>(e_dest);
 		pTa->m_dwMoney = P.r_u32();
+
+		if (!IsGameTypeSingle())
+		{
+			xrClientData* l_pC = ID_to_client(sender);
+			
+			if (l_pC && l_pC->owner == e_dest)			
+				l_pC->ps->money_for_round = pTa->m_dwMoney;			
+		}
 	}
 	break;
 
