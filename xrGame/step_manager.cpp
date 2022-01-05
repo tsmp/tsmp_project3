@@ -127,6 +127,12 @@ void CStepManager::update()
 	// пройти по всем ногам и проверить время
 	for (u32 i = 0; i < m_legs_count; i++)
 	{
+		if (m_foot_bones[i] == BI_NONE)
+		{
+			Msg("! error, cant find foot bone");
+			continue;
+		}
+
 		// если событие уже обработано для этой ноги, то skip
 		if (m_step_info.activity[i].handled && (m_step_info.activity[i].cycle == m_step_info.cur_cycle))
 			continue;
