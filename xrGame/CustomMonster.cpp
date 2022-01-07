@@ -92,6 +92,9 @@ CCustomMonster::~CCustomMonster()
 	xr_delete(m_movement_manager);
 	xr_delete(m_sound_player);
 
+	if (!&Level()) // Level can be nullptr on game exit if monster added to prefetch
+		return;
+
 #ifdef DEBUG
 	Msg("dumping client spawn manager stuff for object with id %d", ID());
 	if (!g_dedicated_server)
