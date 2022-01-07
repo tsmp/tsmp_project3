@@ -219,13 +219,13 @@ void CUICharacterInfo::InitCharacterMP(CInventoryOwner* invOwner)
 void CUICharacterInfo::InitCharacterPlayerMP(CInventoryOwner* player)
 {
 	ClearInfo();
-	m_ownerID = player->object_id();
-	string256 str;
-
-	game_PlayerState* ps = Game().GetPlayerByGameID(Level().CurrentViewEntity()->ID());
+	game_PlayerState* ps = Game().local_player;
 
 	if (!ps)
 		return;
+
+	player->SetName(ps->getName());
+	string256 str;
 
 	if (m_icons[eUIName])	
 		m_icons[eUIName]->SetText(ps->name);	
