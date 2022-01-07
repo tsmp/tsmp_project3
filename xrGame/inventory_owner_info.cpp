@@ -17,11 +17,25 @@
 #include "alife_registry_wrappers.h"
 #include "script_callback_ex.h"
 #include "game_object_space.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 
 void CInventoryOwner::OnEvent(NET_Packet &P, u16 type)
 {
 	switch (type)
 	{
+	case GE_MONEY:
+	{
+		m_money = P.r_u32();
+
+		if (OnServer())
+		{
+			CSE_Abstract* dest = Level().Server->ID_to_entity(this->object_id());
+			if (CSE_ALifeTraderAbstract* pTa = smart_cast<CSE_ALifeTraderAbstract*>(dest))
+				pTa->m_dwMoney = m_money;
+		}
+	}
+	break;
+
 	case GE_INFO_TRANSFER:
 	{
 		u16 id;
