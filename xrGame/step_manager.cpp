@@ -129,7 +129,8 @@ void CStepManager::update()
 	{
 		if (m_foot_bones[i] == BI_NONE)
 		{
-			Msg("! error, cant find foot bone");
+#pragma TODO("TSMP: Разобраться почему такое стало появляться, раньше не было")
+			//Msg("! error, cant find foot bone");
 			continue;
 		}
 
