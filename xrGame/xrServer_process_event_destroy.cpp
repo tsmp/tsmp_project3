@@ -38,7 +38,16 @@ void xrServer::Process_event_destroy(NET_Packet &P, ClientID sender, u32 time, u
 	R_ASSERT(c_dest);
 	xrClientData *c_from = ID_to_client(sender); // клиент, кто прислал
 	R_ASSERT(c_from);
-	R_ASSERT(c_dest == c_from || GetServerClient() == c_from);
+
+	if (c_dest != c_from && c_from != GetServerClient())
+	{
+		CSE_Abstract *parent = game->get_entity_from_eid(e_dest->ID_Parent);
+		LPCSTR parentName = parent ? parent->name() : "unknown";
+		Msg("! ERROR: client [%s] sent destroy for object which owner is [%s]", c_from->ps->getName(), c_dest->ps->getName());
+		Msg("object id [%u], name [%s], parent id [%u], name [%s]", id_dest, e_dest->name(), e_dest->ID_Parent, parentName);
+		return;
+	}
+
 	u16 parent_id = e_dest->ID_Parent;
 
 #ifdef MP_LOGGING
