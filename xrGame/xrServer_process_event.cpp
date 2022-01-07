@@ -323,9 +323,10 @@ void xrServer::Process_event(NET_Packet &P, ClientID sender)
 		P.r_vec3(pos);
 		P.r_stringZ(name_sect);
 
-		if (!Actor())break;
+		if (!Actor())
+			break;
 
-#ifdef FZ_MOD_CLIENT
+#ifdef PUBLIC_BUILD
 		if (!receiver->owner->m_admin_rights.m_has_admin_rights)
 		{
 			Msg("! Attempt to spawn object is player without admin rights! Section: %s, player name: %s.", name_sect.c_str(), receiver->name_replace());
@@ -336,7 +337,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID sender)
 			SendTo(sender, P_answ, net_flags(TRUE, TRUE));
 			break;
 		}
-#endif
+#endif // PUBLIC_BUILD
 				
 		if (game_sv_Deathmatch* tpGame = smart_cast<game_sv_Deathmatch*>(Level().Server->game))
 			tpGame->alife().spawn_item(name_sect.c_str(), pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));

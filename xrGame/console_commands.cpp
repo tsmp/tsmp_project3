@@ -1697,7 +1697,7 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask, "ai_use_torch_dynamic_lights", &g_uCommonFlags, flAiUseTorchDynamicLights);
 
-#ifndef FZ_MOD_CLIENT
+#ifndef PUBLIC_BUILD
 	CMD3(CCC_Mask, "g_no_clip", &psActorFlags, AF_NO_CLIP);
 #endif
 
