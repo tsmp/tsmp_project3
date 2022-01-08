@@ -90,12 +90,22 @@ void CMovementManager::reinit()
 	m_build_at_once = false;
 
 	enable_movement(true);
-	game_selector().reinit(&ai().game_graph());
 	detail().reinit();
-	game_path().reinit(&ai().game_graph());
-	level_path().reinit(ai().get_level_graph());
-	patrol().reinit();
 
+	if (OnServer())
+	{
+		game_selector().reinit(&ai().game_graph());		
+		game_path().reinit(&ai().game_graph());
+		level_path().reinit(ai().get_level_graph());
+	}
+	else
+	{
+		game_selector().reinit(nullptr);
+		game_path().reinit(nullptr);
+		level_path().reinit(nullptr);
+	}
+
+	patrol().reinit();
 	game_selector().set_dest_path(game_path().m_path);
 }
 

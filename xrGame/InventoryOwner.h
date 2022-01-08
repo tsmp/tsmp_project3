@@ -88,6 +88,7 @@ public:
 
 	//игровое имя
 	virtual LPCSTR Name() const;
+	void SetName(LPCSTR newName) { m_game_name = newName; }
 	u32 get_money() const { return m_money; }
 	void set_money(u32 amount, bool bSendEvent);
 

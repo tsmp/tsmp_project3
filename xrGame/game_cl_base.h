@@ -39,6 +39,7 @@ protected:
 	CUIGameCustom *m_game_ui_custom;
 	u16 m_u16VotingEnabled;
 	bool m_bServerControlHits;
+	bool m_ShowPlayerNamesOnCrosshair;
 
 public:
 	typedef xr_map<ClientID, game_PlayerState *> PLAYERS_MAP;
@@ -53,6 +54,7 @@ public:
 	WeaponUsageStatistic *m_WeaponUsageStatistic;
 	virtual void reset_ui();
 	virtual void CommonMessageOut(LPCSTR msg);
+	bool ShowPlayersNameOnCrosshair() { return m_ShowPlayerNamesOnCrosshair; }
 
 private:
 	void switch_Phase(u32 new_phase) { inherited::switch_Phase(new_phase); };

@@ -162,21 +162,73 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, const c
 	Init(x, y, width, height, &uiXml);
 }
 
-void CUICharacterInfo::InitCharacterMP(CInventoryOwner* player)
+void CUICharacterInfo::InitCharacterMP(CInventoryOwner* invOwner)
 {
-	m_ownerID = player->object_id();
+	ClearInfo();	
+	m_ownerID = invOwner->object_id();
+
+	CCharacterInfo chInfo = invOwner->CharacterInfo();
 	CStringTable stbl;
 	string256 str;
 
-	game_PlayerState* ps = Game().GetPlayerByGameID(Level().CurrentViewEntity()->ID());
+	if (m_icons[eUIName])	
+		m_icons[eUIName]->SetText(invOwner->Name());	
+
+	if (m_icons[eUIRank])
+	{
+		sprintf_s(str, "%s", *stbl.translate(GetRankAsText(chInfo.Rank().value())));
+		m_icons[eUIRank]->SetText(str);
+	}
+
+	if (m_icons[eUIReputation])
+	{
+		sprintf_s(str, "%s", *stbl.translate(GetReputationAsText(chInfo.Reputation().value())));
+		m_icons[eUIReputation]->SetText(str);
+	}
+
+	if (m_icons[eUICommunity])
+	{
+		sprintf_s(str, "%s", *CStringTable().translate(chInfo.Community().id()));
+		m_icons[eUICommunity]->SetText(str);
+	}
+
+	m_texture_name = chInfo.IconName().c_str();
+	m_icons[eUIIcon]->InitTexture(m_texture_name.c_str());
+	m_icons[eUIIcon]->SetStretchTexture(true);
+
+	// Bio
+	if (pUIBio && pUIBio->IsEnabled())
+	{
+		pUIBio->Clear();
+		if (chInfo.Bio().size())
+		{
+			CUIStatic* pItem = xr_new<CUIStatic>();
+			pItem->SetWidth(pUIBio->GetDesiredChildWidth());
+			pItem->SetText(*(chInfo.Bio()));
+			pItem->AdjustHeightToText();
+			pUIBio->AddWindow(pItem, true);
+		}
+	}
+
+	m_bForceUpdate = true;
+	for (int i = eUIName; i < eMaxCaption; ++i)
+		if (m_icons[i])
+			m_icons[i]->Show(true);
+}
+
+void CUICharacterInfo::InitCharacterPlayerMP(CInventoryOwner* player)
+{
+	ClearInfo();
+	game_PlayerState* ps = Game().local_player;
 
 	if (!ps)
 		return;
 
-	if (m_icons[eUIName])
-	{
-		m_icons[eUIName]->SetText(ps->name);
-	}
+	player->SetName(ps->getName());
+	string256 str;
+
+	if (m_icons[eUIName])	
+		m_icons[eUIName]->SetText(ps->name);	
 
 	if (m_icons[eUIRank])
 	{
@@ -207,7 +259,7 @@ void CUICharacterInfo::InitCharacterMP(CInventoryOwner* player)
 
 	if (m_icons[eUIReputation])
 	{
-		sprintf_s(str, "%s", *stbl.translate(GetReputationAsText(player->Reputation())));
+		sprintf_s(str, "%s", *CStringTable().translate(GetReputationAsText(player->Reputation())));
 		m_icons[eUIReputation]->SetText(str);
 	}
 
@@ -243,10 +295,10 @@ void CUICharacterInfo::InitCharacterMP(CInventoryOwner* player)
 
 	if (m_icons[eUIRelationCaption])
 		m_icons[eUIRelationCaption]->Show(false);
+
 	if (m_icons[eUIRelation])
 		m_icons[eUIRelation]->Show(false);
 }
-
 
 void CUICharacterInfo::InitCharacter(u16 id)
 {
@@ -338,7 +390,7 @@ void CUICharacterInfo::ResetAllStrings()
 
 void CUICharacterInfo::UpdateRelation()
 {
-	if (!m_icons[eUIRelation] || !m_icons[eUIRelationCaption])
+	if (!m_icons[eUIRelation] || !m_icons[eUIRelationCaption] || !Actor())
 		return;
 
 	if (Actor()->ID() == m_ownerID || !hasOwner())
@@ -355,11 +407,23 @@ void CUICharacterInfo::UpdateRelation()
 		if (m_icons[eUIRelation])
 			m_icons[eUIRelation]->Show(true);
 
-		CSE_ALifeTraderAbstract *T = ch_info_get_from_id(m_ownerID);
-		CSE_ALifeTraderAbstract *TA = ch_info_get_from_id(Actor()->ID());
+		if (OnServer())
+		{
+			CSE_ALifeTraderAbstract* T = ch_info_get_from_id(m_ownerID);
+			CSE_ALifeTraderAbstract* TA = ch_info_get_from_id(Actor()->ID());
 
-		SetRelation(RELATION_REGISTRY().GetRelationType(T, TA),
-					RELATION_REGISTRY().GetAttitude(T, TA));
+			SetRelation(RELATION_REGISTRY().GetRelationType(T, TA), RELATION_REGISTRY().GetAttitude(T, TA));
+		}
+		else
+		{
+			CInventoryOwner* ownerMe = smart_cast<CInventoryOwner*>(Level().Objects.net_Find(Actor()->ID()));
+			CInventoryOwner* ownerOther = smart_cast<CInventoryOwner*>(Level().Objects.net_Find(m_ownerID));
+
+			if (!ownerMe || !ownerOther)
+				return;
+
+			SetRelation(RELATION_REGISTRY().GetRelationType(ownerOther, ownerMe), RELATION_REGISTRY().GetAttitude(ownerOther, ownerMe));
+		}
 	}
 }
 
@@ -367,14 +431,30 @@ void CUICharacterInfo::Update()
 {
 	inherited::Update();
 
-	if (OnClient)
-		return;
-
 	if (hasOwner() && (m_bForceUpdate || (Device.CurrentFrameNumber % 100 == 0)))
 	{
 		m_bForceUpdate = false;
-		CSE_ALifeTraderAbstract *T = ch_info_get_from_id(m_ownerID);
-		if (NULL == T)
+		bool ownerDestroyed = true;
+		bool ownerAlive = false;
+
+		if (OnClient())
+		{
+			if (CEntityAlive* owner = smart_cast<CEntityAlive*>(Level().Objects.net_Find(m_ownerID)))
+			{
+				ownerDestroyed = false;
+				ownerAlive = owner->g_Alive();
+			}
+		}
+		else
+		{
+			if (CSE_ALifeCreatureAbstract* owner = smart_cast<CSE_ALifeCreatureAbstract*>(ch_info_get_from_id(m_ownerID)))
+			{
+				ownerDestroyed = false;
+				ownerAlive = owner->g_Alive();
+			}
+		}
+		
+		if(ownerDestroyed)
 		{
 			m_ownerID = u16(-1);
 			return;
@@ -382,12 +462,8 @@ void CUICharacterInfo::Update()
 		else
 			UpdateRelation();
 
-		if (m_icons[eUIIcon])
-		{
-			CSE_ALifeCreatureAbstract *pCreature = smart_cast<CSE_ALifeCreatureAbstract *>(T);
-			if (pCreature && !pCreature->g_Alive())
-				m_icons[eUIIcon]->SetColor(color_argb(255, 255, 160, 160));
-		}
+		if (m_icons[eUIIcon] && !ownerAlive)
+			m_icons[eUIIcon]->SetColor(color_argb(255, 255, 160, 160));		
 	}
 }
 

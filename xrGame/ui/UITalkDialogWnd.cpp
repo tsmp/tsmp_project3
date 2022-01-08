@@ -184,6 +184,7 @@ void CUITalkDialogWnd::AddIconedAnswer(LPCSTR text, LPCSTR texture_name, Frect t
 	UIAnswersList->AddWindow(itm, true);
 	UIAnswersList->ScrollToEnd();
 }
+
 void CUITalkDialogWnd::SetOsoznanieMode(bool b)
 {
 	UIOurIcon.Show(!b);
@@ -193,6 +194,11 @@ void CUITalkDialogWnd::SetOsoznanieMode(bool b)
 	UIDialogFrame.Show(!b);
 
 	UIToTradeButton.Show(!b);
+}	
+
+bool CUITalkDialogWnd::HasNothingToAsk()
+{
+	return UIQuestionsList->GetSize() == 0;
 }
 
 void CUIQuestionItem::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)

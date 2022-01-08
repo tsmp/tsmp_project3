@@ -302,6 +302,7 @@ protected:
 	virtual void critical_wounded_state_start() {}
 
 	bool update_critical_wounded(const u16 &bone_id, const float &power);
+	void RespawnAfterDeath();
 
 public:
 	IC void critical_wounded_state_stop();

@@ -33,12 +33,12 @@
 #include "..\TSMP3_Build_Config.h"
 
 #define SILENCE
-//#define SAVE_OWN_SOUNDS
-//#define SAVE_OWN_ITEM_SOUNDS
+#define SAVE_OWN_SOUNDS
+#define SAVE_OWN_ITEM_SOUNDS
 #define SAVE_NON_ALIVE_OBJECT_SOUNDS
 #define SAVE_FRIEND_ITEM_SOUNDS
 #define SAVE_FRIEND_SOUNDS
-//#define SAVE_VISIBLE_OBJECT_SOUNDS
+#define SAVE_VISIBLE_OBJECT_SOUNDS
 
 const float COMBAT_SOUND_PERCEIVE_RADIUS_SQR = _sqr(5.f);
 
@@ -224,7 +224,10 @@ void CSoundMemoryManager::add(const CSoundObject &sound_object, bool check_for_e
 	else
 		m_sounds->push_back(sound_object);
 }
-
+#include "relation_registry.h"
+#include "character_info.h"
+#include "visual_memory_manager.h"
+#include "ai/monsters/basemonster/base_monster.h"
 void CSoundMemoryManager::add(const CObject *object, int sound_type, const Fvector &position, float sound_power)
 {
 #ifndef SAVE_OWN_SOUNDS
@@ -244,6 +247,47 @@ void CSoundMemoryManager::add(const CObject *object, int sound_type, const Fvect
 	if (object && !m_object->memory().enemy().selected() && !smart_cast<const CEntityAlive *>(object))
 		return;
 #endif
+	CEntityAlive* other_ealive = smart_cast<CEntityAlive*>(const_cast<CObject*>(object));
+	CEntityAlive* me_ealive = smart_cast<CEntityAlive*>(m_object);
+	if (other_ealive && me_ealive)
+	{
+		if (other_ealive->cast_stalker() && me_ealive->cast_stalker())
+		{
+			CInventoryOwner* our_inv_owner = smart_cast<CInventoryOwner*>(me_ealive);
+			CInventoryOwner* others_inv_owner = smart_cast<CInventoryOwner*>(other_ealive);
+			if (our_inv_owner && others_inv_owner)
+			{
+				if (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner) != ALife::eRelationTypeEnemy)
+					return;
+				else
+				{
+					if (me_ealive->cast_stalker()->visual_memory()->visible_now(other_ealive))
+					{
+						me_ealive->cast_stalker()->memory().enemy().set_enemy(other_ealive);
+						me_ealive->cast_stalker()->memory().make_object_visible_somewhen(other_ealive);
+					}
+				}
+			}
+		}
+		else
+		{
+			if (me_ealive->cast_custom_monster())
+			{
+				if (m_object->tfGetRelationType(smart_cast<const CEntityAlive*>(object)) != ALife::eRelationTypeEnemy
+					&& m_object->tfGetRelationType(smart_cast<const CEntityAlive*>(object)) != ALife::eRelationTypeWorstEnemy)
+					return;
+				else
+				{
+					if (me_ealive->cast_custom_monster()->visual_memory()->visible_now(other_ealive))
+					{
+						me_ealive->cast_custom_monster()->memory().enemy().set_enemy(other_ealive);
+						me_ealive->cast_custom_monster()->memory().make_object_visible_somewhen(other_ealive);
+					}
+				}
+			}
+		}
+	}
+
 
 #ifndef SAVE_FRIEND_ITEM_SOUNDS
 	// we do not want to save sounds from the teammates items

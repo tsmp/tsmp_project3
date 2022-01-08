@@ -13,11 +13,7 @@
 #include "script_process.h"
 #include "..\TSMP3_Build_Config.h"
 
-#ifdef USE_ORIGINAL_SCRIPTS_EXTENSION
 #define SCRIPTS_EXTENSION ".script"
-#else
-#define SCRIPTS_EXTENSION ".lua"
-#endif
 
 #ifdef USE_DEBUGGER
 #include "script_debugger.h"

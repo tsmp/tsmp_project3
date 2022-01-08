@@ -4,11 +4,9 @@ output
 
 ipch/
 .vs/
-.vscode/
 x64/
 obj/
 bin/
-
 output/
 *.aps
 
@@ -33,3 +31,11 @@ output/
 *.user
 *.opendb
 *.pvs-studio.i
+
+# Ignore .vscode/* except GameResources/.vscode/settings.json
+
+GameResources/.vscode/*
+!GameResources/.vscode/
+!GameResources/.vscode/settings.json
+
+.vscode/*

@@ -20,8 +20,11 @@ void CSound_manager_interface::_create(u64 window)
 	}
 	if (strstr(Core.Params, "-nosound"))
 	{
-		SoundRender->bPresent = FALSE;
-		return;
+		psSoundVEffects = 0.0f;
+		psSoundVFactor = 0.0f;
+		psSoundVMusic = 0.0f;
+		//SoundRender->bPresent = FALSE;
+		//return;
 	}
 	Sound->_initialize(window);
 }

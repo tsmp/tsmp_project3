@@ -153,7 +153,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner *pOur, CInventoryBox *pInvBox)
 	if (IsGameTypeSingle())
 		m_pUICharacterInfoLeft->InitCharacter(our_id);
 	else
-		m_pUICharacterInfoLeft->InitCharacterMP(pOur);
+		m_pUICharacterInfoLeft->InitCharacterPlayerMP(pOur);
 
 	m_pUIOthersIcon->Show(false);
 	m_pUICharacterInfoRight->ClearInfo();
@@ -166,7 +166,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner *pOur, CInventoryOwner *pOthers)
 {
 	m_pOurObject = pOur;
 	m_pOthersObject = pOthers;
-	m_pInventoryBox = NULL;
+	m_pInventoryBox = nullptr;
 
 	u16 our_id = smart_cast<CGameObject *>(m_pOurObject)->ID();
 	u16 other_id = smart_cast<CGameObject *>(m_pOthersObject)->ID();
@@ -174,17 +174,19 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner *pOur, CInventoryOwner *pOthers)
 	if (IsGameTypeSingle())
 		m_pUICharacterInfoLeft->InitCharacter(our_id);
 	else
-		m_pUICharacterInfoLeft->InitCharacterMP(pOur);
+		m_pUICharacterInfoLeft->InitCharacterPlayerMP(pOur);
 
 	m_pUIOthersIcon->Show(true);
+	CBaseMonster* monster = nullptr;
 
-	CBaseMonster *monster = NULL;
 	if (m_pOthersObject)
 	{
-		monster = smart_cast<CBaseMonster *>(m_pOthersObject);
+		monster = smart_cast<CBaseMonster*>(m_pOthersObject);
+
 		if (monster || m_pOthersObject->use_simplified_visual())
 		{
 			m_pUICharacterInfoRight->ClearInfo();
+
 			if (monster)
 			{
 				shared_str monster_tex_name = pSettings->r_string(monster->cNameSect(), "icon");
@@ -194,7 +196,10 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner *pOur, CInventoryOwner *pOthers)
 		}
 		else
 		{
-			m_pUICharacterInfoRight->InitCharacter(other_id);
+			if(IsGameTypeSingle())
+				m_pUICharacterInfoRight->InitCharacter(other_id);
+			else
+				m_pUICharacterInfoRight->InitCharacterMP(pOthers);
 		}
 	}
 
@@ -318,16 +323,19 @@ void CUICarBodyWnd::Draw()
 
 void CUICarBodyWnd::Update()
 {
+	if (!m_pInventoryBox && (!m_pOthersObject || !m_pOthersObject->m_inventory ||
+		(smart_cast<CGameObject*>(m_pOurObject))->Position().distance_to((smart_cast<CGameObject*>(m_pOthersObject))->Position()) > 3.0f))
+	{
+		GetHolder()->StartStopMenu(this, true);
+		return;
+	}
+
 	if (m_b_need_update ||
 		m_pOurObject->inventory().ModifyFrame() == Device.CurrentFrameNumber ||
 		(m_pOthersObject && m_pOthersObject->inventory().ModifyFrame() == Device.CurrentFrameNumber))
 
 		UpdateLists();
 
-	if (m_pOthersObject && (smart_cast<CGameObject *>(m_pOurObject))->Position().distance_to((smart_cast<CGameObject *>(m_pOthersObject))->Position()) > 3.0f)
-	{
-		GetHolder()->StartStopMenu(this, true);
-	}
 	inherited::Update();
 }
 

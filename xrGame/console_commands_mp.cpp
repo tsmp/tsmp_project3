@@ -27,6 +27,7 @@ extern int g_iCorpseRemove;
 extern BOOL g_bCollectStatisticData;
 //extern	BOOL	g_bStatisticSaveAuto	;
 extern BOOL g_SV_Disable_Auth_Check;
+xr_token game_types[];
 
 extern int g_sv_mp_iDumpStatsPeriod;
 extern BOOL g_SV_Force_Artefact_Spawn;
@@ -44,6 +45,7 @@ extern float g_sv_mp_fVoteQuota;
 extern float g_sv_mp_fVoteTime;
 extern u32 g_sv_dm_dwForceRespawn;
 extern s32 g_sv_dm_dwFragLimit;
+extern s32 g_sv_visible_server;
 extern s32 g_sv_dm_dwTimeLimit;
 extern BOOL g_sv_dm_bDamageBlockIndicators;
 extern u32 g_sv_dm_dwDamageBlockTime;
@@ -67,6 +69,7 @@ extern int g_sv_ah_iReinforcementTime;
 extern BOOL g_sv_ah_bBearerCantSprint;
 extern BOOL g_sv_ah_bShildedBases;
 extern BOOL g_sv_ah_bAfReturnPlayersToBases;
+extern BOOL g_sv_crosshair_players_names;
 extern u32 g_dwDemoDeltaFrame;
 extern u32 g_sv_dwMaxClientPing;
 extern int g_be_message_out;
@@ -76,7 +79,10 @@ extern int g_sv_Wait_For_Players_Ready;
 extern int G_DELAYED_ROUND_TIME;
 extern int g_sv_Pending_Wait_Time;
 extern int g_sv_Client_Reconnect_Time;
+extern int g_sv_mp_respawn_npc_after_death;
 int g_dwEventDelay = 0;
+
+extern BOOL net_sv_control_hit;
 
 void XRNETWORK_API DumpNetCompressorStats(bool brief);
 BOOL XRNETWORK_API g_net_compressor_enabled;
@@ -955,6 +961,28 @@ public:
 		CCC_ChangeLevelGameType::Execute((LPCSTR)argsNew);
 	};
 
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		if (g_pGameLevel && Level().Server && OnServer() && Level().Server->game)
+		{
+			u32 curType = Level().Server->game->Type();
+
+			for (int k = GAME_DEATHMATCH; game_types[k].name; k++)
+			{
+				TStatus str;
+
+				if (curType == game_types[k].id)
+					sprintf_s(str, sizeof(str), "%s  (current game type)", game_types[k].name);
+				else
+					sprintf_s(str, sizeof(str), "%s", game_types[k].name);
+				
+				tips.push_back(str);				
+			}
+		}
+
+		IConsole_Command::fill_tips(tips, mode);
+	}
+
 	virtual void Info(TInfo &I) { strcpy(I, "Changing Game Type"); };
 };
 
@@ -1574,9 +1602,7 @@ public:
 #include "Actor.h"
 #include "ai_object_location.h"
 
-Fvector vec{0, 0, 0};
-u16 game_vertex_id = 0;
-u32 level_vertex_id = 0;
+Fvector spavn_vec{0, 0, 0};
 
 class CCC_SvSpawn : public IConsole_Command
 {
@@ -1587,6 +1613,9 @@ public:
 		if (!OnServer())
 			return;
 		
+		if (!Actor())
+			return;
+
 		if (!pSettings->section_exist(args))
 		{
 			Msg("! cant find section %s", args);
@@ -1595,21 +1624,77 @@ public:
 
 		if (Level().Server && Level().Server->game)
 		{
-			if (game_vertex_id == 0 && level_vertex_id == 0)
-			{
-				if (!Actor())
-				{
-					Msg("! error, cant get actor");
-					return;
-				}
+			if (game_sv_GameState* game = smart_cast<game_sv_GameState*>(Level().Server->game))
+				game->alife().spawn_item(args, spavn_vec, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		}
+	}
 
-				game_vertex_id = Actor()->ai_location().game_vertex_id();
-				level_vertex_id = Actor()->ai_location().level_vertex_id();
-			}
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		for (auto sect : pSettings->sections())
+		{
+			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
+				|| sect->line_exist("species"))
+				tips.push_back(sect->Name);
+		}
+	}
+};
 
-			game_sv_Deathmatch *game = smart_cast<game_sv_Deathmatch *>(Level().Server->game);
-			if (game)
-				game->alife().spawn_item(args, vec, level_vertex_id, game_vertex_id, ALife::_OBJECT_ID(-1));
+class CCC_ClSpawn : public IConsole_Command
+{
+public:
+	CCC_ClSpawn(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		if (!g_pGameLevel) 
+			return;
+
+		if (!Level().CurrentControlEntity()) 
+			return;
+
+		if (!Actor())
+			return;
+
+		if (!pSettings->section_exist(args))
+		{
+			Msg("! Section [%s] isn`t exist...", args);
+			return;
+		}
+
+		Fvector result;
+
+		if (g_dedicated_server)		
+			result = spavn_vec;
+		else
+		{
+			collide::rq_result RQ;
+			Level().ObjectSpace.RayPick(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, collide::rqtBoth, RQ, Level().CurrentControlEntity());
+			result = Fvector(Device.vCameraPosition).add(Fvector(Device.vCameraDirection).mul(RQ.range));
+		}
+
+		if (OnServer())
+		{			
+			if (game_sv_GameState* tpGame = smart_cast<game_sv_GameState*>(Level().Server->game))
+				tpGame->alife().spawn_item(args, result, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		}
+		else
+		{
+			NET_Packet P;
+			CGameObject::u_EventGen(P, GE_CLIENT_SPAWN, Level().CurrentControlEntity()->ID());
+			P.w_vec3(result);
+			P.w_stringZ(args);
+			CGameObject::u_EventSend(P);
+		}		
+	}
+
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		for (auto sect : pSettings->sections())
+		{
+			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
+				|| sect->line_exist("species"))
+				tips.push_back(sect->Name);
 		}
 	}
 };
@@ -2005,6 +2090,8 @@ void register_mp_console_commands()
 	CMD4(CCC_Integer, "net_sv_update_rate", &psNET_ServerUpdate, 1, 1000000);
 	CMD4(CCC_Integer, "net_sv_pending_lim", &psNET_ServerPending, 0, 10);
 	CMD4(CCC_Integer, "net_sv_gpmode", &psNET_GuaranteedPacketMode, 0, 2);
+	CMD4(CCC_Integer, "net_sv_control_hit", &psNET_GuaranteedPacketMode, 0, 1);
+
 	CMD3(CCC_Mask, "net_sv_log_data", &psNET_Flags, NETFLAG_LOG_SV_PACKETS);
 	CMD3(CCC_Mask, "net_cl_log_data", &psNET_Flags, NETFLAG_LOG_CL_PACKETS);
 #ifdef DEBUG
@@ -2054,6 +2141,8 @@ void register_mp_console_commands()
 
 	CMD4(CCC_Integer, "sv_remove_weapon", &g_iWeaponRemove, -1, 1);
 	CMD4(CCC_Integer, "sv_remove_corpse", &g_iCorpseRemove, -1, 1);
+
+	CMD4(CCC_Integer, "sv_respawn_npc_after_death", &g_sv_mp_respawn_npc_after_death, 0, 1);
 
 	CMD4(CCC_Integer, "sv_statistic_collect", &g_bCollectStatisticData, 0, 1);
 	CMD1(CCC_SaveStatistic, "sv_statistic_save");
@@ -2106,6 +2195,7 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer, "sv_anomalies_length", (int *)&g_sv_dm_dwAnomalySetLengthTime, 0, 180); //min
 	CMD4(CCC_SV_Integer, "sv_pda_hunt", (int *)&g_sv_dm_bPDAHunt, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_warm_up", (int *)&g_sv_dm_dwWarmUp_MaxTime, 0, 1000000); //sec
+	CMD4(CCC_SV_Integer, "sv_visible_server", &g_sv_visible_server, 0, 1);
 
 	CMD4(CCC_Integer, "sv_max_ping_limit", (int *)&g_sv_dwMaxClientPing, 1, 2000);
 
@@ -2116,6 +2206,7 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer, "sv_friendly_fire", (int*)&g_sv_tdm_bFriendlyFireEnabled, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_teamkill_limit", &g_sv_tdm_iTeamKillLimit, 0, 100);
 	CMD4(CCC_SV_Integer, "sv_teamkill_punish", (int *)&g_sv_tdm_bTeamKillPunishment, 0, 1);
+	CMD4(CCC_SV_Integer, "sv_crosshair_players_names", (int*)&g_sv_crosshair_players_names, 0, 1);
 
 	CMD4(CCC_SV_Integer, "sv_artefact_respawn_delta", (int *)&g_sv_ah_dwArtefactRespawnDelta, 0, 600); //sec
 	CMD4(CCC_SV_Integer, "sv_artefacts_count", (int *)&g_sv_ah_dwArtefactsNum, 1, 1000000);
@@ -2136,10 +2227,9 @@ void register_mp_console_commands()
 	CMD1(CCC_SvChat, "chat");
 	CMD1(CCC_SvEventMsg, "event_msg");
 
+	CMD1(CCC_ClSpawn, "cl_spawn");
 	CMD1(CCC_SvSpawn, "sv_spawn");
-	CMD4(CCC_SV_Float, "sv_spawn_x", &vec.x, -1000000.f, 1000000.0f);
-	CMD4(CCC_SV_Float, "sv_spawn_y", &vec.y, -1000000.f, 1000000.0f);
-	CMD4(CCC_SV_Float, "sv_spawn_z", &vec.z, -1000000.f, 1000000.0f);
+	CMD4(CCC_Vector3, "sv_spawn_vec", &spavn_vec, Fvector().set(-1000000.0f, -1000000.0f, -1000000.0f ), Fvector().set(1000000.0f, 1000000.0f, 1000000.0f));
 
 	CMD4(CCC_Integer, "fz_downloader_enabled", (int *)&fz_downloader_enabled, 0, 1);
 	CMD1(CCC_fz_reconnect_ip, "fz_downloader_reconnect_ip");

@@ -54,6 +54,7 @@ protected:
 
 	void PerformTrade();
 	void UpdatePrices();
+	void UpdateMoneys();
 	void ColorizeItem(CUICellItem *itm, bool b);
 
 	enum EListType

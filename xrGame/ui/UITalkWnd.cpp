@@ -80,8 +80,17 @@ void CUITalkWnd::InitTalkDialog()
 	m_pOthersDialogManager = smart_cast<CPhraseDialogManager *>(m_pOthersInvOwner);
 
 	//имена собеседников
-	UITalkDialogWnd->UICharacterInfoLeft.InitCharacter(m_pOurInvOwner->object_id());
-	UITalkDialogWnd->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner->object_id());
+	if (IsGameTypeSingle())
+	{
+		UITalkDialogWnd->UICharacterInfoLeft.InitCharacter(m_pOurInvOwner->object_id());
+		UITalkDialogWnd->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner->object_id());
+	}
+	else
+	{
+		UITalkDialogWnd->UICharacterInfoLeft.InitCharacterPlayerMP(m_pOurInvOwner);
+		UITalkDialogWnd->UICharacterInfoRight.InitCharacterMP(m_pOthersInvOwner);
+	}
+
 	UITalkDialogWnd->UIDialogFrame.UITitleText.SetText(m_pOthersInvOwner->Name());
 	UITalkDialogWnd->UIOurPhrasesFrame.UITitleText.SetText(m_pOurInvOwner->Name());
 
@@ -94,8 +103,10 @@ void CUITalkWnd::InitTalkDialog()
 
 	UITalkDialogWnd->SetOsoznanieMode(m_pOthersInvOwner->NeedOsoznanieMode());
 	UITalkDialogWnd->Show();
-
 	UITradeWnd->Hide();
+
+	if (UITalkDialogWnd->HasNothingToAsk())
+		m_pActor->StopTalk();
 }
 
 void CUITalkWnd::InitOthersStartDialog()

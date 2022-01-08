@@ -119,6 +119,8 @@ public:
 	CPHActorCharacter();
 	virtual ~CPHActorCharacter(void);
 
+	virtual	void update_last_material() override final {}; // актору не особо нужно, у него есть foot_material_update
+
 private:
 	void ClearRestrictors();
 	RESTRICTOR_I Restrictor(CPHCharacter::ERestrictionType rtype);

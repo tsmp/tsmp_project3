@@ -299,10 +299,15 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet &tNetPacket)
 		}
 	}
 
-	u16 size;
-	tNetPacket.r_u16(size); // size
-	R_ASSERT3((m_tClassID == CLSID_SPECTATOR) || (size > sizeof(size)), "cannot read object, which is not successfully saved :(", name_replace());
-	STATE_Read(tNetPacket, size);
+	u32 beforeStateReadPos = tNetPacket.r_pos;
+	u16 stateRealSize;
+	tNetPacket.r_u16(stateRealSize);
+	R_ASSERT3((m_tClassID == CLSID_SPECTATOR) || (stateRealSize > sizeof(stateRealSize)), "cannot read object, which is not successfully saved :(", name_replace());
+	STATE_Read(tNetPacket, stateRealSize);
+
+	u16 stateReadSize = static_cast<u16>(tNetPacket.r_pos - beforeStateReadPos);
+	VERIFY(stateReadSize == stateRealSize)
+
 	return TRUE;
 }
 

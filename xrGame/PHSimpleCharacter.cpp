@@ -137,6 +137,8 @@ bool test_sides(const Fvector &center, const Fvector &side_dir, const Fvector &f
 ///////////////////////////////////class//CPHSimpleCharacter////////////////////
 CPHSimpleCharacter::CPHSimpleCharacter()
 {
+	m_last_picked_material = GAMEMTL_NONE_IDX;
+	m_last_env_update_pos = Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
 	m_object_contact_callback = NULL;
 
@@ -342,6 +344,9 @@ void CPHSimpleCharacter::Create(dVector3 sizes)
 	m_last_move.set(0, 0, 0);
 	CPHCollideValidator::SetCharacterClass(*this);
 	m_collision_damage_info.Construct();
+
+	m_last_picked_material = GAMEMTL_NONE_IDX;
+	m_last_env_update_pos = Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 }
 void CPHSimpleCharacter::SwitchOFFInitContact()
 {
@@ -1637,25 +1642,103 @@ void CPHSimpleCharacter::GroundNormal(Fvector &norm)
 		norm.set(*((Fvector *)m_ground_contact_normal));
 	}
 }
+
+IC bool valide_res(u16 &res_material_idx, const collide::rq_result &R)
+{
+	if (!R.O)
+	{
+		CDB::TRI* tri = Level().ObjectSpace.GetStaticTris() + R.element;
+		VERIFY(tri);
+		res_material_idx = tri->material;
+		return !ignore_material(res_material_idx);
+	}
+
+	IRender_Visual* V = R.O->Visual();
+	if (!V)
+		return false;
+
+	CKinematics* K = V->dcast_PKinematics();
+	CBoneData& bd = K->LL_GetData((u16)R.element);
+	res_material_idx = bd.game_mtl_idx;
+	return true;
+}
+
+bool PickMaterial(u16 &res_material_idx, const Fvector &pos_, const Fvector &dir_, float range_, CObject* ignore_object)
+{
+	Fvector dir = dir_;
+	Fvector pos = pos_; 
+	pos.y += EPS_L;
+	
+	float range = range_;
+	collide::rq_result	R;
+	res_material_idx = GAMEMTL_NONE_IDX;
+
+	while (Level().ObjectSpace.RayPick(pos, dir, range, collide::rqtBoth, R, ignore_object))
+	{
+		float r_range = R.range + EPS_L;
+		Fvector next_pos = pos.mad(dir, r_range);
+		float next_range = range - r_range;
+
+		if (valide_res(res_material_idx, R))
+			return true;
+		
+		range = next_range;
+		pos = next_pos;
+
+		if (range < EPS_L)
+			return false;
+	}
+
+	return false;
+}
+
+const float material_pick_dist = 0.5f;
+const float material_pick_upset = 0.5f;
+const float material_update_tolerance = 0.1f;
+
+void CPHSimpleCharacter::update_last_material()
+{
+	Fvector pos; GetPosition(pos); pos.y += material_pick_upset;
+
+	if (m_last_picked_material != GAMEMTL_NONE_IDX && pos.similar(m_last_env_update_pos, material_update_tolerance))
+	{
+		*p_lastMaterialIDX = m_last_picked_material;
+		return;
+	}
+
+	u16 new_material;
+	VERIFY(!PhysicsRefObject() || smart_cast<CObject*>(PhysicsRefObject()));
+
+	if (PickMaterial(new_material, pos, Fvector().set(0, -1, 0), material_pick_dist + material_pick_upset, smart_cast<CObject*>(PhysicsRefObject())))
+	{
+		m_last_picked_material = new_material;
+		*p_lastMaterialIDX = new_material;
+		m_last_env_update_pos = pos;
+	}
+}
+
 u16 CPHSimpleCharacter::ContactBone()
 {
 	return RetriveContactBone();
 }
+
 void CPHSimpleCharacter::SetMaterial(u16 material)
 {
 	if (!b_exist)
 		return;
+
 	dGeomGetUserData(m_geom_shell)->material = material;
 	dGeomGetUserData(m_wheel)->material = material;
 	dGeomGetUserData(m_cap)->material = material;
 	dGeomGetUserData(m_hat)->material = material;
 }
+
 void CPHSimpleCharacter::get_State(SPHNetState &state)
 {
 	CPHCharacter::get_State(state);
-
 	state.previous_position.y -= m_radius;
 }
+
 void CPHSimpleCharacter::set_State(const SPHNetState &state)
 {
 	CPHCharacter::set_State(state);
@@ -1673,6 +1756,7 @@ float CPHSimpleCharacter::FootRadius()
 	else
 		return 0.f;
 }
+
 void CPHSimpleCharacter::DeathPosition(Fvector &deathPos)
 {
 	if (!b_exist)
@@ -1690,6 +1774,7 @@ void CPHSimpleCharacter::DeathPosition(Fvector &deathPos)
 			deathPos.set(m_safe_position);
 	}
 }
+
 void CPHSimpleCharacter::AddControlVel(const Fvector &vel)
 {
 	m_acceleration.add(vel);
@@ -1733,15 +1818,13 @@ CPHSimpleCharacter::SCollisionDamageInfo::SCollisionDamageInfo()
 {
 	Construct();
 }
+
 void CPHSimpleCharacter::SCollisionDamageInfo::Construct()
 {
 	m_contact_velocity = 0.f;
 	SCollisionDamageInfo::Reinit();
-	//m_damege_contact;
-
-	//m_dmc_signum;
-	//m_dmc_type;
 }
+
 float CPHSimpleCharacter::SCollisionDamageInfo::ContactVelocity() const
 {
 	dReal ret = m_contact_velocity;
@@ -1754,26 +1837,13 @@ void CPHSimpleCharacter::SCollisionDamageInfo::HitDir(Fvector &dir) const
 	dir.set(m_damege_contact.geom.normal[0] * m_dmc_signum, m_damege_contact.geom.normal[1] * m_dmc_signum, m_damege_contact.geom.normal[2] * m_dmc_signum);
 }
 
-//u16 CPHSimpleCharacter::SCollisionDamageInfo::DamageInitiatorID() const
-//{
-//	//if(!m_object)
-//				//return u16(-1);
-//	CPhysicsShellHolder* object =static_cast<CPhysicsShellHolder*>(Level().Objects.net_Find(m_obj_id));
-//	if(!object)return u16(-1);
-//	IDamageSource* ds=m_object->cast_IDamageSource();
-//	if(ds) return ds->Initiator();
-//	return u16(-1);
-//}
 void CPHSimpleCharacter::SCollisionDamageInfo::Reinit()
 {
-	//m_damege_contact;
-
 	m_obj_id = u16(-1);
-	m_hit_callback = NULL;
+	m_hit_callback = nullptr;
 	m_contact_velocity = 0;
-	//float					m_dmc_signum;
-	//enum{ctStatic,ctObject}	m_dmc_type;
 }
+
 void CPHSimpleCharacter::GetSmothedVelocity(Fvector &vvel)
 {
 	if (!b_exist)
@@ -1781,26 +1851,18 @@ void CPHSimpleCharacter::GetSmothedVelocity(Fvector &vvel)
 		vvel.set(0, 0, 0);
 		return;
 	}
-	vvel.set(m_last_move);
 
-	//if(IsEnabled()&&m_count<m_frames)
-	//{
-	//	vvel.set(m_mean_velocity.sum);
-	//	vvel.mul(1.f/(m_frames-m_count)/fixed_step);
-	//}
-	//else
-	//{
-	//	GetSavedVelocity(vvel);
-	//}
+	vvel.set(m_last_move);
 }
+
 ALife::EHitType CPHSimpleCharacter::HitType() const
 {
 	if (GMLib.GetMaterialByIdx(LastMaterialIDX())->Flags.test(SGameMtl::flInjurious) && IsGameTypeSingle())
 		return ALife::eHitTypeRadiation;
 	else
-		//		return ALife::eHitTypeStrike;
 		return (GameID() == GAME_SINGLE) ? ALife::eHitTypeStrike : ALife::eHitTypePhysicStrike;
-} //
+}
+
 CElevatorState *CPHSimpleCharacter::ElevatorState()
 {
 	return &m_elevator_state;
@@ -1810,13 +1872,15 @@ SCollisionHitCallback *CPHSimpleCharacter::HitCallback() const
 {
 	return m_collision_damage_info.m_hit_callback;
 }
+
 const float resolve_depth = 0.05f;
 static float restrictor_depth = 0.f;
+
 void CPHSimpleCharacter::TestRestrictorContactCallbackFun(bool &do_colide, bool bo1, dContact &c, SGameMtl *material_1, SGameMtl *material_2)
 {
+	dGeomID g_this = nullptr;
+	dGeomID g_obj = nullptr;
 
-	dGeomID g_this = NULL;
-	dGeomID g_obj = NULL;
 	if (bo1)
 	{
 		g_this = c.geom.g1;
@@ -1827,16 +1891,23 @@ void CPHSimpleCharacter::TestRestrictorContactCallbackFun(bool &do_colide, bool 
 		g_this = c.geom.g2;
 		g_obj = c.geom.g1;
 	}
+
 	dxGeomUserData *obj_data = retrieveGeomUserData(g_obj);
+
 	if (!obj_data)
 		return;
+
 	if (!obj_data->ph_object)
 		return;
+
 	if (obj_data->ph_object->CastType() != tpCharacter)
 		return;
+
 	CPHActorCharacter *actor_character = (static_cast<CPHCharacter *>(obj_data->ph_object))->CastActorCharacter();
+
 	if (!actor_character)
 		return;
+
 	CPHSimpleCharacter *ch_this = static_cast<CPHSimpleCharacter *>(retrieveGeomUserData(g_this)->ph_object);
 	VERIFY(ch_this);
 	save_max(restrictor_depth, c.geom.depth);
@@ -1848,8 +1919,10 @@ bool CPHSimpleCharacter::UpdateRestrictionType(CPHCharacter *ach)
 {
 	VERIFY(ph_world);
 	VERIFY(ph_world->Exist());
+
 	if (m_restriction_type == m_new_restriction_type)
 		return true;
+
 	ach->Enable();
 	Enable();
 	restrictor_depth = 0.f;
@@ -1862,22 +1935,22 @@ bool CPHSimpleCharacter::UpdateRestrictionType(CPHCharacter *ach)
 	UnFreeze();
 	ph_world->StepTouch();
 	ach->SwitchOFFInitContact();
+
 	if (restrictor_depth < resolve_depth)
 	{
 		RemoveObjectContactCallback(TestRestrictorContactCallbackFun);
 		ph_world->UnFreeze();
 		ach->SwitchInInitContact();
-		//if(!state)Disable();
 		return true;
 	}
+
 	u16 num_steps = 2 * (u16)iCeil(restrictor_depth / resolve_depth);
+
 	for (u16 i = 0; num_steps > i; ++i)
 	{
-		//Calculate(Fvector().set(0,0,0),Fvector().set(1,0,0),0,0,0,0);
 		restrictor_depth = 0.f;
 		ach->Enable();
 		Enable();
-		//ach->ApplyForce(0,ph_world->Gravity()*ach->Mass(),0);
 		ph_world->Step();
 
 		if (restrictor_depth < resolve_depth)
@@ -1885,19 +1958,20 @@ bool CPHSimpleCharacter::UpdateRestrictionType(CPHCharacter *ach)
 			RemoveObjectContactCallback(TestRestrictorContactCallbackFun);
 			ph_world->UnFreeze();
 			ach->SwitchInInitContact();
-			//if(!state)Disable();
 			return true;
 		}
 	}
+
 	RemoveObjectContactCallback(TestRestrictorContactCallbackFun);
 	ach->SwitchInInitContact();
 	ph_world->UnFreeze();
-	//if(!state)Disable();
 	m_new_restriction_type = old;
+
 #ifdef DEBUG
 	if (ph_dbg_draw_mask1.test(ph_m1_DbgActorRestriction))
 		Msg("restriction can not change change small -> large");
 #endif
+
 	return false;
 }
 bool CPHSimpleCharacter::TouchRestrictor(ERestrictionType rttype)

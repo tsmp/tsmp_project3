@@ -512,20 +512,14 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 				cc->Execute(last);
 
 				if (record_cmd)
-				{
-					#pragma TODO("FIX ME!")
-					//cc->add_to_LRU((LPCSTR)last);
-				}
+					cc->add_to_LRU((LPCSTR)last);
 			}
 		}
 		else		
 			Log("! Command disabled.");		
 	}
 	else
-	{
-		first[CONSOLE_BUF_SIZE - 21] = 0;
-		Log("! Unknown command: ", first);
-	}
+		Log("! Unknown command: ", first);	
 
 	if (record_cmd)	
 		ec().clear_states();	
@@ -796,8 +790,7 @@ void CConsole::update_tips()
 					last += 1; // fake: next char
 				}
 
-				#pragma TODO("FIX")
-				//cc->fill_tips(m_temp_tips, mode);
+				cc->fill_tips(m_temp_tips, mode);
 				m_tips_mode = 2;
 				m_cur_cmd._set(first);
 				select_for_filter(last, m_temp_tips, m_tips);

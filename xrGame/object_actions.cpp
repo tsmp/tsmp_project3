@@ -236,7 +236,6 @@ void CObjectActionStrapping::initialize()
 	VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
 	m_callback_removed = false;
-
 	m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, true);
 
 	object().animation().torso().add_callback(
@@ -312,7 +311,7 @@ CObjectActionStrappingToIdle::~CObjectActionStrappingToIdle()
 void CObjectActionStrappingToIdle::on_animation_end()
 {
 	VERIFY(!m_callback_removed);
-
+	
 	m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, false);
 
 	object().animation().torso().remove_callback(
@@ -354,6 +353,7 @@ void CObjectActionStrappingToIdle::execute()
 
 void CObjectActionStrappingToIdle::finalize()
 {
+	object().m_StrappedState = 1;
 	inherited::finalize();
 
 	if (!m_callback_removed)
@@ -423,13 +423,13 @@ void CObjectActionUnstrapping::on_animation_end()
 void CObjectActionUnstrapping::initialize()
 {
 	inherited::initialize();
+	object().m_StrappedState = 0;
 
 	VERIFY(m_item);
 	VERIFY(object().inventory().ActiveItem());
 	VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
 	m_callback_removed = false;
-
 	m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, true);
 
 	object().animation().torso().add_callback(

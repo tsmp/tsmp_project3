@@ -93,6 +93,7 @@ CAI_Stalker::CAI_Stalker()
 	m_mpSoundSyncMinStartTime = 0;
 	m_mpSoundSyncMaxStopTime = 0;
 	m_mpSoundSyncMinStopTime = 0;
+	m_StrappedState = 0;
 }
 
 CAI_Stalker::~CAI_Stalker()
@@ -387,11 +388,14 @@ BOOL CAI_Stalker::net_Spawn(CSE_Abstract *DC)
 	movement().m_head.current.yaw = movement().m_head.target.yaw = movement().m_body.current.yaw = movement().m_body.target.yaw = angle_normalize_signed(-tpHuman->o_torso.yaw);
 	movement().m_body.current.pitch = movement().m_body.target.pitch = 0;
 
-	if (ai().game_graph().valid_vertex_id(tpHuman->m_tGraphID))
-		ai_location().game_vertex(tpHuman->m_tGraphID);
+	if (OnServer())
+	{
+		if (ai().game_graph().valid_vertex_id(tpHuman->m_tGraphID))
+			ai_location().game_vertex(tpHuman->m_tGraphID);
 
-	if (ai().game_graph().valid_vertex_id(tpHuman->m_tNextGraphID) && movement().restrictions().accessible(ai().game_graph().vertex(tpHuman->m_tNextGraphID)->level_point()))
-		movement().set_game_dest_vertex(tpHuman->m_tNextGraphID);
+		if (ai().game_graph().valid_vertex_id(tpHuman->m_tNextGraphID) && movement().restrictions().accessible(ai().game_graph().vertex(tpHuman->m_tNextGraphID)->level_point()))
+			movement().set_game_dest_vertex(tpHuman->m_tNextGraphID);
+	}
 
 	if (IsGameTypeSingle())
 	{
@@ -570,18 +574,25 @@ void CAI_Stalker::net_Export_MP(NET_Packet& P)
 	P.w_angle8(movement().m_head.current.pitch);
 	P.w_angle8(movement().m_head.current.yaw);
 
-	if (inventory().ActiveItem())
-	{
-		CWeapon* weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
-
-		if (weapon && !weapon->strapped_mode())
-			P.w_u32(inventory().GetActiveSlot());
-		else		
-			P.w_u32(NO_ACTIVE_SLOT);		
+	if (PIItem activeItem = inventory().ActiveItem())
+	{		
+		if (CWeapon* activeWeapon = smart_cast<CWeapon*>(activeItem))
+		{
+			P.w_u16(activeItem->object().ID());
+			P.w_u8(m_StrappedState);
+		}
+		else
+		{
+			P.w_u16(u16(-1)); // activeItemId
+			P.w_u8(0); // strappedState
+		}
 	}
 	else
-		P.w_u32(NO_ACTIVE_SLOT);
-
+	{
+		P.w_u16(u16(-1)); // activeItemId
+		P.w_u8(0); // strappedState
+	}
+		
 	P.w_u16(m_animation_manager->torso().animation().val);
 	P.w_u16(m_animation_manager->legs().animation().val);
 	P.w_u16(m_animation_manager->head().animation().val);
@@ -664,10 +675,9 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 		P.r_vec3(position);
 	}
 
-
 	float f_health;
-
-	u32	u_active_weapon_slot;
+	u16 activeItemId;
+	u8 strapped;
 
 	P.r_float(f_health);
 
@@ -677,7 +687,8 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 	P.r_angle8(fv_head_orientation.pitch);
 	P.r_angle8(fv_head_orientation.yaw);
 
-	P.r_u32(u_active_weapon_slot);
+	P.r_u16(activeItemId);
+	P.r_u8(strapped);
 
 	u16 u_torso_motion_val;
 	u16 u_legs_motion_val;
@@ -721,7 +732,31 @@ void CAI_Stalker::net_Import_MP(NET_Packet& P)
 	setVisible(TRUE);
 	setEnabled(TRUE);
 	
-	inventory().SetActiveSlot(u_active_weapon_slot);	
+	if (activeItemId != u16(-1))
+	{
+		if (auto activeItem = smart_cast<CInventoryItem*>(Level().Objects.net_Find(activeItemId)))
+		{
+			if (!inventory().ActiveItem() || (inventory().ActiveItem()->object().ID() != activeItem->object().ID()))
+			{
+				if (PIItem itemInActiveItemSlot = inventory().m_slots[activeItem->GetSlot()].m_pIItem)
+					inventory().Ruck(itemInActiveItemSlot);
+
+				inventory().Slot(activeItem);
+			}
+		}
+		else
+			Msg("! cant find active item");
+	}
+	else
+		inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+
+#pragma todo("Переписать синхронизацию на ивенты")
+
+	if (strapped != m_StrappedState)
+	{
+		planner().m_storage.set_property(ObjectHandlerSpace::eWorldPropertyStrapped, static_cast<bool>(strapped));
+		m_StrappedState = strapped;
+	}
 
 	setVisible(TRUE);
 	setEnabled(TRUE);
@@ -925,7 +960,8 @@ void CAI_Stalker::UpdateCL()
 			sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection));
 			sight().update();
 		}
-
+		if(!IsGameTypeSingle())
+			Exec_Visibility();
 		Exec_Look(Device.fTimeDelta);
 		STOP_PROFILE
 
@@ -979,8 +1015,10 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	VERIFY(_valid(Position()));
 	// *** general stuff
 	float dt = float(DT) / 1000.f;
+	if (g_Alive() && !IsGameTypeSingle())
+		Exec_Visibility();
 
-	if (g_Alive())
+	if (g_Alive() && OnServer())
 	{
 		animation().play_delayed_callbacks();
 
@@ -992,13 +1030,16 @@ void CAI_Stalker::shedule_Update(u32 DT)
 #if 0 //def DEBUG
 		memory().visual().check_visibles();
 #endif
-		if (IsGameTypeSingle() && g_mt_config.test(mtAiVision))
-			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
-		else
+		if (IsGameTypeSingle())
 		{
-			START_PROFILE("stalker/schedule_update/vision")
-			Exec_Visibility();
-			STOP_PROFILE
+			if (g_mt_config.test(mtAiVision))
+				Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
+			else
+			{
+				START_PROFILE("stalker/schedule_update/vision")
+					Exec_Visibility();
+				STOP_PROFILE
+			}
 		}
 
 		START_PROFILE("stalker/schedule_update/memory")
@@ -1008,8 +1049,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 		STOP_PROFILE
 
 		START_PROFILE("stalker/schedule_update/memory/update")
-			if(!Remote())
-				memory().update(dt);
+		memory().update(dt);
 		STOP_PROFILE
 
 		STOP_PROFILE

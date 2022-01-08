@@ -46,6 +46,26 @@ xr_token vid_bpp_token[] =
 		{"32", 32},
 		{0, 0}};
 
+void IConsole_Command::add_to_LRU(shared_str const& arg)
+{
+	if (arg.size() == 0 || bEmptyArgsHandled)	
+		return;	
+
+	if (std::find(m_LRU.begin(), m_LRU.end(), arg) != m_LRU.end())
+		return;
+
+	m_LRU.push_back(arg);
+
+	if (m_LRU.size() > LRU_MAX_COUNT)
+		m_LRU.erase(m_LRU.begin());
+}
+
+void IConsole_Command::add_LRU_to_tips(vecTips &tips)
+{
+	for (shared_str &StrLR : m_LRU)
+		tips.push_back(StrLR);
+}
+
 class CCC_Quit : public IConsole_Command
 {
 public:

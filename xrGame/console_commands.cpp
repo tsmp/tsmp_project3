@@ -70,8 +70,6 @@ extern BOOL g_bUseCursorAcceleration;
 
 extern int x_m_x;
 extern int x_m_z;
-extern BOOL net_cl_inputguaranteed;
-extern BOOL net_sv_control_hit;
 extern int g_dwInputUpdateDelta;
 #ifdef DEBUG
 extern BOOL g_ShowAnimationInfo;
@@ -1699,7 +1697,7 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask, "ai_use_torch_dynamic_lights", &g_uCommonFlags, flAiUseTorchDynamicLights);
 
-#ifndef FZ_MOD_CLIENT
+#ifndef PUBLIC_BUILD
 	CMD3(CCC_Mask, "g_no_clip", &psActorFlags, AF_NO_CLIP);
 #endif
 

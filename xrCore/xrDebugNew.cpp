@@ -26,14 +26,13 @@ static BOOL bException = FALSE;
 #include <dbghelp.h> // MiniDump flags
 
 #ifdef USE_BUG_TRAP
-#include "../bugtrap/bugtrap.h" // for BugTrap functionality
-
-#pragma comment(lib, "BugTrap.lib") // Link to ANSI DLL
-
+#include "../bugtrap/bugtrap.h" 
+#pragma comment(lib, "BugTrap.lib")
 #endif // USE_BUG_TRAP
 
 #include <new.h>	// for _set_new_mode
 #include <signal.h> // for signals
+#include "../TSMP3_Build_Config.h"
 
 #if 0 //def DEBUG
 #define USE_OWN_ERROR_MESSAGE_WINDOW
@@ -355,15 +354,24 @@ void CALLBACK PreErrorHandler(INT_PTR)
 #ifdef USE_BUG_TRAP
 void SetupExceptionHandler(const bool &dedicated)
 {
+	// Install bugtrap exceptions filter
 	BT_InstallSehFilter();
+
+#ifdef SEND_ERROR_REPORTS
+	BT_SetSupportServer("192.162.247.202", 9999);
+	// Force BugTrap to submit reports to support server without gui
+	BT_SetActivityType(BTA_SENDREPORT);
+#else // SEND_ERROR_REPORTS
+
 #ifndef USE_OWN_ERROR_MESSAGE_WINDOW
-	if (!dedicated && !strstr(GetCommandLine(), "-silent_error_mode"))
-		BT_SetActivityType(BTA_SHOWUI);
-	else
-		BT_SetActivityType(BTA_SAVEREPORT);
+	// раскомментировать если хочется окошко с жуком :)
+	//if (!dedicated && !strstr(GetCommandLine(), "-silent_error_mode")) BT_SetActivityType(BTA_SHOWUI); else	
+	BT_SetActivityType(BTA_SAVEREPORT);
 #else  // USE_OWN_ERROR_MESSAGE_WINDOW
 	BT_SetActivityType(BTA_SAVEREPORT);
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
+
+#endif // SEND_ERROR_REPORTS
 
 	BT_SetDialogMessage(
 		BTDM_INTRO2,
@@ -376,28 +384,9 @@ please Submit Bug or save report and email it manually (button More...).\
 	BT_SetPreErrHandler(PreErrorHandler, 0);
 	BT_SetAppName("XRay Engine");
 	BT_SetReportFormat(BTRF_TEXT);
-	BT_SetFlags(BTF_DETAILEDMODE | /**BTF_EDIETMAIL | /**/ BTF_ATTACHREPORT /**| BTF_LISTPROCESSES /**| BTF_SHOWADVANCEDUI /**| BTF_SCREENCAPTURE/**/);
-	BT_SetDumpType(
-		MiniDumpWithDataSegs |
-		//		MiniDumpWithFullMemory |
-		//		MiniDumpWithHandleData |
-		//		MiniDumpFilterMemory |
-		//		MiniDumpScanMemory |
-		//		MiniDumpWithUnloadedModules |
-
-		MiniDumpWithIndirectlyReferencedMemory |
-
-		//		MiniDumpFilterModulePaths |
-		//		MiniDumpWithProcessThreadData |
-		//		MiniDumpWithPrivateReadWriteMemory |
-		//		MiniDumpWithoutOptionalData |
-		//		MiniDumpWithFullMemoryInfo |
-		//		MiniDumpWithThreadInfo |
-		//		MiniDumpWithCodeSegs |
-		0);
+	BT_SetFlags(BTF_DETAILEDMODE | BTF_ATTACHREPORT);
+	BT_SetDumpType(MiniDumpWithDataSegs | MiniDumpWithIndirectlyReferencedMemory | 0);
 	BT_SetSupportEMail("crash-report@stalker-game.com");
-	//	BT_SetSupportServer		("localhost", 9999);
-	//	BT_SetSupportURL		("www.gsc-game.com");
 }
 #endif // USE_BUG_TRAP
 

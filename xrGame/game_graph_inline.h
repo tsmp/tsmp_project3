@@ -8,10 +8,21 @@
 
 #pragma once
 
-IC CGameGraph::CGameGraph()
+IC CGameGraph::CGameGraph(LPCSTR spawnName)
 {
 	string_path file_name;
-	FS.update_path(file_name, "$game_data$", GRAPH_NAME);
+
+	if (!strcmp("all", spawnName))	
+		FS.update_path(file_name, "$game_data$", GRAPH_NAME);	
+	else
+	{
+		if (FS.exist(file_name, "$level$", GRAPH_NAME))
+			Msg("- found game graph in level folder");
+		else
+			FS.update_path(file_name, "$game_data$", GRAPH_NAME);
+	}
+
+	Msg("- loading game graph: %s", file_name);
 
 	m_reader = FS.r_open(file_name);
 	VERIFY(m_reader);

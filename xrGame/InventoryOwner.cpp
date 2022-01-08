@@ -115,8 +115,11 @@ BOOL CInventoryOwner::net_Spawn(CSE_Abstract *DC)
 	if (!pThis)
 		return FALSE;
 	CSE_Abstract *E = (CSE_Abstract *)(DC);
-
+#ifdef ALIFE_MP
+	if (!smart_cast<CSE_ALifeCreatureActor*>(E))
+#else
 	if (!smart_cast<CSE_ALifeCreatureActor*>(E) || IsGameTypeSingle())
+#endif
 	{
 		CSE_ALifeTraderAbstract *pTrader = NULL;
 		if (E)
@@ -273,9 +276,12 @@ void CInventoryOwner::StopTalk()
 
 	GetTrade()->StopTrade();
 
-	CUIGameSP *ui_sp = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-	if (ui_sp && ui_sp->TalkMenu->IsShown())
-		ui_sp->TalkMenu->Stop();
+	CUIGameCustom* pGameUi = smart_cast<CUIGameCustom*>(HUD().GetUI()->UIGame());
+	if (!pGameUi)
+		return;
+
+	if (pGameUi->TalkMenu->IsShown())
+		pGameUi->TalkMenu->Stop();
 }
 
 bool CInventoryOwner::IsTalking()
@@ -375,34 +381,38 @@ void CInventoryOwner::SetCommunity(CHARACTER_COMMUNITY_INDEX new_community)
 {
 	CEntityAlive *EA = smart_cast<CEntityAlive *>(this);
 	VERIFY(EA);
+	if (!OnClient())
+	{
+		CSE_Abstract* e_entity = ai().alife().objects().object(EA->ID(), false);
+		if (!e_entity)
+			return;
 
-	CSE_Abstract *e_entity = ai().alife().objects().object(EA->ID(), false);
-	if (!e_entity)
-		return;
+		CSE_ALifeTraderAbstract* trader = smart_cast<CSE_ALifeTraderAbstract*>(e_entity);
+		if (!trader)
+			return;
 
-	CSE_ALifeTraderAbstract *trader = smart_cast<CSE_ALifeTraderAbstract *>(e_entity);
-	if (!trader)
-		return;
-
+		trader->m_community_index = new_community;
+	}
 	CharacterInfo().m_CurrentCommunity.set(new_community);
-	//	EA->id_Team = CharacterInfo().m_CurrentCommunity.team();
 	EA->ChangeTeam(CharacterInfo().m_CurrentCommunity.team(), EA->g_Squad(), EA->g_Group());
-	trader->m_community_index = new_community;
 }
 
 void CInventoryOwner::SetRank(CHARACTER_RANK_VALUE rank)
 {
-	CEntityAlive *EA = smart_cast<CEntityAlive *>(this);
+	CEntityAlive* EA = smart_cast<CEntityAlive*>(this);
 	VERIFY(EA);
-	CSE_Abstract *e_entity = ai().alife().objects().object(EA->ID(), false);
-	if (!e_entity)
-		return;
-	CSE_ALifeTraderAbstract *trader = smart_cast<CSE_ALifeTraderAbstract *>(e_entity);
-	if (!trader)
-		return;
+	if (!OnClient())
+	{
+		CSE_Abstract* e_entity = ai().alife().objects().object(EA->ID(), false);
+		if (!e_entity)
+			return;
+		CSE_ALifeTraderAbstract* trader = smart_cast<CSE_ALifeTraderAbstract*>(e_entity);
+		if (!trader)
+			return;
 
+		trader->m_rank = rank;
+	}
 	CharacterInfo().m_CurrentRank.set(rank);
-	trader->m_rank = rank;
 }
 
 void CInventoryOwner::ChangeRank(CHARACTER_RANK_VALUE delta)
@@ -412,18 +422,21 @@ void CInventoryOwner::ChangeRank(CHARACTER_RANK_VALUE delta)
 
 void CInventoryOwner::SetReputation(CHARACTER_REPUTATION_VALUE reputation)
 {
-	CEntityAlive *EA = smart_cast<CEntityAlive *>(this);
+	CEntityAlive* EA = smart_cast<CEntityAlive*>(this);
 	VERIFY(EA);
-	CSE_Abstract *e_entity = ai().alife().objects().object(EA->ID(), false);
-	if (!e_entity)
-		return;
+	if (!OnClient())
+	{
+		CSE_Abstract* e_entity = ai().alife().objects().object(EA->ID(), false);
+		if (!e_entity)
+			return;
 
-	CSE_ALifeTraderAbstract *trader = smart_cast<CSE_ALifeTraderAbstract *>(e_entity);
-	if (!trader)
-		return;
+		CSE_ALifeTraderAbstract* trader = smart_cast<CSE_ALifeTraderAbstract*>(e_entity);
+		if (!trader)
+			return;
 
+		trader->m_reputation = reputation;
+	}
 	CharacterInfo().m_CurrentReputation.set(reputation);
-	trader->m_reputation = reputation;
 }
 
 void CInventoryOwner::ChangeReputation(CHARACTER_REPUTATION_VALUE delta)
@@ -530,7 +543,6 @@ bool CInventoryOwner::AllowItemToTrade(CInventoryItem const *item, EItemPlace pl
 
 void CInventoryOwner::set_money(u32 amount, bool bSendEvent)
 {
-
 	if (InfinitiveMoney())
 		m_money = _max(m_money, amount);
 	else

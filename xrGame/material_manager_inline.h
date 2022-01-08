@@ -7,6 +7,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "PHMovementControl.h"
+#include "ai/monsters/basemonster/base_monster.h"
 
 IC u16 CMaterialManager::last_material_idx() const
 {
@@ -20,5 +22,9 @@ IC u16 CMaterialManager::self_material_idx() const
 
 IC SGameMtlPair *CMaterialManager::get_current_pair()
 {
+	// у мутантов звуки всегда одинаковые, нет смысла получать материал по которому они идут
+	if(!smart_cast<CBaseMonster*>(m_object))
+		m_movement_control->update_last_material();
+
 	return GMLib.GetMaterialPair(m_my_material_idx, m_last_material_idx);
 }

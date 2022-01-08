@@ -9,6 +9,11 @@
 #include "alife_object_registry.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "xrServer_Objects_ALife_Monsters.h"
+#include "game_sv_deathmatch.h"
+#include "Level.h"
+#include "Actor.h"
+#include "ai_object_location.h"
+#include "..\TSMP3_Build_Config.h"
 
 void xrServer::Process_event(NET_Packet &P, ClientID sender)
 {
@@ -284,13 +289,61 @@ void xrServer::Process_event(NET_Packet &P, ClientID sender)
 	break;
 	case GE_MONEY:
 	{
-		CSE_Abstract *e_dest = receiver;
-		CSE_ALifeTraderAbstract *pTa = smart_cast<CSE_ALifeTraderAbstract *>(e_dest);
-		pTa->m_dwMoney = P.r_u32();
+		if (IsGameTypeSingle())
+		{
+			if(CSE_ALifeTraderAbstract *pTa = smart_cast<CSE_ALifeTraderAbstract*>(receiver))
+				pTa->m_dwMoney = P.r_u32();
+			break;
+		}
+
+		if (CSE_ALifeTraderAbstract* pTa = smart_cast<CSE_ALifeTraderAbstract*>(receiver))
+		{
+			xrClientData* l_pC = ID_to_client(sender);
+
+			if (l_pC && l_pC->owner == receiver)
+			{
+				pTa->m_dwMoney = P.r_u32();
+				l_pC->ps->money_for_round = pTa->m_dwMoney;
+				break;
+			}
+		}
+
+		SendBroadcast(BroadcastCID, P, MODE); // Signal to everyone (including sender)
 	}
 	break;
+
 	case GE_FREEZE_OBJECT:
 		break;
+
+	case GE_CLIENT_SPAWN:
+	{
+		Fvector3 pos;
+		shared_str name_sect;
+
+		P.r_vec3(pos);
+		P.r_stringZ(name_sect);
+
+		if (!Actor())
+			break;
+
+#ifdef PUBLIC_BUILD
+		if (!receiver->owner->m_admin_rights.m_has_admin_rights)
+		{
+			Msg("! Attempt to spawn object is player without admin rights! Section: %s, player name: %s.", name_sect.c_str(), receiver->name_replace());
+		
+			NET_Packet P_answ;
+			P_answ.w_begin(M_REMOTE_CONTROL_CMD);
+			P_answ.w_stringZ("You dont have admin rights!");
+			SendTo(sender, P_answ, net_flags(TRUE, TRUE));
+			break;
+		}
+#endif // PUBLIC_BUILD
+				
+		if (game_sv_Deathmatch* tpGame = smart_cast<game_sv_Deathmatch*>(Level().Server->game))
+			tpGame->alife().spawn_item(name_sect.c_str(), pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+	}
+	break;
+
 	default:
 		R_ASSERT2(0, "Game Event not implemented!!!");
 		break;

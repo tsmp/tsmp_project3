@@ -12,6 +12,8 @@ class CUIStatic;
 class CUIWindow;
 class CUIXml;
 class CInventoryBox;
+class CUITalkWnd;
+class CInventoryOwner;
 
 struct SDrawStaticStruct : public IPureDestroyableObject
 {
@@ -130,6 +132,7 @@ public:
 
 	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers) {};
 	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox) {};
+	virtual void StartTalk() {};
 
 	void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color);
 	void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color, float flicker);
@@ -144,6 +147,9 @@ public:
 	virtual bool shedule_Needed() { return true; };
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
+
+public: 
+		CUITalkWnd* TalkMenu;
 };
 
 add_to_type_list(CUIGameCustom)

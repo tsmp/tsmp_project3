@@ -89,7 +89,7 @@ float CEnemyManager::evaluate(const CEntityAlive *object) const
 {
 	//	Msg						("[%6d] enemy manager %s evaluates %s",Device.dwTimeGlobal,*m_object->cName(),*object->cName());
 
-	bool actor = (object->CLS_ID == CLSID_OBJECT_ACTOR);
+	bool actor = (object->CLS_ID == CLSID_OBJECT_ACTOR && IsGameTypeSingle());
 	if (actor)
 		m_ready_to_save = false;
 
@@ -252,10 +252,10 @@ bool CEnemyManager::change_from_wounded(const CEntityAlive *current, const CEnti
 
 IC bool CEnemyManager::enemy_inertia(const CEntityAlive *previous_enemy) const
 {
-	if (m_selected->CLS_ID == CLSID_OBJECT_ACTOR)
+	if (m_selected->CLS_ID == CLSID_OBJECT_ACTOR && IsGameTypeSingle())
 		return (Device.dwTimeGlobal <= (m_last_enemy_change + ENEMY_INERTIA_TIME_TO_ACTOR));
 
-	if (previous_enemy && previous_enemy->CLS_ID == CLSID_OBJECT_ACTOR)
+	if (previous_enemy && previous_enemy->CLS_ID == CLSID_OBJECT_ACTOR && IsGameTypeSingle())
 		return (Device.dwTimeGlobal <= (m_last_enemy_change + ENEMY_INERTIA_TIME_FROM_ACTOR));
 
 	return (Device.dwTimeGlobal <= (m_last_enemy_change + ENEMY_INERTIA_TIME_TO_SOMEBODY));
@@ -409,4 +409,11 @@ void CEnemyManager::update()
 		Level().autosave_manager().inc_not_ready();
 	
 	STOP_PROFILE
+}
+void CEnemyManager::set_enemy(CEntityAlive const* enemy)
+{
+	if (enemy->getDestroy() || !enemy->g_Alive()) return;
+
+	m_last_enemy = enemy;
+	m_selected = enemy;
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+    <dialog id="mp_hello_dialog">
+         <phrase_list>
+            <phrase id="0">
+                <text>Здравствуй, сталкер!</text>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>Что здесь происходит?</text>
+                <next>2</next>
+            </phrase>
+            <phrase id="2">
+                <text>Здесь ничего не происходит. Это тестовый уровень, придурок!</text>
+            </phrase>
+        </phrase_list>
+    </dialog>
+</game_dialogs>
