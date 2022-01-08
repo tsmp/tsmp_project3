@@ -92,7 +92,7 @@ CCustomMonster::~CCustomMonster()
 	xr_delete(m_movement_manager);
 	xr_delete(m_sound_player);
 
-	if (!&Level()) // Level can be nullptr on game exit if monster added to prefetch
+	if (LevelIsNullptr()) // Level can be nullptr on game exit if monster added to prefetch
 		return;
 
 #ifdef DEBUG
