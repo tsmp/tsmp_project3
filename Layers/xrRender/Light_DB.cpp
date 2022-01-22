@@ -16,6 +16,7 @@ CLight_DB::~CLight_DB()
 void CLight_DB::Load(IReader *fs)
 {
 	IReader *F = 0;
+	Msg("loading light db");
 
 	// Lights itself
 	sun_original = NULL;

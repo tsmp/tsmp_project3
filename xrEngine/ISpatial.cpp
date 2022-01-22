@@ -286,6 +286,8 @@ void ISpatial_DB::insert(ISpatial *S)
 	}
 #endif
 
+	R_ASSERT2(m_root, "Spatial root is not initialized");
+
 	if (verify_sp(S, m_center, m_bounds))
 	{
 		// Object inside our DB
