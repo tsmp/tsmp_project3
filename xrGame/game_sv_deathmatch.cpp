@@ -126,56 +126,49 @@ void game_sv_Deathmatch::OnRoundStart()
 
 	m_dwWarmUp_CurTime = 0;
 	m_bInWarmUp = false;
-	if (!m_bFastRestart)
+
+	if (!m_bFastRestart && GetWarmUpTime() != 0)
 	{
-		if (GetWarmUpTime() != 0)
-		{
-			m_dwWarmUp_CurTime = Level().timeServer() + GetWarmUpTime() * 1000;
-			m_bInWarmUp = true;
-		}
-	}
+		m_dwWarmUp_CurTime = Level().timeServer() + GetWarmUpTime() * 1000;
+		m_bInWarmUp = true;
+	}	
+
 	inherited::OnRoundStart();
 
 	if (IsAnomaliesEnabled())
 		StartAnomalies();
-	//-------------------------------------
+
 	m_vFreeRPoints.clear();
 	m_dwLastRPoint = u32(-1);
-	//-------------------------------------
 
 	// Respawn all players and some info
-	u32 cnt = get_players_count();
-
-	for (u32 it = 0; it < cnt; ++it)
+	m_server->ForEachClientDoSender([this](IClient* cl)
 	{
-		// init
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
-
+		xrClientData* l_pC = dynamic_cast<xrClientData*>(cl);
+		
 		if (!l_pC || !l_pC->net_Ready || !l_pC->ps)
-			continue;
-		game_PlayerState *ps = l_pC->ps;
+			return;
+		game_PlayerState* ps = l_pC->ps;
 
 		ps->clear();
 		ps->DeathTime = Device.dwTimeGlobal - 1001;
 
 		SetPlayersDefItems(ps);
-		Money_SetStart(get_it_2_id(it));
-		SpawnPlayer(get_it_2_id(it), "spectator");
-	}
-	//Clear disconnected players
-	cnt = m_server->disconnected_client_Count();
-	for (u32 it = 0; it < cnt; ++it)
-	{
-		// init
-		xrClientData *l_pC = (xrClientData *)m_server->disconnected_client_Get(it);
-		if (!l_pC || !l_pC->ps)
-			continue;
-		game_PlayerState *ps = l_pC->ps;
+		Money_SetStart(l_pC->ID);
+		SpawnPlayer(l_pC->ID, "spectator");
+	});
 
+	//Clear disconnected players
+	m_server->ForEachClientDo([this](IClient* client)
+	{
+		xrClientData* l_pC = dynamic_cast<xrClientData*>(client);
+		if (!l_pC || !l_pC->ps)
+			return;
+		game_PlayerState* ps = l_pC->ps;
 		ps->clear();
 		SetPlayersDefItems(ps);
 		Money_SetStart(l_pC->ID);
-	}
+	});
 }
 
 void game_sv_Deathmatch::OnRoundEnd()
@@ -184,17 +177,16 @@ void game_sv_Deathmatch::OnRoundEnd()
 	{
 	case GAME_PHASE_INPROGRESS:
 	{
-		u32 cnt = get_players_count();
-		for (u32 it = 0; it < cnt; ++it)
+		m_server->ForEachClientDoSender([this](IClient* cl)
 		{
-			xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
-			game_PlayerState *ps = l_pC->ps;
+			xrClientData* l_pC = dynamic_cast<xrClientData*>(cl);
+			game_PlayerState* ps = l_pC->ps;
 			if (!ps)
-				continue;
+				return;
 			if (ps->IsSkip())
-				continue;
-			SpawnPlayer(get_it_2_id(it), "spectator");
-		};
+				return;
+			SpawnPlayer(l_pC->ID, "spectator");
+		});
 	}
 	break;
 	}
@@ -518,18 +510,21 @@ bool game_sv_Deathmatch::checkForTimeLimit()
 
 bool game_sv_Deathmatch::checkForFragLimit()
 {
+	bool result = false;
+
 	if (g_sv_dm_dwFragLimit)
 	{
-		u32 cnt = get_players_count();
-		for (u32 it = 0; it < cnt; ++it)
+		m_server->ForEachClientDo([this, &result](IClient* client)
 		{
-			game_PlayerState *ps = get_it(it);
+			xrClientData* C = static_cast<xrClientData*>(client);
+			game_PlayerState* ps = C->ps;
+
 			if (ps->frags() >= g_sv_dm_dwFragLimit)
 			{
 				OnFraglimitExceed();
-				return true;
+				result = true;
 			}
-		}
+		});
 	}
 	return false;
 }
@@ -753,26 +748,21 @@ void game_sv_Deathmatch::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 	{
 		inherited::assign_RP(E, ps_who);
 		return;
-	};
-	//-------------------------------------------------------------------------------
+	}
+
 	xr_vector<RPoint> &rp = rpoints[Team];
+	xr_vector<xrClientData*> pEnemies;
 
-	xr_vector<u32> pEnemies;
-	xr_vector<u32> pFriends;
-
-	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; ++it)
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		// init
-		game_PlayerState *ps = get_it(it);
+		xrClientData* C = static_cast<xrClientData*>(client);
+		game_PlayerState* ps = C->ps;
 		if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
-			continue;
-		if (ps->team == pA->s_team && !teams.empty())
-			pFriends.push_back(it);
-		else
-			pEnemies.push_back(it);
-	};
-	//-------------------------------------------------------------------------------
+			return;
+		if (ps->team != pA->s_team || teams.empty())
+			pEnemies.push_back(C);
+	});
+
 	if (m_vFreeRPoints.empty())
 	{
 		for (u32 i = 0; i < rp.size(); i++)
@@ -790,7 +780,7 @@ void game_sv_Deathmatch::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 		float MinEnemyDist = 10000.0f;
 		for (u32 e = 0; e < pEnemies.size(); e++)
 		{
-			xrClientData *xrCData = m_server->ID_to_client(get_it_2_id(pEnemies[e]));
+			xrClientData *xrCData = pEnemies[e];
 			if (!xrCData || !xrCData->owner)
 				continue;
 

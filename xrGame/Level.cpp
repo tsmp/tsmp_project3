@@ -536,20 +536,20 @@ void CLevel::OnFrame()
 				F->OutNext("sv_urate/cl_urate : %4d/%4d", psNET_ServerUpdate, psNET_ClientUpdate);
 
 				F->SetColor(D3DCOLOR_XRGB(255, 255, 255));
-				for (u32 I = 0; I < Server->client_Count(); ++I)
-				{
-					IClient *C = Server->client_Get(I);
+
+				Server->ForEachClientDo([this,&F](IClient* C)
+				{						
 					Server->UpdateClientStatistic(C);
 					F->OutNext("P(%d), BPS(%2.1fK), MRR(%2d), MSR(%2d), Retried(%2d), Blocked(%2d)",
-							   //Server->game->get_option_s(*C->Name,"name",*C->Name),
-							   //					C->Name,
-							   C->stats.getPing(),
-							   float(C->stats.getBPS()), // /1024,
-							   C->stats.getMPS_Receive(),
-							   C->stats.getMPS_Send(),
-							   C->stats.getRetriedCount(),
-							   C->stats.dwTimesBlocked);
-				}
+						//Server->game->get_option_s(*C->Name,"name",*C->Name),
+						//					C->Name,
+						C->stats.getPing(),
+						float(C->stats.getBPS()), // /1024,
+						C->stats.getMPS_Receive(),
+						C->stats.getMPS_Send(),
+						C->stats.getRetriedCount(),
+						C->stats.dwTimesBlocked);
+				});
 			}
 			if (IsClient())
 			{
@@ -1070,7 +1070,7 @@ bool CLevel::IsServer()
 	};
 	if (!Server)
 		return false;
-	return (Server->client_Count() != 0);
+	return (Server->GetClientsCount() != 0);
 }
 
 bool CLevel::IsClient()
@@ -1082,7 +1082,7 @@ bool CLevel::IsClient()
 	};
 	if (!Server)
 		return true;
-	return (Server->client_Count() == 0);
+	return (Server->GetClientsCount() == 0);
 }
 
 void CLevel::OnSessionTerminate(LPCSTR reason)

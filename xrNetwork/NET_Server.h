@@ -260,12 +260,6 @@ public:
 	virtual void client_Replicate() = 0;		 // replicate current state to client
 	virtual void client_Destroy(IClient *C) = 0; // destroy client info
 
-	//IC u32 client_Count() { return net_Players.size(); }
-	//IC IClient *client_Get(u32 num) { return net_Players[num]; }
-
-	//IC u32 disconnected_client_Count() { return net_Players_disconnected.size(); }
-	//IC IClient *disconnected_client_Get(u32 num) { return net_Players_disconnected[num]; }
-
 	BOOL HasBandwidth(IClient *C);
 
 	IC int GetPort() { return psNET_Port; };

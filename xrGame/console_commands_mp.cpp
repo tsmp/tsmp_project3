@@ -288,6 +288,46 @@ public:
 	virtual void Save(IWriter *F){};
 };
 
+struct SearcherClientByName
+{
+	string512 player_name;
+	SearcherClientByName(LPCSTR name)
+	{
+		strncpy_s(player_name, sizeof(player_name), name, sizeof(player_name) - 1);
+		xr_strlwr(player_name);
+	}
+	bool operator()(IClient* client)
+	{
+		xrClientData* temp_client = smart_cast<xrClientData*>(client);
+
+		if (!xr_strcmp(player_name, temp_client->ps->getName()))
+		{
+			return true;
+		}
+		return false;
+	}
+};
+
+struct SearcherClientByClientID
+{
+	ClientID m_Id;
+
+	SearcherClientByClientID(ClientID clid)
+	{
+		m_Id = clid;
+	}
+
+	bool operator()(IClient* client)
+	{
+		xrClientData* temp_client = smart_cast<xrClientData*>(client);
+
+		if(temp_client->ID.value() == m_Id.value())
+			return true;
+		
+		return false;
+	}
+};
+
 class CCC_KickPlayerByName : public IConsole_Command
 {
 public:
@@ -314,37 +354,20 @@ public:
 			strcpy(PlayerName, args);
 
 		xr_strlwr(PlayerName);
+		IClient* tmp_client = Level().Server->FindClient(SearcherClientByName(PlayerName));
 
-		Level().Server->clients_Lock();
-		u32 cnt = Level().Server->game->get_players_count();
-		u32 it;
-		for (it = 0; it < cnt; it++)
+		if (tmp_client && (tmp_client != Level().Server->GetServerClient()))
 		{
-			xrClientData *l_pC = (xrClientData *)Level().Server->client_Get(it);
-			if (l_pC)
-			{
-				string64 _low_name;
-				strcpy(_low_name, l_pC->ps->getName());
-				xr_strlwr(_low_name);
+			Msg("Disconnecting : %s", PlayerName);
+			xrClientData* tmpxrclient = static_cast<xrClientData*>(tmp_client);
 
-				if (!xr_strcmp(_low_name, PlayerName))
-				{
-					if (Level().Server->GetServerClient() != l_pC)
-					{
-						Msg("Disconnecting : %s", l_pC->ps->getName());
-						Level().Server->DisconnectClient(l_pC);
-						break;
-					}
-					else
-						Msg("! Can't disconnect server's client");
-				}
-			}
-		};
-		if (it == cnt)
-		{
-			Msg("! No such player found : %s", PlayerName);
+			if (!tmpxrclient->m_admin_rights.m_has_admin_rights)			
+				Level().Server->DisconnectClient(tmp_client);			
+			else			
+				Msg("! Can't disconnect client with admin rights");			
 		}
-		Level().Server->clients_Unlock();
+		else		
+			Msg("! Can't disconnect player [%s]", PlayerName);		
 	};
 
 	virtual void Info(TInfo &I) { strcpy(I, "Kick Player by name"); }
@@ -403,6 +426,17 @@ public:
 	{
 		if (!g_pGameLevel || !Level().Server) 
 			return;
+
+		struct ScreenshotMaker
+		{
+			xrClientData* admin_client;
+			void operator()(IClient* C)
+			{
+				Level().Server->MakeScreenshot(admin_client->ID, C->ID);
+			}
+		};
+
+		ScreenshotMaker tmp_functor;
 		
 		xrClientData* radmin = GetCommandInitiator(args_);
 
@@ -412,17 +446,7 @@ public:
 			return;
 		}
 
-		Level().Server->clients_Lock();
-		u32 cnt = Level().Server->game->get_players_count();
-		u32 it;
-
-		for (it = 0; it < cnt; it++)
-		{
-			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
-			Level().Server->MakeScreenshot(radmin->ID, l_pC->ID);
-		}
-
-		Level().Server->clients_Unlock();
+		Level().Server->ForEachClientDo(tmp_functor);
 	}
 
 	virtual void Info(TInfo& I)
@@ -480,40 +504,16 @@ public:
 			strcpy(PlayerName, buff);
 
 		xr_strlwr(PlayerName);
+		IClient* tmp_client = Level().Server->FindClient(SearcherClientByName(PlayerName));
 
-		Level().Server->clients_Lock();
-		u32 cnt = Level().Server->game->get_players_count();
-		u32 it;
-		for (it = 0; it < cnt; it++)
+		if (tmp_client && (tmp_client != Level().Server->GetServerClient()))
 		{
-			xrClientData *l_pC = (xrClientData *)Level().Server->client_Get(it);
-			if (l_pC)
-			{
-				string64 _low_name;
-				strcpy(_low_name, l_pC->ps->getName());
-				xr_strlwr(_low_name);
-
-				if (!xr_strcmp(_low_name, PlayerName))
-				{
-					if (Level().Server->GetServerClient() != l_pC)
-					{
-						Msg("Disconnecting and Banning: %s", l_pC->ps->getName());
-						Level().Server->BanClient(l_pC, ban_time);
-						Level().Server->DisconnectClient(l_pC);
-						break;
-					}
-					else
-					{
-						Msg("! Can't disconnect server's client");
-						break;
-					}
-				}
-			}
-		};
-		if (it == cnt)
-			Msg("! No such player found : %s", PlayerName);
-
-		Level().Server->clients_Unlock();
+			Msg("Disconnecting and Banning: %s", PlayerName);
+			Level().Server->BanClient(tmp_client, ban_time);
+			Level().Server->DisconnectClient(tmp_client);
+		}
+		else		
+			Msg("! Can't disconnect player [%s]", PlayerName);
 	};
 
 	virtual void Info(TInfo &I) { strcpy(I, "Ban Player by Name"); }
@@ -560,15 +560,12 @@ public:
 
 		string1024 s_ip_addr;
 		strcpy(s_ip_addr, buff);
-		//-----------
 
 		ip_address Address;
 		Address.set(s_ip_addr);
-		Level().Server->clients_Lock();
 		Msg("Disconnecting and Banning: %s", Address.to_string().c_str());
 		Level().Server->BanAddress(Address, ban_time);
 		Level().Server->DisconnectAddress(Address);
-		Level().Server->clients_Unlock();
 	};
 
 	virtual void Info(TInfo &I) { strcpy(I, "Ban Player by IP"); }
@@ -618,32 +615,18 @@ public:
 		std::string str5(hwstr.begin() + delimiters[3] + 1, hwstr.end());
 		s5 = atoi(str5.c_str());
 
-		Level().Server->clients_Lock();
-		u32 cnt = Level().Server->game->get_players_count();
-
 		HWID hwid(s1, s2, s3, s4, s5);
 		Level().Server->BanClientHW(hwid);
-		
-		for (u32 it = 0; it < cnt; it++)
+
+		Level().Server->ForEachClientDo([](IClient* client) 
 		{
-			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+			xrClientData* temp_client = smart_cast<xrClientData*>(client);
 
-			if (l_pC && l_pC->m_HWID == hwid)
-			{
-				if (Level().Server->GetServerClient() != l_pC)
-				{	
-						Level().Server->DisconnectClient(l_pC);
-						break;
-				}
-				else
-				{
-					Msg("! Can't disconnect server's client");
-					break;
-				}
-			}
-		}
-
-		Level().Server->clients_Unlock();
+			if (Level().Server->GetServerClient() != temp_client)		
+				Level().Server->DisconnectClient(temp_client);		
+			else			
+				Msg("! Can't disconnect server's client");		
+		});
 	};
 
 	virtual void Info(TInfo& I) { strcpy(I, "Ban Player by IP"); }
@@ -714,9 +697,7 @@ public:
 
 		ip_address Address;
 		Address.set(args);
-		Level().Server->clients_Lock();
 		Level().Server->UnBanAddress(Address);
-		Level().Server->clients_Unlock();
 	};
 
 	virtual void Info(TInfo &I) { strcpy(I, "UnBan Player by IP"); }
@@ -733,30 +714,26 @@ public:
 
 		Msg("------------------------");
 
-		Level().Server->clients_Lock();
 		u32	cnt = Level().Server->game->get_players_count();
-
 		Msg("- Total Players : %d", cnt);
+		int it = 0;
 
-		for (u32 it = 0; it < cnt; it++)
+		Level().Server->ForEachClientDo([&it](IClient* client)
 		{
-			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+			xrClientData* l_pC = smart_cast<xrClientData*>(client);
 			ip_address Address;
-
-			if (!l_pC)
-				continue;		
-
+			it++;
+			
 			Level().Server->GetClientAddress(l_pC->ID, Address, nullptr);
 
 			Msg("%d (name: %s), (session_id: %u), (hash: @), (ip: %s), (ping: %u);"
-				, it + 1
+				, it
 				, l_pC->ps->getName()
 				, l_pC->ID.value()
 				, Address.to_string().c_str()
 				, l_pC->ps->ping);
-		}
+		});
 
-		Level().Server->clients_Unlock();
 		Msg("------------------------");
 	};
 
@@ -774,77 +751,32 @@ public:
 
 		Msg("------------------------");
 
-		Level().Server->clients_Lock();
 		u32	cnt = Level().Server->game->get_players_count();
-
 		Msg("- Total Players : %d", cnt);
+		int it = 0;
 
-		for (u32 it = 0; it < cnt; it++)
-		{
-			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
-			ip_address Address;
+		Level().Server->ForEachClientDo([&it](IClient* client)
+			{
+				xrClientData* l_pC = smart_cast<xrClientData*>(client);
+				ip_address Address;
+				it++;
 
-			if (!l_pC)
-				continue;
+				Level().Server->GetClientAddress(l_pC->ID, Address, nullptr);
 
-			Level().Server->GetClientAddress(l_pC->ID, Address, nullptr);
+				Msg("%d (name: %s), (session_id: %u), (hash: @), (ip: %s), (ping: %u);"
+					, it
+					, l_pC->ps->getName()
+					, l_pC->ID.value()
+					, Address.to_string().c_str()
+					, l_pC->ps->ping);
 
-			Msg("%d (name: %s), (session_id: %u), (hash: @), (ip: %s), (ping: %u);"
-				, it + 1
-				, l_pC->ps->getName()
-				, l_pC->ID.value()
-				, Address.to_string().c_str()
-				, l_pC->ps->ping);
+				Msg("His hwid: %hu-%hu-%hu-%hu-%hu", l_pC->m_HWID.s1, l_pC->m_HWID.s2, l_pC->m_HWID.s3, l_pC->m_HWID.s4, l_pC->m_HWID.s5);
+			});
 
-			Msg("His hwid: %hu-%hu-%hu-%hu-%hu", l_pC->m_HWID.s1, l_pC->m_HWID.s2, l_pC->m_HWID.s3, l_pC->m_HWID.s4, l_pC->m_HWID.s5);
-		}
-
-		Level().Server->clients_Unlock();
 		Msg("------------------------");
 	};
 
 	virtual void Info(TInfo& I) { strcpy(I, "List Players"); }
-};
-
-class CCC_ListPlayersOld : public IConsole_Command
-{
-public:
-	CCC_ListPlayersOld(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR args)
-	{
-		if (!OnServer())
-			return;
-
-		Msg("------------------------");
-
-		Level().Server->clients_Lock();
-		u32 cnt = Level().Server->game->get_players_count();
-		
-		Msg("- Total Players : %d", cnt);
-
-		for (u32 it = 0; it < cnt; it++)
-		{
-			xrClientData *l_pC = (xrClientData *)Level().Server->client_Get(it);
-
-			if (!l_pC)
-				continue;
-
-			ip_address Address;
-			DWORD dwPort = 0;
-
-			Level().Server->GetClientAddress(l_pC->ID, Address, &dwPort);
-
-			Msg("%d : %s - %s port[%u] ping[%u]", it + 1, l_pC->ps->getName(),
-				Address.to_string().c_str(),
-				dwPort,
-				l_pC->ps->ping);
-		}
-
-		Level().Server->clients_Unlock();
-		Msg("------------------------");
-	};
-
-	virtual void Info(TInfo &I) { strcpy(I, "List Players Original"); }
 };
 
 class CCC_ListPlayers_Banned : public IConsole_Command
@@ -1830,32 +1762,22 @@ public:
 			return;
 		}
 
-		Level().Server->clients_Lock();
-		u32	cnt = Level().Server->game->get_players_count();
+		ClientID clid = id;
+		IClient* tmp_client = Level().Server->FindClient(SearcherClientByClientID(clid));
 
-		for (u32 it = 0; it < cnt; it++)
+		if (tmp_client)
 		{
-			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+			xrClientData* l_pC = smart_cast<xrClientData*>(tmp_client);
+			u64 temp = (u64)money_count;
 
-			if (!l_pC)
-				continue;
+			if (temp > (u64)MAXLONG)
+				Msg("! cant set too much money");
+			else
+				l_pC->ps->money_for_round = (s32)money_count;
 
-			if (l_pC->ID.value() == id)
-			{
-				u64 temp = (u64)money_count;
-
-				if (temp > (u64)MAXLONG)
-					Msg("! cant set too much money");
-				else
-					l_pC->ps->money_for_round = (s32)money_count;
-
-				Level().Server->clients_Unlock();
-				return;
-			}
 		}
-
-		Level().Server->clients_Unlock();
-		Msg("! client with this id not found");
+		else
+			Msg("! client with this id not found");
 	};
 
 	virtual void Info(TInfo& I) { strcpy(I, "Set money count by ClientID"); }
@@ -1879,32 +1801,22 @@ public:
 		{
 			Msg("invalid id");
 			return;
-		}	
-
-		Level().Server->clients_Lock();
-		u32	cnt = Level().Server->game->get_players_count();
-
-		for (u32 it = 0; it < cnt; it++)
-		{
-			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
-
-			if (!l_pC)
-				continue;
-
-			if (l_pC->ID.value() == id)
-			{
-				if (l_pC->ps->rank < 4)
-					l_pC->ps->rank++;
-				else
-					Msg("! cant increase rank");
-
-				Level().Server->clients_Unlock();
-				return;
-			}
 		}
 
-		Level().Server->clients_Unlock();
-		Msg("! client with this id not found");
+		ClientID clid = id;
+		IClient* tmp_client = Level().Server->FindClient(SearcherClientByClientID(clid));
+
+		if (tmp_client)
+		{
+			xrClientData* l_pC = smart_cast<xrClientData*>(tmp_client);
+
+			if (l_pC->ps->rank < 4)
+				l_pC->ps->rank++;
+			else
+				Msg("! cant increase rank");
+		}
+		else
+			Msg("! client with this id not found");
 	};
 
 	virtual void Info(TInfo& I) { strcpy(I, "Increase player rank by ClientID"); }
@@ -1930,30 +1842,20 @@ public:
 			return;
 		}
 
-		Level().Server->clients_Lock();
-		u32	cnt = Level().Server->game->get_players_count();
+		ClientID clid = id;
+		IClient* tmp_client = Level().Server->FindClient(SearcherClientByClientID(clid));
 
-		for (u32 it = 0; it < cnt; it++)
+		if (tmp_client)
 		{
-			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
+			xrClientData* l_pC = smart_cast<xrClientData*>(tmp_client);
 
-			if (!l_pC)
-				continue;
-
-			if (l_pC->ID.value() == id)
-			{
-				if (l_pC->ps->rank > 0)
-					l_pC->ps->rank--;
-				else
-					Msg("! cant decrease rank");
-
-				Level().Server->clients_Unlock();
-				return;
-			}
+			if (l_pC->ps->rank > 0)
+				l_pC->ps->rank--;
+			else
+				Msg("! cant decrease rank");
 		}
-
-		Level().Server->clients_Unlock();
-		Msg("! client with this id not found");
+		else
+			Msg("! client with this id not found");		
 	};
 
 	virtual void Info(TInfo& I) { strcpy(I, "Decrease player rank bu ClientID"); }
@@ -1979,26 +1881,16 @@ public:
 			return;
 		}
 
-		Level().Server->clients_Lock();
-		u32	cnt = Level().Server->game->get_players_count();
+		ClientID clid = id;
+		IClient* tmp_client = Level().Server->FindClient(SearcherClientByClientID(clid));
 
-		for (u32 it = 0; it < cnt; it++)
+		if (tmp_client)
 		{
-			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
-
-			if (!l_pC)
-				continue;
-
-			if (l_pC->ID.value() == id)
-			{
-				l_pC->bMutedChat = true;
-				Level().Server->clients_Unlock();
-				return;
-			}
+			xrClientData* l_pC = smart_cast<xrClientData*>(tmp_client);
+			l_pC->bMutedChat = true;
 		}
-
-		Level().Server->clients_Unlock();
-		Msg("! client with this id not found");
+		else
+			Msg("! client with this id not found");
 	};
 
 	virtual void Info(TInfo& I) { strcpy(I, "Mute chat for player by ClientID"); }
@@ -2024,26 +1916,16 @@ public:
 			return;
 		}
 
-		Level().Server->clients_Lock();
-		u32	cnt = Level().Server->game->get_players_count();
+		ClientID clid = id;
+		IClient* tmp_client = Level().Server->FindClient(SearcherClientByClientID(clid));
 
-		for (u32 it = 0; it < cnt; it++)
+		if (tmp_client)
 		{
-			xrClientData* l_pC = (xrClientData*)Level().Server->client_Get(it);
-
-			if (!l_pC)
-				continue;
-
-			if (l_pC->ID.value() == id)
-			{
-				l_pC->bMutedChat = false;
-				Level().Server->clients_Unlock();
-				return;
-			}
+			xrClientData* l_pC = smart_cast<xrClientData*>(tmp_client);
+			l_pC->bMutedChat = false;
 		}
-
-		Level().Server->clients_Unlock();
-		Msg("! client with this id not found");
+		else
+			Msg("! client with this id not found");
 	};
 
 	virtual void Info(TInfo& I) { strcpy(I, "Unmute chat for player by ClientID"); }
@@ -2115,7 +1997,6 @@ void register_mp_console_commands()
 
 	CMD1(CCC_ListPlayers, "sv_listplayers");
 	CMD1(CCC_ListPlayersHW, "sv_listplayers_hw");
-	CMD1(CCC_ListPlayersOld, "sv_listplayers_old");
 	CMD1(CCC_ListPlayers_Banned, "sv_listplayers_banned");
 
 	CMD1(CCC_ChangeGameType, "sv_changegametype");

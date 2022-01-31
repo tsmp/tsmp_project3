@@ -318,21 +318,27 @@ void game_sv_TeamDeathmatch::OnPlayerKillPlayer(game_PlayerState *ps_killer, gam
 			{
 				if (ps_killer->m_iTeamKills >= Get_TeamKillLimit())
 				{
-					m_server->clients_Lock();
-					u32 ClientCount = m_server->client_Count();
-
-					for (u32 i = 0; i < ClientCount; ++i)
+					struct player_state_searcher
 					{
-						xrClientData *pCL = (xrClientData *)m_server->client_Get(i);
+						game_PlayerState* ps_killer;
+						IClient* server_client;
 
-						if (!pCL || pCL == m_server->GetServerClient())
-							continue;
-						if (!pCL->ps || pCL->ps != ps_killer)
-							continue;
-						m_server->DisconnectClient(pCL);
-						break;
-					}
-					m_server->clients_Unlock();
+						bool operator()(IClient* client)
+						{
+							xrClientData* pCL = (xrClientData*)client;
+							if (!pCL || pCL == server_client) return false;
+							if (!pCL->ps || pCL->ps != ps_killer) return false;
+							return true;
+						}
+					};
+
+					player_state_searcher tmp_predicate;
+					tmp_predicate.ps_killer = ps_killer;
+					tmp_predicate.server_client = m_server->GetServerClient();
+					xrClientData* tmp_client = static_cast<xrClientData*>(m_server->FindClient(tmp_predicate));
+
+					if (tmp_client)
+						m_server->DisconnectClient(tmp_client);
 				}
 			}
 		}

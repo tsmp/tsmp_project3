@@ -279,27 +279,31 @@ bool game_sv_ArtefactHunt::assign_rp_tmp(game_PlayerState *ps_who,
 										 xr_vector<RPoint> &rps,
 										 xr_vector<u32> &dest,
 										 xr_vector<u32> &rpIDEnemy,
-										 xr_vector<u32> &EnemyIt,
+										 xr_vector<ClientID> &EnemyIt,
 										 bool force_find)
 {
 	dest.clear();
 	for (u32 p = 0; p < rps.size(); ++p)
 	{
 		RPoint rp = rps[p];
-
 		bool Blocked = false;
-		for (u32 p_it = 0; p_it < get_players_count(); ++p_it)
+
+		m_server->ForEachClientDo([&](IClient* client)
 		{
-			game_PlayerState *PS = get_it(p_it);
+			if (Blocked)
+				return;
+
+			xrClientData* clData = static_cast<xrClientData*>(client);
+			game_PlayerState* PS = clData->ps;
 			if (!PS)
-				continue;
+				return;
 
 			if (PS->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
-				continue;
+				return;
 
-			CObject *pPlayer = Level().Objects.net_Find(PS->GameID);
+			CObject* pPlayer = Level().Objects.net_Find(PS->GameID);
 			if (!pPlayer)
-				continue;
+				return;
 
 			if (rp.P.distance_to(pPlayer->Position()) <= 0.4f && !force_find)
 			{
@@ -308,11 +312,10 @@ bool game_sv_ArtefactHunt::assign_rp_tmp(game_PlayerState *ps_who,
 				if ((ps_who->team != PS->team) && !teams.empty())
 				{
 					rpIDEnemy.push_back(p);
-					EnemyIt.push_back(p_it);
+					EnemyIt.push_back(client->ID);
 				}
-				break;
 			}
-		};
+		});
 
 		if (Blocked || rp.Blocked)		
 			continue;
@@ -351,7 +354,7 @@ void game_sv_ArtefactHunt::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 	xr_vector<RPoint> &rps = rpoints[Team];
 	xr_vector<u32> rpID;
 	xr_vector<u32> rpIDEnemy;
-	xr_vector<u32> EnemyIt;
+	xr_vector<ClientID> EnemyIt;
 
 	if (!assign_rp_tmp(ps_who, rps, rpID, rpIDEnemy, EnemyIt, true))
 		assign_rp_tmp(ps_who, rps, rpID, rpIDEnemy, EnemyIt, false);
@@ -362,8 +365,7 @@ void game_sv_ArtefactHunt::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 		
 		RPoint &r = rps[rpIDEnemy[PointID]];
 		SetRP(E, &r);
-
-		game_PlayerState *PSE = get_it(EnemyIt[PointID]);
+		game_PlayerState* PSE = static_cast<xrClientData*>(m_server->GetClientByID(EnemyIt[PointID]))->ps;
 		R_ASSERT2(PSE, "Where is Enemy!!!");
 		CGameObject *pPlayer = smart_cast<CGameObject *>(Level().Objects.net_Find(PSE->GameID));
 		R_ASSERT2(pPlayer, "Where is Enemy Object!!!");
