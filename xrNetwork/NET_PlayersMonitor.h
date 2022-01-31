@@ -90,13 +90,13 @@ public:
 
 		if (iter != m_NetPlayers.end())
 		{
-			clResult = *client_iter;
-			m_NetPlayers.erase(client_iter);
+			clResult = *iter;
+			m_NetPlayers.erase(iter);
 		}
 
 		m_IteratingNowInPlayers = false;
 		csPlayers.Leave();
-		return ret_client;
+		return clResult;
 	}
 
 	template <typename SearchPredicate>

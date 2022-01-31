@@ -53,37 +53,41 @@ void game_sv_TeamDeathmatch::net_Export_State(NET_Packet &P, ClientID to)
 
 u8 game_sv_TeamDeathmatch::AutoTeam()
 {
-	u32 cnt = get_players_count(), l_teams[2] = {0, 0};
-	for (u32 it = 0; it < cnt; it++)
+	u32 l_teams[2] = {0, 0};
+
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
 		game_PlayerState *ps = l_pC->ps;
 		if (!l_pC->net_Ready)
-			continue;
+			return;
 		if (ps->IsSkip() || ps->team == 0 || ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
-			continue;
+			return;
 		if (ps->team >= 1)
 			++(l_teams[ps->team - 1]);
-	}
+	});
+
 	return (l_teams[0] > l_teams[1]) ? 2 : 1;
 }
 
 u32 game_sv_TeamDeathmatch::GetPlayersCountInTeams(u8 team)
 {
-	u32 cnt = get_players_count(), TeamPlayersCount = 0;
-	for (u32 it = 0; it < cnt; it++)
+	u32 TeamPlayersCount = 0;
+	
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
 		game_PlayerState *ps = l_pC->ps;
 		if (!l_pC->net_Ready)
-			continue;
+			return;
 		if (ps->IsSkip() || ps->team == 0 || ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
-			continue;
+			return;
 		if (ps->team >= team)
 			TeamPlayersCount++;
-	}
+	});
+
 	return (TeamPlayersCount);
-};
+}
 
 bool game_sv_TeamDeathmatch::TeamSizeEqual()
 {
@@ -97,19 +101,20 @@ void game_sv_TeamDeathmatch::AutoBalanceTeams()
 	//calc team count
 	s16 MinTeam, MaxTeam;
 	u32 NumToMove;
-	u32 cnt = get_players_count(), l_teams[2] = {0, 0};
-	u32 it;
-	for (it = 0; it < cnt; it++)
+	u32 l_teams[2] = {0, 0};
+
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
 		game_PlayerState *ps = l_pC->ps;
+
 		if (!l_pC->net_Ready)
-			continue;
+			return;
 		if (ps->IsSkip())
-			continue;
+			return;
 		if (ps->team >= 1)
 			++(l_teams[ps->team - 1]);
-	};
+	});
 
 	if (l_teams[0] == l_teams[1])
 		return;
@@ -132,32 +137,35 @@ void game_sv_TeamDeathmatch::AutoBalanceTeams()
 	while (NumToMove)
 	{
 		///////// get lowest score player from MaxTeam
-		u32 LowestPlayer = 0;
+		xrClientData* LowestPlayer = nullptr;
 		s16 LowestScore = 32767;
-		for (it = 0; it < cnt; it++)
+
+		m_server->ForEachClientDo([&](IClient* client)
 		{
-			xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+			xrClientData* l_pC = static_cast<xrClientData*>(client);
 			game_PlayerState *ps = l_pC->ps;
+		
 			if (!l_pC->net_Ready)
-				continue;
+				return;
 			if (ps->IsSkip())
-				continue;
+				return;
 			if (ps->team - 1 != MaxTeam)
-				continue;
+				return;
 
 			if (ps->frags() < LowestScore)
 			{
 				LowestScore = ps->frags();
-				LowestPlayer = it;
-			};
-		};
+				LowestPlayer = l_pC;
+			}
+		});
+
 		///////// move player to opposite team
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(LowestPlayer);
+		xrClientData *l_pC = LowestPlayer;
 		game_PlayerState *ps = l_pC->ps;
 		ps->team = u8((MinTeam + 1) & 0x00ff);
 		NumToMove--;
 	}
-};
+}
 
 void game_sv_TeamDeathmatch::OnRoundStart()
 {
@@ -520,20 +528,19 @@ void game_sv_TeamDeathmatch::AutoSwapTeams()
 	if (!Get_AutoTeamSwap())
 		return;
 
-	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; ++it)
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		// init
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
 		if (!l_pC || !l_pC->net_Ready || !l_pC->ps)
-			continue;
+			return;
+	
 		game_PlayerState *ps = l_pC->ps;
 		if (ps->IsSkip())
-			continue;
+			return;
 
 		if (ps->team != 0)
 			ps->team = (ps->team == 1) ? 2 : 1;
-	}
+	});
 }
 
 void game_sv_TeamDeathmatch::WriteGameState(CInifile &ini, LPCSTR sect, bool bRoundResult)

@@ -1034,7 +1034,7 @@ void game_sv_mp::SendPlayerKilledMessage(u16 KilledID, KILL_TYPE KillType, u16 K
 	P.w_u16(WeaponID);
 	P.w_u8(u8(SpecialKill));
 
-	m_server->ForEachClientDo([this](IClient* client)
+	m_server->ForEachClientDo([this, &P](IClient* client)
 	{
 		xrClientData* l_pC = dynamic_cast<xrClientData*>(client);
 		game_PlayerState* ps = l_pC->ps;
@@ -1096,7 +1096,7 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID sender)
 		P.w_stringZ(ps->getName());
 		P.w_stringZ(NewName);
 
-		m_server->ForEachClientDo([this](IClient* client)
+		m_server->ForEachClientDo([this, &P](IClient* client)
 		{
 			xrClientData* l_pC = dynamic_cast<xrClientData*>(client);
 			game_PlayerState* ps = l_pC->ps;
@@ -1139,7 +1139,7 @@ void game_sv_mp::OnPlayerSpeechMessage(NET_Packet &P, ClientID sender)
 	NP.w_u8(P.r_u8());
 	NP.w_u8(P.r_u8());
 
-	m_server->ForEachClientDo([this](IClient* client)
+	m_server->ForEachClientDo([this, &NP](IClient* client)
 	{
 		xrClientData* l_pC = dynamic_cast<xrClientData*>(client);
 		game_PlayerState* ps = l_pC->ps;

@@ -398,26 +398,24 @@ void xrServer::SendUpdatesToAll()
 			}
 		}
 
-		//.#ifdef DEBUG
 		if (g_Dump_Update_Write)
 			Msg("----------------------- ");
-		//.#endif
+
 		for (u32 p = 0; p <= m_iCurUpdatePacket; p++)
 		{
 			NET_Packet &ToSend = m_aUpdatePackets[p];
 			if (ToSend.B.count > 2)
 			{
-				//.#ifdef DEBUG
-				if (g_Dump_Update_Write && Client->ps != NULL)
+
+				if (g_Dump_Update_Write && xr_client->ps != NULL)
 				{
 					Msg("- Server Update[%d] to Client[%s]  : %d",
 						*((u16 *)ToSend.B.data),
-						Client->ps->getName(),
+						xr_client->ps->getName(),
 						ToSend.B.count);
 				}
-				//.#endif
 
-				SendTo(Client->ID, ToSend, net_flags(FALSE, TRUE));
+				SendTo(xr_client->ID, ToSend, net_flags(FALSE, TRUE));
 			}
 		}
 	});

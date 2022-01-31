@@ -93,10 +93,18 @@ u16 game_sv_GameState::get_id_2_eid(ClientID id)
 
 game_PlayerState *game_sv_GameState::get_eid(u16 id) //if exist
 {
+	if (xrClientData* data = get_client(id))
+		return data->ps;
+
+	return nullptr;
+}
+
+xrClientData *game_sv_GameState::get_client(u16 id) //if exist
+{
 	CSE_Abstract *entity = get_entity_from_eid(id);
 
 	if (entity && entity->owner && entity->owner->ps && entity->owner->ps->GameID == id)
-		return entity->owner->ps;
+		return entity->owner;
 
 	IClient* cl = m_server->FindClient([&](IClient* client)
 	{
@@ -110,33 +118,7 @@ game_PlayerState *game_sv_GameState::get_eid(u16 id) //if exist
 			return true;
 	});	
 
-	if (cl)
-		return (static_cast<xrClientData*>(cl))->ps;
-
-	return nullptr;
-}
-
-void *game_sv_GameState::get_client(u16 id) //if exist
-{
-	CSE_Abstract *entity = get_entity_from_eid(id);
-
-	if (entity && entity->owner && entity->owner->ps && entity->owner->ps->GameID == id)
-		return entity->owner;
-
-	u32 cnt = get_players_count();
-
-	for (u32 it = 0; it < cnt; ++it)
-	{
-		xrClientData *C = (xrClientData *)m_server->client_Get(it);
-
-		if (!C || !C->ps)
-			continue;
-
-		if (C->ps->HasOldID(id))
-			return C;
-	}
-
-	return nullptr;
+	return dynamic_cast<xrClientData*> (cl);
 }
 
 CSE_Abstract *game_sv_GameState::get_entity_from_eid(u16 id)
@@ -251,13 +233,13 @@ void game_sv_GameState::net_Export_State(NET_Packet &P, ClientID to)
 	// Players
 	//	u32	p_count			= get_players_count() - ((g_dedicated_server)? 1 : 0);
 	u32 p_count = 0;
-	for (u32 p_it = 0; p_it < get_players_count(); ++p_it)
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *C = (xrClientData *)m_server->client_Get(p_it);
+		xrClientData* C = static_cast<xrClientData*>(client);
 		if (!C->net_Ready || (C->ps->IsSkip() && C->ID != to))
-			continue;
+			return;
 		p_count++;
-	};
+	});
 
 	P.w_u16(u16(p_count));
 	game_PlayerState *Base = get_id(to);
@@ -282,7 +264,7 @@ void game_sv_GameState::net_Export_State(NET_Packet &P, ClientID to)
 		if (Base == A)
 			A->setFlag(GAME_PLAYER_FLAG_LOCAL);
 
-		ClientID clientID = C->ID();
+		ClientID clientID = C->ID;
 		P.w_clientID(clientID);
 		A->net_Export(P, TRUE);
 		A->flags__ = tmp_flags;
@@ -589,7 +571,7 @@ void game_sv_GameState::UpdateClientPing(xrClientData *client)
 
 void game_sv_GameState::Update()
 {
-	m_server->ForEachClientDo([&this](IClient* client)
+	m_server->ForEachClientDo([&](IClient* client)
 	{
 		xrClientData* C = static_cast<xrClientData*>(client);
 		UpdateClientPing(C);

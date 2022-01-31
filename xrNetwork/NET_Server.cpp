@@ -886,6 +886,7 @@ void IPureServer::ClearStatistic()
 	});
 };
 
+#pragma TODO("—делать как в чн")
 bool IPureServer::DisconnectClient(IClient* C)
 {
 	if (!C)

@@ -265,7 +265,6 @@ public:
 	IC int GetPort() { return psNET_Port; };
 	bool GetClientAddress(ClientID ID, ip_address &Address, DWORD *pPort = NULL);
 
-#pragma TODO("—делать как в чн")
 	virtual bool DisconnectClient(IClient *C); 
 	virtual bool DisconnectClient(IClient *C, string512 &Reason);
 	virtual bool DisconnectAddress(const ip_address &Address);

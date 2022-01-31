@@ -365,22 +365,21 @@ void game_sv_Deathmatch::OnGiveBonus(KILL_RES KillResult, game_PlayerState *pKil
 
 game_PlayerState *game_sv_Deathmatch::GetWinningPlayer()
 {
-	game_PlayerState *res = NULL;
+	game_PlayerState *res = nullptr;
 	s16 MaxFrags = -10000;
 
-	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; ++it)
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
 		game_PlayerState *ps = l_pC->ps;
 		if (!ps)
-			continue;
+			return;
 		if (ps->frags() > MaxFrags)
 		{
 			MaxFrags = ps->frags();
 			res = ps;
 		}
-	};
+	});
 	return res;
 };
 
@@ -544,26 +543,24 @@ bool game_sv_Deathmatch::checkForRoundEnd()
 
 void game_sv_Deathmatch::SM_SwitchOnNextActivePlayer()
 {
-	u32 PossiblePlayers[32];
-	u32 cnt = get_players_count();
+	xrClientData* PossiblePlayers[32]{ nullptr };
 	u32 PPlayersCount = 0;
 
-	u32 it;
-	for (it = 0; it < cnt; ++it)
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
 		game_PlayerState *ps = l_pC->ps;
 		if (!l_pC->net_Ready)
-			continue;
+			return;
 		if (ps->IsSkip())
-			continue;
+			return;
 
 		if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
-			continue;
-		PossiblePlayers[PPlayersCount++] = it;
-	};
+			return;
+		PossiblePlayers[PPlayersCount++] = l_pC;
+	});
 
-	CObject *pNewObject = NULL;
+	CObject *pNewObject = nullptr;
 	if (!PPlayersCount)
 	{
 		xrClientData *C = (xrClientData *)m_server->GetServerClient();
@@ -571,15 +568,14 @@ void game_sv_Deathmatch::SM_SwitchOnNextActivePlayer()
 	}
 	else
 	{
-		it = PossiblePlayers[::Random.randI((int)PPlayersCount)];
-		xrClientData *C = NULL;
-		C = (xrClientData *)m_server->client_Get(it);
+		xrClientData *C = PossiblePlayers[::Random.randI((int)PPlayersCount)];
+		
 		pNewObject = Level().Objects.net_Find(C->ps->GameID);
 		CActor *pActor = smart_cast<CActor *>(pNewObject);
 
 		if (!pActor || !pActor->g_Alive() || !pActor->inventory().ActiveItem())
 			return;
-	};
+	}
 	SM_SwitchOnPlayer(pNewObject);
 };
 
@@ -629,25 +625,26 @@ BOOL game_sv_Deathmatch::AllPlayers_Ready()
 	if (!m_server->GetServerClient())
 		return FALSE;
 	// Check if all players ready
-	u32 cnt = get_players_count();
 	u32 ready = 0;
-	for (u32 it = 0; it < cnt; ++it)
+	u32 cnt = m_server->GetClientsCount();
+	
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
 		game_PlayerState *ps = l_pC->ps;
+
 		if (!l_pC->net_Ready)
 		{
-			if (l_pC->ID == m_server->GetServerClient()->ID)
-			{
-				continue;
-			}
+			if (l_pC->ID == m_server->GetServerClient()->ID)			
+				return;			
 			++ready;
-		};
+		}
+
 		if (ps->testFlag(GAME_PLAYER_FLAG_READY))
 			++ready;
 		else if (ps->IsSkip())
 			++ready;
-	}
+	});
 
 	if (ready == cnt && ready != 0)
 		return TRUE;
@@ -1250,22 +1247,21 @@ void game_sv_Deathmatch::OnTeamScore(u32 Team, bool Minor)
 	if (!pTeam)
 		return;
 
-	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; ++it)
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		// init
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
 		game_PlayerState *ps = l_pC->ps;
+
 		if (!l_pC->net_Ready)
-			continue;
+			return;
 		if (ps->IsSkip())
-			continue;
+			return;
 
 		if (ps->team == s16(Team))
 			Player_AddMoney(ps, ((Minor) ? pTeam->m_iM_RoundWin_Minor : pTeam->m_iM_RoundWin));
 		else
 			Player_AddMoney(ps, ((Minor) ? pTeam->m_iM_RoundLoose_Minor : pTeam->m_iM_RoundLoose));
-	}
+	});
 }
 
 void game_sv_Deathmatch::net_Export_State(NET_Packet &P, ClientID id_to)
@@ -1774,18 +1770,17 @@ void game_sv_Deathmatch::check_Player_for_Invincibility(game_PlayerState *ps)
 
 void game_sv_Deathmatch::check_InvinciblePlayers()
 {
-	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; ++it)
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
 		game_PlayerState *ps = l_pC->ps;
 		if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
-			continue;
+			return;
 		u16 OldFlags = ps->flags__;
 		check_Player_for_Invincibility(ps);
 		if (ps->flags__ != OldFlags)
 			signal_Syncronize();
-	};
+	});
 };
 
 void game_sv_Deathmatch::RespawnPlayer(ClientID id_who, bool NoSpectator)
@@ -1829,18 +1824,21 @@ void game_sv_Deathmatch::check_ForceRespawn()
 {
 	if (!GetForceRespawn())
 		return;
-	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; ++it)
+
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
 		game_PlayerState *ps = l_pC->ps;
+
 		if (!l_pC->net_Ready || ps->IsSkip())
-			continue;
+			return;
 		if (!ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
-			continue;
+			return;
 		if (ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
-			continue;
+			return;
+		
 		u32 CurTime = Device.dwTimeGlobal;
+		
 		if (ps->DeathTime + GetForceRespawn() * 1000 < CurTime)
 		{
 			SetPlayersDefItems(ps);
@@ -1848,8 +1846,8 @@ void game_sv_Deathmatch::check_ForceRespawn()
 			SpawnWeaponsForActor(l_pC->owner, ps);
 			Check_ForClearRun(ps);
 		}
-	};
-};
+	});
+}
 
 INT g_sv_Skip_Winner_Waiting = 0;
 bool game_sv_Deathmatch::HasChampion()
@@ -1858,31 +1856,36 @@ bool game_sv_Deathmatch::HasChampion()
 	s16 MaxFragsMin = -100;
 	s16 MaxFragsCurr = MaxFragsMin;
 
-	u32 cnt = get_players_count();
-	for (u32 it = 0; it < cnt; ++it)
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
 		game_PlayerState *ps = l_pC->ps;
+	
 		if (!ps)
-			continue;
+			return;
+
 		if (ps->frags() > MaxFragsCurr)
 		{
 			MaxFragsCurr = ps->frags();
 			res = ps;
 		}
-	};
+	});
 
-	for (u32 it = 0; it < cnt; ++it)
+	bool noChampion = true;
+
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *l_pC = (xrClientData *)m_server->client_Get(it);
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
 		game_PlayerState *ps = l_pC->ps;
+	
 		if (!ps)
-			continue;
-		if ((ps->frags() == MaxFragsCurr) && (ps != res))
-		{
-			return false;
-		}
-	};
+			return;
+		if ((ps->frags() == MaxFragsCurr) && (ps != res))		
+			noChampion = true;
+	});
+	
+	if (noChampion)
+		return false;
 
 	return (MaxFragsCurr > MaxFragsMin || g_sv_Skip_Winner_Waiting);
 };

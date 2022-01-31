@@ -104,7 +104,7 @@ public:
 	virtual ~game_sv_GameState();
 	// Main accessors
 	virtual game_PlayerState *get_eid(u16 id);
-	virtual void *get_client(u16 id); //if exist
+	virtual xrClientData *get_client(u16 id); //if exist
 	virtual game_PlayerState *get_id(ClientID id);
 
 	virtual LPCSTR get_name_id(ClientID id);
