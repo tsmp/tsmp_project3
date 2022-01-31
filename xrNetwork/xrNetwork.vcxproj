@@ -327,6 +327,7 @@
     <ClInclude Include="NET_Compressor.h" />
     <ClInclude Include="NET_Log.h" />
     <ClInclude Include="NET_Messages.h" />
+    <ClInclude Include="NET_PlayersMonitor.h" />
     <ClInclude Include="NET_Server.h" />
     <ClInclude Include="NET_Shared.h" />
     <ClInclude Include="NET_utils.h" />

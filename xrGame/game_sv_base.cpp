@@ -105,7 +105,7 @@ LPCSTR game_sv_GameState::get_player_name_id(ClientID id)
 
 u32 game_sv_GameState::get_players_count()
 {
-	return m_server->client_Count();
+	return m_server->GetClientsCount();
 }
 
 u16 game_sv_GameState::get_id_2_eid(ClientID id)

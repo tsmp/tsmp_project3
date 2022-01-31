@@ -2,6 +2,7 @@
 
 #include "net_shared.h"
 #include "NET_Common.h"
+#include "NET_PlayersMonitor.h"
 
 struct SClientConnectData
 {
@@ -16,8 +17,6 @@ struct SClientConnectData
 		process_id = 0;
 	}
 };
-
-// -----------------------------------------------------
 
 class IPureServer;
 
@@ -168,7 +167,17 @@ public:
 	xr_string BannedTimeTo() const;
 };
 
-//==============================================================================
+struct ClientIdSearchPredicate
+{
+	ClientID clientId;
+	ClientIdSearchPredicate(ClientID clientIdToSearch) : clientId(clientIdToSearch) {}
+	
+	inline bool operator()(IClient* client) const
+	{
+		return client->ID == clientId;
+	}
+};
+
 class CServerInfo;
 
 class XRNETWORK_API
@@ -191,17 +200,11 @@ protected:
 	IDirectPlay8Address *net_Address_device;
 
 	NET_Compressor net_Compressor;
-
-	xrCriticalSection csPlayers;
-	xr_vector<IClient *> net_Players;
-	xr_vector<IClient *> net_Players_disconnected;
 	IClient *SV_Client;
+	PlayersMonitor net_players;
 
 	int psNET_Port;
-
-	xr_vector<IBannedClient *> BannedAddresses;
-
-	//
+	xr_vector<IBannedClient*> BannedAddresses;	
 	xrCriticalSection csMessage;
 
 	void client_link_aborted(ClientID ID);
@@ -257,17 +260,19 @@ public:
 	virtual void client_Replicate() = 0;		 // replicate current state to client
 	virtual void client_Destroy(IClient *C) = 0; // destroy client info
 
-	IC u32 client_Count() { return net_Players.size(); }
-	IC IClient *client_Get(u32 num) { return net_Players[num]; }
+	//IC u32 client_Count() { return net_Players.size(); }
+	//IC IClient *client_Get(u32 num) { return net_Players[num]; }
 
-	IC u32 disconnected_client_Count() { return net_Players_disconnected.size(); }
-	IC IClient *disconnected_client_Get(u32 num) { return net_Players_disconnected[num]; }
+	//IC u32 disconnected_client_Count() { return net_Players_disconnected.size(); }
+	//IC IClient *disconnected_client_Get(u32 num) { return net_Players_disconnected[num]; }
 
 	BOOL HasBandwidth(IClient *C);
 
 	IC int GetPort() { return psNET_Port; };
 	bool GetClientAddress(ClientID ID, ip_address &Address, DWORD *pPort = NULL);
-	virtual bool DisconnectClient(IClient *C);
+
+#pragma TODO("—делать как в чн")
+	virtual bool DisconnectClient(IClient *C); 
 	virtual bool DisconnectClient(IClient *C, string512 &Reason);
 	virtual bool DisconnectAddress(const ip_address &Address);
 	virtual void BanClient(IClient *C, u32 BanTime);
@@ -281,12 +286,31 @@ public:
 	virtual void Assign_ServerType(string512 &res){};
 	virtual void GetServerInfo(CServerInfo *si){};
 
+	u32	GetClientsCount() { return net_players.ClientsCount(); };
 	IClient *GetServerClient() { return SV_Client; };
+
+	template<typename SearchPredicate>
+	IClient* FindClient(SearchPredicate predicate) { return net_players.GetFoundClient(predicate); }
+
+	template<typename ActionFunctor>
+	void ForEachClientDo(ActionFunctor action) { net_players.ForEachClientDo(action); }
+
+	template<typename SenderFunctor>
+	void ForEachClientDoSender(SenderFunctor action) 
+	{
+		csMessage.Enter();
+		net_players.ForEachClientDo(action);
+		csMessage.Leave();
+	}
+
+	template<typename ActionFunctor>
+	void ForEachDisconnectedClientDo(ActionFunctor action) { net_players.ForEachDisconnectedClientDo(action); };
+
+	IClient *GetClientByID(ClientID clientId) { return net_players.GetFoundClient(ClientIdSearchPredicate(clientId)); };
+	IClient *GetDisconnectedClientByID(ClientID clientId) { return net_players.GetFoundDisconnectedClient(ClientIdSearchPredicate(clientId)); }
 
 	const shared_str &GetConnectOptions() const { return connect_options; }
 
 private:
 	virtual void _Recieve(const void *data, u32 data_size, u32 param);
 };
-
-// =========================================================================================================

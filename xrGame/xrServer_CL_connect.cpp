@@ -77,15 +77,11 @@ void xrServer::OnCL_Connected(IClient *_CL)
 {
 	xrClientData *CL = (xrClientData *)_CL;
 	CL->net_Accepted = TRUE;
-	///	Server_Client_Check(CL);
-
-	csPlayers.Enter();
 
 	Export_game_type(CL);
 	Perform_game_export();
 	SendConnectionData(CL);
 
-	//
 	NET_Packet P;
 	P.B.count = 0;
 	P.w_clientID(CL->ID);
@@ -93,7 +89,6 @@ void xrServer::OnCL_Connected(IClient *_CL)
 	ClientID clientID;
 	clientID.set(0);
 	game->AddDelayedEvent(P, GAME_EVENT_PLAYER_CONNECTED, 0, clientID);
-	csPlayers.Leave();
 	game->ProcessDelayedEvent();
 }
 
