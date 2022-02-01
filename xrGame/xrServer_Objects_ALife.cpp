@@ -1361,16 +1361,30 @@ void CSE_ALifeHelicopter::STATE_Write(NET_Packet &tNetPacket)
 	tNetPacket.w_stringZ(engine_sound);
 }
 
-void CSE_ALifeHelicopter::UPDATE_Read(NET_Packet &tNetPacket)
+void CSE_ALifeHelicopter::UPDATE_Read(NET_Packet &P)
 {
-	inherited1::UPDATE_Read(tNetPacket);
-	inherited3::UPDATE_Read(tNetPacket);
+	if (firstUpdate)
+	{
+		firstUpdate = false;
+		return;
+	}
+
+	P.r_vec3(State.position);
+
+	P.r_float_q8(State.quaternion.x, -1.0, 1.0);
+	P.r_float_q8(State.quaternion.y, -1.0, 1.0);
+	P.r_float_q8(State.quaternion.z, -1.0, 1.0);
+	P.r_float_q8(State.quaternion.w, -1.0, 1.0);
 }
 
-void CSE_ALifeHelicopter::UPDATE_Write(NET_Packet &tNetPacket)
+void CSE_ALifeHelicopter::UPDATE_Write(NET_Packet &P)
 {
-	inherited1::UPDATE_Write(tNetPacket);
-	inherited3::UPDATE_Write(tNetPacket);
+	P.w_vec3(State.position);
+
+	P.w_float_q8(State.quaternion.x, -1.0, 1.0);
+	P.w_float_q8(State.quaternion.y, -1.0, 1.0);
+	P.w_float_q8(State.quaternion.z, -1.0, 1.0);
+	P.w_float_q8(State.quaternion.w, -1.0, 1.0);
 }
 
 void CSE_ALifeHelicopter::load(NET_Packet &tNetPacket)

@@ -266,7 +266,6 @@ void CHelicopter::net_Destroy()
 
 void CHelicopter::SpawnInitPhysics(CSE_Abstract *D)
 {
-
 	PPhysicsShell() = P_build_Shell(this, false);
 	if (g_Alive())
 	{
@@ -275,6 +274,79 @@ void CHelicopter::SpawnInitPhysics(CSE_Abstract *D)
 		PPhysicsShell()->set_ContactCallback(ContactCallbackAlife);
 		PPhysicsShell()->Disable();
 	}
+}
+
+void CHelicopter::net_Export(NET_Packet &P)
+{
+	SPHNetState State;
+	CPHSynchronize* pSyncObj = this->PHGetSyncItem(0);
+	R_ASSERT(pSyncObj);
+	pSyncObj->get_State(State);
+
+	P.w_vec3(State.position);
+	P.w_float_q8(State.quaternion.x, -1.0, 1.0);
+	P.w_float_q8(State.quaternion.y, -1.0, 1.0);
+	P.w_float_q8(State.quaternion.z, -1.0, 1.0);
+	P.w_float_q8(State.quaternion.w, -1.0, 1.0);
+}
+
+void CHelicopter::net_Import(NET_Packet &P)
+{
+	SHeliNetUpdate N;
+	N.TimeStamp = Device.dwTimeGlobal;
+	SPHNetState &State = N.State;
+
+	P.r_vec3(State.position);
+	P.r_float_q8(State.quaternion.x, -1.0, 1.0);
+	P.r_float_q8(State.quaternion.y, -1.0, 1.0);
+	P.r_float_q8(State.quaternion.z, -1.0, 1.0);
+	P.r_float_q8(State.quaternion.w, -1.0, 1.0);
+
+	if (this->cast_game_object()->Local())
+		return;
+
+	m_NetUpdates.push_back(N);
+
+	while (m_NetUpdates.size() > 2)
+		m_NetUpdates.pop_front();
+}
+
+float CHelicopter::InterpolateStates(SHeliNetUpdate const& first, SHeliNetUpdate const& last, SPHNetState& current)
+{
+	u32 CurTime = Device.dwTimeGlobal;
+
+	if (CurTime == last.TimeStamp)
+		return 0.f;
+
+	float factor = float(CurTime - last.TimeStamp) / float(last.TimeStamp - first.TimeStamp);
+	float result = factor;
+	clamp(factor, 0.f, 1.f);
+	
+	current.position.x = first.State.position.x + (factor * (last.State.position.x - first.State.position.x));
+	current.position.y = first.State.position.y + (factor * (last.State.position.y - first.State.position.y));
+	current.position.z = first.State.position.z + (factor * (last.State.position.z - first.State.position.z));
+
+	current.quaternion.slerp(first.State.quaternion, last.State.quaternion, factor);
+	return result;
+}
+
+void CHelicopter::Interpolate()
+{
+	if (OnServer() || !getVisible() || !m_pPhysicsShell || m_NetUpdates.empty())
+		return;	
+	
+	// simple linear interpolation...
+	SPHNetState newState = m_NetUpdates.front().State;
+
+	if (m_NetUpdates.size() >= 2)
+	{
+		if(InterpolateStates(m_NetUpdates.front(), m_NetUpdates.back(), newState) >= 1.f)
+			m_NetUpdates.pop_front();		
+	}
+
+	CPHSynchronize* pSyncObj = this->PHGetSyncItem(0);
+	pSyncObj->set_State(newState);
+	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
 }
 
 void CHelicopter::net_Save(NET_Packet &P)
@@ -376,7 +448,6 @@ void CHelicopter::MoveStep()
 	angle_lerp(m_body.currBodyHPB.z, needBodyB, m_body.model_angSpeedBank, STEP);
 
 	XFORM().setHPB(m_body.currBodyHPB.x, m_body.currBodyHPB.y, m_body.currBodyHPB.z);
-
 	XFORM().translate_over(m_movement.currP);
 }
 
@@ -384,6 +455,13 @@ void CHelicopter::UpdateCL()
 {
 	inherited::UpdateCL();
 	CExplosive::UpdateCL();
+
+	if (!IsGameTypeSingle())	
+		Interpolate();
+	
+	if (OnClient())
+		return;
+
 	if (PPhysicsShell() && (state() == CHelicopter::eDead))
 	{
 
@@ -437,6 +515,9 @@ void CHelicopter::UpdateCL()
 
 void CHelicopter::shedule_Update(u32 time_delta)
 {
+	if (OnClient())
+		return;
+
 	if (!getEnabled())
 		return;
 

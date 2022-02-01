@@ -13,6 +13,7 @@
 #include "patrol_path.h"
 #include "PHDestroyable.h"
 #include "Explosive.h"
+#include "PHSynchronize.h"
 
 class CScriptGameObject;
 class CLAItem;
@@ -25,6 +26,7 @@ enum EHeliHuntState
 	eEnemyPoint,
 	eEnemyEntity
 };
+
 struct SHeliEnemy
 {
 	EHeliHuntState type;
@@ -46,6 +48,7 @@ enum EHeliBodyState
 	eBodyByPath,
 	eBodyToPoint
 };
+
 struct SHeliBodyState
 {
 	CHelicopter *parent;
@@ -78,6 +81,13 @@ enum EHeilMovementState
 	eMovLanding,
 	eMovTakeOff
 };
+
+struct SHeliNetUpdate
+{
+	u32	TimeStamp;
+	SPHNetState	State;
+};
+
 struct SHeliMovementState
 {
 	struct STmpPt
@@ -86,6 +96,7 @@ struct SHeliMovementState
 		float dir_h;
 		STmpPt(const Fvector &p, const float h) : point(p), dir_h(h){};
 	};
+
 	~SHeliMovementState();
 	CHelicopter *parent;
 	EHeilMovementState type;
@@ -230,13 +241,12 @@ protected:
 	SHeliEnemy m_enemy;
 	SHeliBodyState m_body;
 	SHeliMovementState m_movement;
+	xr_deque<SHeliNetUpdate> m_NetUpdates;
 
 	// on death...
 	Fvector m_death_ang_vel;
 	float m_death_lin_vel_k;
 	shared_str m_death_bones_to_hide;
-
-	//////////////////////////////////////////////////
 
 	// sound, light, particles...
 	ref_sound m_engineSound;
@@ -267,7 +277,8 @@ protected:
 	typedef xr_map<s16, float>::iterator bonesIt;
 	float m_stepRemains;
 
-	void UpdateState();
+	void Interpolate();
+	float InterpolateStates(SHeliNetUpdate const &first, SHeliNetUpdate const &last, SPHNetState &current);
 
 public:
 	void ExplodeHelicopter();
@@ -289,8 +300,8 @@ public:
 
 	virtual BOOL net_Spawn(CSE_Abstract *DC);
 	virtual void net_Destroy();
-	virtual void net_Export(NET_Packet &P){};
-	virtual void net_Import(NET_Packet &P){};
+	virtual void net_Export(NET_Packet &P);
+	virtual void net_Import(NET_Packet &P);
 	virtual void net_Relcase(CObject *O);
 	virtual void save(NET_Packet &output_packet);
 	virtual void load(IReader &input_packet);
