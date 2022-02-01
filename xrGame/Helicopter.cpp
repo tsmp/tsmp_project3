@@ -236,7 +236,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract *DC)
 
 	if (g_Alive())
 		processing_activate();
-	TurnEngineSound(false);
+	TurnEngineSound(true);
 	if (pUserData->section_exist("destroyed"))
 		CPHDestroyable::Load(pUserData, "destroyed");
 #ifdef DEBUG
@@ -460,7 +460,11 @@ void CHelicopter::UpdateCL()
 		Interpolate();
 	
 	if (OnClient())
+	{
+		if (m_engineSound._feedback())
+			m_engineSound.set_position(XFORM().c);
 		return;
+	}
 
 	if (PPhysicsShell() && (state() == CHelicopter::eDead))
 	{
