@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "game_sv_freeplay.h"
+#include "xrserver_objects_alife_monsters.h"
+#include "ui/UIBuyWndShared.h"
 
 ENGINE_API bool g_dedicated_server;
 
@@ -14,6 +16,11 @@ game_sv_Freeplay::~game_sv_Freeplay() {}
 void game_sv_Freeplay::Create(shared_str &options)
 {
 	inherited::Create(options);
+
+	TeamStruct NewTeam;
+	NewTeam.aSkins.push_back("stalker_killer_antigas");
+	TeamList.push_back(NewTeam);
+
 	switch_Phase(GAME_PHASE_PENDING);
 }
 
@@ -93,3 +100,53 @@ void game_sv_Freeplay::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameI
 {
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
 }
+
+void game_sv_Freeplay::OnPlayerReady(ClientID id)
+{
+	switch (m_phase)
+	{
+	case GAME_PHASE_INPROGRESS:
+	{
+		xrClientData* xrCData = m_server->ID_to_client(id);
+		game_PlayerState* ps = get_id(id);
+		if (ps->IsSkip())
+			break;
+
+		if (!(ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)))
+			break;
+
+		xrClientData* xrSCData = (xrClientData*)m_server->GetServerClient();
+		CSE_Abstract* pOwner = xrCData->owner;
+
+		RespawnPlayer(id, false);
+		pOwner = xrCData->owner;
+				
+		if (CSE_ALifeCreatureActor* pA = smart_cast<CSE_ALifeCreatureActor*>(pOwner))		
+			SpawnItemsForActor(pOwner, ps);
+	}
+	break;
+	};
+}
+
+void game_sv_Freeplay::SpawnItemsForActor(CSE_Abstract* pE, game_PlayerState* ps)
+{
+	CSE_ALifeCreatureActor* pA = smart_cast<CSE_ALifeCreatureActor*>(pE);
+	R_ASSERT2(pA, "Owner not a Actor");
+	if (!pA)
+		return;
+
+	if (!(ps->team < s16(TeamList.size())))
+		return;
+
+	SpawnWeapon4Actor(pA->ID, "mp_wpn_pm", 0);
+	SpawnWeapon4Actor(pA->ID, "mp_wpn_abakan", 0);
+	SpawnWeapon4Actor(pA->ID, "mp_medkit", 0);
+
+	for (u32 i = 0; i < ps->pItemList.size(); i++)
+	{
+		u16 ItemID = ps->pItemList[i];
+		SpawnWeapon4Actor(pA->ID, *m_strWeaponsData->GetItemName(ItemID & 0x00FF), u8((ItemID & 0xFF00) >> 0x08));
+	};
+
+	Player_AddMoney(ps, ps->LastBuyAcount);
+};

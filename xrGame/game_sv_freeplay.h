@@ -15,10 +15,12 @@ public:
 	virtual LPCSTR type_name() const override { return "freeplay"; };
 	virtual void Create(shared_str &options) override;
 	virtual void Update() override;
-
+	
+	virtual void OnPlayerReady(ClientID id) override;
 	virtual void OnPlayerConnect(ClientID id_who) override;
 	virtual void OnPlayerConnectFinished(ClientID id_who) override;
 	virtual void OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID) override;
 	
 	void SetStartMoney(ClientID &id_who);
+	void SpawnItemsForActor(CSE_Abstract* pE, game_PlayerState* ps);
 };
