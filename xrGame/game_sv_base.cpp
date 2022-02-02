@@ -310,6 +310,24 @@ void game_sv_GameState::OnPlayerDisconnect(ClientID /**id_who/**/, LPSTR, u16)
 	signal_Syncronize();
 }
 
+bool IsCompatibleSpawnGameType(u8 spawnGameType, u32 currentGameType)
+{
+	if (spawnGameType == rpgtGameDeathmatch && currentGameType == GAME_DEATHMATCH)
+		return true;
+
+	if (spawnGameType == rpgtGameTeamDeathmatch && currentGameType == GAME_TEAMDEATHMATCH)
+		return true;
+
+	if (spawnGameType == rpgtGameArtefactHunt && currentGameType == GAME_ARTEFACTHUNT)
+		return true;
+
+	// Freeplay uses deathmatch rpoints
+	if (spawnGameType == rpgtGameDeathmatch && currentGameType == GAME_FREEPLAY)
+		return true;
+
+	return false;
+}
+
 static float rpoints_Dist[TEAM_COUNT] = {1000.f, 1000.f, 1000.f, 1000.f};
 void game_sv_GameState::Create(shared_str &options)
 {
@@ -335,18 +353,11 @@ void game_sv_GameState::Create(shared_str &options)
 				VERIFY(team >= 0 && team < 4);
 				type = O->r_u8();
 				GameType = O->r_u8();
-				//u16 res					=
 				O->r_u8();
 
-				if (GameType != rpgtGameAny)
-				{
-					if ((GameType == rpgtGameDeathmatch && Type() != GAME_DEATHMATCH) ||
-						(GameType == rpgtGameTeamDeathmatch && Type() != GAME_TEAMDEATHMATCH) ||
-						(GameType == rpgtGameArtefactHunt && Type() != GAME_ARTEFACTHUNT))
-					{
-						continue;
-					};
-				};
+				if (GameType != rpgtGameAny && !IsCompatibleSpawnGameType(GameType, Type()))
+					continue;				
+
 				switch (type)
 				{
 				case rptActorSpawn:
