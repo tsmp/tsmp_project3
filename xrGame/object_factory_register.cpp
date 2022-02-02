@@ -153,12 +153,14 @@
 #include "game_sv_teamdeathmatch.h"
 #include "game_sv_ArtefactHunt.h"
 #include "game_sv_hardmatch.h"
+#include "game_sv_freeplay.h"
 
 #include "game_cl_single.h"
 #include "game_cl_deathmatch.h"
 #include "game_cl_teamdeathmatch.h"
 #include "game_cl_ArtefactHunt.h"
 #include "game_cl_hardmatch.h"
+#include "game_cl_freeplay.h"
 
 #include "UIGameSP.h"
 #include "UIGameAHunt.h"
@@ -195,12 +197,14 @@ void CObjectFactory::register_classes()
 	add<game_sv_TeamDeathmatch>(CLSID_SV_GAME_TEAMDEATHMATCH, "game_sv_team_deathmatch");
 	add<game_sv_ArtefactHunt>(CLSID_SV_GAME_ARTEFACTHUNT, "game_sv_artefact_hunt");
 	add<game_sv_Hardmatch>(CLSID_SV_GAME_HARDMATCH, "game_sv_hardmatch");
+	add<game_sv_Freeplay>(CLSID_SV_GAME_FREEPLAY, "game_sv_freeplay");
 	//Client Game type
 	add<game_cl_Single>(CLSID_CL_GAME_SINGLE, "game_cl_single");
 	add<game_cl_Deathmatch>(CLSID_CL_GAME_DEATHMATCH, "game_cl_deathmatch");
 	add<game_cl_TeamDeathmatch>(CLSID_CL_GAME_TEAMDEATHMATCH, "game_cl_team_deathmatch");
 	add<game_cl_ArtefactHunt>(CLSID_CL_GAME_ARTEFACTHUNT, "game_cl_artefact_hunt");
 	add<game_cl_Hardmatch>(CLSID_CL_GAME_HARDMATCH, "game_cl_hardhmatch");
+	add<game_cl_Freeplay>(CLSID_CL_GAME_FREEPLAY, "game_cl_freeplay");
 
 	//Game UI type
 	add<CUIGameSP>(CLSID_GAME_UI_SINGLE, "game_ui_single");

@@ -180,6 +180,14 @@ CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 			return (TEXT2CLSID("CL_HM"));
 	}
 
+	if (!xr_strcmp(game_type_name, "freeplay"))
+	{
+		if (isServer)
+			return (TEXT2CLSID("SV_FP"));
+		else
+			return (TEXT2CLSID("CL_FP"));
+}
+
 #ifndef ALIFE_MP
 	if (!g_dedicated_server)
 #endif

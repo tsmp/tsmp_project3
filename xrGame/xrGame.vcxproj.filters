@@ -2308,6 +2308,12 @@
     <Filter Include="Core\Server\Games\client\hardmatch">
       <UniqueIdentifier>{3adfbb1c-342c-4a76-98b7-895c1b1b54b9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Server\Games\client\freeplay">
+      <UniqueIdentifier>{5fbd545b-2964-4237-b2a3-ec1fbab66184}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Server\Games\server\freeplay">
+      <UniqueIdentifier>{eede75e7-6b59-444b-b0e3-dd06fb339ebc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6594,6 +6600,12 @@
     <ClInclude Include="game_cl_hardmatch.h">
       <Filter>Core\Server\Games\client\hardmatch</Filter>
     </ClInclude>
+    <ClInclude Include="game_sv_freeplay.h">
+      <Filter>Core\Server\Games\server\freeplay</Filter>
+    </ClInclude>
+    <ClInclude Include="game_cl_freeplay.h">
+      <Filter>Core\Server\Games\client\freeplay</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9762,6 +9774,12 @@
     </ClCompile>
     <ClCompile Include="game_sv_hardmatch.cpp">
       <Filter>Core\Server\Games\server\hardmatch</Filter>
+    </ClCompile>
+    <ClCompile Include="game_sv_freeplay.cpp">
+      <Filter>Core\Server\Games\server\freeplay</Filter>
+    </ClCompile>
+    <ClCompile Include="game_cl_freeplay.cpp">
+      <Filter>Core\Server\Games\client\freeplay</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

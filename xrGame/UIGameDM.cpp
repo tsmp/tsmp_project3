@@ -90,7 +90,8 @@ CUIGameDM::CUIGameDM()
 void CUIGameDM::SetClGame(game_cl_GameState *g)
 {
 	inherited::SetClGame(g);
-	m_game = smart_cast<game_cl_Deathmatch *>(g);
+	//m_game = smart_cast<game_cl_Deathmatch *>(g);
+	m_game = smart_cast<game_cl_mp*>(g);
 	R_ASSERT(m_game);
 
 	if (smart_cast<game_cl_Hardmatch*>(g))

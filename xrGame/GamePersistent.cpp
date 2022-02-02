@@ -200,6 +200,8 @@ void CGamePersistent::UpdateGameType()
 	if (!xr_strcmp(m_game_params.m_game_type, "hm"))
 		strcpy_s(m_game_params.m_game_type, "hardmatch");
 	
+	if (!xr_strcmp(m_game_params.m_game_type, "fp"))
+		strcpy_s(m_game_params.m_game_type, "freeplay");
 
 	if (!xr_strcmp(m_game_params.m_game_type, "single"))
 		m_game_params.m_e_game_type = GAME_SINGLE;
@@ -215,6 +217,9 @@ void CGamePersistent::UpdateGameType()
 
 	if (!xr_strcmp(m_game_params.m_game_type, "hardmatch"))
 		m_game_params.m_e_game_type = GAME_HARDMATCH;
+
+	if (!xr_strcmp(m_game_params.m_game_type, "freeplay"))
+		m_game_params.m_e_game_type = GAME_FREEPLAY;
 
 	// На клиенте может остаться GAME_ANY если мы не знаем тип игры еще
 	

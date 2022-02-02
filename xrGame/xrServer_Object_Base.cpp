@@ -373,7 +373,8 @@ Flags16 &CSE_Abstract::flags()
 	return (s_flags);
 }
 
-xr_token game_types[] = {
+xr_token game_types[] = 
+{
 	{"any game", GAME_ANY},
 	{"single", GAME_SINGLE},
 	{"deathmatch", GAME_DEATHMATCH},
@@ -383,7 +384,9 @@ xr_token game_types[] = {
 	{"teamdeathmatch", GAME_TEAMDEATHMATCH},
 	{"artefacthunt", GAME_ARTEFACTHUNT},
 	{"hardmatch", GAME_HARDMATCH},
-	{0, 0}};
+	{"freeplay",GAME_FREEPLAY},
+	{0, 0}
+};
 
 void CSE_Abstract::FillProps(LPCSTR pref, PropItemVec &items)
 {

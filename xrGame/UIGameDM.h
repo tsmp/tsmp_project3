@@ -3,6 +3,8 @@
 #include "UIGameCustom.h"
 #include "ui/KillMessageStruct.h"
 
+#include "game_cl_mp.h"
+
 class CUIDMPlayerList;
 class CUIDMStatisticWnd;
 class CUISkinSelectorWnd;
@@ -20,7 +22,8 @@ class CInventoryBox;
 class CUIGameDM : public CUIGameCustom
 {
 private:
-	game_cl_Deathmatch *m_game;
+	//game_cl_Deathmatch *m_game;
+	game_cl_mp *m_game;
 	using inherited = CUIGameCustom;
 	bool m_IsHardmatch;
 
