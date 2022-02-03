@@ -96,6 +96,21 @@ void game_sv_Freeplay::OnPlayerConnectFinished(ClientID id_who)
 	}
 }
 
+void game_sv_Freeplay::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID sender)
+{
+	if(type == GAME_EVENT_PLAYER_KILL) // g_kill
+	{
+		u16 ID = P.r_u16();
+
+		if(xrClientData* l_pC = get_client(ID))
+			KillPlayer(l_pC->ID, l_pC->ps->GameID);
+
+		return;
+	}
+
+	inherited::OnEvent(P, type, time, sender);
+}
+
 void game_sv_Freeplay::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 {
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
@@ -103,18 +118,16 @@ void game_sv_Freeplay::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameI
 
 void game_sv_Freeplay::OnPlayerReady(ClientID id)
 {
-	switch (m_phase)
-	{
-	case GAME_PHASE_INPROGRESS:
+	if(m_phase == GAME_PHASE_INPROGRESS)
 	{
 		xrClientData* xrCData = m_server->ID_to_client(id);
 		game_PlayerState* ps = get_id(id);
 		if (ps->IsSkip())
-			break;
+			return;
 
 		if (!(ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)))
-			break;
-
+			return;
+		
 		xrClientData* xrSCData = (xrClientData*)m_server->GetServerClient();
 		CSE_Abstract* pOwner = xrCData->owner;
 
@@ -124,8 +137,6 @@ void game_sv_Freeplay::OnPlayerReady(ClientID id)
 		if (CSE_ALifeCreatureActor* pA = smart_cast<CSE_ALifeCreatureActor*>(pOwner))		
 			SpawnItemsForActor(pOwner, ps);
 	}
-	break;
-	};
 }
 
 void game_sv_Freeplay::SpawnItemsForActor(CSE_Abstract* pE, game_PlayerState* ps)
@@ -146,7 +157,21 @@ void game_sv_Freeplay::SpawnItemsForActor(CSE_Abstract* pE, game_PlayerState* ps
 	{
 		u16 ItemID = ps->pItemList[i];
 		SpawnWeapon4Actor(pA->ID, *m_strWeaponsData->GetItemName(ItemID & 0x00FF), u8((ItemID & 0xFF00) >> 0x08));
-	};
+	}
 
 	Player_AddMoney(ps, ps->LastBuyAcount);
-};
+}
+
+void game_sv_Freeplay::OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA)
+{
+	ps_killed->setFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
+	ps_killed->m_iDeaths++;
+	ps_killed->m_iKillsInRowCurr = 0;
+	ps_killed->DeathTime = Device.dwTimeGlobal;
+
+	if (!ps_killer)	
+		ps_killed->m_iSelfKills++;	
+
+	SetPlayersDefItems(ps_killed);
+	signal_Syncronize();
+}
