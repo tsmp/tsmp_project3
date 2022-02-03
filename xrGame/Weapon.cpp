@@ -1545,13 +1545,17 @@ void CWeapon::OnDrawUI()
 
 bool CWeapon::unlimited_ammo()
 {
-	if (GameID() == GAME_SINGLE)
-		return psActorFlags.test(AF_UNLIMITEDAMMO) &&
-			   m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
+	if (!m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited))
+		return false;
 
-	return (GameID() != GAME_ARTEFACTHUNT) &&
-		   m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
-};
+	if (GameID() == GAME_SINGLE)
+		return psActorFlags.test(AF_UNLIMITEDAMMO);
+
+	if (GameID() == GAME_ARTEFACTHUNT || GameID() == GAME_FREEPLAY)
+		return false;
+
+	return true;
+}
 
 LPCSTR CWeapon::GetCurrentAmmo_ShortName()
 {
