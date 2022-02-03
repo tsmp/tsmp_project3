@@ -1,13 +1,13 @@
 #pragma once
 #include "game_cl_mp.h"
 
-class CUIGameDM;
+class CUIGameFP;
 
 class game_cl_Freeplay : public game_cl_mp
 {
 private:
 	typedef game_cl_mp inherited;
-	CUIGameDM* m_game_ui;
+	CUIGameFP* m_game_ui;
 	 
 public:
 

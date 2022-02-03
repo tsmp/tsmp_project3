@@ -164,6 +164,8 @@
 
 #include "UIGameSP.h"
 #include "UIGameAHunt.h"
+#include "UIGameFP.h"
+
 #include "climableobject.h"
 #include "space_restrictor.h"
 #include "smart_zone.h"
@@ -211,6 +213,7 @@ void CObjectFactory::register_classes()
 	add<CUIGameDM>(CLSID_GAME_UI_DEATHMATCH, "game_ui_deathmatch");
 	add<CUIGameTDM>(CLSID_GAME_UI_TEAMDEATHMATCH, "game_ui_team_deathmatch");
 	add<CUIGameAHunt>(CLSID_GAME_UI_ARTEFACTHUNT, "game_ui_artefact_hunt");
+	add<CUIGameFP>(CLSID_GAME_UI_FREEPLAY, "game_ui_freeplay");
 
 	ADD_MP(CActor, CActorMP, CSE_ALifeCreatureActor, CSE_ActorMP, CLSID_OBJECT_ACTOR, "actor");
 #else  // NO_XR_GAME

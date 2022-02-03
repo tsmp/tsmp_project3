@@ -2314,6 +2314,9 @@
     <Filter Include="Core\Server\Games\server\freeplay">
       <UniqueIdentifier>{eede75e7-6b59-444b-b0e3-dd06fb339ebc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\GameTypes\Freeplay">
+      <UniqueIdentifier>{56a9f993-4f11-4f86-adfd-a5b0e43873db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6606,6 +6609,9 @@
     <ClInclude Include="game_cl_freeplay.h">
       <Filter>Core\Server\Games\client\freeplay</Filter>
     </ClInclude>
+    <ClInclude Include="UIGameFP.h">
+      <Filter>UI\GameTypes\Freeplay</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9780,6 +9786,9 @@
     </ClCompile>
     <ClCompile Include="game_cl_freeplay.cpp">
       <Filter>Core\Server\Games\client\freeplay</Filter>
+    </ClCompile>
+    <ClCompile Include="UIGameFP.cpp">
+      <Filter>UI\GameTypes\Freeplay</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
