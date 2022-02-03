@@ -14,6 +14,7 @@ class CUIXml;
 class CInventoryBox;
 class CUITalkWnd;
 class CInventoryOwner;
+class CUICarBodyWnd;
 
 struct SDrawStaticStruct : public IPureDestroyableObject
 {
@@ -83,7 +84,8 @@ protected:
 	st_vec m_custom_statics;
 	u32 uFlags;
 	CUICaption* m_pgameCaptions;
-	CUIXml* m_msgs_xml;	
+	CUIXml* m_msgs_xml;
+	CUICarBodyWnd* m_pUICarBodyMenu;
 
 	void SetFlag(u32 mask, BOOL flag)
 	{
@@ -130,9 +132,9 @@ public:
 	virtual void ReInitShownUI() = 0;
 	virtual void HideShownDialogs(){};
 
-	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers) {};
-	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox) {};
-	virtual void StartTalk() {};
+	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers);
+	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox);
+	virtual void StartTalk();
 
 	void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color);
 	void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color, float flicker);

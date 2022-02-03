@@ -16,7 +16,6 @@ class UIVoteStatusWnd;
 class CUIInventoryWnd;
 class CUIPdaWnd;
 class CUIMapDesc;
-class CUICarBodyWnd;
 class CInventoryBox;
 
 class CUIGameDM : public CUIGameCustom
@@ -59,7 +58,6 @@ protected:
 	CUIRankIndicator* m_pRankIndicator;
 	CUIStatic* m_pFragLimitIndicator;
 	UIVoteStatusWnd* m_voteStatusWnd;
-	CUICarBodyWnd* m_pUICarBodyMenu;
 
 	virtual void ClearLists();
 
@@ -95,10 +93,6 @@ public:
 
 	virtual bool IR_OnKeyboardPress(int dik);
 	virtual bool IR_OnKeyboardRelease(int dik);
-
-	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers) override;
-	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox) override;
-	virtual void StartTalk() override;
 
 	virtual void HideShownDialogs() override;
 

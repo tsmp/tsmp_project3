@@ -13,7 +13,6 @@
 #include "GameTask.h"
 
 #include "ui/UIInventoryWnd.h"
-#include "ui/UITradeWnd.h"
 #include "ui/UIPdaWnd.h"
 #include "ui/UITalkWnd.h"
 #include "ui/UICarBodyWnd.h"
@@ -26,7 +25,6 @@ CUIGameSP::CUIGameSP()
 	InventoryMenu = xr_new<CUIInventoryWnd>();
 	PdaMenu = xr_new<CUIPdaWnd>();
 	TalkMenu = xr_new<CUITalkWnd>();
-	UICarBodyMenu = xr_new<CUICarBodyWnd>();
 	UIChangeLevelWnd = xr_new<CChangeLevelWnd>();
 }
 
@@ -35,7 +33,6 @@ CUIGameSP::~CUIGameSP()
 	delete_data(InventoryMenu);
 	delete_data(PdaMenu);
 	delete_data(TalkMenu);
-	delete_data(UICarBodyMenu);
 	delete_data(UIChangeLevelWnd);
 }
 
@@ -44,7 +41,7 @@ bool CUIGameSP::IsAnyWndActive()
 	return PdaMenu->IsShown()
 		|| InventoryMenu->IsShown()
 		|| TalkMenu->IsShown()
-		|| UICarBodyMenu->IsShown()
+		|| m_pUICarBodyMenu->IsShown()
 		|| UIChangeLevelWnd->IsShown();
 }
 
@@ -70,7 +67,7 @@ void CUIGameSP::HideShownDialogs()
 		(mir == InventoryMenu ||
 		 mir == PdaMenu ||
 		 mir == TalkMenu ||
-		 mir == UICarBodyMenu))
+		 mir == m_pUICarBodyMenu))
 		mir->GetHolder()->StartStopMenu(mir, true);
 }
 
@@ -161,35 +158,12 @@ bool CUIGameSP::IR_OnKeyboardRelease(int dik)
 	return false;
 }
 
-void CUIGameSP::StartTalk()
-{
-	m_game->StartStopMenu(TalkMenu, true);
-}
-
-void CUIGameSP::StartCarBody(CInventoryOwner *pOurInv, CInventoryOwner *pOthers)
-{
-	if (MainInputReceiver())
-		return;
-
-	UICarBodyMenu->InitCarBody(pOurInv, pOthers);
-	m_game->StartStopMenu(UICarBodyMenu, true);
-}
-
-void CUIGameSP::StartCarBody(CInventoryOwner *pOurInv, CInventoryBox *pBox)
-{
-	if (MainInputReceiver())
-		return;
-
-	UICarBodyMenu->InitCarBody(pOurInv, pBox);
-	m_game->StartStopMenu(UICarBodyMenu, true);
-}
-
 void CUIGameSP::ReInitShownUI()
 {
 	if (InventoryMenu->IsShown())
 		InventoryMenu->InitInventory_delayed();
-	else if (UICarBodyMenu->IsShown())
-		UICarBodyMenu->UpdateLists_delayed();
+	else if (m_pUICarBodyMenu->IsShown())
+		m_pUICarBodyMenu->UpdateLists_delayed();
 }
 
 extern ENGINE_API BOOL bShowPauseString;
@@ -214,8 +188,6 @@ void CUIGameSP::reset_ui()
 	inherited::reset_ui();
 	InventoryMenu->Reset();
 	PdaMenu->Reset();
-	TalkMenu->Reset();
-	UICarBodyMenu->Reset();
 	UIChangeLevelWnd->Reset();
 }
 

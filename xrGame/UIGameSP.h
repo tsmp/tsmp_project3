@@ -7,7 +7,6 @@
 class CUIInventoryWnd;
 class CUITradeWnd;
 class CUIPdaWnd;
-class CUICarBodyWnd;
 class CInventory;
 
 class game_cl_Single;
@@ -32,9 +31,6 @@ public:
 	virtual bool IR_OnKeyboardPress(int dik);
 	virtual bool IR_OnKeyboardRelease(int dik);
 
-	void StartTalk();
-	void StartCarBody(CInventoryOwner *pOurInv, CInventoryOwner *pOthers);
-	void StartCarBody(CInventoryOwner *pOurInv, CInventoryBox *pBox);
 	virtual void ReInitShownUI();
 	void ChangeLevel(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id, Fvector pos, Fvector ang, Fvector pos2, Fvector ang2, bool b);
 
@@ -44,7 +40,6 @@ public:
 
 	CUIInventoryWnd *InventoryMenu;
 	CUIPdaWnd *PdaMenu;
-	CUICarBodyWnd* UICarBodyMenu;
 	CChangeLevelWnd *UIChangeLevelWnd;
 };
 

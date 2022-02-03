@@ -82,9 +82,6 @@ CUIGameDM::CUIGameDM()
 	m_pInventoryMenu = xr_new<CUIInventoryWnd>();
 	m_pPdaMenu = xr_new<CUIPdaWnd>();
 	m_pMapDesc = nullptr;
-
-	m_pUICarBodyMenu = xr_new<CUICarBodyWnd>();
-	TalkMenu = xr_new<CUITalkWnd>();
 }
 
 void CUIGameDM::SetClGame(game_cl_GameState *g)
@@ -165,8 +162,6 @@ CUIGameDM::~CUIGameDM()
 	delete_data(m_pInventoryMenu);
 	delete_data(m_pPdaMenu);
 	delete_data(m_pMapDesc);
-	delete_data(m_pUICarBodyMenu);
-	delete_data(TalkMenu);
 }
 
 void CUIGameDM::ReInitShownUI()
@@ -175,29 +170,6 @@ void CUIGameDM::ReInitShownUI()
 		m_pInventoryMenu->InitInventory();	
 	else if (m_pUICarBodyMenu->IsShown())
 		m_pUICarBodyMenu->UpdateLists_delayed();
-}
-
-void CUIGameDM::StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers)
-{
-	if (MainInputReceiver())
-		return;
-
-	m_pUICarBodyMenu->InitCarBody(pOurInv, pOthers);
-	m_game->StartStopMenu(m_pUICarBodyMenu, true);
-}
-
-void CUIGameDM::StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox)
-{
-	if (MainInputReceiver())
-		return;
-
-	m_pUICarBodyMenu->InitCarBody(pOurInv, pBox);
-	m_game->StartStopMenu(m_pUICarBodyMenu, true);
-}
-
-void CUIGameDM::StartTalk()
-{
-	m_game->StartStopMenu(TalkMenu, true);
 }
 
 void CUIGameDM::HideShownDialogs()
@@ -393,6 +365,4 @@ void CUIGameDM::reset_ui()
 	inherited::reset_ui();
 	m_pInventoryMenu->Reset();
 	m_pPdaMenu->Reset();
-	TalkMenu->Reset();
-	m_pUICarBodyMenu->Reset();
 }
