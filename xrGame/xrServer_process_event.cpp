@@ -339,7 +339,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID sender)
 		}
 #endif // PUBLIC_BUILD
 				
-		if (game_sv_Deathmatch* tpGame = smart_cast<game_sv_Deathmatch*>(Level().Server->game))
+		if (game_sv_mp* tpGame = smart_cast<game_sv_mp*>(Level().Server->game))
 			tpGame->alife().spawn_item(name_sect.c_str(), pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
 	}
 	break;

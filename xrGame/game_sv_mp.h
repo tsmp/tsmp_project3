@@ -138,6 +138,7 @@ public:
 
 	virtual void DumpOnlineStatistic();
 	void SvSendChatMessage(LPCSTR str);
+	CRandom monsterResp; // для респавна монстров
 
 protected:
 	virtual void WriteGameState(CInifile &ini, LPCSTR sect, bool bRoundResult);

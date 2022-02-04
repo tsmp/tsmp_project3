@@ -636,7 +636,7 @@ void CCustomMonster::HitSignal(float /**perc/**/, Fvector & /**vLocalDir/**/, CO
 void CCustomMonster::RespawnAfterDeath()
 {
 	// выбираем случайный рпоинт команды 0
-	game_sv_Deathmatch* game = smart_cast<game_sv_Deathmatch*>(Level().Server->game);
+	game_sv_mp* game = smart_cast<game_sv_mp*>(Level().Server->game);
 	const xr_vector<RPoint>& rp = game->rpoints[0];
 	RPoint r;
 	u32 ID = game->monsterResp.randI((int)rp.size());

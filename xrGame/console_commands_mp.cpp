@@ -1281,7 +1281,7 @@ public:
 		if (!OnServer())
 			return;
 
-		game_sv_mp *pGameMP = smart_cast<game_sv_Deathmatch *>(Level().Server->game);
+		game_sv_mp *pGameMP = smart_cast<game_sv_mp*>(Level().Server->game);
 		if (!pGameMP)
 			return;
 
