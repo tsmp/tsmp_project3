@@ -5,10 +5,95 @@
 
 ENGINE_API bool g_dedicated_server;
 
+const std::vector<std::string> FreeplayDefaultRandomItems
+{
+	"mp_wpn_pm","mp_wpn_pb"
+};
+
+const std::vector<std::string> FreeplayDefaultSkins
+{
+	"stalker_killer_antigas"
+};
+
+const std::vector<std::string> FreeplayDefaultPersistentItems
+{
+	"mp_medkit","mp_wpn_knife", "mp_device_torch","mp_ammo_9x18_fmj","mp_ammo_9x18_fmj","mp_ammo_9x18_fmj"
+};
+
+const char* freeplaySkinsSection = "freeplay_skins";
+const char* freeplayRandomItemsSection = "freeplay_random_weapons";
+const char* freeplayPersistentItemsSection = "freeplay_persistent_items";
+
+void game_sv_Freeplay::LoadSettings()
+{
+	if (pSettings->section_exist(freeplayRandomItemsSection))
+	{
+		CInifile::Sect &sect = pSettings->r_section(freeplayRandomItemsSection);
+
+		for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
+		{
+			const CInifile::Item& item = *I;
+			m_RandomItems.push_back(item.first.c_str());
+		}
+
+		Msg("- Loaded %u persistent items for freeplay", m_RandomItems.size());
+	}
+
+	if (m_RandomItems.empty())
+	{
+		Msg("- Cant find freeplay random weapons list, using default");
+		m_RandomItems = FreeplayDefaultRandomItems;
+	}
+
+	if (pSettings->section_exist(freeplaySkinsSection))
+	{
+		CInifile::Sect& sect = pSettings->r_section(freeplaySkinsSection);
+
+		for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
+		{
+			const CInifile::Item& item = *I;
+			m_Skins.push_back(item.first.c_str());
+		}
+
+		Msg("- Loaded %u skins for freeplay", m_Skins.size());
+	}
+
+	if (m_Skins.empty())
+	{
+		Msg("- Cant find freeplay skins list, using default");
+		m_Skins = FreeplayDefaultSkins;
+	}
+
+	if (pSettings->section_exist(freeplayPersistentItemsSection))
+	{
+		CInifile::Sect& sect = pSettings->r_section(freeplayPersistentItemsSection);
+
+		for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
+		{
+			const CInifile::Item& item = *I;
+			u32 count = 1;
+
+			if (const char* ch = item.second.c_str())
+				count = pSettings->r_u32(freeplayPersistentItemsSection, item.first.c_str());
+
+			for (int i = 0; i < count; i++)
+				m_PersistentItems.push_back(item.first.c_str());
+		}
+
+		Msg("- Loaded %u persistent items for freeplay", m_PersistentItems.size());
+	}
+
+	if (m_PersistentItems.empty())
+	{
+		Msg("- Cant find freeplay persistent items list, using default");
+		m_PersistentItems = FreeplayDefaultPersistentItems;
+	}
+}
+
 game_sv_Freeplay::game_sv_Freeplay() 
 {
 	m_phase = GAME_PHASE_NONE;
-	m_type = GAME_FREEPLAY;
+	m_type = GAME_FREEPLAY;	
 }
 
 game_sv_Freeplay::~game_sv_Freeplay() {}
@@ -16,9 +101,11 @@ game_sv_Freeplay::~game_sv_Freeplay() {}
 void game_sv_Freeplay::Create(shared_str &options)
 {
 	inherited::Create(options);
+	LoadSettings();
 
 	TeamStruct NewTeam;
-	NewTeam.aSkins.push_back("stalker_killer_antigas");
+	for (std::string& skin : m_Skins)
+		NewTeam.aSkins.push_back(skin.c_str());
 	TeamList.push_back(NewTeam);
 
 	switch_Phase(GAME_PHASE_PENDING);
@@ -149,17 +236,10 @@ void game_sv_Freeplay::SpawnItemsForActor(CSE_Abstract* pE, game_PlayerState* ps
 	if (!(ps->team < s16(TeamList.size())))
 		return;
 
-	SpawnWeapon4Actor(pA->ID, "mp_wpn_pm", 0);
-	SpawnWeapon4Actor(pA->ID, "mp_wpn_abakan", 0);
-	SpawnWeapon4Actor(pA->ID, "mp_medkit", 0);
+	SpawnWeapon4Actor(pA->ID, m_RandomItems[m_ItemsRnd.randI(m_RandomItems.size())].c_str(), 0);
 
-	for (u32 i = 0; i < ps->pItemList.size(); i++)
-	{
-		u16 ItemID = ps->pItemList[i];
-		SpawnWeapon4Actor(pA->ID, *m_strWeaponsData->GetItemName(ItemID & 0x00FF), u8((ItemID & 0xFF00) >> 0x08));
-	}
-
-	Player_AddMoney(ps, ps->LastBuyAcount);
+	for (std::string& itemName : m_PersistentItems)
+		SpawnWeapon4Actor(pA->ID, itemName.c_str(), 0);
 }
 
 void game_sv_Freeplay::OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA)

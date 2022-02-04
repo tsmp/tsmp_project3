@@ -6,6 +6,11 @@
 class game_sv_Freeplay : public game_sv_mp
 {
 	using inherited = game_sv_mp;
+	CRandom m_ItemsRnd;
+
+	std::vector<std::string> m_Skins;
+	std::vector<std::string> m_RandomItems;	
+	std::vector<std::string> m_PersistentItems;
 
 public:
 
@@ -23,6 +28,7 @@ public:
 	virtual void OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID) override;
 	virtual void OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState *ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract *pWeaponA);
 
+	void LoadSettings();
 	void SetStartMoney(ClientID &id_who);
 	void SpawnItemsForActor(CSE_Abstract* pE, game_PlayerState* ps);
 };
