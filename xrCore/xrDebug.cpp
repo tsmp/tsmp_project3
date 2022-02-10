@@ -23,11 +23,7 @@ static BOOL bException = FALSE;
 #pragma comment(lib, "BugTrap.lib")
 #pragma comment(lib, "dxerr9.lib")
 
-#if 0 //def DEBUG
-#define USE_OWN_ERROR_MESSAGE_WINDOW
-#else // DEBUG
 #define USE_OWN_MINI_DUMP
-#endif // DEBUG
 
 XRCORE_API xrDebug Debug;
 
@@ -118,20 +114,12 @@ void gather_info(const char *expression, const char *description, const char *ar
 		if (shared_str_initialized)
 			Msg("stack trace:\n");
 
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-		buffer += sprintf(buffer, "stack trace:%s%s", endline, endline);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
-
 		BuildStackTrace();
 
 		for (int i = 2; i < g_stackTraceCount; ++i)
 		{
 			if (shared_str_initialized)
 				Msg("%s", g_stackTrace[i]);
-
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-			buffer += sprintf(buffer, "%s%s", g_stackTrace[i], endline);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
 		}
 
 		if (shared_str_initialized)
@@ -163,53 +151,14 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 	string4096 assertion_info;
 	gather_info(expression, description, argument0, argument1, file, line, function, assertion_info);
 
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-	LPCSTR endline = "\r\n";
-	LPSTR buffer = assertion_info + xr_strlen(assertion_info);
-	buffer += sprintf(buffer, "%sPress CANCEL to abort execution%s", endline, endline);
-	buffer += sprintf(buffer, "Press TRY AGAIN to continue execution%s", endline);
-	buffer += sprintf(buffer, "Press CONTINUE to continue execution and ignore all the errors of this type%s%s", endline, endline);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
-
 	if (handler)
 		handler();
 
 	if (get_on_dialog())
 		get_on_dialog()(true);
 
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-	int result =
-		MessageBox(
-			GetTopWindow(NULL),
-			assertion_info,
-			"Fatal Error",
-			MB_CANCELTRYCONTINUE | MB_ICONERROR | MB_SYSTEMMODAL);
-
-	switch (result)
-	{
-	case IDCANCEL:
-	{
-		DEBUG_INVOKE;
-		break;
-	}
-	case IDTRYAGAIN:
-	{
-		error_after_dialog = false;
-		break;
-	}
-	case IDCONTINUE:
-	{
-		error_after_dialog = false;
-		ignore_always = true;
-		break;
-	}
-	default:
-		NODEFAULT;
-	}
-#else // USE_OWN_ERROR_MESSAGE_WINDOW
 	BT_SetUserMessage(assertion_info);
 	DebugBreak();
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
 	if (get_on_dialog())
 		get_on_dialog()(false);
@@ -346,15 +295,9 @@ void SetupExceptionHandler(const bool &dedicated)
 	// Force BugTrap to submit reports to support server without gui
 	BT_SetActivityType(BTA_SENDREPORT);
 #else // SEND_ERROR_REPORTS
-
-#ifndef USE_OWN_ERROR_MESSAGE_WINDOW
 	// раскомментировать если хочется окошко с жуком :)
 	//if (!dedicated && !strstr(GetCommandLine(), "-silent_error_mode")) BT_SetActivityType(BTA_SHOWUI); else	
 	BT_SetActivityType(BTA_SAVEREPORT);
-#else  // USE_OWN_ERROR_MESSAGE_WINDOW
-	BT_SetActivityType(BTA_SAVEREPORT);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
-
 #endif // SEND_ERROR_REPORTS
 
 	BT_SetDialogMessage(
@@ -562,38 +505,15 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 	if (shared_str_initialized)
 		FlushLog();
 
-#ifndef USE_OWN_ERROR_MESSAGE_WINDOW
 #ifdef USE_OWN_MINI_DUMP
 	save_mini_dump(pExceptionInfo);
 #endif // USE_OWN_MINI_DUMP
-#else  // USE_OWN_ERROR_MESSAGE_WINDOW
-	if (!error_after_dialog)
-	{
-		if (Debug.get_on_dialog())
-			Debug.get_on_dialog()(true);
-
-		MessageBox(NULL, "Fatal error occured\n\nPress OK to abort program execution", "Fatal error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-	}
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
 	if (!previous_filter)
-	{
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-		if (Debug.get_on_dialog())
-			Debug.get_on_dialog()(false);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
-
-		return (EXCEPTION_CONTINUE_SEARCH);
-	}
+		return EXCEPTION_CONTINUE_SEARCH;	
 
 	previous_filter(pExceptionInfo);
-
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-	if (Debug.get_on_dialog())
-		Debug.get_on_dialog()(false);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
-
-	return (EXCEPTION_CONTINUE_SEARCH);
+	return EXCEPTION_CONTINUE_SEARCH;
 }
 
 void debug_on_thread_spawn()
@@ -680,13 +600,6 @@ static void pure_call_handler()
 {
 	handler_base("pure virtual function call");
 }
-
-#ifdef CS_USE_EXCEPTIONS
-static void unexpected_handler()
-{
-	handler_base("unexpected program termination");
-}
-#endif // CS_USE_EXCEPTIONS
 
 static void abort_handler(int signal)
 {
