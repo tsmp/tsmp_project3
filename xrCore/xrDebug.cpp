@@ -12,27 +12,16 @@
 #pragma warning(pop)
 
 extern bool shared_str_initialized;
-
-#define USE_BUG_TRAP
-#define DEBUG_INVOKE __asm int 3
 static BOOL bException = FALSE;
 
-#ifndef _M_AMD64
-
-#pragma comment(lib, "dxerr9.lib")
-
-#endif
-
 #include <dbghelp.h> // MiniDump flags
-
-#ifdef USE_BUG_TRAP
-#include "../bugtrap/bugtrap.h" 
-#pragma comment(lib, "BugTrap.lib")
-#endif // USE_BUG_TRAP
-
+#include "../bugtrap/bugtrap.h"
 #include <new.h>	// for _set_new_mode
 #include <signal.h> // for signals
 #include "../TSMP3_Build_Config.h"
+
+#pragma comment(lib, "BugTrap.lib")
+#pragma comment(lib, "dxerr9.lib")
 
 #if 0 //def DEBUG
 #define USE_OWN_ERROR_MESSAGE_WINDOW
@@ -218,10 +207,8 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 		NODEFAULT;
 	}
 #else // USE_OWN_ERROR_MESSAGE_WINDOW
-#ifdef USE_BUG_TRAP
 	BT_SetUserMessage(assertion_info);
-#endif // USE_BUG_TRAP
-	DEBUG_INVOKE;
+	DebugBreak();
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
 	if (get_on_dialog())
@@ -323,7 +310,6 @@ extern LPCSTR log_name();
 
 void CALLBACK PreErrorHandler(INT_PTR)
 {
-#ifdef USE_BUG_TRAP
 	if (!xr_FS || !FS.m_Flags.test(CLocatorAPI::flReady))
 		return;
 
@@ -348,10 +334,8 @@ void CALLBACK PreErrorHandler(INT_PTR)
 	}
 
 	BT_AddLogFile(log_name());
-#endif // USE_BUG_TRAP
 }
 
-#ifdef USE_BUG_TRAP
 void SetupExceptionHandler(const bool &dedicated)
 {
 	// Install bugtrap exceptions filter
@@ -388,9 +372,7 @@ please Submit Bug or save report and email it manually (button More...).\
 	BT_SetDumpType(MiniDumpWithDataSegs | MiniDumpWithIndirectlyReferencedMemory | 0);
 	BT_SetSupportEMail("crash-report@stalker-game.com");
 }
-#endif // USE_BUG_TRAP
 
-#if 1
 extern void BuildStackTrace(struct _EXCEPTION_POINTERS *pExceptionInfo);
 typedef LONG WINAPI UnhandledExceptionFilterType(struct _EXCEPTION_POINTERS *pExceptionInfo);
 typedef LONG(__stdcall *PFNCHFILTFN)(EXCEPTION_POINTERS *pExPtrs);
@@ -613,55 +595,10 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 
 	return (EXCEPTION_CONTINUE_SEARCH);
 }
-#endif
-
-#ifndef USE_BUG_TRAP
-void _terminate()
-{
-	if (strstr(GetCommandLine(), "-silent_error_mode"))
-		exit(-1);
-
-	string4096 assertion_info;
-
-	gather_info(
-		"<no expression>",
-		"Unexpected application termination",
-		0,
-		0,
-#ifdef _ANONYMOUS_BUILD
-		"",
-		0,
-#else
-		__FILE__,
-		__LINE__,
-#endif
-
-		__FUNCTION__,
-
-		assertion_info);
-
-	LPCSTR endline = "\r\n";
-	LPSTR buffer = assertion_info + xr_strlen(assertion_info);
-	buffer += sprintf(buffer, "Press OK to abort execution%s", endline);
-
-	MessageBox(
-		GetTopWindow(NULL),
-		assertion_info,
-		"Fatal Error",
-		MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-
-	exit(-1);
-	//	FATAL					("Unexpected application termination");
-}
-#endif // USE_BUG_TRAP
 
 void debug_on_thread_spawn()
 {
-#ifdef USE_BUG_TRAP
 	BT_SetTerminate();
-#else  // USE_BUG_TRAP
-	std::set_terminate(_terminate);
-#endif // USE_BUG_TRAP
 }
 
 static void handler_base(LPCSTR reason_string)
@@ -766,11 +703,6 @@ static void illegal_instruction_handler(int signal)
 	handler_base("illegal instruction");
 }
 
-//	static void storage_access_handler		(int signal)
-//	{
-//		handler_base					("illegal storage access");
-//	}
-
 static void termination_handler(int signal)
 {
 	handler_base("termination with exit code 3");
@@ -786,36 +718,14 @@ void xrDebug::_initialize(const bool &dedicated)
 	signal(SIGFPE, floating_point_handler);
 	signal(SIGILL, illegal_instruction_handler);
 	signal(SIGINT, 0);
-	//		signal							(SIGSEGV,		storage_access_handler);
 	signal(SIGTERM, termination_handler);
 
 	_set_invalid_parameter_handler(&invalid_parameter_handler);
-
 	_set_new_mode(1);
 	_set_new_handler(&out_of_memory_handler);
 	std::set_new_handler(&std_out_of_memory_handler);
-
 	_set_purecall_handler(&pure_call_handler);
 
-#if 0 // should be if we use exceptions
-		std::set_unexpected				(_terminate);
-#endif
-
-#ifdef USE_BUG_TRAP
 	SetupExceptionHandler(dedicated);
-#endif																  // USE_BUG_TRAP
 	previous_filter = ::SetUnhandledExceptionFilter(UnhandledFilter); // exception handler to all "unhandled" exceptions
-
-#if 0
-		struct foo {static void	recurs	(const u32 &count)
-		{
-			if (!count)
-				return;
-
-			_alloca			(4096);
-			recurs			(count - 1);
-		}};
-		foo::recurs			(u32(-1));
-		std::terminate		();
-#endif // 0
 }
