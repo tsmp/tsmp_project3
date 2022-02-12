@@ -31,9 +31,9 @@ using namespace luabind;
 
 extern CScriptActionPlanner *script_action_planner(CScriptGameObject *obj);
 
-class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject> &instance)
+class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject> &&instance)
 {
-	instance
+	return std::move(instance)
 		.enum_("relation")
 			[value("friend", int(ALife::eRelationTypeFriend)),
 			 value("neutral", int(ALife::eRelationTypeNeutral)),
@@ -53,14 +53,9 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 			 value("patrol_path", int(MovementManager::ePathTypePatrolPath)),
 			 value("no_path", int(MovementManager::ePathTypeNoPath))]
 
-		//		.property("visible",				&CScriptGameObject::getVisible,			&CScriptGameObject::setVisible)
-		//		.property("enabled",				&CScriptGameObject::getEnabled,			&CScriptGameObject::setEnabled)
-
-		//		.def_readonly("health",				&CScriptGameObject::GetHealth,			&CScriptGameObject::SetHealth)
 		.property("health", &CScriptGameObject::GetHealth, &CScriptGameObject::SetHealth)
 		.property("psy_health", &CScriptGameObject::GetPsyHealth, &CScriptGameObject::SetPsyHealth)
 		.property("power", &CScriptGameObject::GetPower, &CScriptGameObject::SetPower)
-		//		.property("satiety",				&CScriptGameObject::GetSatiety,			&CScriptGameObject::SetSatiety)
 		.property("radiation", &CScriptGameObject::GetRadiation, &CScriptGameObject::SetRadiation)
 		.property("morale", &CScriptGameObject::GetMorale, &CScriptGameObject::SetMorale)
 
@@ -79,7 +74,7 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 		.def("condition", &CScriptGameObject::GetCondition)
 		.def("set_condition", &CScriptGameObject::SetCondition)
 		.def("death_time", &CScriptGameObject::DeathTime)
-		//		.def("armor",						&CScriptGameObject::Armor)
+	
 		.def("max_health", &CScriptGameObject::MaxHealth)
 		.def("accuracy", &CScriptGameObject::Accuracy)
 		.def("alive", &CScriptGameObject::Alive)
@@ -106,7 +101,7 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 
 		.def("rank", &CScriptGameObject::GetRank)
 		.def("command", &CScriptGameObject::AddAction)
-		.def("action", &CScriptGameObject::GetCurrentAction, adopt(result))
+		.def("action", &CScriptGameObject::GetCurrentAction, adopt<result>())
 		.def("object_count", &CScriptGameObject::GetInventoryObjectCount)
 		.def("object", (CScriptGameObject * (CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::GetObjectByName))
 		.def("object", (CScriptGameObject * (CScriptGameObject::*)(int))(&CScriptGameObject::GetObjectByIndex))
@@ -130,17 +125,12 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 		.def("get_ammo_total", &CScriptGameObject::GetAmmoCurrent)
 		.def("set_ammo_elapsed", &CScriptGameObject::SetAmmoElapsed)
 		.def("set_queue_size", &CScriptGameObject::SetQueueSize)
-		//		.def("best_hit",					&CScriptGameObject::GetBestHit)
-		//		.def("best_sound",					&CScriptGameObject::GetBestSound)
+	
 		.def("best_danger", &CScriptGameObject::GetBestDanger)
 		.def("best_enemy", &CScriptGameObject::GetBestEnemy)
 		.def("best_item", &CScriptGameObject::GetBestItem)
 		.def("action_count", &CScriptGameObject::GetActionCount)
 		.def("action_by_index", &CScriptGameObject::GetActionByIndex)
-
-		//.def("set_hear_callback",			(void (CScriptGameObject::*)(const luabind::object &, LPCSTR))(&CScriptGameObject::SetSoundCallback))
-		//.def("set_hear_callback",			(void (CScriptGameObject::*)(const luabind::functor<void> &))(&CScriptGameObject::SetSoundCallback))
-		//.def("clear_hear_callback",		&CScriptGameObject::ClearSoundCallback)
 
 		.def("memory_time", &CScriptGameObject::memory_time)
 		.def("memory_position", &CScriptGameObject::memory_position)
@@ -151,7 +141,7 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 		.def("get_enemy_strength", &CScriptGameObject::GetEnemyStrength)
 		.def("get_sound_info", &CScriptGameObject::GetSoundInfo)
 		.def("get_monster_hit_info", &CScriptGameObject::GetMonsterHitInfo)
-		.def("bind_object", &CScriptGameObject::bind_object, adopt(_2))
+		.def("bind_object", &CScriptGameObject::bind_object, adopt<2>())
 		.def("motivation_action_manager", &script_action_planner)
 
 		// bloodsucker
@@ -241,7 +231,5 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 #endif // DEBUG
 		.def("invulnerable", (bool (CScriptGameObject::*)() const) & CScriptGameObject::invulnerable)
 		.def("invulnerable", (void (CScriptGameObject::*)(bool)) & CScriptGameObject::invulnerable)
-
-		;
-	return (instance);
+	;
 }

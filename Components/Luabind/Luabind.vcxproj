@@ -225,6 +225,7 @@
     </Link>
     <Link Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">
       <TargetMachine>MachineX86</TargetMachine>
+      <ImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">$(SolutionDir)\output\libraries_$(Configuration)\$(ProjectName).lib</ImportLibrary>
     </Link>
     <Link Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">
       <TargetMachine>MachineX64</TargetMachine>
