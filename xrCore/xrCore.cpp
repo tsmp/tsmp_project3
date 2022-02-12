@@ -9,7 +9,6 @@
 #include "trivial_encryptor.h"
 
 #pragma comment(lib, "winmm.lib")
-#pragma comment(lib, "blackBox.lib")
 #pragma comment(lib, "lzo.lib")
 
 #ifdef DEBUG
@@ -26,10 +25,6 @@ namespace CPU
 };
 
 static u32 init_counter = 0;
-
-extern char g_application_path[256];
-
-//. extern xr_vector<shared_str>*	LogFile;
 
 void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
@@ -50,8 +45,6 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
 		GetModuleFileName(GetModuleHandle(MODULE_NAME), fn, sizeof(fn));
 		_splitpath(fn, dr, di, 0, 0);
 		strconcat(sizeof(ApplicationPath), ApplicationPath, dr, di);
-
-		strcpy_s(g_application_path, sizeof(g_application_path), ApplicationPath);
 
 		// working path
 		if (strstr(Params, "-wf"))
