@@ -21,6 +21,7 @@
 #include "restriction_space.h"
 #include "profiler.h"
 #include "mt_config.h"
+#include "igame_persistent.h"
 
 using namespace ALife;
 
@@ -225,7 +226,6 @@ bool CALifeUpdateManager::change_level(NET_Packet &net_packet)
 	return (true);
 }
 
-#include "../igame_persistent.h"
 void CALifeUpdateManager::new_game(LPCSTR save_name)
 {
 	g_pGamePersistent->LoadTitle("st_creating_new_game");

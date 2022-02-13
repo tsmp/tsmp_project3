@@ -1,11 +1,12 @@
 // Do NOT build this file seperately. It is included in dTriList.cpp automatically.
 
-#include "../cl_intersect.h"
+#include "cl_intersect.h"
 #include "dTriCollideK.h"
 #include "dSortTriPrimitive.h"
 #include "../dCylinder/dCylinder.h"
 #include "../MathUtils.h"
 #include "../level.h"
+
 #ifdef DEBUG
 #include "../phdebug.h"
 #endif

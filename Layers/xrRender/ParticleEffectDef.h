@@ -1,9 +1,6 @@
-//---------------------------------------------------------------------------
-#ifndef ParticleEffectDefH
-#define ParticleEffectDefH
-
-#include "..\FBasicVisual.h"
-#include "..\ParticleCustom.h"
+#pragma once
+#include "FBasicVisual.h"
+#include "ParticleCustom.h"
 
 namespace PAPI
 {
@@ -129,5 +126,3 @@ namespace PS
 #define PED_CHUNK_OWNER 0x0023
 #define PED_CHUNK_EDATA 0x0024
 #define PED_CHUNK_ALIGN_TO_PATH 0x0025
-//---------------------------------------------------------------------------
-#endif

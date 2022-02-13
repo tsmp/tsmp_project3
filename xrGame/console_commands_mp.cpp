@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "../Console.h"
-#include "../Console_commands.h"
+#include "Console.h"
+#include "Console_commands.h"
 #include "level.h"
 #include "xrServer.h"
 #include "game_cl_base.h"

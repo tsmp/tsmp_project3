@@ -4,6 +4,7 @@
 #include "UIColorAnimatorWrapper.h"
 #include "../xr_level_controller.h"
 #include "../object_broker.h"
+#include "Console.h"
 
 CUIEditKeyBind::CUIEditKeyBind(bool bPrim)
 {
@@ -178,8 +179,6 @@ void CUIEditKeyBind::SaveValue()
 	BindAction2Key();
 	m_bChanged = false;
 }
-
-#include "../Console.h"
 
 void CUIEditKeyBind::BindAction2Key()
 {

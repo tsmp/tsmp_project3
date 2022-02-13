@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 #include "step_manager_defs.h"
 #include "step_manager.h"
 #include "entity_alive.h"

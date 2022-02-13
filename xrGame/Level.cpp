@@ -1,8 +1,8 @@
 #include "pch_script.h"
-#include "../fdemorecord.h"
-#include "../fdemoplay.h"
-#include "../environment.h"
-#include "../igame_persistent.h"
+#include "fdemorecord.h"
+#include "fdemoplay.h"
+#include "environment.h"
+#include "igame_persistent.h"
 #include "ParticlesObject.h"
 #include "Level.h"
 #include "xrServer.h"
@@ -15,7 +15,7 @@
 #include "PHdynamicdata.h"
 #include "Physics.h"
 #include "ShootingObject.h"
-//.#include "LevelFogOfWar.h"
+
 #include "Level_Bullet_Manager.h"
 #include "script_process.h"
 #include "script_engine.h"
@@ -34,14 +34,15 @@
 #include "mt_config.h"
 #include "phcommander.h"
 #include "map_manager.h"
-#include "../CameraManager.h"
+#include "CameraManager.h"
 #include "level_sounds.h"
 #include "car.h"
 #include "trade_parameters.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
 #include "MainMenu.h"
-#include "..\Console.h"
+#include "Console.h"
+#include "IGame_Persistent.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -1094,8 +1095,6 @@ u32 GameID()
 {
 	return Game().Type();
 }
-
-#include "../IGame_Persistent.h"
 
 bool IsGameTypeSingle()
 {

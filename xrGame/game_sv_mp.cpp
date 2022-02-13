@@ -8,18 +8,19 @@
 #include "xrserver_objects_alife_monsters.h"
 #include "actor.h"
 #include "clsid_game.h"
-#include "../Console.h"
-#include "../igame_persistent.h"
+#include "Console.h"
+#include "igame_persistent.h"
 #include "date_time.h"
 #include "game_cl_base.h"
 #include "Spectator.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "xrGameSpyServer.h"
+#include "CameraBase.h"
 
 #include "game_sv_mp_vote_flags.h"
 
 u32 g_dwMaxCorpses = 10;
-//-----------------------------------------------------------------
+
 BOOL g_sv_mp_bSpectator_FreeFly = FALSE;
 BOOL g_sv_mp_bSpectator_FirstEye = TRUE;
 BOOL g_sv_mp_bSpectator_LookAt = TRUE;
@@ -493,8 +494,6 @@ void game_sv_mp::SetSkin(CSE_Abstract *E, u16 Team, u16 ID)
 	pV->set_visual(SkinName);
 	//-------------------------------------------
 };
-
-#include "../CameraBase.h"
 
 bool game_sv_mp::GetPosAngleFromActor(ClientID id, Fvector &Pos, Fvector &Angle)
 {

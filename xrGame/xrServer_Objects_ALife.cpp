@@ -15,14 +15,13 @@
 #include "restriction_space.h"
 
 #include "character_info.h"
+#include "bone.h"
 
 #ifndef XRGAME_EXPORTS
-#include "bone.h"
 #include "defines.h"
 LPCSTR GAME_CONFIG = "game.ltx";
 #else
-#include "..\bone.h"
-#include "..\render.h"
+#include "render.h"
 #endif
 
 bool SortStringsByAlphabetPred(const shared_str &s1, const shared_str &s2)

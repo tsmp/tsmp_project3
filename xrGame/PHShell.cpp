@@ -10,22 +10,9 @@
 #include "SpaceUtils.h"
 #include "MathUtils.h"
 #include "PhysicsShellHolder.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "PHCollideValidator.h"
 #include "game_object_space.h"
-//#pragma warning(disable:4995)
-//#pragma warning(disable:4267)
-//#include "../../xrODE/ode/src/collision_kernel.h"
-//#pragma warning(default:4995)
-//#pragma warning(default:4267)
-///////////////////////////////////////////////////////////////
-///#pragma warning(disable:4995)
-
-//#include "../../xrODE/ode/src/joint.h"
-//#include "../../xrODE/ode/src/objects.h"
-
-//#pragma warning(default:4995)
-///////////////////////////////////////////////////////////////////
 
 #include "ExtendedGeom.h"
 #include "PHElement.h"
@@ -41,6 +28,7 @@ IC bool PhOutOfBoundaries(const Fvector &v)
 {
 	return v.y < phBoundaries.y1;
 }
+
 CPHShell::~CPHShell()
 {
 	m_pKinematics = 0;

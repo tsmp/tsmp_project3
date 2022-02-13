@@ -1,5 +1,5 @@
 #pragma once
-#include "../SkeletonAnimated.h"
+#include "SkeletonAnimated.h"
 class CPhysicsShell;
 class interactive_motion
 {

@@ -20,12 +20,12 @@
 
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "ai_object_location.h"
 #include "clsid_game.h"
 #include "mathutils.h"
 #include "object_broker.h"
-#include "../igame_persistent.h"
+#include "igame_persistent.h"
 
 #include "..\TSMP3_Build_Config.h"
 

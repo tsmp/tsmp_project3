@@ -57,7 +57,7 @@ void IBlender::CreatePalette(xr_vector<IBlender *> &palette)
 }
 
 // Engine
-#include "..\render.h"
+#include "render.h"
 IBlender *IBlender::Create(CLASS_ID cls)
 {
 	return ::Render->blender_create(cls);

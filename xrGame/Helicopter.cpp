@@ -5,13 +5,14 @@
 #include "level.h"
 #include "ai_sounds.h"
 #include "clsid_game.h"
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 #include "script_callback_ex.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
-#include "../LightAnimLibrary.h"
+#include "LightAnimLibrary.h"
 #include "HudManager.h"
 #include "physicscommon.h"
+
 //50fps fixed
 float STEP = 0.02f;
 

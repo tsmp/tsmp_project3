@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "..\igame_persistent.h"
-#include "..\environment.h"
+#include "igame_persistent.h"
+#include "environment.h"
 
 #define STENCIL_CULL 0
 

@@ -1,6 +1,6 @@
 #pragma once
-#include "../effectorPP.h"
-#include "../cameramanager.h"
+#include "effectorPP.h"
+#include "cameramanager.h"
 
 //////////////////////////////////////////////////////////////////////////
 

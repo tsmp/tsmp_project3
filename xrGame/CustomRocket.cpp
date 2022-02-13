@@ -12,9 +12,10 @@
 #include "xrMessages.h"
 #include "gamemtllib.h"
 #include "tri-colliderknoopc/dTriList.h"
-#include "../fbasicvisual.h"
+#include "fbasicvisual.h"
 #include "CalculateTriangle.h"
 #include "actor.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #include "game_base_space.h"

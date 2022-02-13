@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include "..\igame_persistent.h"
-#include "..\igame_level.h"
-#include "..\environment.h"
-#include "..\fmesh.h"
+#include "igame_persistent.h"
+#include "igame_level.h"
+#include "environment.h"
+#include "fmesh.h"
 
 #include "ftreevisual.h"
 

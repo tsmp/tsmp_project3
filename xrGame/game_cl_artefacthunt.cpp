@@ -32,35 +32,27 @@
 #define MESSAGE_MENUS "ahunt_messages_menu"
 
 #include "game_cl_artefacthunt_snd_msg.h"
-#include "../IGame_Persistent.h"
+#include "IGame_Persistent.h"
 
 game_cl_ArtefactHunt::game_cl_ArtefactHunt()
 {
 	m_game_ui = NULL;
-
 	m_bBuyEnabled = FALSE;
-	//---------------------------------
 	m_Eff_Af_Spawn = "";
 	m_Eff_Af_Disappear = "";
-	//---------------------------------
 	LoadSndMessages();
-	//---------------------------------
 	m_iSpawn_Cost = READ_IF_EXISTS(pSettings, r_s32, "artefacthunt_gamedata", "spawn_cost", -10000);
 }
 
 void game_cl_ArtefactHunt::Init()
 {
-	//	pInventoryMenu	= xr_new<CUIInventoryWnd>();
-	//	pPdaMenu = xr_new<CUIPdaWnd>();
-	//	pMapDesc = xr_new<CUIMapDesc>();
-
 	LoadTeamData(TEAM1_MENU);
 	LoadTeamData(TEAM2_MENU);
 
 	old_artefactBearerID = 0;
 	old_artefactID = 0;
 	old_teamInPossession = 0;
-	//---------------------------------------------------
+
 	string_path fn_game;
 	if (FS.exist(fn_game, "$level$", "level.game"))
 	{

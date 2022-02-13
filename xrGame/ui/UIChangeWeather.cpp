@@ -5,7 +5,7 @@
 #include "../game_cl_teamdeathmatch.h"
 #include "UIKickPlayer.h"
 #include "UIChangeMap.h"
-//#include "UIMapList.h"
+#include "Console.h"
 
 CUIChangeWeather::CUIChangeWeather()
 {
@@ -94,8 +94,6 @@ bool CUIChangeWeather::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 	return false;
 }
-
-#include "../Console.h"
 
 void CUIChangeWeather::OnBtn(int i)
 {

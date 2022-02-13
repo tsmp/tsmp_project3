@@ -4,10 +4,10 @@
 
 #include "stdafx.h"
 #include "LightTrack.h"
-#include "..\xr_object.h"
+#include "xr_object.h"
 
-#include "..\igame_persistent.h"
-#include "..\environment.h"
+#include "igame_persistent.h"
+#include "environment.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

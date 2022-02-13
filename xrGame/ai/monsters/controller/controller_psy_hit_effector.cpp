@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "controller_psy_hit_effector.h"
 
+#pragma TODO("Вырезать")
+
 //void CPsyHitEffectorPP::load(LPCSTR section)
 //{
 //	inherited::load(section);

@@ -19,7 +19,7 @@
 #include "script_entity_action.h"
 #include "inventory.h"
 #include "xrserver_objects_alife_items.h"
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 #include "level.h"
 #include "ui/UIMainIngameWnd.h"
 #include "CarWeapon.h"
@@ -30,7 +30,6 @@
 #include "car_memory.h"
 
 BONE_P_MAP CCar::bone_map = BONE_P_MAP();
-
 extern CPHWorld *ph_world;
 
 CCar::CCar()

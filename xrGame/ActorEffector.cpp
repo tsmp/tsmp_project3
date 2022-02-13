@@ -2,8 +2,8 @@
 
 #include "ActorEffector.h"
 #include "PostprocessAnimator.h"
-#include "../effectorPP.h"
-#include "../ObjectAnimator.h"
+#include "effectorPP.h"
+#include "ObjectAnimator.h"
 #include "object_broker.h"
 #include "actor.h"
 

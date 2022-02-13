@@ -27,9 +27,7 @@
 #include "ai/monsters/basemonster/base_monster.h"
 
 // breakpoints
-#include "../xr_input.h"
-
-//
+#include "xr_input.h"
 #include "Actor.h"
 #include "ActorAnimation.h"
 #include "actor_anim_defs.h"
@@ -46,10 +44,10 @@
 #include "xrmessages.h"
 #include "string_table.h"
 #include "usablescriptobject.h"
-#include "../cl_intersect.h"
+#include "cl_intersect.h"
 #include "ExtendedGeom.h"
 #include "alife_registry_wrappers.h"
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 #include "artifact.h"
 #include "CharacterPhysicsSupport.h"
 #include "material_manager.h"

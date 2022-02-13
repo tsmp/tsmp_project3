@@ -3,7 +3,7 @@
 #include "PhysicsShell.h"
 #include "xrMessages.h"
 #include "ph_shell_interface.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "script_callback_ex.h"
 #include "Level.h"
 #include "PHCommander.h"
@@ -13,6 +13,7 @@
 #include "phworld.h"
 #include "phactivationshape.h"
 #include "phvalide.h"
+
 CPhysicsShellHolder::CPhysicsShellHolder()
 {
 	init();

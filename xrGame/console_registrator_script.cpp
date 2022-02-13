@@ -1,6 +1,6 @@
 #include "pch_script.h"
 #include "console_registrator.h"
-#include "../Console.h"
+#include "Console.h"
 
 using namespace luabind;
 

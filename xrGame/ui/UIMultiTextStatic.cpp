@@ -9,13 +9,12 @@
 
 #include "stdafx.h"
 #include "UIMultiTextStatic.h"
-#include "../CustomHUD.h"
+#include "CustomHUD.h"
 
-//////////////////////////////////////////////////////////////////////////
 CUIMultiTextStatic::CUIMultiTextStatic()
 {
 	m_vPhrases.clear();
-};
+}
 
 CUIMultiTextStatic::~CUIMultiTextStatic()
 {

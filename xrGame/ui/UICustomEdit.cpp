@@ -1,10 +1,8 @@
 #include "stdafx.h"
-
-#include "stdafx.h"
 #include <dinput.h>
 #include "../HUDManager.h"
 #include "UICustomEdit.h"
-#include "../LightAnimLibrary.h"
+#include "LightAnimLibrary.h"
 
 static char RusSymbols[] = {'ô', 'è', 'ñ', 'â', 'ó', 'à', 'ï', 'ð', 'ø', 'î', 'ë', 'ä', 'ü', 'ò', 'ù', 'ç',
 							'é', 'ê', 'û', 'å', 'ã', 'ì', 'ö', '÷', 'í', 'ÿ', 'õ', 'ú', 'æ', 'ý', 'á', 'þ', '.'};

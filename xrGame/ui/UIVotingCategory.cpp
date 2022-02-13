@@ -9,6 +9,8 @@
 #include "UITextVote.h"
 
 #include "../game_sv_mp_vote_flags.h"
+#include <dinput.h>
+#include "Console.h"
 
 CUIVotingCategory::CUIVotingCategory()
 {
@@ -92,8 +94,6 @@ void CUIVotingCategory::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 	}
 }
 
-#include <dinput.h>
-
 bool CUIVotingCategory::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 	CUIDialogWnd::OnKeyboard(dik, keyboard_action);
@@ -111,8 +111,6 @@ bool CUIVotingCategory::OnKeyboard(int dik, EUIMessages keyboard_action)
 	}
 	return false;
 }
-
-#include "../Console.h"
 
 void CUIVotingCategory::OnBtn(int i)
 {

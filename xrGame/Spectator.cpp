@@ -17,13 +17,15 @@
 #include "team_hierarchy_holder.h"
 #include "squad_hierarchy_holder.h"
 #include "group_hierarchy_holder.h"
-#include "../CameraManager.h"
+#include "CameraManager.h"
 #include "Inventory.h"
 #include "huditem.h"
 #include "clsid_game.h"
 #include "game_cl_mp.h"
 #include "string_table.h"
 #include "map_manager.h"
+
+#include "IGame_Persistent.h"
 
 //--------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////
@@ -452,9 +454,8 @@ BOOL CSpectator::net_Spawn(CSE_Abstract *DC)
 		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
 	};
 	return TRUE;
-};
+}
 
-#include "../IGame_Persistent.h"
 void CSpectator::net_Destroy()
 {
 	inherited::net_Destroy();

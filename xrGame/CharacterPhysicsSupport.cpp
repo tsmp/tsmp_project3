@@ -6,7 +6,7 @@
 #include "PHMovementControl.h"
 #include "CustomMonster.h"
 #include "PhysicsShell.h"
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 #include "Actor.h"
 #include "CustomZone.h"
 #include "Extendedgeom.h"
@@ -19,12 +19,11 @@
 #include "ai/stalker/ai_stalker.h"
 #include "interactive_motion.h"
 #include "animation_movement_controller.h"
-//const float default_hinge_friction = 5.f;//gray_wolf comment
+#include "device.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif // DEBUG
-
-#include "../device.h"
 
 void NodynamicsCollide(bool &do_colide, bool bo1, dContact &c, SGameMtl * /*material_1*/, SGameMtl * /*material_2*/)
 {

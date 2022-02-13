@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "WeaponKnife.h"
 #include "WeaponHUD.h"
 #include "Entity.h"
@@ -7,7 +6,7 @@
 #include "level.h"
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 #include "gamemtllib.h"
 #include "level_bullet_manager.h"
 #include "ai_sounds.h"

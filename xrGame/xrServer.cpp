@@ -9,10 +9,10 @@
 #include "level.h"
 #include "game_cl_base.h"
 #include "ai_space.h"
-#include "../IGame_Persistent.h"
+#include "IGame_Persistent.h"
 #include "screenshot_server.h"
 
-#include "../Console.h"
+#include "Console.h"
 #include "ui/UIInventoryUtilities.h"
 #include <functional>
 

@@ -1,9 +1,9 @@
 #include "pch_script.h"
 #include "gamepersistent.h"
-#include "../fmesh.h"
-#include "../Console.h"
+#include "fmesh.h"
+#include "Console.h"
 #include "gamemtllib.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "profiler.h"
 #include "MainMenu.h"
 #include "UICursor.h"
@@ -16,11 +16,11 @@
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
 
-#include "../CameraManager.h"
+#include "CameraManager.h"
 #include "actor.h"
 
 #include "string_table.h"
-#include "../xrApplication.h"
+#include "xrApplication.h"
 
 #ifndef MASTER_GOLD
 #include "custommonster.h"

@@ -8,7 +8,7 @@
 #include "../level.h"
 #include "../game_cl_base.h"
 #include "../game_cl_teamdeathmatch.h"
-#include "../Console.h"
+#include "Console.h"
 
 CUIVote::CUIVote()
 {

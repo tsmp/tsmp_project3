@@ -1,15 +1,10 @@
 // Level.h: interface for the CLevel class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_)
-#define AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_
 #pragma once
 
-#include "../igame_level.h"
-#include "../../xrNetwork/net_client.h"
+#include "igame_level.h"
+#include "../xrNetwork/net_client.h"
 #include "script_export_space.h"
-#include "../StatGraph.h"
+#include "StatGraph.h"
 #include "xrMessages.h"
 #include "alife_space.h"
 #include "xrDebug.h"
@@ -44,7 +39,7 @@ class CFogOfWarMngr;
 class CBulletManager;
 class CMapManager;
 
-#include "../feel_touch.h"
+#include "feel_touch.h"
 
 class GlobalFeelTouch : public Feel::Touch
 {
@@ -426,5 +421,3 @@ bool IsGameTypeSingle();
 class CPHWorld;
 extern CPHWorld *ph_world;
 extern BOOL g_bDebugEvents;
-
-#endif // !defined(AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_)

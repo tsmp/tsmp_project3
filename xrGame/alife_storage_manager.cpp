@@ -19,7 +19,7 @@
 #include "level.h"
 #include "saved_game_wrapper.h"
 #include "string_table.h"
-#include "../igame_persistent.h"
+#include "igame_persistent.h"
 
 using namespace ALife;
 

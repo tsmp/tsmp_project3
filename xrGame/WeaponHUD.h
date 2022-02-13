@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../SkeletonAnimated.h"
+#include "SkeletonAnimated.h"
 class CHudItem;
 
 struct weapon_hud_value : public shared_value

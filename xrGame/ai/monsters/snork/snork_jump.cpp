@@ -2,8 +2,10 @@
 #include "snork.h"
 #include "snork_jump.h"
 //#include "../jump_ability.h"
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 #include "../../../level.h"
+
+#pragma TODO("Удалить")
 
 //CSnorkJump::CSnorkJump(CSnork *monster)
 //{

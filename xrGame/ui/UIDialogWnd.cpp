@@ -6,7 +6,7 @@
 #include "uidialogwnd.h"
 #include "../hudmanager.h"
 #include "../xr_level_controller.h"
-#include "../Console.h"
+#include "Console.h"
 #include "../level.h"
 #include "../GameObject.h"
 

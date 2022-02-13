@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "UICDkey.h"
 #include "UIColorAnimatorWrapper.h"
-#include "../Console.h"
+#include "Console.h"
 #include "../RegistryFuncs.h"
 
 extern string64 gsCDKey;

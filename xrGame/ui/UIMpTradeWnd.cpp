@@ -9,6 +9,7 @@
 
 #include "../UIDialogHolder.h"
 #include "../game_cl_deathmatch.h"
+#include "xr_input.h"
 
 void CUIMpTradeWnd::OnBtnOkClicked(CUIWindow *w, void *d)
 {
@@ -43,8 +44,6 @@ void CUIMpTradeWnd::TryUsePreset(ETradePreset idx)
 
 	ApplyPreset(idx);
 }
-
-#include "../xr_input.h"
 
 void CUIMpTradeWnd::OnBtnPreset1Clicked(CUIWindow *w, void *d)
 {

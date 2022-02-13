@@ -6,10 +6,8 @@
 //	Description : vision client
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef VISION_CLIENT_H
-#define VISION_CLIENT_H
-
-#include "../feel_vision.h"
+#pragma once
+#include "feel_vision.h"
 
 class CObject;
 class CEntity;
@@ -71,5 +69,3 @@ public:
 };
 
 #include "vision_client_inline.h"
-
-#endif // VISION_CLIENT_H

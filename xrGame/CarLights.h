@@ -1,8 +1,5 @@
-#ifndef CAR_LIGHTS_H
-#define CAR_LIGHTS_H
 #pragma once
-
-#include "../Render.h"
+#include "Render.h"
 
 class CCarLights;
 class CCar;
@@ -54,17 +51,7 @@ protected:
 			return light->bone_id == m_light->bone_id;
 		}
 	};
+
 	LIGHTS_STORAGE m_lights;
 	CCar *m_pcar;
-	/*
-	Ivector2		m_head_near_lights						;
-	Ivector2		m_head_far_lights						;
-	Ivector2		m_left_turns							;
-	Ivector2		m_stops									;
-	Ivector2		m_gabarites								;
-	Ivector2		m_door_gabarites						;
-*/
-private:
 };
-
-#endif

@@ -2,8 +2,8 @@
 #pragma hdrstop
 
 
-#include "..\skeletonX.h"
-#include "..\skeletoncustom.h"
+#include "skeletonX.h"
+#include "skeletoncustom.h"
 
 
 /*

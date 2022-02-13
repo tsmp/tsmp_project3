@@ -2,8 +2,8 @@
 #include "alife_space.h"
 #include "hit.h"
 #include "ode_include.h"
-#include "../bone.h"
-#include "../../xrNetwork/net_utils.h"
+#include "bone.h"
+#include "../xrNetwork/net_utils.h"
 #include "xrMessages.h"
 #include "Level.h"
 

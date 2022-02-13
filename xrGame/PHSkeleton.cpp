@@ -7,15 +7,15 @@
 #include "PhysicsShell.h"
 #include "PHSynchronize.h"
 #include "MathUtils.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "PHObject.h"
 #include "PHCollideValidator.h"
 #include "ai_object_location.h"
 #include "ai_space.h"
 #include "game_graph.h"
 #include "PHDestroyable.h"
-#define F_MAX 3.402823466e+38F
 
+#define F_MAX 3.402823466e+38F
 u32 CPHSkeleton::existence_time = 5000;
 
 bool IC CheckObjectSize(CKinematics *K)

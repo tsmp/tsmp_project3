@@ -18,13 +18,13 @@
 #define R_R2 2
 #define RENDER R_R2
 
-#include "..\resourcemanager.h"
-#include "..\vis_common.h"
-#include "..\render.h"
-#include "..\igame_level.h"
+#include "resourcemanager.h"
+#include "vis_common.h"
+#include "render.h"
+#include "igame_level.h"
 #include "..\xrRender\blenders\blender.h"
 #include "..\xrRender\blenders\blender_clsid.h"
-#include "..\psystem.h"
+#include "psystem.h"
 #include "..\xrRender\xrRender_console.h"
 #include "r2.h"
 

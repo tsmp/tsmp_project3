@@ -6,7 +6,7 @@
 #include "xrserver.h"
 #include "Inventory.h"
 #include "CustomZone.h"
-#include "../igame_persistent.h"
+#include "igame_persistent.h"
 #include "clsid_game.h"
 #include "Actor.h"
 #include "game_cl_base.h"
@@ -19,11 +19,10 @@
 
 //#define DELAYED_ROUND_TIME	7000
 #include "ui\UIBuyWndShared.h"
-#include "../Console.h"
+#include "Console.h"
 
 #define UNBUYABLESLOT 20
 
-//-----------------------------------------------------------------
 u32 g_sv_dm_dwForceRespawn = 0;
 s32 g_sv_dm_dwFragLimit = 10;
 s32 g_sv_dm_dwTimeLimit = 0;
@@ -34,7 +33,7 @@ u32 g_sv_dm_dwAnomalySetLengthTime = 3;
 BOOL g_sv_dm_bPDAHunt = TRUE;
 u32 g_sv_dm_dwWarmUp_MaxTime = 0;
 BOOL g_sv_dm_bDMIgnore_Money_OnBuy = FALSE;
-//-----------------------------------------------------------------
+
 BOOL game_sv_Deathmatch::IsDamageBlockIndEnabled() { return g_sv_dm_bDamageBlockIndicators; };
 s32 game_sv_Deathmatch::GetTimeLimit() { return g_sv_dm_dwTimeLimit; };
 s32 game_sv_Deathmatch::GetFragLimit() { return g_sv_dm_dwFragLimit; };
@@ -43,7 +42,6 @@ u32 game_sv_Deathmatch::GetForceRespawn() { return g_sv_dm_dwForceRespawn; };
 u32 game_sv_Deathmatch::GetWarmUpTime() { return g_sv_dm_dwWarmUp_MaxTime; };
 BOOL game_sv_Deathmatch::IsAnomaliesEnabled() { return g_sv_dm_bAnomaliesEnabled; };
 u32 game_sv_Deathmatch::GetAnomaliesTime() { return g_sv_dm_dwAnomalySetLengthTime; };
-//-----------------------------------------------------------------
 
 game_sv_Deathmatch::game_sv_Deathmatch()
 	: pure_relcase(&game_sv_Deathmatch::net_Relcase)
@@ -62,14 +60,12 @@ game_sv_Deathmatch::game_sv_Deathmatch()
 	m_pSM_CurViewEntity = NULL;
 	m_dwSM_LastSwitchTime = 0;
 
-	//-------------------------------
 	m_vFreeRPoints.clear();
 	m_dwLastRPoint = u32(-1);
-	//-------------------------------
+
 	m_dwWarmUp_CurTime = 0;
 	m_bInWarmUp = false;
-	//-------------------------------
-};
+}
 
 game_sv_Deathmatch::~game_sv_Deathmatch()
 {

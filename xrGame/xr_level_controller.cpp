@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include <dinput.h>
-#include "../Console.h"
-#include "../xr_input.h"
-#include "../Console_commands.h"
+#include "Console.h"
+#include "xr_input.h"
+#include "Console_commands.h"
 #include "xr_level_controller.h"
 #include "string_table.h"
 

@@ -2,9 +2,8 @@
 #pragma hdrstop
 
 
-#include "..\skeletonX.h"
- 	#include "..\skeletoncustom.h"
-
+#include "skeletonX.h"
+#include "skeletoncustom.h"
 
 void __stdcall xrSkin1W_x86(	vertRender*		D,
 								vertBoned1W*	S,

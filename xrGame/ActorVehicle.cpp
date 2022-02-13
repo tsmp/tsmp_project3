@@ -2,18 +2,19 @@
 #pragma hdrstop
 
 #include "actor.h"
-#include "../CameraBase.h"
-
+#include "CameraBase.h"
 #include "ActorEffector.h"
 #include "holder_custom.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 #include "PHShellSplitter.h"
 
 #include "actor_anim_defs.h"

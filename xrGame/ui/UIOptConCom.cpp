@@ -1,8 +1,8 @@
 #include "StdAfx.h"
-#include "../Console.h"
-#include "../Console_commands.h"
+#include "Console.h"
+#include "Console_commands.h"
 #include "UIOptConCom.h"
-#include "../../xrcore/xrCore.h"
+#include "xrCore.h"
 #include "../game_base_space.h"
 #include "../RegistryFuncs.h"
 

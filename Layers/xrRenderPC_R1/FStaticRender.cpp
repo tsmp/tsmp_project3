@@ -3,14 +3,16 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "..\igame_persistent.h"
-#include "..\environment.h"
-#include "..\fbasicvisual.h"
-#include "..\CustomHUD.h"
-#include "..\xr_object.h"
-#include "..\fmesh.h"
-#include "..\SkeletonCustom.h"
+#include "igame_persistent.h"
+#include "environment.h"
+#include "fbasicvisual.h"
+#include "CustomHUD.h"
+#include "xr_object.h"
+#include "fmesh.h"
+#include "SkeletonCustom.h"
 #include "..\xrRender\lighttrack.h"
+#include "PS_instance.h"
+#include "GameFont.h"
 
 using namespace R_dsgraph;
 
@@ -238,7 +240,9 @@ void CRender::add_Visual(IRender_Visual *V)
 	VERIFY(g_bRendering);
 	add_leafs_Dynamic(V);
 }
+
 void CRender::add_Geometry(IRender_Visual *V) { add_Static(V, View->getMask()); }
+
 void CRender::add_StaticWallmark(ref_shader &S, const Fvector &P, float s, CDB::TRI *T, Fvector *verts)
 {
 	if (T->suppress_wm)
@@ -256,17 +260,18 @@ void CRender::add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 {
 	Wallmarks->AddSkeletonWallmark(wm);
 }
+
 void CRender::add_SkeletonWallmark(const Fmatrix *xf, CKinematics *obj, ref_shader &sh, const Fvector &start, const Fvector &dir, float size)
 {
 	Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
 }
+
 void CRender::add_Occluder(Fbox2 &bb_screenspace)
 {
 	VERIFY(_valid(bb_screenspace));
 	HOM.occlude(bb_screenspace);
 }
 
-#include "../PS_instance.h"
 void CRender::set_Object(IRenderable *O)
 {
 	VERIFY(g_bRendering);
@@ -667,7 +672,6 @@ void CRender::ApplyBlur4(FVF::TL4uv *pv, u32 w, u32 h, float k)
 	pv++;
 }
 
-#include "..\GameFont.h"
 void CRender::Statistics(CGameFont *_F)
 {
 	CGameFont &F = *_F;

@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "..\igame_persistent.h"
-#include "..\environment.h"
-#include "..\fvf.h"
+#include "igame_persistent.h"
+#include "environment.h"
+#include "fvf.h"
 
 CPortalTraverser PortalTraverser;
 

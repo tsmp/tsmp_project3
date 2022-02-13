@@ -1,8 +1,9 @@
 #pragma once
 
 #include "limb.h"
-#include "../SkeletonAnimated.h"
-#include "../ik_anim_state.h"
+#include "SkeletonAnimated.h"
+#include "..\ik_anim_state.h"
+
 class CKinematics;
 class CDB::TRI;
 struct SCalculateData;

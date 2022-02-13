@@ -2,19 +2,21 @@
 #include "phcollisiondamagereceiver.h"
 #include "PhysicsShellHolder.h"
 #include "xr_ini.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "geometry.h"
 #include "PhysicsShell.h"
 #include "GameMtlLib.h"
 #include "Physics.h"
-#include "../../xrNetwork/net_utils.h"
+#include "../xrNetwork/net_utils.h"
 #include "xrMessages.h"
 #include "CharacterPhysicsSupport.h"
+
 void CPHCollisionDamageReceiver::BoneInsert(u16 id, float k)
 {
 	R_ASSERT2(FindBone(id) == m_controled_bones.end(), "duplicate bone!");
 	m_controled_bones.push_back(SControledBone(id, k));
 }
+
 void CPHCollisionDamageReceiver::Init()
 {
 	CPhysicsShellHolder *sh = PPhysicsShellHolder();

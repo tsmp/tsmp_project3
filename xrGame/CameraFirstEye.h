@@ -1,7 +1,5 @@
-#ifndef __CAMERA_FE_H__
-#define __CAMERA_FE_H__
-
-#include "../CameraBase.h"
+#pragma once
+#include "CameraBase.h"
 
 class CCameraFirstEye : public CCameraBase
 {
@@ -20,5 +18,3 @@ public:
 	virtual float GetWorldYaw() { return -yaw; };
 	virtual float GetWorldPitch() { return pitch; };
 };
-
-#endif // __CAMERALOOK_H__

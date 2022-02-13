@@ -8,22 +8,20 @@
 
 #include "stdafx.h"
 #include "xrMessages.h"
-#include "../../xrNetwork/net_utils.h"
+#include "../xrNetwork/net_utils.h"
 #include "clsid_game.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "clsid_game.h"
-
-#ifndef XRGAME_EXPORTS
 #include "bone.h"
-#else
-#include "..\bone.h"
-#ifdef DEBUG
+
+#if defined(XRGAME_EXPORTS) && defined(DEBUG)
 #define PHPH_DEBUG
 #endif
-#endif
+
 #ifdef PHPH_DEBUG
 #include "PHDebug.h"
 #endif
+
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeInventoryItem
 ////////////////////////////////////////////////////////////////////////////

@@ -15,9 +15,12 @@
 
 #include "game_cl_base.h"
 #include "Level.h"
+#include "CameraBase.h"
 
 #include "..\TSMP3_Build_Config.h"
+
 ENGINE_API bool g_dedicated_server;
+BOOL g_b_COD_PickUpMode = TRUE;
 
 #define PICKUP_INFO_COLOR 0xFFDDDDDD
 
@@ -151,8 +154,6 @@ void CActor::PickupModeUpdate()
 			PickupInfoDraw(*it);
 }
 
-#include "../CameraBase.h"
-BOOL g_b_COD_PickUpMode = TRUE;
 void CActor::PickupModeUpdate_COD()
 {
 	if (Level().CurrentViewEntity() != this || !g_b_COD_PickUpMode)
