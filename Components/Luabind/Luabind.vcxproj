@@ -70,25 +70,17 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\tsmp3.props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(SolutionDir)\output\libraries_$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IntDir>$(SolutionDir)\output\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)\output\binaries_$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>$(SolutionDir)\output\libraries_$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IntDir>$(SolutionDir)\output\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)\output\binaries_$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">
-    <LibraryPath>$(SolutionDir)\output\libraries_$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IntDir>$(SolutionDir)\output\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)\output\binaries_$(Configuration)\</OutDir>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <ExceptionHandling>
@@ -135,6 +127,7 @@
     </Link>
     <Link Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       <TargetMachine>MachineX86</TargetMachine>
+      <ImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\output\libraries_$(platform)_$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <Link Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       <TargetMachine>MachineX64</TargetMachine>
@@ -162,7 +155,7 @@
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Default</BasicRuntimeChecks>
       <FunctionLevelLinking Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</FunctionLevelLinking>
       <FunctionLevelLinking Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</FunctionLevelLinking>
-      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Default</BasicRuntimeChecks>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -179,6 +172,7 @@
     </Link>
     <Link Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       <TargetMachine>MachineX86</TargetMachine>
+      <ImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\output\libraries_$(platform)_$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <Link Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       <TargetMachine>MachineX64</TargetMachine>
@@ -225,7 +219,7 @@
     </Link>
     <Link Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">
       <TargetMachine>MachineX86</TargetMachine>
-      <ImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">$(SolutionDir)\output\libraries_$(Configuration)\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">$(SolutionDir)\output\libraries_$(platform)_$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <Link Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">
       <TargetMachine>MachineX64</TargetMachine>
