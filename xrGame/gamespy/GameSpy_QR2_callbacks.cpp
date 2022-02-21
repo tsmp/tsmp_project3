@@ -96,7 +96,7 @@ void __cdecl callback_serverkey(int keyid, void *outbuf, void *userdata)
 		break;
 	case G_BATTLEYE_KEY:
 	{
-		pQR2->BufferAdd_Int(outbuf, 1);
+		pQR2->BufferAdd_Int(outbuf, 5);
 	}
 	break;
 
