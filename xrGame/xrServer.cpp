@@ -903,6 +903,7 @@ void xrServer::OnChatMessage(NET_Packet *P, xrClientData *CL)
 	if (!CL->net_Ready || CL->bMutedChat)
 		return;
 
+#pragma TODO("TSMP: если будет скучно можно тут проверять еще имя и команду :)")
 	string128 playerName;
 	s16 senderTeam = P->r_s16();	
 	P->r_stringZ(playerName);
@@ -936,7 +937,7 @@ void xrServer::OnChatMessage(NET_Packet *P, xrClientData *CL)
 		if (!xrClient->net_Ready)
 			return;
 
-		if (senderTeam != 0 && ps->team != senderTeam)
+		if (senderTeam != 0 && ps->team != senderTeam && client != GetServerClient())
 			return;
 
 		SendTo(client->ID, *P);
