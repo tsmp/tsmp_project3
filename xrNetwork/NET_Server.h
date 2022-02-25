@@ -241,10 +241,13 @@ public:
 	virtual void SendTo_Buf(ClientID ID, void *data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
 	virtual void Flush_Clients_Buffers();
 
+	virtual void OnPlayersBaseVerifyRespond(IClient* CL, bool banned) {}
+	virtual const char* GetServerName() { return ""; }
+
 	void SendTo(ClientID ID, NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
 	void SendBroadcast_LL(ClientID exclude, void *data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED);
 	void SendBroadcast(ClientID exclude, NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED);
-
+	
 	// statistic
 	const IServerStatistic *GetStatistic() { return &stats; }
 	void ClearStatistic();

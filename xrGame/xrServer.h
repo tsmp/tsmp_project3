@@ -148,6 +148,7 @@ public:
 	void AttachNewClient(IClient *CL);
 	virtual void OnBuildVersionRespond(IClient *CL, NET_Packet &P);
 	void OnHardwareVerifyRespond(IClient* CL, NET_Packet& P);
+	void OnPlayersBaseVerifyRespond(IClient* CL, bool banned) override;
 
 	void MakeScreenshot(ClientID const &admin_id, ClientID const &cheater_id);
 	void initialize_screenshot_proxies();
