@@ -22,6 +22,7 @@
 #pragma warning(pop)
 
 ENGINE_API const char* RadminIdPrefix;
+static const int maxMessageLength = 140;
 
 #pragma TODO("Посмотреть на MakeUpdatePackets в чн, возможно сделать так же")
 
@@ -902,57 +903,45 @@ void xrServer::OnChatMessage(NET_Packet *P, xrClientData *CL)
 	if (!CL->net_Ready || CL->bMutedChat)
 		return;
 
-	struct MessageSenderController
+	string128 playerName;
+	s16 senderTeam = P->r_s16();	
+	P->r_stringZ(playerName);
+
+	char* pChatMessage = reinterpret_cast<char*>(&P->B.data[P->r_pos]);	
+	int chatMessageLength = strnlen_s(pChatMessage, maxMessageLength);
+
+	if (chatMessageLength == maxMessageLength)
 	{
-		xrServer* m_owner;
-		s16	m_team;
-		game_PlayerState* m_sender_ps;
-		NET_Packet* m_packet;
-		MessageSenderController(xrServer* owner) : m_owner(owner)
-		{}
+		Msg("! WARNING: player [%s] sent chat message with length more than limit!", playerName);
+		return;
+	}
 
-		void operator()(IClient* client)
+	for (int i = 0; i < chatMessageLength; i++)
+	{
+		if (pChatMessage[i] == '%')
 		{
-			xrClientData* xr_client = static_cast<xrClientData*>(client);
-			game_PlayerState* ps = xr_client->ps;
-			if (!ps)
-				return;
-			if (!xr_client->net_Ready)
-				return;
-			if (m_team != -1 && ps->team != m_team)
-				return;
-			if (m_sender_ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) &&
-				!ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
-			{
-				return;
-			}
-			m_owner->SendTo(client->ID, *m_packet);
+			pChatMessage[i] = '_';
+			Msg("! WARNING: player [%s] tried to use %% in chat!", playerName);
 		}
-	};
+	}
 
-	MessageSenderController	mesenger(this);
-	mesenger.m_team = P->r_s16();
-	mesenger.m_sender_ps = CL->ps;
-	mesenger.m_packet = P;
-	ForEachClientDoSender(mesenger);
-		
-#pragma TODO("Починить!")
-	//s16 teamReceiver = P->r_s16();
-	//string128 playerName;
-	//P->r_stringZ(playerName);
-	//
-	//char* pChatMessage = reinterpret_cast<char*>(&P->B.data[P->r_pos]);
-	//int chatMessageLength = strlen(pChatMessage);
+	ForEachClientDoSender([&](IClient *client)
+	{
+		xrClientData* xrClient = static_cast<xrClientData*>(client);
+		game_PlayerState* ps = xrClient->ps;
 
-	//for (int i = 0; i < chatMessageLength; i++)
-	//{
-	//	if (pChatMessage[i] == '%')
-	//	{
-	//		pChatMessage[i] = '_';
-	//		Msg("! WARNING: player [%s] tried to use %% in chat!", playerName);
-	//	}
-	//}
-};
+		if (!ps)
+			return;
+
+		if (!xrClient->net_Ready)
+			return;
+
+		if (senderTeam != 0 && ps->team != senderTeam)
+			return;
+
+		SendTo(client->ID, *P);
+	});
+}
 
 #ifdef DEBUG
 
