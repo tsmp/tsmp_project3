@@ -116,9 +116,12 @@ xrClientData *game_sv_GameState::get_client(u16 id) //if exist
 
 		if (ps->HasOldID(id))
 			return true;
-	});	
+	});
 
-	return dynamic_cast<xrClientData*> (cl);
+	if (!cl)
+		return nullptr;
+
+	return static_cast<xrClientData*>(cl);
 }
 
 CSE_Abstract *game_sv_GameState::get_entity_from_eid(u16 id)

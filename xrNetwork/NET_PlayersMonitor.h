@@ -5,6 +5,7 @@
 #include "../xrCore/fastdelegate.h"
 
 class IClient;
+extern bool IsSameClientID(IClient *client, ClientID &id);
 
 class PlayersMonitor
 {
@@ -55,29 +56,6 @@ public:
 		csPlayers.Leave();
 	}
 
-	template <typename SearchPredicate, typename ActionFunctor>
-	u32 ForFoundClientsDo(SearchPredicate const &predicate, ActionFunctor functor)
-	{
-		u32 ret_count = 0;
-		csPlayers.Enter();
-		m_IteratingNowInPlayers = true;
-
-		auto itEnd = m_NetPlayers.end();
-		auto iter = std::find_if(m_NetPlayers.begin(), itEnd, predicate);
-
-		while (iter != itEnd)
-		{
-			if (auto client = *iter)
-				functor(client);
-
-			iter = std::find_if(++iter, itEnd, predicate);
-		}
-
-		m_IteratingNowInPlayers = false;
-		csPlayers.Leave();
-		return ret_count;
-	}
-
 	template <typename SearchPredicate>
 	IClient *FindAndEraseClient(SearchPredicate const &predicate)
 	{
@@ -109,6 +87,59 @@ public:
 		if (it != m_NetPlayers.end())		
 			clResult = *it;
 		
+		csPlayers.Leave();
+		return clResult;
+	}
+
+	IClient *GetClientById(ClientID &id, bool disconnected)
+	{
+		IClient *clResult = nullptr;
+		csPlayers.Enter();
+
+		PlayersCollectionT::iterator itBegin;
+		PlayersCollectionT::iterator itEnd;
+
+		if (disconnected)
+		{
+			itBegin = m_NetPlayersDisconnected.begin();
+			itEnd = m_NetPlayersDisconnected.end();
+		}
+		else
+		{
+			itBegin = m_NetPlayers.begin();
+			itEnd = m_NetPlayers.end();
+		}
+
+		auto itSearch = std::find_if(itBegin, itEnd, [&id](IClient *client)
+		{
+			return IsSameClientID(client,id);
+		});
+
+		if (itSearch != itEnd)
+			clResult = *itSearch;
+
+		csPlayers.Leave();
+		return clResult;
+	}
+
+	IClient *GetFirstClient(bool disconnected)
+	{
+		IClient *clResult = nullptr;
+		csPlayers.Enter();
+
+		if (disconnected)
+		{
+			auto it = m_NetPlayersDisconnected.begin();
+			if (it != m_NetPlayersDisconnected.end())
+				clResult = *it;
+		}
+		else
+		{
+			auto it = m_NetPlayers.begin();
+			if (it != m_NetPlayers.end())
+				clResult = *it;
+		}
+
 		csPlayers.Leave();
 		return clResult;
 	}

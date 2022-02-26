@@ -66,28 +66,22 @@ extern void UnloadSysmsgsDLL();
 xrServer::~xrServer()
 {
 	UnloadSysmsgsDLL();
+	IClient *tmpClient = nullptr;
 
-	struct ClientDestroyer
+	do
 	{
-		static bool true_generator(IClient*)
-		{
-			return true;
-		}
-	};
+		client_Destroy(tmpClient);
+		tmpClient = net_players.GetFirstClient(false);
+	} 
+	while (tmpClient);
 
-	IClient* tmp_client = net_players.GetFoundClient(&ClientDestroyer::true_generator);
-	while (tmp_client)
+	do
 	{
-		client_Destroy(tmp_client);
-		tmp_client = net_players.GetFoundClient(&ClientDestroyer::true_generator);
-	}
+		client_Destroy(tmpClient);
+		tmpClient = net_players.GetFirstClient(true);
+	} 
+	while (tmpClient);
 
-	tmp_client = net_players.GetFoundDisconnectedClient(&ClientDestroyer::true_generator);
-	while (tmp_client)
-	{
-		client_Destroy(tmp_client);
-		tmp_client = net_players.GetFoundDisconnectedClient(&ClientDestroyer::true_generator);
-	}
 	m_aUpdatePackets.clear();
 	m_aDelayedPackets.clear();
 	entities.clear();
@@ -119,43 +113,38 @@ void xrServer::client_Replicate() {}
 
 IClient *xrServer::client_Find_Get(ClientID ID)
 {
-	struct AddressSearcherPredicate
-	{
-		ip_address m_cAddress;
-		bool operator()(IClient* client)
-		{
-			return client->m_cAddress == m_cAddress;
-		};
-	};
-	AddressSearcherPredicate	search_predicate;
-
 	ip_address cAddress;
 	DWORD dwPort = 0;
 
 	if (!psNET_direct_connect)
-		GetClientAddress(ID, search_predicate.m_cAddress, &dwPort);
+		GetClientAddress(ID, cAddress, &dwPort);
 	else
-		search_predicate.m_cAddress.set("127.0.0.1");
+		cAddress.set("127.0.0.1");
 
 	if (!psNET_direct_connect)
 	{
-		IClient* disconnected_client = net_players.FindAndEraseDisconnectedClient(search_predicate);
-		if (disconnected_client)
+		IClient* disconnectedClient = net_players.FindAndEraseDisconnectedClient([&cAddress](IClient* client)
 		{
-			disconnected_client->m_dwPort = dwPort;
-			disconnected_client->flags.bReconnect = TRUE;
-			disconnected_client->server = this;
-			net_players.AddNewClient(disconnected_client);
+			return client->m_cAddress == cAddress;
+		});
+
+		if (disconnectedClient)
+		{
+			disconnectedClient->m_dwPort = dwPort;
+			disconnectedClient->flags.bReconnect = TRUE;
+			disconnectedClient->server = this;
+			net_players.AddNewClient(disconnectedClient);
 			Msg("# Player found");
-			return disconnected_client;
+			return disconnectedClient;
 		}
-	};
+	}
 
 	IClient *newCL = client_Create();
 	newCL->ID = ID;
+
 	if (!psNET_direct_connect)
 	{
-		newCL->m_cAddress = search_predicate.m_cAddress;
+		newCL->m_cAddress = cAddress;
 		newCL->m_dwPort = dwPort;
 	}
 
@@ -170,6 +159,9 @@ INT g_sv_Client_Reconnect_Time = 0;
 
 void xrServer::client_Destroy(IClient* C)
 {
+	if (!C)
+		return;
+
 	auto predicate = std::bind(std::equal_to<IClient*>(), std::placeholders::_1, C);
 
 	if(IClient *erasedDisconnectedCL = net_players.FindAndEraseDisconnectedClient(predicate))
@@ -268,33 +260,26 @@ void xrServer::Update()
 	DEBUG_VERIFY(verify_entities());
 
 	//Remove any of long time disconnected players
+	IClient* tmpClient = nullptr;
 
-	struct LongTimeClient
+	do
 	{
-		static bool Searher(IClient* client)
+		client_Destroy(tmpClient);
+		tmpClient = net_players.GetFoundDisconnectedClient([](IClient* client)
 		{
 			if (client->dwTime_LastUpdate + (g_sv_Client_Reconnect_Time * 60000) < Device.dwTimeGlobal)
 				return true;
+
 			return false;
-		}
-	};
-
-	IClient* tmp_client = net_players.GetFoundDisconnectedClient(LongTimeClient::Searher);
-
-	while (tmp_client)
-	{
-		client_Destroy(tmp_client);
-		tmp_client = net_players.GetFoundDisconnectedClient(
-			LongTimeClient::Searher);
-	}
+		});
+	} 
+	while (tmpClient);
 
 	PerformCheckClientsForMaxPing();
 	Flush_Clients_Buffers();
 
-	if (0 == (Device.CurrentFrameNumber % 100)) //once per 100 frames
-	{
-		UpdateBannedList();
-	}
+	if (Device.CurrentFrameNumber % 100 == 0) //once per 100 frames	
+		UpdateBannedList();	
 }
 
 void xrServer::SendUpdatesToAll()
@@ -443,10 +428,44 @@ void console_log_cb(LPCSTR text)
 	_tmp_log.push_back(text);
 }
 
+void xrServer::OnRadminCommand(xrClientData* CL, NET_Packet &P, ClientID &sender)
+{
+	NET_Packet answerP;
+
+	if (!CL->m_admin_rights.m_has_admin_rights)
+	{
+		answerP.w_begin(M_REMOTE_CONTROL_CMD);
+		answerP.w_stringZ("you dont have admin rights");
+		SendTo(sender, answerP, net_flags(TRUE, TRUE));
+		return;
+	}
+
+	string128 buffer;
+	P.r_stringZ(buffer);
+
+	string128 command;
+	sprintf_s(command, 128, "%s %s%u", buffer, RadminIdPrefix, sender.value());
+
+	Msg("# radmin %s is running command: %s", CL->m_admin_rights.m_Login.c_str(), buffer);
+	_tmp_log.clear();
+
+	SetLogCB(console_log_cb);
+	Console->Execute(command);
+	SetLogCB(nullptr);
+
+	for (u32 i = 0; i < _tmp_log.size(); ++i)
+	{
+		answerP.w_begin(M_REMOTE_CONTROL_CMD);
+		answerP.w_stringZ(_tmp_log[i]);
+		SendTo(sender, answerP, net_flags(TRUE, TRUE));
+	}
+}
+
 u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID &sender) // Non-Zero means broadcasting with "flags" as returned
 {
 	if (g_pGameLevel && Level().IsDemoSave())
 		Level().Demo_StoreServerData(P.B.data, P.B.count);
+
 	u16 type;
 	P.r_begin(type);
 
@@ -456,50 +475,17 @@ u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID &sender) // Non-Zero mean
 
 	switch (type)
 	{
-	case M_CLIENT_REQUEST_CONNECTION_DATA:
-	{
+	case M_CLIENT_REQUEST_CONNECTION_DATA:	
 		OnCL_Connected(CL);
-	}
-	break;
+		break;
+
 	case M_REMOTE_CONTROL_CMD:
-	{
-		if (CL->m_admin_rights.m_has_admin_rights)
-		{
-			string128 buffer;
-			P.r_stringZ(buffer);
+		OnRadminCommand(CL, P, sender);
+		break;
 
-			string128 command;
-			sprintf_s(command, 128, "%s %s%u", buffer, RadminIdPrefix, sender.value());
-
-			Msg("# radmin %s is running command: %s", CL->m_admin_rights.m_Login.c_str(), buffer);
-			_tmp_log.clear();
-
-			SetLogCB(console_log_cb);			
-			Console->Execute(command);
-			SetLogCB(nullptr);
-			
-			NET_Packet P_answ;
-
-			for (u32 i = 0; i < _tmp_log.size(); ++i)
-			{
-				P_answ.w_begin(M_REMOTE_CONTROL_CMD);
-				P_answ.w_stringZ(_tmp_log[i]);
-				SendTo(sender, P_answ, net_flags(TRUE, TRUE));
-			}
-		}
-		else
-		{
-			NET_Packet P_answ;
-			P_answ.w_begin(M_REMOTE_CONTROL_CMD);
-			P_answ.w_stringZ("you dont have admin rights");
-			SendTo(sender, P_answ, net_flags(TRUE, TRUE));
-		}
-	}
-	break;
-	case M_FILE_TRANSFER:
-	{
+	case M_FILE_TRANSFER:	
 		m_file_transfers->on_message(&P, sender);
-	}break;
+		break;
 	}
 
 	DEBUG_VERIFY(verify_entities());
@@ -1045,45 +1031,35 @@ u8 g_sv_maxPingWarningsCount = 5;
 
 void xrServer::PerformCheckClientsForMaxPing()
 {
-	struct MaxPingClientDisconnector
+	ForEachClientDoSender([&](IClient* client)
 	{
-		xrServer* m_owner;
-		MaxPingClientDisconnector(xrServer* owner) :
-			m_owner(owner)
-		{}
-		void operator()(IClient* client)
-		{
-			xrClientData* Client = static_cast<xrClientData*>(client);
-			game_PlayerState* ps = Client->ps;
-			if (!ps)
-				return;
+		xrClientData* Client = static_cast<xrClientData*>(client);
+		game_PlayerState* ps = Client->ps;
+		if (!ps)
+			return;
 
-			if (ps->ping > g_sv_dwMaxClientPing &&
-				Client->m_ping_warn.m_dwLastMaxPingWarningTime + g_sv_time_for_ping_check < Device.dwTimeGlobal)
-			{
-				++Client->m_ping_warn.m_maxPingWarnings;
-				Client->m_ping_warn.m_dwLastMaxPingWarningTime = Device.dwTimeGlobal;
+		if (ps->ping <= g_sv_dwMaxClientPing)
+			return;
 
-				if (Client->m_ping_warn.m_maxPingWarnings >= g_sv_maxPingWarningsCount)
-				{  //kick
-					Level().Server->DisconnectClient(Client);
-				}
-				else
-				{ //send warning
-					NET_Packet		P;
-					P.w_begin(M_CLIENT_WARN);
-					P.w_u8(1); // 1 means max-ping-warning
-					P.w_u16(ps->ping);
-					P.w_u8(Client->m_ping_warn.m_maxPingWarnings);
-					P.w_u8(g_sv_maxPingWarningsCount);
-					m_owner->SendTo(Client->ID, P, net_flags(FALSE, TRUE));
-				}
-			}
-		}
-	};
+		if (Client->m_ping_warn.m_dwLastMaxPingWarningTime + g_sv_time_for_ping_check >= Device.dwTimeGlobal)
+			return;
 
-	MaxPingClientDisconnector temp_functor(this);
-	ForEachClientDoSender(temp_functor);
+		++Client->m_ping_warn.m_maxPingWarnings;
+		Client->m_ping_warn.m_dwLastMaxPingWarningTime = Device.dwTimeGlobal;
+
+		if (Client->m_ping_warn.m_maxPingWarnings >= g_sv_maxPingWarningsCount)				 
+			Level().Server->DisconnectClient(Client); //kick				
+		else
+		{ 
+			NET_Packet P;
+			P.w_begin(M_CLIENT_WARN);
+			P.w_u8(1); // 1 means max-ping-warning
+			P.w_u16(ps->ping);
+			P.w_u8(Client->m_ping_warn.m_maxPingWarnings);
+			P.w_u8(g_sv_maxPingWarningsCount);
+			SendTo(Client->ID, P, net_flags(FALSE, TRUE));
+		}			
+	});
 }
 
 extern s32 g_sv_dm_dwFragLimit;
@@ -1139,4 +1115,17 @@ void xrServer::GetServerInfo(CServerInfo *si)
 		strcat_s(tmp256, "]");
 	}
 	si->AddItem("Game type", tmp256, RGB(128, 255, 255));
+}
+
+IClient *xrServer::GetClientByName(const char* name)
+{
+	string64 playerName;
+	strncpy_s(playerName, sizeof(playerName), name, sizeof(playerName) - 1);
+	xr_strlwr(playerName);
+
+	return FindClient([&playerName](IClient* client)
+	{
+		auto cl = static_cast<xrClientData*>(client);
+		return !xr_strcmp(playerName, cl->ps->getName());
+	});
 }

@@ -167,17 +167,6 @@ public:
 	xr_string BannedTimeTo() const;
 };
 
-struct ClientIdSearchPredicate
-{
-	ClientID clientId;
-	ClientIdSearchPredicate(ClientID clientIdToSearch) : clientId(clientIdToSearch) {}
-	
-	inline bool operator()(IClient* client) const
-	{
-		return client->ID == clientId;
-	}
-};
-
 class CServerInfo;
 
 class XRNETWORK_API
@@ -302,8 +291,8 @@ public:
 	template<typename ActionFunctor>
 	void ForEachDisconnectedClientDo(ActionFunctor action) { net_players.ForEachDisconnectedClientDo(action); };
 
-	IClient *GetClientByID(ClientID clientId) { return net_players.GetFoundClient(ClientIdSearchPredicate(clientId)); };
-	IClient *GetDisconnectedClientByID(ClientID clientId) { return net_players.GetFoundDisconnectedClient(ClientIdSearchPredicate(clientId)); }
+	IClient *GetClientByID(ClientID clientId) { return net_players.GetClientById(clientId, false); };
+	IClient *GetDisconnectedClientByID(ClientID clientId) { return net_players.GetClientById(clientId, true); }
 
 	const shared_str &GetConnectOptions() const { return connect_options; }
 

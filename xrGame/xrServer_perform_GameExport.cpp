@@ -4,30 +4,21 @@
 
 void xrServer::Perform_game_export()
 {
-	struct NetExportToClientFunctor
+	u32 mode = net_flags(TRUE, TRUE);
+
+	ForEachClientDoSender([&](IClient* client)
 	{
-		xrServer* server_ptr;
-		NetExportToClientFunctor(xrServer* server) :
-			server_ptr(server)
-		{
-		}
-		void operator()(IClient* client)
-		{
+		NET_Packet P;
+		xrClientData* CL = static_cast<xrClientData*>(client);
 
-			R_ASSERT(server_ptr);
-			NET_Packet		P;
-			u32				mode = net_flags(TRUE, TRUE);
+		if (!CL->net_Accepted)
+			return;
 
-			xrClientData* CL = (xrClientData*)client;
-			if (!CL->net_Accepted)
-				return;
-			P.w_begin(M_SV_CONFIG_GAME);
-			server_ptr->game->net_Export_State(P, client->ID);
-			server_ptr->SendTo(client->ID, P, mode);
-		}
-	};
-	NetExportToClientFunctor temp_functor(this);
-	ForEachClientDoSender(temp_functor);
+		P.w_begin(M_SV_CONFIG_GAME);
+		game->net_Export_State(P, client->ID);
+		SendTo(client->ID, P, mode);
+	});
+
 	game->sv_force_sync = FALSE;
 }
 

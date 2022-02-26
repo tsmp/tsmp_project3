@@ -83,6 +83,7 @@ private:
 	void AddDelayedPacket(NET_Packet &Packet, ClientID &Sender);
 	u32 OnDelayedMessage(NET_Packet &P, ClientID &sender); // Non-Zero means broadcasting with "flags" as returned
 
+	void OnRadminCommand(xrClientData *CL, NET_Packet& P, ClientID& sender);
 	void SendUpdatesToAll();
 
 private:
@@ -214,6 +215,7 @@ public:
 	bool HasBattlEye();
 
 	virtual void GetServerInfo(CServerInfo *si);
+	IClient* GetClientByName(const char* name);
 
 public:
 	xr_string ent_name_safe(u16 eid);

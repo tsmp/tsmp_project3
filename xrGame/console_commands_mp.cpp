@@ -288,46 +288,6 @@ public:
 	virtual void Save(IWriter *F){};
 };
 
-struct SearcherClientByName
-{
-	string512 player_name;
-	SearcherClientByName(LPCSTR name)
-	{
-		strncpy_s(player_name, sizeof(player_name), name, sizeof(player_name) - 1);
-		xr_strlwr(player_name);
-	}
-	bool operator()(IClient* client)
-	{
-		xrClientData* temp_client = smart_cast<xrClientData*>(client);
-
-		if (!xr_strcmp(player_name, temp_client->ps->getName()))
-		{
-			return true;
-		}
-		return false;
-	}
-};
-
-struct SearcherClientByClientID
-{
-	ClientID m_Id;
-
-	SearcherClientByClientID(ClientID clid)
-	{
-		m_Id = clid;
-	}
-
-	bool operator()(IClient* client)
-	{
-		xrClientData* temp_client = smart_cast<xrClientData*>(client);
-
-		if(temp_client->ID.value() == m_Id.value())
-			return true;
-		
-		return false;
-	}
-};
-
 class CCC_KickPlayerByName : public IConsole_Command
 {
 public:
@@ -352,17 +312,14 @@ public:
 		}
 		else
 			strcpy(PlayerName, args);
-
-		xr_strlwr(PlayerName);
-		IClient* tmp_client = Level().Server->FindClient(SearcherClientByName(PlayerName));
-
-		if (tmp_client && (tmp_client != Level().Server->GetServerClient()))
+		
+		if (IClient *client = Level().Server->GetClientByName(PlayerName))
 		{
 			Msg("Disconnecting : %s", PlayerName);
-			xrClientData* tmpxrclient = static_cast<xrClientData*>(tmp_client);
+			xrClientData* xrClient = static_cast<xrClientData*>(client);
 
-			if (!tmpxrclient->m_admin_rights.m_has_admin_rights)			
-				Level().Server->DisconnectClient(tmp_client);			
+			if (!xrClient->m_admin_rights.m_has_admin_rights && xrClient != Level().Server->GetServerClient())
+				Level().Server->DisconnectClient(client);
 			else			
 				Msg("! Can't disconnect client with admin rights");			
 		}
@@ -426,17 +383,6 @@ public:
 	{
 		if (!g_pGameLevel || !Level().Server) 
 			return;
-
-		struct ScreenshotMaker
-		{
-			xrClientData* admin_client;
-			void operator()(IClient* C)
-			{
-				Level().Server->MakeScreenshot(admin_client->ID, C->ID);
-			}
-		};
-
-		ScreenshotMaker tmp_functor;
 		
 		xrClientData* radmin = GetCommandInitiator(args_);
 
@@ -446,7 +392,10 @@ public:
 			return;
 		}
 
-		Level().Server->ForEachClientDo(tmp_functor);
+		Level().Server->ForEachClientDo([&radmin](IClient* C)
+		{
+			Level().Server->MakeScreenshot(radmin->ID, C->ID);
+		});
 	}
 
 	virtual void Info(TInfo& I)
@@ -503,14 +452,13 @@ public:
 		else
 			strcpy(PlayerName, buff);
 
-		xr_strlwr(PlayerName);
-		IClient* tmp_client = Level().Server->FindClient(SearcherClientByName(PlayerName));
+		IClient* client = Level().Server->GetClientByName(PlayerName);
 
-		if (tmp_client && (tmp_client != Level().Server->GetServerClient()))
+		if (client && (client != Level().Server->GetServerClient()))
 		{
 			Msg("Disconnecting and Banning: %s", PlayerName);
-			Level().Server->BanClient(tmp_client, ban_time);
-			Level().Server->DisconnectClient(tmp_client);
+			Level().Server->BanClient(client, ban_time);
+			Level().Server->DisconnectClient(client);
 		}
 		else		
 			Msg("! Can't disconnect player [%s]", PlayerName);
@@ -620,10 +568,10 @@ public:
 
 		Level().Server->ForEachClientDo([](IClient* client) 
 		{
-			xrClientData* temp_client = smart_cast<xrClientData*>(client);
+			xrClientData* tempClient = static_cast<xrClientData*>(client);
 
-			if (Level().Server->GetServerClient() != temp_client)		
-				Level().Server->DisconnectClient(temp_client);		
+			if (Level().Server->GetServerClient() != tempClient)
+				Level().Server->DisconnectClient(tempClient);
 			else			
 				Msg("! Can't disconnect server's client");		
 		});
@@ -720,7 +668,7 @@ public:
 
 		Level().Server->ForEachClientDo([&it](IClient* client)
 		{
-			xrClientData* l_pC = smart_cast<xrClientData*>(client);
+			xrClientData* l_pC = static_cast<xrClientData*>(client);
 			ip_address Address;
 			it++;
 			
@@ -757,7 +705,7 @@ public:
 
 		Level().Server->ForEachClientDo([&it](IClient* client)
 			{
-				xrClientData* l_pC = smart_cast<xrClientData*>(client);
+				xrClientData* l_pC = static_cast<xrClientData*>(client);
 				ip_address Address;
 				it++;
 
@@ -1767,19 +1715,14 @@ public:
 			return;
 		}
 
-		ClientID clid = id;
-		IClient* tmp_client = Level().Server->FindClient(SearcherClientByClientID(clid));
-
-		if (tmp_client)
+		if (IClient* client = Level().Server->GetClientByID(ClientID(id)))
 		{
-			xrClientData* l_pC = smart_cast<xrClientData*>(tmp_client);
-			u64 temp = (u64)money_count;
+			xrClientData* l_pC = static_cast<xrClientData*>(client);
 
-			if (temp > (u64)MAXLONG)
+			if (money_count > (u32)INT_MAX)
 				Msg("! cant set too much money");
 			else
 				l_pC->ps->money_for_round = (s32)money_count;
-
 		}
 		else
 			Msg("! client with this id not found");
@@ -1808,12 +1751,9 @@ public:
 			return;
 		}
 
-		ClientID clid = id;
-		IClient* tmp_client = Level().Server->FindClient(SearcherClientByClientID(clid));
-
-		if (tmp_client)
+		if (IClient *tmpClient = Level().Server->GetClientByID(ClientID(id)))
 		{
-			xrClientData* l_pC = smart_cast<xrClientData*>(tmp_client);
+			xrClientData* l_pC = static_cast<xrClientData*>(tmpClient);
 
 			if (l_pC->ps->rank < 4)
 				l_pC->ps->rank++;
@@ -1846,13 +1786,10 @@ public:
 			Msg("invalid id");
 			return;
 		}
-
-		ClientID clid = id;
-		IClient* tmp_client = Level().Server->FindClient(SearcherClientByClientID(clid));
-
-		if (tmp_client)
+				
+		if (IClient* tmpClient = Level().Server->GetClientByID(ClientID(id)))
 		{
-			xrClientData* l_pC = smart_cast<xrClientData*>(tmp_client);
+			xrClientData* l_pC = static_cast<xrClientData*>(tmpClient);
 
 			if (l_pC->ps->rank > 0)
 				l_pC->ps->rank--;
@@ -1886,12 +1823,9 @@ public:
 			return;
 		}
 
-		ClientID clid = id;
-		IClient* tmp_client = Level().Server->FindClient(SearcherClientByClientID(clid));
-
-		if (tmp_client)
+		if (IClient* tmpClient = Level().Server->GetClientByID(ClientID(id)))
 		{
-			xrClientData* l_pC = smart_cast<xrClientData*>(tmp_client);
+			xrClientData* l_pC = static_cast<xrClientData*>(tmpClient);
 			l_pC->bMutedChat = true;
 		}
 		else
@@ -1921,12 +1855,9 @@ public:
 			return;
 		}
 
-		ClientID clid = id;
-		IClient* tmp_client = Level().Server->FindClient(SearcherClientByClientID(clid));
-
-		if (tmp_client)
+		if (IClient* tmpClient = Level().Server->GetClientByID(ClientID(id)))
 		{
-			xrClientData* l_pC = smart_cast<xrClientData*>(tmp_client);
+			xrClientData* l_pC = static_cast<xrClientData*>(tmpClient);
 			l_pC->bMutedChat = false;
 		}
 		else

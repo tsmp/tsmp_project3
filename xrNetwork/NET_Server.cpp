@@ -745,44 +745,25 @@ void IPureServer::SendTo(ClientID ID /*DPNID ID*/, NET_Packet& P, u32 dwFlags, u
 	SendTo_LL(ID, P.B.data, P.B.count, dwFlags, dwTimeout);
 }
 
-void IPureServer::SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 dwFlags)
+bool IsSameClientID(IClient *client, ClientID &id)
 {
-	struct ClientExcluderPredicate
+	return client->ID == id;
+}
+
+void IPureServer::SendBroadcast_LL(ClientID idToExclude, void* data, u32 size, u32 dwFlags)
+{
+#pragma TODO("TSMP: изучить не нужно ли тут использовать ForEachClientSender")
+
+	net_players.ForEachClientDo([&](IClient *client)
 	{
-		ClientID id_to_exclude;
-		ClientExcluderPredicate(ClientID exclude) : id_to_exclude(exclude) {}
+		if (client->ID == idToExclude)
+			return;
 
-		bool operator()(IClient* client)
-		{
-			if (client->ID == id_to_exclude)
-				return false;
+		if (!client->flags.bConnected)
+			return;
 
-			if (!client->flags.bConnected)
-				return false;
-
-			return true;
-		}
-	};
-
-#pragma TODO("Можно переписать на лямбду")
-	struct ClientSenderFunctor
-	{
-		IPureServer* m_owner;
-		void* m_data;
-		u32 m_size;
-		u32 m_dwFlags;
-		ClientSenderFunctor(IPureServer* owner, void* data, u32 size, u32 dwFlags) :
-			m_owner(owner), m_data(data), m_size(size), m_dwFlags(dwFlags)
-		{}
-
-		void operator()(IClient* client)
-		{
-			m_owner->SendTo_LL(client->ID, m_data, m_size, m_dwFlags);
-		}
-	};
-
-	ClientSenderFunctor temp_functor(this, data, size, dwFlags);
-	net_players.ForFoundClientsDo(ClientExcluderPredicate(exclude), temp_functor);
+		SendTo_LL(client->ID, data, size, dwFlags);
+	});
 }
 
 void IPureServer::SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags)
@@ -908,46 +889,31 @@ bool IPureServer::DisconnectClient(IClient* C, string512& Reason)
 	return true;
 };
 
-bool IPureServer::DisconnectAddress(const ip_address &Address)
+bool IPureServer::DisconnectAddress(const ip_address &disconAddress)
 {
-#pragma TODO("Наверно можно написать лучше")
-	u32 players_count = net_players.ClientsCount();
-
-	buffer_vector<IClient*>	PlayersToDisconnect(
-		_alloca(players_count * sizeof(IClient*)),
-		players_count
-	);
-
-	struct ToDisconnectFillerFunctor
+	if (disconAddress.to_string() == "0.0.0.0")
 	{
-		IPureServer* m_owner;
-		buffer_vector<IClient*>* dest;
-		ip_address const* address_to_disconnect;
+		Msg("! WARNING: attempt to disconnect server ip");
+		return false;
+	}
 
-		ToDisconnectFillerFunctor(IPureServer* owner, buffer_vector<IClient*>* dest_disconnect, ip_address const* address) :
-			m_owner(owner), dest(dest_disconnect), address_to_disconnect(address)
-		{}
+	// TSMP: скорее всего нельзя дисконнектить сразу в ForEachClientDo из за крит секции csPlayers
+	xr_vector<IClient*> clientsToDisconnect;
 
-		void operator()(IClient* client)
-		{
-			ip_address tmp_address;
-			m_owner->GetClientAddress(client->ID, tmp_address);
+	net_players.ForEachClientDo([&](IClient* client)
+	{
+		ip_address tempAddress;
+		GetClientAddress(client->ID, tempAddress);
 
-			if (*address_to_disconnect == tmp_address)
-			{
-				dest->push_back(client);
-			};
-		}
-	};
+		if (disconAddress == tempAddress)
+			clientsToDisconnect.push_back(client);
+	});
 
-	ToDisconnectFillerFunctor tmp_functor(this, &PlayersToDisconnect, &Address);
-	net_players.ForEachClientDo(tmp_functor);
-
-	for (IClient *client: PlayersToDisconnect)	
+	for (IClient *client: clientsToDisconnect)
 		DisconnectClient(client);
 	
 	return true;
-};
+}
 
 bool IPureServer::GetClientAddress(IDirectPlay8Address* pClientAddress, ip_address& Address, DWORD* pPort)
 {

@@ -275,18 +275,14 @@ void game_sv_TeamDeathmatch::OnPlayerChangeTeam(ClientID id_who, s16 team)
 			Money_SetStart(id_who);
 	}
 
-	/////////////////////////////////////////////////////////
 	//Send Switch team message
 	NET_Packet P;
-	//	P.w_begin			(M_GAMEMESSAGE);
 	GenerateGameMessage(P);
 	P.w_u32(PLAYER_CHANGE_TEAM);
 	P.w_u16(ps_who->GameID);
 	P.w_u16(ps_who->team);
 	P.w_u16(team);
 	u_EventSend(P);
-	/////////////////////////////////////////////////////////
-
 	SetPlayersDefItems(ps_who);
 }
 
@@ -296,61 +292,41 @@ void game_sv_TeamDeathmatch::OnPlayerKillPlayer(game_PlayerState *ps_killer, gam
 	s16 OldKillsVictim = 0;
 
 	if (ps_killer)
-	{
-		//.		OldKillsKiller = ps_killer->kills;
-		OldKillsKiller = ps_killer->frags();
-	}
+		OldKillsKiller = ps_killer->frags();	
 
 	if (ps_killed)
-	{
-		//.		OldKillsVictim = ps_killed->kills;
-		OldKillsVictim = ps_killed->frags();
-	}
+		OldKillsVictim = ps_killed->frags();	
 
 	inherited::OnPlayerKillPlayer(ps_killer, ps_killed, KillType, SpecialKillType, pWeaponA);
-
 	UpdateTeamScore(ps_killer, OldKillsKiller);
 
 	if (ps_killer != ps_killed)
 		UpdateTeamScore(ps_killed, OldKillsVictim);
 
-	//-------------------------------------------------------------------
-	if (ps_killed && ps_killer)
+	if (!ps_killed || !ps_killer)
+		return;
+
+	// teamkill checks
+	if (ps_killed == ps_killer || ps_killer->team != ps_killed->team || !Get_TeamKillPunishment())
+		return;
+
+	if (ps_killer->m_iTeamKills < Get_TeamKillLimit())
+		return;
+
+	IClient *srvClient = m_server->GetServerClient();
+
+	IClient *client = m_server->FindClient([&](IClient *client)
 	{
-		if (ps_killed != ps_killer && ps_killer->team == ps_killed->team)
-		{
-			//.			ps_killer->m_iTeamKills++;
+		xrClientData* pCL = static_cast<xrClientData*>(client);
 
-			//Check for TeamKill
-			if (Get_TeamKillPunishment())
-			{
-				if (ps_killer->m_iTeamKills >= Get_TeamKillLimit())
-				{
-					struct player_state_searcher
-					{
-						game_PlayerState* ps_killer;
-						IClient* server_client;
+		if (pCL == srvClient || !pCL->ps || pCL->ps != ps_killer) 
+			return false;
+			
+		return true;
+	});
 
-						bool operator()(IClient* client)
-						{
-							xrClientData* pCL = (xrClientData*)client;
-							if (!pCL || pCL == server_client) return false;
-							if (!pCL->ps || pCL->ps != ps_killer) return false;
-							return true;
-						}
-					};
-
-					player_state_searcher tmp_predicate;
-					tmp_predicate.ps_killer = ps_killer;
-					tmp_predicate.server_client = m_server->GetServerClient();
-					xrClientData* tmp_client = static_cast<xrClientData*>(m_server->FindClient(tmp_predicate));
-
-					if (tmp_client)
-						m_server->DisconnectClient(tmp_client);
-				}
-			}
-		}
-	}
+	if (client)
+		m_server->DisconnectClient(client);
 }
 
 void game_sv_TeamDeathmatch::UpdateTeamScore(game_PlayerState *ps_killer, s16 OldKills)

@@ -1129,7 +1129,6 @@ void game_sv_mp::OnPlayerSpeechMessage(NET_Packet &P, ClientID sender)
 	if (!pClient->owner)
 		return;
 
-
 	NET_Packet NP;
 	GenerateGameMessage(NP);
 	NP.w_u32(GAME_EVENT_SPEECH_MESSAGE);

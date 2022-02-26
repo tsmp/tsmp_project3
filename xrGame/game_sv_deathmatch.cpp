@@ -505,23 +505,24 @@ bool game_sv_Deathmatch::checkForTimeLimit()
 
 bool game_sv_Deathmatch::checkForFragLimit()
 {
+	if (!g_sv_dm_dwFragLimit)
+		return false;
+
 	bool result = false;
 
-	if (g_sv_dm_dwFragLimit)
+	m_server->ForEachClientDo([this, &result](IClient* client)
 	{
-		m_server->ForEachClientDo([this, &result](IClient* client)
-		{
-			xrClientData* C = static_cast<xrClientData*>(client);
-			game_PlayerState* ps = C->ps;
+		xrClientData* C = static_cast<xrClientData*>(client);
+		game_PlayerState* ps = C->ps;
 
-			if (ps->frags() >= g_sv_dm_dwFragLimit)
-			{
-				OnFraglimitExceed();
-				result = true;
-			}
-		});
-	}
-	return false;
+		if (ps->frags() >= g_sv_dm_dwFragLimit && !result)
+		{
+			OnFraglimitExceed();
+			result = true;
+		}
+	});
+
+	return result;
 }
 
 bool game_sv_Deathmatch::checkForRoundEnd()
