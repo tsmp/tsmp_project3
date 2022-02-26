@@ -78,9 +78,7 @@ CUIGameDM::CUIGameDM()
 	CUIXmlInit::InitStatic(uiXml, "fraglimit", 0, m_pFragLimitIndicator);
 
 	m_voteStatusWnd = nullptr;
-
 	m_pInventoryMenu = xr_new<CUIInventoryWnd>();
-	m_pPdaMenu = xr_new<CUIPdaWnd>();
 	m_pMapDesc = nullptr;
 }
 
@@ -160,7 +158,6 @@ CUIGameDM::~CUIGameDM()
 	xr_delete(m_voteStatusWnd);
 
 	delete_data(m_pInventoryMenu);
-	delete_data(m_pPdaMenu);
 	delete_data(m_pMapDesc);
 }
 
@@ -364,5 +361,4 @@ void CUIGameDM::reset_ui()
 {
 	inherited::reset_ui();
 	m_pInventoryMenu->Reset();
-	m_pPdaMenu->Reset();
 }

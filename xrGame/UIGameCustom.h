@@ -2,6 +2,7 @@
 
 #include "script_export_space.h"
 #include "object_interfaces.h"
+#include "game_base_space.h"
 
 class CUI;
 class CTeamBaseZone;
@@ -15,6 +16,7 @@ class CInventoryBox;
 class CUITalkWnd;
 class CInventoryOwner;
 class CUICarBodyWnd;
+class CUIPdaWnd;
 
 struct SDrawStaticStruct : public IPureDestroyableObject
 {
@@ -39,8 +41,6 @@ struct SDrawStaticStruct : public IPureDestroyableObject
 };
 
 using st_vec = xr_vector<SDrawStaticStruct>;
-
-#include "game_base_space.h"
 
 struct SGameTypeMaps
 {
@@ -152,6 +152,7 @@ public:
 
 public: 
 		CUITalkWnd* TalkMenu;
+		CUIPdaWnd* PdaMenu;
 };
 
 add_to_type_list(CUIGameCustom)

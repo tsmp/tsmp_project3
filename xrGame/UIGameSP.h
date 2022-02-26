@@ -6,7 +6,6 @@
 
 class CUIInventoryWnd;
 class CUITradeWnd;
-class CUIPdaWnd;
 class CInventory;
 
 class game_cl_Single;
@@ -39,7 +38,6 @@ public:
 	bool IsAnyWndActive();
 
 	CUIInventoryWnd *InventoryMenu;
-	CUIPdaWnd *PdaMenu;
 	CChangeLevelWnd *UIChangeLevelWnd;
 };
 

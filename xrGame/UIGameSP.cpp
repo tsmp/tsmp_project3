@@ -21,18 +21,13 @@
 CUIGameSP::CUIGameSP()
 {
 	m_game = nullptr;
-
-	InventoryMenu = xr_new<CUIInventoryWnd>();
-	PdaMenu = xr_new<CUIPdaWnd>();
-	TalkMenu = xr_new<CUITalkWnd>();
+	InventoryMenu = xr_new<CUIInventoryWnd>();	
 	UIChangeLevelWnd = xr_new<CChangeLevelWnd>();
 }
 
 CUIGameSP::~CUIGameSP()
 {
 	delete_data(InventoryMenu);
-	delete_data(PdaMenu);
-	delete_data(TalkMenu);
 	delete_data(UIChangeLevelWnd);
 }
 

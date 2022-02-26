@@ -10,6 +10,7 @@
 
 #include "ui/UITalkWnd.h"
 #include "ui/UICarBodyWnd.h"
+#include "ui/UIPdaWnd.h"
 
 struct predicate_remove_stat
 {
@@ -31,6 +32,7 @@ CUIGameCustom::CUIGameCustom()
 
 	m_pUICarBodyMenu = xr_new<CUICarBodyWnd>();
 	TalkMenu = xr_new<CUITalkWnd>();
+	PdaMenu = xr_new<CUIPdaWnd>();
 }
 
 CUIGameCustom::~CUIGameCustom()
@@ -42,6 +44,7 @@ CUIGameCustom::~CUIGameCustom()
 
 	delete_data(m_pUICarBodyMenu);
 	delete_data(TalkMenu);
+	delete_data(PdaMenu);
 }
 
 float CUIGameCustom::shedule_Scale()

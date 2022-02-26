@@ -68,8 +68,8 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion *info_portion) const
 
 		if (HUD().GetUI())
 		{
-			CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
 			pda_section::part p = pda_section::encyclopedia;
+
 			switch (article.data()->articleType)
 			{
 			case ARTICLE_DATA::eEncyclopediaArticle:
@@ -87,7 +87,9 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion *info_portion) const
 			default:
 				NODEFAULT;
 			};
-			pGameSP->PdaMenu->PdaContentsChanged(p);
+			
+			CUIGameCustom* pGameUI = HUD().GetUI()->UIGame();
+			pGameUI->PdaMenu->PdaContentsChanged(p);
 		}
 	}
 }
@@ -115,9 +117,9 @@ void CActor::AddGameNews(GAME_NEWS_DATA &news_data)
 	if (HUD().GetUI())
 	{
 		HUD().GetUI()->UIMainIngameWnd->ReceiveNews(&news_data);
-		CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-		if (pGameSP)
-			pGameSP->PdaMenu->PdaContentsChanged(pda_section::news);
+		
+		if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())		
+			pGameUI->PdaMenu->PdaContentsChanged(pda_section::news);
 	}
 }
 
@@ -271,34 +273,28 @@ void CActor::NewPdaContact(CInventoryOwner *pInvOwner)
 
 	if (HUD().GetUI())
 	{
-		CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-
-		if (pGameSP)
-			pGameSP->PdaMenu->PdaContentsChanged(pda_section::contacts);
+		if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())
+			pGameUI->PdaMenu->PdaContentsChanged(pda_section::contacts);
 	}
 }
 
 void CActor::LostPdaContact(CInventoryOwner *pInvOwner)
-{
-	CGameObject *GO = smart_cast<CGameObject *>(pInvOwner);
-	if (GO)
+{	
+	if (CGameObject* GO = smart_cast<CGameObject*>(pInvOwner))
 	{
-
 		for (int t = ALife::eRelationTypeFriend; t < ALife::eRelationTypeLast; ++t)
 		{
 			ALife::ERelationType tt = (ALife::ERelationType)t;
 			Level().MapManager().RemoveMapLocation(RELATION_REGISTRY().GetSpotName(tt), GO->ID());
 		}
+
 		Level().MapManager().RemoveMapLocation("deadbody_location", GO->ID());
-	};
+	}
 
 	if (HUD().GetUI())
-	{
-		CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-		if (pGameSP)
-		{
-			pGameSP->PdaMenu->PdaContentsChanged(pda_section::contacts);
-		}
+	{		
+		if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())		
+			pGameUI->PdaMenu->PdaContentsChanged(pda_section::contacts);		
 	}
 }
 

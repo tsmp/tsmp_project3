@@ -14,7 +14,6 @@ class CUIRankIndicator;
 class UIVoteStatusWnd;
 
 class CUIInventoryWnd;
-class CUIPdaWnd;
 class CUIMapDesc;
 class CInventoryBox;
 
@@ -28,7 +27,6 @@ private:
 
 public:
 	CUIInventoryWnd *m_pInventoryMenu;
-	CUIPdaWnd *m_pPdaMenu;
 	CUIMapDesc *m_pMapDesc;
 
 protected:

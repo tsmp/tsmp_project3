@@ -60,12 +60,9 @@ game_cl_TeamDeathmatch::game_cl_TeamDeathmatch()
 
 	LoadSndMessages();
 }
+
 void game_cl_TeamDeathmatch::Init()
 {
-	//	pInventoryMenu	= xr_new<CUIInventoryWnd>();
-	//	pPdaMenu = xr_new<CUIPdaWnd>();
-	//	pMapDesc = xr_new<CUIMapDesc>();
-	//-----------------------------------------------------------
 	LoadTeamData(GetTeamMenu(1));
 	LoadTeamData(GetTeamMenu(2));
 }
@@ -183,15 +180,7 @@ CUIGameCustom *game_cl_TeamDeathmatch::createGameUI()
 	m_game_ui->SetClGame(this);
 	m_game_ui->Init();
 
-	//-----------------------------------------------------------
-	//	pInventoryMenu = xr_new<CUIInventoryWnd>();
-	//-----------------------------------------------------------
-	//	pPdaMenu = xr_new<CUIPdaWnd>();
-	//-----------------------------------------------------------
-	//	pMapDesc = xr_new<CUIMapDesc>();
-	//-----------------------------------------------------------
 	LoadMessagesMenu(MESSAGE_MENUS);
-	//-----------------------------------------------------------
 	return m_game_ui;
 }
 
