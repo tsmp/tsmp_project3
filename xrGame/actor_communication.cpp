@@ -241,31 +241,9 @@ void CActor::StartTalk(CInventoryOwner *talk_partner)
 
 	CInventoryOwner::StartTalk(talk_partner);
 }
-/*
-void CActor::UpdateContact		(u16 contact_id)
-{
-	if(ID() == contact_id) return;
 
-	TALK_CONTACT_VECTOR& contacts = contacts_registry->registry().objects();
-	for(TALK_CONTACT_VECTOR_IT it = contacts.begin(); contacts.end() != it; ++it)
-		if((*it).id == contact_id) break;
-
-	if(contacts.end() == it)
-	{
-		TALK_CONTACT_DATA contact_data(contact_id, Level().GetGameTime());
-		contacts.push_back(contact_data);
-	}
-	else
-	{
-		(*it).time = Level().GetGameTime();
-	}
-}
-*/
 void CActor::NewPdaContact(CInventoryOwner *pInvOwner)
 {
-	if (!IsGameTypeSingle())
-		return;
-
 	bool b_alive = !!(smart_cast<CEntityAlive *>(pInvOwner))->g_Alive();
 	HUD().GetUI()->UIMainIngameWnd->AnimateContacts(b_alive);
 

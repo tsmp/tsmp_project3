@@ -407,7 +407,7 @@ void CUICharacterInfo::UpdateRelation()
 		if (m_icons[eUIRelation])
 			m_icons[eUIRelation]->Show(true);
 
-		if (OnServer())
+		if (IsGameTypeSingle())
 		{
 			CSE_ALifeTraderAbstract* T = ch_info_get_from_id(m_ownerID);
 			CSE_ALifeTraderAbstract* TA = ch_info_get_from_id(Actor()->ID());

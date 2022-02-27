@@ -97,12 +97,12 @@ void CUIPdaWnd::Init()
 	UIMapWnd = xr_new<CUIMapWnd>();
 	UIMapWnd->Init("pda_map.xml", "map_wnd");
 
+	// Oкно коммуникaции
+	UIPdaContactsWnd = xr_new<CUIPdaContactsWnd>();
+	UIPdaContactsWnd->Init();
+
 	if (IsGameTypeSingle())
 	{
-		// Oкно коммуникaции
-		UIPdaContactsWnd = xr_new<CUIPdaContactsWnd>();
-		UIPdaContactsWnd->Init();
-
 		// Oкно новостей
 		UIDiaryWnd = xr_new<CUIDiaryWnd>();
 		UIDiaryWnd->Init();
@@ -114,7 +114,7 @@ void CUIPdaWnd::Init()
 		// Окно статистики о актере
 		UIActorInfo = xr_new<CUIActorInfoWnd>();
 		UIActorInfo->Init();
-
+		
 		// Окно рейтинга сталкеров
 		UIStalkersRanking = xr_new<CUIStalkersRankingWnd>();
 		UIStalkersRanking->Init();
@@ -122,6 +122,7 @@ void CUIPdaWnd::Init()
 		UIEventsWnd = xr_new<CUIEventsWnd>();
 		UIEventsWnd->Init();
 	}
+
 	// Tab control
 	UITabControl = xr_new<CUITabControl>();
 	UITabControl->SetAutoDelete(true);
@@ -133,7 +134,6 @@ void CUIPdaWnd::Init()
 	{
 		UITabControl->GetButtonsVector()->at(0)->Enable(false);
 		UITabControl->GetButtonsVector()->at(2)->Enable(false);
-		UITabControl->GetButtonsVector()->at(3)->Enable(false);
 		UITabControl->GetButtonsVector()->at(4)->Enable(false);
 		UITabControl->GetButtonsVector()->at(5)->Enable(false);
 		UITabControl->GetButtonsVector()->at(6)->Enable(false);

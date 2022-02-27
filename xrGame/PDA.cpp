@@ -130,6 +130,10 @@ void CPda::OnH_A_Chield()
 {
 	VERIFY(IsOff());
 
+	// TSMP: для мп
+	if (m_idOriginalOwner == u16(-1))
+		m_idOriginalOwner = H_Parent()->ID();
+
 	//включить PDA только если оно находится у первого владельца
 	if (H_Parent()->ID() == m_idOriginalOwner)
 	{
