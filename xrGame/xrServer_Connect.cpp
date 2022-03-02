@@ -94,6 +94,10 @@ IClient *xrServer::new_client(SClientConnectData *cl_data)
 	P.r_pos = 0;
 
 	game->AddDelayedEvent(P, GAME_EVENT_CREATE_CLIENT, 0, CL->ID);	
+
+	if (IsGameTypeSingle)
+		Update();
+
 	return CL;
 }
 
