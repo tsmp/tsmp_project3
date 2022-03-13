@@ -31,6 +31,8 @@
 #include "ai/monsters/basemonster/base_monster.h"
 #include "ai/trader/ai_trader.h"
 
+ENGINE_API bool g_dedicated_server;
+
 void CActor::AddEncyclopediaArticle(const CInfoPortion *info_portion) const
 {
 	VERIFY(info_portion);
@@ -244,6 +246,9 @@ void CActor::StartTalk(CInventoryOwner *talk_partner)
 
 void CActor::NewPdaContact(CInventoryOwner *pInvOwner)
 {
+	if (g_dedicated_server)
+		return;
+
 	bool b_alive = !!(smart_cast<CEntityAlive *>(pInvOwner))->g_Alive();
 	HUD().GetUI()->UIMainIngameWnd->AnimateContacts(b_alive);
 
