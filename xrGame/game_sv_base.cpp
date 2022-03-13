@@ -324,8 +324,11 @@ bool IsCompatibleSpawnGameType(u8 spawnGameType, u32 currentGameType)
 	if (spawnGameType == rpgtGameArtefactHunt && currentGameType == GAME_ARTEFACTHUNT)
 		return true;
 
-	// Freeplay uses deathmatch rpoints
+	// Freeplay and hardmatch use deathmatch rpoints
 	if (spawnGameType == rpgtGameDeathmatch && currentGameType == GAME_FREEPLAY)
+		return true;
+
+	if (spawnGameType == rpgtGameDeathmatch && currentGameType == GAME_HARDMATCH)
 		return true;
 
 	return false;
