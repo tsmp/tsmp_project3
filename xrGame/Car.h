@@ -34,6 +34,12 @@ struct dSurfaceParameters;
 class CScriptEntityAction;
 class car_memory;
 
+struct SCarNetUpdate
+{
+	u32	TimeStamp;
+	std::vector<SPHNetState> StateVec;
+};
+
 class CCar : public CEntity,
 			 public CScriptEntity,
 			 public CPHUpdateObject,
@@ -48,6 +54,7 @@ class CCar : public CEntity,
 {
 private:
 	collide::rq_results RQR;
+	xr_deque<SCarNetUpdate> m_CarNetUpdates;
 
 #ifdef DEBUG
 	CFunctionGraph m_dbg_power_rpm;
@@ -61,9 +68,10 @@ private:
 	void DbgCreatePlots();
 	void DBgClearPlots();
 #endif
-	////////////////////////////////////////////////////////////////////
+
 	Flags16 async_calls;
 	static const u16 cAsCallsnum = 3;
+	
 	enum EAsyncCalls
 	{
 		ascSndTransmission = 1 << 0,
@@ -71,12 +79,15 @@ private:
 		ascExhoustStop = 1 << 2,
 		ascLast = 1 << cAsCallsnum
 	};
+	
 	void ASCUpdate();
 	void ASCUpdate(EAsyncCalls c);
 	void AscCall(EAsyncCalls c);
-	////////////////////////////////////////////////////////////////////////////////////////
+
+	void Interpolate();
+	float InterpolateStates(u32 element, SCarNetUpdate const &first, SCarNetUpdate const &last, SPHNetState &current);
 	virtual bool CanRemoveObject();
-	////////////////////////////////////////////////////////////////////////
+
 	static BONE_P_MAP bone_map; //interface for PhysicsShell
 	static void ActorObstacleCallback(bool &do_colide, bool bo1, dContact &c, SGameMtl *material_1, SGameMtl *material_2);
 	virtual void PhDataUpdate(dReal step);
@@ -381,7 +392,6 @@ private:
 
 	Fvector m_camera_position;
 
-	////////////////////////////////////////////////////
 	friend struct SWheel;
 	friend struct SDoor;
 
@@ -397,18 +407,15 @@ private:
 	xr_vector<Fmatrix> m_sits_transforms; // m_sits_transforms[0] - driver_place
 	float m_current_gear_ratio;
 
-	/////////////////////////////////////////////////////////////
 	bool b_auto_switch_transmission;
-
-	/////////////////////////////////////////////////////////////
 	float m_doors_torque_factor;
-	/////////////////////////////////////////////////////////////
 
 	float m_max_power; //best rpm
 	float m_power_increment_factor;
 	float m_power_decrement_factor;
 	float m_rpm_increment_factor;
 	float m_rpm_decrement_factor;
+
 	/////////////////////porabola
 	float m_a, m_b, m_c;
 
@@ -546,7 +553,7 @@ public:
 	// Network
 	virtual void net_Export(NET_Packet &P);				// export to server
 	virtual void net_Import(NET_Packet &P);				// import from server
-	virtual BOOL net_Relevant() { return getLocal(); }; // relevant for export to server
+	virtual BOOL net_Relevant(); // relevant for export to server
 	virtual BOOL UsedAI_Locations();
 	virtual void net_Relcase(CObject *O);
 	// Input
@@ -595,6 +602,8 @@ protected:
 	void SaveNetState(NET_Packet &P);
 	virtual void RestoreNetState(CSE_PHSkeleton *po);
 	void SetDefaultNetState(CSE_PHSkeleton *po);
+
+	bool IsMyCar();
 
 public:
 	CCar(void);

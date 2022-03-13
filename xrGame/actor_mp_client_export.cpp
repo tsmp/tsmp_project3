@@ -100,7 +100,10 @@ BOOL CActorMP::net_Relevant()
 	}
 
 	if (character_physics_support()->IsRemoved())
-		return (false);
+		return false;
+
+	if (Holder())
+		return false;
 
 	actor_mp_state state;
 	fill_state(state);

@@ -24,7 +24,7 @@ BOOL CPhysicsSkeletonObject::net_Spawn(CSE_Abstract *DC)
 	CPHSkeleton::Spawn(e);
 	setVisible(TRUE);
 	setEnabled(TRUE);
-	if (!PPhysicsShell()->isBreakable())
+	if (PPhysicsShell() && !PPhysicsShell()->isBreakable())
 		SheduleUnregister();
 	return TRUE;
 }

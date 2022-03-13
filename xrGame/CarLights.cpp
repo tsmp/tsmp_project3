@@ -158,6 +158,14 @@ void CCarLights::Update()
 		(*i)->Update();
 }
 
+bool CCarLights::IsLightTurnedOn()
+{
+	if (m_lights.empty())
+		return false;
+
+	return m_lights[0]->isOn();
+}
+
 void CCarLights::SwitchHeadLights()
 {
 

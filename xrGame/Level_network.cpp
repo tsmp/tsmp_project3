@@ -13,6 +13,8 @@
 #include "stalker_animation_data_storage.h"
 #include "client_spawn_manager.h"
 #include "seniority_hierarchy_holder.h"
+#include "Actor.h"
+#include "holder_custom.h"
 
 #include "..\TSMP3_Build_Config.h"
 
@@ -155,10 +157,16 @@ void CLevel::ClientSend()
 	{
 		CObject *pObj = CurrentControlEntity();
 
+		// Когда в машине, нужно слать апдейт не для актора, а для машины. Актор приклеен к машине.
+		if (auto* act = smart_cast<CActor*>(pObj))
+		{
+			if (CObject* holder = dynamic_cast<CObject*>(act->Holder()))
+				pObj = holder;
+		}
+
 		if (!pObj->getDestroy() && pObj->net_Relevant())
 		{
 			P.w_begin(M_CL_UPDATE);
-
 			P.w_u16(u16(pObj->ID()));
 			P.w_u32(0); //reserved place for client's ping
 
