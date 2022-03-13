@@ -98,6 +98,9 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion *info_portion) const
 
 void CActor::AddGameTask(const CInfoPortion *info_portion) const
 {
+	if (Level().CurrentControlEntity() != this)
+		return;
+
 	VERIFY(info_portion);
 
 	if (info_portion->GameTasks().empty())

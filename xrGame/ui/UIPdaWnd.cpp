@@ -118,10 +118,10 @@ void CUIPdaWnd::Init()
 		// Окно рейтинга сталкеров
 		UIStalkersRanking = xr_new<CUIStalkersRankingWnd>();
 		UIStalkersRanking->Init();
-
-		UIEventsWnd = xr_new<CUIEventsWnd>();
-		UIEventsWnd->Init();
 	}
+
+	UIEventsWnd = xr_new<CUIEventsWnd>();
+	UIEventsWnd->Init();
 
 	// Tab control
 	UITabControl = xr_new<CUITabControl>();
@@ -132,7 +132,6 @@ void CUIPdaWnd::Init()
 
 	if (GameID() != GAME_SINGLE)
 	{
-		UITabControl->GetButtonsVector()->at(0)->Enable(false);
 		UITabControl->GetButtonsVector()->at(2)->Enable(false);
 		UITabControl->GetButtonsVector()->at(4)->Enable(false);
 		UITabControl->GetButtonsVector()->at(5)->Enable(false);

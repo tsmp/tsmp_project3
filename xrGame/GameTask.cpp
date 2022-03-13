@@ -480,9 +480,115 @@ void CGameTask::AddObjective_script(SGameTaskObjective *O)
 	m_Objectives.push_back(*O);
 }
 
+extern TEX_INFO get_texture_info(LPCSTR name, LPCSTR def_name);
+extern LPCSTR translate_string(LPCSTR str);
+extern void _AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, LPCSTR templ_name);
+extern bool _give_news(LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, int delay, int show_time);
+
+std::string GetActionDescr(const char* type)
+{
+	std::string typee = type;
+	
+	if (typee == "new")
+		return "general_new_task";
+
+	if (typee == "update")
+		return "general_update_task";
+
+	if (typee == "complete")
+		return "general_complete_task";
+
+	if (typee == "fail")
+		return "general_fail_task";	
+}
+
+std::string action_descr_by_type[]
+{
+	"general_new_task",
+	"general_update_task",
+	"general_complete_task",
+	"general_fail_task"
+};
+
+#include "HUDManager.h"
+#include "UIGameCustom.h"
+#include "ui/UIStatic.h"
+#include "sound_memory_manager.h"
+
+void SendTask(CActor* actor, const char* type, CGameTask* task, SGameTaskObjective* objective)
+{
+	if (!actor)
+		return;
+
+	// Берем координаты из текстуры таска	
+	std::string id = task->GetID_script();
+	std::string path = "ui_iconsTotal_" + id;
+	TEX_INFO tInfo = get_texture_info(path.c_str(), "ui_iconsTotal_locations");
+	Frect r = tInfo.get_rect();
+
+	r.x2 = r.x2 - r.x1;
+	r.y2 = r.y2 - r.y1;
+
+	std::string tast_texture = tInfo.get_file_name();
+	Frect task_rect = r;
+
+	ref_sound snd;
+	snd.create("device\\pda\\pda_objective", st_Effect, SOUND_TYPE_NO_SOUND);
+	snd.play(Actor(), sm_2D, 0);
+
+	std::string news_text = "%c[255,160,160,160]";
+	news_text += translate_string(GetActionDescr(type).c_str());
+	news_text += "\\n";
+	news_text += "%c[default]";
+	news_text += translate_string(task->m_Title.c_str()); 
+
+	if (actor->IsTalking())
+	{
+		_AddIconedTalkMessage(news_text.c_str(), tast_texture.c_str(), task_rect, "iconed_answer_item");
+	}
+	else
+	{
+		_give_news(news_text.c_str(), tast_texture.c_str(), task_rect, 0, 3000);
+	}
+
+	std::string tyype = type;
+
+	if (tyype == "new" || tyype == "update")
+	{
+		//Выдать новое подзадание
+		if (task->m_Objectives.size() == objective->GetIDX_script() + 1)
+			return;
+
+		news_text = translate_string((task->Objective(objective->GetIDX_script() + 1).description).c_str());
+	}
+
+	auto hud = HUD().GetUI()->UIGame();
+	hud->AddCustomStatic("main_task", true);
+	hud->GetCustomStatic("main_task")->wnd()->SetTextST(news_text.c_str());
+	hud->GetCustomStatic("main_task")->m_endTime = Device.dwTimeGlobal / 1000 + 5;
+}
+
 void SGameTaskObjective::ChangeStateCallback()
 {
-	Actor()->callback(GameObject::eTaskStateChange)(parent, this, task_state);
+	if(IsGameTypeSingle())
+		Actor()->callback(GameObject::eTaskStateChange)(parent, this, task_state);
+	else
+	{
+		if (idx == 0)
+		{
+			if (task_state == eTaskStateFail)
+				SendTask(Actor(), "fail", parent, this);
+			else if (task_state == eTaskStateCompleted)
+				SendTask(Actor(), "complete", parent, this); //task_manager.reward_by_task(_task)			
+			else
+				SendTask(Actor(), "new", parent, this);
+		}
+		else
+		{
+			if(parent->Objective(0).task_state == eTaskStateInProgress)
+				SendTask(Actor(), "update", parent, this);
+		}
+	}
 }
 
 void SGameTaskObjective::save(IWriter &stream)
