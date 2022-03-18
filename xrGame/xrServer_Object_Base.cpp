@@ -306,7 +306,7 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet &tNetPacket)
 	STATE_Read(tNetPacket, stateRealSize);
 
 	u16 stateReadSize = static_cast<u16>(tNetPacket.r_pos - beforeStateReadPos);
-	VERIFY(stateReadSize == stateRealSize)
+	VERIFY(stateReadSize == stateRealSize);
 
 	return TRUE;
 }
