@@ -27,6 +27,9 @@ void IGame_ObjectPool::prefetch()
 	if (!strcmp(gameTypeName, "hardmatch"))
 		strcpy(gameTypeName, "deathmatch");
 
+	if (!strcmp(gameTypeName, "freeplay"))
+		strcpy(gameTypeName, "deathmatch");
+
 	// prefetch objects
 	strconcat(sizeof(section), section, "prefetch_objects_", gameTypeName);
 	CInifile::Sect &sect = pSettings->r_section(section);
