@@ -19,11 +19,12 @@ IC const CPatrolPathStorage::PATROL_REGISTRY &CPatrolPathStorage::patrol_paths()
 
 IC const CPatrolPath *CPatrolPathStorage::path(shared_str patrol_name, bool no_assert) const
 {
-	const_iterator I = patrol_paths().find(patrol_name);
-	if (I == patrol_paths().end())
-	{
-		THROW3(no_assert, "There is no patrol path", *patrol_name);
-		return (0);
-	}
-	return ((*I).second);
+	const_iterator it = patrol_paths().find(patrol_name);
+
+	if (it != patrol_paths().end())		
+		return (*it).second;
+	
+	Msg("! ERROR: There is no patrol path [%s]", *patrol_name);
+	R_ASSERT(no_assert);
+	return nullptr;	
 }
