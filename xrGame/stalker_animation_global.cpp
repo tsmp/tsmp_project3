@@ -47,12 +47,19 @@ MotionID CStalkerAnimationManager::global_critical_hit()
 
 	u32 animation_slot = weapon->animation_slot();
 	VERIFY(animation_slot >= 1);
-	VERIFY(animation_slot <= 3);
+	// VERIFY(animation_slot <= 3);
 
-	return (
-		global().select(
-			m_data_storage->m_part_animations.A[eBodyStateStand].m_global.A[object().critical_wound_type() + 6 * (animation_slot - 1)].A,
-			&object().critical_wound_weights()));
+	if (animation_slot > 3)
+	{
+		Msg("! WARNING: stalker with wpn animation_slot [%u] get critical hit!", animation_slot);
+		animation_slot = 2; // 1 - pistol, 2 - gun
+	}
+
+	auto &anims = m_data_storage->m_part_animations.A[eBodyStateStand].m_global.A;
+	int animIdx = object().critical_wound_type() + 6 * (animation_slot - 1);
+	R_ASSERT(animIdx < anims.size());
+
+	return global().select(anims[animIdx].A, &object().critical_wound_weights());
 }
 
 MotionID CStalkerAnimationManager::assign_global_animation()
