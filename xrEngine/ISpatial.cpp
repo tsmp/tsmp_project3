@@ -176,7 +176,7 @@ ISpatial_DB::~ISpatial_DB()
 
 void ISpatial_DB::initialize(Fbox &BB)
 {
-	if (!m_root)
+	//if (!m_root)
 	{
 		// initialize
 		Fvector bbc, bbd;
