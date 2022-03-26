@@ -341,9 +341,7 @@ void game_cl_ArtefactHunt::shedule_Update(u32 dt)
 		return;
 
 	//out game information
-	//	m_game_ui->SetReinforcementCaption("");
 	m_game_ui->SetBuyMsgCaption("");
-	m_game_ui->SetTodoCaption("");
 	m_game_ui->SetPressBuyMsgCaption("");
 
 	switch (m_phase)

@@ -1266,7 +1266,6 @@ void game_sv_Deathmatch::net_Export_State(NET_Packet &P, ClientID id_to)
 
 	P.w_s32(g_sv_dm_dwFragLimit);
 	P.w_s32(GetTimeLimit());
-	//	P.w_u32			(GetDMBLimit());
 	P.w_u32(GetForceRespawn());
 	P.w_u32(m_dwWarmUp_CurTime);
 	P.w_u8(u8(g_sv_dm_bDamageBlockIndicators));
@@ -1277,14 +1276,8 @@ void game_sv_Deathmatch::net_Export_State(NET_Packet &P, ClientID id_to)
 	for (s32 &score : m_TeamsScores)
 		P.w_s32(score);
 
-	switch (Phase())
-	{
-	case GAME_PHASE_PLAYER_SCORES:
-	{
+	if(Phase() == GAME_PHASE_PLAYER_SCORES)
 		P.w_stringZ(pWinnigPlayerName);
-	}
-	break;
-	}
 }
 
 int game_sv_Deathmatch::GetTeamScore(u32 idx)
