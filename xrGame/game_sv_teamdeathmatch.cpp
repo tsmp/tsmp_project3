@@ -35,13 +35,8 @@ void game_sv_TeamDeathmatch::Create(shared_str &options)
 	inherited::Create(options);
 
 	switch_Phase(GAME_PHASE_PENDING);
-
-	game_TeamState td;
-	td.score = 0;
-	td.num_targets = 0;
-	teams.push_back(td);
-	teams.push_back(td);
-	//-----------------------------------------------------------
+	m_TeamsScores.push_back(0);
+	m_TeamsScores.push_back(0);
 }
 
 void game_sv_TeamDeathmatch::net_Export_State(NET_Packet &P, ClientID to)
@@ -381,11 +376,12 @@ bool game_sv_TeamDeathmatch::OnKillResult(KILL_RES KillResult, game_PlayerState 
 
 bool game_sv_TeamDeathmatch::checkForFragLimit()
 {
-	if (g_sv_dm_dwFragLimit && ((teams[0].score >= g_sv_dm_dwFragLimit) || (teams[1].score >= g_sv_dm_dwFragLimit)))
+	if (g_sv_dm_dwFragLimit && (m_TeamsScores[0] >= g_sv_dm_dwFragLimit || m_TeamsScores[1] >= g_sv_dm_dwFragLimit))
 	{
 		OnFraglimitExceed();
 		return true;
-	};
+	}
+
 	return false;
 }
 
@@ -523,7 +519,7 @@ void game_sv_TeamDeathmatch::WriteGameState(CInifile &ini, LPCSTR sect, bool bRo
 {
 	inherited::WriteGameState(ini, sect, bRoundResult);
 
-	for (u32 i = 0; i < teams.size(); ++i)
+	for (u32 i = 0; i < m_TeamsScores.size(); ++i)
 	{
 		string16 buf_name;
 		sprintf_s(buf_name, "team_%d_score", i);

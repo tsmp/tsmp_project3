@@ -114,11 +114,8 @@ void game_sv_Deathmatch::OnRoundStart()
 	pWinnigPlayerName = "";
 	m_dwLastAnomalySetID = 1001;
 
-	for (u32 i = 0; i < teams.size(); ++i)
-	{
-		teams[i].score = 0;
-		teams[i].num_targets = 0;
-	};
+	for (int &score : m_TeamsScores)
+		score = 0;
 
 	m_dwWarmUp_CurTime = 0;
 	m_bInWarmUp = false;
@@ -751,9 +748,11 @@ void game_sv_Deathmatch::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 	{
 		xrClientData* C = static_cast<xrClientData*>(client);
 		game_PlayerState* ps = C->ps;
+
 		if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 			return;
-		if (ps->team != pA->s_team || teams.empty())
+
+		if (ps->team != pA->s_team || m_TeamsScores.empty())
 			pEnemies.push_back(C);
 	});
 
@@ -1271,12 +1270,13 @@ void game_sv_Deathmatch::net_Export_State(NET_Packet &P, ClientID id_to)
 	P.w_u32(GetForceRespawn());
 	P.w_u32(m_dwWarmUp_CurTime);
 	P.w_u8(u8(g_sv_dm_bDamageBlockIndicators));
+
 	// Teams
-	P.w_u16(u16(teams.size()));
-	for (u32 t_it = 0; t_it < teams.size(); ++t_it)
-	{
-		P.w(&teams[t_it], sizeof(game_TeamState));
-	}
+	P.w_u16(static_cast<u16>(m_TeamsScores.size()));
+
+	for (s32 &score : m_TeamsScores)
+		P.w_s32(score);
+
 	switch (Phase())
 	{
 	case GAME_PHASE_PLAYER_SCORES:
@@ -1289,8 +1289,8 @@ void game_sv_Deathmatch::net_Export_State(NET_Packet &P, ClientID id_to)
 
 int game_sv_Deathmatch::GetTeamScore(u32 idx)
 {
-	VERIFY((idx >= 0) && (idx < teams.size()));
-	return teams[idx].score;
+	VERIFY((idx >= 0) && (idx < m_TeamsScores.size()));
+	return m_TeamsScores[idx];
 }
 
 void game_sv_Deathmatch::OnPlayerSelectSkin(NET_Packet &P, ClientID sender)
@@ -1329,25 +1329,23 @@ void game_sv_Deathmatch::OnPlayerChangeSkin(ClientID id_who, s8 skin)
 
 void game_sv_Deathmatch::SetTeamScore(u32 idx, int val)
 {
-	VERIFY((idx >= 0) && (idx < teams.size()));
-	teams[idx].score = val;
+	VERIFY((idx >= 0) && (idx < m_TeamsScores.size()));
+	m_TeamsScores[idx] = val;
 }
 
 void game_sv_Deathmatch::LoadAnomalySets()
 {
-	//-----------------------------------------------------------
 	m_AnomalySetsList.clear();
 	m_AnomaliesPermanent.clear();
-	//-----------------------------------------------------------
+
 	if (!m_AnomalyIDSetsList.empty())
 	{
-		for (u32 i = 0; i < m_AnomalyIDSetsList.size(); i++)
-		{
+		for (u32 i = 0; i < m_AnomalyIDSetsList.size(); i++)		
 			m_AnomalyIDSetsList[i].clear();
-		};
+		
 		m_AnomalyIDSetsList.clear();
-	};
-	//-----------------------------------------------------------
+	}
+
 	if (!g_pGameLevel || !Level().pLevel)
 		return;
 
@@ -1356,6 +1354,7 @@ void game_sv_Deathmatch::LoadAnomalySets()
 	string1024 SetName, AnomaliesNames, AnomalyName;
 	ANOMALIES AnomalySingleSet;
 	ANOMALIES_ID AnomalyIDSingleSet;
+
 	for (u32 i = 0; i < 20; i++)
 	{
 		AnomalySingleSet.clear();
@@ -1374,25 +1373,27 @@ void game_sv_Deathmatch::LoadAnomalySets()
 		{
 			_GetItem(AnomaliesNames, j, AnomalyName);
 			AnomalySingleSet.push_back(AnomalyName);
-		};
+		}
 
 		if (AnomalySingleSet.empty())
 			continue;
+
 		m_AnomalySetsList.push_back(AnomalySingleSet);
 		m_AnomalyIDSetsList.push_back(AnomalyIDSingleSet);
-	};
-	//---------------------------------------------------------
+	}
+
 	if (Level().pLevel->line_exist(ASetBaseName, "permanent"))
 	{
 		std::strcpy(AnomaliesNames, Level().pLevel->r_string(ASetBaseName, "permanent"));
 		u32 count = _GetItemCount(AnomaliesNames);
+
 		for (u32 j = 0; j < count; j++)
 		{
 			_GetItem(AnomaliesNames, j, AnomalyName);
 			m_AnomaliesPermanent.push_back(AnomalyName);
-		};
+		}
 	}
-};
+}
 
 void game_sv_Deathmatch::Send_EventPack_for_AnomalySet(u32 AnomalySet, u8 Event)
 {

@@ -80,7 +80,7 @@ game_cl_TeamDeathmatch::~game_cl_TeamDeathmatch()
 
 void game_cl_TeamDeathmatch::net_import_state(NET_Packet &P)
 {
-	bool teamsEqual = (!teams.empty()) ? (teams[0].score == teams[1].score) : false;
+	bool teamsEqual = (!m_TeamsScores.empty()) ? (m_TeamsScores[0] == m_TeamsScores[1]) : false;
 	inherited::net_import_state(P);
 	m_bFriendlyIndicators = !!P.r_u8();
 	m_bFriendlyNames = !!P.r_u8();
@@ -88,36 +88,31 @@ void game_cl_TeamDeathmatch::net_import_state(NET_Packet &P)
 	if (!m_bFriendlyNames && m_bShowPlayersNames)
 		m_bShowPlayersNames = false;
 
-	if (!teams.empty())
+	if (m_TeamsScores.empty())
+		return;
+
+	if (teamsEqual)
 	{
-		if (teamsEqual)
+		if (m_TeamsScores[0] != m_TeamsScores[1] && Level().CurrentViewEntity())
 		{
-			if (teams[0].score != teams[1].score)
-			{
-				if (Level().CurrentViewEntity())
-				{
-					if (teams[0].score > teams[1].score)
-						PlaySndMessage(ID_TEAM1_LEAD);
-					else
-						PlaySndMessage(ID_TEAM2_LEAD);
-				}
-			}
+			if (m_TeamsScores[0] > m_TeamsScores[1])
+				PlaySndMessage(ID_TEAM1_LEAD);
+			else
+				PlaySndMessage(ID_TEAM2_LEAD);
 		}
-		else
-		{
-			if (teams[0].score == teams[1].score)
-				if (Level().CurrentViewEntity())
-					PlaySndMessage(ID_TEAMS_EQUAL);
-		}
-	};
+	}
+	else
+	{
+		if (m_TeamsScores[0] == m_TeamsScores[1] && Level().CurrentViewEntity())
+			PlaySndMessage(ID_TEAMS_EQUAL);
+	}
 }
+
 void game_cl_TeamDeathmatch::TranslateGameMessage(u32 msg, NET_Packet &P)
 {
 	CStringTable st;
 	string512 Text;
-	//	LPSTR	Color_Teams[3]	= {"%c[255,255,255,255]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
 	char Color_Main[] = "%c[255,192,192,192]";
-	//	LPSTR	TeamsNames[3]	= {"Zero Team", "Team Green", "Team Blue"};
 
 	switch (msg)
 	{
@@ -136,9 +131,8 @@ void game_cl_TeamDeathmatch::TranslateGameMessage(u32 msg, NET_Packet &P)
 				  CTeamInfo::GetTeam_color_tag(int(Team)),
 				  CTeamInfo::GetTeam_name(int(Team)));
 		CommonMessageOut(Text);
-		//---------------------------------------
-		Msg("%s %s %s", PlayerName, *st.translate("mp_joined"),
-			CTeamInfo::GetTeam_name(int(Team)));
+
+		Msg("%s %s %s", PlayerName, *st.translate("mp_joined"), CTeamInfo::GetTeam_name(int(Team)));
 	}
 	break;
 
@@ -454,31 +448,19 @@ void game_cl_TeamDeathmatch::shedule_Update(u32 dt)
 
 void game_cl_TeamDeathmatch::SetScore()
 {
-	if (local_player)
-	{
-		s16 lt = local_player->team;
-		if (lt >= 0)
-		{
-			if (m_game_ui)
-				m_game_ui->SetScoreCaption(teams[0].score, teams[1].score);
-		}
-	}
+	if (local_player && local_player->team >= 0 && m_game_ui)
+		m_game_ui->SetScoreCaption(m_TeamsScores[0], m_TeamsScores[1]);
 }
 
 bool game_cl_TeamDeathmatch::OnKeyboardPress(int key)
 {
-	if (kTEAM == key)
+	if (kTEAM == key && m_game_ui)
 	{
-		if (m_game_ui)
-		{
-			if (CanCallTeamSelectMenu())
-			{
-				StartStopMenu(m_game_ui->m_pUITeamSelectWnd, true);
-			};
+		if (CanCallTeamSelectMenu())		
+			StartStopMenu(m_game_ui->m_pUITeamSelectWnd, true);		
 
-			return true;
-		}
-	};
+		return true;
+	}
 
 	return inherited::OnKeyboardPress(key);
 }
@@ -487,6 +469,7 @@ bool game_cl_TeamDeathmatch::IsEnemy(game_PlayerState *ps)
 {
 	if (!local_player)
 		return false;
+
 	return local_player->team != ps->team;
 }
 

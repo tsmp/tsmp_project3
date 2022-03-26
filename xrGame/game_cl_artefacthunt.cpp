@@ -428,13 +428,11 @@ void game_cl_ArtefactHunt::shedule_Update(u32 dt)
 
 		if (local_player)
 		{
-			game_TeamState team0 = teams[0];
-			game_TeamState team1 = teams[1];
-
 			if (dReinforcementTime > 0 && Level().CurrentViewEntity() && m_cl_dwWarmUp_Time == 0)
 			{
 				u32 CurTime = Level().timeServer();
 				u32 dTime;
+
 				if (s32(CurTime) > dReinforcementTime)
 					dTime = 0;
 				else
@@ -444,45 +442,8 @@ void game_cl_ArtefactHunt::shedule_Update(u32 dt)
 			}
 			else
 				m_game_ui->m_pReinforcementInidcator->SetPos(0, 0);
+		}
 
-			s16 lt = local_player->team;
-			if (lt >= 0)
-			{
-				//					if(m_game_ui) m_game_ui->SetScoreCaption	(teams[0].score, teams[1].score);
-			};
-			/*
-			if ( (artefactBearerID==0))// && (artefactID!=0) )
-				{
-					m_game_ui->SetTodoCaption("Grab the Artefact");
-				}
-				else
-				{
-					if (teamInPossession != local_player->team )
-					{
-						m_game_ui->SetTodoCaption("Stop ArtefactBearer");
-					}
-					else
-					{
-						if (local_player->GameID == artefactBearerID)
-						{
-							m_game_ui->SetTodoCaption("You got the Artefact. Bring it to your base.");
-						}
-						else
-						{
-							m_game_ui->SetTodoCaption("Protect your ArtefactBearer");
-						};
-					};
-				};
-			*/
-		};
-		/*
-			if (Level().CurrentViewEntity() && m_game_ui)
-			{
-				game_PlayerState* ps = GetPlayerByGameID(Level().CurrentViewEntity()->ID());
-				if (ps&&m_game_ui) m_game_ui->SetRank(ps->team, ps->rank);
-				if (ps&&m_game_ui) m_game_ui->SetFraglimit(ps->kills, artefactsNum);
-			}
-*/
 		SetScore();
 	}
 	break;

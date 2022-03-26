@@ -309,7 +309,7 @@ bool game_sv_ArtefactHunt::assign_rp_tmp(game_PlayerState *ps_who,
 			{
 				Blocked = true;
 
-				if ((ps_who->team != PS->team) && !teams.empty())
+				if ((ps_who->team != PS->team) && !m_TeamsScores.empty())
 				{
 					rpIDEnemy.push_back(p);
 					EnemyIt.push_back(client->ID);
