@@ -523,6 +523,7 @@ virtual CSE_Abstract *cast_abstract() { return this; }
 u8 engine;
 u8 light;
 u16 owner;
+float m_health;
 std::vector<SPHNetState> StateVec;
 
 protected:

@@ -560,6 +560,7 @@ void CCar::net_Export(NET_Packet &P)
 {
 	P.w_u8(u8(b_engine_on));
 	P.w_u8(u8(m_lights.IsLightTurnedOn()));
+	P.w_float(Health());
 
 	if (OwnerActor())
 		P.w_u16(OwnerActor()->ID());
@@ -611,6 +612,10 @@ void CCar::net_Import(NET_Packet &P)
 
 	u8 light;
 	P.r_u8(light);
+
+	float health;
+	P.r_float(health);
+	SetfHealth(health);
 	
 	u16 owner;
 	P.r_u16(owner);
