@@ -1,16 +1,20 @@
 #include "stdafx.h"
+
 #ifdef DEBUG
 #include "ode_include.h"
 #include "../StatGraph.h"
 #include "PHDebug.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "PHWorld.h"
+
 extern CPHWorld *ph_world;
+
 CCar::SCarSound::SCarSound(CCar *car)
 {
 	volume = 1.f;

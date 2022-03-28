@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "flod.h"
-
-#include "..\igame_persistent.h"
-#include "..\environment.h"
+#include "igame_persistent.h"
+#include "environment.h"
 
 extern float r_ssaLOD_A;
 extern float r_ssaLOD_B;

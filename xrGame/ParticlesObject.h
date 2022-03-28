@@ -1,7 +1,5 @@
-#ifndef ParticlesObjectH
-#define ParticlesObjectH
-
-#include "../PS_instance.h"
+#pragma once
+#include "PS_instance.h"
 
 extern const Fvector zero_vel;
 
@@ -64,5 +62,3 @@ public:
 		}
 	}
 };
-
-#endif /*ParticlesObjectH*/

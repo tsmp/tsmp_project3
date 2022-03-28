@@ -2,9 +2,9 @@
 
 #include "game_sv_mp.h"
 #include "inventory_space.h"
-#include "../../xrNetwork/client_id.h"
+#include "../xrNetwork/client_id.h"
 #include "Hit.h"
-#include "../pure_relcase.h"
+#include "pure_relcase.h"
 
 class game_sv_Deathmatch : public game_sv_mp, private pure_relcase
 {
@@ -38,8 +38,7 @@ protected:
 	u32 m_TeamEliminatedDelay;
 
 	shared_str m_sBaseWeaponCostSection;
-
-	xr_vector<game_TeamState> teams; //dm,tdm,ah
+	xr_vector<int> m_TeamsScores; //dm,tdm,ah
 
 	LPCSTR pWinnigPlayerName;
 
@@ -97,7 +96,6 @@ protected:
 	void __stdcall net_Relcase(CObject *O);
 
 public:
-	CRandom monsterResp; // для респавна монстров
 	game_sv_Deathmatch();
 	virtual ~game_sv_Deathmatch();
 	virtual void Create(shared_str &options);
@@ -194,7 +192,7 @@ public:
 	virtual BOOL IsAnomaliesEnabled();
 	virtual u32 GetAnomaliesTime();
 
-	virtual u32 GetNumTeams() { return teams.size(); };
+	virtual u32 GetNumTeams() { return m_TeamsScores.size(); };
 
 protected:
 	virtual void WriteGameState(CInifile &ini, LPCSTR sect, bool bRoundResult);

@@ -1,15 +1,14 @@
 #include "stdafx.h"
-
 #include "IKLimbsController.h"
-
 #include "IK/IKLimb.h"
 #include "physicsshellholder.h"
-
 #include "ik_anim_state.h"
-#include "../ennumerateVertices.h"
+#include "ennumerateVertices.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+
 CIKLimbsController::CIKLimbsController() : m_object(0), m_legs_blend(0)
 {
 }

@@ -54,6 +54,14 @@ void CUIPdaListItem::Init(float x, float y, float width, float height)
 
 void CUIPdaListItem::InitCharacter(CInventoryOwner *pInvOwner)
 {
-	VERIFY(pInvOwner);
-	UIInfo->InitCharacter(pInvOwner->object_id());
+	if (!pInvOwner)
+	{
+		Msg("! ERROR: cant get inventory owner of pda");
+		return;
+	}
+
+	if (IsGameTypeSingle())
+		UIInfo->InitCharacter(pInvOwner->object_id());
+	else
+		UIInfo->InitCharacterMP(pInvOwner);
 }

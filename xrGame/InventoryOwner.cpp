@@ -115,11 +115,8 @@ BOOL CInventoryOwner::net_Spawn(CSE_Abstract *DC)
 	if (!pThis)
 		return FALSE;
 	CSE_Abstract *E = (CSE_Abstract *)(DC);
-#ifdef ALIFE_MP
-	if (!smart_cast<CSE_ALifeCreatureActor*>(E))
-#else
+
 	if (!smart_cast<CSE_ALifeCreatureActor*>(E) || IsGameTypeSingle())
-#endif
 	{
 		CSE_ALifeTraderAbstract *pTrader = NULL;
 		if (E)

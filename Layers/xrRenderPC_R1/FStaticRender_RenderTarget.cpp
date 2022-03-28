@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "fstaticrender_rendertarget.h"
-#include "../IGame_Persistent.h"
+#include "IGame_Persistent.h"
 
 static LPCSTR RTname = "$user$rendertarget";
 static LPCSTR RTname_distort = "$user$distort";

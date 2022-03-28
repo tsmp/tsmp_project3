@@ -1,18 +1,20 @@
 #include "stdafx.h"
+
 #ifdef DEBUG
 #include "ode_include.h"
-#include "../StatGraph.h"
+#include "StatGraph.h"
 #include "PHDebug.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"
-#include "../../xrNetwork/net_utils.h"
-#include "../skeletoncustom.h"
+#include "../xrNetwork/net_utils.h"
+#include "skeletoncustom.h"
 #include "MathUtils.h"
 #include "game_object_space.h"
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 bool CCar::DoorHit(float P, s16 element, ALife::EHitType hit_type)
 {
 	if (hit_type == ALife::eHitTypeStrike && P > 20.f)

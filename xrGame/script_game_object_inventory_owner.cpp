@@ -888,7 +888,8 @@ CScriptGameObject *CScriptGameObject::item_in_slot(u32 slot_id) const
 
 void CScriptGameObject::GiveTaskToActor(CGameTask *t, u32 dt, bool bCheckExisting)
 {
-	Actor()->GameTaskManager().GiveGameTaskToActor(t, dt, bCheckExisting);
+	if(Level().CurrentControlEntity() == Actor())
+		Actor()->GameTaskManager().GiveGameTaskToActor(t, dt, bCheckExisting);
 }
 
 u32 CScriptGameObject::active_slot()

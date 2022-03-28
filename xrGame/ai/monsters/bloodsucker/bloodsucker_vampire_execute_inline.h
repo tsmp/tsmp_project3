@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "../../../actor.h"
-#include "../CameraBase.h"
+#include "CameraBase.h"
 
 #define TEMPLATE_SPECIALIZATION template < \
 	typename _Object>

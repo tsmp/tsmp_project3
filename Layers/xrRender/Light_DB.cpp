@@ -1,8 +1,8 @@
 #include "StdAfx.h"
-#include "..\flight.h"
-#include "..\xrLevel.h"
-#include "..\igame_persistent.h"
-#include "..\environment.h"
+#include "flight.h"
+#include "xrLevel.h"
+#include "igame_persistent.h"
+#include "environment.h"
 #include "light_db.h"
 
 CLight_DB::CLight_DB()
@@ -16,6 +16,7 @@ CLight_DB::~CLight_DB()
 void CLight_DB::Load(IReader *fs)
 {
 	IReader *F = 0;
+	Msg("loading light db");
 
 	// Lights itself
 	sun_original = NULL;

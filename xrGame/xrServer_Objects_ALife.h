@@ -487,19 +487,23 @@ virtual void load(NET_Packet &tNetPacket);
 virtual bool can_save() const;
 virtual bool used_ai_locations() const;
 virtual CSE_Motion *__stdcall motion();
+
+SPHNetState State;
+virtual BOOL Net_Relevant() { return true; }
 virtual CSE_Abstract *cast_abstract() { return this; }
 
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeHelicopter)
 #define script_type_list save_type_list(CSE_ALifeHelicopter)
 
-	SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeCar, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton) struct SDoorState
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeCar, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton) struct SDoorState
 {
 	void read(NET_Packet &P);
 	void write(NET_Packet &P);
 	u8 open_state;
 	float health;
 };
+
 struct SWheelState
 {
 	void read(NET_Packet &P);
@@ -515,6 +519,11 @@ virtual bool used_ai_locations() const;
 virtual void load(NET_Packet &tNetPacket);
 virtual bool can_save() const;
 virtual CSE_Abstract *cast_abstract() { return this; }
+
+u8 engine;
+u8 light;
+u16 owner;
+std::vector<SPHNetState> StateVec;
 
 protected:
 virtual void data_load(NET_Packet &tNetPacket);

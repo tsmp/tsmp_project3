@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../feel_touch.h"
+#include "feel_touch.h"
 #include "inventory_item_object.h"
 
 #include "InfoPortionDefs.h"
 #include "character_info_defs.h"
-
 #include "PdaMsg.h"
 
 class CInventoryOwner;

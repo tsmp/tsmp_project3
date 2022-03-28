@@ -170,7 +170,7 @@ struct CWrapperBase : public T, public luabind::wrap_base
 
 	virtual game_PlayerState *createPlayerState()
 	{
-		return call_member<game_PlayerState *>(this, "createPlayerState")[adopt(result)];
+		return call_member<game_PlayerState *>(this, "createPlayerState")[adopt<result>()];
 	}
 	static game_PlayerState *createPlayerState_static(inherited *ptr)
 	{
@@ -221,5 +221,5 @@ void game_sv_mp_script::script_register(lua_State *L)
 			 .def("OnRoundEnd", &BaseType::OnRoundEnd, &WrapType::OnRoundEnd_static)
 
 			 .def("net_Export_State", &BaseType::net_Export_State, &WrapType::net_Export_State_static)
-			 .def("createPlayerState", &BaseType::createPlayerState, &WrapType::createPlayerState_static, adopt(result))];
+			 .def("createPlayerState", &BaseType::createPlayerState, &WrapType::createPlayerState_static, adopt<result>())];
 }

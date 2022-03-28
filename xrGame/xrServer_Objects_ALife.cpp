@@ -15,14 +15,13 @@
 #include "restriction_space.h"
 
 #include "character_info.h"
+#include "bone.h"
 
 #ifndef XRGAME_EXPORTS
-#include "bone.h"
 #include "defines.h"
 LPCSTR GAME_CONFIG = "game.ltx";
 #else
-#include "..\bone.h"
-#include "..\render.h"
+#include "render.h"
 #endif
 
 bool SortStringsByAlphabetPred(const shared_str &s1, const shared_str &s2)
@@ -1361,16 +1360,30 @@ void CSE_ALifeHelicopter::STATE_Write(NET_Packet &tNetPacket)
 	tNetPacket.w_stringZ(engine_sound);
 }
 
-void CSE_ALifeHelicopter::UPDATE_Read(NET_Packet &tNetPacket)
+void CSE_ALifeHelicopter::UPDATE_Read(NET_Packet &P)
 {
-	inherited1::UPDATE_Read(tNetPacket);
-	inherited3::UPDATE_Read(tNetPacket);
+	if (firstUpdate)
+	{
+		firstUpdate = false;
+		return;
+	}
+
+	P.r_vec3(State.position);
+
+	P.r_float_q8(State.quaternion.x, -1.0, 1.0);
+	P.r_float_q8(State.quaternion.y, -1.0, 1.0);
+	P.r_float_q8(State.quaternion.z, -1.0, 1.0);
+	P.r_float_q8(State.quaternion.w, -1.0, 1.0);
 }
 
-void CSE_ALifeHelicopter::UPDATE_Write(NET_Packet &tNetPacket)
+void CSE_ALifeHelicopter::UPDATE_Write(NET_Packet &P)
 {
-	inherited1::UPDATE_Write(tNetPacket);
-	inherited3::UPDATE_Write(tNetPacket);
+	P.w_vec3(State.position);
+
+	P.w_float_q8(State.quaternion.x, -1.0, 1.0);
+	P.w_float_q8(State.quaternion.y, -1.0, 1.0);
+	P.w_float_q8(State.quaternion.z, -1.0, 1.0);
+	P.w_float_q8(State.quaternion.w, -1.0, 1.0);
 }
 
 void CSE_ALifeHelicopter::load(NET_Packet &tNetPacket)
@@ -1435,16 +1448,55 @@ void CSE_ALifeCar::STATE_Write(NET_Packet &tNetPacket)
 	tNetPacket.w_float(health);
 }
 
-void CSE_ALifeCar::UPDATE_Read(NET_Packet &tNetPacket)
+void CSE_ALifeCar::UPDATE_Read(NET_Packet &P)
 {
-	inherited1::UPDATE_Read(tNetPacket);
-	inherited2::UPDATE_Read(tNetPacket);
+	if (firstUpdate)
+	{
+		firstUpdate = false;
+		return;
+	}
+
+	P.r_u8(engine);
+	P.r_u8(light);
+	P.r_u16(owner);
+
+	StateVec.clear();
+	u16 cnt;
+	P.r_u16(cnt);
+
+	for (int i = 0; i < cnt; i++)
+	{
+		SPHNetState State;
+		P.r_vec3(State.position);
+
+		P.r_float_q8(State.quaternion.x, -1.0, 1.0);
+		P.r_float_q8(State.quaternion.y, -1.0, 1.0);
+		P.r_float_q8(State.quaternion.z, -1.0, 1.0);
+		P.r_float_q8(State.quaternion.w, -1.0, 1.0);
+
+		StateVec.push_back(State);
+	}
 }
 
-void CSE_ALifeCar::UPDATE_Write(NET_Packet &tNetPacket)
+void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
 {
-	inherited1::UPDATE_Write(tNetPacket);
-	inherited2::UPDATE_Write(tNetPacket);
+	P.w_u8(engine);
+	P.w_u8(light);
+	P.w_u16(owner);
+
+	u16 cnt = StateVec.size();
+	P.w_u16(cnt);
+
+	for (int i = 0; i < cnt; i++)
+	{
+		SPHNetState State = StateVec[i];
+		P.w_vec3(State.position);
+
+		P.w_float_q8(State.quaternion.x, -1.0, 1.0);
+		P.w_float_q8(State.quaternion.y, -1.0, 1.0);
+		P.w_float_q8(State.quaternion.z, -1.0, 1.0);
+		P.w_float_q8(State.quaternion.w, -1.0, 1.0);
+	}
 }
 
 bool CSE_ALifeCar::used_ai_locations() const
@@ -1490,6 +1542,7 @@ void CSE_ALifeCar::data_load(NET_Packet &tNetPacket)
 	}
 	health = tNetPacket.r_float();
 }
+
 void CSE_ALifeCar::data_save(NET_Packet &tNetPacket)
 {
 	//inherited1::data_save(tNetPacket);
@@ -1516,11 +1569,13 @@ void CSE_ALifeCar::data_save(NET_Packet &tNetPacket)
 	}
 	tNetPacket.w_float(health);
 }
+
 void CSE_ALifeCar::SDoorState::read(NET_Packet &P)
 {
 	open_state = P.r_u8();
 	health = P.r_float();
 }
+
 void CSE_ALifeCar::SDoorState::write(NET_Packet &P)
 {
 	P.w_u8(open_state);

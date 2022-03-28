@@ -3,15 +3,17 @@
 #include "Physics.h"
 #include "PHElement.h"
 #include "PHShell.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 
 #pragma warning(disable : 4995)
 #pragma warning(disable : 4267)
 #include "../../xrODE/ode/src/joint.h"
 #pragma warning(default : 4995)
 #pragma warning(default : 4267)
+
 extern class CPHWorld *ph_world;
 static const float torque_factor = 10000000.f;
+
 CPHFracturesHolder::CPHFracturesHolder()
 {
 	m_has_breaks = false;

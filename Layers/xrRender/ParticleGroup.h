@@ -1,8 +1,5 @@
-//---------------------------------------------------------------------------
-#ifndef ParticleGroupH
-#define ParticleGroupH
-
-#include "..\ParticleCustom.h"
+#pragma once
+#include "ParticleCustom.h"
 
 namespace PS
 {
@@ -151,6 +148,3 @@ namespace PS
 #define PGD_CHUNK_TIME_LIMIT 0x0005
 #define PGD_CHUNK_OWNER 0x0006
 #define PGD_CHUNK_EFFECTS2 0x0007
-
-//---------------------------------------------------------------------------
-#endif

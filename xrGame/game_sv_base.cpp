@@ -9,8 +9,8 @@
 #include "xrserver.h"
 #include "ai_space.h"
 #include "game_sv_event_queue.h"
-#include "../Console.h"
-#include "../Console_commands.h"
+#include "Console.h"
+#include "Console_commands.h"
 #include "string_table.h"
 #include "object_broker.h"
 #include "debug_renderer.h"
@@ -41,44 +41,12 @@ xr_token round_end_result_str[] =
 		{0, 0}};
 
 // Main
-game_PlayerState *game_sv_GameState::get_it(u32 it)
-{
-	xrClientData *C = (xrClientData *)m_server->client_Get(it);
-
-	if (C)
-		return C->ps;
-
-	return nullptr;
-}
-
 game_PlayerState *game_sv_GameState::get_id(ClientID id)
 {
 	xrClientData *C = (xrClientData *)m_server->ID_to_client(id);
 
 	if (C)
 		return C->ps;
-
-	return nullptr;
-}
-
-ClientID game_sv_GameState::get_it_2_id(u32 it)
-{
-	xrClientData *C = (xrClientData *)m_server->client_Get(it);
-
-	if (C)
-		return C->ID;
-
-	ClientID clientID;
-	clientID.set(0);
-	return clientID;
-}
-
-LPCSTR game_sv_GameState::get_name_it(u32 it)
-{
-	xrClientData *C = (xrClientData *)m_server->client_Get(it);
-
-	if (C)
-		return *C->name;
 
 	return nullptr;
 }
@@ -105,7 +73,7 @@ LPCSTR game_sv_GameState::get_player_name_id(ClientID id)
 
 u32 game_sv_GameState::get_players_count()
 {
-	return m_server->client_Count();
+	return m_server->GetClientsCount();
 }
 
 u16 game_sv_GameState::get_id_2_eid(ClientID id)
@@ -125,48 +93,35 @@ u16 game_sv_GameState::get_id_2_eid(ClientID id)
 
 game_PlayerState *game_sv_GameState::get_eid(u16 id) //if exist
 {
-	CSE_Abstract *entity = get_entity_from_eid(id);
-
-	if (entity && entity->owner && entity->owner->ps && entity->owner->ps->GameID == id)
-		return entity->owner->ps;
-
-	u32 cnt = get_players_count();
-
-	for (u32 it = 0; it < cnt; ++it)
-	{
-		game_PlayerState *ps = get_it(it);
-
-		if (!ps)
-			continue;
-
-		if (ps->HasOldID(id))
-			return ps;
-	}
+	if (xrClientData* data = get_client(id))
+		return data->ps;
 
 	return nullptr;
 }
 
-void *game_sv_GameState::get_client(u16 id) //if exist
+xrClientData *game_sv_GameState::get_client(u16 id) //if exist
 {
 	CSE_Abstract *entity = get_entity_from_eid(id);
 
 	if (entity && entity->owner && entity->owner->ps && entity->owner->ps->GameID == id)
 		return entity->owner;
 
-	u32 cnt = get_players_count();
-
-	for (u32 it = 0; it < cnt; ++it)
+	IClient* cl = m_server->FindClient([&](IClient* client)
 	{
-		xrClientData *C = (xrClientData *)m_server->client_Get(it);
+		xrClientData* cldata = static_cast<xrClientData*>(client);
+		game_PlayerState* ps = cldata->ps;
 
-		if (!C || !C->ps)
-			continue;
+		if (!ps)
+			return false;
 
-		if (C->ps->HasOldID(id))
-			return C;
-	}
+		if (ps->HasOldID(id))
+			return true;
+	});
 
-	return nullptr;
+	if (!cl)
+		return nullptr;
+
+	return static_cast<xrClientData*>(cl);
 }
 
 CSE_Abstract *game_sv_GameState::get_entity_from_eid(u16 id)
@@ -180,16 +135,17 @@ u32 game_sv_GameState::get_alive_count(u32 team)
 	u32 cnt = get_players_count();
 	u32 alive = 0;
 
-	for (u32 it = 0; it < cnt; ++it)
+	m_server->ForEachClientDo([&alive,&team](IClient* client)
 	{
-		game_PlayerState *ps = get_it(it);
+		xrClientData* cldata = static_cast<xrClientData*>(client);
+		game_PlayerState* ps = cldata->ps;
 
 		if (!ps)
-			continue;
+			return;
 
 		if (u32(ps->team) == team)
 			alive += (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) ? 0 : 1;
-	}
+	});
 
 	return alive;
 }
@@ -280,35 +236,30 @@ void game_sv_GameState::net_Export_State(NET_Packet &P, ClientID to)
 	// Players
 	//	u32	p_count			= get_players_count() - ((g_dedicated_server)? 1 : 0);
 	u32 p_count = 0;
-	for (u32 p_it = 0; p_it < get_players_count(); ++p_it)
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *C = (xrClientData *)m_server->client_Get(p_it);
+		xrClientData* C = static_cast<xrClientData*>(client);
 		if (!C->net_Ready || (C->ps->IsSkip() && C->ID != to))
-			continue;
+			return;
 		p_count++;
-	};
+	});
 
 	P.w_u16(u16(p_count));
 	game_PlayerState *Base = get_id(to);
-	for (u32 p_it = 0; p_it < get_players_count(); ++p_it)
+
+	m_server->ForEachClientDo([&](IClient* client)
 	{
 		string64 p_name;
-		xrClientData *C = (xrClientData *)m_server->client_Get(p_it);
-		game_PlayerState *A = get_it(p_it);
+		xrClientData *C = static_cast<xrClientData*>(client);
+		game_PlayerState *A = C->ps;
+
 		if (!C->net_Ready || (A->IsSkip() && C->ID != to))
-			continue;
-		if (0 == C)
-			strcpy(p_name, "Unknown");
+			return;
+
+		if(CSE_Abstract *C_e = C->owner)
+			strcpy(p_name, C_e->name_replace());
 		else
-		{
-			CSE_Abstract *C_e = C->owner;
-			if (0 == C_e)
-				strcpy(p_name, "Unknown");
-			else
-			{
-				strcpy(p_name, C_e->name_replace());
-			}
-		}
+			strcpy(p_name, "Unknown");	
 
 		A->setName(p_name);
 		u16 tmp_flags = A->flags__;
@@ -316,12 +267,11 @@ void game_sv_GameState::net_Export_State(NET_Packet &P, ClientID to)
 		if (Base == A)
 			A->setFlag(GAME_PLAYER_FLAG_LOCAL);
 
-		ClientID clientID = get_it_2_id(p_it);
+		ClientID clientID = C->ID;
 		P.w_clientID(clientID);
 		A->net_Export(P, TRUE);
-
 		A->flags__ = tmp_flags;
-	}
+	});
 
 	net_Export_GameTime(P);
 }
@@ -363,6 +313,27 @@ void game_sv_GameState::OnPlayerDisconnect(ClientID /**id_who/**/, LPSTR, u16)
 	signal_Syncronize();
 }
 
+bool IsCompatibleSpawnGameType(u8 spawnGameType, u32 currentGameType)
+{
+	if (spawnGameType == rpgtGameDeathmatch && currentGameType == GAME_DEATHMATCH)
+		return true;
+
+	if (spawnGameType == rpgtGameTeamDeathmatch && currentGameType == GAME_TEAMDEATHMATCH)
+		return true;
+
+	if (spawnGameType == rpgtGameArtefactHunt && currentGameType == GAME_ARTEFACTHUNT)
+		return true;
+
+	// Freeplay and hardmatch use deathmatch rpoints
+	if (spawnGameType == rpgtGameDeathmatch && currentGameType == GAME_FREEPLAY)
+		return true;
+
+	if (spawnGameType == rpgtGameDeathmatch && currentGameType == GAME_HARDMATCH)
+		return true;
+
+	return false;
+}
+
 static float rpoints_Dist[TEAM_COUNT] = {1000.f, 1000.f, 1000.f, 1000.f};
 void game_sv_GameState::Create(shared_str &options)
 {
@@ -388,18 +359,11 @@ void game_sv_GameState::Create(shared_str &options)
 				VERIFY(team >= 0 && team < 4);
 				type = O->r_u8();
 				GameType = O->r_u8();
-				//u16 res					=
 				O->r_u8();
 
-				if (GameType != rpgtGameAny)
-				{
-					if ((GameType == rpgtGameDeathmatch && Type() != GAME_DEATHMATCH) ||
-						(GameType == rpgtGameTeamDeathmatch && Type() != GAME_TEAMDEATHMATCH) ||
-						(GameType == rpgtGameArtefactHunt && Type() != GAME_ARTEFACTHUNT))
-					{
-						continue;
-					};
-				};
+				if (GameType != rpgtGameAny && !IsCompatibleSpawnGameType(GameType, Type()))
+					continue;				
+
 				switch (type)
 				{
 				case rptActorSpawn:
@@ -624,11 +588,11 @@ void game_sv_GameState::UpdateClientPing(xrClientData *client)
 
 void game_sv_GameState::Update()
 {
-	for (u32 it = 0; it < m_server->client_Count(); ++it)
+	m_server->ForEachClientDo([&](IClient* client)
 	{
-		xrClientData *C = (xrClientData *)m_server->client_Get(it);
+		xrClientData* C = static_cast<xrClientData*>(client);
 		UpdateClientPing(C);
-	}
+	});
 
 #ifdef ALIFE_MP
 	if (Level().game)
@@ -824,19 +788,18 @@ bool game_sv_GameState::NewPlayerName_Exists(void *pClient, LPCSTR NewName)
 	if (st.HasTranslation(NewName))
 		return true;
 
-	u32 cnt = get_players_count();
-	
-	for (u32 it = 0; it < cnt; ++it)
+	auto cl = m_server->FindClient([&](IClient* client)
 	{
-		IClient *pIC = m_server->client_Get(it);
+		IClient* pIC = dynamic_cast<xrClientData*>(client);
 		if (!pIC || pIC == CL)
-			continue;
+			return false;
 		string64 xName;
 		strcpy(xName, pIC->name.c_str());
 		if (!xr_strcmp(NewName, xName))
 			return true;
-	}
-	return false;
+	});
+
+	return !!cl;
 }
 
 void game_sv_GameState::NewPlayerName_Generate(void *pClient, LPSTR NewPlayerName)
@@ -1050,23 +1013,26 @@ void game_sv_GameState::OnRender()
 				Level().debug_renderer().draw_line(Fidentity, V0, V1, TeamColors[t]);
 
 				bool Blocked = false;
-				for (u32 p_it = 0; p_it < get_players_count(); ++p_it)
+
+				m_server->ForEachClientDo([&](IClient* client)
 				{
-					game_PlayerState *PS = get_it(p_it);
+					if (Blocked)
+						return;
+
+					xrClientData* C = static_cast<xrClientData*>(client);
+					game_PlayerState *PS = C->ps;
 					if (!PS)
-						continue;
+						return;
 					if (PS->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
-						continue;
+						return;
 					CObject *pPlayer = Level().Objects.net_Find(PS->GameID);
 					if (!pPlayer)
-						continue;
+						return;
 
-					if (rp.P.distance_to(pPlayer->Position()) <= 0.4f)
-					{
-						Blocked = true;
-						break;
-					}
-				};
+					if (rp.P.distance_to(pPlayer->Position()) <= 0.4f)					
+						Blocked = true;					
+				});
+
 				if (rp.Blocked)
 					continue;
 
@@ -1094,23 +1060,24 @@ void game_sv_GameState::OnRender()
 
 	if (dbg_net_Draw_Flags.test(1 << 0))
 	{
-		for (u32 p_it = 0; p_it < get_players_count(); ++p_it)
+		m_server->ForEachClientDo([&](IClient* client)
 		{
-			game_PlayerState *PS = get_it(p_it);
+			xrClientData* C = static_cast<xrClientData*>(client);
+			game_PlayerState* PS = C->ps;
 			if (!PS)
-				continue;
+				return;
 			if (PS->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
-				continue;
+				return;
 			CObject *pPlayer = Level().Objects.net_Find(PS->GameID);
 			if (!pPlayer)
-				continue;
+				return;
 
 			float r = .4f;
 			T.identity();
 			T.scale(r, r, r);
 			T.translate_add(pPlayer->Position());
 			Level().debug_renderer().draw_ellipse(T, TeamColors[PS->team]);
-		};
+		});
 	}
 };
 #endif

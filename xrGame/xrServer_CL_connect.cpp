@@ -4,6 +4,7 @@
 #include "hudmanager.h"
 #include "xrserver_objects.h"
 #include "Level.h"
+#include "../xrNetwork/PlayersBase.h"
 
 xr_vector<u16> g_perform_spawn_ids;
 
@@ -77,15 +78,11 @@ void xrServer::OnCL_Connected(IClient *_CL)
 {
 	xrClientData *CL = (xrClientData *)_CL;
 	CL->net_Accepted = TRUE;
-	///	Server_Client_Check(CL);
-
-	csPlayers.Enter();
 
 	Export_game_type(CL);
 	Perform_game_export();
 	SendConnectionData(CL);
 
-	//
 	NET_Packet P;
 	P.B.count = 0;
 	P.w_clientID(CL->ID);
@@ -93,7 +90,6 @@ void xrServer::OnCL_Connected(IClient *_CL)
 	ClientID clientID;
 	clientID.set(0);
 	game->AddDelayedEvent(P, GAME_EVENT_PLAYER_CONNECTED, 0, clientID);
-	csPlayers.Leave();
 	game->ProcessDelayedEvent();
 }
 
@@ -133,7 +129,8 @@ void xrServer::CheckClientHWID(IClient* CL)
 {
 	if (SV_Client && SV_Client == CL)
 	{
-		OnConnectionVerificationStepComplete(CL);
+		OnConnectionVerificationStepComplete(CL); // HWID
+		OnConnectionVerificationStepComplete(CL); // PlayersBase
 		return;
 	}
 
@@ -166,9 +163,23 @@ void xrServer::OnHardwareVerifyRespond(IClient* CL, NET_Packet& P)
 	{
 		Msg("! Player banned by hwid tried to connect");
 		SendConnectResult(CL, 0, 0, "You are banned.");
+		return;
 	}
-	else
+	
+	CheckPlayerBannedInBase(CL, this);
+	OnConnectionVerificationStepComplete(CL);
+}
+
+void xrServer::OnPlayersBaseVerifyRespond(IClient* CL, bool banned)
+{
+	if (!banned)
+	{
 		OnConnectionVerificationStepComplete(CL);
+		return;
+	}
+	
+	Msg("! Player banned by base tried to connect");
+	SendConnectResult(CL, 0, 0, "You are banned!!!");	
 }
 
 void xrServer::OnBuildVersionRespond(IClient *CL, NET_Packet &P)
@@ -213,8 +224,8 @@ void xrServer::OnConnectionVerificationStepComplete(IClient *CL)
 {
 	CL->verificationStepsCompleted++;
 
-	// проверяем ключ, билд, hwid, поэтому 3
-	if (CL->verificationStepsCompleted == 3)
+	// проверяем ключ, билд, hwid, бан в базе всего 4
+	if (CL->verificationStepsCompleted == 4)
 	{
 		CL->flags.bVerified = TRUE;
 		SendConnectResult(CL, 1, 0, "All Ok");

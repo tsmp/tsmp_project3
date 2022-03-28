@@ -2,6 +2,7 @@
 
 #include "script_export_space.h"
 #include "object_interfaces.h"
+#include "game_base_space.h"
 
 class CUI;
 class CTeamBaseZone;
@@ -14,6 +15,8 @@ class CUIXml;
 class CInventoryBox;
 class CUITalkWnd;
 class CInventoryOwner;
+class CUICarBodyWnd;
+class CUIPdaWnd;
 
 struct SDrawStaticStruct : public IPureDestroyableObject
 {
@@ -38,8 +41,6 @@ struct SDrawStaticStruct : public IPureDestroyableObject
 };
 
 using st_vec = xr_vector<SDrawStaticStruct>;
-
-#include "game_base_space.h"
 
 struct SGameTypeMaps
 {
@@ -83,7 +84,8 @@ protected:
 	st_vec m_custom_statics;
 	u32 uFlags;
 	CUICaption* m_pgameCaptions;
-	CUIXml* m_msgs_xml;	
+	CUIXml* m_msgs_xml;
+	CUICarBodyWnd* m_pUICarBodyMenu;
 
 	void SetFlag(u32 mask, BOOL flag)
 	{
@@ -130,9 +132,9 @@ public:
 	virtual void ReInitShownUI() = 0;
 	virtual void HideShownDialogs(){};
 
-	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers) {};
-	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox) {};
-	virtual void StartTalk() {};
+	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers);
+	virtual void StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox);
+	virtual void StartTalk();
 
 	void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color);
 	void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color, float flicker);
@@ -150,6 +152,7 @@ public:
 
 public: 
 		CUITalkWnd* TalkMenu;
+		CUIPdaWnd* PdaMenu;
 };
 
 add_to_type_list(CUIGameCustom)

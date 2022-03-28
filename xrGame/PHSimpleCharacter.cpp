@@ -2,7 +2,7 @@
 
 #include "PHDynamicData.h"
 #include "ExtendedGeom.h"
-#include "../cl_intersect.h"
+#include "cl_intersect.h"
 #include "tri-colliderKNoOPC\__aabb_tri.h"
 #include "PHSimpleCharacter.h"
 #include "PHContactBodyEffector.h"
@@ -14,18 +14,18 @@
 #include "gamemtllib.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "PHSimpleCharacterInline.h"
 #include "DamageSource.h"
 #include "PHCollideValidator.h"
 #include "CalculateTriangle.h"
 #include "game_base_space.h"
-//#include "phvalide.h"
 
 IC bool PhOutOfBoundaries(const Fvector &v)
 {
 	return v.y < phBoundaries.y1;
 }
+
 #ifdef DEBUG
 #include "debug_renderer.h"
 #endif
@@ -38,6 +38,7 @@ float IC sgn(float v)
 {
 	return v < 0.f ? -1.f : 1.f;
 }
+
 bool test_sides(const Fvector &center, const Fvector &side_dir, const Fvector &fv_dir, const Fvector &box, int tri_id)
 {
 	Triangle tri;

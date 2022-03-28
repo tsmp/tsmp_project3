@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "contextmenu.h"
-#include "../gamefont.h"
+#include "gamefont.h"
 
 const float fade_speed = 8.0f;
 
@@ -14,6 +14,7 @@ CContextMenu::~CContextMenu()
 	}
 	xr_free(Name);
 }
+
 void CContextMenu::Load(CInifile *INI, LPCSTR SECT)
 {
 	CInifile::Sect &S = INI->r_section(SECT);
@@ -30,6 +31,7 @@ void CContextMenu::Load(CInifile *INI, LPCSTR SECT)
 		Items.push_back(Item);
 	}
 }
+
 void CContextMenu::Render(CGameFont *F, u32 cT, u32 cI, float s)
 {
 	F->SetHeightI(0.05f);
@@ -41,6 +43,7 @@ void CContextMenu::Render(CGameFont *F, u32 cT, u32 cI, float s)
 	for (u32 i = 0; i < Items.size(); ++i)
 		F->OutNext("%d. %s", i, (char *)Items[i].Name);
 }
+
 void CContextMenu::Select(int I)
 {
 	if (I >= 0 && I < (int)(Items.size()))

@@ -111,17 +111,25 @@ void CExplosive::Load(CInifile *ini, LPCSTR section)
 	m_fLightTime = ini->r_float(section, "light_time");
 
 	//трассы для разлета осколков
-	m_fFragmentSpeed = ini->r_float(section, "fragment_speed");
+
+	if (ini->line_exist(section, "fragment_speed"))
+		m_fFragmentSpeed = ini->r_float(section, "fragment_speed");
+	else
+		m_fFragmentSpeed = 60;
 
 	LPCSTR snd_name = ini->r_string(section, "snd_explode");
 	sndExplode.create(snd_name, st_Effect, m_eSoundExplode);
 
 	m_fExplodeDurationMax = ini->r_float(section, "explode_duration");
+	effector.effect_sect_name = "effector_explode_hit";
 
 	if (ini->line_exist(section, "effect_sect_name"))
 		effector.effect_sect_name = ini->r_string(section, "effect_sect_name");
 	else
-		effector.effect_sect_name = ini->r_string("explode_effector", "effect_sect_name");
+	{
+		if (ini->line_exist("explode_effector", "effect_sect_name"))
+			effector.effect_sect_name = ini->r_string("explode_effector", "effect_sect_name");
+	}
 
 	if (ini->line_exist(section, "effector_radius"))
 		m_effector_radius = ini->r_float(section, "effector_radius");

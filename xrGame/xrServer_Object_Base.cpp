@@ -306,7 +306,7 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet &tNetPacket)
 	STATE_Read(tNetPacket, stateRealSize);
 
 	u16 stateReadSize = static_cast<u16>(tNetPacket.r_pos - beforeStateReadPos);
-	VERIFY(stateReadSize == stateRealSize)
+	VERIFY(stateReadSize == stateRealSize);
 
 	return TRUE;
 }
@@ -373,7 +373,8 @@ Flags16 &CSE_Abstract::flags()
 	return (s_flags);
 }
 
-xr_token game_types[] = {
+xr_token game_types[] = 
+{
 	{"any game", GAME_ANY},
 	{"single", GAME_SINGLE},
 	{"deathmatch", GAME_DEATHMATCH},
@@ -383,7 +384,9 @@ xr_token game_types[] = {
 	{"teamdeathmatch", GAME_TEAMDEATHMATCH},
 	{"artefacthunt", GAME_ARTEFACTHUNT},
 	{"hardmatch", GAME_HARDMATCH},
-	{0, 0}};
+	{"freeplay",GAME_FREEPLAY},
+	{0, 0}
+};
 
 void CSE_Abstract::FillProps(LPCSTR pref, PropItemVec &items)
 {

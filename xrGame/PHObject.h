@@ -1,9 +1,8 @@
 #pragma once
-#ifndef CPHOBJECT
-#define CPHOBJECT
-#include "../ispatial.h"
+#include "ispatial.h"
 #include "PHItemList.h"
 #include "PHIsland.h"
+
 typedef u32 CLClassBits;
 typedef u32 CLBits;
 DEFINE_VECTOR(ISpatial *, qResultVec, qResultIt)
@@ -134,4 +133,3 @@ public:
 
 DEFINE_PHITEM_LIST(CPHObject, PH_OBJECT_STORAGE, PH_OBJECT_I)
 DEFINE_PHITEM_LIST(CPHUpdateObject, PH_UPDATE_OBJECT_STORAGE, PH_UPDATE_OBJECT_I)
-#endif //CPHOBJECT

@@ -3,8 +3,8 @@
 #include "PhysicsShell.h"
 #include "phsynchronize.h"
 #include "xrserver_objects_alife.h"
-#include "../skeletoncustom.h"
-#include "../xr_collide_form.h"
+#include "skeletoncustom.h"
+#include "xr_collide_form.h"
 
 CPhysicsSkeletonObject::CPhysicsSkeletonObject()
 {
@@ -24,7 +24,7 @@ BOOL CPhysicsSkeletonObject::net_Spawn(CSE_Abstract *DC)
 	CPHSkeleton::Spawn(e);
 	setVisible(TRUE);
 	setEnabled(TRUE);
-	if (!PPhysicsShell()->isBreakable())
+	if (PPhysicsShell() && !PPhysicsShell()->isBreakable())
 		SheduleUnregister();
 	return TRUE;
 }

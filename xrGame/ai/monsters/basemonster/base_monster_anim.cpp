@@ -8,10 +8,12 @@
 
 #include "stdafx.h"
 #include "base_monster.h"
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 #include "../../../sound_player.h"
 #include "../../../ai_monster_space.h"
 #include "../control_animation_base.h"
+
+#pragma TODO("Перенести в другой файл")
 
 // Установка анимации
 void CBaseMonster::SelectAnimation(const Fvector & /**_view/**/, const Fvector & /**_move/**/, float /**speed/**/)

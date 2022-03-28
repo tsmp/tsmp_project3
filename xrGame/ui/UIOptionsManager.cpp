@@ -5,7 +5,7 @@
 #include "StdAfx.h"
 #include "UIOptionsManager.h"
 #include "UIOptionsItem.h"
-#include "../Console.h"
+#include "Console.h"
 
 CUIOptionsManager::CUIOptionsManager()
 {

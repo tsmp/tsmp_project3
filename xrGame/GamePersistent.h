@@ -1,8 +1,6 @@
-#ifndef GamePersistentH
-#define GamePersistentH
 #pragma once
+#include "IGame_Persistent.h"
 
-#include "../IGame_Persistent.h"
 class CMainMenu;
 class CUICursor;
 class CParticlesObject;
@@ -72,5 +70,3 @@ public:
 };
 
 IC CGamePersistent &GamePersistent() { return *((CGamePersistent *)g_pGamePersistent); }
-
-#endif //GamePersistentH

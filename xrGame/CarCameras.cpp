@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #pragma hdrstop
+
 #ifdef DEBUG
 #include "ode_include.h"
 #include "../StatGraph.h"
 #include "PHDebug.h"
 #include "phworld.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
@@ -14,7 +16,7 @@
 #include "cameralook.h"
 #include "camerafirsteye.h"
 #include "level.h"
-#include "../cameramanager.h"
+#include "cameramanager.h"
 
 bool CCar::HUDView() const
 {

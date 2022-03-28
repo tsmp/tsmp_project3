@@ -140,18 +140,13 @@ void game_PlayerState::SetGameID(u16 NewID)
 	mOldIDs.push_back(GameID);
 	GameID = NewID;
 }
+
 bool game_PlayerState::HasOldID(u16 ID)
 {
 	OLD_GAME_ID_it ID_i = std::find(mOldIDs.begin(), mOldIDs.end(), ID);
 	if (ID_i != mOldIDs.end() && *(ID_i) == ID)
 		return true;
 	return false;
-}
-
-game_TeamState::game_TeamState()
-{
-	score = 0;
-	num_targets = 0;
 }
 
 game_GameState::game_GameState()
@@ -179,6 +174,14 @@ CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 		else
 			return (TEXT2CLSID("CL_HM"));
 	}
+
+	if (!xr_strcmp(game_type_name, "freeplay"))
+	{
+		if (isServer)
+			return (TEXT2CLSID("SV_FP"));
+		else
+			return (TEXT2CLSID("CL_FP"));
+}
 
 #ifndef ALIFE_MP
 	if (!g_dedicated_server)

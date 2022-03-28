@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../fmesh.h"
+#include "fmesh.h"
 #include "flod.h"
 
 struct _hw

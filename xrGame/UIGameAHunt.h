@@ -32,7 +32,6 @@ public:
 	virtual ~CUIGameAHunt();
 
 	virtual void Init();
-	void SetTodoCaption(LPCSTR str);
 	void SetBuyMsgCaption(LPCSTR str);
 
 	virtual void Render();
@@ -40,6 +39,5 @@ public:
 	virtual void reset_ui();
 
 protected:
-	shared_str m_todo_caption;
 	shared_str m_buy_msg_caption;
 };

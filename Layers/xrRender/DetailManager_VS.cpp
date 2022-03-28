@@ -3,8 +3,8 @@
 
 #include "detailmanager.h"
 
-#include "..\igame_persistent.h"
-#include "..\environment.h"
+#include "igame_persistent.h"
+#include "environment.h"
 
 const int quant = 16384;
 const int c_hdr = 10;

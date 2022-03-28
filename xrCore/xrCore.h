@@ -136,11 +136,9 @@
 
 #include "xrDebug.h"
 #include "vector.h"
-
 #include "clsid.h"
 #include "Threading\xrCriticalSection.h"
 #include "xrMemory.h"
-#include "xrDebug.h"
 
 #include "_stl_extensions.h"
 #include "xrsharedmem.h"

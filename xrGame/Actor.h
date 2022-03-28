@@ -1,16 +1,16 @@
 #pragma once
 
-#include "../feel_touch.h"
-#include "../feel_sound.h"
-#include "../iinputreceiver.h"
-#include "../SkeletonAnimated.h"
+#include "feel_touch.h"
+#include "feel_sound.h"
+#include "iinputreceiver.h"
+#include "SkeletonAnimated.h"
 #include "actor_flags.h"
 #include "actor_defs.h"
 #include "entity_alive.h"
 #include "PHMovementControl.h"
 #include "PhysicsShell.h"
 #include "InventoryOwner.h"
-#include "../StatGraph.h"
+#include "StatGraph.h"
 #include "PhraseDialogManager.h"
 
 #include "step_manager.h"

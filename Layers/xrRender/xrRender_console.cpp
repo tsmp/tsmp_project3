@@ -132,8 +132,8 @@ float dm_fade = 47.5; // float(2 * dm_size) - .5f;
 
 int ps_r__detail_radius = 49;
 
-#include "..\Console.h"
-#include "..\Console_commands.h"
+#include "Console.h"
+#include "Console_commands.h"
 
 class CCC_tf_Aniso : public CCC_Integer
 {

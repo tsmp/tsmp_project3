@@ -2,13 +2,15 @@
 //					могут держать в руках персонажи, также используется
 //					для синхронизации анимаций с видом от 3-го лица
 //////////////////////////////////////////////////////////////////////
+
 #include "stdafx.h"
 #include "WeaponHUD.h"
 #include "Weapon.h"
-#include "../Motion.h"
-#include "../skeletonanimated.h"
+#include "Motion.h"
+#include "skeletonanimated.h"
 #include "level.h"
 #include "MathUtils.h"
+
 weapon_hud_container *g_pWeaponHUDContainer = 0;
 
 BOOL weapon_hud_value::load(const shared_str &section, CHudItem *owner)

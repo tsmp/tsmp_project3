@@ -129,14 +129,6 @@ add_to_type_list(game_PlayerState)
 #undef script_type_list
 #define script_type_list save_type_list(game_PlayerState)
 
-	struct game_TeamState
-{
-	int score;
-	u16 num_targets;
-
-	game_TeamState();
-};
-
 #pragma pack(pop)
 
 class game_GameState : public DLL_Pure
@@ -149,15 +141,7 @@ protected:
 
 	u32 m_round_start_time;
 	string64 m_round_start_time_str;
-	//	u32								buy_time;
-	//	s32								fraglimit; //dm,tdm,ah
-	//	s32								timelimit; //dm
-	//	u32								damageblocklimit;//dm,tdm
-	//	xr_vector<game_TeamState>		teams;//dm,tdm,ah
-	// for Artefact Hunt
-	//	u8								artefactsNum;//ah
-	//	u16								artefactBearerID;//ah,ZoneMap
-	//	u8								teamInPossession;//ah,ZoneMap
+
 protected:
 	virtual void switch_Phase(u32 new_phase);
 	virtual void OnSwitchPhase(u32 old_phase, u32 new_phase){};

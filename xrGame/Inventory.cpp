@@ -192,9 +192,16 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 bool CInventory::DropItem(CGameObject *pObj)
 {
 	CInventoryItem *pIItem = smart_cast<CInventoryItem *>(pObj);
-	VERIFY(pIItem);
 	if (!pIItem)
 		return false;
+
+	if (!pIItem->m_pCurrentInventory)
+	{
+		Msg("! Error, cant drop item with null current inventory!");
+		Msg("item: [%u][%s]", pIItem->cast_game_object()->ID(), pIItem->Name());
+		Msg("this: [%u][%s]", GetOwner()->object_id(), GetOwner()->Name());
+		return false;
+	}
 
 	if (pIItem->m_pCurrentInventory != this)
 	{
@@ -204,10 +211,8 @@ bool CInventory::DropItem(CGameObject *pObj)
 		Msg("pIItem->m_pCurrentInventory = [%d]", pIItem->m_pCurrentInventory->GetOwner()->object_id());
 	}
 
-	R_ASSERT(pIItem->m_pCurrentInventory);
 	R_ASSERT(pIItem->m_pCurrentInventory == this);
 	VERIFY(pIItem->m_eItemPlace != eItemPlaceUndefined);
-
 	pIItem->object().processing_activate();
 
 	switch (pIItem->m_eItemPlace)
@@ -245,8 +250,7 @@ bool CInventory::DropItem(CGameObject *pObj)
 	else
 		Msg("! CInventory::Drop item not found in inventory!!!");
 
-	pIItem->m_pCurrentInventory = NULL;
-
+	pIItem->m_pCurrentInventory = nullptr;
 	m_pOwner->OnItemDrop(smart_cast<CInventoryItem *>(pObj));
 
 	CalcTotalWeight();

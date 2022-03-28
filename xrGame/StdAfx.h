@@ -41,9 +41,9 @@ IC void throw_and_log(const xr_string &s)
 #define THROW3 VERIFY3
 #endif
 
-#include "../gamefont.h"
-#include "../xr_object.h"
-#include "../igame_level.h"
+#include "gamefont.h"
+#include "xr_object.h"
+#include "igame_level.h"
 
 #define REGISTRY_VALUE_GSCDKEY "InstallCDKEY"
 #define REGISTRY_VALUE_VERSION "InstallVers"

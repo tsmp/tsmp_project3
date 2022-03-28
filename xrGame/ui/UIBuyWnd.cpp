@@ -15,6 +15,7 @@
 #include <dinput.h>
 #include "../actor.h"
 #include "restrictions.h"
+#include "xr_input.h"
 
 #define BELT_SLOT 5
 
@@ -302,8 +303,6 @@ void CUIBuyWnd::Update()
 		m_btnRifleGrenade.Enable(false);
 	}
 }
-
-#include "../xr_input.h"
 
 void CUIBuyWnd::OnBtnBulletBuy(int slot)
 {

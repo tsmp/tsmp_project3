@@ -3,10 +3,12 @@
 #include "Actor.h"
 #include "Torch.h"
 #include "trade.h"
-#include "../CameraBase.h"
+#include "CameraBase.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
@@ -24,6 +26,9 @@
 #include "UI/UIStatic.h"
 #include "CharacterPhysicsSupport.h"
 #include "InventoryBox.h"
+
+#include "Weapon.h"
+#include "xr_input.h"
 
 bool g_bAutoClearCrouch = true;
 
@@ -585,8 +590,6 @@ void CActor::set_input_external_handler(CActorInputHandler *handler)
 	m_input_external_handler = handler;
 }
 
-#include "Weapon.h"
-#include "../xr_input.h"
 void CActor::NoClipFly(int cmd)
 {
 	Fvector cur_pos, right, left;

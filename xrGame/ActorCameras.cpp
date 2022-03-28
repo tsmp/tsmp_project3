@@ -1,9 +1,11 @@
 #include "stdafx.h"
 #include "Actor.h"
-#include "../CameraBase.h"
+#include "CameraBase.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
@@ -14,13 +16,20 @@
 #include "SleepEffector.h"
 #include "ActorEffector.h"
 #include "level.h"
-#include "../cl_intersect.h"
+#include "cl_intersect.h"
 #include "gamemtllib.h"
 #include "elevatorstate.h"
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
 #include "phcollidevalidator.h"
 #include "PHShell.h"
+
+#include "physics.h"
+#include "PHActivationShape.h"
+#include "debug_renderer.h"
+
+float CActor::f_Ladder_cam_limit = 1.f;
+
 void CActor::cam_Set(EActorCameras style)
 {
 	CCameraBase *old_cam = cam_Active();
@@ -28,7 +37,7 @@ void CActor::cam_Set(EActorCameras style)
 	old_cam->OnDeactivate();
 	cam_Active()->OnActivate(old_cam);
 }
-float CActor::f_Ladder_cam_limit = 1.f;
+
 void CActor::cam_SetLadder()
 {
 	CCameraBase *C = cameras[eacFirstEye];
@@ -47,6 +56,7 @@ void CActor::cam_SetLadder()
 		C->bClampYaw = true;
 	}
 }
+
 void CActor::camUpdateLadder(float dt)
 {
 	if (!character_physics_support()->movement()->ElevatorState())
@@ -90,6 +100,7 @@ void CActor::cam_UnsetLadder()
 	C->lim_yaw[1] = 0;
 	C->bClampYaw = false;
 }
+
 float CActor::CameraHeight()
 {
 	Fvector R;
@@ -131,9 +142,6 @@ ICF BOOL test_point(xrXRC &xrc, const Fmatrix &xform, const Fmatrix33 &mat, cons
 	return FALSE;
 }
 
-#include "physics.h"
-#include "PHActivationShape.h"
-#include "debug_renderer.h"
 void CActor::cam_Update(float dt, float fFOV)
 {
 	if (m_holder)

@@ -31,6 +31,8 @@
 #include "ai/monsters/basemonster/base_monster.h"
 #include "ai/trader/ai_trader.h"
 
+ENGINE_API bool g_dedicated_server;
+
 void CActor::AddEncyclopediaArticle(const CInfoPortion *info_portion) const
 {
 	VERIFY(info_portion);
@@ -68,8 +70,8 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion *info_portion) const
 
 		if (HUD().GetUI())
 		{
-			CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
 			pda_section::part p = pda_section::encyclopedia;
+
 			switch (article.data()->articleType)
 			{
 			case ARTICLE_DATA::eEncyclopediaArticle:
@@ -87,13 +89,18 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion *info_portion) const
 			default:
 				NODEFAULT;
 			};
-			pGameSP->PdaMenu->PdaContentsChanged(p);
+			
+			CUIGameCustom* pGameUI = HUD().GetUI()->UIGame();
+			pGameUI->PdaMenu->PdaContentsChanged(p);
 		}
 	}
 }
 
 void CActor::AddGameTask(const CInfoPortion *info_portion) const
 {
+	if (Level().CurrentControlEntity() != this)
+		return;
+
 	VERIFY(info_portion);
 
 	if (info_portion->GameTasks().empty())
@@ -115,9 +122,9 @@ void CActor::AddGameNews(GAME_NEWS_DATA &news_data)
 	if (HUD().GetUI())
 	{
 		HUD().GetUI()->UIMainIngameWnd->ReceiveNews(&news_data);
-		CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-		if (pGameSP)
-			pGameSP->PdaMenu->PdaContentsChanged(pda_section::news);
+		
+		if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())		
+			pGameUI->PdaMenu->PdaContentsChanged(pda_section::news);
 	}
 }
 
@@ -239,29 +246,10 @@ void CActor::StartTalk(CInventoryOwner *talk_partner)
 
 	CInventoryOwner::StartTalk(talk_partner);
 }
-/*
-void CActor::UpdateContact		(u16 contact_id)
-{
-	if(ID() == contact_id) return;
 
-	TALK_CONTACT_VECTOR& contacts = contacts_registry->registry().objects();
-	for(TALK_CONTACT_VECTOR_IT it = contacts.begin(); contacts.end() != it; ++it)
-		if((*it).id == contact_id) break;
-
-	if(contacts.end() == it)
-	{
-		TALK_CONTACT_DATA contact_data(contact_id, Level().GetGameTime());
-		contacts.push_back(contact_data);
-	}
-	else
-	{
-		(*it).time = Level().GetGameTime();
-	}
-}
-*/
 void CActor::NewPdaContact(CInventoryOwner *pInvOwner)
 {
-	if (!IsGameTypeSingle())
+	if (g_dedicated_server)
 		return;
 
 	bool b_alive = !!(smart_cast<CEntityAlive *>(pInvOwner))->g_Alive();
@@ -271,34 +259,28 @@ void CActor::NewPdaContact(CInventoryOwner *pInvOwner)
 
 	if (HUD().GetUI())
 	{
-		CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-
-		if (pGameSP)
-			pGameSP->PdaMenu->PdaContentsChanged(pda_section::contacts);
+		if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())
+			pGameUI->PdaMenu->PdaContentsChanged(pda_section::contacts);
 	}
 }
 
 void CActor::LostPdaContact(CInventoryOwner *pInvOwner)
-{
-	CGameObject *GO = smart_cast<CGameObject *>(pInvOwner);
-	if (GO)
+{	
+	if (CGameObject* GO = smart_cast<CGameObject*>(pInvOwner))
 	{
-
 		for (int t = ALife::eRelationTypeFriend; t < ALife::eRelationTypeLast; ++t)
 		{
 			ALife::ERelationType tt = (ALife::ERelationType)t;
 			Level().MapManager().RemoveMapLocation(RELATION_REGISTRY().GetSpotName(tt), GO->ID());
 		}
+
 		Level().MapManager().RemoveMapLocation("deadbody_location", GO->ID());
-	};
+	}
 
 	if (HUD().GetUI())
-	{
-		CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-		if (pGameSP)
-		{
-			pGameSP->PdaMenu->PdaContentsChanged(pda_section::contacts);
-		}
+	{		
+		if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())		
+			pGameUI->PdaMenu->PdaContentsChanged(pda_section::contacts);		
 	}
 }
 

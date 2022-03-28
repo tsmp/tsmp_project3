@@ -118,22 +118,20 @@ CGameTask *CGameTaskManager::GiveGameTaskToActor(CGameTask *t, u32 timeToComplet
 			ml->SetSerializable(true);
 		}
 	}
+
 	CGameTask *_at = ActiveTask();
-	if ((NULL == _at) || (_at->m_priority > t->m_priority))
-	{
-		SetActiveTask(t->m_ID, 1);
-	}
+
+	if (!_at || _at->m_priority > t->m_priority)	
+		SetActiveTask(t->m_ID, 1);	
 
 	//установить флажок необходимости прочтения тасков в PDA
 	if (HUD().GetUI())
 	{
-		CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-		if (pGameSP)
-			pGameSP->PdaMenu->PdaContentsChanged(pda_section::quests);
+		if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())
+			pGameUI->PdaMenu->PdaContentsChanged(pda_section::quests);
 	}
-	if (true /*t->m_ID!="user_task"*/)
-		t->Objective(0).ChangeStateCallback();
 
+	t->Objective(0).ChangeStateCallback();
 	return t;
 }
 
@@ -173,14 +171,11 @@ void CGameTaskManager::SetTaskState(CGameTask *t, u16 objective_num, ETaskState 
 				SetTaskState(t, i, state);
 	}
 
-	if (0 == objective_num && eTaskStateCompleted == state || eTaskStateFail == state)
+	if (!objective_num && eTaskStateCompleted == state || eTaskStateFail == state)
 		t->m_FinishTime = Level().GetGameTime();
 
-	CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-	if (pGameSP)
-	{
-		pGameSP->PdaMenu->PdaContentsChanged(pda_section::quests);
-	}
+	if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())
+		pGameUI->PdaMenu->PdaContentsChanged(pda_section::quests);	
 }
 
 void CGameTaskManager::SetTaskState(const TASK_ID &id, u16 objective_num, ETaskState state)

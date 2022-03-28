@@ -164,13 +164,14 @@ IC int CObjectSpace::GetNearest(xr_vector<CObject *> &q_nearest, ICollisionForm 
 	return GetNearest(q_nearest, O->spatial.sphere.P, range + O->spatial.sphere.R, O);
 }
 
-//----------------------------------------------------------------------
 static void __stdcall build_callback(Fvector *V, int Vcnt, CDB::TRI *T, int Tcnt, void *params)
 {
 	g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt);
 }
+
 void CObjectSpace::Load()
 {
+	Msg("loading object space");
 	IReader *F = FS.r_open("$level$", "level.cform");
 	R_ASSERT(F);
 

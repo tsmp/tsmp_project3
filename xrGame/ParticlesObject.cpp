@@ -5,11 +5,11 @@
 #pragma hdrstop
 
 #include "ParticlesObject.h"
-#include "../defines.h"
-#include "../fbasicvisual.h"
-#include "../ParticleCustom.h"
-#include "../render.h"
-#include "../IGame_Persistent.h"
+#include "defines.h"
+#include "fbasicvisual.h"
+#include "ParticleCustom.h"
+#include "render.h"
+#include "IGame_Persistent.h"
 
 const Fvector zero_vel = {0.f, 0.f, 0.f};
 

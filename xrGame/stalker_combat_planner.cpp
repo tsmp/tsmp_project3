@@ -427,6 +427,7 @@ void CStalkerCombatPlanner::add_actions()
 	add_operator(eWorldOperatorKillEnemyIfPlayerOnThePath, action);
 
 	CStalkerKillWoundedPlanner *planner = xr_new<CStalkerKillWoundedPlanner>(m_object, "kill wounded enemy");
+	add_condition(planner, eWorldPropertyItemToKill, true);
 	add_condition(planner, eWorldPropertyCriticallyWounded, false);
 	add_condition(planner, eWorldPropertyDangerGrenade, false);
 	add_condition(planner, eWorldPropertyEnemyWounded, true);

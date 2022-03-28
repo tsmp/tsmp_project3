@@ -3,10 +3,10 @@
 
 #include "ModelPool.h"
 
-#include "..\IGame_Persistent.h"
-#include "..\fmesh.h"
-#include "..\fhierrarhyvisual.h"
-#include "..\SkeletonAnimated.h"
+#include "IGame_Persistent.h"
+#include "fmesh.h"
+#include "fhierrarhyvisual.h"
+#include "SkeletonAnimated.h"
 #include "fvisual.h"
 #include "fprogressive.h"
 #include "fskinned.h"
@@ -396,6 +396,9 @@ void CModelPool::Prefetch()
 	strcpy(gameTypeName, g_pGamePersistent->m_game_params.m_game_type);
 
 	if (!strcmp(gameTypeName, "hardmatch"))
+		strcpy(gameTypeName, "deathmatch");
+
+	if (!strcmp(gameTypeName, "freeplay"))
 		strcpy(gameTypeName, "deathmatch");
 
 	strconcat(sizeof(section), section, "prefetch_visuals_", gameTypeName);

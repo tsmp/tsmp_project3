@@ -20,12 +20,12 @@
 
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "ai_object_location.h"
 #include "clsid_game.h"
 #include "mathutils.h"
 #include "object_broker.h"
-#include "../igame_persistent.h"
+#include "igame_persistent.h"
 
 #include "..\TSMP3_Build_Config.h"
 
@@ -1545,13 +1545,17 @@ void CWeapon::OnDrawUI()
 
 bool CWeapon::unlimited_ammo()
 {
-	if (GameID() == GAME_SINGLE)
-		return psActorFlags.test(AF_UNLIMITEDAMMO) &&
-			   m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
+	if (!m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited))
+		return false;
 
-	return (GameID() != GAME_ARTEFACTHUNT) &&
-		   m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
-};
+	if (GameID() == GAME_SINGLE)
+		return psActorFlags.test(AF_UNLIMITEDAMMO);
+
+	if (GameID() == GAME_ARTEFACTHUNT || GameID() == GAME_FREEPLAY)
+		return false;
+
+	return true;
+}
 
 LPCSTR CWeapon::GetCurrentAmmo_ShortName()
 {

@@ -16,7 +16,7 @@
 #include "game_cl_base.h"
 #include "infoportion.h"
 #include "alife_registry_wrappers.h"
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 #include "client_spawn_manager.h"
 #include "hit.h"
 #include "PHDestroyable.h"
@@ -708,14 +708,13 @@ BOOL CActor::net_Spawn(CSE_Abstract *DC)
 	m_bWasHitted = false;
 	m_dwILastUpdateTime = 0;
 
+	m_game_task_manager = xr_new<CGameTaskManager>();
+	GameTaskManager().initialize(ID());
+
 	if (IsGameTypeSingle())
 	{
 		Level().MapManager().AddMapLocation("actor_location", ID());
 		Level().MapManager().AddMapLocation("actor_location_p", ID());
-
-		m_game_task_manager = xr_new<CGameTaskManager>();
-		GameTaskManager().initialize(ID());
-
 		m_statistic_manager = xr_new<CActorStatisticMgr>();
 	}
 

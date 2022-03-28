@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include <dinput.h>
-#include "../Console.h"
-#include "../xr_input.h"
-#include "../Console_commands.h"
+#include "Console.h"
+#include "xr_input.h"
+#include "Console_commands.h"
 #include "xr_level_controller.h"
 #include "string_table.h"
 
@@ -28,7 +28,7 @@ _action actions[] = {
 	{"llookout", kL_LOOKOUT, _both},
 	{"rlookout", kR_LOOKOUT, _both},
 
-	{"turn_engine", kENGINE, _sp},
+	{"turn_engine", kENGINE, _both},
 
 	{"cam_1", kCAM_1, _both},
 	{"cam_2", kCAM_2, _both},

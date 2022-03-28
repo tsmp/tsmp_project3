@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "uicursor.h"
 
-#include "../CustomHUD.h"
+#include "CustomHUD.h"
 #include "UI.h"
 #include "HUDManager.h"
 #include "ui/UIStatic.h"
@@ -15,7 +15,7 @@ CUICursor::CUICursor()
 	InitInternal();
 	Device.seqRender.Add(this, 2);
 }
-//--------------------------------------------------------------------
+
 CUICursor::~CUICursor()
 {
 	xr_delete(m_static);

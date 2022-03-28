@@ -2,7 +2,7 @@
 #include "dxerr9.h"
 #include "NET_Common.h"
 #include "net_server.h"
-
+#include "..\xrCore\buffer_vector.h"
 #include "NET_Log.h"
 
 #pragma warning(push)
@@ -244,42 +244,22 @@ static HRESULT WINAPI Handler(PVOID pvUserContext, DWORD dwMessageType, PVOID pM
 	return C->net_Handler(dwMessageType, pMessage);
 }
 
-//------------------------------------------------------------------------------
-
 void IClient::_SendTo_LL(const void* data, u32 size, u32 flags, u32 timeout)
 {
 	R_ASSERT(server);
 	server->IPureServer::SendTo_LL(ID, const_cast<void*>(data), size, flags, timeout);
 }
 
-//------------------------------------------------------------------------------
-IClient* IPureServer::ID_to_client(ClientID ID, bool ScanAll)
+IClient *IPureServer::ID_to_client(ClientID ID, bool ScanAll)
 {
-	if (0 == ID.value())
-		return NULL;
-	csPlayers.Enter();
+	if (!ID.value())
+		return nullptr;
 
-	for (u32 client = 0; client < net_Players.size(); ++client)
-	{
-		if (net_Players[client]->ID == ID)
-		{
-			csPlayers.Leave();
-			return net_Players[client];
-		}
-	}
-	if (ScanAll)
-	{
-		for (u32 client = 0; client < net_Players_disconnected.size(); ++client)
-		{
-			if (net_Players_disconnected[client]->ID == ID)
-			{
-				csPlayers.Leave();
-				return net_Players_disconnected[client];
-			}
-		}
-	};
-	csPlayers.Leave();
-	return NULL;
+	IClient *clResult = GetClientByID(ID);
+	if (clResult || !ScanAll)
+		return clResult;
+
+	return GetDisconnectedClientByID(ID);
 }
 
 void IPureServer::_Recieve(const void* data, u32 data_size, u32 param)
@@ -635,20 +615,13 @@ HRESULT IPureServer::net_Handler(u32 dwMessageType, PVOID pMessage)
 	{
 		PDPNMSG_DESTROY_PLAYER msg = PDPNMSG_DESTROY_PLAYER(pMessage);
 
-		csPlayers.Enter();
-		for (u32 I = 0; I < net_Players.size(); I++)
-			if (net_Players[I]->ID.compare(msg->dpnidPlayer))
-			{
-				// gen message
-				net_Players[I]->flags.bConnected = FALSE;
-				net_Players[I]->flags.bReconnect = FALSE;
-				OnCL_Disconnected(net_Players[I]);
-
-				// real destroy
-				client_Destroy(net_Players[I]);
-				break;
-			}
-		csPlayers.Leave();
+		if(IClient *client = GetClientByID(static_cast<ClientID>(msg->dpnidPlayer)))
+		{
+			client->flags.bConnected = FALSE;
+			client->flags.bReconnect = FALSE;
+			OnCL_Disconnected(client);			
+			client_Destroy(client); // real destroy
+		}
 	}
 	break;
 	case DPN_MSGID_RECEIVE:
@@ -707,20 +680,16 @@ void IPureServer::Flush_Clients_Buffers()
 	Msg("#flush server send-buf");
 #endif
 
-	csPlayers.Enter();
-
-	for (xr_vector<IClient*>::iterator it = net_Players.begin(); it != net_Players.end(); ++it)
-		(*it)->MultipacketSender::FlushSendBuffer(0);
-
-	csPlayers.Leave();
+	net_players.ForEachClientDo([](IClient* client)
+	{
+		client->MultipacketSender::FlushSendBuffer(0);
+	});
 }
 
 void IPureServer::SendTo_Buf(ClientID id, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
 {
-	xr_vector<IClient*>::iterator it = std::find(net_Players.begin(), net_Players.end(), id);
-
-	if (it != net_Players.end())
-		(*it)->MultipacketSender::SendPacket(data, size, dwFlags, dwTimeout);
+	if(IClient *client = GetClientByID(id))
+		client->MultipacketSender::SendPacket(data, size, dwFlags, dwTimeout);
 }
 
 void IPureServer::SendTo_LL(ClientID ID /*DPNID ID*/, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
@@ -776,23 +745,25 @@ void IPureServer::SendTo(ClientID ID /*DPNID ID*/, NET_Packet& P, u32 dwFlags, u
 	SendTo_LL(ID, P.B.data, P.B.count, dwFlags, dwTimeout);
 }
 
-void IPureServer::SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 dwFlags)
+bool IsSameClientID(IClient *client, ClientID &id)
 {
-	csPlayers.Enter();
+	return client->ID == id;
+}
 
-	for (u32 i = 0; i < net_Players.size(); i++)
+void IPureServer::SendBroadcast_LL(ClientID idToExclude, void* data, u32 size, u32 dwFlags)
+{
+#pragma TODO("TSMP: изучить не нужно ли тут использовать ForEachClientSender")
+
+	net_players.ForEachClientDo([&](IClient *client)
 	{
-		IClient* player = net_Players[i];
+		if (client->ID == idToExclude)
+			return;
 
-		if (player->ID == exclude)
-			continue;
-		if (!player->flags.bConnected)
-			continue;
+		if (!client->flags.bConnected)
+			return;
 
-		SendTo_LL(player->ID, data, size, dwFlags);
-	}
-
-	csPlayers.Leave();
+		SendTo_LL(client->ID, data, size, dwFlags);
+	});
 }
 
 void IPureServer::SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags)
@@ -889,12 +860,14 @@ void IPureServer::UpdateClientStatistic(IClient* C)
 void IPureServer::ClearStatistic()
 {
 	stats.clear();
-	for (u32 I = 0; I < net_Players.size(); I++)
+
+	net_players.ForEachClientDo([](IClient* client)
 	{
-		net_Players[I]->stats.Clear();
-	}
+		client->stats.Clear();
+	});
 };
 
+#pragma TODO("Сделать как в чн")
 bool IPureServer::DisconnectClient(IClient* C)
 {
 	if (!C)
@@ -916,33 +889,31 @@ bool IPureServer::DisconnectClient(IClient* C, string512& Reason)
 	return true;
 };
 
-bool IPureServer::DisconnectAddress(const ip_address& Address)
+bool IPureServer::DisconnectAddress(const ip_address &disconAddress)
 {
-	if (Address.to_string() == "0.0.0.0")
+	if (disconAddress.to_string() == "0.0.0.0")
 	{
-		Msg("! attempt to disconnect server ip");
+		Msg("! WARNING: attempt to disconnect server ip");
 		return false;
 	}
 
-	xr_vector<IClient*> PlayersToDisconnect;
+	// TSMP: скорее всего нельзя дисконнектить сразу в ForEachClientDo из за крит секции csPlayers
+	xr_vector<IClient*> clientsToDisconnect;
 
-	for (u32 idx = 0; idx < net_Players.size(); ++idx)
+	net_players.ForEachClientDo([&](IClient* client)
 	{
-		ip_address ClAddress;
-		GetClientAddress(net_Players[idx]->ID, ClAddress);
+		ip_address tempAddress;
+		GetClientAddress(client->ID, tempAddress);
 
-		if (Address == ClAddress)		
-			PlayersToDisconnect.push_back(net_Players[idx]);		
-	}
+		if (disconAddress == tempAddress)
+			clientsToDisconnect.push_back(client);
+	});
 
-	xr_vector<IClient*>::iterator it = PlayersToDisconnect.begin();
-	xr_vector<IClient*>::iterator it_e = PlayersToDisconnect.end();
-
-	for (; it != it_e; ++it)	
-		DisconnectClient(*it);
+	for (IClient *client: clientsToDisconnect)
+		DisconnectClient(client);
 	
 	return true;
-};
+}
 
 bool IPureServer::GetClientAddress(IDirectPlay8Address* pClientAddress, ip_address& Address, DWORD* pPort)
 {

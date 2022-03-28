@@ -1,8 +1,8 @@
 #include "pch_script.h"
-#include "../fdemorecord.h"
-#include "../fdemoplay.h"
-#include "../environment.h"
-#include "../igame_persistent.h"
+#include "fdemorecord.h"
+#include "fdemoplay.h"
+#include "environment.h"
+#include "igame_persistent.h"
 #include "ParticlesObject.h"
 #include "Level.h"
 #include "xrServer.h"
@@ -15,7 +15,7 @@
 #include "PHdynamicdata.h"
 #include "Physics.h"
 #include "ShootingObject.h"
-//.#include "LevelFogOfWar.h"
+
 #include "Level_Bullet_Manager.h"
 #include "script_process.h"
 #include "script_engine.h"
@@ -34,14 +34,15 @@
 #include "mt_config.h"
 #include "phcommander.h"
 #include "map_manager.h"
-#include "../CameraManager.h"
+#include "CameraManager.h"
 #include "level_sounds.h"
 #include "car.h"
 #include "trade_parameters.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
 #include "MainMenu.h"
-#include "..\Console.h"
+#include "Console.h"
+#include "IGame_Persistent.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -536,20 +537,20 @@ void CLevel::OnFrame()
 				F->OutNext("sv_urate/cl_urate : %4d/%4d", psNET_ServerUpdate, psNET_ClientUpdate);
 
 				F->SetColor(D3DCOLOR_XRGB(255, 255, 255));
-				for (u32 I = 0; I < Server->client_Count(); ++I)
-				{
-					IClient *C = Server->client_Get(I);
+
+				Server->ForEachClientDo([this,&F](IClient* C)
+				{						
 					Server->UpdateClientStatistic(C);
 					F->OutNext("P(%d), BPS(%2.1fK), MRR(%2d), MSR(%2d), Retried(%2d), Blocked(%2d)",
-							   //Server->game->get_option_s(*C->Name,"name",*C->Name),
-							   //					C->Name,
-							   C->stats.getPing(),
-							   float(C->stats.getBPS()), // /1024,
-							   C->stats.getMPS_Receive(),
-							   C->stats.getMPS_Send(),
-							   C->stats.getRetriedCount(),
-							   C->stats.dwTimesBlocked);
-				}
+						//Server->game->get_option_s(*C->Name,"name",*C->Name),
+						//					C->Name,
+						C->stats.getPing(),
+						float(C->stats.getBPS()), // /1024,
+						C->stats.getMPS_Receive(),
+						C->stats.getMPS_Send(),
+						C->stats.getRetriedCount(),
+						C->stats.dwTimesBlocked);
+				});
 			}
 			if (IsClient())
 			{
@@ -1070,7 +1071,7 @@ bool CLevel::IsServer()
 	};
 	if (!Server)
 		return false;
-	return (Server->client_Count() != 0);
+	return (Server->GetClientsCount() != 0);
 }
 
 bool CLevel::IsClient()
@@ -1082,7 +1083,7 @@ bool CLevel::IsClient()
 	};
 	if (!Server)
 		return true;
-	return (Server->client_Count() == 0);
+	return (Server->GetClientsCount() == 0);
 }
 
 void CLevel::OnSessionTerminate(LPCSTR reason)
@@ -1094,8 +1095,6 @@ u32 GameID()
 {
 	return Game().Type();
 }
-
-#include "../IGame_Persistent.h"
 
 bool IsGameTypeSingle()
 {

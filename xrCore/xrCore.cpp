@@ -9,7 +9,6 @@
 #include "trivial_encryptor.h"
 
 #pragma comment(lib, "winmm.lib")
-#pragma comment(lib, "blackBox.lib")
 #pragma comment(lib, "lzo.lib")
 
 #ifdef DEBUG
@@ -26,10 +25,6 @@ namespace CPU
 };
 
 static u32 init_counter = 0;
-
-extern char g_application_path[256];
-
-//. extern xr_vector<shared_str>*	LogFile;
 
 void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
@@ -50,8 +45,6 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
 		GetModuleFileName(GetModuleHandle(MODULE_NAME), fn, sizeof(fn));
 		_splitpath(fn, dr, di, 0, 0);
 		strconcat(sizeof(ApplicationPath), ApplicationPath, dr, di);
-
-		strcpy_s(g_application_path, sizeof(g_application_path), ApplicationPath);
 
 		// working path
 		if (strstr(Params, "-wf"))
@@ -146,7 +139,11 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvRese
 	case DLL_PROCESS_ATTACH:
 	{
 		_clear87();
+
+#ifndef _WIN64 // unsupported on x64
 		_control87(_PC_53, MCW_PC);
+#endif
+
 		_control87(_RC_CHOP, MCW_RC);
 		_control87(_RC_NEAR, MCW_RC);
 		_control87(_MCW_EM, MCW_EM);

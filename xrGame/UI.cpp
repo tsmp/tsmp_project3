@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UI.h"
-#include "../Console.h"
+#include "Console.h"
 #include "Entity.h"
 #include "HUDManager.h"
 #include "UIGameSP.h"
@@ -10,6 +10,8 @@
 #include "ui/UIMainIngameWnd.h"
 #include "ui/UIMessagesWindow.h"
 #include "ui/UIPdaWnd.h"
+#include "inventory.h"
+#include "huditem.h"
 
 CUI::CUI(CHUDManager *p)
 {
@@ -18,12 +20,11 @@ CUI::CUI(CHUDManager *p)
 	m_pMessagesWnd = xr_new<CUIMessagesWindow>();
 
 	m_Parent = p;
-	pUIGame = NULL;
+	pUIGame = nullptr;
 
 	ShowGameIndicators();
 	ShowCrosshair();
 }
-//--------------------------------------------------------------------
 
 CUI::~CUI()
 {
@@ -31,8 +32,6 @@ CUI::~CUI()
 	xr_delete(pUIGame);
 	xr_delete(UIMainIngameWnd);
 }
-
-//--------------------------------------------------------------------
 
 void CUI::Load(CUIGameCustom *pGameUI)
 {
@@ -52,39 +51,26 @@ void CUI::UnLoad()
 	pUIGame = Game().createGameUI();
 	R_ASSERT(pUIGame);
 }
-//--------------------------------------------------------------------
 
 void CUI::UIOnFrame()
 {
 	CEntity *m_Actor = smart_cast<CEntity *>(Level().CurrentEntity());
-	if (m_Actor)
-	{
 
-		//update windows
-		if (GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
-		{
-			UIMainIngameWnd->Update();
-		}
-	}
+	//update windows
+	if (m_Actor && GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))		
+		UIMainIngameWnd->Update();			
 
 	// out GAME-style depend information
-	if (GameIndicatorsShown())
-	{
-		if (pUIGame)
-			pUIGame->OnFrame();
-	}
+	if (GameIndicatorsShown() && pUIGame)
+		pUIGame->OnFrame();	
+
 	m_pMessagesWnd->Update();
 }
-//--------------------------------------------------------------------
-#include "inventory.h"
-#include "huditem.h"
+
 bool CUI::Render()
 {
-	if (GameIndicatorsShown())
-	{
-		if (pUIGame)
-			pUIGame->Render();
-	}
+	if (GameIndicatorsShown() && pUIGame)
+		pUIGame->Render();	
 
 	CEntity *pEntity = smart_cast<CEntity *>(Level().CurrentEntity());
 	if (pEntity)
@@ -104,10 +90,9 @@ bool CUI::Render()
 		}
 		else
 		{ //hack - draw messagess wnd in scope mode
-			CUIGameSP *gSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-			if (gSP)
+			if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())			
 			{
-				if (!gSP->PdaMenu->GetVisible())
+				if (!pGameUI->PdaMenu->GetVisible())
 					m_pMessagesWnd->Draw();
 			}
 			else
@@ -118,11 +103,8 @@ bool CUI::Render()
 		m_pMessagesWnd->Draw();
 
 	DoRenderDialogs();
-
 	return false;
 }
-//.		if(HUD().GetUI())HUD().GetUI()->HideGameIndicators();
-//.		if(HUD().GetUI())HUD().GetUI()->ShowGameIndicators();
 
 bool CUI::IR_OnMouseWheel(int direction)
 {
@@ -141,7 +123,6 @@ bool CUI::IR_OnMouseWheel(int direction)
 	return false;
 }
 
-//--------------------------------------------------------------------
 bool CUI::IR_OnKeyboardHold(int dik)
 {
 	if (MainInputReceiver())
@@ -158,7 +139,6 @@ bool CUI::IR_OnKeyboardHold(int dik)
 
 bool CUI::IR_OnKeyboardPress(int dik)
 {
-
 	if (MainInputReceiver())
 	{
 		if (MainInputReceiver()->IR_OnKeyboardPress(dik))
@@ -176,7 +156,6 @@ bool CUI::IR_OnKeyboardPress(int dik)
 
 	return false;
 }
-//--------------------------------------------------------------------
 
 bool CUI::IR_OnKeyboardRelease(int dik)
 {
@@ -194,7 +173,6 @@ bool CUI::IR_OnKeyboardRelease(int dik)
 
 	return false;
 }
-//--------------------------------------------------------------------
 
 bool CUI::IR_OnMouseMove(int dx, int dy)
 {

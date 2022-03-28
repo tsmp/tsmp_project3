@@ -24,7 +24,7 @@
 #include "ui/UIVote.h"
 #include "ui/UIMessageBoxEx.h"
 #include "string_table.h"
-#include "../IGame_Persistent.h"
+#include "IGame_Persistent.h"
 #include "MainMenu.h"
 #include "screenshot_server.h"
 #include "screenshot_manager.h"

@@ -9,7 +9,7 @@
 #include "xrserver_objects_alife_items.h"
 #include "level.h"
 #include "ai_object_location.h"
-#include "../IGame_Persistent.h"
+#include "IGame_Persistent.h"
 
 #include "..\TSMP3_Build_Config.h"
 
@@ -17,9 +17,11 @@ CRocketLauncher::CRocketLauncher()
 {
 	//	m_pRocket =  NULL;
 }
+
 CRocketLauncher::~CRocketLauncher()
 {
 }
+
 void CRocketLauncher::Load(LPCSTR section)
 {
 	m_fLaunchSpeed = pSettings->r_float(section, "launch_speed");

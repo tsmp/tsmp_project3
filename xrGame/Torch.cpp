@@ -2,15 +2,15 @@
 #include "torch.h"
 #include "entity.h"
 #include "actor.h"
-#include "../LightAnimLibrary.h"
+#include "LightAnimLibrary.h"
 #include "PhysicsShell.h"
 #include "xrserver_objects_alife_items.h"
 #include "ai_sounds.h"
 
 #include "HUDManager.h"
 #include "level.h"
-#include "../skeletoncustom.h"
-#include "../camerabase.h"
+#include "skeletoncustom.h"
+#include "camerabase.h"
 #include "inventory.h"
 #include "game_base_space.h"
 
@@ -42,11 +42,6 @@ CTorch::CTorch(void)
 	lanim = 0;
 	time2hide = 0;
 	fBrightness = 1.f;
-
-	/*m_NightVisionRechargeTime	= 6.f;
-	m_NightVisionRechargeTimeMin= 2.f;
-	m_NightVisionDischargeTime	= 10.f;
-	m_NightVisionChargeTime		= 0.f;*/
 
 	m_prev_hp.set(0, 0);
 	m_delta_h = 0;

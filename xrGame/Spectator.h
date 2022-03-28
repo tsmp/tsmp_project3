@@ -1,11 +1,7 @@
-#ifndef __SPECTATOR_H__
-#define __SPECTATOR_H__
-
 #pragma once
 
-#include "../feel_touch.h"
-#include "../iinputreceiver.h"
-
+#include "feel_touch.h"
+#include "iinputreceiver.h"
 #include "entity.h"
 #include "actor_flags.h"
 
@@ -68,5 +64,3 @@ public:
 	virtual void net_Relcase(CObject *O);
 	void GetSpectatorString(string1024 &pStr);
 };
-
-#endif // __SPECTATOR_H__

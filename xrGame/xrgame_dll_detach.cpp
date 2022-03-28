@@ -40,7 +40,7 @@ extern void dump_list_xmls();
 extern void CreateUIGeom();
 extern void DestroyUIGeom();
 
-#include "../IGame_Persistent.h"
+#include "IGame_Persistent.h"
 #include "..\TSMP3_Build_Config.h"
 
 void init_game_globals()

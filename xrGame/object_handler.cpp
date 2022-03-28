@@ -18,7 +18,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "inventory.h"
 #include "torch.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "memory_manager.h"
 #include "enemy_manager.h"
 #include "ai_object_location.h"
@@ -170,7 +170,11 @@ void CObjectHandler::weapon_bones(int &b0, int &b1, int &b2) const
 		return;
 	}
 
-	THROW3(weapon->can_be_strapped(), "Cannot strap weapon", *weapon->cName());
+	if (!weapon->can_be_strapped())
+	{
+		Msg("! error, cant strap weapon %s", weapon->cName().c_str());
+		return;
+	}
 
 	if (weapon->ID() != m_strap_object_id)
 	{

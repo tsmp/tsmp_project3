@@ -6,11 +6,9 @@
 #include "UI3tButton.h"
 #include "UIEditboxEx.h"
 
-//#include "UIMapList.h"
 #include "../level.h"
-//#include "../game_cl_base.h"
 #include "../game_cl_teamdeathmatch.h"
-#include "../Console.h"
+#include "Console.h"
 
 CUITextVote::CUITextVote()
 {

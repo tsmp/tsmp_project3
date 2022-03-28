@@ -176,7 +176,7 @@ ISpatial_DB::~ISpatial_DB()
 
 void ISpatial_DB::initialize(Fbox &BB)
 {
-	if (!m_root)
+	//if (!m_root)
 	{
 		// initialize
 		Fvector bbc, bbd;
@@ -285,6 +285,8 @@ void ISpatial_DB::insert(ISpatial *S)
 		}
 	}
 #endif
+
+	R_ASSERT2(m_root, "Spatial root is not initialized");
 
 	if (verify_sp(S, m_center, m_bounds))
 	{

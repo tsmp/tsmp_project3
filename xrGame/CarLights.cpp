@@ -1,15 +1,17 @@
 #include "stdafx.h"
 #include "CarLights.h"
+
 #ifdef DEBUG
 #include "ode_include.h"
 #include "../StatGraph.h"
 #include "PHDebug.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "PHWorld.h"
 extern CPHWorld *ph_world;
 
@@ -23,7 +25,6 @@ SCarLight::SCarLight()
 
 SCarLight::~SCarLight()
 {
-
 	light_render.destroy();
 	glow_render.destroy();
 	bone_id = BI_NONE;
@@ -36,7 +37,6 @@ void SCarLight::Init(CCarLights *holder)
 
 void SCarLight::ParseDefinitions(LPCSTR section)
 {
-
 	light_render = ::Render->light_create();
 	light_render->set_type(IRender_Light::SPOT);
 	light_render->set_shadow(true);
@@ -156,6 +156,14 @@ void CCarLights::Update()
 	LIGHTS_I i = m_lights.begin(), e = m_lights.end();
 	for (; i != e; ++i)
 		(*i)->Update();
+}
+
+bool CCarLights::IsLightTurnedOn()
+{
+	if (m_lights.empty())
+		return false;
+
+	return m_lights[0]->isOn();
 }
 
 void CCarLights::SwitchHeadLights()

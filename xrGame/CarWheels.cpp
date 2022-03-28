@@ -1,14 +1,16 @@
 #include "stdafx.h"
+
 #ifdef DEBUG
 #include "ode_include.h"
 #include "../StatGraph.h"
 #include "PHDebug.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "ExtendedGeom.h"
 
 CCar::SWheel::SWheelCollisionParams::SWheelCollisionParams()
@@ -17,6 +19,7 @@ CCar::SWheel::SWheelCollisionParams::SWheelCollisionParams()
 	damping_factor = 1;
 	mu_factor = 1;
 }
+
 IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud, bool &do_colide, dContact &c, SGameMtl *material_1, SGameMtl *material_2)
 {
 	if (ud && ud->object_callbacks && ud->object_callbacks->HasCallback(WheellCollisionCallback))
@@ -30,14 +33,12 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud, bool &
 
 void CCar::SWheel::WheellCollisionCallback(bool &do_colide, bool bo1, dContact &c, SGameMtl *material_1, SGameMtl *material_2)
 {
-
 	dxGeomUserData *ud1 = retrieveGeomUserData(c.geom.g1);
 	dxGeomUserData *ud2 = retrieveGeomUserData(c.geom.g2);
 	applywheelCollisionParams(ud1, do_colide, c, material_1, material_2);
 	applywheelCollisionParams(ud2, do_colide, c, material_1, material_2);
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 bool CCar::WheelHit(float P, s16 element, ALife::EHitType hit_type)
 {
 	xr_map<u16, SWheel>::iterator i = m_wheels_map.find(element);
@@ -49,6 +50,7 @@ bool CCar::WheelHit(float P, s16 element, ALife::EHitType hit_type)
 	else
 		return false;
 }
+
 void CCar::SWheel::Init()
 {
 	if (inited)

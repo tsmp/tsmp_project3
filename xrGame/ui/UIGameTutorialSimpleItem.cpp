@@ -4,7 +4,7 @@
 #include "UIStatic.h"
 #include "UIXmlInit.h"
 #include "../object_broker.h"
-#include "../xr_input.h"
+#include "xr_input.h"
 #include "../xr_level_controller.h"
 #include "../UIGameSp.h"
 #include "../HUDManager.h"
@@ -190,50 +190,52 @@ void CUISequenceSimpleItem::Start()
 	if (g_pGameLevel)
 	{
 		bool bShowPda = false;
-		CUIGameSP *ui_game_sp = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
+		CUIGameCustom *pGameUI = HUD().GetUI()->UIGame();
+
 		if (!stricmp(m_pda_section, "pda_contacts"))
 		{
-			ui_game_sp->PdaMenu->SetActiveSubdialog(eptContacts);
+			pGameUI->PdaMenu->SetActiveSubdialog(eptContacts);
 			bShowPda = true;
 		}
 		else
 		{
 			if (!stricmp(m_pda_section, "pda_map"))
 			{
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptMap);
+				pGameUI->PdaMenu->SetActiveSubdialog(eptMap);
 				bShowPda = true;
 			}
 			else if (!stricmp(m_pda_section, "pda_quests"))
 			{
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptQuests);
+				pGameUI->PdaMenu->SetActiveSubdialog(eptQuests);
 				bShowPda = true;
 			}
 			else if (!stricmp(m_pda_section, "pda_diary"))
 			{
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptDiary);
+				pGameUI->PdaMenu->SetActiveSubdialog(eptDiary);
 				bShowPda = true;
 			}
 			else if (!stricmp(m_pda_section, "pda_ranking"))
 			{
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptRanking);
+				pGameUI->PdaMenu->SetActiveSubdialog(eptRanking);
 				bShowPda = true;
 			}
 			else if (!stricmp(m_pda_section, "pda_statistics"))
 			{
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptActorStatistic);
+				pGameUI->PdaMenu->SetActiveSubdialog(eptActorStatistic);
 				bShowPda = true;
 			}
 			else if (!stricmp(m_pda_section, "pda_encyclopedia"))
 			{
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptEncyclopedia);
+				pGameUI->PdaMenu->SetActiveSubdialog(eptEncyclopedia);
 				bShowPda = true;
 			}
 		}
-		if (ui_game_sp)
+
+		if (pGameUI)
 		{
-			if ((!ui_game_sp->PdaMenu->IsShown() && bShowPda) ||
-				(ui_game_sp->PdaMenu->IsShown() && !bShowPda))
-				HUD().GetUI()->StartStopMenu(ui_game_sp->PdaMenu, true);
+			if ((!pGameUI->PdaMenu->IsShown() && bShowPda) ||
+				(pGameUI->PdaMenu->IsShown() && !bShowPda))
+				HUD().GetUI()->StartStopMenu(pGameUI->PdaMenu, true);
 		}
 	}
 }

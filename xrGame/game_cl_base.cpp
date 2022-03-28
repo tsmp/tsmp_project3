@@ -11,7 +11,7 @@
 #include "UI/UIMessagesWindow.h"
 #include "string_table.h"
 #include "game_cl_base_weapon_usage_statistic.h"
-#include "../Console.h"
+#include "Console.h"
 #include "game_sv_mp_vote_flags.h"
 
 struct Color

@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../IGame_Persistent.h"
+#include "IGame_Persistent.h"
 
 class occTri;
 

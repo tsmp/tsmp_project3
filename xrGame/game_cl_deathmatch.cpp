@@ -103,17 +103,18 @@ void game_cl_Deathmatch::net_import_state(NET_Packet &P)
 	m_u32ForceRespawn = P.r_u32() * 1000;
 	m_cl_dwWarmUp_Time = P.r_u32();
 	m_bDamageBlockIndicators = !!P.r_u8();
+	
 	// Teams
-	u16 t_count;
-	P.r_u16(t_count);
-	teams.clear();
+	u16 teamsCnt;
+	P.r_u16(teamsCnt);
+	m_TeamsScores.resize(teamsCnt);
 
-	for (u16 t_it = 0; t_it < t_count; ++t_it)
+	for (u16 team = 0; team < teamsCnt; team++)
 	{
-		game_TeamState ts;
-		P.r(&ts, sizeof(game_TeamState));
-		teams.push_back(ts);
-	};
+		int teamScore;
+		P.r_s32(teamScore);
+		m_TeamsScores[team] = teamScore;
+	}
 
 	switch (Phase())
 	{
@@ -723,23 +724,22 @@ bool game_cl_Deathmatch::OnKeyboardPress(int key)
 			}
 		}
 		return true;
-	};
-	//---------------------------------------------
+	}
+
 	if (kMAP == key)
 	{
 		if (m_game_ui)
 		{
-			if (m_game_ui->m_pPdaMenu && m_game_ui->m_pPdaMenu->IsShown())
-				StartStopMenu(m_game_ui->m_pPdaMenu, true);
+			if (m_game_ui->PdaMenu && m_game_ui->PdaMenu->IsShown())
+				StartStopMenu(m_game_ui->PdaMenu, true);
 			else
 			{
-				m_game_ui->m_pPdaMenu->SetActiveSubdialog(eptMap);
-				StartStopMenu(m_game_ui->m_pPdaMenu, true);
-			};
+				m_game_ui->PdaMenu->SetActiveSubdialog(eptMap);
+				StartStopMenu(m_game_ui->PdaMenu, true);
+			}
 			return true;
 		}
-	};
-	//---------------------------------------------
+	}
 
 	return inherited::OnKeyboardPress(key);
 }

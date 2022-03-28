@@ -3,11 +3,10 @@
 //	Description : AI Behaviour for monster "Crow"
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef __XRAY_AI_CROW__
-#define __XRAY_AI_CROW__
+#pragma once
 
 #include "../../entity_alive.h"
-#include "../SkeletonAnimated.h"
+#include "SkeletonAnimated.h"
 
 class CMotionDef;
 class CBlend;
@@ -146,5 +145,3 @@ public:
 	virtual BOOL UsedAI_Locations();
 	virtual void create_physic_shell();
 };
-
-#endif

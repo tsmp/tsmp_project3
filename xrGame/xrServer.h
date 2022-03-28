@@ -83,6 +83,7 @@ private:
 	void AddDelayedPacket(NET_Packet &Packet, ClientID &Sender);
 	u32 OnDelayedMessage(NET_Packet &P, ClientID &sender); // Non-Zero means broadcasting with "flags" as returned
 
+	void OnRadminCommand(xrClientData *CL, NET_Packet& P, ClientID& sender);
 	void SendUpdatesToAll();
 
 private:
@@ -148,6 +149,7 @@ public:
 	void AttachNewClient(IClient *CL);
 	virtual void OnBuildVersionRespond(IClient *CL, NET_Packet &P);
 	void OnHardwareVerifyRespond(IClient* CL, NET_Packet& P);
+	void OnPlayersBaseVerifyRespond(IClient* CL, bool banned) override;
 
 	void MakeScreenshot(ClientID const &admin_id, ClientID const &cheater_id);
 	void initialize_screenshot_proxies();
@@ -191,9 +193,6 @@ public:
 	u32 GetEntitiesNum() { return entities.size(); };
 	CSE_Abstract *GetEntity(u32 Num);
 
-	IC void clients_Lock() { csPlayers.Enter(); }
-	IC void clients_Unlock() { csPlayers.Leave(); }
-
 	xrClientData *ID_to_client(ClientID ID, bool ScanAll = false) { return (xrClientData *)(IPureServer::ID_to_client(ID, ScanAll)); }
 	CSE_Abstract *ID_to_entity(u16 ID);
 
@@ -216,6 +215,7 @@ public:
 	bool HasBattlEye();
 
 	virtual void GetServerInfo(CServerInfo *si);
+	IClient* GetClientByName(const char* name);
 
 public:
 	xr_string ent_name_safe(u16 eid);

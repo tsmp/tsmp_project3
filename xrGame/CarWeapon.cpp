@@ -2,7 +2,7 @@
 #include "CarWeapon.h"
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "object_broker.h"
 #include "ai_sounds.h"
 #include "weaponAmmo.h"

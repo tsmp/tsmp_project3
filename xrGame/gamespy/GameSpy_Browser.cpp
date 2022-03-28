@@ -393,6 +393,8 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo *pServerInfo, void *pServer)
 			pServerInfo->m_GameType = GAME_ARTEFACTHUNT;
 		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "hardmatch"))
 			pServerInfo->m_GameType = GAME_HARDMATCH;
+		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "freeplay"))
+			pServerInfo->m_GameType = GAME_FREEPLAY;
 	}
 	sprintf_s(pServerInfo->m_ServerVersion, "%s", xrGS_SBServerGetStringValue(pServer, m_pQR2->xrGS_RegisteredKey(GAMEVER_KEY), "--"));
 

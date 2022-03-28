@@ -16,7 +16,7 @@
 #include "lightPPA.h"
 #include "..\xrRender\light_DB.h"
 
-#include "../Fmesh.h"
+#include "Fmesh.h"
 
 class CMemoryWriter;
 

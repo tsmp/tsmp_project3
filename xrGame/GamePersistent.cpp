@@ -1,9 +1,9 @@
 #include "pch_script.h"
 #include "gamepersistent.h"
-#include "../fmesh.h"
-#include "../Console.h"
+#include "fmesh.h"
+#include "Console.h"
 #include "gamemtllib.h"
-#include "../skeletoncustom.h"
+#include "skeletoncustom.h"
 #include "profiler.h"
 #include "MainMenu.h"
 #include "UICursor.h"
@@ -16,11 +16,11 @@
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
 
-#include "../CameraManager.h"
+#include "CameraManager.h"
 #include "actor.h"
 
 #include "string_table.h"
-#include "../xrApplication.h"
+#include "xrApplication.h"
 
 #ifndef MASTER_GOLD
 #include "custommonster.h"
@@ -200,6 +200,8 @@ void CGamePersistent::UpdateGameType()
 	if (!xr_strcmp(m_game_params.m_game_type, "hm"))
 		strcpy_s(m_game_params.m_game_type, "hardmatch");
 	
+	if (!xr_strcmp(m_game_params.m_game_type, "fp"))
+		strcpy_s(m_game_params.m_game_type, "freeplay");
 
 	if (!xr_strcmp(m_game_params.m_game_type, "single"))
 		m_game_params.m_e_game_type = GAME_SINGLE;
@@ -215,6 +217,9 @@ void CGamePersistent::UpdateGameType()
 
 	if (!xr_strcmp(m_game_params.m_game_type, "hardmatch"))
 		m_game_params.m_e_game_type = GAME_HARDMATCH;
+
+	if (!xr_strcmp(m_game_params.m_game_type, "freeplay"))
+		m_game_params.m_e_game_type = GAME_FREEPLAY;
 
 	// На клиенте может остаться GAME_ANY если мы не знаем тип игры еще
 	

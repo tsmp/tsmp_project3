@@ -5,29 +5,57 @@
       <Configuration>Debug_Dedicated</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_Dedicated|x64">
+      <Configuration>Debug_Dedicated</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Mixed_Dedicated|Win32">
       <Configuration>Mixed_Dedicated</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Mixed_Dedicated|x64">
+      <Configuration>Mixed_Dedicated</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Mixed|Win32">
       <Configuration>Mixed</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Mixed|x64">
+      <Configuration>Mixed</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release_Dedicated|Win32">
       <Configuration>Release_Dedicated</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_Dedicated|x64">
+      <Configuration>Release_Dedicated</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release_without_optimizations|Win32">
       <Configuration>Release_without_optimizations</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_without_optimizations|x64">
+      <Configuration>Release_without_optimizations</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -43,7 +71,20 @@
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
@@ -55,7 +96,20 @@
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
@@ -69,7 +123,20 @@
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
@@ -81,84 +148,71 @@
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\tsmp3.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>16.0.29511.113</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\output\binaries_$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\output\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
     <ExtensionsToDeleteOnClean>*.idb%3b*.obj%3b*.ilk%3b*.pdb%3b*.tlb%3b*.tli%3b*.tlh%3b*.tmp%3b*.rsp%3b*.bat%3b$(TargetPath)</ExtensionsToDeleteOnClean>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(SolutionDir)\Components\DX9SDK\Lib;$(SolutionDir)\output\libraries_$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)\xrEngine\xrRender;$(SolutionDir)\xrcore;$(SolutionDir)\components\dx9sdk\include;$(SolutionDir)\components;$(SolutionDir)\components\eax\include;$(SolutionDir)\xropenal\include\al;$(SolutionDir)\components\luabind;$(SolutionDir)\xrlua\src;$(SolutionDir)\components\loki;$(SolutionDir)\components\libogg\include;$(SolutionDir)\components\libvorbis\include;$(SolutionDir)\components\libtheora\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ExtensionsToDeleteOnClean>*.idb%3b*.obj%3b*.ilk%3b*.pdb%3b*.tlb%3b*.tli%3b*.tlh%3b*.tmp%3b*.rsp%3b*.bat%3b$(TargetPath)</ExtensionsToDeleteOnClean>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
-    <OutDir>x:\binaries\</OutDir>
-    <IntDir>x:\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\output\binaries_$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\output\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\Components\Loki;$(SolutionDir)\xrLua\src;$(SolutionDir)\Components\;$(SolutionDir)\xrOpenAL\include\AL;$(SolutionDir)\Components\eax\Include;$(SolutionDir)\Components\libtheora\include;$(SolutionDir)\Components\libogg\include;$(SolutionDir)\Components\libvorbis\include;$(SolutionDir)\xrEngine\xrRender;$(SolutionDir)\xrCore\;$(SolutionDir)\Components\DX9SDK\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\output\libraries_$(Configuration)\;$(SolutionDir)\Components\DX9SDK\Lib\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">
-    <OutDir>$(SolutionDir)\output\binaries_$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\output\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\Components\Loki;$(SolutionDir)\xrLua\src;$(SolutionDir)\Components\;$(SolutionDir)\xrOpenAL\include\AL;$(SolutionDir)\Components\eax\Include;$(SolutionDir)\Components\libtheora\include;$(SolutionDir)\Components\libogg\include;$(SolutionDir)\Components\libvorbis\include;$(SolutionDir)\xrCore\;$(SolutionDir)\Components\DX9SDK\Include\;$(SolutionDir)\xrEngine;$(SolutionDir)\xrEngine\xrRender;$(SolutionDir)\xrGame;$(SolutionDir)\xrSound;$(SolutionDir)\xrParticles;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\output\libraries_$(Configuration)\;$(SolutionDir)\Components\DX9SDK\Lib\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">
-    <OutDir>x:\binaries\dedicated\</OutDir>
-    <IntDir>x:\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <ExtensionsToDeleteOnClean>*.idb%3b*.obj%3b*.ilk%3b*.pdb%3b*.tlb%3b*.tli%3b*.tlh%3b*.tmp%3b*.rsp%3b*.bat%3b$(TargetPath)</ExtensionsToDeleteOnClean>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">
     <ExtensionsToDeleteOnClean>*.idb%3b*.obj%3b*.ilk%3b*.pdb%3b*.tlb%3b*.tli%3b*.tlh%3b*.tmp%3b*.rsp%3b*.bat%3b$(TargetPath)</ExtensionsToDeleteOnClean>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">
-    <OutDir>x:\binaries\dedicated\</OutDir>
-    <IntDir>x:\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">
-    <OutDir>x:\binaries\dedicated\</OutDir>
-    <IntDir>x:\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -217,7 +271,66 @@
       <MapExports>false</MapExports>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>$(SolutionDir)\output\libraries_$(Configuration)\$(ProjectName).lib</ImportLibrary>
+      <StackReserveSize>2097152</StackReserveSize>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>x:\XR_3DA.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/Zm200  %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <PreprocessorDefinitions>DEBUG;WIN32;_WINDOWS;ENGINE_BUILD;SECURE_GAMEDATA;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>false</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>
+      </BrowseInformation>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0422</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;libogg_static_d.lib;libtheora_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>libcmtd;libc;libcd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+      <MapExports>false</MapExports>
+      <SubSystem>Windows</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
       <StackReserveSize>2097152</StackReserveSize>
     </Link>
   </ItemDefinitionGroup>
@@ -269,8 +382,58 @@
       <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>x:\libraries\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>NotSet</TargetMachine>
+      <FixedBaseAddress>false</FixedBaseAddress>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>x:\XR_3DA.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>false</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <PreprocessorDefinitions>DEBUG;MIXED;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerOutput>
+      </AssemblerOutput>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0422</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;ogg_static.lib;theora_static.lib;openAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
@@ -287,7 +450,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>true</OmitFramePointers>
+      <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -333,7 +496,72 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)\output\libraries_$(Configuration)\$(ProjectName).lib</ImportLibrary>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <StackReserveSize>2097152</StackReserveSize>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>x:\XR_3DA.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>false</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>
+      </BrowseInformation>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ConformanceMode>false</ConformanceMode>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0422</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;libogg_static.lib;libtheora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+      <SubSystem>NotSet</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <FixedBaseAddress>false</FixedBaseAddress>
       <StackReserveSize>2097152</StackReserveSize>
     </Link>
@@ -399,7 +627,70 @@
       <OptimizeReferences>false</OptimizeReferences>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)\output\libraries_$(Configuration)\$(ProjectName).lib</ImportLibrary>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <StackReserveSize>2097152</StackReserveSize>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>x:\XR_3DA.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <OmitFramePointers>false</OmitFramePointers>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>
+      </BrowseInformation>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0422</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;libogg_static.lib;libtheora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+      <SubSystem>NotSet</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <FixedBaseAddress>false</FixedBaseAddress>
       <StackReserveSize>2097152</StackReserveSize>
     </Link>
@@ -458,6 +749,60 @@
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>x:\XR_3DA.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/Zm200  %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <PreprocessorDefinitions>DEDICATED_SERVER;_DEBUG;DEBUG;WIN32;_WINDOWS;ENGINE_BUILD;SECURE_GAMEDATA;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>false</StringPooling>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <SmallerTypeCheck>true</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>
+      </BrowseInformation>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0422</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;ogg_static_d.lib;theora_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>libcmtd;libc;libcd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <MapFileName>
+      </MapFileName>
+      <MapExports>false</MapExports>
+      <SubSystem>Windows</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
+      <FixedBaseAddress>false</FixedBaseAddress>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -509,6 +854,58 @@
       <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>x:\XR_3DA.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>false</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <PreprocessorDefinitions>DEDICATED_SERVER;DEBUG;MIXED;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AssemblerOutput>
+      </AssemblerOutput>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>
+      </BrowseInformation>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0422</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
+      <FixedBaseAddress>false</FixedBaseAddress>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -555,6 +952,61 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName />
+      <SubSystem>NotSet</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <FixedBaseAddress>false</FixedBaseAddress>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>x:\XR_3DA.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <PreprocessorDefinitions>DEDICATED_SERVER;NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>
+      </BrowseInformation>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0422</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>msacm32.lib;vfw32.lib;ogg_static.lib;theora_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
       <SubSystem>NotSet</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
       <OptimizeReferences>true</OptimizeReferences>
@@ -712,25 +1164,46 @@
     <ClCompile Include="doug_lea_memory_allocator.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">
       </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">
+      </PrecompiledHeader>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">Level2</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">Level2</WarningLevel>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeader>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Level2</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level2</WarningLevel>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">
       </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">
+      </PrecompiledHeader>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">Level2</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">Level2</WarningLevel>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
       </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
+      </PrecompiledHeader>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Level2</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Level2</WarningLevel>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">
       </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|x64'">
+      </PrecompiledHeader>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">Level2</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|x64'">Level2</WarningLevel>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">
       </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">
+      </PrecompiledHeader>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Level2</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level2</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">Level2</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">Level2</WarningLevel>
     </ClCompile>
     <ClCompile Include="du_box.cpp" />
     <ClCompile Include="du_cone.cpp" />
@@ -756,7 +1229,9 @@
     <ClCompile Include="fmesh.cpp" />
     <ClCompile Include="Frustum.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="GameFont.cpp" />
     <ClCompile Include="HW.cpp" />
@@ -772,13 +1247,17 @@
     <ClCompile Include="ISheduled.cpp" />
     <ClCompile Include="ISpatial.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="ISpatial_q_box.cpp" />
     <ClCompile Include="ISpatial_q_frustum.cpp" />
     <ClCompile Include="ISpatial_q_ray.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="ISpatial_verify.cpp" />
     <ClCompile Include="LightAnimLibrary.cpp" />
@@ -806,9 +1285,13 @@
     <ClCompile Include="R_Backend_Runtime.cpp" />
     <ClCompile Include="R_Backend_xform.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="r_constants.cpp" />
     <ClCompile Include="r_constants_cache.cpp" />
@@ -817,9 +1300,13 @@
     <ClCompile Include="SH_Atomic.cpp" />
     <ClCompile Include="SH_Constant.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="SH_Matrix.cpp" />
     <ClCompile Include="SH_RT.cpp" />
@@ -830,21 +1317,33 @@
     <ClCompile Include="SkeletonRigid.cpp" />
     <ClCompile Include="SkeletonX.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">All</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">All</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">All</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">All</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">All</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|x64'">All</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">All</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">All</AssemblerOutput>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">All</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">All</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="StatGraph.cpp" />
     <ClCompile Include="Stats.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedicated|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TextureDescrManager.cpp" />
     <ClCompile Include="DedicatedSrvConsole.cpp" />
@@ -899,10 +1398,6 @@
     </ProjectReference>
     <ProjectReference Include="..\xrCore\xrCore.vcxproj">
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\xrLua\xrLua.vcxproj">
-      <Project>{9ace5473-6d68-4b96-ac42-b39eaba0fe1f}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\xrParticles\xrParticles.vcxproj">

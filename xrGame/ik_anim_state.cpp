@@ -1,8 +1,6 @@
 #include "stdafx.h"
-
 #include "ik_anim_state.h"
-
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 
 IC bool is_in(const motion_marks::interval &i, float v)
 {

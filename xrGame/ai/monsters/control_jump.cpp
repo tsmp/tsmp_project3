@@ -3,7 +3,7 @@
 #include "BaseMonster/base_monster.h"
 #include "control_manager.h"
 #include "../../PHMovementControl.h"
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 #include "../../detail_path_manager.h"
 #include "../../level.h"
 #include "control_animation_base.h"
@@ -15,6 +15,7 @@
 #include "../../level_graph.h"
 #include "../../ai_object_location.h"
 #include "../../CharacterPhysicsSupport.h"
+
 #ifdef DEBUG
 #include "../../level_debug.h"
 #endif

@@ -2,18 +2,19 @@
 #pragma hdrstop
 
 #include "actor.h"
-#include "../CameraBase.h"
-
+#include "CameraBase.h"
 #include "ActorEffector.h"
 #include "holder_custom.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
-#include "../skeletonanimated.h"
+#include "skeletonanimated.h"
 #include "PHShellSplitter.h"
 
 #include "actor_anim_defs.h"
@@ -98,19 +99,22 @@ void CActor::detach_Vehicle()
 
 bool CActor::use_Vehicle(CHolderCustom *object)
 {
+	Fvector camPos = Position(); //Device.vCameraPosition;
+	Fvector camDirection = Direction(); // Device.vCameraDirection
 
-	//	CHolderCustom* vehicle=smart_cast<CHolderCustom*>(object);
 	CHolderCustom *vehicle = object;
+
 	Fvector center;
 	Center(center);
+
 	if (m_holder)
 	{
-		if (!vehicle && m_holder->Use(Device.vCameraPosition, Device.vCameraDirection, center))
+		if (!vehicle && m_holder->Use(camPos, camDirection, center))
 			detach_Vehicle();
 		else
 		{
 			if (m_holder == vehicle)
-				if (m_holder->Use(Device.vCameraPosition, Device.vCameraDirection, center))
+				if (m_holder->Use(camPos, camDirection, center))
 					detach_Vehicle();
 		}
 		return true;
@@ -119,7 +123,7 @@ bool CActor::use_Vehicle(CHolderCustom *object)
 	{
 		if (vehicle)
 		{
-			if (vehicle->Use(Device.vCameraPosition, Device.vCameraDirection, center))
+			if (vehicle->Use(camPos, camDirection, center))
 			{
 				if (pCamBobbing)
 				{

@@ -8,6 +8,10 @@
 #include "object_broker.h"
 #include "string_table.h"
 
+#include "ui/UITalkWnd.h"
+#include "ui/UICarBodyWnd.h"
+#include "ui/UIPdaWnd.h"
+
 struct predicate_remove_stat
 {
 	bool operator()(SDrawStaticStruct &s)
@@ -25,6 +29,10 @@ CUIGameCustom::CUIGameCustom()
 	m_pgameCaptions = xr_new<CUICaption>();
 	m_msgs_xml = xr_new<CUIXml>();
 	m_msgs_xml->Init(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
+
+	m_pUICarBodyMenu = xr_new<CUICarBodyWnd>();
+	TalkMenu = xr_new<CUITalkWnd>();
+	PdaMenu = xr_new<CUIPdaWnd>();
 }
 
 CUIGameCustom::~CUIGameCustom()
@@ -33,6 +41,10 @@ CUIGameCustom::~CUIGameCustom()
 	shedule_unregister();
 	delete_data(m_custom_statics);
 	delete_data(m_msgs_xml);
+
+	delete_data(m_pUICarBodyMenu);
+	delete_data(TalkMenu);
+	delete_data(PdaMenu);
 }
 
 float CUIGameCustom::shedule_Scale()
@@ -130,6 +142,29 @@ void CUIGameCustom::RemoveCustomMessage(LPCSTR id)
 	GameCaptions()->removeCustomMessage(id);
 }
 
+void CUIGameCustom::StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers)
+{
+	if (MainInputReceiver())
+		return;
+
+	m_pUICarBodyMenu->InitCarBody(pOurInv, pOthers);
+	Game().StartStopMenu(m_pUICarBodyMenu, true);
+}
+
+void CUIGameCustom::StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox)
+{
+	if (MainInputReceiver())
+		return;
+
+	m_pUICarBodyMenu->InitCarBody(pOurInv, pBox);
+	Game().StartStopMenu(m_pUICarBodyMenu, true);
+}
+
+void CUIGameCustom::StartTalk()
+{
+	Game().StartStopMenu(TalkMenu, true);
+}
+
 SDrawStaticStruct *CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstance)
 {
 	if (bSingleInstance)
@@ -191,10 +226,14 @@ void CUIGameCustom::reset_ui()
 		g_tutorial->Destroy();
 		xr_delete(g_tutorial);
 	}
+
+	TalkMenu->Reset();
+	m_pUICarBodyMenu->Reset();
 }
+
 SDrawStaticStruct::SDrawStaticStruct()
 {
-	m_static = NULL;
+	m_static = nullptr;
 	m_endTime = -1.0f;
 }
 

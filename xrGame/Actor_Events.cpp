@@ -133,10 +133,15 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 		}
 
 		if (GO->H_Parent()->ID() != ID())
-		{
-			CActor *real_parent = smart_cast<CActor *>(GO->H_Parent());
-			Msg("! ERROR: Actor [%d][%s] tries to drop not own item [%d][%s], his parent is [%d][%s]", ID(), Name(),
-				GO->ID(), GO->cNameSect().c_str(), real_parent->ID(), real_parent->Name());
+		{			
+			Msg("! ERROR: Actor [%d][%s] tries to drop not own item [%d][%s].", ID(), Name(),
+				GO->ID(), GO->cNameSect().c_str());
+			
+			if (CObject* realParent = GO->H_Parent())
+				Msg("! Its real owner is [%d][%s]", realParent->ID(), realParent->cName().c_str());
+			else
+				Msg("! Its real owner is nullptr");
+				
 			break;
 		}
 
@@ -223,9 +228,14 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 
 		if (GO->H_Parent()->ID() != ID())
 		{
-			CActor* real_parent = smart_cast<CActor*>(GO->H_Parent());
-			Msg("! ERROR: Actor [%d][%s] tries to manipulate with item he doesnt own [%d][%s], his parent is [%d][%s]", ID(), Name(),
-				GO->ID(), GO->cNameSect().c_str(), real_parent->ID(), real_parent->Name());
+			Msg("! ERROR: Actor [%d][%s] ries to manipulate with item he doesnt own [%d][%s].", ID(), Name(),
+				GO->ID(), GO->cNameSect().c_str());
+
+			if (CObject* realParent = GO->H_Parent())
+				Msg("! Its real owner is [%d][%s]", realParent->ID(), realParent->cName().c_str());
+			else
+				Msg("! Its real owner is nullptr");
+
 			break;
 		}
 

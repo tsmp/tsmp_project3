@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "HOM.h"
 #include "occRasterizer.h"
-#include "../GameFont.h"
+#include "GameFont.h"
 
 float psOSSR = .001f;
 

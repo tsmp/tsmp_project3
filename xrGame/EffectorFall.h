@@ -1,6 +1,5 @@
 #pragma once
-
-#include "../Effector.h"
+#include "Effector.h"
 
 // приседание после падения
 class CEffectorFall : public CEffectorCam

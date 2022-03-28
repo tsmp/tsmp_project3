@@ -239,7 +239,7 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
 				usr_data_2->ph_object->InitContact(&c, do_collide, material_idx_1, material_idx_2);
 			}
 		}
-		///////////////////////////////////////////////////////////////////////////////////////
+
 		if (usr_data_1)
 		{
 			usr_data_1->pushing_b_neg = usr_data_1->pushing_b_neg && !GMLib.GetMaterialByIdx(usr_data_1->b_neg_tri->material)->Flags.test(SGameMtl::flPassable);
@@ -252,7 +252,13 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
 		}
 
 		if (pushing_neg)
+#ifdef _WIN64
+			surface.mu = FLT_MAX;
+#else
 			surface.mu = dInfinity;
+#endif
+			
+
 		if (do_collide && collided_contacts < MAX_CONTACTS)
 		{
 			++collided_contacts;

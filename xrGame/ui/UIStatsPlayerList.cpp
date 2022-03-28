@@ -241,14 +241,14 @@ void CUIStatsPlayerList::Update()
 	if (GameID() == GAME_ARTEFACTHUNT && !m_bSpectator)
 	{
 		game_cl_ArtefactHunt *game = static_cast<game_cl_ArtefactHunt *>(&Game());
-		pl_artefacts = game->teams[m_CurTeam - 1].score;
+		pl_artefacts = game->m_TeamsScores[m_CurTeam - 1];
 		sprintf_s(teaminfo, "%s: %u, %s: %u, %s: %d", *st.translate("mp_artefacts_upcase"), pl_artefacts, *st.translate("mp_players"), pl_count, *st.translate("mp_frags_upcase"), pl_frags);
 		m_header_text->SetText(teaminfo);
 	}
 	else if (GameID() == GAME_TEAMDEATHMATCH && !m_bSpectator)
 	{
 		game_cl_TeamDeathmatch *game = static_cast<game_cl_TeamDeathmatch *>(&Game());
-		pl_frags = game->teams[m_CurTeam - 1].score;
+		pl_frags = game->m_TeamsScores[m_CurTeam - 1];
 		sprintf_s(teaminfo, "%s: %d, %s: %u", *st.translate("mp_frags_upcase"), pl_frags, *st.translate("mp_players"), pl_count);
 		m_header_text->SetText(teaminfo);
 	}
