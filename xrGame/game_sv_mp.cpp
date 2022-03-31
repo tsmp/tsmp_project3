@@ -313,11 +313,11 @@ void game_sv_mp::net_Export_State(NET_Packet &P, ClientID id_to)
 
 void game_sv_mp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 {
-	//------------------------------------------------------------
+
 	xrClientData *xrCData = m_server->ID_to_client(id_who);
 	if (!xrCData || !xrCData->owner)
 		return;
-	//	game_PlayerState*	ps	=	&(xrCData->ps);
+
 	CSE_Abstract *pOwner = xrCData->owner;
 	CSE_ALifeCreatureActor *pA = smart_cast<CSE_ALifeCreatureActor *>(pOwner);
 	CSE_Spectator *pS = smart_cast<CSE_Spectator *>(pOwner);
@@ -338,29 +338,23 @@ void game_sv_mp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 			NET_Packet P;
 			u_EventGen(P, GE_DESTROY, pS->ID);
 			Level().Send(P, net_flags(TRUE, TRUE));
-		};
-		//------------------------------------------------------------
-		SpawnPlayer(id_who, "mp_actor");
-		//------------------------------------------------------------
-		//		SpawnWeaponsForActor(xrCData->owner, ps);
-		//------------------------------------------------------------
-	};
-};
+		}
 
-void game_sv_mp::SpawnPlayer(ClientID id, LPCSTR N)
+		SpawnPlayer(id_who, "mp_actor");
+	}
+}
+
+void game_sv_mp::SpawnPlayer(ClientID id, LPCSTR N, u16 holderId)
 {
 	xrClientData *CL = m_server->ID_to_client(id);
-	//-------------------------------------------------
 	CL->net_PassUpdates = TRUE;
-	//-------------------------------------------------
+
 	game_PlayerState *ps_who = CL->ps;
 	ps_who->setFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
 
 	// Spawn "actor"
 	CSE_Abstract *E = spawn_begin(N); // create SE
-
 	E->set_name_replace(get_name_id(id)); // name
-
 	E->s_flags.assign(M_SPAWN_OBJECT_LOCAL | M_SPAWN_OBJECT_ASPLAYER); // flags
 
 	CSE_ALifeCreatureActor *pA = smart_cast<CSE_ALifeCreatureActor *>(E);
@@ -370,6 +364,7 @@ void game_sv_mp::SpawnPlayer(ClientID id, LPCSTR N)
 
 	if (pA)
 	{
+		pA->m_holderID = holderId;
 		pA->s_team = u8(ps_who->team);
 		assign_RP(pA, ps_who);
 		SetSkin(E, pA->s_team, ps_who->skin);
@@ -379,7 +374,6 @@ void game_sv_mp::SpawnPlayer(ClientID id, LPCSTR N)
 			OnPlayerEnteredGame(id);
 
 		ps_who->RespawnTime = Device.dwTimeGlobal;
-
 		Game().m_WeaponUsageStatistic->OnPlayerSpawned(ps_who);
 	}
 	else if (pS)
@@ -392,13 +386,12 @@ void game_sv_mp::SpawnPlayer(ClientID id, LPCSTR N)
 			E->o_Angle.set(Angle);
 			E->o_Position.set(Pos);
 		}
-	};
+	}
 
 	Msg("* %s respawned as %s", get_name_id(id), (0 == pA) ? "spectator" : "actor");
 	spawn_end(E, id);
 
 	ps_who->SetGameID(CL->owner->ID);
-
 	signal_Syncronize();
 }
 

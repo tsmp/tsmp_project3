@@ -2,6 +2,8 @@
 #include "game_sv_race.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "xrServer.h"
+#include "..\xrNetwork\client_id.h"
+#include "Level.h"
 
 ENGINE_API bool g_dedicated_server;
 
@@ -96,6 +98,58 @@ void game_sv_Race::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
 }
 
+void game_sv_Race::AssignRPoint(CSE_Abstract* E)
+{
+	R_ASSERT(E);
+	const xr_vector<RPoint> &rp = rpoints[0];
+
+	RPoint r;
+	u32 ID = 0;
+
+	r = rp[ID];
+	E->o_Position.set(r.P);
+	E->o_Angle.set(r.A);
+}
+
+CSE_Abstract* game_sv_Race::SpawnCar()
+{
+	CSE_Abstract* E = nullptr;
+	E = spawn_begin("m_car");
+	E->s_flags.assign(M_SPAWN_OBJECT_LOCAL); // flags
+	AssignRPoint(E);
+
+	CSE_Visual* pV = smart_cast<CSE_Visual*>(E);
+	pV->set_visual("physics\\vehicles\\kamaz\\veh_kamaz_u_01.ogf");
+
+	CSE_Abstract* spawned = spawn_end(E, m_server->GetServerClient()->ID);
+	signal_Syncronize();
+	return spawned;
+}
+
+void game_sv_Race::SpawnPlayerInCar(ClientID &playerId)
+{
+	CSE_Abstract* car = SpawnCar();
+	R_ASSERT(smart_cast<CSE_ALifeCar*>(car));
+
+	xrClientData* xrCData = m_server->ID_to_client(playerId);
+	if (!xrCData || !xrCData->owner)
+		return;
+
+	CSE_Abstract* pOwner = xrCData->owner;
+	CSE_Spectator* pS = smart_cast<CSE_Spectator*>(pOwner);
+	R_ASSERT(pS);
+
+	if (pOwner->owner != m_server->GetServerClient())
+		pOwner->owner = (xrClientData*)m_server->GetServerClient();
+
+	//remove spectator entity
+	NET_Packet P;
+	u_EventGen(P, GE_DESTROY, pS->ID);
+	Level().Send(P, net_flags(TRUE, TRUE));
+
+	SpawnPlayer(playerId, "mp_actor", car->ID);
+}
+
 void game_sv_Race::OnPlayerReady(ClientID id)
 {
 	if (m_phase == GAME_PHASE_INPROGRESS)
@@ -111,7 +165,7 @@ void game_sv_Race::OnPlayerReady(ClientID id)
 		xrClientData* xrSCData = (xrClientData*)m_server->GetServerClient();
 		CSE_Abstract* pOwner = xrCData->owner;
 
-		RespawnPlayer(id, false);
+		SpawnPlayerInCar(id);
 		pOwner = xrCData->owner;
 	}
 }

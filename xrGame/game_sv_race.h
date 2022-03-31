@@ -1,6 +1,8 @@
 #pragma once
 #include "game_sv_mp.h"
 
+class ClientID;
+
 class game_sv_Race : public game_sv_mp
 {
 	using inherited = game_sv_mp;
@@ -19,4 +21,9 @@ public:
 	virtual void OnPlayerConnect(ClientID id_who) override;
 	virtual void OnPlayerConnectFinished(ClientID id_who) override;
 	virtual void OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID) override;
+
+private:
+	void SpawnPlayerInCar(ClientID &playerId);
+	CSE_Abstract* SpawnCar();
+	void AssignRPoint(CSE_Abstract* E);
 };
