@@ -385,6 +385,7 @@ xr_token game_types[] =
 	{"artefacthunt", GAME_ARTEFACTHUNT},
 	{"hardmatch", GAME_HARDMATCH},
 	{"freeplay",GAME_FREEPLAY},
+	{"race", GAME_RACE},
 	{0, 0}
 };
 

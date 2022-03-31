@@ -181,6 +181,14 @@ CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 			return (TEXT2CLSID("SV_FP"));
 		else
 			return (TEXT2CLSID("CL_FP"));
+	}
+
+	if (!xr_strcmp(game_type_name, "race"))
+	{
+		if (isServer)
+			return (TEXT2CLSID("SV_RACE"));
+		else
+			return (TEXT2CLSID("CL_RACE"));
 }
 
 #ifndef ALIFE_MP

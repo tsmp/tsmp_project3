@@ -776,10 +776,11 @@ public:
 				if (xr_strcmp(GameType, "artefacthunt"))
 					if (xr_strcmp(GameType, "hardmatch"))
 						if (xr_strcmp(GameType, "freeplay"))
-						{
-							Msg("! Unknown gametype - %s", GameType);
-							return;
-						};
+							if (xr_strcmp(GameType, "race"))
+							{
+								Msg("! Unknown gametype - %s", GameType);
+								return;
+							}
 
 		s32 GameTypeID = 0;
 
@@ -793,6 +794,8 @@ public:
 			GameTypeID = GAME_HARDMATCH;
 		else if (!xr_strcmp(GameType, "freeplay"))
 			GameTypeID = GAME_FREEPLAY;
+		else if (!xr_strcmp(GameType, "race"))
+			GameTypeID = GAME_RACE;
 
 		const SGameTypeMaps &M = gMapListHelper.GetMapListFor((EGameTypes)GameTypeID);
 		u32 cnt = M.m_map_names.size();

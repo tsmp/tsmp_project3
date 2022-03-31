@@ -2317,6 +2317,12 @@
     <Filter Include="UI\GameTypes\Freeplay">
       <UniqueIdentifier>{56a9f993-4f11-4f86-adfd-a5b0e43873db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Server\Games\client\race">
+      <UniqueIdentifier>{7a30c763-e5a7-4e17-9081-06166b303011}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Server\Games\server\race">
+      <UniqueIdentifier>{5e4048f8-1c11-4991-8487-2efe06dd297a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6612,6 +6618,12 @@
     <ClInclude Include="UIGameFP.h">
       <Filter>UI\GameTypes\Freeplay</Filter>
     </ClInclude>
+    <ClInclude Include="game_sv_race.h">
+      <Filter>Core\Server\Games\server\race</Filter>
+    </ClInclude>
+    <ClInclude Include="game_cl_race.h">
+      <Filter>Core\Server\Games\client\race</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9789,6 +9801,12 @@
     </ClCompile>
     <ClCompile Include="UIGameFP.cpp">
       <Filter>UI\GameTypes\Freeplay</Filter>
+    </ClCompile>
+    <ClCompile Include="game_sv_race.cpp">
+      <Filter>Core\Server\Games\server\race</Filter>
+    </ClCompile>
+    <ClCompile Include="game_cl_race.cpp">
+      <Filter>Core\Server\Games\client\race</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
