@@ -11,7 +11,6 @@ game_sv_Race::game_sv_Race()
 {
 	m_phase = GAME_PHASE_NONE;
 	m_type = GAME_FREEPLAY;
-	m_WinnerId = u16(-1);
 }
 
 game_sv_Race::~game_sv_Race() {}
@@ -128,6 +127,25 @@ void game_sv_Race::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 		inherited::OnEvent(P, type, time, sender);
 		break;
 	}	
+}
+
+void game_sv_Race::OnRoundStart()
+{
+	inherited::OnRoundStart();
+	m_WinnerId = u16(-1);
+
+	// Respawn all players
+	m_server->ForEachClientDoSender([this](IClient* cl)
+	{
+		xrClientData* l_pC = dynamic_cast<xrClientData*>(cl);
+
+		if (!l_pC || !l_pC->net_Ready || !l_pC->ps)
+			return;
+
+		game_PlayerState* ps = l_pC->ps;
+		ps->clear();
+		SpawnPlayer(l_pC->ID, "spectator");
+	});
 }
 
 void game_sv_Race::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)

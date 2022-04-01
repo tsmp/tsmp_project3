@@ -14,9 +14,11 @@ public:
 	virtual ~game_sv_Race();
 
 	virtual LPCSTR type_name() const override { return "race"; };
-	virtual void Create(shared_str& options) override;
+	virtual void Create(shared_str &options) override;
 	virtual void Update() override;
-	virtual void OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender) override;
+
+	virtual void OnEvent(NET_Packet &P, u16 type, u32 time, ClientID sender) override;
+	virtual void OnRoundStart() override;
 
 	virtual void OnPlayerReady(ClientID id) override;
 	virtual void OnPlayerConnect(ClientID id_who) override;
