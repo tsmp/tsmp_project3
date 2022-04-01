@@ -5,7 +5,7 @@
 #include "../xrCore/fastdelegate.h"
 
 class IClient;
-extern bool IsSameClientID(IClient *client, ClientID &id);
+extern bool IsSameClientID(IClient *client, ClientID const &id);
 
 class PlayersMonitor
 {
@@ -91,7 +91,7 @@ public:
 		return clResult;
 	}
 
-	IClient *GetClientById(ClientID &id, bool disconnected)
+	IClient *GetClientById(ClientID const &id, bool disconnected)
 	{
 		IClient *clResult = nullptr;
 		csPlayers.Enter();

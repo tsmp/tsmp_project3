@@ -19,18 +19,18 @@ public:
 	game_sv_TeamDeathmatch() { m_type = GAME_TEAMDEATHMATCH; }
 	virtual void Create(shared_str &options);
 
-	virtual void OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender);
+	virtual void OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender);
 
 	virtual LPCSTR type_name() const { return "teamdeathmatch"; };
 
 	virtual void Update();
-	virtual void net_Export_State(NET_Packet &P, ClientID id_to); // full state
+	virtual void net_Export_State(NET_Packet &P, ClientID const &id_to); // full state
 	// Events
-	virtual void OnPlayerConnect(ClientID id_who);
-	virtual void OnPlayerConnectFinished(ClientID id_who);
+	virtual void OnPlayerConnect(ClientID const &id_who);
+	virtual void OnPlayerConnectFinished(ClientID const &id_who);
 
-	virtual void OnPlayerSelectTeam(NET_Packet &P, ClientID sender);
-	virtual void OnPlayerChangeTeam(ClientID id_who, s16 team);
+	virtual void OnPlayerSelectTeam(NET_Packet &P, ClientID const &sender);
+	virtual void OnPlayerChangeTeam(ClientID const &id_who, s16 team);
 	virtual KILL_RES GetKillResult(game_PlayerState *pKiller, game_PlayerState *pVictim);
 	virtual bool OnKillResult(KILL_RES KillResult, game_PlayerState *pKiller, game_PlayerState *pVictim);
 	virtual void OnPlayerKillPlayer(game_PlayerState *ps_killer, game_PlayerState *ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract *pWeaponA);

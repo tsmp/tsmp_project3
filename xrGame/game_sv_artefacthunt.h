@@ -52,7 +52,7 @@ protected:
 
 	void CheckForAnyAlivePlayer();
 	void UpdatePlayersNotSendedMoveRespond();
-	void ReplicatePlayersStateToPlayer(ClientID CID);
+	void ReplicatePlayersStateToPlayer(ClientID const &CID);
 
 	virtual void check_Player_for_Invincibility(game_PlayerState *ps);
 	virtual void Check_ForClearRun(game_PlayerState *ps);
@@ -74,7 +74,7 @@ public:
 
 	virtual LPCSTR type_name() const { return "artefacthunt"; };
 	// Events
-	virtual void OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender);
+	virtual void OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender);
 	virtual void OnRoundStart(); // старт раунда
 	virtual KILL_RES GetKillResult(game_PlayerState *pKiller, game_PlayerState *pVictim);
 	virtual bool OnKillResult(KILL_RES KillResult, game_PlayerState *pKiller, game_PlayerState *pVictim);
@@ -82,11 +82,11 @@ public:
 	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet &P);
 	virtual void OnPlayerHitPlayer_Case(game_PlayerState *ps_hitter, game_PlayerState *ps_hitted, SHit *pHitS);
 	virtual void OnPlayerKillPlayer(game_PlayerState *ps_killer, game_PlayerState *ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract *pWeaponA);
-	virtual void OnPlayerFire(ClientID id_who, NET_Packet &P){};
+	virtual void OnPlayerFire(ClientID const &id_who, NET_Packet &P){};
 	virtual void Victim_Exp(game_PlayerState *pVictim){};
 	virtual void UpdateTeamScore(game_PlayerState *ps_killer, s16 OldKills){};
-	virtual void OnPlayerReady(ClientID id_who);
-	virtual void OnPlayerBuySpawn(ClientID sender);
+	virtual void OnPlayerReady(ClientID const &id_who);
+	virtual void OnPlayerBuySpawn(ClientID const &sender);
 
 	virtual void OnTimelimitExceed();
 
@@ -102,7 +102,7 @@ public:
 	virtual void OnObjectEnterTeamBase(u16 id, u16 zone_team);
 	virtual void OnObjectLeaveTeamBase(u16 id, u16 zone_team);
 
-	void OnArtefactOnBase(ClientID id_who);	
+	void OnArtefactOnBase(ClientID const &id_who);	
 
 	virtual BOOL OnTouch(u16 eid_who, u16 eid_what, BOOL bForced = FALSE);
 	virtual void OnDetach(u16 eid_who, u16 eid_what);
@@ -114,7 +114,7 @@ public:
 	void RemoveArtefact();
 	void Assign_Artefact_RPoint(CSE_Abstract *E);
 
-	virtual void net_Export_State(NET_Packet &P, ClientID id_to); // full state
+	virtual void net_Export_State(NET_Packet &P, ClientID const &id_to); // full state
 	bool ArtefactSpawn_Allowed();
 
 	virtual void RespawnAllNotAlivePlayers();

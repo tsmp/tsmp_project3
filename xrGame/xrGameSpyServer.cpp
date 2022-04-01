@@ -190,7 +190,7 @@ void xrGameSpyServer::OnCL_Disconnected(IClient *_CL)
 	};
 }
 
-u32 xrGameSpyServer::OnMessage(NET_Packet &P, ClientID sender) // Non-Zero means broadcasting with "flags" as returned
+u32 xrGameSpyServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means broadcasting with "flags" as returned
 {
 	u16 type;
 	P.r_begin(type);

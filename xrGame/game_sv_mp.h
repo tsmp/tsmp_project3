@@ -23,7 +23,7 @@ struct Rank_Struct
 		ZeroMemory(m_iTerms, sizeof(m_iTerms));
 		m_iBonusMoney = 0;
 		m_aRankDiff_ExpBonus.clear();
-	};
+	}
 };
 
 class game_sv_mp : public game_sv_GameState
@@ -44,7 +44,6 @@ protected:
 	TEAM_DATA_LIST TeamList;
 	CItemMgr *m_strWeaponsData;
 
-	//-------------------------------------------------------
 	bool m_bVotingActive;
 	bool m_bVotingReal;
 	u32 m_uVoteStartTime;
@@ -64,10 +63,10 @@ protected:
 
 protected:
 	virtual void SendPlayerKilledMessage(u16 KilledID, KILL_TYPE KillType, u16 KillerID, u16 WeaponID, SPECIAL_KILL_TYPE SpecialKill);
-	virtual void RespawnPlayer(ClientID id_who, bool NoSpectator);
-	void SpawnPlayer(ClientID id, LPCSTR N, u16 holderId = u16(-1));
+	virtual void RespawnPlayer(ClientID const &id_who, bool NoSpectator);
+	void SpawnPlayer(ClientID const &id, LPCSTR N, u16 holderId = u16(-1));
 	virtual void SetSkin(CSE_Abstract *E, u16 Team, u16 ID);
-	bool GetPosAngleFromActor(ClientID id, Fvector &Pos, Fvector &Angle);
+	bool GetPosAngleFromActor(ClientID const &id, Fvector &Pos, Fvector &Angle);
 	void AllowDeadBodyRemove(u16 GameID, bool changeOwner = true);
 	void SpawnWeapon4Actor(u16 actorId, LPCSTR N, u8 Addons);
 	void SpawnWeaponForActor(u16 actorId, LPCSTR N, bool isScope, bool isGrenadeLauncher, bool isSilencer);
@@ -82,44 +81,44 @@ public:
 	game_sv_mp();
 	virtual ~game_sv_mp();
 	virtual void Create(shared_str &options);
-	virtual void OnPlayerConnect(ClientID id_who);
-	virtual void OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID);
+	virtual void OnPlayerConnect(ClientID const &id_who);
+	virtual void OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 GameID);
 	virtual BOOL OnTouch(u16 eid_who, u16 eid_target, BOOL bForced = FALSE) { return true; }; // TRUE=allow ownership, FALSE=denied
 	virtual void OnDetach(u16 eid_who, u16 eid_target){};
 	virtual void OnPlayerKillPlayer(game_PlayerState *ps_killer, game_PlayerState *ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract *pWeaponA){};
 	virtual void OnPlayerKilled(NET_Packet &P);
 	virtual bool CheckTeams() { return false; };
 	virtual void OnPlayerHitted(NET_Packet &P);
-	virtual void OnPlayerEnteredGame(ClientID id_who);
+	virtual void OnPlayerEnteredGame(ClientID const &id_who);
 
 	virtual void OnDestroyObject(u16 eid_who);
 
-	virtual void net_Export_State(NET_Packet &P, ClientID id_to);
+	virtual void net_Export_State(NET_Packet &P, ClientID const &id_to);
 
 	virtual void OnRoundStart(); // старт раунда
 	virtual void OnRoundEnd();	 //round_end_reason							// конец раунда
 	virtual bool OnNextMap();
 	virtual void OnPrevMap();
 
-	virtual void OnVoteStart(LPCSTR VoteCommand, ClientID sender);
+	virtual void OnVoteStart(LPCSTR VoteCommand, ClientID const &sender);
 	virtual bool IsVotingActive() { return m_bVotingActive; };
 	virtual void SetVotingActive(bool Active) { m_bVotingActive = Active; };
 	virtual void UpdateVote();
-	virtual void OnVoteYes(ClientID sender);
-	virtual void OnVoteNo(ClientID sender);
+	virtual void OnVoteYes(ClientID const &sender);
+	virtual void OnVoteNo(ClientID const &sender);
 	virtual void OnVoteStop();
-	virtual void OnPlayerChangeName(NET_Packet &P, ClientID sender);
-	virtual void OnPlayerSpeechMessage(NET_Packet &P, ClientID sender);
-	virtual void OnPlayerGameMenu(NET_Packet &P, ClientID sender);
+	virtual void OnPlayerChangeName(NET_Packet &P, ClientID const &sender);
+	virtual void OnPlayerSpeechMessage(NET_Packet &P, ClientID const &sender);
+	virtual void OnPlayerGameMenu(NET_Packet &P, ClientID const &sender);
 
-	virtual void OnPlayerSelectSpectator(NET_Packet &P, ClientID sender);
-	virtual void OnPlayerSelectTeam(NET_Packet &P, ClientID sender){};
-	virtual void OnPlayerSelectSkin(NET_Packet &P, ClientID sender){};
-	virtual void OnPlayerBuySpawn(ClientID sender){};
+	virtual void OnPlayerSelectSpectator(NET_Packet &P, ClientID const &sender);
+	virtual void OnPlayerSelectTeam(NET_Packet &P, ClientID const &sender){};
+	virtual void OnPlayerSelectSkin(NET_Packet &P, ClientID const &sender){};
+	virtual void OnPlayerBuySpawn(ClientID const &sender){};
 
-	virtual void OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender);
+	virtual void OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender);
 	virtual void Update();
-	void KillPlayer(ClientID id_who, u16 GameID);
+	void KillPlayer(ClientID const &id_who, u16 GameID);
 	virtual BOOL CanHaveFriendlyFire() { return TRUE; };
 
 	virtual void ClearPlayerState(game_PlayerState *ps);

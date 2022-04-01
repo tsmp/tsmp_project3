@@ -39,7 +39,7 @@ void game_sv_TeamDeathmatch::Create(shared_str &options)
 	m_TeamsScores.push_back(0);
 }
 
-void game_sv_TeamDeathmatch::net_Export_State(NET_Packet &P, ClientID to)
+void game_sv_TeamDeathmatch::net_Export_State(NET_Packet &P, ClientID const &to)
 {
 	inherited::net_Export_State(P, to);
 	P.w_u8(u8(Get_FriendlyIndicators()));
@@ -173,7 +173,7 @@ void game_sv_TeamDeathmatch::OnRoundStart()
 	inherited::OnRoundStart();
 };
 
-void game_sv_TeamDeathmatch::OnPlayerConnect(ClientID id_who)
+void game_sv_TeamDeathmatch::OnPlayerConnect(ClientID const &id_who)
 {
 	inherited::OnPlayerConnect(id_who);
 
@@ -190,7 +190,7 @@ void game_sv_TeamDeathmatch::OnPlayerConnect(ClientID id_who)
 	SetPlayersDefItems(ps_who);
 }
 
-void game_sv_TeamDeathmatch::OnPlayerConnectFinished(ClientID id_who)
+void game_sv_TeamDeathmatch::OnPlayerConnectFinished(ClientID const &id_who)
 {
 	inherited::OnPlayerConnectFinished(id_who);
 
@@ -214,16 +214,15 @@ void game_sv_TeamDeathmatch::OnPlayerConnectFinished(ClientID id_who)
 	}
 };
 
-void game_sv_TeamDeathmatch::OnPlayerSelectTeam(NET_Packet &P, ClientID sender)
+void game_sv_TeamDeathmatch::OnPlayerSelectTeam(NET_Packet &P, ClientID const &sender)
 {
 	xrClientData *l_pC = m_server->ID_to_client(sender);
 	s16 l_team;
 	P.r_s16(l_team);
 	OnPlayerChangeTeam(l_pC->ID, l_team);
-	//-------------------------------------------------
-};
+}
 
-void game_sv_TeamDeathmatch::OnPlayerChangeTeam(ClientID id_who, s16 team)
+void game_sv_TeamDeathmatch::OnPlayerChangeTeam(ClientID const &id_who, s16 team)
 {
 	game_PlayerState *ps_who = get_id(id_who);
 	if (!ps_who)
@@ -240,27 +239,26 @@ void game_sv_TeamDeathmatch::OnPlayerChangeTeam(ClientID id_who, s16 team)
 		{
 			team = AutoTeam();
 		}
-	};
-	//-----------------------------------------------------
+	}
+
 	NET_Packet Px;
 	GenerateGameMessage(Px);
 	Px.w_u32(GAME_EVENT_PLAYER_GAME_MENU_RESPOND);
 	Px.w_u8(PLAYER_CHANGE_TEAM);
 	Px.w_s16(team);
 	m_server->SendTo(id_who, Px, net_flags(TRUE, TRUE));
-	//-----------------------------------------------------
+
 	if (ps_who->team == team)
 		return;
-	//-----------------------------------------------------
+
 	KillPlayer(id_who, ps_who->GameID);
-	//-----------------------------------------------------
+
 	ps_who->setFlag(GAME_PLAYER_FLAG_SPECTATOR);
-	//-----------------------------------------------------
+
 	s16 OldTeam = ps_who->team;
 	ps_who->team = u8(team & 0x00ff);
-	TeamStruct *pTS = GetTeamData(team);
-
-	if (pTS)
+	
+	if(TeamStruct *pTS = GetTeamData(team))
 	{
 		s32 temp = ps_who->money_for_round_team2;
 		ps_who->money_for_round_team2 = ps_who->money_for_round;

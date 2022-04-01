@@ -123,7 +123,7 @@ void game_sv_Freeplay::Update()
 	}
 }
 
-void game_sv_Freeplay::SetStartMoney(ClientID &id_who)
+void game_sv_Freeplay::SetStartMoney(ClientID const &id_who)
 {
 	xrClientData* C = m_server->ID_to_client(id_who);
 	if (!C || (C->ID != id_who))
@@ -140,7 +140,7 @@ void game_sv_Freeplay::SetStartMoney(ClientID &id_who)
 	ps_who->money_for_round = pTeamData->m_iM_Start;
 }
 
-void game_sv_Freeplay::OnPlayerConnect(ClientID id_who)
+void game_sv_Freeplay::OnPlayerConnect(ClientID const &id_who)
 {
 	inherited::OnPlayerConnect(id_who);
 	xrClientData* xrCData = m_server->ID_to_client(id_who);
@@ -168,7 +168,7 @@ void game_sv_Freeplay::OnPlayerConnect(ClientID id_who)
 	SetPlayersDefItems(ps_who);
 }
 
-void game_sv_Freeplay::OnPlayerConnectFinished(ClientID id_who)
+void game_sv_Freeplay::OnPlayerConnectFinished(ClientID const &id_who)
 {
 	xrClientData* xrCData = m_server->ID_to_client(id_who);
 	SpawnPlayer(id_who, "spectator");
@@ -183,7 +183,7 @@ void game_sv_Freeplay::OnPlayerConnectFinished(ClientID id_who)
 	}
 }
 
-void game_sv_Freeplay::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID sender)
+void game_sv_Freeplay::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &sender)
 {
 	if(type == GAME_EVENT_PLAYER_KILL) // g_kill
 	{
@@ -198,12 +198,12 @@ void game_sv_Freeplay::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID sende
 	inherited::OnEvent(P, type, time, sender);
 }
 
-void game_sv_Freeplay::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
+void game_sv_Freeplay::OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 GameID)
 {
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
 }
 
-void game_sv_Freeplay::OnPlayerReady(ClientID id)
+void game_sv_Freeplay::OnPlayerReady(ClientID const &id)
 {
 	if(m_phase == GAME_PHASE_INPROGRESS)
 	{

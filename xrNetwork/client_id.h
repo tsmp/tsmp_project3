@@ -14,9 +14,9 @@ public:
 	void set(u32 v) { id = v; };
 
 	bool compare(u32 v) const { return id == v; };
-	bool operator==(const ClientID &other) const { return value() == other.value(); };
-	bool operator!=(const ClientID &other) const { return value() != other.value(); };
-	bool operator<(const ClientID &other) const { return value() < other.value(); };
+	bool operator==(ClientID const &other) const { return value() == other.value(); };
+	bool operator!=(ClientID const &other) const { return value() != other.value(); };
+	bool operator<(ClientID const &other) const { return value() < other.value(); };
 };
 
 #endif

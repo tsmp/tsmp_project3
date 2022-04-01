@@ -85,7 +85,7 @@ virtual CSE_Abstract *init();
 virtual CSE_Abstract *cast_abstract() { return this; };
 virtual CSE_ALifeInventoryItem *cast_inventory_item() { return this; };
 virtual BOOL Net_Relevant();
-virtual void OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender);
+virtual void OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender);
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeItem)
 #define script_type_list save_type_list(CSE_ALifeItem)
@@ -159,7 +159,7 @@ u32 m_ef_weapon_type;
 
 CSE_ALifeItemWeapon(LPCSTR caSection);
 virtual ~CSE_ALifeItemWeapon();
-virtual void OnEvent(NET_Packet &P, u16 type, u32 time, ClientID sender);
+virtual void OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &sender);
 virtual u32 ef_main_weapon_type() const;
 virtual u32 ef_weapon_type() const;
 u8 get_slot();

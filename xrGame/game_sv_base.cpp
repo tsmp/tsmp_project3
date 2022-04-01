@@ -30,18 +30,18 @@ u32 g_sv_base_dwRPointFreezeTime = 0;
 int g_sv_base_iVotingEnabled = 0x00ff;
 
 xr_token round_end_result_str[] =
-	{
-		{"Finish", eRoundEnd_Finish},
-		{"Game restarted", eRoundEnd_GameRestarted},
-		{"Game restarted fast", eRoundEnd_GameRestartedFast},
-		{"Time limit", eRoundEnd_TimeLimit},
-		{"Frag limit", eRoundEnd_FragLimit},
-		{"Artefact limit", eRoundEnd_ArtrefactLimit},
-		{"Unknown", eRoundEnd_Force},
-		{0, 0}};
+{
+	{"Finish", eRoundEnd_Finish},
+	{"Game restarted", eRoundEnd_GameRestarted},
+	{"Game restarted fast", eRoundEnd_GameRestartedFast},
+	{"Time limit", eRoundEnd_TimeLimit},
+	{"Frag limit", eRoundEnd_FragLimit},
+	{"Artefact limit", eRoundEnd_ArtrefactLimit},
+	{"Unknown", eRoundEnd_Force},
+	{0, 0}
+};
 
-// Main
-game_PlayerState *game_sv_GameState::get_id(ClientID id)
+game_PlayerState *game_sv_GameState::get_id(ClientID const &id)
 {
 	xrClientData *C = (xrClientData *)m_server->ID_to_client(id);
 
@@ -51,7 +51,7 @@ game_PlayerState *game_sv_GameState::get_id(ClientID id)
 	return nullptr;
 }
 
-LPCSTR game_sv_GameState::get_name_id(ClientID id)
+LPCSTR game_sv_GameState::get_name_id(ClientID const &id)
 {
 	xrClientData *C = (xrClientData *)m_server->ID_to_client(id);
 
@@ -61,7 +61,7 @@ LPCSTR game_sv_GameState::get_name_id(ClientID id)
 	return nullptr;
 }
 
-LPCSTR game_sv_GameState::get_player_name_id(ClientID id)
+LPCSTR game_sv_GameState::get_player_name_id(ClientID const &id)
 {
 	xrClientData *xrCData = m_server->ID_to_client(id);
 
@@ -76,7 +76,7 @@ u32 game_sv_GameState::get_players_count()
 	return m_server->GetClientsCount();
 }
 
-u16 game_sv_GameState::get_id_2_eid(ClientID id)
+u16 game_sv_GameState::get_id_2_eid(ClientID const &id)
 {
 	xrClientData *C = (xrClientData *)m_server->ID_to_client(id);
 
@@ -150,7 +150,7 @@ u32 game_sv_GameState::get_alive_count(u32 team)
 	return alive;
 }
 
-xr_vector<u16> *game_sv_GameState::get_children(ClientID id)
+xr_vector<u16> *game_sv_GameState::get_children(ClientID const &id)
 {
 	xrClientData *C = (xrClientData *)m_server->ID_to_client(id);
 
@@ -220,7 +220,7 @@ void game_sv_GameState::signal_Syncronize()
 }
 
 // Network
-void game_sv_GameState::net_Export_State(NET_Packet &P, ClientID to)
+void game_sv_GameState::net_Export_State(NET_Packet &P, ClientID const &to)
 {
 	// Generic
 	P.w_clientID(to);
@@ -276,7 +276,7 @@ void game_sv_GameState::net_Export_State(NET_Packet &P, ClientID to)
 	net_Export_GameTime(P);
 }
 
-void game_sv_GameState::net_Export_Update(NET_Packet &P, ClientID id_to, ClientID id)
+void game_sv_GameState::net_Export_Update(NET_Packet &P, ClientID const &id_to, ClientID const &id)
 {
 	game_PlayerState *A = get_id(id);
 	if (A)
@@ -303,12 +303,12 @@ void game_sv_GameState::net_Export_GameTime(NET_Packet &P)
 	P.w_float(GetEnvironmentGameTimeFactor());
 };
 
-void game_sv_GameState::OnPlayerConnect(ClientID /**id_who/**/)
+void game_sv_GameState::OnPlayerConnect(ClientID const &id_who)
 {
 	signal_Syncronize();
 }
 
-void game_sv_GameState::OnPlayerDisconnect(ClientID /**id_who/**/, LPSTR, u16)
+void game_sv_GameState::OnPlayerDisconnect(ClientID const &id_who, LPSTR, u16)
 {
 	signal_Syncronize();
 }
@@ -529,7 +529,7 @@ CSE_Abstract *game_sv_GameState::spawn_begin(LPCSTR N)
 	return A;
 }
 
-CSE_Abstract *game_sv_GameState::spawn_end(CSE_Abstract *E, ClientID id)
+CSE_Abstract *game_sv_GameState::spawn_end(CSE_Abstract *E, ClientID const &id)
 {
 	NET_Packet P;
 	u16 skip_header;
@@ -635,36 +635,34 @@ game_sv_GameState::~game_sv_GameState()
 		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
 
 	xr_delete(m_event_queue);
-
 	SaveMapList();
 
 	m_pMapRotation_List.clear();
-	//-------------------------------------------------------
 	ConsoleCommands_Clear();
 
 	if (m_alife_simulator)
 		delete_data(m_alife_simulator);
 }
 
-bool game_sv_GameState::change_level(NET_Packet &net_packet, ClientID sender)
+bool game_sv_GameState::change_level(NET_Packet &net_packet, ClientID const &sender)
 {
 	return (true);
 }
 
-void game_sv_GameState::save_game(NET_Packet &net_packet, ClientID sender)
+void game_sv_GameState::save_game(NET_Packet &net_packet, ClientID const &sender)
 {
 }
 
-bool game_sv_GameState::load_game(NET_Packet &net_packet, ClientID sender)
+bool game_sv_GameState::load_game(NET_Packet &net_packet, ClientID const &sender)
 {
 	return (true);
 }
 
-void game_sv_GameState::reload_game(NET_Packet &net_packet, ClientID sender)
+void game_sv_GameState::reload_game(NET_Packet &net_packet, ClientID const &sender)
 {
 }
 
-void game_sv_GameState::switch_distance(NET_Packet &net_packet, ClientID sender)
+void game_sv_GameState::switch_distance(NET_Packet &net_packet, ClientID const &sender)
 {
 }
 
@@ -685,7 +683,7 @@ void game_sv_GameState::OnHit(u16 id_hitter, u16 id_hitted, NET_Packet &P)
 	};
 }
 
-void game_sv_GameState::OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender)
+void game_sv_GameState::OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender)
 {
 	switch (type)
 	{
@@ -845,9 +843,8 @@ void game_sv_GameState::OnSwitchPhase(u32 old_phase, u32 new_phase)
 	signal_Syncronize();
 }
 
-void game_sv_GameState::AddDelayedEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender)
+void game_sv_GameState::AddDelayedEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender)
 {
-	//	OnEvent(tNetPacket,type,time,sender);
 	m_event_queue->Create(tNetPacket, type, time, sender);
 }
 

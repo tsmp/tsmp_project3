@@ -15,7 +15,7 @@
 #include "ai_object_location.h"
 #include "..\TSMP3_Build_Config.h"
 
-void xrServer::Process_event(NET_Packet &P, ClientID sender)
+void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 {
 #ifdef SLOW_VERIFY_ENTITIES
 	VERIFY(verify_entities());

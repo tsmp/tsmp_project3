@@ -127,7 +127,7 @@ public:
 		w_vec3(M.c);
 	}
 
-	IC void w_clientID(ClientID &C)
+	IC void w_clientID(ClientID const &C)
 	{
 		w_u32(C.value());
 	}
@@ -367,6 +367,7 @@ public:
 		r_vec3(M.c);
 		M._44_ = 1;
 	}
+
 	IC void r_clientID(ClientID &C)
 	{
 		u32 tmp;

@@ -21,7 +21,7 @@ public:
 	~GameEventQueue();
 
 	GameEvent *Create();
-	GameEvent *Create(NET_Packet &P, u16 type, u32 time, ClientID clientID);
+	GameEvent *Create(NET_Packet &P, u16 type, u32 time, ClientID const &clientID);
 	GameEvent *Retreive();
 	void Release();
 };

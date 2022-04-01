@@ -250,7 +250,7 @@ void IClient::_SendTo_LL(const void* data, u32 size, u32 flags, u32 timeout)
 	server->IPureServer::SendTo_LL(ID, const_cast<void*>(data), size, flags, timeout);
 }
 
-IClient *IPureServer::ID_to_client(ClientID ID, bool ScanAll)
+IClient *IPureServer::ID_to_client(ClientID const &ID, bool ScanAll)
 {
 	if (!ID.value())
 		return nullptr;
@@ -580,7 +580,8 @@ HRESULT IPureServer::net_Handler(u32 dwMessageType, PVOID pMessage)
 		if (NameSize >= sizeof(string64))
 		{
 			ip_address IP;
-			GetClientAddress(msg->dpnidPlayer, IP);
+			ClientID id(msg->dpnidPlayer);
+			GetClientAddress(id, IP);
 			BanAddress(IP, 99999999);
 			Msg("! attack blocked! ip - %s", IP.to_string().c_str());
 			Msg("! player name without null terminator");
@@ -595,7 +596,8 @@ HRESULT IPureServer::net_Handler(u32 dwMessageType, PVOID pMessage)
 		if (!Pinfo->pvData)
 		{
 			ip_address IP;
-			GetClientAddress(msg->dpnidPlayer, IP);
+			ClientID id(msg->dpnidPlayer);
+			GetClientAddress(id, IP);
 			BanAddress(IP, 99999999);
 			Msg("! attack blocked! ip - %s", IP.to_string().c_str());
 			Msg("! fake players");
@@ -614,8 +616,9 @@ HRESULT IPureServer::net_Handler(u32 dwMessageType, PVOID pMessage)
 	case DPN_MSGID_DESTROY_PLAYER:
 	{
 		PDPNMSG_DESTROY_PLAYER msg = PDPNMSG_DESTROY_PLAYER(pMessage);
+		ClientID id(msg->dpnidPlayer);
 
-		if(IClient *client = GetClientByID(static_cast<ClientID>(msg->dpnidPlayer)))
+		if(IClient *client = GetClientByID(id))
 		{
 			client->flags.bConnected = FALSE;
 			client->flags.bReconnect = FALSE;
@@ -686,15 +689,14 @@ void IPureServer::Flush_Clients_Buffers()
 	});
 }
 
-void IPureServer::SendTo_Buf(ClientID id, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
+void IPureServer::SendTo_Buf(ClientID const &id, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
 {
 	if(IClient *client = GetClientByID(id))
 		client->MultipacketSender::SendPacket(data, size, dwFlags, dwTimeout);
 }
 
-void IPureServer::SendTo_LL(ClientID ID /*DPNID ID*/, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
+void IPureServer::SendTo_LL(ClientID const &ID, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
 {
-	//	if (psNET_Flags.test(NETFLAG_LOG_SV_PACKETS)) pSvNetLog->LogData(TimeGlobal(device_timer), data, size);
 	if (psNET_Flags.test(NETFLAG_LOG_SV_PACKETS))
 	{
 		if (!pSvNetLog)
@@ -740,17 +742,17 @@ void IPureServer::SendTo_LL(ClientID ID /*DPNID ID*/, void* data, u32 size, u32 
 	R_CHK(_hr);
 }
 
-void IPureServer::SendTo(ClientID ID /*DPNID ID*/, NET_Packet& P, u32 dwFlags, u32 dwTimeout)
+void IPureServer::SendTo(ClientID const &ID, NET_Packet &P, u32 dwFlags, u32 dwTimeout)
 {
 	SendTo_LL(ID, P.B.data, P.B.count, dwFlags, dwTimeout);
 }
 
-bool IsSameClientID(IClient *client, ClientID &id)
+bool IsSameClientID(IClient *client, ClientID const &id)
 {
 	return client->ID == id;
 }
 
-void IPureServer::SendBroadcast_LL(ClientID idToExclude, void* data, u32 size, u32 dwFlags)
+void IPureServer::SendBroadcast_LL(ClientID const &idToExclude, void* data, u32 size, u32 dwFlags)
 {
 #pragma TODO("TSMP: изучить не нужно ли тут использовать ForEachClientSender")
 
@@ -766,29 +768,14 @@ void IPureServer::SendBroadcast_LL(ClientID idToExclude, void* data, u32 size, u
 	});
 }
 
-void IPureServer::SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags)
+void IPureServer::SendBroadcast(ClientID const &exclude, NET_Packet& P, u32 dwFlags)
 {
 	// Perform broadcasting
 	SendBroadcast_LL(exclude, P.B.data, P.B.count, dwFlags);
 }
 
-u32 IPureServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadcasting with "flags" as returned
+u32 IPureServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means broadcasting with "flags" as returned
 {
-	/*
-	u16 m_type;
-	P.r_begin	(m_type);
-	switch (m_type)
-	{
-	case M_CHAT:
-		{
-			char	buffer[256];
-			P.r_string(buffer);
-			printf	("RECEIVE: %s\n",buffer);
-		}
-		break;
-	}
-	*/
-
 	return 0;
 }
 
@@ -796,6 +783,7 @@ void IPureServer::OnCL_Connected(IClient* CL)
 {
 	Msg("* Player '%s' connected.\n", CL->name.c_str());
 }
+
 void IPureServer::OnCL_Disconnected(IClient* CL)
 {
 	Msg("* Player '%s' disconnected.\n", CL->name.c_str());
@@ -927,25 +915,24 @@ bool IPureServer::GetClientAddress(IDirectPlay8Address* pClientAddress, ip_addre
 
 	Address.set(HostName);
 
-	if (pPort != NULL)
+	if (pPort)
 	{
 		DWORD dwPort = 0;
 		DWORD dwPortSize = sizeof(dwPort);
 		DWORD dwPortDataType = DPNA_DATATYPE_DWORD;
 		CHK_DX(pClientAddress->GetComponentByName(DPNA_KEY_PORT, &dwPort, &dwPortSize, &dwPortDataType));
 		*pPort = dwPort;
-	};
+	}
 
 	return true;
-};
+}
 
-bool IPureServer::GetClientAddress(ClientID ID, ip_address& Address, DWORD* pPort)
+bool IPureServer::GetClientAddress(ClientID const &ID, ip_address& Address, DWORD* pPort)
 {
 	IDirectPlay8Address* pClAddr = NULL;
 	CHK_DX(NET->GetClientAddress(ID.value(), &pClAddr, 0));
-
 	return GetClientAddress(pClAddr, Address, pPort);
-};
+}
 
 IBannedClient* IPureServer::GetBannedClient(const ip_address& Address)
 {

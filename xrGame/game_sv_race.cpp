@@ -38,7 +38,7 @@ void game_sv_Race::Update()
 	}
 }
 
-void game_sv_Race::OnPlayerConnect(ClientID id_who)
+void game_sv_Race::OnPlayerConnect(ClientID const &id_who)
 {
 	inherited::OnPlayerConnect(id_who);
 	xrClientData* xrCData = m_server->ID_to_client(id_who);
@@ -63,7 +63,7 @@ void game_sv_Race::OnPlayerConnect(ClientID id_who)
 	SetPlayersDefItems(ps_who);
 }
 
-void game_sv_Race::OnPlayerConnectFinished(ClientID id_who)
+void game_sv_Race::OnPlayerConnectFinished(ClientID const &id_who)
 {
 	xrClientData* xrCData = m_server->ID_to_client(id_who);
 	SpawnPlayer(id_who, "spectator");
@@ -108,7 +108,7 @@ void game_sv_Race::OnBaseEnter(NET_Packet &P)
 	}
 }
 
-void game_sv_Race::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
+void game_sv_Race::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID const &sender)
 {
 	switch (type)
 	{
@@ -149,7 +149,7 @@ void game_sv_Race::OnRoundStart()
 	});
 }
 
-void game_sv_Race::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
+void game_sv_Race::OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 GameID)
 {
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
 }
@@ -181,7 +181,7 @@ CSE_Abstract* game_sv_Race::SpawnCar()
 	return spawned;
 }
 
-void game_sv_Race::SpawnPlayerInCar(ClientID &playerId)
+void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
 {
 	if (m_CurrentRpoint >= rpoints[0].size())
 	{
@@ -211,7 +211,7 @@ void game_sv_Race::SpawnPlayerInCar(ClientID &playerId)
 	SpawnPlayer(playerId, "mp_actor", car->ID);
 }
 
-void game_sv_Race::OnPlayerReady(ClientID id)
+void game_sv_Race::OnPlayerReady(ClientID const &id)
 {
 	if (m_phase == GAME_PHASE_INPROGRESS)
 	{

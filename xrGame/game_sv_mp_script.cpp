@@ -54,7 +54,7 @@ void game_sv_mp_script::Create(shared_str &options)
 	Create(lpcstr_options);
 }
 
-void game_sv_mp_script::SpawnPlayer(ClientID id, LPCSTR N, LPCSTR SkinName, RPoint rp)
+void game_sv_mp_script::SpawnPlayer(ClientID const &id, LPCSTR N, LPCSTR SkinName, RPoint rp)
 {
 	xrClientData *CL = m_server->ID_to_client(id);
 	game_PlayerState *ps_who = CL->ps;
@@ -106,7 +106,6 @@ void game_sv_mp_script::SpawnPlayer(ClientID id, LPCSTR N, LPCSTR SkinName, RPoi
 	else if (pS)
 	{
 		Fvector Pos, Angle;
-		///			ps_who->setFlag(GAME_PLAYER_FLAG_CS_SPECTATOR);
 		if (!GetPosAngleFromActor(id, Pos, Angle))
 			assign_RP(E, ps_who);
 		else
@@ -114,15 +113,13 @@ void game_sv_mp_script::SpawnPlayer(ClientID id, LPCSTR N, LPCSTR SkinName, RPoi
 			E->o_Angle.set(Angle);
 			E->o_Position.set(Pos);
 		}
-	};
+	}
 
 	Msg("* %s respawned as %s", get_name_id(id), (0 == pA) ? "spectator" : "actor");
 	spawn_end(E, id);
 
 	ps_who->SetGameID(CL->owner->ID);
-
 	CL->owner->owner = CL;
-
 	signal_Syncronize();
 }
 
@@ -131,23 +128,25 @@ void game_sv_mp_script::switch_Phase(u32 new_phase)
 	inherited::switch_Phase(new_phase);
 }
 
-void game_sv_mp_script::net_Export_State(NET_Packet &P, ClientID id_to)
+void game_sv_mp_script::net_Export_State(NET_Packet &P, ClientID const &id_to)
 {
 	inherited::net_Export_State(P, id_to);
-};
+}
 
-void game_sv_mp_script::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID sender)
+void game_sv_mp_script::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &sender)
 {
 	inherited::OnEvent(P, type, time, sender);
-};
-void game_sv_mp_script::OnPlayerConnect(ClientID id_who)
+}
+
+void game_sv_mp_script::OnPlayerConnect(ClientID const &id_who)
 {
 	inherited::OnPlayerConnect(id_who);
-};
-void game_sv_mp_script::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
+}
+
+void game_sv_mp_script::OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 GameID)
 {
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
-};
+}
 
 #pragma warning(push)
 #pragma warning(disable : 4709)

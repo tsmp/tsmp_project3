@@ -165,7 +165,7 @@ void game_sv_mp::OnRoundEnd()
 	u_EventSend(P);
 }
 
-void game_sv_mp::KillPlayer(ClientID id_who, u16 GameID)
+void game_sv_mp::KillPlayer(ClientID const &id_who, u16 GameID)
 {
 	CObject *pObject = Level().Objects.net_Find(GameID);
 
@@ -208,7 +208,7 @@ void game_sv_mp::KillPlayer(ClientID id_who, u16 GameID)
 	signal_Syncronize();
 }
 
-void game_sv_mp::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID sender)
+void game_sv_mp::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &sender)
 {
 	switch (type)
 	{
@@ -302,18 +302,15 @@ void game_sv_mp::SpectatorModes_UnPack(u8 SpectrModesPacked)
 	g_sv_mp_bSpectator_TeamCamera = (SpectrModesPacked & (1 << CSpectator::eacMaxCam)) != 0;
 };
 
-void game_sv_mp::net_Export_State(NET_Packet &P, ClientID id_to)
+void game_sv_mp::net_Export_State(NET_Packet &P, ClientID const &id_to)
 {
 	inherited::net_Export_State(P, id_to);
-	//-------------------------------------
 	m_u8SpectatorModes = SpectatorModes_Pack();
-
 	P.w_u8(m_u8SpectatorModes);
-};
+}
 
-void game_sv_mp::RespawnPlayer(ClientID id_who, bool NoSpectator)
+void game_sv_mp::RespawnPlayer(ClientID const &id_who, bool NoSpectator)
 {
-
 	xrClientData *xrCData = m_server->ID_to_client(id_who);
 	if (!xrCData || !xrCData->owner)
 		return;
@@ -344,7 +341,7 @@ void game_sv_mp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 	}
 }
 
-void game_sv_mp::SpawnPlayer(ClientID id, LPCSTR N, u16 holderId)
+void game_sv_mp::SpawnPlayer(ClientID const &id, LPCSTR N, u16 holderId)
 {
 	xrClientData *CL = m_server->ID_to_client(id);
 	CL->net_PassUpdates = TRUE;
@@ -416,21 +413,19 @@ void game_sv_mp::AllowDeadBodyRemove(u16 GameID, bool changeOwner)
 	};
 };
 
-void game_sv_mp::OnPlayerConnect(ClientID id_who)
+void game_sv_mp::OnPlayerConnect(ClientID const &id_who)
 {
 	inherited::OnPlayerConnect(id_who);
 }
 
-void game_sv_mp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
+void game_sv_mp::OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 GameID)
 {
-	//---------------------------------------------------
 	NET_Packet P;
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_PLAYER_DISCONNECTED);
 	P.w_stringZ(Name);
 	u_EventSend(P);
 	KillPlayer(id_who, GameID);
-
 	AllowDeadBodyRemove(GameID);
 
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
@@ -440,24 +435,20 @@ void game_sv_mp::SetSkin(CSE_Abstract *E, u16 Team, u16 ID)
 {
 	if (!E)
 		return;
-	//-------------------------------------------
+
 	CSE_Visual *pV = smart_cast<CSE_Visual *>(E);
 	if (!pV)
 		return;
-	//-------------------------------------------
+
 	string256 SkinName;
 	std::strcpy(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));
 	//загружены ли скины для этой комманды
 
-	if (!TeamList.empty() &&
-		TeamList.size() > Team &&
-		!TeamList[Team].aSkins.empty())
+	if (!TeamList.empty() && TeamList.size() > Team && !TeamList[Team].aSkins.empty())
 	{
 		//загружено ли достаточно скинов для этой комманды
-		if (TeamList[Team].aSkins.size() > ID)
-		{
-			std::strcat(SkinName, TeamList[Team].aSkins[ID].c_str());
-		}
+		if (TeamList[Team].aSkins.size() > ID)		
+			std::strcat(SkinName, TeamList[Team].aSkins[ID].c_str());		
 		else
 			std::strcat(SkinName, TeamList[Team].aSkins[0].c_str());
 	}
@@ -479,16 +470,15 @@ void game_sv_mp::SetSkin(CSE_Abstract *E, u16 Team, u16 ID)
 			R_ASSERT2(0, "Unknown Team");
 			break;
 		};
-	};
+	}
+
 	std::strcat(SkinName, ".ogf");
-	//.	Msg("* Skin - %s", SkinName);
 	int len = xr_strlen(SkinName);
 	R_ASSERT2(len < 64, "Skin Name is too LONG!!!");
 	pV->set_visual(SkinName);
-	//-------------------------------------------
-};
+}
 
-bool game_sv_mp::GetPosAngleFromActor(ClientID id, Fvector &Pos, Fvector &Angle)
+bool game_sv_mp::GetPosAngleFromActor(ClientID const &id, Fvector &Pos, Fvector &Angle)
 {
 	xrClientData *xrCData = m_server->ID_to_client(id);
 	if (!xrCData || !xrCData->owner)
@@ -640,7 +630,7 @@ _votecommands votecommands[] = {
 	{"changeweather", "sv_setenvtime", flVoteWeather},
 	{NULL, NULL}};
 
-void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID sender)
+void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID const &sender)
 {
 	if (!IsVotingEnabled())
 		return;
@@ -807,16 +797,18 @@ void game_sv_mp::UpdateVote()
 		Console->Execute(m_pVoteCommand.c_str());
 };
 
-void game_sv_mp::OnVoteYes(ClientID sender)
+void game_sv_mp::OnVoteYes(ClientID const &sender)
 {
 	game_PlayerState *ps = get_id(sender);
+
 	if (!ps)
 		return;
+
 	ps->m_bCurrentVoteAgreed = 1;
 	signal_Syncronize();
-};
+}
 
-void game_sv_mp::OnVoteNo(ClientID sender)
+void game_sv_mp::OnVoteNo(ClientID const &sender)
 {
 	game_PlayerState *ps = get_id(sender);
 	if (!ps)
@@ -840,7 +832,7 @@ void game_sv_mp::OnVoteStop()
 	signal_Syncronize();
 }
 
-void game_sv_mp::OnPlayerEnteredGame(ClientID id_who)
+void game_sv_mp::OnPlayerEnteredGame(ClientID const &id_who)
 {
 	xrClientData *xrCData = m_server->ID_to_client(id_who);
 
@@ -1038,7 +1030,7 @@ void game_sv_mp::SendPlayerKilledMessage(u16 KilledID, KILL_TYPE KillType, u16 K
 	});
 }
 
-void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID sender)
+void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID const &sender)
 {
 	string1024 NewName = "";
 	P.r_stringZ(NewName);
@@ -1109,7 +1101,7 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID sender)
 	signal_Syncronize();
 }
 
-void game_sv_mp::OnPlayerSpeechMessage(NET_Packet &P, ClientID sender)
+void game_sv_mp::OnPlayerSpeechMessage(NET_Packet &P, ClientID const &sender)
 {
 	xrClientData *pClient = (xrClientData *)m_server->ID_to_client(sender);
 
@@ -1140,9 +1132,10 @@ void game_sv_mp::OnPlayerSpeechMessage(NET_Packet &P, ClientID sender)
 	});
 }
 
-void game_sv_mp::OnPlayerGameMenu(NET_Packet &P, ClientID sender)
+void game_sv_mp::OnPlayerGameMenu(NET_Packet &P, ClientID const &sender)
 {
 	u8 SubEvent = P.r_u8();
+
 	switch (SubEvent)
 	{
 	case PLAYER_SELECT_SPECTATOR:
@@ -1162,7 +1155,8 @@ void game_sv_mp::OnPlayerGameMenu(NET_Packet &P, ClientID sender)
 	break;
 	}
 }
-void game_sv_mp::OnPlayerSelectSpectator(NET_Packet &P, ClientID sender)
+
+void game_sv_mp::OnPlayerSelectSpectator(NET_Packet &P, ClientID const &sender)
 {
 	xrClientData *pClient = (xrClientData *)m_server->ID_to_client(sender);
 
@@ -1174,15 +1168,14 @@ void game_sv_mp::OnPlayerSelectSpectator(NET_Packet &P, ClientID sender)
 
 	KillPlayer(sender, ps->GameID);
 	ps->setFlag(GAME_PLAYER_FLAG_SPECTATOR);
-	//-------------------------------------------
+
 	if (pClient->owner)
 	{
-		CSE_ALifeCreatureActor *pA = smart_cast<CSE_ALifeCreatureActor *>(pClient->owner);
-		if (pA)
+		if(auto pA = smart_cast<CSE_ALifeCreatureActor *>(pClient->owner))
 		{
 			AllowDeadBodyRemove(ps->GameID);
 			SpawnPlayer(sender, "spectator");
-		};
+		}
 	}
 }
 

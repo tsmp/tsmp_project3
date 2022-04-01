@@ -14,7 +14,7 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-extern void fz_download_mod(xrServer *server, ClientID ID);
+extern void fz_download_mod(xrServer *server, ClientID const &ID);
 
 xrServer::EConnect xrServer::Connect(shared_str &session_name)
 {
