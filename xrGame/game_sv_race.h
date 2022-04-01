@@ -6,6 +6,7 @@ class ClientID;
 class game_sv_Race : public game_sv_mp
 {
 	using inherited = game_sv_mp;
+	u16 m_WinnerId;
 
 public:
 
@@ -26,4 +27,7 @@ private:
 	void SpawnPlayerInCar(ClientID &playerId);
 	CSE_Abstract* SpawnCar();
 	void AssignRPoint(CSE_Abstract* E);
+
+	void OnGKill(NET_Packet &P);
+	void OnBaseEnter(NET_Packet &P);
 };
