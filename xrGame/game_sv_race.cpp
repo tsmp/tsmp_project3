@@ -133,6 +133,7 @@ void game_sv_Race::OnRoundStart()
 {
 	inherited::OnRoundStart();
 	m_WinnerId = u16(-1);
+	m_CurrentRpoint = 0;
 
 	// Respawn all players
 	m_server->ForEachClientDoSender([this](IClient* cl)
@@ -158,10 +159,9 @@ void game_sv_Race::AssignRPoint(CSE_Abstract* E)
 	R_ASSERT(E);
 	const xr_vector<RPoint> &rp = rpoints[0];
 
-	RPoint r;
-	u32 ID = 0;
+	RPoint r = rp[m_CurrentRpoint];
+	m_CurrentRpoint++;
 
-	r = rp[ID];
 	E->o_Position.set(r.P);
 	E->o_Angle.set(r.A);
 }
@@ -183,6 +183,12 @@ CSE_Abstract* game_sv_Race::SpawnCar()
 
 void game_sv_Race::SpawnPlayerInCar(ClientID &playerId)
 {
+	if (m_CurrentRpoint >= rpoints[0].size())
+	{
+		Msg("! ERROR: there are no free rpoints for players");
+		return;
+	}
+
 	CSE_Abstract* car = SpawnCar();
 	R_ASSERT(smart_cast<CSE_ALifeCar*>(car));
 

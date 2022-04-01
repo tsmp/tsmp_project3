@@ -7,6 +7,7 @@ class game_sv_Race : public game_sv_mp
 {
 	using inherited = game_sv_mp;
 	u16 m_WinnerId;
+	u8 m_CurrentRpoint;
 
 public:
 
