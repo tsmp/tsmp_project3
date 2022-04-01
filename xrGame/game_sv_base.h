@@ -79,7 +79,6 @@ public:
 	virtual void OnPlayerEnteredGame(ClientID const &id_who){};
 	virtual void OnPlayerConnectFinished(ClientID const &id_who){};
 	virtual void OnPlayerFire(ClientID const &id_who, NET_Packet &P){};
-	virtual void OnPlayer_Sell_Item(ClientID const &id_who, NET_Packet &P){};
 	void GenerateGameMessage(NET_Packet &P);
 
 	virtual void OnRoundStart(); // старт раунда
@@ -133,7 +132,6 @@ public:
 	s32 get_option_i(LPCSTR lst, LPCSTR name, s32 def = 0);
 	string64 &get_option_s(LPCSTR lst, LPCSTR name, LPCSTR def = 0);
 	virtual u32 get_alive_count(u32 team);
-	virtual xr_vector<u16> *get_children(ClientID const &id_who);
 	void u_EventGen(NET_Packet &P, u16 type, u16 dest);
 	void u_EventSend(NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED);
 
@@ -158,7 +156,6 @@ public:
 	virtual bool change_level(NET_Packet &net_packet, ClientID const &sender);
 	virtual void save_game(NET_Packet &net_packet, ClientID const &sender);
 	virtual bool load_game(NET_Packet &net_packet, ClientID const &sender);
-	virtual void reload_game(NET_Packet &net_packet, ClientID const &sender);
 	virtual void switch_distance(NET_Packet &net_packet, ClientID const &sender);
 
 	void AddDelayedEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender);

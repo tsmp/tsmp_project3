@@ -442,8 +442,8 @@ void game_sv_mp::SetSkin(CSE_Abstract *E, u16 Team, u16 ID)
 
 	string256 SkinName;
 	std::strcpy(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));
+	
 	//загружены ли скины для этой комманды
-
 	if (!TeamList.empty() && TeamList.size() > Team && !TeamList[Team].aSkins.empty())
 	{
 		//загружено ли достаточно скинов для этой комманды

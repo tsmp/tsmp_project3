@@ -34,7 +34,6 @@ public:
 	virtual bool change_level(NET_Packet &net_packet, ClientID const &sender);
 	virtual void save_game(NET_Packet &net_packet, ClientID const &sender);
 	virtual bool load_game(NET_Packet &net_packet, ClientID const &sender);
-	virtual void reload_game(NET_Packet &net_packet, ClientID const &sender);
 	virtual void switch_distance(NET_Packet &net_packet, ClientID const &sender);
 	virtual BOOL CanHaveFriendlyFire() { return FALSE; }
 	virtual void teleport_object(NET_Packet &packet, u16 id);

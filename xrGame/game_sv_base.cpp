@@ -150,21 +150,6 @@ u32 game_sv_GameState::get_alive_count(u32 team)
 	return alive;
 }
 
-xr_vector<u16> *game_sv_GameState::get_children(ClientID const &id)
-{
-	xrClientData *C = (xrClientData *)m_server->ID_to_client(id);
-
-	if (!C)
-		return nullptr;
-
-	CSE_Abstract *E = C->owner;
-
-	if (E)
-		return &(E->children);
-
-	return nullptr;
-}
-
 s32 game_sv_GameState::get_option_i(LPCSTR lst, LPCSTR name, s32 def)
 {
 	string64 op;
@@ -656,10 +641,6 @@ void game_sv_GameState::save_game(NET_Packet &net_packet, ClientID const &sender
 bool game_sv_GameState::load_game(NET_Packet &net_packet, ClientID const &sender)
 {
 	return (true);
-}
-
-void game_sv_GameState::reload_game(NET_Packet &net_packet, ClientID const &sender)
-{
 }
 
 void game_sv_GameState::switch_distance(NET_Packet &net_packet, ClientID const &sender)

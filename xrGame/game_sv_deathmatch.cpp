@@ -1028,53 +1028,6 @@ void game_sv_Deathmatch::LoadDefItemsForTeam(const shared_str &caSection, DEF_IT
 	}
 }
 
-void game_sv_Deathmatch::SetSkin(CSE_Abstract *E, u16 Team, u16 ID)
-{
-	if (!E)
-		return;
-
-	CSE_Visual *pV = smart_cast<CSE_Visual *>(E);
-	if (!pV)
-		return;
-
-	string256 SkinName;
-	std::strcpy(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));
-	
-	//загружены ли скины для этой комманды
-	if (!TeamList.empty() && TeamList.size() > Team && !TeamList[Team].aSkins.empty())
-	{
-		//загружено ли достаточно скинов для этой комманды
-		if (TeamList[Team].aSkins.size() > ID)		
-			std::strcat(SkinName, TeamList[Team].aSkins[ID].c_str());		
-		else
-			std::strcat(SkinName, TeamList[Team].aSkins[0].c_str());
-	}
-	else
-	{
-		//скины для такой комманды не загружены
-		switch (Team)
-		{
-		case 0:
-			std::strcat(SkinName, "stalker_hood_multiplayer");
-			break;
-		case 1:
-			std::strcat(SkinName, "soldat_beret");
-			break;
-		case 2:
-			std::strcat(SkinName, "stalker_black_mask");
-			break;
-		default:
-			R_ASSERT2(0, "Unknown Team");
-			break;
-		}
-	}
-
-	std::strcat(SkinName, ".ogf");
-	int len = xr_strlen(SkinName);
-	R_ASSERT2(len < 64, "Skin Name is too LONG!!!");
-	pV->set_visual(SkinName);
-}
-
 void game_sv_Deathmatch::OnPlayerHitPlayer_Case(game_PlayerState *ps_hitter, game_PlayerState *ps_hitted, SHit *pHitS)
 {
 	if (pHitS->hit_type != ALife::eHitTypePhysicStrike)
@@ -2146,8 +2099,6 @@ void game_sv_Deathmatch::on_death(CSE_Abstract *e_dest, CSE_Abstract *e_src)
 		return;
 	pVictim->on_death(e_src);
 }
-
-void game_sv_Deathmatch::OnPlayer_Sell_Item(ClientID const &id_who, NET_Packet &P){};
 
 void game_sv_Deathmatch::WriteGameState(CInifile &ini, LPCSTR sect, bool bRoundResult)
 {

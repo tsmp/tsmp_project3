@@ -136,8 +136,6 @@ public:
 	virtual bool CheckTeams() { return false; };
 	virtual void OnPlayerKillPlayer(game_PlayerState *ps_killer, game_PlayerState *ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract *pWeaponA);
 
-	virtual void OnPlayer_Sell_Item(ClientID const &id_who, NET_Packet &P);
-
 	virtual void OnPlayerSelectSkin(NET_Packet &P, ClientID const &sender);
 	virtual void OnPlayerChangeSkin(ClientID const &id_who, s8 skin);
 
@@ -156,8 +154,6 @@ public:
 #ifdef DEBUG
 	virtual void OnRender();
 #endif
-
-	virtual void SetSkin(CSE_Abstract *E, u16 Team, u16 ID); //	{};
 
 	virtual void SpawnWeaponsForActor(CSE_Abstract *pE, game_PlayerState *ps);
 

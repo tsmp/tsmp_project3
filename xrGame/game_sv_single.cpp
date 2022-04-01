@@ -212,10 +212,6 @@ bool game_sv_Single::load_game(NET_Packet &net_packet, ClientID const &sender)
 	return (alife().load_game(*game_name, true));
 }
 
-void game_sv_Single::reload_game(NET_Packet &net_packet, ClientID const &sender)
-{
-}
-
 void game_sv_Single::switch_distance(NET_Packet &net_packet, ClientID const &sender)
 {
 	if (!ai().get_alife())

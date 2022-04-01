@@ -253,6 +253,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 #endif
 	}
 	break;
+
 	case GEG_PLAYER_ACTIVATE_SLOT:
 	case GEG_PLAYER_ITEM_EAT:
 	{
@@ -262,11 +263,10 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 #endif
 	}
 	break;
+
 	case GEG_PLAYER_ITEM_SELL:
-	{
-		game->OnPlayer_Sell_Item(sender, P);
-	}
-	break;
+		break;
+
 	case GE_TELEPORT_OBJECT:
 	{
 		game->teleport_object(P, destination);
