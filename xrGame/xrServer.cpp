@@ -207,7 +207,7 @@ void xrServer::client_Destroy(IClient* C)
 	//	game->CleanDelayedEventFor(pOwner->ID);
 	//}
 
-	if (!g_sv_Client_Reconnect_Time || !aliveClient->flags.bVerified)	
+	if (!g_sv_Client_Reconnect_Time)	
 		xr_delete(aliveClient);	
 	else
 	{
