@@ -1458,6 +1458,7 @@ void CSE_ALifeCar::UPDATE_Read(NET_Packet &P)
 
 	P.r_u8(engine);
 	P.r_u8(light);
+	P.r_float(m_health);
 	P.r_u16(owner);
 
 	StateVec.clear();
@@ -1482,6 +1483,7 @@ void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
 {
 	P.w_u8(engine);
 	P.w_u8(light);
+	P.w_float(m_health);
 	P.w_u16(owner);
 
 	u16 cnt = StateVec.size();

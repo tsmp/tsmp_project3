@@ -36,7 +36,7 @@ ENGINE_API bool g_dedicated_server;
 
 CCar::CCar()
 {
-	m_memory = NULL;
+	m_memory = nullptr;
 	m_driver_anim_type = 0;
 	m_bone_steer = BI_NONE;
 	active_camera = 0;
@@ -54,10 +54,6 @@ CCar::CCar()
 	OnCameraChange(ectFirst);
 
 	m_repairing = false;
-
-	///////////////////////////////
-	//////////////////////////////
-	/////////////////////////////
 	b_wheels_limited = false;
 	b_engine_on = false;
 	e_state_steer = idle;
@@ -68,9 +64,7 @@ CCar::CCar()
 	fwp = false;
 	bkp = false;
 	brp = false;
-	///////////////////////////////
-	//////////////////////////////
-	/////////////////////////////
+
 	m_exhaust_particles = "vehiclefx\\exhaust_1";
 	m_car_sound = xr_new<SCarSound>(this);
 
@@ -88,9 +82,12 @@ CCar::CCar()
 	m_breaks_to_back_rate = 1.f;
 
 	b_exploded = false;
-	m_car_weapon = NULL;
+	m_car_weapon = nullptr;
 	m_power_neutral_factor = 0.25f;
 	m_steer_angle = 0.f;
+	m_InterpolationStartTime = 0;
+	m_FirstInterpolation = true;
+
 #ifdef DEBUG
 	InitDebug();
 #endif
@@ -106,13 +103,13 @@ CCar::~CCar(void)
 	xr_delete(inventory);
 	xr_delete(m_car_weapon);
 	xr_delete(m_memory);
-	//	xr_delete			(l_tpEntityAction);
 }
 
 void CCar::reinit()
 {
 	CEntity::reinit();
 	CScriptEntity::reinit();
+
 	if (m_memory)
 		m_memory->reinit();
 }
@@ -131,8 +128,8 @@ void CCar::cb_Steer(CBoneInstance *B)
 	Fmatrix m;
 
 	m.rotateZ(C->m_steer_angle);
-
 	B->mTransform.mulB_43(m);
+
 #ifdef DEBUG
 	if (!fsimilar(DET(B->mTransform), 1.f, DET_CHECK_EPS))
 	{
@@ -147,9 +144,8 @@ void CCar::cb_Steer(CBoneInstance *B)
 void CCar::Load(LPCSTR section)
 {
 	inherited::Load(section);
-	//CPHSkeleton::Load(section);
-	ISpatial *self = smart_cast<ISpatial *>(this);
-	if (self)
+
+	if(ISpatial *self = smart_cast<ISpatial*>(this))
 		self->spatial.type |= STYPE_VISIBLEFORAI;
 }
 
@@ -158,6 +154,7 @@ BOOL CCar::net_Spawn(CSE_Abstract *DC)
 #ifdef DEBUG
 	InitDebug();
 #endif
+
 	CSE_Abstract *e = (CSE_Abstract *)(DC);
 	CSE_ALifeCar *co = smart_cast<CSE_ALifeCar *>(e);
 	BOOL R = inherited::net_Spawn(DC);
@@ -173,16 +170,13 @@ BOOL CCar::net_Spawn(CSE_Abstract *DC)
 	m_fSaveMaxRPM = m_max_rpm;
 	SetfHealth(co->health);
 
-	if (!g_Alive())
-		b_exploded = true;
-	else
-		b_exploded = false;
-
+	b_exploded = !g_Alive();
 	CDamagableItem::RestoreEffect();
-
 	CInifile *pUserData = PKinematics(Visual())->LL_UserData();
+	
 	if (pUserData->section_exist("destroyed"))
 		CPHDestroyable::Load(pUserData, "destroyed");
+	
 	if (pUserData->section_exist("mounted_weapon_definition"))
 		m_car_weapon = xr_new<CCarWeapon>(this);
 
@@ -197,26 +191,28 @@ BOOL CCar::net_Spawn(CSE_Abstract *DC)
 
 void CCar::ActorObstacleCallback(bool &do_colide, bool bo1, dContact &c, SGameMtl *material_1, SGameMtl *material_2)
 {
-	if (!do_colide)
-	{
-		if (material_1 && material_1->Flags.test(SGameMtl::flActorObstacle))
-			do_colide = true;
-		if (material_2 && material_2->Flags.test(SGameMtl::flActorObstacle))
-			do_colide = true;
-	}
+	if (do_colide)
+		return;
+
+	if (material_1 && material_1->Flags.test(SGameMtl::flActorObstacle))
+		do_colide = true;
+	
+	if (material_2 && material_2->Flags.test(SGameMtl::flActorObstacle))
+		do_colide = true;	
 }
 
 void CCar::SpawnInitPhysics(CSE_Abstract *D)
 {
 	CSE_PHSkeleton *so = smart_cast<CSE_PHSkeleton *>(D);
 	R_ASSERT(so);
+	
 	ParseDefinitions(); //parse ini filling in m_driving_wheels,m_steering_wheels,m_breaking_wheels
 	CreateSkeleton(D);	//creates m_pPhysicsShell & fill in bone_map
 	CKinematics *K = smart_cast<CKinematics *>(Visual());
 	K->CalculateBones_Invalidate(); //this need to call callbacks
 	K->CalculateBones();
 	Init(); //inits m_driving_wheels,m_steering_wheels,m_breaking_wheels values using recieved in ParceDefinitions & from bone_map
-	//PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
+
 	SetDefaultNetState(so);
 	CPHUpdateObject::Activate();
 }
@@ -226,21 +222,23 @@ void CCar::net_Destroy()
 #ifdef DEBUG
 	DBgClearPlots();
 #endif
-	CKinematics *pKinematics = smart_cast<CKinematics *>(Visual());
-	if (m_bone_steer != BI_NONE)
-	{
 
+	CKinematics *pKinematics = smart_cast<CKinematics *>(Visual());
+	
+	if (m_bone_steer != BI_NONE)
 		pKinematics->LL_GetBoneInstance(m_bone_steer).reset_callback();
-	}
+	
 	CScriptEntity::net_Destroy();
 	inherited::net_Destroy();
 	CExplosive::net_Destroy();
+
 	if (m_pPhysicsShell)
 	{
 		m_pPhysicsShell->Deactivate();
 		m_pPhysicsShell->ZeroCallbacks();
 		xr_delete(m_pPhysicsShell);
 	}
+	
 	CHolderCustom::detach_Actor();
 	ClearExhausts();
 	m_wheels_map.clear();
@@ -265,20 +263,16 @@ void CCar::net_Save(NET_Packet &P)
 	SaveNetState(P);
 }
 
-BOOL CCar::net_SaveRelevant()
-{
-	return TRUE;
-	//return !m_explosion_flags.test(CExplosive::flExploding)&&!CExplosive::IsExploded()&&!CPHDestroyable::Destroyed()&&!b_exploded;
-}
+BOOL CCar::net_SaveRelevant() { return TRUE; }
 
 void CCar::SaveNetState(NET_Packet &P)
 {
-
 	CPHSkeleton::SaveNetState(P);
 	P.w_vec3(Position());
 	Fvector Angle;
 	XFORM().getXYZ(Angle);
 	P.w_vec3(Angle);
+	
 	{
 		xr_map<u16, SDoor>::iterator i, e;
 		i = m_doors.begin();
@@ -296,6 +290,7 @@ void CCar::SaveNetState(NET_Packet &P)
 		for (; i != e; ++i)
 			i->second.SaveNetState(P);
 	}
+
 	P.w_float(GetfHealth());
 }
 
@@ -395,10 +390,6 @@ void CCar::shedule_Update(u32 dt)
 	else
 		CPHSkeleton::Update(dt);
 
-	if (CDelayedActionFuse::isActive() && CDelayedActionFuse::Update(GetfHealth()))
-	{
-		//CarExplode();
-	}
 	if (b_exploded && !m_explosion_flags.test(flExploding) && !getEnabled()) //!m_bExploding
 		setEnabled(TRUE);
 
@@ -413,9 +404,8 @@ void CCar::UpdateEx(float fov)
 	DbgUbdateCl();
 #endif
 
-	//	Log("UpdateCL",Device.CurrentFrameNumber);
-	//XFORM().set(m_pPhysicsShell->mXFORM);
 	VisualUpdate(fov);
+
 	if (OwnerActor() && OwnerActor()->IsMyCamera())
 	{
 		cam_Update(Device.fTimeDelta, fov);
@@ -433,16 +423,19 @@ void CCar::UpdateCL()
 {
 	inherited::UpdateCL();
 	CExplosive::UpdateCL();
+
 	if (m_car_weapon)
 	{
 		m_car_weapon->UpdateCL();
 		if (m_memory)
 			m_memory->set_camera(m_car_weapon->ViewCameraPos(), m_car_weapon->ViewCameraDir(), m_car_weapon->ViewCameraNorm());
 	}
+
 	ASCUpdate();
+
 	if (Owner())
 		return;
-	//	UpdateEx			(g_fov);
+
 	VisualUpdate(90);
 	if (GetScriptControl())
 		ProcessScripts();
@@ -481,57 +474,89 @@ void CCar::VisualUpdate(float fov)
 	m_lights.Update();
 }
 
-float CCar::InterpolateStates(u32 element, SCarNetUpdate const &first, SCarNetUpdate const &last, SPHNetState& current)
+void CCar::InterpolateStates(const float &factor)
 {
-	u32 CurTime = Device.dwTimeGlobal;
+	const auto &vec1 = m_Update1->StateVec;
+	const auto &vec2 = m_Update2->StateVec;
 
-	if (CurTime == last.TimeStamp)
-		return 0.f;
+	u32 elementsCnt = vec1.size();
 
-	float factor = float(CurTime - last.TimeStamp) / float(last.TimeStamp - first.TimeStamp);
-	float result = factor;
-	clamp(factor, 0.f, 1.f);
+	for (u32 i = 0; i < elementsCnt; i++)
+	{
+		SPHNetState newState = vec2[i];
 
-	const Fvector &pos1 = first.StateVec[element].position;
-	const Fvector &pos2 = last.StateVec[element].position;
+		const Fvector &pos1 = vec1[i].position;
+		const Fvector &pos2 = vec2[i].position;
 
-	current.position.x = pos1.x + (factor * (pos2.x - pos1.x));
-	current.position.y = pos1.y + (factor * (pos2.y - pos1.y));
-	current.position.z = pos1.z + (factor * (pos2.z - pos1.z));
+		// simple linear interpolation...
+		newState.position.x = pos1.x + (factor * (pos2.x - pos1.x));
+		newState.position.y = pos1.y + (factor * (pos2.y - pos1.y));
+		newState.position.z = pos1.z + (factor * (pos2.z - pos1.z));
+		newState.quaternion.slerp(vec1[i].quaternion, vec2[i].quaternion, factor);
 
-	current.quaternion.slerp(first.StateVec[element].quaternion, last.StateVec[element].quaternion, factor);
-	return result;
+		CPHSynchronize* pSyncObj = this->PHGetSyncItem(i);
+		SPHNetState oldState;
+		pSyncObj->get_State(oldState);
+
+		newState.previous_position = oldState.position;
+		newState.previous_quaternion = oldState.quaternion;
+		pSyncObj->set_State(newState);
+	}
+}
+
+void CCar::NextUpdate()
+{
+	if (m_CarNetUpdates.size() < 2)
+		return;	
+
+	if (m_FirstInterpolation)
+	{
+		m_Update2 = &m_CarNetUpdates[0];
+		m_FirstInterpolation = false;
+	}
+
+	m_Update1 = m_Update2;
+	int deletedCount = 0;
+
+	while (m_CarNetUpdates[0].TimeStamp < m_Update1->TimeStamp)
+	{
+		deletedCount++;
+		m_CarNetUpdates.pop_front();
+	}
+
+	// Если пропускаем много апдейтов, то выставим больше 1, чтобы интерполяция быстрее подхватывала апдейты. Если мало, то меньше 1.
+	m_LerpMul = 1.f;
+
+	if (deletedCount > 3)
+		m_LerpMul = 1.2;
+	
+	if (deletedCount == 1)
+		m_LerpMul = 0.8;
+
+	m_InterpolationStartTime = Device.dwTimeGlobal;
+	m_Update2 = &m_CarNetUpdates.back();
 }
 
 void CCar::Interpolate()
 {
 	if (!getVisible() || !m_pPhysicsShell || m_CarNetUpdates.empty())
-		return;
-	
-	// simple linear interpolation...
-	if (m_CarNetUpdates.size() >= 2)
+		return;	
+
+	if (m_FirstInterpolation)
 	{
-		auto &first = m_CarNetUpdates.front();
-		auto &last = m_CarNetUpdates.back();		
-		u32 elementsCnt = first.StateVec.size();
+		NextUpdate();
+		return;
+	}
 
-		for (u32 i = 0; i < elementsCnt; i++)
-		{
-			SPHNetState newState = m_CarNetUpdates.back().StateVec[i];
-			float f = InterpolateStates(i, first, last, newState);
+	float factor = float(Device.dwTimeGlobal - m_InterpolationStartTime) / float(m_Update2->TimeStamp - m_Update1->TimeStamp);
+	factor *= m_LerpMul;
+	bool nextUpd = factor >= 1.f;
 
-			if (f == 0)
-				return;			
+	clamp(factor, 0.f, 1.f);
+	InterpolateStates(factor);
 
-			CPHSynchronize* pSyncObj = this->PHGetSyncItem(i);
-			SPHNetState oldState;
-			pSyncObj->get_State(oldState);
-
-			newState.previous_position = oldState.position;
-			newState.previous_quaternion = oldState.quaternion;
-			pSyncObj->set_State(newState);
-		}		
-	}		
+	if (nextUpd)
+		NextUpdate();
 
 	m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
 }
@@ -560,6 +585,7 @@ void CCar::net_Export(NET_Packet &P)
 {
 	P.w_u8(u8(b_engine_on));
 	P.w_u8(u8(m_lights.IsLightTurnedOn()));
+	P.w_float(Health());
 
 	if (OwnerActor())
 		P.w_u16(OwnerActor()->ID());
@@ -611,6 +637,10 @@ void CCar::net_Import(NET_Packet &P)
 
 	u8 light;
 	P.r_u8(light);
+
+	float health;
+	P.r_float(health);
+	SetfHealth(health);
 	
 	u16 owner;
 	P.r_u16(owner);
@@ -662,10 +692,7 @@ void CCar::net_Import(NET_Packet &P)
 	}
 
 	if (!IsMyCar())	
-		m_CarNetUpdates.push_back(update);	
-
-	while (m_CarNetUpdates.size() > 2)
-		m_CarNetUpdates.pop_front();
+		m_CarNetUpdates.push_back(update);
 }
 
 void CCar::OnHUDDraw(CCustomHUD * /**hud/**/)

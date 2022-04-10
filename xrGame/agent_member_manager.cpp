@@ -39,9 +39,11 @@ CAgentMemberManager::~CAgentMemberManager()
 
 void CAgentMemberManager::add(CEntity *member)
 {
-	CAI_Stalker *stalker = smart_cast<CAI_Stalker *>(member);
+	CAI_Stalker *stalker = smart_cast<CAI_Stalker*>(member);
 	if (!stalker || !stalker->g_Alive())
 		return;
+
+	m_actuality = false;
 
 	VERIFY2(
 		sizeof(squad_mask_type) * 8 > members().size(),
@@ -58,9 +60,11 @@ void CAgentMemberManager::add(CEntity *member)
 
 void CAgentMemberManager::remove(CEntity *member)
 {
-	CAI_Stalker *stalker = smart_cast<CAI_Stalker *>(member);
+	CAI_Stalker *stalker = smart_cast<CAI_Stalker*>(member);
 	if (!stalker)
 		return;
+
+	m_actuality = false;
 
 	if (registered_in_combat(stalker))
 		unregister_in_combat(stalker);
@@ -151,20 +155,19 @@ bool CAgentMemberManager::registered_in_combat(const CAI_Stalker *object) const
 CAgentMemberManager::MEMBER_STORAGE &CAgentMemberManager::combat_members()
 {
 	if (m_actuality)
-		return (m_combat_members);
+		return m_combat_members;
 
 	m_actuality = true;
-
 	m_combat_members.clear();
-	MEMBER_STORAGE::iterator I = members().begin();
-	MEMBER_STORAGE::iterator E = members().end();
-	for (; I != E; ++I)
+	auto &membersStorage = members();
+
+	for (CMemberOrder *order : membersStorage)
 	{
-		if (registered_in_combat(&(*I)->object()))
-			m_combat_members.push_back(*I);
+		if (registered_in_combat(&(order)->object()))
+			m_combat_members.push_back(order);
 	}
 
-	return (m_combat_members);
+	return m_combat_members;
 }
 
 CAgentMemberManager::squad_mask_type CAgentMemberManager::non_combat_members_mask() const

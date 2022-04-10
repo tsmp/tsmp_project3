@@ -3,9 +3,8 @@
 #include "xrMessages.h"
 #include "../../xrNetwork/net_utils.h"
 
-void game_sv_ArtefactHunt::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID sender)
+void game_sv_ArtefactHunt::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &sender)
 {
-
 	switch (type)
 	{
 	case GAME_EVENT_PLAYER_ENTER_TEAM_BASE:

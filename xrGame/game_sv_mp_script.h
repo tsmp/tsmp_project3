@@ -14,14 +14,14 @@ public:
 	virtual ~game_sv_mp_script(){};
 	virtual void Create(LPCSTR options){};
 	virtual void Update() { inherited::Update(); };
-	virtual void OnPlayerConnect(ClientID id_who);
-	virtual void OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID);
+	virtual void OnPlayerConnect(ClientID const &id_who);
+	virtual void OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 GameID);
 
-	virtual void net_Export_State(NET_Packet &P, ClientID id_to);
-	virtual void OnEvent(NET_Packet &P, u16 type, u32 time, ClientID sender);
+	virtual void net_Export_State(NET_Packet &P, ClientID const &id_to);
+	virtual void OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &sender);
 	virtual game_PlayerState *createPlayerState() { return inherited::createPlayerState(); };
 
-	virtual void OnPlayerKillPlayer(ClientID id_killer, ClientID id_killed){};
+	virtual void OnPlayerKillPlayer(ClientID const &id_killer, ClientID const &id_killed){};
 	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet &P){};			  //игрок получил Hit
 	virtual BOOL OnTouch(u16 eid_who, u16 eid_target, BOOL bForced = FALSE) { return true; }; // TRUE=allow ownership, FALSE=denied
 	virtual void OnDetach(u16 eid_who, u16 eid_target){};
@@ -31,7 +31,7 @@ protected:
 	float GetHitParamsPower(NET_Packet *P);
 	float GetHitParamsImpulse(NET_Packet *P);
 	virtual void switch_Phase(u32 new_phase);
-	void SpawnPlayer(ClientID id, LPCSTR N, LPCSTR SkinName, RPoint rp);
+	void SpawnPlayer(ClientID const &id, LPCSTR N, LPCSTR SkinName, RPoint rp);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

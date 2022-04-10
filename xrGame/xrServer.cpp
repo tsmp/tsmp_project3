@@ -111,7 +111,7 @@ IClient *xrServer::client_Create()
 
 void xrServer::client_Replicate() {}
 
-IClient *xrServer::client_Find_Get(ClientID ID)
+IClient *xrServer::client_Find_Get(ClientID const &ID)
 {
 	ip_address cAddress;
 	DWORD dwPort = 0;
@@ -207,7 +207,7 @@ void xrServer::client_Destroy(IClient* C)
 	//	game->CleanDelayedEventFor(pOwner->ID);
 	//}
 
-	if (!g_sv_Client_Reconnect_Time || !aliveClient->flags.bVerified)	
+	if (!g_sv_Client_Reconnect_Time)	
 		xr_delete(aliveClient);	
 	else
 	{
@@ -428,7 +428,7 @@ void console_log_cb(LPCSTR text)
 	_tmp_log.push_back(text);
 }
 
-void xrServer::OnRadminCommand(xrClientData* CL, NET_Packet &P, ClientID &sender)
+void xrServer::OnRadminCommand(xrClientData* CL, NET_Packet &P, ClientID const &sender)
 {
 	NET_Packet answerP;
 
@@ -461,7 +461,7 @@ void xrServer::OnRadminCommand(xrClientData* CL, NET_Packet &P, ClientID &sender
 	}
 }
 
-u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID &sender) // Non-Zero means broadcasting with "flags" as returned
+u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means broadcasting with "flags" as returned
 {
 	if (g_pGameLevel && Level().IsDemoSave())
 		Level().Demo_StoreServerData(P.B.data, P.B.count);
@@ -493,9 +493,9 @@ u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID &sender) // Non-Zero mean
 }
 
 #pragma TODO("Посмотреть зачем в чн OnMessageSync")
-
 extern float g_fCatchObjectTime;
-u32 xrServer::OnMessage(NET_Packet &P, ClientID sender) // Non-Zero means broadcasting with "flags" as returned
+
+u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means broadcasting with "flags" as returned
 {
 	if (g_pGameLevel && Level().IsDemoSave())
 		Level().Demo_StoreServerData(P.B.data, P.B.count);
@@ -766,7 +766,7 @@ bool xrServer::CheckAdminRights(const shared_str &user, const shared_str &pass, 
 	return res;
 }
 
-void xrServer::SendTo_LL(ClientID ID, void *data, u32 size, u32 dwFlags, u32 dwTimeout)
+void xrServer::SendTo_LL(ClientID const &ID, void *data, u32 size, u32 dwFlags, u32 dwTimeout)
 {
 	if (SV_Client && SV_Client->ID == ID)
 	{
@@ -1013,7 +1013,7 @@ void xrServer::ProceedDelayedPackets()
 	DelayedPackestCS.Leave();
 };
 
-void xrServer::AddDelayedPacket(NET_Packet &Packet, ClientID &Sender)
+void xrServer::AddDelayedPacket(NET_Packet &Packet, ClientID const &Sender)
 {
 	DelayedPackestCS.Enter();
 

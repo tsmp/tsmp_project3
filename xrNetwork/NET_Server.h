@@ -204,7 +204,7 @@ protected:
 	CTimer *device_timer;
 	BOOL m_bDedicated;
 
-	IClient *ID_to_client(ClientID ID, bool ScanAll = false);
+	IClient *ID_to_client(ClientID const &ID, bool ScanAll = false);
 
 	virtual IClient *new_client(SClientConnectData *cl_data) = 0;
 	bool GetClientAddress(IDirectPlay8Address *pClientAddress, ip_address &Address, DWORD *pPort = NULL);
@@ -226,16 +226,16 @@ public:
 	virtual void Disconnect();
 
 	// send
-	virtual void SendTo_LL(ClientID ID, void *data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
-	virtual void SendTo_Buf(ClientID ID, void *data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
+	virtual void SendTo_LL(ClientID const &ID, void *data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
+	virtual void SendTo_Buf(ClientID const &ID, void *data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
 	virtual void Flush_Clients_Buffers();
 
 	virtual void OnPlayersBaseVerifyRespond(IClient* CL, bool banned) {}
 	virtual const char* GetServerName() { return ""; }
 
-	void SendTo(ClientID ID, NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
-	void SendBroadcast_LL(ClientID exclude, void *data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED);
-	void SendBroadcast(ClientID exclude, NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED);
+	void SendTo(ClientID const &ID, NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
+	void SendBroadcast_LL(ClientID const &exclude, void *data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED);
+	void SendBroadcast(ClientID const &exclude, NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED);
 	
 	// statistic
 	const IServerStatistic *GetStatistic() { return &stats; }
@@ -243,7 +243,7 @@ public:
 	void UpdateClientStatistic(IClient *C);
 
 	// extended functionality
-	virtual u32 OnMessage(NET_Packet &P, ClientID sender); // Non-Zero means broadcasting with "flags" as returned
+	virtual u32 OnMessage(NET_Packet &P, ClientID const &sender); // Non-Zero means broadcasting with "flags" as returned
 	virtual void OnCL_Connected(IClient *C);
 	virtual void OnCL_Disconnected(IClient *C);
 	virtual bool OnCL_QueryHost() { return true; };
@@ -255,7 +255,7 @@ public:
 	BOOL HasBandwidth(IClient *C);
 
 	IC int GetPort() { return psNET_Port; };
-	bool GetClientAddress(ClientID ID, ip_address &Address, DWORD *pPort = NULL);
+	bool GetClientAddress(ClientID const &ID, ip_address &Address, DWORD *pPort = NULL);
 
 	virtual bool DisconnectClient(IClient *C); 
 	virtual bool DisconnectClient(IClient *C, string512 &Reason);
@@ -291,8 +291,8 @@ public:
 	template<typename ActionFunctor>
 	void ForEachDisconnectedClientDo(ActionFunctor action) { net_players.ForEachDisconnectedClientDo(action); };
 
-	IClient *GetClientByID(ClientID clientId) { return net_players.GetClientById(clientId, false); };
-	IClient *GetDisconnectedClientByID(ClientID clientId) { return net_players.GetClientById(clientId, true); }
+	IClient *GetClientByID(ClientID const &clientId) { return net_players.GetClientById(clientId, false); };
+	IClient *GetDisconnectedClientByID(ClientID const &clientId) { return net_players.GetClientById(clientId, true); }
 
 	const shared_str &GetConnectOptions() const { return connect_options; }
 

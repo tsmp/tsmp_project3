@@ -31,11 +31,10 @@ public:
 	virtual float GetEnvironmentGameTimeFactor();
 	virtual void SetEnvironmentGameTimeFactor(const float fTimeFactor);
 
-	virtual bool change_level(NET_Packet &net_packet, ClientID sender);
-	virtual void save_game(NET_Packet &net_packet, ClientID sender);
-	virtual bool load_game(NET_Packet &net_packet, ClientID sender);
-	virtual void reload_game(NET_Packet &net_packet, ClientID sender);
-	virtual void switch_distance(NET_Packet &net_packet, ClientID sender);
+	virtual bool change_level(NET_Packet &net_packet, ClientID const &sender);
+	virtual void save_game(NET_Packet &net_packet, ClientID const &sender);
+	virtual bool load_game(NET_Packet &net_packet, ClientID const &sender);
+	virtual void switch_distance(NET_Packet &net_packet, ClientID const &sender);
 	virtual BOOL CanHaveFriendlyFire() { return FALSE; }
 	virtual void teleport_object(NET_Packet &packet, u16 id);
 	virtual void add_restriction(NET_Packet &packet, u16 id);

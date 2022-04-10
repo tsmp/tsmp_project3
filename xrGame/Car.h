@@ -55,6 +55,12 @@ class CCar : public CEntity,
 private:
 	collide::rq_results RQR;
 	xr_deque<SCarNetUpdate> m_CarNetUpdates;
+	u32 m_InterpolationStartTime;
+	bool m_FirstInterpolation;
+
+	SCarNetUpdate *m_Update1;
+	SCarNetUpdate *m_Update2;
+	float m_LerpMul;
 
 #ifdef DEBUG
 	CFunctionGraph m_dbg_power_rpm;
@@ -84,26 +90,25 @@ private:
 	void ASCUpdate(EAsyncCalls c);
 	void AscCall(EAsyncCalls c);
 
+	void NextUpdate();
 	void Interpolate();
-	float InterpolateStates(u32 element, SCarNetUpdate const &first, SCarNetUpdate const &last, SPHNetState &current);
+	void InterpolateStates(const float &factor);
 	virtual bool CanRemoveObject();
 
 	static BONE_P_MAP bone_map; //interface for PhysicsShell
 	static void ActorObstacleCallback(bool &do_colide, bool bo1, dContact &c, SGameMtl *material_1, SGameMtl *material_2);
 	virtual void PhDataUpdate(dReal step);
 	virtual void PhTune(dReal step);
-	/////////////////////////////////////////////////////////////////////////
+
 	virtual void ApplyDamage(u16 level);
 	virtual float Health() { return GetfHealth(); }
 	virtual void ChangeCondition(float fDeltaCondition);
 	virtual void StartTimerEffects(){};
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	virtual CPhysicsShellHolder *PPhysicsShellHolder() { return static_cast<CPhysicsShellHolder *>(this); }
 	virtual CPHCollisionDamageReceiver *PHCollisionDamageReceiver() { return static_cast<CPHCollisionDamageReceiver *>(this); }
 
-	////////////////////////////////////////////////////////////////////////
 	CCarDamageParticles m_damage_particles;
-	///////////////////////////////////////////////////////////////////////
 protected:
 	enum ECarCamType
 	{
@@ -228,6 +233,7 @@ public:
 		void Limit();
 		void Load(LPCSTR /*section*/){};
 	};
+
 	struct SWheelBreak
 	{
 		SWheel *pwheel;
@@ -253,6 +259,7 @@ public:
 		void Stop();
 		void Update();
 		void Clear();
+
 		SExhaust(CCar *acar)
 		{
 			bone_id = BI_NONE;
@@ -263,7 +270,6 @@ public:
 		~SExhaust();
 	};
 
-	struct SDoor;
 	struct SDoor : public CDamagableHealthItem
 	{
 		typedef CDamagableHealthItem inherited;
@@ -277,6 +283,7 @@ public:
 		float opened_angle;
 		float closed_angle;
 		u32 open_time;
+
 		struct SDoorway
 		{
 			Fvector2 door_plane_ext;
@@ -287,6 +294,7 @@ public:
 			void Init(SDoor *adoor);
 			void Trace(const Fvector &point, const Fvector &dir);
 		};
+
 		Fvector2 door_plane_ext;
 		_vector2<int> door_plane_axes;
 		Fvector door_dir_in_door;
@@ -326,7 +334,9 @@ public:
 			closed,
 			broken
 		};
+
 		eState state;
+
 		SDoor(CCar *acar)
 		{
 			bone_id = BI_NONE;
@@ -353,6 +363,7 @@ public:
 			sndStarting,
 			sndDrive
 		} eCarSound;
+
 		void Update();
 		void UpdateStarting();
 		void UpdateStoping();
@@ -433,10 +444,9 @@ private:
 	float m_steering_speed;
 	float m_ref_radius;
 	size_t m_current_transmission_num;
-	///////////////////////////////////////////////////
+
 	CCarLights m_lights;
-	////////////////////////////////////////////////////
-	/////////////////////////////////////////////////
+
 	void InitParabola();
 	float _stdcall Parabola(float rpm);
 	//float GetSteerAngle();
@@ -454,7 +464,6 @@ private:
 	void ReleasePedals();
 	void ResetKeys();
 
-	////////////////////////////////////////////////////////////////////////////
 	float RefWheelMaxSpeed();
 	float EngineCurTorque();
 	float RefWheelCurTorque();
@@ -462,7 +471,7 @@ private:
 	float EngineDriveSpeed();
 	float DriveWheelsMeanAngleRate();
 	IC float EngineRpmFromWheels() { return dFabs(DriveWheelsMeanAngleRate() * m_current_gear_ratio); }
-	/////////////////////////////////////////////////////////////////////////
+
 	void SteerRight();
 	void SteerLeft();
 	void SteerIdle();
@@ -505,7 +514,6 @@ private:
 	void UpdateFuel(float time_delta);
 	float AddFuel(float ammount); //ammount - fuel to load, ret - fuel loaded
 	void CarExplode();
-	////////////////////////////////////////////		////////
 
 	void OnCameraChange(int type);
 
@@ -638,6 +646,7 @@ private:
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
+
 add_to_type_list(CCar)
 #undef script_type_list
 #define script_type_list save_type_list(CCar)

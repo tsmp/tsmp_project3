@@ -64,9 +64,9 @@ void UnloadSysmsgsDLL()
 	LoadedDLL = false;
 }
 
-void DownloadingMod(xrServer *server, ClientID ID);
+void DownloadingMod(xrServer *server, ClientID const &ID);
 
-void fz_download_mod(xrServer *server, ClientID ID)
+void fz_download_mod(xrServer *server, ClientID const &ID)
 {
 	if (fz_downloader_enabled)
 	{
@@ -80,7 +80,7 @@ void fz_download_mod(xrServer *server, ClientID ID)
 	}
 }
 
-void DownloadingMod(xrServer *server, ClientID ID)
+void DownloadingMod(xrServer *server, ClientID const &ID)
 {
 	SMyUserData userdata = {};
 	userdata.idOfPlayer = ID;

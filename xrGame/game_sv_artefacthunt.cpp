@@ -229,7 +229,7 @@ void game_sv_ArtefactHunt::OnPlayerKillPlayer(game_PlayerState *ps_killer, game_
 		m_iAfBearerMenaceID = 0;
 }
 
-void game_sv_ArtefactHunt::OnPlayerReady(ClientID id)
+void game_sv_ArtefactHunt::OnPlayerReady(ClientID const &id)
 {
 	xrClientData *xrCData = m_server->ID_to_client(id);
 
@@ -254,7 +254,7 @@ void game_sv_ArtefactHunt::OnPlayerReady(ClientID id)
 	inherited::OnPlayerReady(id);
 }
 
-void game_sv_ArtefactHunt::OnPlayerBuySpawn(ClientID sender)
+void game_sv_ArtefactHunt::OnPlayerBuySpawn(ClientID const &sender)
 {
 	xrClientData *xrCData = m_server->ID_to_client(sender);
 
@@ -612,7 +612,7 @@ void game_sv_ArtefactHunt::OnObjectLeaveTeamBase(u16 id, u16 zone_team)
 	};
 };
 
-void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
+void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID const &id_who)
 {
 	if (Get_ReinforcementTime() == -1 || Get_ReturnPlayers())	
 		MoveAllAlivePlayers();
@@ -881,7 +881,7 @@ void game_sv_ArtefactHunt::OnTimelimitExceed()
 	OnDelayedRoundEnd(eRoundEnd_TimeLimit); // "Team Final Score"
 }
 
-void game_sv_ArtefactHunt::net_Export_State(NET_Packet &P, ClientID id_to)
+void game_sv_ArtefactHunt::net_Export_State(NET_Packet &P, ClientID const &id_to)
 {
 	inherited::net_Export_State(P, id_to);
 	P.w_u8(u8(Get_ArtefactsCount()));
@@ -1138,7 +1138,7 @@ void game_sv_ArtefactHunt::UpdatePlayersNotSendedMoveRespond()
 	});
 }
 
-void game_sv_ArtefactHunt::ReplicatePlayersStateToPlayer(ClientID CID)
+void game_sv_ArtefactHunt::ReplicatePlayersStateToPlayer(ClientID const &CID)
 {
 	u8 AliveCount = 0;
 	NET_Packet tmpP;

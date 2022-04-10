@@ -12,6 +12,7 @@ enum EGameTypes
 	GAME_ARTEFACTHUNT = 7,
 	GAME_HARDMATCH = 8,
 	GAME_FREEPLAY = 9,
+	GAME_RACE = 10,
 
 	//identifiers in range [100...254] are registered for script game type
 	GAME_DUMMY = 255 // temporary game type

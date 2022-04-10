@@ -47,7 +47,7 @@ GameEvent *GameEventQueue::Create()
 	cs.Leave();
 	return ge;
 }
-GameEvent *GameEventQueue::Create(NET_Packet &P, u16 type, u32 time, ClientID clientID)
+GameEvent *GameEventQueue::Create(NET_Packet &P, u16 type, u32 time, ClientID const &clientID)
 {
 	GameEvent *ge = 0;
 	cs.Enter();

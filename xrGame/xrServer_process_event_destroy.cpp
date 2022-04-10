@@ -20,7 +20,7 @@ xr_string xrServer::ent_name_safe(u16 eid)
 	return buff;
 }
 
-void xrServer::Process_event_destroy(NET_Packet &P, ClientID sender, u32 time, u16 ID, NET_Packet *pEPack)
+void xrServer::Process_event_destroy(NET_Packet &P, ClientID const &sender, u32 time, u16 ID, NET_Packet *pEPack)
 {
 	u32 MODE = net_flags(TRUE, TRUE);
 	// Parse message

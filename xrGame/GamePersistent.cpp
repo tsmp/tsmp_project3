@@ -221,6 +221,9 @@ void CGamePersistent::UpdateGameType()
 	if (!xr_strcmp(m_game_params.m_game_type, "freeplay"))
 		m_game_params.m_e_game_type = GAME_FREEPLAY;
 
+	if (!xr_strcmp(m_game_params.m_game_type, "race"))
+		m_game_params.m_e_game_type = GAME_RACE;
+
 	// На клиенте может остаться GAME_ANY если мы не знаем тип игры еще
 	
 	if (SinglePlayerGame)

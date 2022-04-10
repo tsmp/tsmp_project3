@@ -94,6 +94,6 @@ public:
 
 	virtual const char* GetServerName() override { return HostName.c_str(); }
 
-	virtual u32 OnMessage(NET_Packet &P, ClientID /*DPNID*/ sender); // Non-Zero means broadcasting with "flags" as returned
+	virtual u32 OnMessage(NET_Packet &P, ClientID const &sender); // Non-Zero means broadcasting with "flags" as returned
 	virtual void OnError_Add(qr2_error_t error){};
 };

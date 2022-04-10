@@ -3,7 +3,7 @@
 #include "xrServer.h"
 #include "xrMessages.h"
 
-void game_sv_Deathmatch::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID sender)
+void game_sv_Deathmatch::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &sender)
 {
 
 	switch (type)
