@@ -25,6 +25,7 @@ string_path MAPROT_LIST = "";
 BOOL net_sv_control_hit = FALSE;
 BOOL g_bCollectStatisticData = FALSE;
 BOOL g_sv_crosshair_players_names = FALSE;
+BOOL g_sv_crosshair_color_players = FALSE;
 
 u32 g_sv_base_dwRPointFreezeTime = 0;
 int g_sv_base_iVotingEnabled = 0x00ff;
@@ -217,6 +218,7 @@ void game_sv_GameState::net_Export_State(NET_Packet &P, ClientID const &to)
 	P.w_u8(u8(net_sv_control_hit));
 	P.w_u8(u8(g_bCollectStatisticData));
 	P.w_u8(u8(g_sv_crosshair_players_names));
+	P.w_u8(u8(g_sv_crosshair_color_players));
 
 	// Players
 	//	u32	p_count			= get_players_count() - ((g_dedicated_server)? 1 : 0);

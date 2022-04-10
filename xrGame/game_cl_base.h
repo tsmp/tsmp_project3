@@ -40,6 +40,7 @@ protected:
 	u16 m_u16VotingEnabled;
 	bool m_bServerControlHits;
 	bool m_ShowPlayerNamesOnCrosshair;
+	bool m_ColorPlayersOnCrosshair;
 
 public:
 	typedef xr_map<ClientID, game_PlayerState *> PLAYERS_MAP;
@@ -55,6 +56,7 @@ public:
 	virtual void reset_ui();
 	virtual void CommonMessageOut(LPCSTR msg);
 	bool ShowPlayersNameOnCrosshair() { return m_ShowPlayerNamesOnCrosshair; }
+	bool ColorPlayersOnCrosshair() { return m_ColorPlayersOnCrosshair; }
 
 private:
 	void switch_Phase(u32 new_phase) { inherited::switch_Phase(new_phase); };

@@ -24,6 +24,7 @@
 
 #include "inventory_item.h"
 #include "inventory.h"
+#include "game_cl_teamdeathmatch.h"
 
 u32 C_ON_ENEMY D3DCOLOR_XRGB(0xff, 0, 0);
 u32 C_ON_NEUTRAL D3DCOLOR_XRGB(0xff, 0xff, 0x80);
@@ -52,10 +53,6 @@ IC float recon_maxspeed()
 {
 	return 10.f;
 }
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 CHUDTarget::CHUDTarget()
 {
@@ -112,7 +109,7 @@ void CHUDTarget::CursorOnFrame()
 	// Render cursor
 	if (Level().CurrentEntity())
 	{
-		RQ.O = 0;
+		RQ.O = nullptr;
 		RQ.range = g_pGamePersistent->Environment().CurrentEnv.far_plane * 0.99f;
 		RQ.element = -1;
 
@@ -125,6 +122,26 @@ void CHUDTarget::CursorOnFrame()
 }
 
 extern ENGINE_API BOOL g_bRendering;
+
+u32 GetActorRelationColor(u16 idOtherActor)
+{
+	if (!Game().ColorPlayersOnCrosshair())
+		return C_DEFAULT;
+
+	if(!smart_cast<game_cl_TeamDeathmatch*>(&Game()))
+		return C_ON_ENEMY;
+
+	if (game_PlayerState* state = Game().GetPlayerByGameID(static_cast<u32>(idOtherActor)))
+	{
+		if (state->team == Game().local_player->team)
+			return C_ON_FRIEND;
+		else
+			return C_ON_ENEMY;
+	}
+
+	return C_DEFAULT;
+}
+
 void CHUDTarget::Render()
 {
 	VERIFY(g_bRendering);
@@ -171,31 +188,36 @@ void CHUDTarget::Render()
 			{
 				if (!E->cast_base_monster())
 				{
-					CInventoryOwner* others_inv_owner = smart_cast<CInventoryOwner*>(E);
-
-					if (our_inv_owner && others_inv_owner)
+					if (E->cast_actor())
+						C = GetActorRelationColor(E->ID());
+					else
 					{
-						switch (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
-						{
-						case ALife::eRelationTypeEnemy:
-							C = C_ON_ENEMY;
-							break;
-						case ALife::eRelationTypeNeutral:
-							C = C_ON_NEUTRAL;
-							break;
-						case ALife::eRelationTypeFriend:
-							C = C_ON_FRIEND;
-							break;
-						}					
+						CInventoryOwner* others_inv_owner = smart_cast<CInventoryOwner*>(E);
 
-						if (fuzzyShowInfo > 0.5f)
+						if (our_inv_owner && others_inv_owner)
 						{
-							if (IsGameTypeSingle() || !E->cast_actor() || Game().ShowPlayersNameOnCrosshair())
+							switch (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
 							{
-								CStringTable strtbl;
-								F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
-								F->OutNext("%s", *strtbl.translate(others_inv_owner->Name()));
-								F->OutNext("%s", *strtbl.translate(others_inv_owner->CharacterInfo().Community().id()));
+							case ALife::eRelationTypeEnemy:
+								C = C_ON_ENEMY;
+								break;
+							case ALife::eRelationTypeNeutral:
+								C = C_ON_NEUTRAL;
+								break;
+							case ALife::eRelationTypeFriend:
+								C = C_ON_FRIEND;
+								break;
+							}
+
+							if (fuzzyShowInfo > 0.5f)
+							{
+								if (IsGameTypeSingle() || !E->cast_actor() || Game().ShowPlayersNameOnCrosshair())
+								{
+									CStringTable strtbl;
+									F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
+									F->OutNext("%s", *strtbl.translate(others_inv_owner->Name()));
+									F->OutNext("%s", *strtbl.translate(others_inv_owner->CharacterInfo().Community().id()));
+								}
 							}
 						}
 					}

@@ -40,6 +40,7 @@ game_cl_GameState::game_cl_GameState()
 {
 	m_WeaponUsageStatistic = xr_new<WeaponUsageStatistic>();
 	m_ShowPlayerNamesOnCrosshair = false;
+	m_ColorPlayersOnCrosshair = false;
 
 	local_player = 0;
 	m_game_type_name = 0;
@@ -161,6 +162,7 @@ void game_cl_GameState::net_import_state(NET_Packet &P)
 	m_bServerControlHits = !!P.r_u8();
 	m_WeaponUsageStatistic->SetCollectData(!!P.r_u8());
 	m_ShowPlayerNamesOnCrosshair = !!P.r_u8();
+	m_ColorPlayersOnCrosshair = !!P.r_u8();
 
 	// Players
 	u16 p_count;
