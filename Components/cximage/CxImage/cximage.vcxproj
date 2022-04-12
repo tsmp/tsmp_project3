@@ -289,7 +289,6 @@
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>..\..\..\..\..\libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>..\..\..\..\..\binaries\$(ProjectName).pdb</ProgramDatabaseFile>
-      <ImportLibrary>$(SolutionDir)\output\libraries_$(Configuration)\$(ProjectName).lib</ImportLibrary>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>

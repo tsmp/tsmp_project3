@@ -97,7 +97,6 @@
     <Link>
       <AdditionalLibraryDirectories>..\..\..\..\libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>$(SolutionDir)\output\libraries_$(Configuration)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>NotSet</TargetMachine>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
     </Link>

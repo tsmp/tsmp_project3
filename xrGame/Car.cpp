@@ -3,7 +3,7 @@
 #include "Physics.h"
 
 #ifdef DEBUG
-#include "../StatGraph.h"
+#include "StatGraph.h"
 #include "PHDebug.h"
 #endif // DEBUG
 
