@@ -53,6 +53,7 @@ extern ECORE_API float ps_r2_tf_Mipbias;
 
 // R2-specific
 extern ECORE_API Flags32 ps_r2_ls_flags;			// r2-only
+extern ECORE_API Flags32 ps_r2_new_flags;			// r2-only
 extern ECORE_API float ps_r2_df_parallax_h;			// r2-only
 extern ECORE_API float ps_r2_df_parallax_range;		// r2-only
 extern ECORE_API float ps_r2_gmaterial;				// r2-only
@@ -120,7 +121,32 @@ enum
 	R2FLAG_USE_NVDBT = (1 << 15),
 	R2FLAG_USE_NVSTENCIL = (1 << 16),
 
-	R2FLAG_EXP_MT_CALC = (1 << 17),
+	R2FLAG_EXP_MT_CALC = (1 << 17)
+};
+
+enum class NewFlagsR2
+{
+	SSAO = (1 << 0),
+	DOF = (1 << 1),
+	COLOR_FRINGE = (1 << 2),
+	SOFT_SHADOWS = (1 << 3),
+	SHAFTS = (1 << 4),
+	SHAFTS_HQ = (1 << 5),
+	SHAFTS_ENHANCED = (1 << 6),
+	SHAFTS_DUST = (1 << 7),
+	SATURATE = (1 << 8),
+	FOG = (1 << 9),
+	RAINBOW = (1 << 10),
+	SOFT_WATER = (1 << 11),
+	SOFT_PARTICLES = (1 << 12),
+	TREES_DARK = (1 << 13),
+	TREES_FAST = (1 << 14),
+	MODELS_BRIGHT = (1 << 15),
+	COLOR_B_FILTER = (1 << 16),
+	CINEMATIC = (1 << 17),
+	CONSTRAST = (1 << 18),
+	HYPERSONIC = (1 << 19),
+	SURERGLOSS = (1 << 20)
 };
 
 extern void xrRender_initconsole();
