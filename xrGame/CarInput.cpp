@@ -22,7 +22,7 @@
 
 void CCar::OnMouseMove(int dx, int dy)
 {
-	if (!IsMyCar())
+	if (!IsMyCar() && !GetScriptControl())
 		return;
 
 	CCameraBase *C = active_camera;
@@ -137,7 +137,7 @@ void CCar::vfProcessInputKey(int iCommand, bool bPressed)
 
 void CCar::OnKeyboardPress(int cmd)
 {
-	if (!IsMyCar())
+	if (!IsMyCar() && !GetScriptControl())
 		return;
 
 	switch (cmd)
@@ -189,7 +189,7 @@ void CCar::OnKeyboardPress(int cmd)
 
 void CCar::OnKeyboardRelease(int cmd)
 {
-	if (!IsMyCar())
+	if (!IsMyCar() && !GetScriptControl())
 		return;
 
 	switch (cmd)
