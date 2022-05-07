@@ -113,6 +113,12 @@ end
 function drop_manager:create_release_item()
   --' Спрашиваем у серверного объекта генерились ли предметы
   local se_obj = alife():object(self.npc:id())
+
+  if se_obj == nil then
+    printfa('cant get item in drop manager')
+    return
+  end
+
   if se_obj.death_droped == true then
     return
   end
@@ -130,6 +136,10 @@ function drop_manager:create_release_item()
 
     --' Доспавниваем необходимое количество итемов:
     --' Необходимо составить список объектов которые могут быть заспавнены для персонажа
+
+    if IsGameTypeSingle() ~= true then
+      return
+    end
 
     local spawn_items = item_by_community[self.npc:character_community()]    
     for k,v in pairs(spawn_items) do
