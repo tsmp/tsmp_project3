@@ -588,7 +588,7 @@ bool game_cl_ArtefactHunt::NeedToSendReady_Spectator(int key, game_PlayerState *
 	{
 		if (local_player->money_for_round + m_iSpawn_Cost >= 0)
 		{
-			string64 BuySpawnText;
+			string256 BuySpawnText;
 			sprintf_s(BuySpawnText, *st.translate("mp_press_yes2pay"), abs(local_player->money_for_round), abs(m_iSpawn_Cost));
 			m_game_ui->m_pBuySpawnMsgBox->SetText(BuySpawnText);
 
