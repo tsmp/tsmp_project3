@@ -85,10 +85,7 @@ bool IsBanned(IClient* CL)
     if (SessionId.empty())
         return false;
 
-    char ch[30];
-    sprintf(ch, "%hu-%hu-%hu-%hu-%hu", CL->m_HWID.s1, CL->m_HWID.s2, CL->m_HWID.s3, CL->m_HWID.s4, CL->m_HWID.s5);
-
-    std::string hwid = ch;
+    std::string hwid = CL->m_HWID.ToString();
     std::string ip = CL->m_cAddress.to_string().c_str();
     std::string name = CL->name.c_str();
 

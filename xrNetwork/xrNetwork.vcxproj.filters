@@ -13,6 +13,9 @@
     <ClCompile Include="UrlEncode.cpp">
       <Filter>PlayersBase</Filter>
     </ClCompile>
+    <ClCompile Include="HWID.cpp">
+      <Filter>HWID</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client_id.h" />
@@ -29,10 +32,16 @@
     <ClInclude Include="PlayersBase.h">
       <Filter>PlayersBase</Filter>
     </ClInclude>
+    <ClInclude Include="HWID.h">
+      <Filter>HWID</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PlayersBase">
       <UniqueIdentifier>{b3e7471d-b319-48ea-891e-a54ffd394d3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HWID">
+      <UniqueIdentifier>{2561006d-542d-44dd-a7cf-03b85e0d9f7b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

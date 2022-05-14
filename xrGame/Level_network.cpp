@@ -396,7 +396,10 @@ void CLevel::OnHardwareVerification()
 {
 	NET_Packet P;
 	P.w_begin(M_HW_RESPOND);
-	P.w(&Core.hardwareId, 10);
+	
+	HWID hwid;
+	HWID::BuildFromCore(Core.hardwareId, hwid);
+	hwid.NetSerialize(P);
 	Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
 }
 
