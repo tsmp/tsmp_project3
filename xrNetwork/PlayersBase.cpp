@@ -15,14 +15,14 @@ extern std::string UrlEncode(const std::string &str);
 
 bool SendRequest(const char* request, char* responseBuffer)
 {
-    char url[256];
-    DWORD dwBytesRead;
+    char url[256];    
     strcpy_s(url, BaseUrl);
     strcat_s(url, request);
 
     HINTERNET hInetSession = InternetOpen(0, INTERNET_OPEN_TYPE_PRECONFIG, 0, 0, 0);
     HINTERNET hURL = InternetOpenUrl(hInetSession, url, 0, 0, 0, 0);
     
+    DWORD dwBytesRead = 0;
     BOOL bResult = InternetReadFile(hURL, responseBuffer, MaxResponseLength, &dwBytesRead);
     responseBuffer[dwBytesRead] = '\0';
 
