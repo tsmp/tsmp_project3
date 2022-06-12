@@ -338,20 +338,24 @@ void CEnvironment::load()
 		eff_LensFlare = xr_new<CLensFlare>();
 	if (!eff_Thunderbolt)
 		eff_Thunderbolt = xr_new<CEffect_Thunderbolt>();
+
 	// load weathers
 	if (WeatherCycles.empty())
 	{
-		LPCSTR first_weather = 0;
-		int weather_count = pSettings->line_count("weathers");
-		for (int w_idx = 0; w_idx < weather_count; w_idx++)
+		m_FirstWeather = nullptr;
+		int weatherCnt = pSettings->line_count("weathers");
+
+		for (int w_idx = 0; w_idx < weatherCnt; w_idx++)
 		{
 			LPCSTR weather, sect_w;
 			if (pSettings->r_line("weathers", w_idx, &weather, &sect_w))
 			{
-				if (0 == first_weather)
-					first_weather = weather;
+				if (!m_FirstWeather)
+					m_FirstWeather = weather;
+
 				int env_count = pSettings->line_count(sect_w);
 				LPCSTR exec_tm, sect_e;
+
 				for (int env_idx = 0; env_idx < env_count; env_idx++)
 				{
 					if (pSettings->r_line(sect_w, env_idx, &exec_tm, &sect_e))
@@ -366,17 +370,18 @@ void CEnvironment::load()
 				}
 			}
 		}
+
 		// sorting weather envs
-		EnvsMapIt _I = WeatherCycles.begin();
-		EnvsMapIt _E = WeatherCycles.end();
-		for (; _I != _E; _I++)
+		for (auto &_I : WeatherCycles)
 		{
-			R_ASSERT3(_I->second.size() > 1, "Environment in weather must >=2", *_I->first);
-			std::sort(_I->second.begin(), _I->second.end(), sort_env_etl_pred);
+			R_ASSERT3(_I.second.size() > 1, "Environment in weather must >=2", *_I.first);
+			std::sort(_I.second.begin(), _I.second.end(), sort_env_etl_pred);
 		}
+
 		R_ASSERT2(!WeatherCycles.empty(), "Empty weathers.");
-		SetWeather(first_weather);
+		SetWeather(m_FirstWeather);
 	}
+
 	// load weather effects
 	if (WeatherFXs.empty())
 	{
