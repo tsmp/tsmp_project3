@@ -456,7 +456,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
 
 		RECT rcWindowBounds;
 		BOOL bCenter = FALSE;
-		if (strstr(Core.Params, "-center_screen"))
+		if (!strstr(Core.Params, "-no_center_screen"))
 			bCenter = TRUE;
 
 #ifdef DEDICATED_SERVER
