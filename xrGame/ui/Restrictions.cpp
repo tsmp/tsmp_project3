@@ -2,8 +2,8 @@
 
 #include "Restrictions.h"
 #ifdef DEBUG
-#include "..\Console.h"
-#include "..\Console_commands.h"
+#include "../../xrEngine/Console.h"
+#include "../../xrEngine/Console_commands.h"
 #endif //#ifdef DEBUG
 #include "../string_table.h"
 CRestrictions g_mp_restrictions;

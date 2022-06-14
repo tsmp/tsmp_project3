@@ -27,10 +27,10 @@ IC bool compare_safe(const luabind::object &o1, const luabind::object &o2)
 
 #if XRAY_EXCEPTIONS
 #define process_error                                                                      \
-	catch (luabind::error & e)                                                             \
+	catch (std::exception & e)                                                             \
 	{                                                                                      \
-		if (e.state())                                                                     \
-			ai().script_engine().print_output(e.state(), "", LUA_ERRRUN);                  \
+		if (e.what())                                                                     \
+			ai().script_engine().print_output(ai().script_engine().lua(), e.what(), LUA_ERRRUN);                  \
 		else                                                                               \
 			ai().script_engine().print_output(ai().script_engine().lua(), "", LUA_ERRRUN); \
 	}
@@ -59,7 +59,7 @@ IC bool compare_safe(const luabind::object &o1, const luabind::object &o2)
 						macros_return_operator(m_functor(_6));                                 \
 				}                                                                              \
 			}                                                                                  \
-			process_error catch (std::exception &)                                             \
+			process_error if(XRAY_EXCEPTIONS)	                                               \
 			{                                                                                  \
 				ai().script_engine().print_output(ai().script_engine().lua(), "", LUA_ERRRUN); \
 			}                                                                                  \

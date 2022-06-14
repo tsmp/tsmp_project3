@@ -83,6 +83,8 @@ BOOL g_bUseCursorAcceleration = FALSE;
 
 void CUICursor::UpdateCursorPosition(int xx, int yy)
 {
+	bool bWindowed = ~psDeviceFlags.is(rsFullscreen);
+
 	vPrevPos = vPos;
 
 	if (g_bUseCursorAcceleration)
@@ -90,6 +92,12 @@ void CUICursor::UpdateCursorPosition(int xx, int yy)
 		POINT p;
 		BOOL r = GetCursorPos(&p);
 		R_ASSERT(r);		
+
+		if (bWindowed)
+		{
+			r = ScreenToClient(Device.m_hWnd, &p);
+			R_ASSERT(r);
+		}
 
 		vPos.x = (float)p.x * (UI_BASE_WIDTH / (float)Device.dwWidth);
 		vPos.y = (float)p.y * (UI_BASE_HEIGHT / (float)Device.dwHeight);

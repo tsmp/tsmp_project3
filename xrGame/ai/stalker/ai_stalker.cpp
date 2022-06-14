@@ -850,13 +850,6 @@ void CAI_Stalker::update_object_handler()
 		{
 			CObjectHandler::update();
 		}
-#ifdef DEBUG
-		catch (luabind::cast_failed &message)
-		{
-			Msg("! Expression \"%s\" from luabind::object to %s", message.what(), message.info()->name());
-			throw;
-		}
-#endif
 		catch (std::exception &message)
 		{
 			Msg("! Expression \"%s\"", message.what());

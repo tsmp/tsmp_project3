@@ -11,7 +11,7 @@
 #ifdef DEBUG
 
 #include "level_graph.h"
-#include "../customhud.h"
+#include "../../xrEngine/customhud.h"
 #include "ai_space.h"
 #include "hudmanager.h"
 #include "game_graph.h"

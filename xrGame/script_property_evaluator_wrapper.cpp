@@ -29,10 +29,10 @@ bool CScriptPropertyEvaluatorWrapper::evaluate()
 		return (luabind::call_member<bool>(this, "evaluate"));
 	}
 #ifdef DEBUG
-	catch (luabind::cast_failed &exception)
+	catch (std::exception &exception)
 	{
 #ifdef LOG_ACTION
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "SCRIPT RUNTIME ERROR : evaluator [%s] returns value with not a %s type!", m_evaluator_name, exception.info()->name());
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "SCRIPT RUNTIME ERROR : evaluator [%s] returns value with not a %s type!", m_evaluator_name, exception.what());
 #else
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "SCRIPT RUNTIME ERROR : evaluator returns value with not a %s type!", exception.info()->name());
 #endif
