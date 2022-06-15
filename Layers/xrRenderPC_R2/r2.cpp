@@ -9,6 +9,8 @@
 #include "..\xrRender\LightTrack.h"
 #include "GameFont.h"
 
+#include <boost/crc.hpp>
+
 CRender RImplementation;
 
 //////////////////////////////////////////////////////////////////////////
@@ -21,17 +23,17 @@ public:
 	CGlow() : bActive(false) {}
 	virtual void set_active(bool b) { bActive = b; }
 	virtual bool get_active() { return bActive; }
-	virtual void set_position(const Fvector &P) {}
-	virtual void set_direction(const Fvector &D) {}
+	virtual void set_position(const Fvector& P) {}
+	virtual void set_direction(const Fvector& D) {}
 	virtual void set_radius(float R) {}
 	virtual void set_texture(LPCSTR name) {}
-	virtual void set_color(const Fcolor &C) {}
+	virtual void set_color(const Fcolor& C) {}
 	virtual void set_color(float r, float g, float b) {}
 };
 
 float r_dtex_range = 50.f;
 //////////////////////////////////////////////////////////////////////////
-ShaderElement *CRender::rimp_select_sh_dynamic(IRender_Visual *pVisual, float cdist_sq)
+ShaderElement* CRender::rimp_select_sh_dynamic(IRender_Visual* pVisual, float cdist_sq)
 {
 	int id = SE_R2_SHADOW;
 	if (CRender::PHASE_NORMAL == RImplementation.phase)
@@ -41,7 +43,7 @@ ShaderElement *CRender::rimp_select_sh_dynamic(IRender_Visual *pVisual, float cd
 	return pVisual->shader->E[id]._get();
 }
 //////////////////////////////////////////////////////////////////////////
-ShaderElement *CRender::rimp_select_sh_static(IRender_Visual *pVisual, float cdist_sq)
+ShaderElement* CRender::rimp_select_sh_static(IRender_Visual* pVisual, float cdist_sq)
 {
 	int id = SE_R2_SHADOW;
 	if (CRender::PHASE_NORMAL == RImplementation.phase)
@@ -52,7 +54,7 @@ ShaderElement *CRender::rimp_select_sh_static(IRender_Visual *pVisual, float cdi
 }
 static class cl_parallax : public R_constant_setup
 {
-	virtual void setup(R_constant *C)
+	virtual void setup(R_constant* C)
 	{
 		float h = ps_r2_df_parallax_h;
 		RCache.set_c(C, h, -h / 2.f, 1.f / r_dtex_range, 1.f / r_dtex_range);
@@ -207,7 +209,7 @@ void CRender::create()
 		o.smapsize = 4096;
 
 	// gloss
-	char *g = strstr(Core.Params, "-gloss ");
+	char* g = strstr(Core.Params, "-gloss ");
 	o.forcegloss = g ? TRUE : FALSE;
 	if (g)
 	{
@@ -280,7 +282,7 @@ void CRender::reset_begin()
 			}
 			catch (...)
 			{
-				Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32 *)(&Lights_LastFrame[it]));
+				Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32*)(&Lights_LastFrame[it]));
 			}
 		}
 		Lights_LastFrame.clear();
@@ -327,42 +329,42 @@ void CRender::OnFrame()
 }
 
 // Implementation
-IRender_ObjectSpecific *CRender::ros_create(IRenderable *parent) { return xr_new<CROS_impl>(); }
-void CRender::ros_destroy(IRender_ObjectSpecific *&p) { xr_delete(p); }
-IRender_Visual *CRender::model_Create(LPCSTR name, IReader *data) { return Models->Create(name, data); }
-IRender_Visual *CRender::model_CreateChild(LPCSTR name, IReader *data) { return Models->CreateChild(name, data); }
-IRender_Visual *CRender::model_Duplicate(IRender_Visual *V) { return Models->Instance_Duplicate(V); }
-void CRender::model_Delete(IRender_Visual *&V, BOOL bDiscard) { Models->Delete(V, bDiscard); }
-IRender_DetailModel *CRender::model_CreateDM(IReader *F)
+IRender_ObjectSpecific* CRender::ros_create(IRenderable* parent) { return xr_new<CROS_impl>(); }
+void CRender::ros_destroy(IRender_ObjectSpecific*& p) { xr_delete(p); }
+IRender_Visual* CRender::model_Create(LPCSTR name, IReader* data) { return Models->Create(name, data); }
+IRender_Visual* CRender::model_CreateChild(LPCSTR name, IReader* data) { return Models->CreateChild(name, data); }
+IRender_Visual* CRender::model_Duplicate(IRender_Visual* V) { return Models->Instance_Duplicate(V); }
+void CRender::model_Delete(IRender_Visual*& V, BOOL bDiscard) { Models->Delete(V, bDiscard); }
+IRender_DetailModel* CRender::model_CreateDM(IReader* F)
 {
-	CDetail *D = xr_new<CDetail>();
+	CDetail* D = xr_new<CDetail>();
 	D->Load(F);
 	return D;
 }
-void CRender::model_Delete(IRender_DetailModel *&F)
+void CRender::model_Delete(IRender_DetailModel*& F)
 {
 	if (F)
 	{
-		CDetail *D = (CDetail *)F;
+		CDetail* D = (CDetail*)F;
 		D->Unload();
 		xr_delete(D);
 		F = NULL;
 	}
 }
-IRender_Visual *CRender::model_CreatePE(LPCSTR name)
+IRender_Visual* CRender::model_CreatePE(LPCSTR name)
 {
-	PS::CPEDef *SE = PSLibrary.FindPED(name);
+	PS::CPEDef* SE = PSLibrary.FindPED(name);
 	R_ASSERT3(SE, "Particle effect doesn't exist", name);
 	return Models->CreatePE(SE);
 }
-IRender_Visual *CRender::model_CreateParticles(LPCSTR name)
+IRender_Visual* CRender::model_CreateParticles(LPCSTR name)
 {
-	PS::CPEDef *SE = PSLibrary.FindPED(name);
+	PS::CPEDef* SE = PSLibrary.FindPED(name);
 	if (SE)
 		return Models->CreatePE(SE);
 	else
 	{
-		PS::CPGDef *SG = PSLibrary.FindPGD(name);
+		PS::CPGDef* SG = PSLibrary.FindPGD(name);
 		R_ASSERT3(SG, "Particle effect or group doesn't exist", name);
 		return Models->CreatePG(SG);
 	}
@@ -375,23 +377,23 @@ ref_shader CRender::getShader(int id)
 	VERIFY(id < int(Shaders.size()));
 	return Shaders[id];
 }
-IRender_Portal *CRender::getPortal(int id)
+IRender_Portal* CRender::getPortal(int id)
 {
 	VERIFY(id < int(Portals.size()));
 	return Portals[id];
 }
-IRender_Sector *CRender::getSector(int id)
+IRender_Sector* CRender::getSector(int id)
 {
 	VERIFY(id < int(Sectors.size()));
 	return Sectors[id];
 }
-IRender_Sector *CRender::getSectorActive() { return pLastSector; }
-IRender_Visual *CRender::getVisual(int id)
+IRender_Sector* CRender::getSectorActive() { return pLastSector; }
+IRender_Visual* CRender::getVisual(int id)
 {
 	VERIFY(id < int(Visuals.size()));
 	return Visuals[id];
 }
-D3DVERTEXELEMENT9 *CRender::getVB_Format(int id, BOOL _alt)
+D3DVERTEXELEMENT9* CRender::getVB_Format(int id, BOOL _alt)
 {
 	if (_alt)
 	{
@@ -404,7 +406,7 @@ D3DVERTEXELEMENT9 *CRender::getVB_Format(int id, BOOL _alt)
 		return nDC[id].begin();
 	}
 }
-IDirect3DVertexBuffer9 *CRender::getVB(int id, BOOL _alt)
+IDirect3DVertexBuffer9* CRender::getVB(int id, BOOL _alt)
 {
 	if (_alt)
 	{
@@ -417,7 +419,7 @@ IDirect3DVertexBuffer9 *CRender::getVB(int id, BOOL _alt)
 		return nVB[id];
 	}
 }
-IDirect3DIndexBuffer9 *CRender::getIB(int id, BOOL _alt)
+IDirect3DIndexBuffer9* CRender::getIB(int id, BOOL _alt)
 {
 	if (_alt)
 	{
@@ -430,25 +432,25 @@ IDirect3DIndexBuffer9 *CRender::getIB(int id, BOOL _alt)
 		return nIB[id];
 	}
 }
-FSlideWindowItem *CRender::getSWI(int id)
+FSlideWindowItem* CRender::getSWI(int id)
 {
 	VERIFY(id < int(SWIs.size()));
 	return &SWIs[id];
 }
-IRender_Target *CRender::getTarget() { return Target; }
+IRender_Target* CRender::getTarget() { return Target; }
 
-IRender_Light *CRender::light_create() { return Lights.Create(); }
-IRender_Glow *CRender::glow_create() { return xr_new<CGlow>(); }
+IRender_Light* CRender::light_create() { return Lights.Create(); }
+IRender_Glow* CRender::glow_create() { return xr_new<CGlow>(); }
 
 void CRender::flush() { r_dsgraph_render_graph(0); }
 
-BOOL CRender::occ_visible(vis_data &P) { return HOM.visible(P); }
-BOOL CRender::occ_visible(sPoly &P) { return HOM.visible(P); }
-BOOL CRender::occ_visible(Fbox &P) { return HOM.visible(P); }
+BOOL CRender::occ_visible(vis_data& P) { return HOM.visible(P); }
+BOOL CRender::occ_visible(sPoly& P) { return HOM.visible(P); }
+BOOL CRender::occ_visible(Fbox& P) { return HOM.visible(P); }
 
-void CRender::add_Visual(IRender_Visual *V) { add_leafs_Dynamic(V); }
-void CRender::add_Geometry(IRender_Visual *V) { add_Static(V, View->getMask()); }
-void CRender::add_StaticWallmark(ref_shader &S, const Fvector &P, float s, CDB::TRI *T, Fvector *verts)
+void CRender::add_Visual(IRender_Visual* V) { add_leafs_Dynamic(V); }
+void CRender::add_Geometry(IRender_Visual* V) { add_Static(V, View->getMask()); }
+void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
 {
 	if (T->suppress_wm)
 		return;
@@ -465,34 +467,34 @@ void CRender::add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 {
 	Wallmarks->AddSkeletonWallmark(wm);
 }
-void CRender::add_SkeletonWallmark(const Fmatrix *xf, CKinematics *obj, ref_shader &sh, const Fvector &start, const Fvector &dir, float size)
+void CRender::add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size)
 {
 	Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
 }
-void CRender::add_Occluder(Fbox2 &bb_screenspace)
+void CRender::add_Occluder(Fbox2& bb_screenspace)
 {
 	HOM.occlude(bb_screenspace);
 }
-void CRender::set_Object(IRenderable *O)
+void CRender::set_Object(IRenderable* O)
 {
 	val_pObject = O;
 }
 void CRender::rmNear()
 {
-	IRender_Target *T = getTarget();
-	D3DVIEWPORT9 VP = {0, 0, T->get_width(), T->get_height(), 0, 0.02f};
+	IRender_Target* T = getTarget();
+	D3DVIEWPORT9 VP = { 0, 0, T->get_width(), T->get_height(), 0, 0.02f };
 	CHK_DX(HW.pDevice->SetViewport(&VP));
 }
 void CRender::rmFar()
 {
-	IRender_Target *T = getTarget();
-	D3DVIEWPORT9 VP = {0, 0, T->get_width(), T->get_height(), 0.99999f, 1.f};
+	IRender_Target* T = getTarget();
+	D3DVIEWPORT9 VP = { 0, 0, T->get_width(), T->get_height(), 0.99999f, 1.f };
 	CHK_DX(HW.pDevice->SetViewport(&VP));
 }
 void CRender::rmNormal()
 {
-	IRender_Target *T = getTarget();
-	D3DVIEWPORT9 VP = {0, 0, T->get_width(), T->get_height(), 0, 1.f};
+	IRender_Target* T = getTarget();
+	D3DVIEWPORT9 VP = { 0, 0, T->get_width(), T->get_height(), 0, 1.f };
 	CHK_DX(HW.pDevice->SetViewport(&VP));
 }
 
@@ -507,9 +509,9 @@ CRender::~CRender()
 {
 }
 
-void CRender::Statistics(CGameFont *_F)
+void CRender::Statistics(CGameFont* _F)
 {
-	CGameFont &F = *_F;
+	CGameFont& F = *_F;
 	F.OutNext(" **** LT:%2d,LV:%2d **** ", stats.l_total, stats.l_visible);
 	stats.l_visible = 0;
 	F.OutNext("    S(%2d)   | (%2d)NS   ", stats.l_shadowed, stats.l_unshadowed);
@@ -562,205 +564,476 @@ static const std::map<NewFlagsR2, const char*> NewFlagDefines
 
 /////////
 #pragma comment(lib, "d3dx9.lib")
-/*
-extern "C"
+static HRESULT create_shader(
+	LPCSTR const pTarget,
+	DWORD const* buffer,
+	u32	const buffer_size,
+	LPCSTR const file_name,
+	void*& result,
+	bool const disasm)
 {
-LPCSTR WINAPI	D3DXGetPixelShaderProfile	(LPDIRECT3DDEVICE9  pDevice);
-LPCSTR WINAPI	D3DXGetVertexShaderProfile	(LPDIRECT3DDEVICE9	pDevice);
-};
-*/
-HRESULT CRender::shader_compile(
-	LPCSTR name,
-	LPCSTR pSrcData,
-	UINT SrcDataLen,
-	void *_pDefines,
-	void *_pInclude,
-	LPCSTR pFunctionName,
-	LPCSTR pTarget,
-	DWORD Flags,
-	void *_ppShader,
-	void *_ppErrorMsgs,
-	void *_ppConstantTable)
-{
-	D3DXMACRO defines[128];
-	int def_it = 0;
-	CONST D3DXMACRO *pDefines = (CONST D3DXMACRO *)_pDefines;
-	char c_smapsize[32];
-	char c_gloss[32];
-	if (pDefines)
+	HRESULT _result = E_FAIL;
+	if (pTarget[0] == 'p')
 	{
-		// transfer existing defines
-		for (;; def_it++)
+		SPS* sps_result = (SPS*)result;
+		_result = HW.pDevice->CreatePixelShader(buffer, &sps_result->ps);
+
+		if (!SUCCEEDED(_result))
 		{
-			if (0 == pDefines[def_it].Name)
-				break;
-			defines[def_it] = pDefines[def_it];
+			Log("! PS: ", file_name);
+			Msg("! CreatePixelShader hr == 0x%08x", _result);
+			return E_FAIL;
+		}
+
+		LPCVOID data = NULL;
+		_result = D3DXFindShaderComment(buffer, MAKEFOURCC('C', 'T', 'A', 'B'), &data, NULL);
+		if (SUCCEEDED(_result) && data)
+		{
+			LPD3DXSHADER_CONSTANTTABLE	pConstants = LPD3DXSHADER_CONSTANTTABLE(data);
+			sps_result->constants.parse(pConstants, 0x1);
+		}
+		else
+		{
+			Log("! PS: ", file_name);
+			Msg("! D3DXFindShaderComment hr == 0x%08x", _result);
 		}
 	}
+	else
+	{
+		SVS* svs_result = (SVS*)result;
+		_result = HW.pDevice->CreateVertexShader(buffer, &svs_result->vs);
+
+		if (!SUCCEEDED(_result)) {
+			Log("! VS: ", file_name);
+			Msg("! CreatePixelShader hr == 0x%08x", _result);
+			return E_FAIL;
+		}
+
+		LPCVOID data = NULL;
+		_result = D3DXFindShaderComment(buffer, MAKEFOURCC('C', 'T', 'A', 'B'), &data, NULL);
+		if (SUCCEEDED(_result) && data)
+		{
+			LPD3DXSHADER_CONSTANTTABLE	pConstants = LPD3DXSHADER_CONSTANTTABLE(data);
+			svs_result->constants.parse(pConstants, 0x2);
+		}
+		else
+		{
+			Log("! VS: ", file_name);
+			Msg("! D3DXFindShaderComment hr == 0x%08x", _result);
+		}
+	}
+
+	if (disasm)
+	{
+		ID3DXBuffer* _disasm = 0;
+		D3DXDisassembleShader(LPDWORD(buffer), FALSE, 0, &_disasm);
+		string_path		dname;
+		strconcat(sizeof(dname), dname, "disasm\\", file_name, ('v' == pTarget[0]) ? ".vs" : ".ps");
+		IWriter* W = FS.w_open("$logs$", dname);
+		W->w(_disasm->GetBufferPointer(), _disasm->GetBufferSize());
+		FS.w_close(W);
+		_RELEASE(_disasm);
+	}
+
+	return _result;
+}
+
+//--------------------------------------------------------------------------------------------------------------
+class includer : public ID3DXInclude
+{
+public:
+	HRESULT __stdcall Open(D3DXINCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes)
+	{
+		string_path pname;
+		strconcat(sizeof(pname), pname, ::Render->getShaderPath(), pFileName);
+		IReader* R = FS.r_open("$game_shaders$", pname);
+		if (0 == R)
+		{
+			R = FS.r_open("$game_shaders$", pFileName);
+			if (0 == R)
+				return E_FAIL;
+		}
+
+		// duplicate and zero-terminate
+		size_t size = R->length();
+		u8* data = xr_alloc<u8>(size + 1);
+		CopyMemory(data, R->pointer(), size);
+		data[size] = 0;
+		FS.r_close(R);
+
+		*ppData = data;
+		*pBytes = static_cast<u32>(size);
+		return D3D_OK;
+	}
+	HRESULT __stdcall Close(LPCVOID pData)
+	{
+		xr_free(pData);
+		return	D3D_OK;
+	}
+};
+
+static inline bool match_shader(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, LPCSTR const mask, size_t const mask_length);
+static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result);
+
+HRESULT	CRender::shader_compile(
+		LPCSTR name,
+		DWORD const* pSrcData,
+		UINT SrcDataLen,
+		LPCSTR pFunctionName,
+		LPCSTR pTarget,
+		DWORD Flags,
+		void*& result)
+{
+	D3DXMACRO defines[128]{};
+	int def_it = 0;
+	char c_smapsize[32];
+	char c_gloss[32];
+
+	char sh_name[MAX_PATH] = "";
+	size_t len = 0;
+
 	// options
 	{
 		sprintf(c_smapsize, "%d", u32(o.smapsize));
 		defines[def_it].Name = "SMAP_size";
 		defines[def_it].Definition = c_smapsize;
 		def_it++;
+		strcat(sh_name, c_smapsize);
+		len += 4;
 	}
-	if (o.fp16_filter)
+
+	if (o.fp16_filter) 
 	{
 		defines[def_it].Name = "FP16_FILTER";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (o.fp16_blend)
+	sh_name[len] = '0' + char(o.fp16_filter);
+	++len;
+
+	if (o.fp16_blend) 
 	{
 		defines[def_it].Name = "FP16_BLEND";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (o.HW_smap)
+	sh_name[len] = '0' + char(o.fp16_blend);
+	++len;
+
+	if (o.HW_smap) 
 	{
 		defines[def_it].Name = "USE_HWSMAP";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (o.HW_smap_PCF)
+	sh_name[len] = '0' + char(o.HW_smap);
+	++len;
+
+	if (o.HW_smap_PCF) 
 	{
 		defines[def_it].Name = "USE_HWSMAP_PCF";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (o.HW_smap_FETCH4)
+	sh_name[len] = '0' + char(o.HW_smap_PCF);
+	++len;
+
+	if (o.HW_smap_FETCH4) 
 	{
 		defines[def_it].Name = "USE_FETCH4";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (o.sjitter)
+	sh_name[len] = '0' + char(o.HW_smap_FETCH4);
+	++len;
+
+	if (o.sjitter) 
 	{
 		defines[def_it].Name = "USE_SJITTER";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (HW.Caps.raster_major >= 3)
+	sh_name[len] = '0' + char(o.sjitter);
+	++len;
+
+	if (HW.Caps.raster_major >= 3) 
 	{
 		defines[def_it].Name = "USE_BRANCHING";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (HW.Caps.geometry.bVTF)
+	sh_name[len] = '0' + char(HW.Caps.raster_major >= 3);
+	++len;
+
+	if (HW.Caps.geometry.bVTF) 
 	{
 		defines[def_it].Name = "USE_VTF";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (o.Tshadows)
+	sh_name[len] = '0' + char(HW.Caps.geometry.bVTF);
+	++len;
+
+	if (o.Tshadows) 
 	{
 		defines[def_it].Name = "USE_TSHADOWS";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (o.mblur)
+	sh_name[len] = '0' + char(o.Tshadows);
+	++len;
+
+	if (o.mblur) 
 	{
 		defines[def_it].Name = "USE_MBLUR";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (o.sunfilter)
+	sh_name[len] = '0' + char(o.mblur);
+	++len;
+
+	if (o.sunfilter) 
 	{
 		defines[def_it].Name = "USE_SUNFILTER";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (o.sunstatic)
+	sh_name[len] = '0' + char(o.sunfilter);
+	++len;
+
+	if (o.sunstatic) 
 	{
 		defines[def_it].Name = "USE_R2_STATIC_SUN";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (o.forcegloss)
+	sh_name[len] = '0' + char(o.sunstatic);
+	++len;
+
+	if (o.forcegloss) 
 	{
 		sprintf(c_gloss, "%f", o.forcegloss_v);
 		defines[def_it].Name = "FORCE_GLOSS";
 		defines[def_it].Definition = c_gloss;
 		def_it++;
 	}
-	if (o.forceskinw)
+	sh_name[len] = '0' + char(o.forcegloss);
+	++len;
+
+	if (o.forceskinw) 
 	{
 		defines[def_it].Name = "SKIN_COLOR";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
+	sh_name[len] = '0' + char(o.forceskinw);
+	++len;
 
 	// skinning
-	if (m_skinning < 0)
+	if (m_skinning < 0) 
 	{
 		defines[def_it].Name = "SKIN_NONE";
 		defines[def_it].Definition = "1";
 		def_it++;
+		sh_name[len] = '1';
+		++len;
 	}
-	if (0 == m_skinning)
+	else
+	{
+		sh_name[len] = '0';
+		++len;
+	}
+
+	if (0 == m_skinning) 
 	{
 		defines[def_it].Name = "SKIN_0";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (1 == m_skinning)
+	sh_name[len] = '0' + char(0 == m_skinning);
+	++len;
+
+	if (1 == m_skinning) 
 	{
 		defines[def_it].Name = "SKIN_1";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	if (2 == m_skinning)
+	sh_name[len] = '0' + char(1 == m_skinning);
+	++len;
+
+	if (2 == m_skinning) 
 	{
 		defines[def_it].Name = "SKIN_2";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
+	sh_name[len] = '0' + char(2 == m_skinning);
+	++len;
 
-	for (auto const &elem : NewFlagDefines)
-	{
-		if (ps_r2_new_flags.test(static_cast<u32>(elem.first)))
-		{
-			defines[def_it].Name = elem.second;
-			defines[def_it].Definition = "1";
-			def_it++;
-		}
-	}
-	
 	// finish
 	defines[def_it].Name = 0;
 	defines[def_it].Definition = 0;
 	def_it++;
 
-	//
-	if (0 == xr_strcmp(pFunctionName, "main"))
+	//Precache
+	HRESULT _result = E_FAIL;
+
+	string_path	folder_name, folder;
+	strcpy(folder, "r2\\objects\\r2\\");
+	strcat(folder, name);
+	strcat(folder, ".");
+
+	char extension[3];
+	strncpy_s(extension, pTarget, 2);
+	strcat(folder, extension);
+
+	FS.update_path(folder_name, "$game_shaders$", folder);
+	strcat(folder_name, "\\");
+
+	m_file_set.clear();
+	FS.file_list(m_file_set, folder_name, FS_ListFiles | FS_RootOnly, "*");
+
+	string_path temp_file_name, file_name;
+	if (!match_shader_id(name, sh_name, m_file_set, temp_file_name)) 
 	{
-		if ('v' == pTarget[0])
-			pTarget = D3DXGetVertexShaderProfile(HW.pDevice); // vertex	"vs_2_a"; //
+		string_path file;
+		strcpy(file, "shaders_cache\\r2\\");
+		strcat(file, name);
+		strcat(file, ".");
+		strcat(file, extension);
+		strcat(file, "\\");
+		strcat(file, sh_name);
+		FS.update_path(file_name, "$app_data_root$", file);
+	}
+	else
+	{
+		strcpy(file_name, folder_name);
+		strcat(file_name, temp_file_name);
+	}
+
+	if (FS.exist(file_name))
+	{
+		IReader* file = FS.r_open(file_name);
+		if (file->length() > 4)
+		{
+			u32 crc = 0;
+			crc = file->r_u32();
+
+			boost::crc_32_type processor;
+			processor.process_block(file->pointer(), ((char*)file->pointer()) + file->elapsed());
+			u32 const real_crc = processor.checksum();
+
+			if (real_crc == crc)
+			{
+				_result = create_shader(pTarget, (DWORD*)file->pointer(), static_cast<u32>(file->elapsed()), file_name, result, o.disasm);
+			}
+		}
+		file->close();
+	}
+
+	if (FAILED(_result))
+	{
+		if (0 == xr_strcmp(pFunctionName, "main"))
+		{
+			if ('v' == pTarget[0])
+				pTarget = D3DXGetVertexShaderProfile(HW.pDevice);	// vertex	"vs_2_a"; //
+			else
+				pTarget = D3DXGetPixelShaderProfile(HW.pDevice);	// pixel	"ps_2_a"; //
+		}
+
+		includer Includer;
+		LPD3DXBUFFER pShaderBuf = nullptr;
+		LPD3DXBUFFER pErrorBuf = nullptr;
+		LPD3DXCONSTANTTABLE pConstants = nullptr;
+		LPD3DXINCLUDE pInclude = (LPD3DXINCLUDE)&Includer;
+
+		_result = D3DXCompileShader((LPCSTR)pSrcData, SrcDataLen, defines, pInclude, pFunctionName, pTarget, Flags | D3DXSHADER_USE_LEGACY_D3DX9_31_DLL, &pShaderBuf, &pErrorBuf, &pConstants);
+
+		if (SUCCEEDED(_result)) 
+		{
+			IWriter* file = FS.w_open(file_name);
+
+			boost::crc_32_type processor;
+			processor.process_block(pShaderBuf->GetBufferPointer(), ((char*)pShaderBuf->GetBufferPointer()) + pShaderBuf->GetBufferSize());
+			u32 const crc = processor.checksum();
+
+			file->w_u32(crc);
+			file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
+			FS.w_close(file);
+
+			_result = create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
+		}
 		else
-			pTarget = D3DXGetPixelShaderProfile(HW.pDevice); // pixel	"ps_2_a"; //
+		{
+			Log("! ", file_name);
+			if (pErrorBuf)
+				Log("! error: ", (LPCSTR)pErrorBuf->GetBufferPointer());
+			else
+				Msg("Can't compile shader hr=0x%08x", _result);
+		}
 	}
 
-	LPD3DXINCLUDE pInclude = (LPD3DXINCLUDE)_pInclude;
-	LPD3DXBUFFER *ppShader = (LPD3DXBUFFER *)_ppShader;
-	LPD3DXBUFFER *ppErrorMsgs = (LPD3DXBUFFER *)_ppErrorMsgs;
-	LPD3DXCONSTANTTABLE *ppConstantTable = (LPD3DXCONSTANTTABLE *)_ppConstantTable;
-
-#ifdef D3DXSHADER_USE_LEGACY_D3DX9_31_DLL //	December 2006 and later
-	HRESULT _result = D3DXCompileShader(pSrcData, SrcDataLen, defines, pInclude, pFunctionName, pTarget, Flags | D3DXSHADER_USE_LEGACY_D3DX9_31_DLL, ppShader, ppErrorMsgs, ppConstantTable);
-#else
-	HRESULT _result = D3DXCompileShader(pSrcData, SrcDataLen, defines, pInclude, pFunctionName, pTarget, Flags, ppShader, ppErrorMsgs, ppConstantTable);
-#endif
-	if (SUCCEEDED(_result) && o.disasm)
-	{
-		ID3DXBuffer *code = *((LPD3DXBUFFER *)_ppShader);
-		ID3DXBuffer *disasm = 0;
-		D3DXDisassembleShader(LPDWORD(code->GetBufferPointer()), FALSE, 0, &disasm);
-		string_path dname;
-		strconcat(sizeof(dname), dname, "disasm\\", name, ('v' == pTarget[0]) ? ".vs" : ".ps");
-		IWriter *W = FS.w_open("$logs$", dname);
-		W->w(disasm->GetBufferPointer(), disasm->GetBufferSize());
-		FS.w_close(W);
-		_RELEASE(disasm);
-	}
 	return _result;
 }
+
+static inline bool match_shader(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, LPCSTR const mask, size_t const mask_length)
+{
+	const size_t full_shader_id_length = xr_strlen(full_shader_id);
+	R_ASSERT2(
+		full_shader_id_length == mask_length,
+		make_string(
+			"bad cache for shader %s, [%s], [%s]",
+			debug_shader_id,
+			mask,
+			full_shader_id
+		)
+	);
+
+	const char* i;
+	const char* j;
+	const char* const e = full_shader_id + full_shader_id_length;
+	for (i = full_shader_id, j = mask; i != e; ++i, ++j)
+	{
+		if (*i == *j)
+			continue;
+
+		if (*j == '_')
+			continue;
+
+		return false;
+	}
+
+	return true;
+}
+
+static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result)
+{
+#ifdef DEBUG
+	LPCSTR temp = "";
+	bool found = false;
+	for (auto& i = file_set.begin(); i != file_set.end(); ++i)
+	{
+		if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size()))
+		{
+			VERIFY(!found);
+			found = true;
+			temp = (*i).name.c_str();
+		}
+	}
+
+	strcpy(result, temp);
+	return found;
+
+#else // #ifdef DEBUG
+	for (auto& i = file_set.begin(); i != file_set.end(); ++i)
+	{
+		if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size()))
+		{
+			strcpy(result, (*i).name.c_str());
+			return true;
+		}
+	}
+
+	return false;
+#endif // #ifdef DEBUG
