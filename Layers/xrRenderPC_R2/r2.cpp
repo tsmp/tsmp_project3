@@ -1012,7 +1012,7 @@ static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const fu
 #ifdef DEBUG
 	LPCSTR temp = "";
 	bool found = false;
-	for (auto& i = file_set.begin(); i != file_set.end(); ++i)
+	for (auto i = file_set.begin(); i != file_set.end(); ++i)
 	{
 		if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size()))
 		{
@@ -1026,7 +1026,7 @@ static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const fu
 	return found;
 
 #else // #ifdef DEBUG
-	for (auto& i = file_set.begin(); i != file_set.end(); ++i)
+	for (auto i = file_set.begin(); i != file_set.end(); ++i)
 	{
 		if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size()))
 		{
@@ -1037,3 +1037,4 @@ static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const fu
 
 	return false;
 #endif // #ifdef DEBUG
+}

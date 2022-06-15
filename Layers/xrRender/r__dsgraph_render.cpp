@@ -652,12 +652,12 @@ void R_dsgraph_structure::r_dsgraph_render_R1_box(IRender_Sector *_S, Fbox &BB, 
 		default:
 		{
 			// Renderable visual
-			ShaderElement *E = V->shader->E[sh]._get();
-			if (E)
+			ShaderElement *ShdrE = V->shader->E[sh]._get();
+			if (ShdrE)
 			{
-				for (u32 pass = 0; pass < E->passes.size(); pass++)
+				for (u32 pass = 0; pass < ShdrE->passes.size(); pass++)
 				{
-					RCache.set_Element(E, pass);
+					RCache.set_Element(ShdrE, pass);
 					V->Render(-1.f);
 				}
 			}

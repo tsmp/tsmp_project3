@@ -302,14 +302,14 @@ void CRenderTarget::phase_combine()
 			L_dir.crossproduct(L_right, L_up);
 			L_dir.normalize();
 
-			Fvector p0, p1, p2, p3;
+			Fvector _p0, _p1, _p2, _p3;
 			float sz = 100.f;
-			p0.mad(zero, L_right, sz).mad(L_dir, sz);
-			p1.mad(zero, L_right, sz).mad(L_dir, -sz);
-			p2.mad(zero, L_right, -sz).mad(L_dir, -sz);
-			p3.mad(zero, L_right, -sz).mad(L_dir, +sz);
-			RCache.dbg_DrawTRI(Fidentity, p0, p1, p2, 0xffffffff);
-			RCache.dbg_DrawTRI(Fidentity, p2, p3, p0, 0xffffffff);
+			_p0.mad(zero, L_right, sz).mad(L_dir, sz);
+			_p1.mad(zero, L_right, sz).mad(L_dir, -sz);
+			_p2.mad(zero, L_right, -sz).mad(L_dir, -sz);
+			_p3.mad(zero, L_right, -sz).mad(L_dir, +sz);
+			RCache.dbg_DrawTRI(Fidentity, _p0, _p1, _p2, 0xffffffff);
+			RCache.dbg_DrawTRI(Fidentity, _p2, _p3, _p0, 0xffffffff);
 		}
 
 	static xr_vector<dbg_line_t> saved_dbg_lines;
@@ -348,15 +348,15 @@ void CRenderTarget::phase_combine()
 		if (1) 
 		{
 			u32							IX=0,IY=1;
-			p0.set						(.5f/_w, .5f/_h);
-			p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
+			_p0.set						(.5f/_w, .5f/_h);
+			_p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
 
 			// Fill vertex buffer
 			FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-			pv->set						((IX+0)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p0.x, p1.y);	pv++;
-			pv->set						((IX+0)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p0.x, p0.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p1.x, p1.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p1.x, p0.y);	pv++;
+			pv->set						((IX+0)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, _p0.x, _p1.y);	pv++;
+			pv->set						((IX+0)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, _p0.x, _p0.y);	pv++;
+			pv->set						((IX+1)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, _p1.x, _p1.y);	pv++;
+			pv->set						((IX+1)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, _p1.x, _p0.y);	pv++;
 			RCache.Vertex.Unlock		(4,g_combine->vb_stride);
 
 			// Draw COLOR
@@ -369,15 +369,15 @@ void CRenderTarget::phase_combine()
 		if (0)
 		{
 			u32							IX=1,IY=1;
-			p0.set						(.5f/_w, .5f/_h);
-			p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
+			_p0.set						(.5f/_w, .5f/_h);
+			_p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
 
 			// Fill vertex buffer
 			FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-			pv->set						((IX+0)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p0.x, p1.y);	pv++;
-			pv->set						((IX+0)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p0.x, p0.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p1.x, p1.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p1.x, p0.y);	pv++;
+			pv->set						((IX+0)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, _p0.x, _p1.y);	pv++;
+			pv->set						((IX+0)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, _p0.x, _p0.y);	pv++;
+			pv->set						((IX+1)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, _p1.x, _p1.y);	pv++;
+			pv->set						((IX+1)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, _p1.x, _p0.y);	pv++;
 			RCache.Vertex.Unlock		(4,g_combine->vb_stride);
 
 			// Draw COLOR

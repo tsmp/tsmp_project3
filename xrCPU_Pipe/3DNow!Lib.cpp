@@ -3,6 +3,7 @@
 
 //;******************************************************************************
 #pragma warning (disable:4799)
+#pragma warning(disable: 4405)
 //;******************************************************************************
 // A "magic" type to allow initialization with any type
 template <class T>
@@ -22,6 +23,8 @@ typedef __m64t<float[2]> __m64f;
 //;******************************************************************************
 //; Vector (3DNow!) data 
 //;******************************************************************************
+#pragma warning(push)
+#pragma warning(disable: 4838)
 static const __m64f  PMOne		=	{ 1.0f		,	-1.0f			};
 static const __m64f  HalfVal	=	{ 0.5f		,	0.5f			};
 static const __m64f  HalfMin	=	{ 0.5f		,	-0.5f			};
@@ -40,6 +43,7 @@ static const __m64f mo30_20		=	{ -0.0333333333f,-0.05f			};
 static const __m64f mo56_42		=	{ -0.0178571f	,-0.0238095f	};
 static const __m64i pio4ht      =   { 0xbf490000,   0xb97daa22      };  // approximately -0.000241913 | -0.785156
 static const __m64i pio4s       =   { 0x3f490fdb,   0x3f490fdb      };  // approximately 0.785398 | 0.785398
+#pragma warning(pop)
 //;******************************************************************************
 //; Scalar (single float) data
 //;******************************************************************************

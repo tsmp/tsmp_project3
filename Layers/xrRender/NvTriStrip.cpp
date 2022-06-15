@@ -81,8 +81,7 @@ void GenerateStrips(const u16 *in_indices, const s32 in_numIndices, xr_vector<Pr
 	//put data in format that the stripifier likes
 	WordVec tempIndices;
 	tempIndices.resize(in_numIndices);
-	int i;
-	for (i = 0; i < in_numIndices; i++)
+	for (s32 i = 0; i < in_numIndices; i++)
 		tempIndices[i] = in_indices[i];
 	NvStripInfoVec tempStrips;
 	NvFaceInfoVec tempFaces;
@@ -103,7 +102,7 @@ void GenerateStrips(const u16 *in_indices, const s32 in_numIndices, xr_vector<Pr
 
 		//count the total number of indices
 		unsigned int numIndices = 0;
-		for (int i = 0; i < tempStrips.size(); i++)
+		for (u32 i = 0; i < tempStrips.size(); i++)
 		{
 			numIndices += tempStrips[i]->m_faces.size() * 3;
 		}

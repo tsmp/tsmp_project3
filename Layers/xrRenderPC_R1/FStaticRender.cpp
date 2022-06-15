@@ -513,8 +513,8 @@ void CRender::Calculate()
 							if (o_it == uID_LTRACK && renderable->renderable_ROS())
 							{
 								// track lighting environment
-								CROS_impl *T = (CROS_impl *)renderable->renderable_ROS();
-								T->update(renderable);
+								CROS_impl *T_crs_impl = (CROS_impl *)renderable->renderable_ROS();
+								T_crs_impl->update(renderable);
 							}
 							set_Object(renderable);
 							renderable->renderable_Render();
@@ -920,15 +920,15 @@ HRESULT CRender::shader_compile(
 		_result = D3DXCompileShader((LPCSTR)pSrcData, SrcDataLen, defines, pInclude, pFunctionName, pTarget, Flags | D3DXSHADER_USE_LEGACY_D3DX9_31_DLL, &pShaderBuf, &pErrorBuf, &pConstants);
 		if (SUCCEEDED(_result)) 
 		{
-			IWriter* file = FS.w_open(file_name);
+			IWriter* shdr_file = FS.w_open(file_name);
 
 			boost::crc_32_type processor;
 			processor.process_block(pShaderBuf->GetBufferPointer(), ((char*)pShaderBuf->GetBufferPointer()) + pShaderBuf->GetBufferSize());
 			u32 const crc = processor.checksum();
 
-			file->w_u32(crc);
-			file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
-			FS.w_close(file);
+			shdr_file->w_u32(crc);
+			shdr_file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
+			FS.w_close(shdr_file);
 
 			_result = create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
 		}
@@ -980,9 +980,9 @@ static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const fu
 #ifdef DEBUG
 	LPCSTR temp = "";
 	bool found = false;
-	for (auto& i = file_set.begin(); i != file_set.end(); ++i)
+	for (auto i = file_set.begin(); i != file_set.end(); ++i)
 	{
-		if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size())) 
+		if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size()))
 		{
 			VERIFY(!found);
 			found = true;
@@ -994,9 +994,9 @@ static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const fu
 	return found;
 
 #else // #ifdef DEBUG
-	for (auto& i = file_set.begin(); i != file_set.end(); ++i)
+	for (auto i = file_set.begin(); i != file_set.end(); ++i)
 	{
-		if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size())) 
+		if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size()))
 		{
 			strcpy(result, (*i).name.c_str());
 			return true;
@@ -1005,3 +1005,4 @@ static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const fu
 
 	return false;
 #endif // #ifdef DEBUG
+}

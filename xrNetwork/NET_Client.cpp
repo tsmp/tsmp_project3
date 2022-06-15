@@ -370,7 +370,7 @@ BOOL IPureClient::Connect(LPCSTR options)
 		//	HRESULT CoInitializeExRes = CoInitializeEx(NULL, 0);
 		//	if (CoInitializeExRes != S_OK && CoInitializeExRes != S_FALSE)
 		//	{
-		//		DXTRACE_ERR(tmp, CoInitializeExRes);
+		//		DXTRACE_ERR(tmp_err, CoInitializeExRes);
 		//		CHK_DX(CoInitializeExRes);
 		//	};
 		//---------------------------
@@ -420,10 +420,10 @@ BOOL IPureClient::Connect(LPCSTR options)
 		dpAppDesc.guidApplication = NET_GUID;
 
 		// Setup client info
-		/*strcpy_s( tmp, server_name );
-		strcat_s( tmp, "/name=" );
-		strcat_s( tmp, user_name_str );
-		strcat_s( tmp, "/" );*/
+		/*strcpy_s( tmp_err, server_name );
+		strcat_s( tmp_err, "/name=" );
+		strcat_s( tmp_err, user_name_str );
+		strcat_s( tmp_err, "/" );*/
 
 		WCHAR ClientNameUNICODE[256];
 		R_CHK(MultiByteToWideChar(CP_ACP, 0, user_name_str, -1, ClientNameUNICODE, 256));
@@ -571,8 +571,8 @@ BOOL IPureClient::Connect(LPCSTR options)
 						Msg("! IPureClient : port %d is BUSY!", c_port);
 
 					//				const char* x = DXGetErrorString9(res);
-					string1024 tmp = "";
-					DXTRACE_ERR(tmp, res);
+					string1024 tmp_err = "";
+					DXTRACE_ERR(tmp_err, res);
 #endif
 					c_port++;
 				}
@@ -620,8 +620,8 @@ BOOL IPureClient::Connect(LPCSTR options)
 			_RELEASE(pHostAddress);
 #ifdef DEBUG
 			//		const char* x = DXGetErrorString9(res);
-			string1024 tmp = "";
-			DXTRACE_ERR(tmp, res);
+			string1024 tmp_err = "";
+			DXTRACE_ERR(tmp_err, res);
 #endif
 			switch (res)
 			{
