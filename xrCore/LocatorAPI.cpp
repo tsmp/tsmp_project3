@@ -604,6 +604,12 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 		if (!pFSltx && m_Flags.is(flScanAppRoot))
 			pFSltx = r_open("$app_root$", fs_ltx);
 
+		if (strstr(Core.Params, "-fsbindir"))
+		{
+			append_path("$work_dir$", Core.WorkingPath, 0, FALSE);
+			pFSltx = r_open("$work_dir$", fs_ltx);
+		}
+
 		if (!pFSltx)
 		{
 			string_path tmpAppPath = "";
