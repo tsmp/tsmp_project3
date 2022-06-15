@@ -9,5 +9,6 @@
 
 // Добавьте сюда заголовочные файлы для предварительной компиляции
 #include "..\..\xrCore\xrCore.h"
+#pragma warning(disable : 4273)
 
 #endif //PCH_H

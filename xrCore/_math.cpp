@@ -150,6 +150,7 @@ void DetectHardwareId()
 	IP_ADAPTER_INFO adapterInfo;
 	DWORD dwBufLen = sizeof(IP_ADAPTER_INFO);
 	auto result = GetAdaptersInfo(&adapterInfo, &dwBufLen);
+	(void)result;
 	//R_ASSERT(result != ERROR_BUFFER_OVERFLOW);
 
 	memcpy(&Core.hardwareId[0], &volumeSerialNumber, sizeof(DWORD));

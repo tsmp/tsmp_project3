@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#pragma warning(disable : 4644)
+
 #include "xr_input.h"
 #include "IInputReceiver.h"
 

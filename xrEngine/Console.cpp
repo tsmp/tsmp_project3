@@ -10,6 +10,9 @@
 #include "Render.h"
 #include "line_editor/line_editor.h"
 
+#pragma TODO("Переписать на зп/чн вид")
+#pragma TODO("FIX! public pureScreenResolutionChanged")
+
 static float const UI_BASE_WIDTH = 1024.0f;
 static float const UI_BASE_HEIGHT = 768.0f;
 static float const LDIST = 0.05f;
@@ -374,14 +377,14 @@ void CConsole::DrawBackgrounds(bool bGame)
 
 	if (m_select_tip < (int)m_tips.size())
 	{
-		Frect r;
+		Frect rct;
 
-		vecTipsEx::iterator itb = m_tips.begin() + m_start_tip;
-		vecTipsEx::iterator ite = m_tips.end();
+		vecTipsEx::iterator itb_tips = m_tips.begin() + m_start_tip;
+		vecTipsEx::iterator ite_tips = m_tips.end();
 
-		for (u32 i = 0; itb != ite; ++itb, ++i) // tips
+		for (u32 i = 0; itb_tips != ite_tips; ++itb_tips, ++i) // tips
 		{
-			TipString const& ts = (*itb);
+			TipString const& ts = (*itb_tips);
 
 			if ((ts.HL_start < 0) || (ts.HL_finish < 0) || (ts.HL_start > ts.HL_finish))			
 				continue;
@@ -391,22 +394,22 @@ void CConsole::DrawBackgrounds(bool bGame)
 			if ((ts.HL_start >= str_size) || (ts.HL_finish > str_size))			
 				continue;			
 
-			r.null();
+			rct.null();
 			LPSTR  tmp = (PSTR)_alloca((str_size + 1) * sizeof(char));
 
 			strncpy_s(tmp, str_size + 1, ts.text.c_str(), ts.HL_start);
-			r.x1 = pr.x1 + w1 + pFont->SizeOf_(tmp);
-			r.y1 = pr.y1 + i * font_h;
+			rct.x1 = pr.x1 + w1 + pFont->SizeOf_(tmp);
+			rct.y1 = pr.y1 + i * font_h;
 
 			strncpy_s(tmp, str_size + 1, ts.text.c_str(), ts.HL_finish);
-			r.x2 = pr.x1 + w1 + pFont->SizeOf_(tmp);
-			r.y2 = r.y1 + font_h;
+			rct.x2 = pr.x1 + w1 + pFont->SizeOf_(tmp);
+			rct.y2 = rct.y1 + font_h;
 
-			DrawRect(r, tips_word_color);
+			DrawRect(rct, tips_word_color);
 
 			if (i >= VIEW_TIPS_COUNT - 1)			
-				break; // for itb			
-		}// for itb
+				break; // for itb_tips			
+		}// for itb_tips
 	} // if
 
 	// --------------------------- scroll bar --------------------
@@ -443,7 +446,7 @@ void CConsole::DrawBackgrounds(bool bGame)
 void CConsole::DrawRect(Frect const &r, u32 color)
 {
 	VERIFY(HW.pDevice);	
-	D3DRECT R = { r.x1, r.y1, r.x2, r.y2 };
+	D3DRECT R = { (LONG)r.x1, (LONG)r.y1, (LONG)r.x2, (LONG)r.y2 };
 	CHK_DX(HW.pDevice->Clear(1, &R, D3DCLEAR_TARGET, color, 1, 0));
 }
 

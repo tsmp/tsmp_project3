@@ -11,6 +11,10 @@
 #include "Coder.hpp"
 #include "SubAlloc.hpp"
 
+#pragma warning(disable : 4244)
+#pragma warning(disable : 4389)
+#pragma warning(disable : 4459)
+
 using namespace ppmd;
 
 #define CP printf("%s : %i\n",__FILE__,__LINE__ );

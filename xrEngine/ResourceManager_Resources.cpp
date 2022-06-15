@@ -362,11 +362,11 @@ SPS *CResourceManager::_CreatePS(LPCSTR name)
 				_hr = HW.pDevice->CreatePixelShader((DWORD *)pShaderBuf->GetBufferPointer(), &_ps->ps);
 				if (SUCCEEDED(_hr))
 				{
-					LPCVOID data = NULL;
-					_hr = D3DXFindShaderComment((DWORD *)pShaderBuf->GetBufferPointer(), MAKEFOURCC('C', 'T', 'A', 'B'), &data, NULL);
-					if (SUCCEEDED(_hr) && data)
+					LPCVOID shader_data = NULL;
+					_hr = D3DXFindShaderComment((DWORD *)pShaderBuf->GetBufferPointer(), MAKEFOURCC('C', 'T', 'A', 'B'), &shader_data, NULL);
+					if (SUCCEEDED(_hr) && shader_data)
 					{
-						pConstants = LPD3DXSHADER_CONSTANTTABLE(data);
+						pConstants = LPD3DXSHADER_CONSTANTTABLE(shader_data);
 						_ps->constants.parse(pConstants, 0x1);
 					}
 					else

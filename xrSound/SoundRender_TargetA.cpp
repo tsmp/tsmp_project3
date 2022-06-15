@@ -24,8 +24,8 @@ BOOL CSoundRender_TargetA::_initialize()
     // initialize buffer
     A_CHK(alGenBuffers(sdef_target_count, pBuffers));
     alGenSources(1, &pSource);
-    ALenum error = alGetError();
-    if (AL_NO_ERROR == error)
+    ALenum al_error = alGetError();
+    if (AL_NO_ERROR == al_error)
     {
         A_CHK(alSourcei(pSource, AL_LOOPING, AL_FALSE));
         A_CHK(alSourcef(pSource, AL_MIN_GAIN, 0.f));
@@ -36,7 +36,7 @@ BOOL CSoundRender_TargetA::_initialize()
     }
     else
     {
-        Msg("! sound: OpenAL: Can't create source. Error: %s.", (LPCSTR)alGetString(error));
+        Msg("! sound: OpenAL: Can't create source. Error: %s.", (LPCSTR)alGetString(al_error));
         return FALSE;
     }
 }

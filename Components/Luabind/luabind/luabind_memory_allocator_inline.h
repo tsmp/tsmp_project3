@@ -46,11 +46,11 @@ typename luabind::memory_allocator<T>::const_pointer luabind::memory_allocator<T
 template <typename T>
 typename luabind::memory_allocator<T>::pointer luabind::memory_allocator<T>::allocate			(size_type const n, void const* const p) const
 {
-	pointer			result = (pointer)call_allocator(p,n*sizeof(T));
+	pointer			__rslt = (pointer)call_allocator(p,n*sizeof(T));
 	if (!n)
-		result		= (pointer)call_allocator(p,1*sizeof(T));
+		__rslt		= (pointer)call_allocator(p,1*sizeof(T));
 
-	return			(result);
+	return			(__rslt);
 }
 
 template <typename T>

@@ -285,7 +285,7 @@ void gather_info(const char *expression, const char *description, const char *ar
 				Msg("%s", stackTrace[i].c_str());
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-			buffer += sprintf(buffer, "%s%s", stackTrace[i], endline);
+			buffer += sprintf(buffer, "%s%s", stackTrace[i].c_str(), endline);
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 		}
 

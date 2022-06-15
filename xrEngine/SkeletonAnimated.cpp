@@ -760,9 +760,9 @@ IC void MakeKeysConsistant(ConsistantKey *keys, int count)
 	// recalc
 	for (int i=0; i<count-1; i++) {
 		Fquaternion Q1,Q2;
-		Q1.add(keys[i].K->Q,keys[i+1].K->Q);
-		Q2.sub(keys[i].K->Q,keys[i+1].K->Q);
-		if (Q1.magnitude()<Q2.magnitude())	keys[i+1].K->Q.inverse_with_w();
+		Q1.add(keys[i].Key->Q,keys[i+1].Key->Q);
+		Q2.sub(keys[i].Key->Q,keys[i+1].Key->Q);
+		if (Q1.magnitude()<Q2.magnitude())	keys[i+1].Key->Q.inverse_with_w();
 	}
 }
 */
@@ -808,8 +808,8 @@ IC void Dequantize(CKey &K, const CBlend &BD, const CMotion &M)
 	// rotation
 	if (M.test_flag(flRKeyAbsent))
 	{
-		const CKeyQR *K = &M._keysR[0];
-		QR2Quat(*K, D->Q);
+		const CKeyQR *Key = &M._keysR[0];
+		QR2Quat(*Key, D->Q);
 	}
 	else
 	{

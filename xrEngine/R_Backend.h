@@ -147,10 +147,10 @@ public:
 	IC void set_ZB(IDirect3DSurface9 *ZB);
 
 	IC void set_Constants(R_constant_table *C);
-	IC void set_Constants(ref_ctable &C) { set_Constants(&*C); }
+	IC void set_Constants(ref_ctable &_C) { set_Constants(&*_C); }
 
 	void set_Textures(STextureList *T);
-	IC void set_Textures(ref_texture_list &T) { set_Textures(&*T); }
+	IC void set_Textures(ref_texture_list &_T) { set_Textures(&*_T); }
 
 	IC void set_Element(ShaderElement *S, u32 pass = 0);
 	IC void set_Element(ref_selement &S, u32 pass = 0) { set_Element(&*S, pass); }
@@ -198,35 +198,35 @@ public:
 	}
 
 	// constants - direct (fast)
-	ICF void set_c(R_constant *C, const Fmatrix &A)
+	ICF void set_c(R_constant *_C, const Fmatrix &A)
 	{
-		if (C)
-			constants.set(C, A);
+		if (_C)
+			constants.set(_C, A);
 	}
-	ICF void set_c(R_constant *C, const Fvector4 &A)
+	ICF void set_c(R_constant *_C, const Fvector4 &A)
 	{
-		if (C)
-			constants.set(C, A);
+		if (_C)
+			constants.set(_C, A);
 	}
-	ICF void set_c(R_constant *C, float x, float y, float z, float w)
+	ICF void set_c(R_constant *_C, float x, float y, float z, float w)
 	{
-		if (C)
-			constants.set(C, x, y, z, w);
+		if (_C)
+			constants.set(_C, x, y, z, w);
 	}
-	ICF void set_ca(R_constant *C, u32 e, const Fmatrix &A)
+	ICF void set_ca(R_constant *_C, u32 e, const Fmatrix &A)
 	{
-		if (C)
-			constants.seta(C, e, A);
+		if (_C)
+			constants.seta(_C, e, A);
 	}
-	ICF void set_ca(R_constant *C, u32 e, const Fvector4 &A)
+	ICF void set_ca(R_constant *_C, u32 e, const Fvector4 &A)
 	{
-		if (C)
-			constants.seta(C, e, A);
+		if (_C)
+			constants.seta(_C, e, A);
 	}
-	ICF void set_ca(R_constant *C, u32 e, float x, float y, float z, float w)
+	ICF void set_ca(R_constant *_C, u32 e, float x, float y, float z, float w)
 	{
-		if (C)
-			constants.seta(C, e, x, y, z, w);
+		if (_C)
+			constants.seta(_C, e, x, y, z, w);
 	}
 
 	// constants - LPCSTR (slow)
@@ -317,19 +317,19 @@ public:
 #ifdef DEBUG
 	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L *pVerts, int vcnt, u16 *pIdx, int pcnt);
 	void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L *pVerts, int pcnt);
-	IC void dbg_DrawAABB(Fvector &T, float sx, float sy, float sz, u32 C)
+	IC void dbg_DrawAABB(Fvector &_T, float sx, float sy, float sz, u32 _C)
 	{
 		Fvector half_dim;
 		half_dim.set(sx, sy, sz);
 		Fmatrix TM;
-		TM.translate(T);
-		dbg_DrawOBB(TM, half_dim, C);
+		TM.translate(_T);
+		dbg_DrawOBB(TM, half_dim, _C);
 	}
-	void dbg_DrawOBB(Fmatrix &T, Fvector &half_dim, u32 C);
-	IC void dbg_DrawTRI(Fmatrix &T, Fvector *p, u32 C) { dbg_DrawTRI(T, p[0], p[1], p[2], C); }
-	void dbg_DrawTRI(Fmatrix &T, Fvector &p1, Fvector &p2, Fvector &p3, u32 C);
-	void dbg_DrawLINE(Fmatrix &T, Fvector &p1, Fvector &p2, u32 C);
-	void dbg_DrawEllipse(Fmatrix &T, u32 C);
+	void dbg_DrawOBB(Fmatrix &_T, Fvector &half_dim, u32 _C);
+	IC void dbg_DrawTRI(Fmatrix &_T, Fvector *p, u32 _C) { dbg_DrawTRI(_T, p[0], p[1], p[2], _C); }
+	void dbg_DrawTRI(Fmatrix &_T, Fvector &p1, Fvector &p2, Fvector &p3, u32 _C);
+	void dbg_DrawLINE(Fmatrix &_T, Fvector &p1, Fvector &p2, u32 _C);
+	void dbg_DrawEllipse(Fmatrix &_T, u32 _C);
 #endif
 
 	CBackend()

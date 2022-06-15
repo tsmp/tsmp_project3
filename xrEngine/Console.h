@@ -55,7 +55,6 @@ class ENGINE_API CGameFont;
 class ENGINE_API IConsole_Command;
 
 
-#pragma TODO("FIX!")
 //public pureScreenResolutionChanged
 
 class ENGINE_API CConsole : 
@@ -144,8 +143,6 @@ public:
 	void ExecuteScript(LPCSTR name);
 	void ExecuteCommand(LPCSTR cmd_str, bool record_cmd = true);
 	void SelectCommand();
-
-#pragma TODO("Переписать на зп/чн вид")
 
 	// get
 	bool GetBool(LPCSTR cmd, bool &val);

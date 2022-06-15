@@ -102,7 +102,7 @@
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FloatingPointModel>Fast</FloatingPointModel>
       <WarningLevel>Level3</WarningLevel>
-      <DisableSpecificWarnings>4251;4577;5037;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4251;4577;5037;4995;</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -148,7 +148,7 @@
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FloatingPointModel>Fast</FloatingPointModel>
       <WarningLevel>Level3</WarningLevel>
-      <DisableSpecificWarnings>4251;4577;5037;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4251;4577;5037;4995;</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <ExceptionHandling>false</ExceptionHandling>
@@ -193,7 +193,7 @@
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FloatingPointModel>Fast</FloatingPointModel>
       <WarningLevel>Level3</WarningLevel>
-      <DisableSpecificWarnings>4251;4577;5037;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4251;4577;5037;4995;</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ExceptionHandling>false</ExceptionHandling>

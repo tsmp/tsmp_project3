@@ -496,7 +496,7 @@ u32 calc_progress_color(u32 idx, u32 total, int stage, int max_stage)
 		idx = total - idx;
 
 	float kk = (float(stage + 1) / float(max_stage)) * (total / 2.0f);
-	float f = 1 / (exp((float(idx) - kk) * 0.5f) + 1.0f);
+	float f = 1 / (expf((float(idx) - kk) * 0.5f) + 1.0f);
 
 	return color_argb_f(f, 1.0f, 1.0f, 1.0f);
 }

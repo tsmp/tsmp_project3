@@ -129,8 +129,8 @@ BOOL CTheoraStream::ParseHeaders()
 		}
 		else
 		{
-			int ret = ReadData(); // someone needs more data
-			if (ret == 0)
+			int result = ReadData(); // someone needs more data
+			if (result == 0)
 				FATAL("End of file while searching for codec headers.");
 		}
 	}

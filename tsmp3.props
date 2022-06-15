@@ -6,6 +6,9 @@
     <OutDir>$(SolutionDir)output\binaries_$(platform)_$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)output\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);MSB8012</MSBuildWarningsAsMessages>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
       <ImportLibrary>$(SolutionDir)output\libraries_$(platform)_$(Configuration)\$(TargetName).lib</ImportLibrary>

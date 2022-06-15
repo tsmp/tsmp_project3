@@ -368,19 +368,19 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
         DU_DRAW_SH(s);
     {
         // fill VB
-        FVF::LIT *pv = (FVF::LIT *)Stream->Lock(6, vs_LIT->vb_stride, vBase);
-        pv->set(0.f, 1.f, 0.f, clr, 0.f, 0.f);
-        pv++;
-        pv->set(0.f, 1.f, .5f, clr, 1.f, 0.f);
-        pv++;
-        pv->set(0.f, .5f, .5f, clr, 1.f, 1.f);
-        pv++;
-        pv->set(0.f, .5f, 0.f, clr, 0.f, 1.f);
-        pv++;
-        pv->set(0.f, .5f, .5f, clr, 1.f, 1.f);
-        pv++;
-        pv->set(0.f, 1.f, .5f, clr, 1.f, 0.f);
-        pv++;
+        FVF::LIT *_pv = (FVF::LIT *)Stream->Lock(6, vs_LIT->vb_stride, vBase);
+        _pv->set(0.f, 1.f, 0.f, clr, 0.f, 0.f);
+        _pv++;
+        _pv->set(0.f, 1.f, .5f, clr, 1.f, 0.f);
+        _pv++;
+        _pv->set(0.f, .5f, .5f, clr, 1.f, 1.f);
+        _pv++;
+        _pv->set(0.f, .5f, 0.f, clr, 0.f, 1.f);
+        _pv++;
+        _pv->set(0.f, .5f, .5f, clr, 1.f, 1.f);
+        _pv++;
+        _pv->set(0.f, 1.f, .5f, clr, 1.f, 0.f);
+        _pv++;
         Stream->Unlock(6, vs_LIT->vb_stride);
         // and Render it as line list
         DU_DRAW_DP(D3DPT_TRIANGLEFAN, vs_LIT, vBase, 4);
@@ -406,21 +406,21 @@ void CDrawUtilities::DrawFlag(const Fvector &p, float heading, float height, flo
         // fill VB
         float rx = _sin(heading);
         float rz = _cos(heading);
-        FVF::L *pv = (FVF::L *)Stream->Lock(6, vs_L->vb_stride, vBase);
+        FVF::L *_pv = (FVF::L *)Stream->Lock(6, vs_L->vb_stride, vBase);
         sz *= 0.8f;
-        pv->set(p.x, p.y + height, p.z, clr);
-        pv++;
-        pv->set(p.x + rx * sz, p.y + height, p.z + rz * sz, clr);
-        pv++;
+        _pv->set(p.x, p.y + height, p.z, clr);
+        _pv++;
+        _pv->set(p.x + rx * sz, p.y + height, p.z + rz * sz, clr);
+        _pv++;
         sz *= 0.5f;
-        pv->set(p.x, p.y + height * (1.f - sz_fl * .5f), p.z, clr);
-        pv++;
-        pv->set(p.x + rx * sz * 0.6f, p.y + height * (1.f - sz_fl * .5f), p.z + rz * sz * 0.75f, clr);
-        pv++;
-        pv->set(p.x, p.y + height * (1.f - sz_fl), p.z, clr);
-        pv++;
-        pv->set(p.x + rx * sz, p.y + height * (1.f - sz_fl), p.z + rz * sz, clr);
-        pv++;
+        _pv->set(p.x, p.y + height * (1.f - sz_fl * .5f), p.z, clr);
+        _pv++;
+        _pv->set(p.x + rx * sz * 0.6f, p.y + height * (1.f - sz_fl * .5f), p.z + rz * sz * 0.75f, clr);
+        _pv++;
+        _pv->set(p.x, p.y + height * (1.f - sz_fl), p.z, clr);
+        _pv++;
+        _pv->set(p.x + rx * sz, p.y + height * (1.f - sz_fl), p.z + rz * sz, clr);
+        _pv++;
         Stream->Unlock(6, vs_L->vb_stride);
         // and Render it as line list
         DU_DRAW_DP(D3DPT_LINELIST, vs_L, vBase, 3);
@@ -428,19 +428,19 @@ void CDrawUtilities::DrawFlag(const Fvector &p, float heading, float height, flo
     else
     {
         // fill VB
-        FVF::L *pv = (FVF::L *)Stream->Lock(6, vs_L->vb_stride, vBase);
-        pv->set(p.x, p.y + height * (1.f - sz_fl), p.z, clr);
-        pv++;
-        pv->set(p.x, p.y + height, p.z, clr);
-        pv++;
-        pv->set(p.x + _sin(heading) * sz, ((pv - 2)->p.y + (pv - 1)->p.y) / 2, p.z + _cos(heading) * sz, clr);
-        pv++;
-        pv->set(*(pv - 3));
-        pv++;
-        pv->set(*(pv - 2));
-        pv++;
-        pv->set(*(pv - 4));
-        pv++;
+        FVF::L *_pv = (FVF::L *)Stream->Lock(6, vs_L->vb_stride, vBase);
+        _pv->set(p.x, p.y + height * (1.f - sz_fl), p.z, clr);
+        _pv++;
+        _pv->set(p.x, p.y + height, p.z, clr);
+        _pv++;
+        _pv->set(p.x + _sin(heading) * sz, ((_pv - 2)->p.y + (_pv - 1)->p.y) / 2, p.z + _cos(heading) * sz, clr);
+        _pv++;
+        _pv->set(*(_pv - 3));
+        _pv++;
+        _pv->set(*(_pv - 2));
+        _pv++;
+        _pv->set(*(_pv - 4));
+        _pv++;
         Stream->Unlock(6, vs_L->vb_stride);
         // and Render it as triangle list
         DU_DRAW_DP(D3DPT_TRIANGLELIST, vs_L, vBase, 2);

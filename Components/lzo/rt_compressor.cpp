@@ -30,6 +30,7 @@ u32 rtc_compress(void *dst, u32 dst_len, const void *src, u32 src_len)
 	VERIFY(r == LZO_E_OK);
 	return out_size;
 }
+
 u32 rtc_decompress(void *dst, u32 dst_len, const void *src, u32 src_len)
 {
 	u32 out_size = dst_len;

@@ -297,8 +297,8 @@ void CStats::Show()
 		F.OutNext("TEST 2:      %2.2fms, %d", TEST2.result, TEST2.count);
 		F.OutNext("TEST 3:      %2.2fms, %d", TEST3.result, TEST3.count);
 #ifdef DEBUG_MEMORY_MANAGER
-		F.OutSkip();
-		F.OutNext("str: cmp[%3d], dock[%3d], qpc[%3d]", Memory.stat_strcmp, Memory.stat_strdock, CPU::qpc_counter);
+		Fnt.OutSkip();
+		Fnt.OutNext("str: cmp[%3d], dock[%3d], qpc[%3d]", Memory.stat_strcmp, Memory.stat_strdock, CPU::qpc_counter);
 		Memory.stat_strcmp = 0;
 		Memory.stat_strdock = 0;
 		CPU::qpc_counter = 0;
@@ -307,7 +307,7 @@ void CStats::Show()
 		F.OutNext("qpc[%3d]", CPU::qpc_counter);
 		CPU::qpc_counter = 0;
 #endif // DEBUG_MEMORY_MANAGER \
-	//		F.OutSet	(640,0);
+	//		Fnt.OutSet	(640,0);
 		F.OutSkip();
 		F.OutNext("static:        %3.1f/%d", RCache.stat.r.s_static.verts / 1024.f, RCache.stat.r.s_static.dips);
 		F.OutNext("flora:         %3.1f/%d", RCache.stat.r.s_flora.verts / 1024.f, RCache.stat.r.s_flora.dips);
@@ -348,30 +348,30 @@ void CStats::Show()
 	// PERF ALERT
 	if (!g_bDisableRedText)
 	{
-		CGameFont &F = *((CGameFont *)pFont);
-		F.SetColor(color_rgba(255, 16, 16, 255));
-		F.OutSet(300, 300);
-		F.SetHeightI(f_base_size * 2);
+		CGameFont &Fnt = *((CGameFont *)pFont);
+		Fnt.SetColor(color_rgba(255, 16, 16, 255));
+		Fnt.OutSet(300, 300);
+		Fnt.SetHeightI(f_base_size * 2);
 		if (fFPS < 30)
-			F.OutNext("FPS       < 30:   %3.1f", fFPS);
+			Fnt.OutNext("FPS       < 30:   %3.1f", fFPS);
 		if (RCache.stat.verts > 500000)
-			F.OutNext("Verts     > 500k: %d", RCache.stat.verts);
-		//if (RCache.stat.polys>500000)	F.OutNext	("Polys     > 500k: %d",	RCache.stat.polys);
+			Fnt.OutNext("Verts     > 500k: %d", RCache.stat.verts);
+		//if (RCache.stat.polys>500000)	Fnt.OutNext	("Polys     > 500k: %d",	RCache.stat.polys);
 		if (psDeviceFlags.test(rsStatistic))
 		{
 			if (RCache.stat.calls > 1000)
-				F.OutNext("DIP/DP    > 1k:   %d", RCache.stat.calls);
-			//if (RCache.stat.textures>1000)F.OutNext	("T_change  > 500:  %d",	RCache.stat.textures);
+				Fnt.OutNext("DIP/DP    > 1k:   %d", RCache.stat.calls);
+			//if (RCache.stat.textures>1000)Fnt.OutNext	("T_change  > 500:  %d",	RCache.stat.textures);
 			if (RenderDUMP_DT_Count > 1000)
-				F.OutNext("DT_count  > 1000: %u", RenderDUMP_DT_Count);
-			F.OutSkip();
-			//if (fMem_calls>1500)			F.OutNext	("MMGR calls > 1500:%3.1f",	fMem_calls);
+				Fnt.OutNext("DT_count  > 1000: %u", RenderDUMP_DT_Count);
+			Fnt.OutSkip();
+			//if (fMem_calls>1500)			Fnt.OutNext	("MMGR calls > 1500:%3.1f",	fMem_calls);
 			if (Sheduler.result > 3.f)
-				F.OutNext("Update     > 3ms:	%3.1f", Sheduler.result);
+				Fnt.OutNext("Update     > 3ms:	%3.1f", Sheduler.result);
 			if (UpdateClient.result > 3.f)
-				F.OutNext("UpdateCL   > 3ms: %3.1f", UpdateClient.result);
+				Fnt.OutNext("UpdateCL   > 3ms: %3.1f", UpdateClient.result);
 			if (Physics.result > 5.f)
-				F.OutNext("Physics    > 5ms: %3.1f", Physics.result);
+				Fnt.OutNext("Physics    > 5ms: %3.1f", Physics.result);
 		}
 	}
 
@@ -379,18 +379,18 @@ void CStats::Show()
 	// Show errors
 	if (!g_bDisableRedText && errors.size())
 	{
-		CGameFont &F = *((CGameFont *)pFont);
-		F.SetColor(color_rgba(255, 16, 16, 191));
-		F.OutSet(200, 0);
-		F.SetHeightI(f_base_size);
+		CGameFont &Fnt = *((CGameFont *)pFont);
+		Fnt.SetColor(color_rgba(255, 16, 16, 191));
+		Fnt.OutSet(200, 0);
+		Fnt.SetHeightI(f_base_size);
 #if 0
 		for (u32 it=0; it<errors.size(); it++)
-			F.OutNext("%s",errors[it].c_str());
+			Fnt.OutNext("%s",errors[it].c_str());
 #else
 		for (u32 it = (u32)_max(int(0), (int)errors.size() - g_ErrorLineCount); it < errors.size(); it++)
-			F.OutNext("%s", errors[it].c_str());
+			Fnt.OutNext("%s", errors[it].c_str());
 #endif
-		F.OnRender();
+		Fnt.OnRender();
 	}
 #endif
 

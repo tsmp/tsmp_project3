@@ -129,13 +129,12 @@ void ConvertVertices(u32 dwTypeDest, void *pDest, u32 dwTypeSrc, void *pSource, 
 	{				// !DEST & SRC
 		tmPosSrc++; // skip it
 	}
-	u32 i;
 	// ---------------------- "Texture coords" property
 	u32 dwTDest = ((dwTypeDest & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
 	u32 dwTSrc = ((dwTypeSrc & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
 	if (dwTDest <= dwTSrc)
 	{
-		for (i = 0; i < dwTDest; i++)
+		for (u32 i = 0; i < dwTDest; i++)
 		{
 			TransferMask[tmPos++] = tmPosSrc++;
 			TransferMask[tmPos++] = tmPosSrc++;
@@ -150,13 +149,13 @@ void ConvertVertices(u32 dwTypeDest, void *pDest, u32 dwTypeSrc, void *pSource, 
 
 		// Copy real TC
 		u32 dwStage0TC = tmPosSrc;
-		for (i = 0; i < dwTSrc; i++)
+		for (u32 i = 0; i < dwTSrc; i++)
 		{
 			TransferMask[tmPos++] = tmPosSrc++;
 			TransferMask[tmPos++] = tmPosSrc++;
 		}
 		// Duplicate stage0 TC
-		for (i = dwTSrc; i < dwTDest; i++)
+		for (u32 i = dwTSrc; i < dwTDest; i++)
 		{
 			TransferMask[tmPos++] = dwStage0TC;
 			TransferMask[tmPos++] = dwStage0TC + 1;
