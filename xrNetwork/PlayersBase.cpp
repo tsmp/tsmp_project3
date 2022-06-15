@@ -15,14 +15,14 @@ extern std::string UrlEncode(const std::string &str);
 
 bool SendRequest(const char* request, char* responseBuffer)
 {
-    char url[256];
-    DWORD dwBytesRead;
+    char url[256];    
     strcpy_s(url, BaseUrl);
     strcat_s(url, request);
 
     HINTERNET hInetSession = InternetOpen(0, INTERNET_OPEN_TYPE_PRECONFIG, 0, 0, 0);
     HINTERNET hURL = InternetOpenUrl(hInetSession, url, 0, 0, 0, 0);
     
+    DWORD dwBytesRead = 0;
     BOOL bResult = InternetReadFile(hURL, responseBuffer, MaxResponseLength, &dwBytesRead);
     responseBuffer[dwBytesRead] = '\0';
 
@@ -85,10 +85,7 @@ bool IsBanned(IClient* CL)
     if (SessionId.empty())
         return false;
 
-    char ch[30];
-    sprintf(ch, "%hu-%hu-%hu-%hu-%hu", CL->m_HWID.s1, CL->m_HWID.s2, CL->m_HWID.s3, CL->m_HWID.s4, CL->m_HWID.s5);
-
-    std::string hwid = ch;
+    std::string hwid = CL->m_HWID.ToString();
     std::string ip = CL->m_cAddress.to_string().c_str();
     std::string name = CL->name.c_str();
 

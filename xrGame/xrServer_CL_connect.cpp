@@ -141,25 +141,10 @@ void xrServer::CheckClientHWID(IClient* CL)
 
 void xrServer::OnHardwareVerifyRespond(IClient* CL, NET_Packet& P)
 {
-	char ch[10];
-	P.r(ch, 10);
+	CL->m_HWID.NetDeserialize(P);	
+	Msg("get respond with hwid: %s", CL->m_HWID.ToString().c_str());
 
-	unsigned short hw1;
-	memcpy(&hw1, &ch[0], sizeof(hw1));
-	unsigned short hw2;
-	memcpy(&hw2, &ch[2], sizeof(hw1));
-	unsigned short hw3;
-	memcpy(&hw3, &ch[4], sizeof(hw1));
-	unsigned short hw4;
-	memcpy(&hw4, &ch[6], sizeof(hw1));
-	unsigned short hw5;
-	memcpy(&hw5, &ch[8], sizeof(hw1));
-	
-	//Msg("His hwid: %hu-%hu-%hu-%hu-%hu", hw1, hw2, hw3, hw4, hw5);
-	HWID hwid(hw1, hw2, hw3, hw4, hw5);
-	CL->m_HWID = hwid;
-
-	if (GetBannedHW(hwid))
+	if (GetBannedHW(CL->m_HWID))
 	{
 		Msg("! Player banned by hwid tried to connect");
 		SendConnectResult(CL, 0, 0, "You are banned.");

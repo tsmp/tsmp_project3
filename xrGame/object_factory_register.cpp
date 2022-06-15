@@ -49,7 +49,7 @@
 #include "ai/crow/ai_crow.h"
 
 #ifdef DEBUG
-#include "../../xrEngine/StatGraph.h"
+#include "StatGraph.h"
 #include "PHDebug.h"
 #endif // DEBUG
 

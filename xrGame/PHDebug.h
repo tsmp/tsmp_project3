@@ -1,9 +1,9 @@
 #ifndef PH_DEBUG_H
 #define PH_DEBUG_H
+
 #ifdef DEBUG
 struct dContact;
-//#include "FastDelegate.h"
-#include "../../xrEngine/StatGraph.h"
+#include "StatGraph.h"
 #define DRAW_CONTACTS
 
 extern Flags32 ph_dbg_draw_mask;
@@ -29,11 +29,12 @@ struct SPHContactDBGDraw
 	Fvector pos;
 	float depth;
 };
+
 DEFINE_VECTOR(SPHContactDBGDraw, CONTACT_VECTOR, CONTACT_I);
 extern CONTACT_VECTOR Contacts0;
 extern CONTACT_VECTOR Contacts1;
 #endif
-///ph_dbg_draw_mask
+
 enum
 {
 	phDbgDrawContacts = 1 << 0,

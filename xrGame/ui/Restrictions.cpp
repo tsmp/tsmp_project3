@@ -1,10 +1,11 @@
 #include "stdafx.h"
-
 #include "Restrictions.h"
+
 #ifdef DEBUG
-#include "../../xrEngine/Console.h"
-#include "../../xrEngine/Console_commands.h"
+#include "Console.h"
+#include "Console_commands.h"
 #endif //#ifdef DEBUG
+
 #include "../string_table.h"
 CRestrictions g_mp_restrictions;
 

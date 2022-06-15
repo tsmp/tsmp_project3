@@ -3,6 +3,7 @@
 #include "net_shared.h"
 #include "NET_Common.h"
 #include "NET_PlayersMonitor.h"
+#include "HWID.h"
 
 struct SClientConnectData
 {
@@ -46,50 +47,7 @@ struct XRNETWORK_API ip_address
 	}
 };
 
-class XRNETWORK_API HWID
-{
-public:
-
-	u16 s1, s2, s3, s4, s5;
-
-	HWID()
-	{
-		s1 = s2 = s3 = s4 = s5 = 0;
-	}
-
-	HWID(u16 us1, u16 us2, u16 us3, u16 us4, u16 us5) : s1(us1), s2(us2), s3(us3), s4(us4), s5(us5) {}
-
-	bool operator==(HWID &other)
-	{
-		return (s1 == other.s1
-			&& s2 == other.s2);
-			//|| (s3 == other.s3
-			//	&& s4 == other.s4
-			//	&& s5 == other.s5);
-	}
-
-	HWID &operator=(const HWID &other)
-	{
-		if (this == &other)
-			return *this;
-
-		s1 = other.s1;
-		s2 = other.s2;
-		s3 = other.s3;
-		s4 = other.s4;
-		s5 = other.s5;
-
-		return *this;
-	}
-
-	bool isEmpty()
-	{
-		return !s1 && !s2 && !s3 && !s4 && !s5;
-	}
-};
-
-class XRNETWORK_API
-	IClient : public MultipacketSender
+class XRNETWORK_API IClient : public MultipacketSender
 {
 public:
 	struct Flags

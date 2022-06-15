@@ -25,7 +25,7 @@ IC bool compare_safe(const luabind::object &o1, const luabind::object &o2)
 #define right_comment concatenizer(*, /)
 #define param_generator(a, b, c, d) a##b##c d##b
 
-#if XRAY_EXCEPTIONS
+#if defined(XRAY_EXCEPTIONS) && !defined(LUABIND_NO_EXCEPTIONS)
 #define process_error                                                                      \
 	catch (std::exception & e)                                                             \
 	{                                                                                      \
@@ -59,7 +59,7 @@ IC bool compare_safe(const luabind::object &o1, const luabind::object &o2)
 						macros_return_operator(m_functor(_6));                                 \
 				}                                                                              \
 			}                                                                                  \
-			process_error if(XRAY_EXCEPTIONS)	                                               \
+			process_error process_error catch (std::exception &) 	                           \
 			{                                                                                  \
 				ai().script_engine().print_output(ai().script_engine().lua(), "", LUA_ERRRUN); \
 			}                                                                                  \

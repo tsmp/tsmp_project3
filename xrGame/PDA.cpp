@@ -102,10 +102,11 @@ void CPda::feel_touch_delete(CObject *O)
 	if (!H_Parent())
 		return;
 	CInventoryOwner *pLostContactInvOwner = smart_cast<CInventoryOwner *>(O);
-	CInventoryOwner *pOwner = smart_cast<CInventoryOwner *>(H_Parent());
-	VERIFY(pOwner);
 
-	pOwner->LostPdaContact(pLostContactInvOwner);
+	if (CInventoryOwner* pOwner = smart_cast<CInventoryOwner*>(H_Parent()))
+		pOwner->LostPdaContact(pLostContactInvOwner);
+	else
+		Msg("! ERROR: cant get pda parent inv owner!");
 }
 
 BOOL CPda::feel_touch_contact(CObject *O)
@@ -142,9 +143,12 @@ void CPda::OnH_A_Chield()
 		{
 			m_sFullName.assign(inherited::Name());
 			m_sFullName += " ";
-			m_sFullName += (smart_cast<CInventoryOwner *>(H_Parent()))->Name();
+
+			if (auto owner = smart_cast<CInventoryOwner*>(H_Parent()))
+				m_sFullName += owner->Name();
 		}
-	};
+	}
+
 	inherited::OnH_A_Chield();
 }
 

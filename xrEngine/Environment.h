@@ -205,6 +205,7 @@ public:
 protected:
 	CBlender_skybox m_b_skybox;
 	CPerlinNoise1D *PerlinNoise1D;
+	shared_str m_FirstWeather;
 
 	float fGameTime;
 
@@ -269,6 +270,7 @@ public:
 	bool SetWeatherFX(shared_str name);
 	bool IsWFXPlaying() { return bWFX; }
 	void SetWeather(shared_str name, bool forced = false);
+	void SetWeather();
 	shared_str GetWeather() { return CurrentWeatherName; }
 	void SetGameTime(float game_time, float time_factor);
 

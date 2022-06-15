@@ -21,10 +21,12 @@
 #include "xrmessages.h"
 #include "gamemtllib.h"
 #include "clsid_game.h"
+
 #ifdef DEBUG
-#include "../../xrEngine/StatGraph.h"
+#include "StatGraph.h"
 #include "PHDebug.h"
 #endif
+
 #include "Physics.h"
 #include "MathUtils.h"
 #include "phvalidevalues.h"

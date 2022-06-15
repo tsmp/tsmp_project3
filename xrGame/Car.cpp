@@ -3,7 +3,7 @@
 #include "Physics.h"
 
 #ifdef DEBUG
-#include "../../xrEngine/StatGraph.h"
+#include "StatGraph.h"
 #include "PHDebug.h"
 #endif // DEBUG
 
@@ -443,7 +443,7 @@ void CCar::UpdateCL()
 
 void CCar::VisualUpdate(float fov)
 {
-	if (IsMyCar())
+	if (IsMyCar() || IsGameTypeSingle())
 		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
 	else
 		Interpolate();

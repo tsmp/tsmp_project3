@@ -128,49 +128,46 @@ float CEnvironment::NormalizeTime(float tm)
 		return tm;
 }
 
+void CEnvironment::SetWeather()
+{
+	SetWeather(m_FirstWeather);
+}
+
 void CEnvironment::SetWeather(shared_str name, bool forced)
 {
-	//.	static BOOL bAlready = FALSE;
-	//.	if(bAlready)	return;
-	if (name.size())
-	{
-		//.		bAlready = TRUE;
-		EnvsMapIt it = WeatherCycles.find(name);
-		if (it == WeatherCycles.end())
-		{
-			Msg("! Invalid weather name: %s", name.c_str());
-			return;
-		}
-		R_ASSERT3(it != WeatherCycles.end(), "Invalid weather name.", *name);
-		CurrentCycleName = it->first;
-		if (forced)
-		{
-			Invalidate();
-		}
-		if (!bWFX)
-		{
-			CurrentWeather = &it->second;
-			CurrentWeatherName = it->first;
-		}
-		if (forced)
-		{
-			SelectEnvs(fGameTime);
-		}
-#ifdef WEATHER_LOGGING
-		Msg("Starting Cycle: %s [%s]", *name, forced ? "forced" : "deferred");
-#endif
-	}
-	else
-	{
+	R_ASSERT(!!name.size(), "Set empty weather name!");
+	EnvsMapIt it = WeatherCycles.find(name);
 
-		FATAL("! Empty weather name");
+	if (it == WeatherCycles.end())
+	{
+		Msg("! Invalid weather name: %s", name.c_str());
+		return;
 	}
+
+	CurrentCycleName = it->first;
+
+	if (forced)
+		Invalidate();
+
+	if (!bWFX)
+	{
+		CurrentWeather = &it->second;
+		CurrentWeatherName = it->first;
+	}
+
+	if (forced)
+		SelectEnvs(fGameTime);
+
+#ifdef WEATHER_LOGGING
+	Msg("Starting Cycle: %s [%s]", *name, forced ? "forced" : "deferred");
+#endif
 }
 
 bool CEnvironment::SetWeatherFX(shared_str name)
 {
 	if (bWFX)
 		return false;
+
 	if (name.size())
 	{
 		EnvsMapIt it = WeatherFXs.find(name);
@@ -184,6 +181,7 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 		float start_tm = fGameTime + rewind_tm;
 		float current_length;
 		float current_weight;
+
 		if (Current[0]->exec_time > Current[1]->exec_time)
 		{
 			float x = fGameTime > Current[0]->exec_time ? fGameTime - Current[0]->exec_time : (DAY_LENGTH - Current[0]->exec_time) + fGameTime;
@@ -195,6 +193,7 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 			current_length = Current[1]->exec_time - Current[0]->exec_time;
 			current_weight = (fGameTime - Current[0]->exec_time) / current_length;
 		}
+
 		clamp(current_weight, 0.f, 1.f);
 
 		std::sort(CurrentWeather->begin(), CurrentWeather->end(), sort_env_etl_pred);
@@ -206,8 +205,10 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 		C0->exec_time = NormalizeTime(fGameTime - ((rewind_tm / (Current[1]->exec_time - fGameTime)) * current_length - rewind_tm));
 		C1->copy(*Current[1]);
 		C1->exec_time = NormalizeTime(start_tm);
+
 		for (EnvIt t_it = CurrentWeather->begin() + 2; t_it != CurrentWeather->end() - 1; t_it++)
 			(*t_it)->exec_time = NormalizeTime(start_tm + (*t_it)->exec_time_loaded);
+
 		SelectEnv(PrevWeather, WFX_end_desc[0], CE->exec_time);
 		SelectEnv(PrevWeather, WFX_end_desc[1], WFX_end_desc[0]->exec_time + 0.5f);
 		CT->copy(*WFX_end_desc[0]);
@@ -220,6 +221,7 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 
 		Current[0] = C0;
 		Current[1] = C1;
+
 #ifdef WEATHER_LOGGING
 		Msg("Starting WFX: '%s' - %3.2f sec", *name, wfx_time);
 		for (EnvIt l_it = CurrentWeather->begin(); l_it != CurrentWeather->end(); l_it++)
@@ -241,6 +243,7 @@ void CEnvironment::StopWFX()
 	SetWeather(CurrentCycleName, false);
 	Current[0] = WFX_end_desc[0];
 	Current[1] = WFX_end_desc[1];
+
 #ifdef WEATHER_LOGGING
 	Msg("WFX - end. Weather: '%s' Desc: '%s'/'%s' GameTime: %3.2f", CurrentWeatherName.c_str(), Current[0]->sect_name.c_str(), Current[1]->sect_name.c_str(), fGameTime);
 #endif

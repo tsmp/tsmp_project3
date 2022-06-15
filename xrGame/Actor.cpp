@@ -1,11 +1,13 @@
 #include "pch_script.h"
 #include "Actor_Flags.h"
 #include "hudmanager.h"
+
 #ifdef DEBUG
 #include "ode_include.h"
-#include "../../xrEngine/StatGraph.h"
+#include "StatGraph.h"
 #include "PHDebug.h"
 #endif // DEBUG
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"

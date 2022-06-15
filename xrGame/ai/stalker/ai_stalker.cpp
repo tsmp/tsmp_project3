@@ -850,6 +850,13 @@ void CAI_Stalker::update_object_handler()
 		{
 			CObjectHandler::update();
 		}
+#if defined(DEBUG) && !defined(LUABIND_NO_EXCEPTIONS)
+		catch (luabind::cast_failed &message)
+		{
+			Msg("! Expression \"%s\" from luabind::object to %s", message.what(), message.info()->name());
+			throw;
+		}
+#endif
 		catch (std::exception &message)
 		{
 			Msg("! Expression \"%s\"", message.what());
@@ -989,7 +996,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	START_PROFILE("stalker/schedule_update")
 	VERIFY2(getEnabled() || PPhysicsShell(), *cName());
 
-	if (!CObjectHandler::planner().initialized())
+	if (!CObjectHandler::planner().initialized() && OnServer())
 	{
 		START_PROFILE("stalker/client_update/object_handler")
 		update_object_handler();

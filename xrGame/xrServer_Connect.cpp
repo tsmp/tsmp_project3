@@ -103,7 +103,8 @@ IClient *xrServer::new_client(SClientConnectData *cl_data)
 
 void xrServer::AttachNewClient(IClient *CL)
 {
-	fz_download_mod(this, CL->ID);
+	if(!IsGameTypeSingle())
+		fz_download_mod(this, CL->ID);
 
 	MSYS_CONFIG msgConfig;
 	msgConfig.sign1 = 0x12071980;

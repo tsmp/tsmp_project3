@@ -668,25 +668,22 @@ bool CRelationMapLocation::Update()
 bool CRelationMapLocation::IsVisible()
 {
 	bool res = true;
+
 	if (m_last_relation == ALife::eRelationTypeEnemy || m_last_relation == ALife::eRelationTypeWorstEnemy)
 	{
-
-		CObject *_object_ = Level().Objects.net_Find(m_pInvOwnerEntityID);
-		if (_object_)
+		if(CObject *obj = Level().Objects.net_Find(m_pInvOwnerEntityID))
 		{
-			CEntityAlive *ea = smart_cast<CEntityAlive *>(_object_);
+			CEntityAlive *ea = smart_cast<CEntityAlive *>(obj);
 			if (ea && !ea->g_Alive())
 				return true;
 
-			res = Actor()->memory().visual().visible_now(smart_cast<const CGameObject *>(_object_));
+			if (CActor* actMe = smart_cast<CActor*>(Level().CurrentViewEntity()))
+				res = actMe->memory().visual().visible_now(smart_cast<CGameObject*>(obj));
 		}
-		else
-			res = false;
 	}
-	if (m_b_was_visible_last_frame == false && res == true)
-	{
-		m_minimap_spot->ResetXformAnimation();
-	}
+
+	if (!m_b_was_visible_last_frame == false && res)	
+		m_minimap_spot->ResetXformAnimation();	
 
 	m_b_was_visible_last_frame = res;
 	return res;

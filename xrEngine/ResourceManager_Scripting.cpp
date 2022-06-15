@@ -293,19 +293,18 @@ static void* __cdecl luabind_allocator(luabind::memory_allocation_function_param
 	}
 
 	if (!pointer)
-	{
-#ifndef DEBUG
-		return Memory.mem_alloc(size);
-#else
-		return Memory.mem_alloc(size, "void");
+#ifdef DEBUG_MEMORY_NAME
+		return Memory.mem_alloc(size, "Luabind");
+#else	
+	return Memory.mem_alloc(size);
 #endif
-	}
 
 	void* non_const_pointer = const_cast<LPVOID>(pointer);
-#ifndef DEBUG
-	return Memory.mem_realloc(non_const_pointer, size);
+
+#ifdef DEBUG_MEMORY_NAME
+	return Memory.mem_realloc(non_const_pointer, size, "Luabind");
 #else
-	return Memory.mem_realloc(non_const_pointer, size, "void");
+	return Memory.mem_realloc(non_const_pointer, size);
 #endif
 }
 

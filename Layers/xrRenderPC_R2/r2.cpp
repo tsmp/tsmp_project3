@@ -535,6 +535,31 @@ void CRender::Statistics(CGameFont *_F)
 #endif
 }
 
+static const std::map<NewFlagsR2, const char*> NewFlagDefines
+{
+	{ NewFlagsR2::SSAO, "USE_SSAO"},
+	{ NewFlagsR2::DOF, "USE_DEPTH_OF_FIELD"},
+	{ NewFlagsR2::COLOR_FRINGE, "USE_COLOR_FRINGE"},
+	{ NewFlagsR2::SOFT_SHADOWS, "USE_SOFT_SHADOWS"},
+	{ NewFlagsR2::SHAFTS, "USE_SHAFTS"},
+	{ NewFlagsR2::SHAFTS_HQ, "SHAFTS_HQ"},
+	{ NewFlagsR2::SHAFTS_ENHANCED, "SHAFTS_ENHANCED"},
+	{ NewFlagsR2::SHAFTS_DUST, "SHAFTS_DUST"},
+	{ NewFlagsR2::SATURATE, "USE_SATURATION"},
+	{ NewFlagsR2::FOG, "USE_HORIZON_FOG"},
+	{ NewFlagsR2::RAINBOW, "USE_RAINBOW"},
+	{ NewFlagsR2::SOFT_WATER, "USE_SOFT_WATER"},
+	{ NewFlagsR2::SOFT_PARTICLES, "USE_SOFT_PARTICLES"},
+	{ NewFlagsR2::TREES_DARK, "USE_TREES_DARK"},
+	{ NewFlagsR2::TREES_FAST, "USE_TREES_FAST"},
+	{ NewFlagsR2::MODELS_BRIGHT, "USE_MODELS_BRIGHT"},
+	{ NewFlagsR2::COLOR_B_FILTER, "USE_COLOR_B_FILTER"},
+	{ NewFlagsR2::CINEMATIC, "USE_SUPER_CINEMATIC"},
+	{ NewFlagsR2::CONSTRAST, "USE_SUPER_CONTRAST"},
+	{ NewFlagsR2::HYPERSONIC, "USE_HYPERSONIC"},
+	{ NewFlagsR2::SURERGLOSS, "USE_SUPER_GLOSS"}
+};
+
 /////////
 #pragma comment(lib, "d3dx9.lib")
 /*
@@ -691,6 +716,16 @@ HRESULT CRender::shader_compile(
 		def_it++;
 	}
 
+	for (auto const &elem : NewFlagDefines)
+	{
+		if (ps_r2_new_flags.test(static_cast<u32>(elem.first)))
+		{
+			defines[def_it].Name = elem.second;
+			defines[def_it].Definition = "1";
+			def_it++;
+		}
+	}
+	
 	// finish
 	defines[def_it].Name = 0;
 	defines[def_it].Definition = 0;

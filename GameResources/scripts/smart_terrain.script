@@ -1139,7 +1139,6 @@ function on_death(obj_id)
 	
 	if not obj then
 		printfa("cant find object in simulation to unregister in gulag")
-		printfa("its id: %d", obj_id)
 		return
 	end
 	

@@ -89,6 +89,10 @@ function generic_object_binder:waypoint_callback(obj, action_type, index)
 end
 
 function generic_object_binder:death_callback(victim, who)
+	if not self.object then
+		return
+	end
+
 	if who:id() == db.actor:id() then
 		xr_statistic.addKillCount(self.object)
 	end

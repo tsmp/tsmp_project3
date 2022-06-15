@@ -64,7 +64,32 @@ float ps_r2_ssaLOD_B = 32.f;
 float ps_r2_tf_Mipbias = 0.0f;
 
 // R2-specific
-Flags32 ps_r2_ls_flags = {R2FLAG_SUN | R2FLAG_SUN_IGNORE_PORTALS | R2FLAG_EXP_DONT_TEST_UNSHADOWED | R2FLAG_USE_NVSTENCIL | R2FLAG_EXP_SPLIT_SCENE | R2FLAG_EXP_MT_CALC}; // r2-only
+Flags32 ps_r2_ls_flags = 
+{
+	R2FLAG_SUN | 
+	R2FLAG_SUN_IGNORE_PORTALS | 
+	R2FLAG_EXP_DONT_TEST_UNSHADOWED | 
+	R2FLAG_USE_NVSTENCIL | 
+	R2FLAG_EXP_SPLIT_SCENE | 
+	R2FLAG_EXP_MT_CALC
+}; // r2-only
+
+Flags32 ps_r2_new_flags =
+{
+	static_cast<u32>(NewFlagsR2::SSAO) |
+	static_cast<u32>(NewFlagsR2::SHAFTS_DUST) |
+	static_cast<u32>(NewFlagsR2::SATURATE) |
+	static_cast<u32>(NewFlagsR2::FOG) |
+	static_cast<u32>(NewFlagsR2::RAINBOW) |
+	static_cast<u32>(NewFlagsR2::SOFT_WATER) |
+	static_cast<u32>(NewFlagsR2::SOFT_PARTICLES) |
+	static_cast<u32>(NewFlagsR2::TREES_FAST) |
+	static_cast<u32>(NewFlagsR2::CINEMATIC) |
+	static_cast<u32>(NewFlagsR2::CONSTRAST) |
+	static_cast<u32>(NewFlagsR2::HYPERSONIC) |
+	static_cast<u32>(NewFlagsR2::SURERGLOSS)
+}; // r2-only
+
 float ps_r2_df_parallax_h = 0.02f;
 float ps_r2_df_parallax_range = 75.f;
 float ps_r2_tonemap_middlegray = 0.25f;		 // r2-only
@@ -343,7 +368,7 @@ void xrRender_initconsole()
 
 	Fvector tw_min, tw_max;
 
-	CMD4(CCC_Float, "r__geometry_lod", &ps_r__LOD, 0.1f, 1.2f);
+	CMD4(CCC_Float, "r__geometry_lod", &ps_r__LOD, 0.1f, 30.0f);
 	//.	CMD4(CCC_Float,		"r__geometry_lod_pow",	&ps_r__LOD_Power,			0,		2		);
 
 	//.	CMD4(CCC_Float,		"r__detail_density",	&ps_r__Detail_density,		.05f,	0.99f	);
@@ -372,10 +397,9 @@ void xrRender_initconsole()
 	CMD4(CCC_Float, "r1_lmodel_lerp", &ps_r1_lmodel_lerp, 0, 0.333f);
 	CMD2(CCC_tf_MipBias, "r1_tf_mipbias", &ps_r1_tf_Mipbias); //	{-3 +3}
 	CMD3(CCC_Mask, "r1_dlights", &ps_r1_flags, R1FLAG_DLIGHTS);
-	CMD4(CCC_Float, "r1_dlights_clip", &ps_r1_dlights_clip, 10.f, 150.f);
+	CMD4(CCC_Float, "r1_dlights_clip", &ps_r1_dlights_clip, 10.f, 300.f);
 	CMD4(CCC_Float, "r1_pps_u", &ps_r1_pps_u, -1.f, +1.f);
 	CMD4(CCC_Float, "r1_pps_v", &ps_r1_pps_v, -1.f, +1.f);
-	CMD4(CCC_Float, "r1_dlights_clip", &ps_r1_dlights_clip, 10.f, 150.f);
 
 	// R1-specific
 	CMD4(CCC_Integer, "r1_glows_per_frame", &ps_r1_GlowsPerFrame, 2, 32);
@@ -426,8 +450,8 @@ void xrRender_initconsole()
 	CMD3(CCC_Mask, "r2_sun_tsm", &ps_r2_ls_flags, R2FLAG_SUN_TSM);
 	CMD4(CCC_Float, "r2_sun_tsm_proj", &ps_r2_sun_tsm_projection, .001f, 0.8f);
 	CMD4(CCC_Float, "r2_sun_tsm_bias", &ps_r2_sun_tsm_bias, -0.5, +0.5);
-	CMD4(CCC_Float, "r2_sun_near", &ps_r2_sun_near, 1.f, 50.f);
-	CMD4(CCC_Float, "r2_sun_near_border", &ps_r2_sun_near_border, .5f, 1.0f);
+	CMD4(CCC_Float, "r2_sun_near", &ps_r2_sun_near, 1.f, 150.f);
+	CMD4(CCC_Float, "r2_sun_near_border", &ps_r2_sun_near_border, .5f, 1.5f);
 	CMD4(CCC_Float, "r2_sun_depth_far_scale", &ps_r2_sun_depth_far_scale, 0.5, 1.5);
 	CMD4(CCC_Float, "r2_sun_depth_far_bias", &ps_r2_sun_depth_far_bias, -0.5, +0.5);
 	CMD4(CCC_Float, "r2_sun_depth_near_scale", &ps_r2_sun_depth_near_scale, 0.5, 1.5);
@@ -469,6 +493,29 @@ void xrRender_initconsole()
 	tw_min.set(0, 0, 0);
 	tw_max.set(1, 1, 1);
 	CMD4(CCC_Vector3, "r2_aa_weight", &ps_r2_aa_weight, tw_min, tw_max);
+
+	// TSMP: new flags
+	CMD3(CCC_Mask, "r2_new_ssao", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::SSAO));
+	CMD3(CCC_Mask, "r2_new_depth_of_field", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::DOF));
+	CMD3(CCC_Mask, "r2_new_color_fringe", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::COLOR_FRINGE));
+	CMD3(CCC_Mask, "r2_new_soft_shadows", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::SOFT_SHADOWS));
+	CMD3(CCC_Mask, "r2_new_shafts", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::SHAFTS));
+	CMD3(CCC_Mask, "r2_new_shafts_hq", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::SHAFTS_HQ));
+	CMD3(CCC_Mask, "r2_new_shafts_enhanced", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::SHAFTS_ENHANCED));
+	CMD3(CCC_Mask, "r2_new_shafts_dust", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::SHAFTS_DUST));
+	CMD3(CCC_Mask, "r2_new_saturate", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::SATURATE));
+	CMD3(CCC_Mask, "r2_new_fog", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::FOG));
+	CMD3(CCC_Mask, "r2_new_rainbow", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::RAINBOW));
+	CMD3(CCC_Mask, "r2_new_soft_water", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::SOFT_WATER));
+	CMD3(CCC_Mask, "r2_new_soft_particles", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::SOFT_PARTICLES));
+	CMD3(CCC_Mask, "r2_new_trees_dark", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::TREES_DARK));
+	CMD3(CCC_Mask, "r2_new_trees_fast", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::TREES_FAST));
+	CMD3(CCC_Mask, "r2_new_models_bright", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::MODELS_BRIGHT));
+	CMD3(CCC_Mask, "r2_new_color_b_filter", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::COLOR_B_FILTER));
+	CMD3(CCC_Mask, "r2_new_cinematic", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::CINEMATIC));
+	CMD3(CCC_Mask, "r2_new_contrast", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::CONSTRAST));
+	CMD3(CCC_Mask, "r2_new_hypersonic", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::HYPERSONIC));
+	CMD3(CCC_Mask, "r2_new_supergloss", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::SURERGLOSS));
 }
 
 void xrRender_apply_tf()
