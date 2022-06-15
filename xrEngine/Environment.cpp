@@ -128,14 +128,9 @@ float CEnvironment::NormalizeTime(float tm)
 		return tm;
 }
 
-void CEnvironment::SetWeather()
-{
-	SetWeather(m_FirstWeather);
-}
-
 void CEnvironment::SetWeather(shared_str name, bool forced)
 {
-	R_ASSERT(!!name.size(), "Set empty weather name!");
+	R_ASSERT2(!!name.size(), "Set empty weather name!");
 	EnvsMapIt it = WeatherCycles.find(name);
 
 	if (it == WeatherCycles.end())

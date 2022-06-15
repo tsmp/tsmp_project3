@@ -3,13 +3,13 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>$(SolutionDir)\output\binaries_$(platform)_$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\output\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)output\binaries_$(platform)_$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)output\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
-      <ImportLibrary>$(SolutionDir)\output\libraries_$(platform)_$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>$(SolutionDir)\output\libraries_$(platform)_$(Configuration);$(SolutionDir)Components\DX9SDK\Lib_$(platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(SolutionDir)output\libraries_$(platform)_$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\libraries_$(platform)_$(Configuration);$(SolutionDir)Components\DX9SDK\Lib_$(platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <ClCompile>
@@ -21,7 +21,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
-      <OutputFile>$(SolutionDir)\output\libraries_$(platform)_$(Configuration)\$(TargetName).lib</OutputFile>
+      <OutputFile>$(SolutionDir)output\libraries_$(platform)_$(Configuration)\$(TargetName).lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup />

@@ -118,13 +118,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>X:\Components\DX9SDK\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Components\DX9SDK\Lib;$(SolutionDir)\output\libraries_$(Configuration)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>X:\Components\DX9SDK\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Components\DX9SDK\Lib;$(SolutionDir)\output\libraries_$(Configuration)\</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -427,6 +423,7 @@
       <LargeAddressAware>true</LargeAddressAware>
       <TargetMachine>NotSet</TargetMachine>
       <AdditionalDependencies>legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\libraries_$(platform)_Debug;$(SolutionDir)Components\DX9SDK\Lib_$(platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
@@ -464,6 +461,7 @@
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
       <AdditionalDependencies>legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\libraries_$(platform)_Debug;$(SolutionDir)Components\DX9SDK\Lib_$(platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

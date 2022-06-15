@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../xrEngine/Environment.h"
 #include "HUDmanager.h"
 #include "LevelGameDef.h"
 #include "ai_space.h"
@@ -119,7 +120,7 @@ BOOL CLevel::Load_GameSpecific_After()
 		if (pLevel->section_exist("level_weather") && pLevel->line_exist("level_weather", "weather"))
 			GamePersistent().Environment().SetWeather(pLevel->r_string("level_weather", "weather"));
 		else
-			GamePersistent().Environment().SetWeather();
+			GamePersistent().Environment().SetWeather(GamePersistent().Environment().m_FirstWeather);
 	}
 
 	BlockCheatLoad();
