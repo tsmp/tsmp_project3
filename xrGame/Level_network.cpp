@@ -377,7 +377,7 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 	};
 
 	if (psNET_direct_connect)
-		net_Syncronised = TRUE;
+		net_Syncronised = true;
 	else
 		net_Syncronize();
 

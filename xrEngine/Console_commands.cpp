@@ -463,7 +463,6 @@ extern int psNET_DedicatedSleep;
 extern int g_svDedicateServerUpdateReate;
 extern int g_Dump_Export_Obj;
 extern int g_Dump_Import_Obj;
-extern char psNET_Name[32];
 extern Flags32 psEnvFlags;
 extern float r__dtex_range;
 

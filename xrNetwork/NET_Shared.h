@@ -18,7 +18,6 @@ XRNETWORK_API extern Flags32 psNET_Flags;
 XRNETWORK_API extern int psNET_ClientUpdate;
 XRNETWORK_API extern int get_psNET_ClientUpdate();
 XRNETWORK_API extern int psNET_ClientPending;
-XRNETWORK_API extern char psNET_Name[];
 XRNETWORK_API extern int psNET_ServerUpdate;
 XRNETWORK_API extern int get_psNET_ServerUpdate();
 XRNETWORK_API extern int psNET_ServerPending;
