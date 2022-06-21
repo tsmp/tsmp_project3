@@ -1561,3 +1561,50 @@ void game_sv_mp::SvSendChatMessage(LPCSTR str)
 	P.w_s16(0);
 	u_EventSend(P);
 }
+
+void game_sv_mp::SvSendChatMessageCow(LPCSTR str)
+{
+	NET_Packet P;
+	P.w_begin(M_CHAT_MESSAGE);
+	P.w_s16(0);
+	P.w_stringZ("ServerAdmin");
+
+	std::string strText = str;
+	int textLen = strText.size();
+
+	std::string top,bottom;
+	top = "  ";
+	bottom = "  ";
+
+	const std::string newLine = "\n ";
+
+	std::string cow[6];
+	cow[0] = "     \\ ";
+	cow[1] = "   ^__^ ";
+	cow[2] = "   (oo)\\______ ";
+	cow[3] = "   (__)\\       )\\/\\ ";
+	cow[4] = "       || ----w | ";
+	cow[5] = "       ||      || ";
+
+	for (int i = 0; i < textLen; i++)
+	{
+		top += "_";
+		bottom += "=";
+	}
+
+	strText = "< " + strText + " >";
+	strText = newLine +top + newLine + strText + newLine + bottom;
+
+	for (int j = 0; j < 6; j++)
+		strText = strText + newLine+ cow[j];
+
+	if (strText.size() > 200)
+	{
+		Msg("! too long message!");
+		return;
+	}
+
+	P.w_stringZ(strText.c_str());
+	P.w_s16(0);
+	u_EventSend(P);
+}

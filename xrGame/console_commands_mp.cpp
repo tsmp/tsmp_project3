@@ -1397,16 +1397,29 @@ class CCC_SvChat : public IConsole_Command
 {
 public:
 	CCC_SvChat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
 	virtual void Execute(LPCSTR args)
 	{
-		if (!OnServer())
+		if (!OnServer() || !Level().Server || !Level().Server->game)
 			return;
-		if (Level().Server && Level().Server->game)
-		{
-			game_sv_mp *game = smart_cast<game_sv_mp *>(Level().Server->game);
-			if (game)
-				game->SvSendChatMessage(args);
-		}
+
+		if (game_sv_mp* game = smart_cast<game_sv_mp*>(Level().Server->game))
+			game->SvSendChatMessage(args);
+	}
+};
+
+class CCC_SvChatCow : public IConsole_Command
+{
+public:
+	CCC_SvChatCow(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		if (!OnServer() || !Level().Server || !Level().Server->game)
+			return;	
+			
+		if (game_sv_mp* game = smart_cast<game_sv_mp*>(Level().Server->game))
+			game->SvSendChatMessageCow(args);
 	}
 };
 
@@ -1997,6 +2010,7 @@ void register_mp_console_commands()
 	CMD1(CCC_Name, "name");
 	CMD1(CCC_SvStatus, "sv_status");
 	CMD1(CCC_SvChat, "chat");
+	CMD1(CCC_SvChatCow, "chat_cow");
 	CMD1(CCC_SvEventMsg, "event_msg");
 
 	CMD1(CCC_ClSpawn, "cl_spawn");
