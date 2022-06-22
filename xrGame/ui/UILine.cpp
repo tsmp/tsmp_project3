@@ -121,19 +121,24 @@ void CUILine::ProcessNewLines()
 	for (u32 i = 0; i < m_subLines.size(); i++)
 	{
 		StrSize pos = m_subLines[i].m_text.find("\\n");
-		if (pos != npos)
-		{
-			CUISubLine sbLine;
-			if (pos)
-				sbLine = *m_subLines[i].Cut2Pos((int)pos - 1);
-			sbLine.m_last_in_line = true;
-			m_subLines.insert(m_subLines.begin() + i, sbLine);
-			m_subLines[i + 1].m_text.erase(0, 2);
-			if (m_subLines[i + 1].m_text.empty())
-			{
-				m_subLines.erase(m_subLines.begin() + i + 1);
-			}
-		}
+
+		if (pos == npos)
+			pos = m_subLines[i].m_text.find("\n");
+
+		if (pos == npos)
+			continue;
+
+		CUISubLine sbLine;
+
+		if (pos)
+			sbLine = *m_subLines[i].Cut2Pos((int)pos - 1);
+		
+		sbLine.m_last_in_line = true;
+		m_subLines.insert(m_subLines.begin() + i, sbLine);
+		m_subLines[i + 1].m_text.erase(0, 2);
+		
+		if (m_subLines[i + 1].m_text.empty())
+			m_subLines.erase(m_subLines.begin() + i + 1);
 	}
 }
 

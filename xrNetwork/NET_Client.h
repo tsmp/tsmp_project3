@@ -1,5 +1,4 @@
 #pragma once
-
 #include "net_shared.h"
 #include "NET_Common.h"
 
@@ -16,19 +15,13 @@ public:
 	~INetQueue();
 
 	NET_Packet *CreateGet();
-	//.	NET_Packet*			CreateGet	(const NET_Packet& _other);
 	void CreateCommit(NET_Packet *);
 
 	NET_Packet *Retreive();
 	void Release();
 };
 
-//==============================================================================
-
-class XRNETWORK_API
-	IPureClient
-	: private MultipacketReciever,
-	  private MultipacketSender
+class XRNETWORK_API IPureClient: private MultipacketReciever, private MultipacketSender
 {
 	enum ConnectionState
 	{
@@ -36,7 +29,8 @@ class XRNETWORK_API
 		EnmConnectionWait = -1,
 		EnmConnectionCompleted = 1
 	};
-	friend void sync_thread(void *);
+
+	friend void sync_thread(void*);
 
 protected:
 	struct HOST_NODE
@@ -45,6 +39,7 @@ protected:
 		IDirectPlay8Address *pHostAddress;
 		shared_str dpSessionName;
 	};
+
 	CTimer *device_timer;
 
 protected:
@@ -58,8 +53,8 @@ protected:
 	NET_Compressor net_Compressor;
 
 	ConnectionState net_Connected;
-	BOOL net_Syncronised;
-	BOOL net_Disconnected;
+	bool net_Syncronised;
+	bool net_Disconnected;
 
 	INetQueue net_Queue;
 	IClientStatistic net_Statistic;
@@ -79,14 +74,14 @@ public:
 	virtual ~IPureClient();
 	HRESULT net_Handler(u32 dwMessageType, PVOID pMessage);
 
-	BOOL Connect(LPCSTR server_name);
+	bool Connect(LPCSTR server_name);
 	void Disconnect();
 
 	void net_Syncronize();
-	BOOL net_isCompleted_Connect() { return net_Connected == EnmConnectionCompleted; }
-	BOOL net_isFails_Connect() { return net_Connected == EnmConnectionFails; }
-	BOOL net_isCompleted_Sync() { return net_Syncronised; }
-	BOOL net_isDisconnected() { return net_Disconnected; }
+	bool net_isCompleted_Connect() { return net_Connected == EnmConnectionCompleted; }
+	bool net_isFails_Connect() { return net_Connected == EnmConnectionFails; }
+	bool net_isCompleted_Sync() { return net_Syncronised; }
+	bool net_isDisconnected() { return net_Disconnected; }
 	LPCSTR net_SessionName() { return *(net_Hosts.front().dpSessionName); }
 
 	// receive
@@ -101,7 +96,7 @@ public:
 	virtual void OnInvalidPassword(){};
 	virtual void OnSessionFull(){};
 	virtual void OnConnectRejected(){};
-	BOOL net_HasBandwidth();
+	bool net_HasBandwidth();
 	void ClearStatistic();
 	IClientStatistic GetStatistic() const { return net_Statistic; }
 	void UpdateStatistic();
@@ -115,7 +110,7 @@ public:
 	IC void timeServer_UserDelta(s32 d) { net_TimeDelta_User = d; }
 	IC void timeServer_Correct(u32 sv_time, u32 cl_time);
 
-	virtual BOOL net_IsSyncronised();
+	virtual bool net_IsSyncronised();
 
 	virtual LPCSTR GetMsgId2Name(u16 ID) { return ""; }
 	virtual void OnSessionTerminate(LPCSTR reason){};
@@ -125,4 +120,7 @@ public:
 private:
 	virtual void _Recieve(const void *data, u32 data_size, u32 param);
 	virtual void _SendTo_LL(const void *data, u32 size, u32 flags, u32 timeout);
+	void ReceiveSysMessage(const MSYS_PING* sysPing, u32 dataSize);
+	bool ConnectLocal(LPCSTR options, DPN_APPLICATION_DESC &dpAppDesc);
+	bool ConnectGlobal(LPCSTR options, DPN_APPLICATION_DESC &dpAppDesc);
 };

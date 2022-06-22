@@ -137,6 +137,7 @@ public:
 
 	virtual void DumpOnlineStatistic();
 	void SvSendChatMessage(LPCSTR str);
+	void SvSendChatMessageCow(LPCSTR str);
 	CRandom monsterResp; // для респавна монстров
 
 protected:

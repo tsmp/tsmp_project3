@@ -177,7 +177,7 @@ public:
 	void shader_option_skinning(s32 mode) { m_skinning = mode; }
 	virtual HRESULT shader_compile(
 		LPCSTR name,
-		DWORD const* pSrcData,
+		char const* pSrcData,
 		UINT SrcDataLen,
 		LPCSTR pFunctionName,
 		LPCSTR pTarget,

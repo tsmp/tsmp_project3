@@ -8,9 +8,9 @@
 #include "SkeletonCustom.h"
 #include "..\xrRender\LightTrack.h"
 #include "GameFont.h"
+#include "..\xrRender\r__shaders_cache.h"
 
-#include <boost/crc.hpp>
-
+#pragma comment(lib, "d3dx9.lib")
 CRender RImplementation;
 
 //////////////////////////////////////////////////////////////////////////
@@ -562,122 +562,9 @@ static const std::map<NewFlagsR2, const char*> NewFlagDefines
 	{ NewFlagsR2::SURERGLOSS, "USE_SUPER_GLOSS"}
 };
 
-/////////
-#pragma comment(lib, "d3dx9.lib")
-static HRESULT create_shader(
-	LPCSTR const pTarget,
-	DWORD const* buffer,
-	u32	const buffer_size,
-	LPCSTR const file_name,
-	void*& result,
-	bool const disasm)
-{
-	HRESULT _result = E_FAIL;
-	if (pTarget[0] == 'p')
-	{
-		SPS* sps_result = (SPS*)result;
-		_result = HW.pDevice->CreatePixelShader(buffer, &sps_result->ps);
-
-		if (!SUCCEEDED(_result))
-		{
-			Log("! PS: ", file_name);
-			Msg("! CreatePixelShader hr == 0x%08x", _result);
-			return E_FAIL;
-		}
-
-		LPCVOID data = NULL;
-		_result = D3DXFindShaderComment(buffer, MAKEFOURCC('C', 'T', 'A', 'B'), &data, NULL);
-		if (SUCCEEDED(_result) && data)
-		{
-			LPD3DXSHADER_CONSTANTTABLE	pConstants = LPD3DXSHADER_CONSTANTTABLE(data);
-			sps_result->constants.parse(pConstants, 0x1);
-		}
-		else
-		{
-			Log("! PS: ", file_name);
-			Msg("! D3DXFindShaderComment hr == 0x%08x", _result);
-		}
-	}
-	else
-	{
-		SVS* svs_result = (SVS*)result;
-		_result = HW.pDevice->CreateVertexShader(buffer, &svs_result->vs);
-
-		if (!SUCCEEDED(_result)) {
-			Log("! VS: ", file_name);
-			Msg("! CreatePixelShader hr == 0x%08x", _result);
-			return E_FAIL;
-		}
-
-		LPCVOID data = NULL;
-		_result = D3DXFindShaderComment(buffer, MAKEFOURCC('C', 'T', 'A', 'B'), &data, NULL);
-		if (SUCCEEDED(_result) && data)
-		{
-			LPD3DXSHADER_CONSTANTTABLE	pConstants = LPD3DXSHADER_CONSTANTTABLE(data);
-			svs_result->constants.parse(pConstants, 0x2);
-		}
-		else
-		{
-			Log("! VS: ", file_name);
-			Msg("! D3DXFindShaderComment hr == 0x%08x", _result);
-		}
-	}
-
-	if (disasm)
-	{
-		ID3DXBuffer* _disasm = 0;
-		D3DXDisassembleShader(LPDWORD(buffer), FALSE, 0, &_disasm);
-		string_path		dname;
-		strconcat(sizeof(dname), dname, "disasm\\", file_name, ('v' == pTarget[0]) ? ".vs" : ".ps");
-		IWriter* W = FS.w_open("$logs$", dname);
-		W->w(_disasm->GetBufferPointer(), _disasm->GetBufferSize());
-		FS.w_close(W);
-		_RELEASE(_disasm);
-	}
-
-	return _result;
-}
-
-//--------------------------------------------------------------------------------------------------------------
-class includer : public ID3DXInclude
-{
-public:
-	HRESULT __stdcall Open(D3DXINCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes)
-	{
-		string_path pname;
-		strconcat(sizeof(pname), pname, ::Render->getShaderPath(), pFileName);
-		IReader* R = FS.r_open("$game_shaders$", pname);
-		if (0 == R)
-		{
-			R = FS.r_open("$game_shaders$", pFileName);
-			if (0 == R)
-				return E_FAIL;
-		}
-
-		// duplicate and zero-terminate
-		size_t size = R->length();
-		u8* data = xr_alloc<u8>(size + 1);
-		CopyMemory(data, R->pointer(), size);
-		data[size] = 0;
-		FS.r_close(R);
-
-		*ppData = data;
-		*pBytes = static_cast<u32>(size);
-		return D3D_OK;
-	}
-	HRESULT __stdcall Close(LPCVOID pData)
-	{
-		xr_free(pData);
-		return	D3D_OK;
-	}
-};
-
-static inline bool match_shader(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, LPCSTR const mask, size_t const mask_length);
-static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result);
-
 HRESULT	CRender::shader_compile(
 		LPCSTR name,
-		DWORD const* pSrcData,
+		char const* pSrcData,
 		UINT SrcDataLen,
 		LPCSTR pFunctionName,
 		LPCSTR pTarget,
@@ -871,170 +758,37 @@ HRESULT	CRender::shader_compile(
 	sh_name[len] = '0' + char(2 == m_skinning);
 	++len;
 
+	for (auto const& elem : NewFlagDefines)
+	{
+		if (ps_r2_new_flags.test(static_cast<u32>(elem.first)))
+		{
+			defines[def_it].Name = elem.second;
+			defines[def_it].Definition = "1";
+			def_it++;
+		}
+	}
+
 	// finish
 	defines[def_it].Name = 0;
 	defines[def_it].Definition = 0;
 	def_it++;
+	R_ASSERT(def_it < 128);
 
-	//Precache
-	HRESULT _result = E_FAIL;
-
-	string_path	folder_name, folder;
-	strcpy(folder, "r2\\objects\\r2\\");
-	strcat(folder, name);
-	strcat(folder, ".");
-
-	char extension[3];
-	strncpy_s(extension, pTarget, 2);
-	strcat(folder, extension);
-
-	FS.update_path(folder_name, "$game_shaders$", folder);
-	strcat(folder_name, "\\");
-
-	m_file_set.clear();
-	FS.file_list(m_file_set, folder_name, FS_ListFiles | FS_RootOnly, "*");
-
-	string_path temp_file_name, file_name;
-	if (!match_shader_id(name, sh_name, m_file_set, temp_file_name)) 
+	if (!xr_strcmp(pFunctionName, "main"))
 	{
-		string_path file;
-		strcpy(file, "shaders_cache\\r2\\");
-		strcat(file, name);
-		strcat(file, ".");
-		strcat(file, extension);
-		strcat(file, "\\");
-		strcat(file, sh_name);
-		FS.update_path(file_name, "$app_data_root$", file);
-	}
-	else
-	{
-		strcpy(file_name, folder_name);
-		strcat(file_name, temp_file_name);
-	}
-
-	if (FS.exist(file_name))
-	{
-		IReader* file = FS.r_open(file_name);
-		if (file->length() > 4)
-		{
-			u32 crc = 0;
-			crc = file->r_u32();
-
-			boost::crc_32_type processor;
-			processor.process_block(file->pointer(), ((char*)file->pointer()) + file->elapsed());
-			u32 const real_crc = processor.checksum();
-
-			if (real_crc == crc)
-			{
-				_result = create_shader(pTarget, (DWORD*)file->pointer(), static_cast<u32>(file->elapsed()), file_name, result, o.disasm);
-			}
-		}
-		file->close();
-	}
-
-	if (FAILED(_result))
-	{
-		if (0 == xr_strcmp(pFunctionName, "main"))
-		{
-			if ('v' == pTarget[0])
-				pTarget = D3DXGetVertexShaderProfile(HW.pDevice);	// vertex	"vs_2_a"; //
-			else
-				pTarget = D3DXGetPixelShaderProfile(HW.pDevice);	// pixel	"ps_2_a"; //
-		}
-
-		includer Includer;
-		LPD3DXBUFFER pShaderBuf = nullptr;
-		LPD3DXBUFFER pErrorBuf = nullptr;
-		LPD3DXCONSTANTTABLE pConstants = nullptr;
-		LPD3DXINCLUDE pInclude = (LPD3DXINCLUDE)&Includer;
-
-		_result = D3DXCompileShader((LPCSTR)pSrcData, SrcDataLen, defines, pInclude, pFunctionName, pTarget, Flags | D3DXSHADER_USE_LEGACY_D3DX9_31_DLL, &pShaderBuf, &pErrorBuf, &pConstants);
-
-		if (SUCCEEDED(_result)) 
-		{
-			IWriter* file = FS.w_open(file_name);
-
-			boost::crc_32_type processor;
-			processor.process_block(pShaderBuf->GetBufferPointer(), ((char*)pShaderBuf->GetBufferPointer()) + pShaderBuf->GetBufferSize());
-			u32 const crc = processor.checksum();
-
-			file->w_u32(crc);
-			file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
-			FS.w_close(file);
-
-			_result = create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
-		}
+		if ('v' == pTarget[0])
+			pTarget = D3DXGetVertexShaderProfile(HW.pDevice);	// vertex	"vs_2_a"; //
 		else
-		{
-			Log("! ", file_name);
-			if (pErrorBuf)
-				Log("! error: ", (LPCSTR)pErrorBuf->GetBufferPointer());
-			else
-				Msg("Can't compile shader hr=0x%08x", _result);
-		}
+			pTarget = D3DXGetPixelShaderProfile(HW.pDevice);	// pixel	"ps_2_a"; //
 	}
 
-	return _result;
-}
+	string_path file_name;
+	FillFileName(file_name, name, sh_name, "r2", pTarget);
+	bool disasm = static_cast<bool>(o.disasm);
+	
+	//Precache
+	if (LoadShaderFromCache(file_name, pTarget, disasm, result))
+		return S_OK;
 
-static inline bool match_shader(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, LPCSTR const mask, size_t const mask_length)
-{
-	const size_t full_shader_id_length = xr_strlen(full_shader_id);
-	R_ASSERT2(
-		full_shader_id_length == mask_length,
-		make_string(
-			"bad cache for shader %s, [%s], [%s]",
-			debug_shader_id,
-			mask,
-			full_shader_id
-		)
-	);
-
-	const char* i;
-	const char* j;
-	const char* const e = full_shader_id + full_shader_id_length;
-	for (i = full_shader_id, j = mask; i != e; ++i, ++j)
-	{
-		if (*i == *j)
-			continue;
-
-		if (*j == '_')
-			continue;
-
-		return false;
-	}
-
-	return true;
-}
-
-static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result)
-{
-#ifdef DEBUG
-	LPCSTR temp = "";
-	bool found = false;
-	for (auto i = file_set.begin(); i != file_set.end(); ++i)
-	{
-		if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size()))
-		{
-			VERIFY(!found);
-			found = true;
-			temp = (*i).name.c_str();
-		}
-	}
-
-	strcpy(result, temp);
-	return found;
-
-#else // #ifdef DEBUG
-	for (auto i = file_set.begin(); i != file_set.end(); ++i)
-	{
-		if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size()))
-		{
-			strcpy(result, (*i).name.c_str());
-			return true;
-		}
-	}
-
-	return false;
-#endif // #ifdef DEBUG
+	return CompileShader(pSrcData, pFunctionName,pTarget,Flags,SrcDataLen, file_name, defines, result, disasm);
 }
