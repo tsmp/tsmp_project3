@@ -37,3 +37,8 @@ extern bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const full_shad
 extern bool match_shader(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, LPCSTR const mask, size_t const mask_length);
 
 HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32	const buffer_size, LPCSTR const file_name, void*& result, bool const disasm);
+
+void FillFileName(string_path& fileName, const char* shName, const char* cachedShName, const char* render /* r1/r2 */, const char* target);
+bool LoadShaderFromCache(const string_path& fileName, const char* target, bool disasm, void*& result);
+
+HRESULT CompileShader(const char* pSrcData, const char* pFunctionName, const char* pTarget, int Flags, u32 SrcDataLen, const string_path& fileName, D3DXMACRO* defines, void*& result, bool disasm);

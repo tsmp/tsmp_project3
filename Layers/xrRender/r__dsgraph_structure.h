@@ -185,8 +185,5 @@ public:
 #else  // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 		return (0);
 #endif // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-	}
-
-	protected:
-		FS_FileSet m_file_set;
+	}	
 };
