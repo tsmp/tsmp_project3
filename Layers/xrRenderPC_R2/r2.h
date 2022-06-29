@@ -36,6 +36,11 @@ public:
 	{
 		u32 bug : 1;
 
+		u32 ssao_blur_on : 1;
+		u32 ssao_opt_data : 1;
+		u32 ssao_half_data : 1;
+		u32 ssao_hbao : 1;
+
 		u32 smapsize : 16;
 		u32 depth16 : 1;
 		u32 mrt : 1;
@@ -64,6 +69,7 @@ public:
 		u32 noshadows : 1;
 		u32 Tshadows : 1; // transluent shadows
 		u32 disasm : 1;
+		u32 advancedpp : 1; //advanced post process (DOF, SSAO, volumetrics, etc.)
 
 		u32 forcegloss : 1;
 		u32 forceskinw : 1;

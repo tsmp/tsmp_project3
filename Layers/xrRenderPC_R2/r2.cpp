@@ -62,6 +62,7 @@ static class cl_parallax : public R_constant_setup
 } binder_parallax;
 
 extern ENGINE_API BOOL r2_sun_static;
+extern ENGINE_API BOOL r2_advanced_pp;
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
 void CRender::create()
@@ -221,6 +222,7 @@ void CRender::create()
 	o.sunfilter = (strstr(Core.Params, "-sunfilter")) ? TRUE : FALSE;
 	//.	o.sunstatic			= (strstr(Core.Params,"-sunstatic"))?	TRUE	:FALSE	;
 	o.sunstatic = r2_sun_static;
+	o.advancedpp = r2_advanced_pp;
 	o.sjitter = (strstr(Core.Params, "-sjitter")) ? TRUE : FALSE;
 	o.depth16 = (strstr(Core.Params, "-depth16")) ? TRUE : FALSE;
 	o.noshadows = (strstr(Core.Params, "-noshadows")) ? TRUE : FALSE;
@@ -230,6 +232,17 @@ void CRender::create()
 	o.distortion = o.distortion_enabled;
 	o.disasm = (strstr(Core.Params, "-disasm")) ? TRUE : FALSE;
 	o.forceskinw = (strstr(Core.Params, "-skinw")) ? TRUE : FALSE;
+
+	o.ssao_blur_on = ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_BLUR) && ps_r_ssao != 0;
+	o.ssao_opt_data = ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_OPT_DATA) && (ps_r_ssao != 0);
+	o.ssao_half_data = ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HALF_DATA) && o.ssao_opt_data && (ps_r_ssao != 0);
+	o.ssao_hbao = ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HBAO) && (ps_r_ssao != 0);
+
+	if ((HW.Caps.id_vendor == 0x1002) && (HW.Caps.id_device <= 0x72FF))
+	{
+		o.ssao_opt_data = false;
+		o.ssao_hbao = false;
+	}
 
 	// constants
 	::Device.Resources->RegisterConstantSetup("parallax", &binder_parallax);
@@ -575,6 +588,7 @@ HRESULT	CRender::shader_compile(
 	int def_it = 0;
 	char c_smapsize[32];
 	char c_gloss[32];
+	char c_ssao[32];
 
 	char sh_name[MAX_PATH] = "";
 	size_t len = 0;
@@ -716,6 +730,33 @@ HRESULT	CRender::shader_compile(
 	sh_name[len] = '0' + char(o.forceskinw);
 	++len;
 
+	if (o.ssao_blur_on)
+	{
+		defines[def_it].Name = "USE_SSAO_BLUR";
+		defines[def_it].Definition = "1";
+		def_it++;
+	}
+	sh_name[len] = '0' + char(o.ssao_blur_on); ++len;
+
+	if (o.ssao_hbao)
+	{
+		defines[def_it].Name = "USE_HBAO";
+		defines[def_it].Definition = "1";
+		def_it++;
+	}
+	sh_name[len] = '0' + char(o.ssao_hbao); ++len;
+
+	if (o.ssao_opt_data)
+	{
+		defines[def_it].Name = "SSAO_OPT_DATA";
+		if (o.ssao_half_data)
+			defines[def_it].Definition = "2";
+		else
+			defines[def_it].Definition = "1";
+		def_it++;
+	}
+	sh_name[len] = '0' + char(o.ssao_opt_data ? (o.ssao_half_data ? 2 : 1) : 0); ++len;
+
 	// skinning
 	if (m_skinning < 0) 
 	{
@@ -766,6 +807,19 @@ HRESULT	CRender::shader_compile(
 			defines[def_it].Definition = "1";
 			def_it++;
 		}
+	}
+
+	if (RImplementation.o.advancedpp && ps_r_ssao)
+	{
+		sprintf_s(c_ssao, "%d", ps_r_ssao);
+		defines[def_it].Name = "SSAO_QUALITY";
+		defines[def_it].Definition = c_ssao;
+		def_it++;
+		sh_name[len] = '0' + char(ps_r_ssao); ++len;
+	}
+	else
+	{
+		sh_name[len] = '0'; ++len;
 	}
 
 	// finish

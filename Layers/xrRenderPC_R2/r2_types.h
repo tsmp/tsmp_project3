@@ -19,6 +19,9 @@
 #define r2_RT_generic0 "$user$generic0" // ---
 #define r2_RT_generic1 "$user$generic1" // ---
 
+#define r2_RT_ssao_temp	 "$user$ssao_temp" //temporary rt for ssao calculation
+#define r2_RT_half_depth "$user$half_depth" //temporary rt for hbao calculation
+
 #define r2_RT_bloom1 "$user$bloom1" // ---
 #define r2_RT_bloom2 "$user$bloom2" // ---
 

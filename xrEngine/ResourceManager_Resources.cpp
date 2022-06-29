@@ -214,7 +214,7 @@ SVS *CResourceManager::_CreateVS(LPCSTR _name)
 
 		CHECK_OR_EXIT(
 			!FAILED(_hr),
-			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
+			make_string("Your video card doesn't meet game requirements, or there errors in shader! (%s).\n\nTry to lower game settings.", name)
 		);
 
 		return _vs;
@@ -306,9 +306,11 @@ SPS *CResourceManager::_CreatePS(LPCSTR name)
 		HRESULT const _hr = ::Render->shader_compile(name, data, size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_ps);
 		xr_free(data);
 
+
 		CHECK_OR_EXIT(
 			!FAILED(_hr),
-			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings."));
+			make_string("Your video card doesn't meet game requirements, or there errors in shader! (%s).\n\nTry to lower game settings.", name)
+		);
 
 		return _ps;
 	}
