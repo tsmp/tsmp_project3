@@ -318,6 +318,8 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 	string4096 assertion_info;
 	gather_info(expression, description, argument0, argument1, file, line, function, assertion_info);
 
+	FlushLog();
+
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	LPCSTR endline = "\r\n";
 	LPSTR buffer = assertion_info + xr_strlen(assertion_info);
