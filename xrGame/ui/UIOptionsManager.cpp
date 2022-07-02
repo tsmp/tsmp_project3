@@ -133,6 +133,9 @@ void CUIOptionsManager::OptionsPostAccept()
 	if (m_b_snd_restart)
 		Console->Execute("snd_restart");
 
+#pragma todo("VAX: Исправьте этот костыль.")
+	Console->Execute("cfg_save");
+
 	m_b_vid_restart = false;
 	m_b_snd_restart = false;
 }

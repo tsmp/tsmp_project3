@@ -842,7 +842,10 @@ HRESULT	CRender::shader_compile(
 	
 	//Precache
 	if (LoadShaderFromCache(file_name, pTarget, disasm, result))
+	{
+		Msg("Loading shader %s from cache", name);
 		return S_OK;
+	}
 
 	return CompileShader(pSrcData, pFunctionName,pTarget,Flags,SrcDataLen, file_name, defines, result, disasm);
 }

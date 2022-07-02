@@ -154,7 +154,8 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvRese
 		_control87(_RC_NEAR, MCW_RC);
 		_control87(_MCW_EM, MCW_EM);
 
-		if(strstr(Core.Params, "-dbg_console") || IS_DEBUG)
+		auto console_cmd = GetCommandLine();
+		if(strstr(console_cmd, "-dbg_console") || IS_DEBUG)
 		{
 			if(AllocConsole())
 			{

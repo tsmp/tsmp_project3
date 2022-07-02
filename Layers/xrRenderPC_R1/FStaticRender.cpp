@@ -766,8 +766,11 @@ HRESULT CRender::shader_compile(
 	bool disasm = static_cast<bool>(o.disasm);
 
 	//Precache
-	if (LoadShaderFromCache(file_name,pTarget,disasm, result))
+	if (LoadShaderFromCache(file_name, pTarget, disasm, result))
+	{
+		Msg("Loading shader %s from cache", name);
 		return S_OK;
+	}
 
 	return CompileShader(pSrcData, pFunctionName, pTarget, Flags, SrcDataLen, file_name, defines, result, disasm);
 }
