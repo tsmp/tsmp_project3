@@ -5,11 +5,6 @@
 #include <xmmintrin.h>
 #pragma warning(pop)
 
-// can you say "barebone"?
-#ifndef _MM_ALIGN16
-#define _MM_ALIGN16 __declspec(align(16))
-#endif // _MM_ALIGN16
-
 struct _MM_ALIGN16 vec_t : public Fvector3
 {
 	float pad;
@@ -23,17 +18,20 @@ vec_t vec_c(float _x, float _y, float _z)
 	v.pad = 0;
 	return v;
 }
+
 struct _MM_ALIGN16 aabb_t
 {
 	vec_t min;
 	vec_t max;
 };
+
 struct _MM_ALIGN16 ray_t
 {
 	vec_t pos;
 	vec_t inv_dir;
 	vec_t fwd_dir;
 };
+
 struct ray_segment_t
 {
 	float t_near, t_far;
