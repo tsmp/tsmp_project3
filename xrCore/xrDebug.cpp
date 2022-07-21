@@ -346,7 +346,8 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 	{
 	case IDCANCEL:
 	{
-		DebugBreak();
+		if (IsDebuggerPresent())
+			__debugbreak();
 		break;
 	}
 	case IDTRYAGAIN:
