@@ -67,8 +67,8 @@ INetLog::INetLog(LPCSTR sFileName, u32 dwStartTime)
 {
 	strcpy(m_cFileName, sFileName);
 
-	m_pLogFile = NULL;
-	m_pLogFile = fopen(sFileName, "wb");
+	m_pLogFile = nullptr;
+	m_pLogFile = FS.w_open(m_cFileName);//fopen(sFileName, "wb");
 	m_dwStartTime = 0; //dwStartTime;
 }
 
@@ -76,21 +76,29 @@ INetLog::~INetLog()
 {
 	FlushLog();
 	if (m_pLogFile)
-		fclose(m_pLogFile);
-	m_pLogFile = NULL;
+		FS.w_close(m_pLogFile);
+
+	m_pLogFile = nullptr;
 }
 
 void INetLog::FlushLog()
 {
 	if (m_pLogFile)
 	{
+		char buff[100] {0};
 		for (xr_vector<SLogPacket>::iterator it = m_aLogPackets.begin(); it != m_aLogPackets.end(); it++)
 		{
 			SLogPacket *pLPacket = &(*it);
 			if (pLPacket->m_u16Type >= sizeof(PacketName) / sizeof(PacketName[0]))
-				fprintf(m_pLogFile, "%s %10d %10d %10d\n", pLPacket->m_bIsIn ? "In:" : "Out:", pLPacket->m_u32Time, pLPacket->m_u16Type, pLPacket->m_u32Size);
+			{
+				sprintf(buff, "%s %10d %10d %10d", pLPacket->m_bIsIn ? "In: " : "Out:", pLPacket->m_u32Time, pLPacket->m_u16Type, pLPacket->m_u32Size);
+			}
 			else
-				fprintf(m_pLogFile, "%s %10d %10s %10d\n", pLPacket->m_bIsIn ? "In:" : "Out:", pLPacket->m_u32Time, PacketName[pLPacket->m_u16Type], pLPacket->m_u32Size);
+			{
+				sprintf(buff, "%s %10d %10s %10d", pLPacket->m_bIsIn ? "In: " : "Out:", pLPacket->m_u32Time, PacketName[pLPacket->m_u16Type], pLPacket->m_u32Size);
+			}
+
+			m_pLogFile->w_string(buff);
 		};
 	};
 
