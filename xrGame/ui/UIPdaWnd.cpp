@@ -101,7 +101,7 @@ void CUIPdaWnd::Init()
 	UIPdaContactsWnd = xr_new<CUIPdaContactsWnd>();
 	UIPdaContactsWnd->Init();
 
-	if (IsGameTypeSingle())
+#pragma TODO("TSMP: изучить вопрос включения этих менюшек в мп")
 	{
 		// Oкно новостей
 		UIDiaryWnd = xr_new<CUIDiaryWnd>();

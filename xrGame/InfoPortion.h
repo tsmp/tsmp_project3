@@ -31,6 +31,9 @@ struct SInfoPortionData : CSharedResource
 	//информацию получает персонаж
 	CPhraseScript m_PhraseScript;
 
+	// нужно ли отправлять его всем в мп
+	bool m_NeedMpSync;
+
 	//массив с индексами тех порций информации, которые
 	//исчезнут, после получения этой info_portion
 	DEFINE_VECTOR(shared_str, INFO_ID_VECTOR, INFO_ID_VECTOR_IT);
@@ -65,6 +68,7 @@ public:
 	const TASK_ID_VECTOR &GameTasks() const { return info_data()->m_GameTasks; }
 	const DIALOG_ID_VECTOR &DialogNames() const { return info_data()->m_DialogNames; }
 	const SInfoPortionData::INFO_ID_VECTOR &DisableInfos() const { return info_data()->m_DisableInfo; }
+	const bool NeedMpSync() const { return info_data()->m_NeedMpSync; }
 
 	void RunScriptActions(const CGameObject *pOwner) { info_data()->m_PhraseScript.Action(pOwner, NULL, NULL); }
 
