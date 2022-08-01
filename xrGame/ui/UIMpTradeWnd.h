@@ -123,7 +123,7 @@ public:
 	virtual void SetRank(u32 rank);
 	virtual u32 GetRank();
 
-	virtual void ItemToBelt(const shared_str &sectionName);
+	virtual void ItemToBelt(const shared_str &sectionName, u8 addons);
 	virtual void ItemToRuck(const shared_str &sectionName, u8 addons);
 	virtual void ItemToSlot(const shared_str &sectionName, u8 addons);
 	virtual void SetupPlayerItemsBegin();
@@ -131,7 +131,7 @@ public:
 	virtual void SetupDefaultItemsBegin();
 	virtual void SetupDefaultItemsEnd();
 
-	virtual const preset_items &GetPreset(ETradePreset idx);
+	virtual preset_items &GetPreset(ETradePreset idx);
 	virtual u32 GetPresetCost(ETradePreset idx);
 	virtual void ClearPreset(ETradePreset idx);
 	virtual void TryUsePreset(ETradePreset idx);
