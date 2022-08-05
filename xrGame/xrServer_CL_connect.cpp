@@ -69,7 +69,8 @@ void xrServer::SendConnectionData(IClient *_CL)
 	for (I = entities.begin(); I != E; ++I)
 		Perform_connect_spawn(I->second, CL, P);
 
-	game->SendPatrolPaths(CL->ID);
+	if (_CL != GetServerClient())
+		game->SendPatrolPaths(CL->ID);
 
 	// Send "finished" signal
 	P.w_begin(M_SV_CONFIG_FINISHED);
