@@ -473,7 +473,6 @@
     <ClInclude Include="..\xrRender\r__dsgraph_structure.h" />
     <ClInclude Include="..\xrRender\r__dsgraph_types.h" />
     <ClInclude Include="..\xrRender\r__sector.h" />
-    <ClInclude Include="..\xrRender\r__shaders_cache.h" />
     <ClInclude Include="..\xrRender\VertexCache.h" />
     <ClInclude Include="..\xrRender\WallmarksEngine.h" />
     <ClInclude Include="..\xrRender\xrRender_console.h" />
@@ -571,7 +570,6 @@
     <ClCompile Include="..\xrRender\r__screenshot.cpp" />
     <ClCompile Include="..\xrRender\r__sector.cpp" />
     <ClCompile Include="..\xrRender\r__sector_traversal.cpp" />
-    <ClCompile Include="..\xrRender\r__shaders_cache.cpp" />
     <ClCompile Include="..\xrRender\Texture.cpp" />
     <ClCompile Include="..\xrRender\tga.cpp" />
     <ClCompile Include="..\xrRender\VertexCache.cpp" />

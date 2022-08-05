@@ -211,7 +211,7 @@ public:
 	virtual IDirect3DBaseTexture9 *texture_load(LPCSTR fname, u32 &msize);
 	virtual HRESULT shader_compile(
 		LPCSTR name,
-		char const* pSrcData,
+		DWORD const* pSrcData,
 		UINT SrcDataLen,
 		LPCSTR pFunctionName,
 		LPCSTR pTarget,
@@ -288,6 +288,8 @@ public:
 	// Constructor/destructor/loader
 	CRender();
 	virtual ~CRender();
+private:
+	FS_FileSet m_file_set;
 };
 
 extern CRender RImplementation;

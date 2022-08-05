@@ -210,9 +210,6 @@
     <ClInclude Include="..\xrRender\LightTrack.h">
       <Filter>Lights</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrRender\r__shaders_cache.h">
-      <Filter>Core</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -415,9 +412,6 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\LightTrack.cpp">
       <Filter>Lights</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\r__shaders_cache.cpp">
-      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
