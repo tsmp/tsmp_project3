@@ -203,10 +203,7 @@ SVS *CResourceManager::_CreateVS(LPCSTR _name)
 
 		// vertex
 		R_ASSERT2(fs, cname);
-
-#ifdef DEBUG
-		Msg("loading shader %s", name);
-#endif
+		Msg("compiling shader %s", name);
 
 		HRESULT const _hr = ::Render->shader_compile(name, data, size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_vs);
 		xr_free(data);
@@ -299,10 +296,7 @@ SPS *CResourceManager::_CreatePS(LPCSTR name)
 		}
 
 		// Compile
-#ifdef DEBUG
-		Msg("loading shader %s", name);
-#endif
-
+		Msg("compiling shader %s", name);
 		HRESULT const _hr = ::Render->shader_compile(name, data, size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_ps);
 		xr_free(data);
 
