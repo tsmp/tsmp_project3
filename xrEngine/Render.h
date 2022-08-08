@@ -177,13 +177,16 @@ public:
 	void shader_option_skinning(s32 mode) { m_skinning = mode; }
 	virtual HRESULT shader_compile(
 		LPCSTR name,
-		char const* pSrcData,
+		LPCSTR pSrcData,
 		UINT SrcDataLen,
+		void *pDefines,
+		void *pInclude,
 		LPCSTR pFunctionName,
 		LPCSTR pTarget,
 		DWORD Flags,
-		void*& result
-	) = 0;
+		void *ppShader,
+		void *ppErrorMsgs,
+		void *ppConstantTable) = 0;
 
 	// Information
 	virtual void Statistics(CGameFont *F){};

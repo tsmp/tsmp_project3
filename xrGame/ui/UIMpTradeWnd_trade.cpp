@@ -256,7 +256,7 @@ void CUIMpTradeWnd::RenewShopItem(const shared_str &sect_name, bool b_just_bough
 	}
 }
 
-void CUIMpTradeWnd::ItemToBelt(const shared_str &sectionName)
+void CUIMpTradeWnd::ItemToBelt(const shared_str &sectionName, u8)
 {
 	R_ASSERT2(m_item_mngr->GetItemIdx(sectionName) != u32(-1), sectionName.c_str());
 

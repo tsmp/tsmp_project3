@@ -102,8 +102,7 @@ protected:
 	virtual void LoadTeamDefaultPresetItems(const shared_str &caSection, IBuyWnd *pBuyMenu, PRESET_ITEMS *pPresetItems);
 	virtual void LoadPlayerDefItems(char *TeamName, IBuyWnd *pBuyMenu);
 	virtual void LoadDefItemsForRank(IBuyWnd *pBuyMenu);
-	virtual void ChangeItemsCosts(IBuyWnd *pBuyMenu);
-	///	virtual		s16					GetBuyMenuItemIndex			(u8 SlotID, u8 ItemID);
+	virtual void ChangeItemsCosts(IBuyWnd* pBuyMenu) {};
 	s16 GetBuyMenuItemIndex(u8 Addons, u8 ItemID);
 
 	virtual void ConvertTime2String(string64 *str, u32 Time);

@@ -71,6 +71,7 @@ bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
 	//добавить запись в реестр
 	KNOWN_INFO_VECTOR &known_info = m_known_info_registry->registry().objects();
 	KNOWN_INFO_VECTOR_IT it = std::find_if(known_info.begin(), known_info.end(), CFindByIDPred(info_id));
+
 	if (known_info.end() == it)
 		known_info.push_back(INFO_DATA(info_id, Level().GetGameTime()));
 	else
@@ -81,12 +82,12 @@ bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
 		Msg("[%s] Received Info [%s]", Name(), *info_id);
 #endif
 
-	//Запустить скриптовый callback
-	const CGameObject *pThisGameObject = smart_cast<const CGameObject *>(this);
-	VERIFY(pThisGameObject);
+	if (this != smart_cast<CInventoryOwner*>(Level().CurrentControlEntity()))
+		return true;
 
-	//	SCRIPT_CALLBACK_EXECUTE_2(*m_pInfoCallback, pThisGameObject->lua_game_object(), info_index);
-	//	pThisGameObject->callback(GameObject::eInventoryInfo)(pThisGameObject->lua_game_object(), *info_id);
+	//Запустить скриптовый callback
+	const CGameObject *pThisGameObject = smart_cast<const CGameObject*>(this);
+	VERIFY(pThisGameObject);
 
 	CInfoPortion info_portion;
 	info_portion.Load(info_id);
@@ -95,11 +96,14 @@ bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
 	info_portion.RunScriptActions(pThisGameObject);
 
 	//выкинуть те info portions которые стали неактуальными
-	for (u32 i = 0; i < info_portion.DisableInfos().size(); i++)
-		TransferInfo(info_portion.DisableInfos()[i], false);
+	auto &infosToDisable = info_portion.DisableInfos();
 
+	for (const shared_str &info : infosToDisable)
+		TransferInfo(info, false);	
+	
 	return true;
 }
+
 #ifdef DEBUG
 void CInventoryOwner::DumpInfo() const
 {

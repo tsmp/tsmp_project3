@@ -37,25 +37,21 @@
 
 bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
 {
-	if (IsGameTypeSingle())
-	{
-		CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
-		if (!pInventoryOwner)
-			return false;
-		pInventoryOwner->TransferInfo(info_id, true);
-	}
+	CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
+	if (!pInventoryOwner)
+		return false;
+
+	pInventoryOwner->TransferInfo(info_id, true);
 	return true;
 }
 
 bool CScriptGameObject::DisableInfoPortion(LPCSTR info_id)
 {
-	if (IsGameTypeSingle())
-	{
-		CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
-		if (!pInventoryOwner)
-			return false;
-		pInventoryOwner->TransferInfo(info_id, false);
-	}
+	CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
+	if (!pInventoryOwner)
+		return false;
+
+	pInventoryOwner->TransferInfo(info_id, false);
 	return true;
 }
 
@@ -111,15 +107,13 @@ bool _give_news(LPCSTR text, LPCSTR texture_name, const Frect &tex_rect, int del
 
 bool CScriptGameObject::HasInfo(LPCSTR info_id)
 {
-	if (!IsGameTypeSingle())
-		return false;
-
 	CInventoryOwner *pInventoryOwner = smart_cast<CInventoryOwner *>(&object());
 	if (!pInventoryOwner)
 		return false;
 
 	return pInventoryOwner->HasInfo(info_id);
 }
+
 bool CScriptGameObject::DontHasInfo(LPCSTR info_id)
 {
 	CInventoryOwner *pInventoryOwner = smart_cast<CInventoryOwner *>(&object());

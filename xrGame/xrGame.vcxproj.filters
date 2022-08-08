@@ -9808,5 +9808,8 @@
     <ClCompile Include="game_cl_race.cpp">
       <Filter>Core\Server\Games\client\race</Filter>
     </ClCompile>
+    <ClCompile Include="console_commands_car_dbg.cpp">
+      <Filter>Core\Common\Console Commands</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

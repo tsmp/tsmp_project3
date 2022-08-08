@@ -68,6 +68,11 @@ void CLevel::ClientReceive()
 			//*/
 		}
 		break;
+
+		case M_TRANSFER_PATROL_PATHS:
+			Game().ReceivePatrolPaths(*P);
+			break;
+
 		case M_EVENT:
 			game_events->insert(*P);
 			if (g_bDebugEvents)

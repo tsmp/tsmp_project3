@@ -103,6 +103,7 @@ public:
 	virtual CUIGameCustom *createGameUI() { return NULL; };
 	virtual void GetMapEntities(xr_vector<SZoneMapEntityData> &dst){};
 
+	void ReceivePatrolPaths(NET_Packet& P);
 	void StartStopMenu(CUIDialogWnd *pDialog, bool bDoHideIndicators);
 	virtual void shedule_Update(u32 dt);
 

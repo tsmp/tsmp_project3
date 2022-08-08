@@ -71,6 +71,7 @@ void CCar::SWheel::Init()
 	e->SetAirResistance(0, 0);
 	inited = true;
 }
+
 void CCar::SWheel::Load(LPCSTR section)
 {
 	CKinematics *K = PKinematics(car->Visual());
@@ -95,6 +96,7 @@ void CCar::SWheel::ApplyDriveAxisTorque(float torque)
 		return;
 	dJointSetHinge2Param(joint->GetDJoint(), dParamFMax2, torque); //car->m_axle_friction
 }
+
 void CCar::SWheel::ApplyDriveAxisVel(float vel)
 {
 	if (!joint)
@@ -107,6 +109,7 @@ void CCar::SWheel::ApplyDriveAxisVelTorque(float vel, float torque)
 	ApplyDriveAxisVel(vel);
 	ApplyDriveAxisTorque(torque);
 }
+
 void CCar::SWheel::ApplySteerAxisVel(float vel)
 {
 	if (!joint)
@@ -133,12 +136,14 @@ void CCar::SWheel::SetSteerHiLimit(float hi)
 		return;
 	dJointSetHinge2Param(joint->GetDJoint(), dParamHiStop, hi);
 }
+
 void CCar::SWheel::SetSteerLoLimit(float lo)
 {
 	if (!joint)
 		return;
 	dJointSetHinge2Param(joint->GetDJoint(), dParamLoStop, lo);
 }
+
 void CCar::SWheel::SetSteerLimits(float hi, float lo)
 {
 	SetSteerHiLimit(hi);
@@ -197,7 +202,7 @@ void CCar::SWheel::RestoreNetState(const CSE_ALifeCar::SWheelState &a_state)
 	SetHealth(a_state.health);
 	RestoreEffect();
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void CCar::SWheelDrive::Init()
 {
 	pwheel->Init();
@@ -215,15 +220,18 @@ void CCar::SWheelDrive::Init()
 
 	pos_fvd = pos_fvd > 0.f ? -1.f : 1.f;
 }
+
 void CCar::SWheelDrive::Drive()
 {
 	float cur_speed = pwheel->car->RefWheelMaxSpeed() / gear_factor;
 	pwheel->ApplyDriveAxisVel(pos_fvd * cur_speed);
 }
+
 void CCar::SWheelDrive::UpdatePower()
 {
 	pwheel->ApplyDriveAxisTorque(pwheel->car->RefWheelCurTorque() / gear_factor);
 }
+
 void CCar::SWheelDrive::Neutral()
 {
 	pwheel->ApplyDriveAxisVelTorque(0.f, pwheel->car->m_axle_friction);
@@ -236,7 +244,7 @@ float CCar::SWheelDrive::ASpeed()
 		return 0.f;
 	return (dJointGetHinge2Angle2Rate(J->GetDJoint())) * pos_fvd; //dFabs
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void CCar::SWheelSteer::Init()
 {
 	CKinematics *pKinematics = smart_cast<CKinematics *>(pwheel->car->Visual());
@@ -275,6 +283,7 @@ void CCar::SWheelSteer::SteerRight()
 		pwheel->ApplySteerAxisVel(-pwheel->car->m_steering_speed);
 	}
 }
+
 void CCar::SWheelSteer::SteerLeft()
 {
 
@@ -290,6 +299,7 @@ void CCar::SWheelSteer::SteerLeft()
 		pwheel->ApplySteerAxisVel(-pwheel->car->m_steering_speed);
 	}
 }
+
 void CCar::SWheelSteer::SteerIdle()
 {
 	limited = false;
@@ -339,7 +349,7 @@ void CCar::SWheelSteer::Limit()
 	}
 	pwheel->car->b_wheels_limited = pwheel->car->b_wheels_limited && limited;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void CCar::SWheelBreak::Init()
 {
 	pwheel->Init();
@@ -348,6 +358,7 @@ void CCar::SWheelBreak::Init()
 	break_torque *= k;
 	hand_break_torque *= k;
 }
+
 void CCar::SWheelBreak::Load(LPCSTR section)
 {
 	CKinematics *K = PKinematics(pwheel->car->Visual());
@@ -355,12 +366,14 @@ void CCar::SWheelBreak::Load(LPCSTR section)
 	VERIFY(ini);
 	break_torque = ini->r_float("car_definition", "break_torque");
 	hand_break_torque = READ_IF_EXISTS(ini, r_float, "car_definition", "hand_break_torque", break_torque);
+
 	if (ini->section_exist(section))
 	{
 		break_torque = READ_IF_EXISTS(ini, r_float, section, "break_torque", break_torque);
 		hand_break_torque = READ_IF_EXISTS(ini, r_float, section, "hand_break_torque", hand_break_torque);
 	}
 }
+
 void CCar::SWheelBreak::Break(float k)
 {
 	pwheel->ApplyDriveAxisVelTorque(0.f, 100000.f * break_torque * k);

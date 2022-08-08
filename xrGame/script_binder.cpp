@@ -87,13 +87,29 @@ void CScriptBinder::reload(LPCSTR section)
 #endif // DEBUG_MEMORY_MANAGER
 #ifndef DBG_DISABLE_SCRIPTS
 	VERIFY(!m_object);
-	if (!pSettings->line_exist(section, "script_binding"))
-		return;
+
+	const char* scriptBinding = nullptr;
+
+	if (!xr_strcmp(section, "mp_actor"))
+	{
+		if (OnServer())
+			return;
+
+		scriptBinding = "bind_stalker.actor_init";
+	}
+	else
+	{
+		if (!pSettings->line_exist(section, "script_binding"))
+			return;
+
+		scriptBinding = pSettings->r_string(section, "script_binding");
+	}
 
 	luabind::functor<void> lua_function;
-	if (!ai().script_engine().functor(pSettings->r_string(section, "script_binding"), lua_function))
+
+	if (!ai().script_engine().functor(scriptBinding, lua_function))
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "function %s is not loaded!", pSettings->r_string(section, "script_binding"));
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "function %s is not loaded!", scriptBinding);
 		return;
 	}
 
@@ -183,10 +199,37 @@ void CScriptBinder::net_Destroy()
 	xr_delete(m_object);
 }
 
+bool CanBind(CGameObject &obj)
+{
+	if (IsGameTypeSingle())
+		return true;
+
+	shared_str section = obj.cNameSect();
+
+	if (OnServer())
+	{
+		if (section == "mp_actor" || section == "space_restrictor")
+			return false;
+
+		return true;
+	}
+
+	if (section == "space_restrictor")
+		return true;
+
+	if (section == "mp_actor" && obj.Local())
+		return true;
+	
+	return false;
+}
+
 void CScriptBinder::set_object(CScriptBinderObject *object)
 {
-	if(strstr(Core.Params,"-usebinder") || IsGameTypeSingle())
+	CGameObject &objToBind = object->m_object->object();
+
+	if(CanBind(objToBind))
 	{
+		Msg("- bind: %s", *objToBind.cName());
 		VERIFY2(!m_object, "Cannot bind to the object twice!");
 #ifdef _DEBUG
 		Msg("* Core object %s is binded with the script object", smart_cast<CGameObject *>(this) ? *smart_cast<CGameObject *>(this)->cName() : "");

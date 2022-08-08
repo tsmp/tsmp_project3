@@ -233,6 +233,7 @@ void destroySettings()
 
 void destroyConsole()
 {
+	Console->Execute("cfg_save");
 	Console->Destroy();
 	xr_delete(Console);
 }

@@ -508,3 +508,11 @@ void game_cl_GameState::reset_ui()
 	if (HUD().GetUI()->MainInputReceiver())
 		HUD().GetUI()->StartStopMenu(HUD().GetUI()->MainInputReceiver(), true);
 }
+
+#include "ai_space.h"
+#include "patrol_path_storage.h"
+
+void game_cl_GameState::ReceivePatrolPaths(NET_Packet &P)
+{
+	ai().patrol_paths().NetworkImport(P);
+}

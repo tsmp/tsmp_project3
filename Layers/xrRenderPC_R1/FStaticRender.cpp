@@ -13,9 +13,6 @@
 #include "..\xrRender\lighttrack.h"
 #include "PS_instance.h"
 #include "GameFont.h"
-#include "..\xrRender\r__shaders_cache.h"
-
-#pragma comment(lib, "d3dx9.lib")
 
 using namespace R_dsgraph;
 
@@ -689,21 +686,33 @@ void CRender::Statistics(CGameFont *_F)
 #endif
 }
 
+#pragma comment(lib, "d3dx9.lib")
 HRESULT CRender::shader_compile(
 	LPCSTR name,
-	char const* pSrcData,
+	LPCSTR pSrcData,
 	UINT SrcDataLen,
+	void *_pDefines,
+	void *_pInclude,
 	LPCSTR pFunctionName,
 	LPCSTR pTarget,
 	DWORD Flags,
-	void*& result)
+	void *_ppShader,
+	void *_ppErrorMsgs,
+	void *_ppConstantTable)
 {
-	D3DXMACRO defines[128]{};
+	D3DXMACRO defines[128];
 	int def_it = 0;
-
-	char sh_name[MAX_PATH] = "";
-	size_t len = 0;
-
+	CONST D3DXMACRO *pDefines = (CONST D3DXMACRO *)_pDefines;
+	if (pDefines)
+	{
+		// transfer existing defines
+		for (;; def_it++)
+		{
+			if (0 == pDefines[def_it].Name)
+				break;
+			defines[def_it] = pDefines[def_it];
+		}
+	}
 	// options
 	if (o.forceskinw)
 	{
@@ -711,66 +720,58 @@ HRESULT CRender::shader_compile(
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	sh_name[len] = '0' + char(o.forceskinw); ++len;
-
 	if (m_skinning < 0)
 	{
 		defines[def_it].Name = "SKIN_NONE";
 		defines[def_it].Definition = "1";
 		def_it++;
-		sh_name[len] = '1'; ++len;
 	}
-	else
-	{
-		sh_name[len] = '0'; ++len;
-	}
-
 	if (0 == m_skinning)
 	{
 		defines[def_it].Name = "SKIN_0";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	sh_name[len] = '0' + char(0 == m_skinning); ++len;
-
-	if (1 == m_skinning) {
+	if (1 == m_skinning)
+	{
 		defines[def_it].Name = "SKIN_1";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	sh_name[len] = '0' + char(1 == m_skinning); ++len;
-
-	if (2 == m_skinning) {
+	if (2 == m_skinning)
+	{
 		defines[def_it].Name = "SKIN_2";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	sh_name[len] = '0' + char(2 == m_skinning); ++len;
-
 	// finish
 	defines[def_it].Name = 0;
 	defines[def_it].Definition = 0;
 	def_it++;
 	R_ASSERT(def_it < 128);
 
-	if (!xr_strcmp(pFunctionName, "main"))
+	LPD3DXINCLUDE pInclude = (LPD3DXINCLUDE)_pInclude;
+	LPD3DXBUFFER *ppShader = (LPD3DXBUFFER *)_ppShader;
+	LPD3DXBUFFER *ppErrorMsgs = (LPD3DXBUFFER *)_ppErrorMsgs;
+	LPD3DXCONSTANTTABLE *ppConstantTable = (LPD3DXCONSTANTTABLE *)_ppConstantTable;
+#ifdef D3DXSHADER_USE_LEGACY_D3DX9_31_DLL //	December 2006 and later
+	HRESULT _result = D3DXCompileShader(pSrcData, SrcDataLen, defines, pInclude, pFunctionName, pTarget, Flags | D3DXSHADER_USE_LEGACY_D3DX9_31_DLL, ppShader, ppErrorMsgs, ppConstantTable);
+#else
+	HRESULT _result = D3DXCompileShader(pSrcData, SrcDataLen, defines, pInclude, pFunctionName, pTarget, Flags, ppShader, ppErrorMsgs, ppConstantTable);
+#endif
+
+	if (SUCCEEDED(_result) && o.disasm)
 	{
-		if ('v' == pTarget[0])
-			pTarget = D3DXGetVertexShaderProfile(HW.pDevice);	// vertex	"vs_2_a"; //
-		else
-			pTarget = D3DXGetPixelShaderProfile(HW.pDevice);	// pixel	"ps_2_a"; //
+		ID3DXBuffer *code = *((LPD3DXBUFFER *)_ppShader);
+		ID3DXBuffer *disasm = 0;
+		D3DXDisassembleShader(LPDWORD(code->GetBufferPointer()), FALSE, 0, &disasm);
+		string_path dname;
+		strconcat(sizeof(dname), dname, "disasm\\", name, ('v' == pTarget[0]) ? ".vs" : ".ps");
+		IWriter *W = FS.w_open("$logs$", dname);
+		W->w(disasm->GetBufferPointer(), disasm->GetBufferSize());
+		FS.w_close(W);
+		_RELEASE(disasm);
 	}
 
-	string_path file_name;
-	FillFileName(file_name, name, sh_name, "r1", pTarget);
-	bool disasm = static_cast<bool>(o.disasm);
-
-	//Precache
-	if (LoadShaderFromCache(file_name, pTarget, disasm, result))
-	{
-		Msg("Loading shader %s from cache", name);
-		return S_OK;
-	}
-
-	return CompileShader(pSrcData, pFunctionName, pTarget, Flags, SrcDataLen, file_name, defines, result, disasm);
+	return _result;
 }

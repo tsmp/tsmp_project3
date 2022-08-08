@@ -76,7 +76,7 @@ IC CScriptEngine &CAI_Space::script_engine() const
 	return (*m_script_engine);
 }
 
-IC const CPatrolPathStorage &CAI_Space::patrol_paths() const
+IC CPatrolPathStorage &CAI_Space::patrol_paths() const
 {
 	VERIFY(m_patrol_path_storage);
 	return (*m_patrol_path_storage);

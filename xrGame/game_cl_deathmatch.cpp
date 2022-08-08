@@ -728,7 +728,7 @@ bool game_cl_Deathmatch::OnKeyboardPress(int key)
 
 	if (kMAP == key)
 	{
-		if (m_game_ui)
+		if (m_game_ui && smart_cast<CActor*>(Level().CurrentControlEntity()))
 		{
 			if (m_game_ui->PdaMenu && m_game_ui->PdaMenu->IsShown())
 				StartStopMenu(m_game_ui->PdaMenu, true);

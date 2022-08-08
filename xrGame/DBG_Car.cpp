@@ -1,4 +1,116 @@
 #include "stdafx.h"
+#include "Car.h"
+#include "..\TSMP3_Build_Config.h"
+
+#ifndef PUBLIC_BUILD
+constexpr float powerCoeff = 0.8f * 1000.f;
+constexpr float rpmCoeff = (1.f / 60.f * 2.f * M_PI);
+
+void CCar::ChangeEnginePower(float newPower)
+{
+	m_max_power = newPower * powerCoeff;
+	InitParabola();
+
+#ifdef DEBUG
+	DBgClearPlots();
+	DbgCreatePlots();
+#endif
+}
+
+void CCar::ChangeReferenceRadius(float newRefRad)
+{
+	for(SWheelDrive &drive:m_driving_wheels)
+		drive.gear_factor = drive.pwheel->radius / newRefRad;
+
+	for (SWheelBreak& whBreak : m_breaking_wheels)
+	{
+		float oldK = whBreak.pwheel->radius / m_ref_radius;
+		whBreak.break_torque /= oldK;
+		whBreak.hand_break_torque /= oldK;
+
+		float k = whBreak.pwheel->radius / newRefRad;
+		whBreak.break_torque *= k;
+		whBreak.hand_break_torque *=k;
+	}
+
+	m_ref_radius = newRefRad;
+}
+
+void CCar::ChangeFrictionFactor(float newFactor)
+{
+	for (auto& mapElem : m_wheels_map)
+		mapElem.second.collision_params.mu_factor = newFactor;
+}
+
+void CCar::ChangeSteeringSpeed(float newSpeed)
+{
+	m_steering_speed = newSpeed;
+}
+
+void CCar::ChangeHandBreakTorque(float newTorque)
+{
+	for (auto& breakingWheel : m_breaking_wheels)
+		breakingWheel.hand_break_torque = newTorque;
+}
+
+void CCar::ChangeMaxPowerRpm(float newPower)
+{
+	m_power_rpm = newPower * rpmCoeff;
+	InitParabola();
+
+#ifdef DEBUG
+	DBgClearPlots();
+	DbgCreatePlots();
+#endif
+}
+
+void CCar::ChangeMaxTorqueRpm(float newTorque)
+{
+	m_torque_rpm = newTorque * rpmCoeff;
+	InitParabola();
+
+#ifdef DEBUG
+	DBgClearPlots();
+	DbgCreatePlots();
+#endif
+}
+
+float CCar::GetEnginePower()
+{
+	return m_max_power / powerCoeff;
+}
+
+float CCar::GetReferenceRadius()
+{
+	return m_ref_radius;
+}
+
+float CCar::GetSteeringSpeed()
+{
+	return m_steering_speed;
+}
+
+float CCar::GetFrictionFactor()
+{
+	return m_wheels_map.begin()->second.collision_params.mu_factor;
+}
+
+float CCar::GetHandBreakTorque()
+{
+	return m_breaking_wheels[0].hand_break_torque;
+}
+
+float CCar::GetMaxPowerRpm()
+{
+	return m_power_rpm / rpmCoeff;
+}
+
+float CCar::GetMaxTorqueRpm()
+{
+	return m_torque_rpm / rpmCoeff;
+}
+#endif
+
 #ifdef DEBUG
 
 #include "ode_include.h"
@@ -7,7 +119,6 @@
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
-#include "Car.h"
 #include "hudmanager.h"
 #include "Level.h"
 
