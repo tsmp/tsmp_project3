@@ -14,6 +14,7 @@
 #include "Actor.h"
 #include "ai_object_location.h"
 #include "..\TSMP3_Build_Config.h"
+#include "InfoPortion.h"
 
 void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 {
@@ -49,7 +50,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		game->AddDelayedEvent(P, game_event_type, timestamp, sender);
 	}
 	break;
-	case GE_INFO_TRANSFER:
+	
 	case GE_WPN_STATE_CHANGE:
 	case GE_ZONE_STATE_CHANGE:
 	case GEG_PLAYER_PLAY_HEADSHOT_PARTICLE:
@@ -64,6 +65,54 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		SendBroadcast(BroadcastCID, P, MODE);
 	}
 	break;
+
+	case GE_INFO_TRANSFER:
+	{
+		u16 id;
+		shared_str info_id;
+		u8 add_info;
+
+		u32 idPos = P.r_tell() - sizeof(u16); // позиция id отправителя
+		P.r_u16(id); // отправитель
+		P.r_stringZ(info_id);
+		P.r_u8(add_info); // добавление или убирание информации
+
+		CInfoPortion info_portion;
+		info_portion.Load(info_id);
+
+		if(!info_portion.NeedMpSync())
+			SendBroadcast(BroadcastCID, P, MODE);
+		else
+		{
+			// глобальный поршень, надо разослать всем акторам
+			xr_vector<u16> actors;
+
+			ForEachClientDo([&](IClient* client)
+			{
+				auto cl = static_cast<xrClientData*>(client);
+
+				if (!cl->ps)
+					return;
+
+				u16 gameId = cl->ps->GameID;
+					
+				if (smart_cast<CActor*>(Level().Objects.net_Find(gameId)))
+					actors.push_back(gameId);
+			});
+
+			// server
+			actors.push_back(Actor()->ID());
+
+			for (u16 actor : actors)
+			{
+				P.w_seek(idPos, &actor, sizeof(u16));
+				SendBroadcast(BroadcastCID, P, MODE);
+			}
+		}
+
+		break;
+	}
+
 	case GE_INV_ACTION:
 	{
 		xrClientData *CL = ID_to_client(sender);

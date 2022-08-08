@@ -105,6 +105,9 @@ void CInfoPortion::load_shared(LPCSTR)
 		THROW(task_str_id);
 		info_data()->m_GameTasks.push_back(task_str_id);
 	}
+
+	shared_str needMpSyncinfo = pXML->Read(pNode, "mpsync", 0, "false");
+	info_data()->m_NeedMpSync = needMpSyncinfo == "true";
 }
 
 void CInfoPortion::InitXmlIdToIndex()

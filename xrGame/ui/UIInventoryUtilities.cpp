@@ -452,14 +452,8 @@ LPCSTR InventoryUtilities::GetGoodwillAsText(CHARACTER_GOODWILL goodwill)
 // (для tutorial)
 void InventoryUtilities::SendInfoToActor(LPCSTR info_id)
 {
-	if (GameID() != GAME_SINGLE)
-		return;
-
-	CActor *actor = smart_cast<CActor *>(Level().CurrentEntity());
-	if (actor)
-	{
-		actor->TransferInfo(info_id, true);
-	}
+	if(CActor *actor = smart_cast<CActor *>(Level().CurrentEntity()))	
+		actor->TransferInfo(info_id, true);	
 }
 
 u32 InventoryUtilities::GetGoodwillColor(CHARACTER_GOODWILL gw)

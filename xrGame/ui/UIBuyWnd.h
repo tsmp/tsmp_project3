@@ -54,11 +54,9 @@ public:
 	virtual void SetRank(u32 rank);
 	virtual u32 GetRank();
 
-	virtual void ItemToBelt(const shared_str &sectionName);
-	virtual void ItemToRuck(const shared_str &sectionName, u32 addons);
-	virtual void ItemToSlot(const shared_str &sectionName, u32 addons);
-
-	/////
+	virtual void ItemToBelt(const shared_str &sectionName, u8 addons) {}
+	virtual void ItemToRuck(const shared_str &sectionName, u8 addons) {}
+	virtual void ItemToSlot(const shared_str &sectionName, u8 addons) {}
 
 	void OnTabChange();
 	void OnMenuLevelChange();

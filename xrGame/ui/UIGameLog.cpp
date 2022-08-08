@@ -85,7 +85,7 @@ void CUIGameLog::AddChatMessage(LPCSTR msg, LPCSTR author)
 	pItem->m_pLines->SetCutWordsMode(true);
 	pItem->SetFont(GetFont());
 	pItem->SetTextColor(txt_color);
-	pItem->SetClrAnimDelay(5000.0f);
+	pItem->SetClrAnimDelay(8000.0f);
 	pItem->SetClrLightAnim(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);
 	pItem->SetWidth(this->GetDesiredChildWidth());
 	pItem->AdjustHeightToText();

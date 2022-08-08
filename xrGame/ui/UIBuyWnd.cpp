@@ -17,7 +17,7 @@
 #include "restrictions.h"
 #include "xr_input.h"
 
-#define BELT_SLOT 5
+const u32 BELT_SLOT = 5;
 
 CUIBuyWnd::CUIBuyWnd()
 {
@@ -63,7 +63,7 @@ CUIBuyWnd::CUIBuyWnd()
 	m_propertiesBox.Init(0, 0, 300, 300);
 	m_propertiesBox.Hide();
 
-	m_pCurrentCellItem = NULL;
+	m_pCurrentCellItem = nullptr;
 }
 
 CUIBuyWnd::~CUIBuyWnd()
@@ -83,11 +83,10 @@ void CUIBuyWnd::ResetItems()
 
 void CUIBuyWnd::Show()
 {
-	m_pMouseCapturer = NULL;
+	m_pMouseCapturer = nullptr;
 	inherited::Show();
-
-	CActor *pActor = smart_cast<CActor *>(Level().CurrentEntity());
-	if (pActor)
+		
+	if (CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity()))
 		pActor->SetWeaponHideState(INV_STATE_BUY_MENU, true);
 
 	m_tab.SetActiveState();
@@ -99,27 +98,21 @@ void CUIBuyWnd::Show()
 void CUIBuyWnd::Hide()
 {
 	inherited::Hide();
-
-	CActor *pActor = smart_cast<CActor *>(Level().CurrentEntity());
-	if (pActor)
+	
+	if (CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity()))
 		pActor->SetWeaponHideState(INV_STATE_BUY_MENU, false);
 }
 
 void CUIBuyWnd::DestroyAllItems()
 {
-	if (m_list[MP_SLOT_PISTOL]->ItemsCount())
-	{
+	if (m_list[MP_SLOT_PISTOL]->ItemsCount())	
 		m_bag.DestroyItem(m_list[MP_SLOT_PISTOL]->GetItemIdx(0));
-	}
-	if (m_list[MP_SLOT_RIFLE]->ItemsCount())
-	{
-		m_bag.DestroyItem(m_list[MP_SLOT_RIFLE]->GetItemIdx(0));
-	}
+	
+	if (m_list[MP_SLOT_RIFLE]->ItemsCount())	
+		m_bag.DestroyItem(m_list[MP_SLOT_RIFLE]->GetItemIdx(0));	
 
-	for (int i = 0; i < MP_SLOT_NUM; i++)
-	{
-		m_list[i]->ClearAll(true);
-	}
+	for (int i = 0; i < MP_SLOT_NUM; i++)	
+		m_list[i]->ClearAll(true);	
 }
 
 void CUIBuyWnd::Init(const shared_str &sectionName, const shared_str &sectionPrice)
@@ -171,7 +164,7 @@ void CUIBuyWnd::Init(const shared_str &sectionName, const shared_str &sectionPri
 	BindDragDropListEvents(m_list[MP_SLOT_BELT], false);
 	BindDragDropListEvents(m_list[MP_SLOT_OUTFIT], false);
 
-	m_list[MP_SLOT_OUTFIT]->SetItem(NULL);
+	m_list[MP_SLOT_OUTFIT]->SetItem(nullptr);
 
 	CUIXmlInit::InitWindow(xml_doc, "desc_static", 0, &m_itemInfo);
 	CUIXmlInit::InitStatic(xml_doc, "desc_static:rank_icon", 0, &m_rankInfo);
@@ -198,33 +191,36 @@ bool CUIBuyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 			return true;
 	}
 
-	if (DIK_ESCAPE == dik)
+	switch (dik)
 	{
+	case DIK_ESCAPE:
 		m_btnCancel.OnClick();
-	}
-	else if (DIK_SPACE == dik || DIK_RETURN == dik)
-	{
+		break;
+
+	case DIK_SPACE:
+	case DIK_RETURN:
 		m_btnOk.OnClick();
-	}
-	else if (DIK_B == dik)
-	{
+		break;
+
+	case DIK_B:
 		m_tab.SetActiveState();
-	}
-	else if (DIK_C == dik)
-	{
+		break;
+
+	case DIK_C:
 		m_btnClear.OnClick();
-	}
-	else if (DIK_Q == dik)
-	{
+		break;
+
+	case DIK_Q:
 		m_btnPistolBullet.OnClick();
-	}
-	else if (DIK_W == dik)
-	{
+		break;
+
+	case DIK_W:
 		m_btnRifleBullet.OnClick();
-	}
-	else if (DIK_E == dik)
-	{
+		break;
+
+	case DIK_E:
 		m_btnRifleGrenade.OnClick();
+		break;
 	}
 
 	return true;
@@ -243,35 +239,27 @@ void CUIBuyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 		break;
 
 	case BUTTON_CLICKED:
-		if (&m_btnOk == pWnd)
-		{
-			OnBtnOk();
-		}
-		else if (&m_btnCancel == pWnd)
-		{
-			OnBtnCancel();
-		}
-		else if (&m_btnClear == pWnd)
-		{
-			OnBtnClear();
-		}
-		else if (&m_btnPistolBullet == pWnd)
-		{
-			OnBtnBulletBuy(MP_SLOT_PISTOL);
-		}
-		else if (&m_btnRifleBullet == pWnd)
-		{
-			OnBtnBulletBuy(MP_SLOT_RIFLE);
-		}
-		else if (&m_btnRifleGrenade)
-		{
-			OnBtnRifleGrenade();
-		}
-		break;
+	{
+		if (&m_btnOk == pWnd)		
+			OnBtnOk();		
+		else if (&m_btnCancel == pWnd)		
+			OnBtnCancel();		
+		else if (&m_btnClear == pWnd)		
+			OnBtnClear();		
+		else if (&m_btnPistolBullet == pWnd)		
+			OnBtnBulletBuy(MP_SLOT_PISTOL);		
+		else if (&m_btnRifleBullet == pWnd)		
+			OnBtnBulletBuy(MP_SLOT_RIFLE);		
+		else if (&m_btnRifleGrenade)		
+			OnBtnRifleGrenade();	
+	}
+	break;
+
 	case PROPERTY_CLICKED:
 		if (pWnd == &m_propertiesBox)
 			ProcessPropertiesBoxClicked();
 		break;
+
 	case MP_MONEY_CHANGE:
 		OnMoneyChange();
 		break;
@@ -290,8 +278,8 @@ void CUIBuyWnd::Update()
 	if (m_list[MP_SLOT_RIFLE]->ItemsCount())
 	{
 		m_btnRifleBullet.Enable(true);
+		CWeapon *wpn = static_cast<CWeapon*>(m_list[MP_SLOT_RIFLE]->GetItemIdx(0)->m_pData);
 
-		CWeapon *wpn = (CWeapon *)m_list[MP_SLOT_RIFLE]->GetItemIdx(0)->m_pData;
 		if (wpn->IsGrenadeLauncherAttached())
 			m_btnRifleGrenade.Enable(true);
 		else
@@ -306,54 +294,55 @@ void CUIBuyWnd::Update()
 
 void CUIBuyWnd::OnBtnBulletBuy(int slot)
 {
-	if (m_list[slot]->ItemsCount())
-	{
-		CUICellItem *itm = m_list[slot]->GetItemIdx(0);
-		CInventoryItem *iitm = (CInventoryItem *)itm->m_pData;
+	if (!m_list[slot]->ItemsCount())
+		return;
 
-		R_ASSERT(pSettings->section_exist(*iitm->object().cNameSect()));
+	CUICellItem* itm = m_list[slot]->GetItemIdx(0);
+	CInventoryItem* iitm = static_cast<CInventoryItem*>(itm->m_pData);
 
-		shared_str itemsList;
-		string256 single_item;
+	R_ASSERT(pSettings->section_exist(*iitm->object().cNameSect()));
 
-		itemsList = pSettings->r_string(*iitm->object().cNameSect(), "ammo_class");
-		int n = 0;
-		if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
-			n = 1;
-		if (_GetItemCount(itemsList.c_str()) < 2)
-			n = 0;
-		_GetItem(itemsList.c_str(), n, single_item);
+	shared_str itemsList;
+	string256 single_item;
 
-		CUICellItem *ammo = m_bag.GetItemBySectoin(single_item);
-		if (ammo && m_bag.CanBuy(ammo))
-		{
-			ToBelt(ammo, false);
-		}
-	}
+	itemsList = pSettings->r_string(*iitm->object().cNameSect(), "ammo_class");
+	int n = 0;
+
+	if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+		n = 1;
+
+	if (_GetItemCount(itemsList.c_str()) < 2)
+		n = 0;
+
+	_GetItem(itemsList.c_str(), n, single_item);
+
+	CUICellItem* ammo = m_bag.GetItemBySectoin(single_item);
+
+	if (ammo && m_bag.CanBuy(ammo))
+		ToBelt(ammo, false);
 }
 
 void CUIBuyWnd::OnBtnRifleGrenade()
 {
-	if (m_list[MP_SLOT_RIFLE]->ItemsCount())
-	{
-		CUICellItem *itm = m_list[MP_SLOT_RIFLE]->GetItemIdx(0);
-		CWeapon *wpn = (CWeapon *)itm->m_pData;
+	if (!m_list[MP_SLOT_RIFLE]->ItemsCount())
+		return;
 
-		if (wpn->IsGrenadeLauncherAttached())
-		{
-			shared_str itemsList;
-			string256 single_item;
+	CUICellItem* itm = m_list[MP_SLOT_RIFLE]->GetItemIdx(0);
+	CWeapon* wpn = static_cast<CWeapon*>(itm->m_pData);
 
-			itemsList = pSettings->r_string(*wpn->cNameSect(), "grenade_class");
-			_GetItem(*itemsList, 0, single_item);
+	if (!wpn->IsGrenadeLauncherAttached())
+		return;
 
-			CUICellItem *grenade = m_bag.GetItemBySectoin(single_item);
-			if (grenade && m_bag.CanBuy(grenade))
-			{
-				ToBelt(grenade, false);
-			}
-		}
-	}
+	shared_str itemsList;
+	string256 single_item;
+
+	itemsList = pSettings->r_string(*wpn->cNameSect(), "grenade_class");
+	_GetItem(*itemsList, 0, single_item);
+
+	CUICellItem* grenade = m_bag.GetItemBySectoin(single_item);
+
+	if (grenade && m_bag.CanBuy(grenade))	
+		ToBelt(grenade, false);
 }
 
 void CUIBuyWnd::HightlightCurrAmmo()
@@ -367,16 +356,13 @@ void CUIBuyWnd::Highlight(int slot)
 {
 	R_ASSERT(MP_SLOT_PISTOL == slot || MP_SLOT_RIFLE == slot);
 
-	CUICellItem *item = NULL;
-	CInventoryItem *iitem = NULL;
 
-	if (m_list[slot]->ItemsCount())
-	{
-		item = m_list[slot]->GetItemIdx(0);
-		iitem = (CInventoryItem *)item->m_pData;
-	}
-	else
+
+	if (!m_list[slot]->ItemsCount())
 		return;
+	
+	CUICellItem* item = m_list[slot]->GetItemIdx(0);
+	CInventoryItem* iitem = static_cast<CInventoryItem*>(item->m_pData);		
 
 	R_ASSERT(pSettings->section_exist(*iitem->object().cNameSect()));
 
@@ -384,8 +370,8 @@ void CUIBuyWnd::Highlight(int slot)
 	string256 single_item;
 
 	itemsList = pSettings->r_string(*iitem->object().cNameSect(), "ammo_class");
-
 	int c = _GetItemCount(itemsList.c_str());
+
 	for (int i = 0; i < c; i++)
 	{
 		_GetItem(itemsList.c_str(), i, single_item);
@@ -404,65 +390,61 @@ void CUIBuyWnd::AfterBuy()
 {
 	int iActiveIndex = m_tab.GetActiveIndex();
 
-	if (2 == iActiveIndex || 4 == iActiveIndex)
-	{
-		; // do nothing
-	}
-	else
+	if (iActiveIndex != 2 && iActiveIndex != 4)
 		m_tab.SetActiveState();
 }
 
 void CUIBuyWnd::ProcessPropertiesBoxClicked()
 {
-	if (m_propertiesBox.GetClickedItem())
+	if (!m_propertiesBox.GetClickedItem())
+		return;
+
+	CUICellItem* itm = nullptr;
+
+	switch (m_propertiesBox.GetClickedItem()->GetTAG())
 	{
-		CUICellItem *itm = NULL;
+	case INVENTORY_TO_SLOT_ACTION:
+		ToSlot(CurrentItem(), true);
+		break;
 
-		switch (m_propertiesBox.GetClickedItem()->GetTAG())
-		{
-		case INVENTORY_TO_SLOT_ACTION:
-			ToSlot(CurrentItem(), true);
-			break;
+	case INVENTORY_TO_BELT_ACTION:
+		ToBelt(CurrentItem(), false);
+		break;
 
-		case INVENTORY_TO_BELT_ACTION:
-			ToBelt(CurrentItem(), false);
-			break;
+	case INVENTORY_TO_BAG_ACTION:
+		ToBag(CurrentItem(), false);
+		break;
 
-		case INVENTORY_TO_BAG_ACTION:
-			ToBag(CurrentItem(), false);
-			break;
+	case INVENTORY_ATTACH_ADDON:
+		AttachAddon((PIItem)(m_propertiesBox.GetClickedItem()->GetData()));
+		break;
 
-		case INVENTORY_ATTACH_ADDON:
-			AttachAddon((PIItem)(m_propertiesBox.GetClickedItem()->GetData()));
-			break;
+	case INVENTORY_ATTACH_SCOPE_ADDON:
+		itm = (CUICellItem*)(m_propertiesBox.GetClickedItem()->GetData());
+		m_bag.AttachAddon(itm, CSE_ALifeItemWeapon::eWeaponAddonScope, false);
+		break;
 
-		case INVENTORY_ATTACH_SCOPE_ADDON:
-			itm = (CUICellItem *)(m_propertiesBox.GetClickedItem()->GetData());
-			m_bag.AttachAddon(itm, CSE_ALifeItemWeapon::eWeaponAddonScope, false);
-			break;
+	case INVENTORY_DETACH_SCOPE_ADDON:
+		DetachAddon(*(smart_cast<CWeapon*>(CurrentIItem()))->GetScopeName());
+		break;
 
-		case INVENTORY_DETACH_SCOPE_ADDON:
-			DetachAddon(*(smart_cast<CWeapon *>(CurrentIItem()))->GetScopeName());
-			break;
+	case INVENTORY_ATTACH_SILENCER_ADDON:
+		itm = (CUICellItem*)(m_propertiesBox.GetClickedItem()->GetData());
+		m_bag.AttachAddon(itm, CSE_ALifeItemWeapon::eWeaponAddonSilencer, false);
+		break;
 
-		case INVENTORY_ATTACH_SILENCER_ADDON:
-			itm = (CUICellItem *)(m_propertiesBox.GetClickedItem()->GetData());
-			m_bag.AttachAddon(itm, CSE_ALifeItemWeapon::eWeaponAddonSilencer, false);
-			break;
+	case INVENTORY_DETACH_SILENCER_ADDON:
+		DetachAddon(*(smart_cast<CWeapon*>(CurrentIItem()))->GetSilencerName());
+		break;
 
-		case INVENTORY_DETACH_SILENCER_ADDON:
-			DetachAddon(*(smart_cast<CWeapon *>(CurrentIItem()))->GetSilencerName());
-			break;
+	case INVENTORY_ATTACH_GRENADE_LAUNCHER_ADDON:
+		itm = (CUICellItem*)(m_propertiesBox.GetClickedItem()->GetData());
+		m_bag.AttachAddon(itm, CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher, false);
+		break;
 
-		case INVENTORY_ATTACH_GRENADE_LAUNCHER_ADDON:
-			itm = (CUICellItem *)(m_propertiesBox.GetClickedItem()->GetData());
-			m_bag.AttachAddon(itm, CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher, false);
-			break;
-
-		case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON:
-			DetachAddon(*(smart_cast<CWeapon *>(CurrentIItem()))->GetGrenadeLauncherName());
-			break;
-		}
+	case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON:
+		DetachAddon(*(smart_cast<CWeapon*>(CurrentIItem()))->GetGrenadeLauncherName());
+		break;
 	}
 }
 
@@ -472,7 +454,7 @@ void CUIBuyWnd::OnBtnOk()
 		return;
 
 	Game().StartStopMenu(this, true);
-	game_cl_Deathmatch *dm = smart_cast<game_cl_Deathmatch *>(&(Game()));
+	game_cl_Deathmatch *dm = smart_cast<game_cl_Deathmatch*>(&(Game()));
 	dm->OnBuyMenu_Ok();
 }
 
@@ -483,15 +465,14 @@ void CUIBuyWnd::OnBtnCancel()
 
 bool CUIBuyWnd::ClearTooExpensiveItems()
 {
-	bool f = false;
-	bool res;
+	bool res = ClearSlot_ifTooExpensive(MP_SLOT_PISTOL);
+	bool f = res;
 
-	res = ClearSlot_ifTooExpensive(MP_SLOT_PISTOL);
-	f = (f) ? true : res;
 	res = ClearSlot_ifTooExpensive(MP_SLOT_RIFLE);
-	f = (f) ? true : res;
+	f = f || res;
+
 	res = ClearSlot_ifTooExpensive(MP_SLOT_OUTFIT);
-	f = (f) ? true : res;
+	f = f || res;
 
 	u32 c = m_list[MP_SLOT_BELT]->ItemsCount();
 
@@ -507,56 +488,60 @@ bool CUIBuyWnd::ClearTooExpensiveItems()
 			c = m_list[MP_SLOT_BELT]->ItemsCount();
 		}
 	}
+
 	return f;
 }
 
 bool CUIBuyWnd::ClearSlot_ifTooExpensive(int slot)
 {
-	R_ASSERT(slot <= MP_SLOT_NUM);
+	R_ASSERT(slot <= MP_SLOT_NUM);	
+
+	if (!m_list[slot]->ItemsCount())
+		return false;
+
+	CUICellItem* itm = m_list[slot]->GetItemIdx(0);
+
+	if (itm->GetColor() == PRICE_RESTR_COLOR)
+	{
+		ToBag(itm, false);
+		return true;
+	}
+
+	CUIWeaponCellItem* witm = smart_cast<CUIWeaponCellItem*>(itm);
+
+	if (!witm)
+		return false;
 
 	bool add_on = false;
+	CWeapon* wpn = static_cast<CWeapon*>(itm->m_pData);
 
-	if (m_list[slot]->ItemsCount())
+	if (witm->get_addon_static(CUIWeaponCellItem::eScope))
 	{
-		CUICellItem *itm = m_list[slot]->GetItemIdx(0);
-
-		if (itm->GetColor() == PRICE_RESTR_COLOR)
+		if (witm->get_addon_static(CUIWeaponCellItem::eScope)->GetColor() == PRICE_RESTR_COLOR)
 		{
-			ToBag(itm, false);
-			return true;
-		}
-
-		CUIWeaponCellItem *witm = smart_cast<CUIWeaponCellItem *>(itm);
-		CWeapon *wpn = (CWeapon *)itm->m_pData;
-
-		if (witm)
-		{
-			if (witm->get_addon_static(CUIWeaponCellItem::eScope))
-			{
-				if (witm->get_addon_static(CUIWeaponCellItem::eScope)->GetColor() == PRICE_RESTR_COLOR)
-				{
-					wpn->Detach(*wpn->GetScopeName(), true);
-					add_on = true;
-				}
-			}
-			if (witm->get_addon_static(CUIWeaponCellItem::eSilencer))
-			{
-				if (witm->get_addon_static(CUIWeaponCellItem::eSilencer)->GetColor() == PRICE_RESTR_COLOR)
-				{
-					wpn->Detach(*wpn->GetSilencerName(), true);
-					add_on = true;
-				}
-			}
-			if (witm->get_addon_static(CUIWeaponCellItem::eLauncher))
-			{
-				if (witm->get_addon_static(CUIWeaponCellItem::eLauncher)->GetColor() == PRICE_RESTR_COLOR)
-				{
-					wpn->Detach(*wpn->GetGrenadeLauncherName(), true);
-					add_on = true;
-				}
-			}
+			wpn->Detach(*wpn->GetScopeName(), true);
+			add_on = true;
 		}
 	}
+
+	if (witm->get_addon_static(CUIWeaponCellItem::eSilencer))
+	{
+		if (witm->get_addon_static(CUIWeaponCellItem::eSilencer)->GetColor() == PRICE_RESTR_COLOR)
+		{
+			wpn->Detach(*wpn->GetSilencerName(), true);
+			add_on = true;
+		}
+	}
+
+	if (witm->get_addon_static(CUIWeaponCellItem::eLauncher))
+	{
+		if (witm->get_addon_static(CUIWeaponCellItem::eLauncher)->GetColor() == PRICE_RESTR_COLOR)
+		{
+			wpn->Detach(*wpn->GetGrenadeLauncherName(), true);
+			add_on = true;
+		}
+	}
+
 	return add_on;
 }
 
@@ -569,6 +554,7 @@ bool CUIBuyWnd::SlotToSection(int slot)
 		CUICellItem *itm = m_list[slot]->GetItemIdx(0);
 		itm->GetMessageTarget()->SendMessage(itm, DRAG_DROP_ITEM_DB_CLICK, NULL);
 	}
+
 	return true;
 }
 
@@ -581,9 +567,8 @@ void CUIBuyWnd::OnBtnClear()
 	SlotToSection(MP_SLOT_RIFLE);
 	SlotToSection(MP_SLOT_BELT);
 	SlotToSection(MP_SLOT_OUTFIT);
-
-	game_cl_Deathmatch *dm = smart_cast<game_cl_Deathmatch *>(&(Game()));
-	if (dm)
+	
+	if (game_cl_Deathmatch* dm = smart_cast<game_cl_Deathmatch*>(&(Game())))
 		dm->OnBuyMenu_DefaultItems();
 }
 
@@ -605,34 +590,36 @@ CUICellItem *CUIBuyWnd::CurrentItem()
 
 CInventoryItem *CUIBuyWnd::CurrentIItem()
 {
-	return (m_pCurrentCellItem) ? (CInventoryItem *)m_pCurrentCellItem->m_pData : NULL;
+	return (m_pCurrentCellItem) ? (CInventoryItem*)m_pCurrentCellItem->m_pData : NULL;
 }
 
 void CUIBuyWnd::SetCurrentItem(CUICellItem *itm)
 {
 	if (m_pCurrentCellItem == itm)
 		return;
+
 	m_pCurrentCellItem = itm;
 
-	if (m_pCurrentCellItem)
+	if (!m_pCurrentCellItem)
+		return;
+
 	{
 		string256 str;
 		m_itemInfo.InitItem(CurrentIItem());
 		sprintf_s(str, "%d RU", m_bag.GetItemPrice(itm));
 		m_itemInfo.UICost->SetText(str);
-
-		string64 tex_name;
-		string64 team;
-
-		if (m_bag.IsBlueTeamItem(itm))
-			strcpy(team, "blue");
-		else
-			strcpy(team, "green");
-
-		sprintf_s(tex_name, "ui_hud_status_%s_0%d", team, m_bag.GetItemRank(m_pCurrentCellItem) + 1);
-
-		m_rankInfo.InitTexture(tex_name);
 	}
+		
+	string64 team;
+
+	if (m_bag.IsBlueTeamItem(itm))
+		strcpy(team, "blue");
+	else
+		strcpy(team, "green");
+
+	string64 tex_name;
+	sprintf_s(tex_name, "ui_hud_status_%s_0%d", team, m_bag.GetItemRank(m_pCurrentCellItem) + 1);
+	m_rankInfo.InitTexture(tex_name);
 }
 
 bool CUIBuyWnd::OnItemStartDrag(CUICellItem *itm)
@@ -652,6 +639,7 @@ void CUIBuyWnd::BindDragDropListEvents(CUIDragDropListEx *lst, bool bDrag)
 	lst->m_f_item_db_click = CUIDragDropListEx::DRAG_DROP_EVENT(this, &CUIBuyWnd::OnItemDbClick);
 	lst->m_f_item_selected = CUIDragDropListEx::DRAG_DROP_EVENT(this, &CUIBuyWnd::OnItemSelected);
 	lst->m_f_item_rbutton_click = CUIDragDropListEx::DRAG_DROP_EVENT(this, &CUIBuyWnd::OnItemRButtonClick);
+
 	if (bDrag)
 		lst->m_f_item_start_drag = CUIDragDropListEx::DRAG_DROP_EVENT(this, &CUIBuyWnd::OnItemStartDrag);
 }
@@ -661,13 +649,12 @@ bool CUIBuyWnd::OnItemDrop(CUICellItem *itm)
 	CUIDragDropListEx *old_owner = itm->OwnerList();
 	CUIDragDropListEx *new_owner = CUIDragDropListEx::m_drag_item->BackList();
 
-	if (old_owner == new_owner ||
-		!old_owner ||
-		!new_owner)
+	if (old_owner == new_owner || !old_owner || !new_owner)
 		return false;
 
 	EListType t_new = GetType(new_owner);
 	EListType t_old = GetType(old_owner);
+
 	if (t_new == t_old)
 		return true;
 
@@ -681,17 +668,13 @@ bool CUIBuyWnd::OnItemDrop(CUICellItem *itm)
 	break;
 
 	case iwBag:
-	{
 		ToBag(itm, true);
-	}
-	break;
+		break;
 
 	case iwBelt:
-	{
 		ToBelt(itm, true);
+		break;
 	}
-	break;
-	};
 
 	return true;
 }
@@ -718,9 +701,10 @@ CUIDragDropListEx *CUIBuyWnd::GetSlotList(u32 slot_idx)
 
 	default:
 		NODEFAULT;
-	};
+	}
+
 #ifdef DEBUG
-	return NULL;
+	return nullptr;
 #endif // DEBUG
 }
 
@@ -742,6 +726,7 @@ EListType CUIBuyWnd::GetType(CUIDragDropListEx *l)
 		return iwBag;
 
 	NODEFAULT;
+
 #ifdef DEBUG
 	return iwSlot;
 #endif // DEBUG
@@ -749,39 +734,28 @@ EListType CUIBuyWnd::GetType(CUIDragDropListEx *l)
 
 bool CUIBuyWnd::OnItemDbClick(CUICellItem *itm)
 {
-
-	CUIDragDropListEx *old_owner = itm->OwnerList();
-	EListType t_old = GetType(old_owner);
+	EListType t_old = GetType(itm->OwnerList());
 
 	switch (t_old)
 	{
-	case iwSlot:
-	{
+	case iwSlot:	
 		ToBag(itm, false);
-	}
-	break;
+		break;
 
 	case iwBag:
 	{
-		if (m_bag.CanBuy(itm))
-		{
-			if (!ToSlot(itm, false))
-			{
-				if (!ToBelt(itm, false))
-					ToSlot(itm, true);
-			}
-		}
-		else
+		if (!m_bag.CanBuy(itm))
 			return false;
+		
+		if (!ToSlot(itm, false) && !ToBelt(itm, false))
+			ToSlot(itm, true);			
 	}
 	break;
 
-	case iwBelt:
-	{
+	case iwBelt:	
 		ToBag(itm, false);
+		break;
 	}
-	break;
-	};
 
 	return true;
 }
@@ -815,33 +789,31 @@ void CUIBuyWnd::ActivatePropertiesBox()
 
 	m_propertiesBox.RemoveAll();
 
-	CCustomOutfit *pOutfit = smart_cast<CCustomOutfit *>(CurrentIItem());
-	CWeapon *pWeapon = smart_cast<CWeapon *>(CurrentIItem());
-	CScope *pScope = smart_cast<CScope *>(CurrentIItem());
-	CSilencer *pSilencer = smart_cast<CSilencer *>(CurrentIItem());
-	CGrenadeLauncher *pGrenadeLauncher = smart_cast<CGrenadeLauncher *>(CurrentIItem());
+	CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>(CurrentIItem());
+	CWeapon* pWeapon = smart_cast<CWeapon*>(CurrentIItem());
+	CScope* pScope = smart_cast<CScope*>(CurrentIItem());
+	CSilencer* pSilencer = smart_cast<CSilencer*>(CurrentIItem());
+	CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(CurrentIItem());
 
-	if ((pWeapon || pOutfit) && m_bag.IsInBag(CurrentItem()) && m_bag.CanBuy(CurrentItem()) /*&& m_list[GetLocalSlot(CurrentIItem()->GetSlot())]->ItemsCount()*/)
-	{
+	if ((pWeapon || pOutfit) && m_bag.IsInBag(CurrentItem()) && m_bag.CanBuy(CurrentItem()))	
 		m_propertiesBox.AddItem("st_move_to_slot", NULL, INVENTORY_TO_SLOT_ACTION);
-	}
-	if (CurrentIItem()->Belt() && CanPutInBelt(CurrentIItem()))
-	{
+	
+	if (CurrentIItem()->Belt() && CanPutInBelt(CurrentIItem()))	
 		m_propertiesBox.AddItem("st_move_on_belt", NULL, INVENTORY_TO_BELT_ACTION);
-	}
+	
 	if (!m_bag.IsInBag(CurrentItem()))
 	{
 		if (!pOutfit)
 			m_propertiesBox.AddItem("st_move_to_bag", NULL, INVENTORY_TO_BAG_ACTION);
 		else
 			m_propertiesBox.AddItem("st_undress_outfit", NULL, INVENTORY_TO_BAG_ACTION);
+
 		bAlreadyDressed = true;
 	}
-	if (pOutfit && !bAlreadyDressed)
-	{
+
+	if (pOutfit && !bAlreadyDressed)	
 		m_propertiesBox.AddItem("Dress in outfit", NULL, INVENTORY_TO_SLOT_ACTION);
-	}
-	//
+	
 	//отсоединение аддонов от вещи
 	if (pWeapon)
 	{
@@ -851,18 +823,17 @@ void CUIBuyWnd::ActivatePropertiesBox()
 				m_propertiesBox.AddItem("st_detach_gl", GetRifle(), INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON);
 			else if (m_list[MP_SLOT_RIFLE]->IsOwner(CurrentItem()))
 			{
-
 				if (m_bag.CanBuy(*pWeapon->GetGrenadeLauncherName()))
 					m_propertiesBox.AddItem("st_attach_gl_to_rifle", CurrentItem(), INVENTORY_ATTACH_GRENADE_LAUNCHER_ADDON);
 			}
 		}
+
 		if (pWeapon->ScopeAttachable())
 		{
 			if (pWeapon->IsScopeAttached())
 				m_propertiesBox.AddItem("st_detach_scope", NULL, INVENTORY_DETACH_SCOPE_ADDON);
 			else
 			{
-
 				if (m_bag.CanBuy(*pWeapon->GetScopeName()))
 				{
 					if (m_list[MP_SLOT_PISTOL]->IsOwner(CurrentItem()))
@@ -872,13 +843,13 @@ void CUIBuyWnd::ActivatePropertiesBox()
 				}
 			}
 		}
+
 		if (pWeapon->SilencerAttachable())
 		{
 			if (pWeapon->IsSilencerAttached())
 				m_propertiesBox.AddItem("st_detach_silencer", NULL, INVENTORY_DETACH_SILENCER_ADDON);
 			else
 			{
-
 				if (m_bag.CanBuy(*pWeapon->GetSilencerName()))
 				{
 					if (m_list[MP_SLOT_PISTOL]->IsOwner(CurrentItem()))
@@ -889,60 +860,63 @@ void CUIBuyWnd::ActivatePropertiesBox()
 			}
 		}
 	}
+
 	if (pScope)
 	{
-		CInventoryItem *pIItem = NULL;
+		CInventoryItem *pIItem = nullptr;
+
 		if (m_list[MP_SLOT_PISTOL]->ItemsCount())
 		{
-			pIItem = (CInventoryItem *)((m_list[MP_SLOT_PISTOL]->GetItemIdx(0))->m_pData);
+			pIItem = static_cast<CInventoryItem*>((m_list[MP_SLOT_PISTOL]->GetItemIdx(0))->m_pData);
 
 			if (pIItem->CanAttach(pScope))
-				m_propertiesBox.AddItem("st_attach_scope_to_pistol", (void *)pIItem, INVENTORY_ATTACH_ADDON);
+				m_propertiesBox.AddItem("st_attach_scope_to_pistol", reinterpret_cast<void*>(pIItem), INVENTORY_ATTACH_ADDON);
 		}
+
 		if (m_list[MP_SLOT_RIFLE]->ItemsCount())
 		{
-			pIItem = (CInventoryItem *)((m_list[MP_SLOT_RIFLE]->GetItemIdx(0))->m_pData);
+			pIItem = static_cast<CInventoryItem*>((m_list[MP_SLOT_RIFLE]->GetItemIdx(0))->m_pData);
 
 			if (pIItem->CanAttach(pScope))
-				m_propertiesBox.AddItem("st_attach_scope_to_rifle", (void *)pIItem, INVENTORY_ATTACH_ADDON);
+				m_propertiesBox.AddItem("st_attach_scope_to_rifle", reinterpret_cast<void*>(pIItem), INVENTORY_ATTACH_ADDON);
 		}
 	}
 	else if (pSilencer)
 	{
-		CInventoryItem *pIItem = NULL;
+		CInventoryItem *pIItem = nullptr;
+
 		if (m_list[MP_SLOT_PISTOL]->ItemsCount())
 		{
-			pIItem = (CInventoryItem *)((m_list[MP_SLOT_PISTOL]->GetItemIdx(0))->m_pData);
+			pIItem = static_cast<CInventoryItem*>((m_list[MP_SLOT_PISTOL]->GetItemIdx(0))->m_pData);
 
 			if (pIItem->CanAttach(pSilencer))
-				m_propertiesBox.AddItem("st_attach_silencer_to_pistol", (void *)pIItem, INVENTORY_ATTACH_ADDON);
+				m_propertiesBox.AddItem("st_attach_silencer_to_pistol", reinterpret_cast<void*>(pIItem), INVENTORY_ATTACH_ADDON);
 		}
 
 		if (m_list[MP_SLOT_RIFLE]->ItemsCount())
 		{
-			pIItem = (CInventoryItem *)((m_list[MP_SLOT_RIFLE]->GetItemIdx(0))->m_pData);
+			pIItem = static_cast<CInventoryItem*>((m_list[MP_SLOT_RIFLE]->GetItemIdx(0))->m_pData);
 
 			if (pIItem->CanAttach(pSilencer))
-				m_propertiesBox.AddItem("st_attach_silencer_to_rifle", (void *)pIItem, INVENTORY_ATTACH_ADDON);
+				m_propertiesBox.AddItem("st_attach_silencer_to_rifle", reinterpret_cast<void*>(pIItem), INVENTORY_ATTACH_ADDON);
 		}
 	}
 	else if (pGrenadeLauncher)
 	{
-		CInventoryItem *pIItem = NULL;
+		CInventoryItem *pIItem = nullptr;
+
 		if (m_list[MP_SLOT_RIFLE]->ItemsCount())
 		{
-			pIItem = (CInventoryItem *)((m_list[MP_SLOT_RIFLE]->GetItemIdx(0))->m_pData);
+			pIItem = static_cast<CInventoryItem*>((m_list[MP_SLOT_RIFLE]->GetItemIdx(0))->m_pData);
 
 			if (pIItem->CanAttach(pGrenadeLauncher))
-				m_propertiesBox.AddItem("st_attach_gl_to_rifle", (void *)pIItem, INVENTORY_ATTACH_ADDON);
+				m_propertiesBox.AddItem("st_attach_gl_to_rifle", reinterpret_cast<void*>(pIItem), INVENTORY_ATTACH_ADDON);
 		}
 	}
-	else if (pOutfit)
-	{
-	}
 
-	if (m_propertiesBox.GetItemsCount() == 0)
+	if (!m_propertiesBox.GetItemsCount())
 		return;
+
 	m_propertiesBox.AutoUpdateSize();
 	m_propertiesBox.BringAllToTop();
 
@@ -955,15 +929,15 @@ void CUIBuyWnd::ActivatePropertiesBox()
 	m_propertiesBox.Show(vis_rect, cursor_pos);
 }
 
-bool CUIBuyWnd::CanPutInSlot(CInventoryItem *iitm)
+bool CUIBuyWnd::CanPutInSlot(CInventoryItem* iitm)
 {
-	if (PISTOL_SLOT == iitm->GetSlot() || RIFLE_SLOT == iitm->GetSlot() || OUTFIT_SLOT == iitm->GetSlot())
-	{
-		u32 _slot = GetLocalSlot(iitm->GetSlot());
-		return m_list[_slot]->ItemsCount() == 0;
-	}
-	else
+	u32 slot = iitm->GetSlot();
+
+	if (slot != PISTOL_SLOT && slot != RIFLE_SLOT && slot != OUTFIT_SLOT)
 		return false;
+
+	u32 _slot = GetLocalSlot(iitm->GetSlot());
+	return !!m_list[_slot]->ItemsCount();
 }
 
 bool CUIBuyWnd::CanPutInBag(CInventoryItem *iitm)
@@ -973,119 +947,104 @@ bool CUIBuyWnd::CanPutInBag(CInventoryItem *iitm)
 
 bool CUIBuyWnd::CanPutInBelt(CInventoryItem *iitem)
 {
-	if (PISTOL_SLOT == iitem->GetSlot())
+	switch (iitem->GetSlot())
+	{
+	case PISTOL_SLOT:
+	case RIFLE_SLOT:
+	case OUTFIT_SLOT:
 		return false;
-
-	else if (RIFLE_SLOT == iitem->GetSlot())
-		return false;
-
-	else if (OUTFIT_SLOT == iitem->GetSlot())
-		return false;
+		break;
+	}
 
 	return true;
 }
 
 CWeapon *CUIBuyWnd::GetPistol()
 {
-	if (m_list[MP_SLOT_PISTOL]->ItemsCount() > 0)
-	{
-		CWeapon *pistol = (CWeapon *)(m_list[MP_SLOT_PISTOL]->GetItemIdx(0)->m_pData);
-		VERIFY(pistol);
-		return pistol;
-	}
-	else
-		return NULL;
+	if (!m_list[MP_SLOT_PISTOL]->ItemsCount())
+		return nullptr;
+
+	CWeapon* pistol = (CWeapon*)m_list[MP_SLOT_PISTOL]->GetItemIdx(0)->m_pData;
+	VERIFY(pistol);
+	return pistol;
 }
 
-CWeapon *CUIBuyWnd::GetRifle()
+CWeapon* CUIBuyWnd::GetRifle()
 {
-	if (m_list[MP_SLOT_RIFLE]->ItemsCount() > 0)
-	{
-		CWeapon *rifle = (CWeapon *)(m_list[MP_SLOT_RIFLE]->GetItemIdx(0)->m_pData);
-		VERIFY(rifle);
-		return rifle;
-	}
-	else
-		return NULL;
+	if (!m_list[MP_SLOT_RIFLE]->ItemsCount())
+		return nullptr;
+
+	CWeapon* rifle = (CWeapon*)m_list[MP_SLOT_RIFLE]->GetItemIdx(0)->m_pData;
+	VERIFY(rifle);
+	return rifle;
 }
 
 bool CUIBuyWnd::ToSlot(CUICellItem *itm, bool force_place)
 {
 	PIItem iitem = (PIItem)itm->m_pData;
-	u32 _slot = GetLocalSlot(iitem->GetSlot());
-
-	CScope *pScope = smart_cast<CScope *>(iitem);
-	CSilencer *pSilencer = smart_cast<CSilencer *>(iitem);
-	CGrenadeLauncher *pGrenadeLauncher = smart_cast<CGrenadeLauncher *>(iitem);
+	u32 _slot = GetLocalSlot(iitem->GetSlot());	
 
 	CWeapon *pPistol = GetPistol();
 	CWeapon *pRifle = GetRifle();
 
-	if (pSilencer)
-	{ // try to buy silencer
+	if (CSilencer* pSilencer = smart_cast<CSilencer*>(iitem))
+	{ 
+		// try to buy silencer
 		if (pRifle && pRifle->SilencerAttachable() && !pRifle->IsSilencerAttached())
 		{
-			if (pRifle->Attach(pSilencer, true))
-			{
-				m_bag.BuyItem(itm); // BUY
-				return true;
-			}
-			else
+			if (!pRifle->Attach(pSilencer, true))
 				return false;
+
+			m_bag.BuyItem(itm); // BUY
+			return true;
 		}
 
 		if (pPistol && pPistol->SilencerAttachable() && !pPistol->IsSilencerAttached())
 		{
-			if (pPistol->Attach(pSilencer, true))
-			{
-				m_bag.BuyItem(itm); // BUY
-				return true;
-			}
-			else
+			if (!pPistol->Attach(pSilencer, true))
 				return false;
+
+			m_bag.BuyItem(itm); // BUY
+			return true;
 		}
 	}
-	if (pScope)
+
+	if (CScope* pScope = smart_cast<CScope*>(iitem))
 	{
 		if (pRifle && pRifle->ScopeAttachable() && !pRifle->IsScopeAttached())
 		{
-			if (pRifle->Attach(pScope, true))
-			{
-				m_bag.BuyItem(itm); // BUY
-				return true;
-			}
-			else
+			if (!pRifle->Attach(pScope, true))
 				return false;
+
+			m_bag.BuyItem(itm); // BUY
+			return true;
 		}
 
 		if (pPistol && pPistol->ScopeAttachable() && !pPistol->IsScopeAttached())
 		{
-			if (pPistol->Attach(pScope, true))
-			{
-				m_bag.BuyItem(itm); // BUY
-				return true;
-			}
-			else
+			if (!pPistol->Attach(pScope, true))
 				return false;
+
+			m_bag.BuyItem(itm); // BUY
+			return true;
 		}
 	}
-	if (pGrenadeLauncher &&
-		pRifle &&
-		pRifle->GrenadeLauncherAttachable() &&
-		!pRifle->IsGrenadeLauncherAttached())
+
+	if (CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(iitem))
 	{
-		if (pRifle->Attach(pGrenadeLauncher, true))
+		if (pRifle && pRifle->GrenadeLauncherAttachable() && !pRifle->IsGrenadeLauncherAttached())
 		{
+
+			if (!pRifle->Attach(pGrenadeLauncher, true))
+				return false;
+
 			m_bag.BuyItem(itm);
 			return true;
 		}
-		else
-			return false;
 	}
 
 	if (CanPutInSlot(iitem))
 	{
-
 		CUIDragDropListEx *slot = GetSlotList(_slot);
 		VERIFY(slot);
 
@@ -1101,124 +1060,120 @@ bool CUIBuyWnd::ToSlot(CUICellItem *itm, bool force_place)
 
 		return true;
 	}
+
+	// in case slot is busy
+	if (!force_place || iitem->GetSlot() == NO_ACTIVE_SLOT)
+		return false;
+
+	CUIDragDropListEx* slot = GetSlotList(_slot);
+	CUICellItem* i = slot->GetItemIdx(0);
+
+	if (iitem->GetSlot() == OUTFIT_SLOT)
+		slot->RemoveItem(i, false);
 	else
-	{ // in case slot is busy
-		if (!force_place || iitem->GetSlot() == NO_ACTIVE_SLOT)
-			return false;
+		slot->RemoveItem(i, true);
 
-		CUIDragDropListEx *slot = GetSlotList(_slot);
+	m_bag.SellItem(i);
+	m_bag.DestroyItem(i);
+	xr_delete(i);
 
-		CUICellItem *i = slot->GetItemIdx(0);
+	return ToSlot(itm, false);
+}
 
-		if (iitem->GetSlot() == OUTFIT_SLOT)
-			slot->RemoveItem(i, false);
-		else
-			slot->RemoveItem(i, true);
+bool CUIBuyWnd::ToBag(CUICellItem *itm, bool b_use_cursor_pos)
+{
+	PIItem iitem = reinterpret_cast<PIItem>(itm->m_pData);
+
+	if (!CanPutInBag(iitem))
+		return false;
+
+	// if it is Pistol, Rifle or Outfit
+	if (MP_SLOT_BELT != GetLocalSlot(iitem->GetSlot()))
+	{
+		CUIDragDropListEx* slot = GetSlotList(GetLocalSlot(iitem->GetSlot()));
+		VERIFY(slot->ItemsCount() == 1);
+
+		CUICellItem* i = slot->GetItemIdx(0);
+		slot->RemoveItem(i, MP_SLOT_OUTFIT != GetLocalSlot(iitem->GetSlot()));
+
+		if (MP_SLOT_OUTFIT != GetLocalSlot(iitem->GetSlot()))
+		{
+			SetCurrentItem(itm); // set current item
+			CWeapon* wpn = (CWeapon*)CurrentIItem();
+
+			if (wpn->SilencerAttachable() && wpn->IsSilencerAttached())
+				DetachAddon(*wpn->GetSilencerName());
+
+			if (wpn->ScopeAttachable() && wpn->IsScopeAttached())
+				DetachAddon(*wpn->GetScopeName());
+
+			if (wpn->GrenadeLauncherAttachable() && wpn->IsGrenadeLauncherAttached())
+				DetachAddon(*wpn->GetGrenadeLauncherName());
+		}
 
 		m_bag.SellItem(i);
 		m_bag.DestroyItem(i);
 		xr_delete(i);
 
-		return ToSlot(itm, false);
+		return true;
 	}
+
+	// else if it is Belt
+	CUIDragDropListEx* old_owner = itm->OwnerList();
+	CUIDragDropListEx* new_owner = nullptr;
+
+	if (b_use_cursor_pos)	
+		new_owner = CUIDragDropListEx::m_drag_item->BackList();	
+	else
+		new_owner = m_bag.GetItemList(itm);
+
+	CUICellItem* i = old_owner->RemoveItem(itm, (old_owner == new_owner));
+
+	if (b_use_cursor_pos)
+		new_owner->SetItem(i, old_owner->GetDragItemPosition());
+	else
+		new_owner->SetItem(i);
+
+	m_bag.SellItem(i);
+	HightlightCurrAmmo();
+	return true;
 }
 
-bool CUIBuyWnd::ToBag(CUICellItem *itm, bool b_use_cursor_pos)
+bool CUIBuyWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 {
 	PIItem iitem = (PIItem)itm->m_pData;
 
-	if (CanPutInBag(iitem))
+	if (!CanPutInBelt(iitem) || !m_list[MP_SLOT_BELT]->CanSetItem(itm))
+		return false;
+
+	CUIDragDropListEx* old_owner = itm->OwnerList();
+	CUIDragDropListEx* new_owner = nullptr;
+
+	if (b_use_cursor_pos)
 	{
-		// if it is Pistol, Rifle or Outfit
-		if (MP_SLOT_BELT != GetLocalSlot(iitem->GetSlot()))
-		{
-			CUIDragDropListEx *slot = GetSlotList(GetLocalSlot(iitem->GetSlot()));
-			VERIFY(slot->ItemsCount() == 1);
-
-			CUICellItem *i = slot->GetItemIdx(0);
-			slot->RemoveItem(i, MP_SLOT_OUTFIT != GetLocalSlot(iitem->GetSlot()));
-
-			if (MP_SLOT_OUTFIT != GetLocalSlot(iitem->GetSlot()))
-			{
-				SetCurrentItem(itm); // set current item
-				CWeapon *wpn = (CWeapon *)CurrentIItem();
-
-				if (wpn->SilencerAttachable() && wpn->IsSilencerAttached())
-					DetachAddon(*wpn->GetSilencerName());
-
-				if (wpn->ScopeAttachable() && wpn->IsScopeAttached())
-					DetachAddon(*wpn->GetScopeName());
-
-				if (wpn->GrenadeLauncherAttachable() && wpn->IsGrenadeLauncherAttached())
-					DetachAddon(*wpn->GetGrenadeLauncherName());
-			}
-
-			m_bag.SellItem(i);
-			m_bag.DestroyItem(i);
-			xr_delete(i);
-
-			return true;
-		}
-
-		// else if it is Belt
-		CUIDragDropListEx *old_owner = itm->OwnerList();
-		CUIDragDropListEx *new_owner = NULL;
-		if (b_use_cursor_pos)
-		{
-			new_owner = CUIDragDropListEx::m_drag_item->BackList();
-		}
-		else
-			new_owner = m_bag.GetItemList(itm);
-
-		CUICellItem *i = old_owner->RemoveItem(itm, (old_owner == new_owner));
-
-		if (b_use_cursor_pos)
-			new_owner->SetItem(i, old_owner->GetDragItemPosition());
-		else
-			new_owner->SetItem(i);
-
-		m_bag.SellItem(i);
-		HightlightCurrAmmo();
-		return true;
+		new_owner = CUIDragDropListEx::m_drag_item->BackList();
+		VERIFY(new_owner == m_list[MP_SLOT_BELT]);
 	}
-	return false;
-}
+	else
+		new_owner = m_list[MP_SLOT_BELT];
 
-bool CUIBuyWnd::ToBelt(CUICellItem *itm, bool b_use_cursor_pos)
-{
-	PIItem iitem = (PIItem)itm->m_pData;
+	CUICellItem* i = old_owner->RemoveItem(itm, (old_owner == new_owner));
 
-	if (CanPutInBelt(iitem) && m_list[MP_SLOT_BELT]->CanSetItem(itm))
+	if (i != itm)
 	{
-		CUIDragDropListEx *old_owner = itm->OwnerList();
-		CUIDragDropListEx *new_owner = NULL;
-		if (b_use_cursor_pos)
-		{
-			new_owner = CUIDragDropListEx::m_drag_item->BackList();
-			VERIFY(new_owner == m_list[MP_SLOT_BELT]);
-		}
-		else
-			new_owner = m_list[MP_SLOT_BELT];
-
-		CUICellItem *i = old_owner->RemoveItem(itm, (old_owner == new_owner));
-
-		if (i != itm)
-		{
-			m_bag.SetExternal(i, m_bag.GetExternal(itm));
-			m_bag.SetExternal(itm, false);
-		}
-
-		if (b_use_cursor_pos)
-			new_owner->SetItem(i, old_owner->GetDragItemPosition());
-		else
-			new_owner->SetItem(i);
-
-		UNHIGHTLIGHT_ITEM(i);
-
-		m_bag.BuyItem(i);
-		return true;
+		m_bag.SetExternal(i, m_bag.GetExternal(itm));
+		m_bag.SetExternal(itm, false);
 	}
-	return false;
+
+	if (b_use_cursor_pos)
+		new_owner->SetItem(i, old_owner->GetDragItemPosition());
+	else
+		new_owner->SetItem(i);
+
+	UNHIGHTLIGHT_ITEM(i);
+
+	m_bag.BuyItem(i);
+	return true;
 }
 
 void CUIBuyWnd::SetRank(u32 rank)
@@ -1233,7 +1188,7 @@ u32 CUIBuyWnd::GetRank()
 
 const u8 CUIBuyWnd::GetItemIndex(u32 slotNum, u32 idx, u8 &sectionNum)
 {
-	CUICellItem *itm = NULL;
+	CUICellItem *itm = nullptr;
 
 	if (m_list[GetLocalSlot(slotNum)]->ItemsCount())
 		itm = m_list[GetLocalSlot(slotNum)]->GetItemIdx(idx);
@@ -1243,7 +1198,7 @@ const u8 CUIBuyWnd::GetItemIndex(u32 slotNum, u32 idx, u8 &sectionNum)
 
 const u8 CUIBuyWnd::GetWeaponIndexInBelt(u32 indexInBelt, u8 &sectionId, u8 &itemId, u8 &count)
 {
-	CUICellItem *itm = NULL;
+	CUICellItem *itm = nullptr;
 
 	if (m_list[GetLocalSlot(BELT_SLOT)]->ItemsCount())
 		itm = m_list[GetLocalSlot(BELT_SLOT)]->GetItemIdx(indexInBelt);
@@ -1289,9 +1244,8 @@ void CUIBuyWnd::AddonToSlot(int add_on, int slot, bool bRealRepresentationSet)
 	VERIFY(m_list[GetLocalSlot(slot)]->ItemsCount());
 
 	CUICellItem *wpn = m_list[GetLocalSlot(slot)]->GetItemIdx(0);
-
 	m_bag.AttachAddon(wpn, (CSE_ALifeItemWeapon::EWeaponAddonState)add_on, bRealRepresentationSet);
-};
+}
 
 void CUIBuyWnd::SectionToSlot(const u8 grpNum, u8 uIndexInSlot, bool bRealRepresentationSet)
 {
@@ -1299,39 +1253,35 @@ void CUIBuyWnd::SectionToSlot(const u8 grpNum, u8 uIndexInSlot, bool bRealRepres
 	uIndexInSlot &= 0x1f; // 0x1f = 00011111;
 
 	CUICellItem *itm = m_bag.GetItemBySectoin(grpNum, uIndexInSlot);
-	if (!itm)
-	{
-		itm = m_bag.CreateNewItem(grpNum, uIndexInSlot);
-	}
+
+	if (!itm)	
+		itm = m_bag.CreateNewItem(grpNum, uIndexInSlot);	
 
 	R_ASSERT(itm);
-
 	CInventoryItem *iitm = (CInventoryItem *)itm->m_pData;
-	if (0 == xr_strcmp(iitm->object().cNameSect(), "mp_wpn_knife"))
+
+	if (!xr_strcmp(iitm->object().cNameSect(), "mp_wpn_knife"))
 		return;
 
-	if (m_bag.IsInBag(itm))
-	{
-		m_bag.SetExternal(itm, bRealRepresentationSet);
-		if (!ToSlot(itm, false))
-			ToBelt(itm, false);
+	if (!m_bag.IsInBag(itm))
+		return;
 
-		if (addon_info)
-		{
-			if (addon_info & CSE_ALifeItemWeapon::eWeaponAddonScope)
-			{
-				AddonToSlot(CSE_ALifeItemWeapon::eWeaponAddonScope, iitm->GetSlot(), false);
-			}
-			if (addon_info & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher)
-			{
-				AddonToSlot(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher, iitm->GetSlot(), false);
-			}
-			if (addon_info & CSE_ALifeItemWeapon::eWeaponAddonSilencer)
-			{
-				AddonToSlot(CSE_ALifeItemWeapon::eWeaponAddonSilencer, iitm->GetSlot(), false);
-			}
-		}
-	}
+	m_bag.SetExternal(itm, bRealRepresentationSet);
+
+	if (!ToSlot(itm, false))
+		ToBelt(itm, false);
+
+	if (!addon_info)
+		return;
+
+	if (addon_info & CSE_ALifeItemWeapon::eWeaponAddonScope)	
+		AddonToSlot(CSE_ALifeItemWeapon::eWeaponAddonScope, iitm->GetSlot(), false);
+	
+	if (addon_info & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher)	
+		AddonToSlot(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher, iitm->GetSlot(), false);
+	
+	if (addon_info & CSE_ALifeItemWeapon::eWeaponAddonSilencer)	
+		AddonToSlot(CSE_ALifeItemWeapon::eWeaponAddonSilencer, iitm->GetSlot(), false);
 }
 
 void CUIBuyWnd::ClearSlots()
@@ -1384,7 +1334,6 @@ u32 CUIBuyWnd::GetMoneyAmount() const
 void CUIBuyWnd::SetSkin(u8 SkinID)
 {
 	LPCSTR skins = pSettings->r_string(m_sectionName, "skins");
-
 	R_ASSERT(_GetItemCount(skins) > SkinID);
 
 	string256 item;
@@ -1405,6 +1354,7 @@ bool CUIBuyWnd::CanBuyAllItems()
 	for (u32 slot = MP_SLOT_PISTOL; slot < MP_SLOT_NUM; slot++)
 	{
 		u32 sz = m_list[slot]->ItemsCount();
+
 		for (u32 i = 0; i < sz; i++)
 		{
 			CUICellItem *itm = m_list[slot]->GetItemIdx(i);
@@ -1412,41 +1362,43 @@ bool CUIBuyWnd::CanBuyAllItems()
 			if (itm->GetColor() == PRICE_RESTR_COLOR)
 				return false;
 
-			CUIWeaponCellItem *witm = smart_cast<CUIWeaponCellItem *>(itm);
+			CUIWeaponCellItem *witm = smart_cast<CUIWeaponCellItem*>(itm);
 
-			if (witm)
+			if (!witm)
+				continue;
+
+
+			if (CUIStatic* stat = witm->get_addon_static(CUIWeaponCellItem::eScope))
 			{
-				if (witm->get_addon_static(CUIWeaponCellItem::eScope))
-				{
-					if (witm->get_addon_static(CUIWeaponCellItem::eScope)->GetColor() == PRICE_RESTR_COLOR)
-						return false;
-				}
-				if (witm->get_addon_static(CUIWeaponCellItem::eSilencer))
-				{
-					if (witm->get_addon_static(CUIWeaponCellItem::eSilencer)->GetColor() == PRICE_RESTR_COLOR)
-						return false;
-				}
-				if (witm->get_addon_static(CUIWeaponCellItem::eLauncher))
-				{
-					if (witm->get_addon_static(CUIWeaponCellItem::eLauncher)->GetColor() == PRICE_RESTR_COLOR)
-						return false;
-				}
+				if (stat->GetColor() == PRICE_RESTR_COLOR)
+					return false;
+			}
+
+			if (CUIStatic* stat = witm->get_addon_static(CUIWeaponCellItem::eSilencer))
+			{
+				if (stat->GetColor() == PRICE_RESTR_COLOR)
+					return false;
+			}
+
+			if (CUIStatic* stat = witm->get_addon_static(CUIWeaponCellItem::eLauncher))
+			{
+				if (stat->GetColor() == PRICE_RESTR_COLOR)
+					return false;
 			}
 		}
 	}
+
 	return true;
 }
 
 bool CUIBuyWnd::CheckBuyAvailabilityInSlots()
 {
 	int priorityArr[] =
-		{
-			MP_SLOT_RIFLE,
-			MP_SLOT_PISTOL,
-			MP_SLOT_OUTFIT,
-		};
-
-	bool status = true;
+	{
+		MP_SLOT_RIFLE,
+		MP_SLOT_PISTOL,
+		MP_SLOT_OUTFIT,
+	};
 
 	for (int j = 0; j < 3; ++j)
 	{
@@ -1459,36 +1411,39 @@ bool CUIBuyWnd::CheckBuyAvailabilityInSlots()
 	}
 
 	u32 sz = m_list[MP_SLOT_BELT]->ItemsCount();
+
 	for (u32 i = 0; i < sz; i++)
 	{
 		CUICellItem *itm = m_list[MP_SLOT_BELT]->GetItemIdx(i);
 		UpdItem(itm);
 	}
 
-	return status;
+	return true;
 }
 
 void CUIBuyWnd::CheckAddons(CUICellItem *itm)
 {
-	CUIWeaponCellItem *witm = smart_cast<CUIWeaponCellItem *>(itm);
-	CWeapon *wpn = (CWeapon *)itm->m_pData;
-	if (witm)
-	{
-		if (wpn->ScopeAttachable() && wpn->IsScopeAttached())
-			UpdAddon(witm, CSE_ALifeItemWeapon::eWeaponAddonScope);
+	CUIWeaponCellItem *witm = smart_cast<CUIWeaponCellItem*>(itm);
 
-		if (wpn->SilencerAttachable() && wpn->IsSilencerAttached())
-			UpdAddon(witm, CSE_ALifeItemWeapon::eWeaponAddonSilencer);
+	if (!witm)
+		return;
 
-		if (wpn->GrenadeLauncherAttachable() && wpn->IsGrenadeLauncherAttached())
-			UpdAddon(witm, CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher);
-	}
+	CWeapon* wpn = static_cast<CWeapon*>(itm->m_pData);
+
+	if (wpn->ScopeAttachable() && wpn->IsScopeAttached())
+		UpdAddon(witm, CSE_ALifeItemWeapon::eWeaponAddonScope);
+
+	if (wpn->SilencerAttachable() && wpn->IsSilencerAttached())
+		UpdAddon(witm, CSE_ALifeItemWeapon::eWeaponAddonSilencer);
+
+	if (wpn->GrenadeLauncherAttachable() && wpn->IsGrenadeLauncherAttached())
+		UpdAddon(witm, CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher);
 }
 
 void CUIBuyWnd::UpdAddon(CUIWeaponCellItem *itm, CSE_ALifeItemWeapon::EWeaponAddonState add_on)
 {
-	CWeapon *wpn = (CWeapon *)itm->m_pData;
-	CUICellItem *add_itm = NULL;
+	CWeapon *wpn = static_cast<CWeapon*>(itm->m_pData);
+	CUICellItem *add_itm = nullptr;
 
 	switch (add_on)
 	{
@@ -1545,15 +1500,11 @@ void CUIBuyWnd::UpdItem(CUICellItem *itm)
 			m_bag.BuyItem(itm);
 			SET_NO_RESTR_COLOR(itm);
 		}
-		else
-		{
-			SET_PRICE_RESTR_COLOR(itm);
-		}
+		else		
+			SET_PRICE_RESTR_COLOR(itm);		
 	}
-	else
-	{
-		SET_EXTERNAL_COLOR(itm);
-	}
+	else	
+		SET_EXTERNAL_COLOR(itm);	
 
 	CheckAddons(itm);
 }
@@ -1563,30 +1514,11 @@ void CUIBuyWnd::IgnoreMoneyAndRank(bool ignore)
 	m_bIgnoreMoneyAndRank = ignore;
 	m_bag.IgnoreRank(ignore);
 	m_bag.IgnoreMoney(ignore);
-};
+}
 
 void CUIBuyWnd::IgnoreMoney(bool ignore)
 {
-	if (m_bIgnoreMoneyAndRank)
-	{
-		m_bag.IgnoreMoney(true);
-	}
-	else
-	{
-		m_bag.IgnoreMoney(ignore);
-	};
-}
-
-void CUIBuyWnd::ItemToBelt(const shared_str &sectionName)
-{
-}
-
-void CUIBuyWnd::ItemToRuck(const shared_str &sectionName, u32 addons)
-{
-}
-
-void CUIBuyWnd::ItemToSlot(const shared_str &sectionName, u32 addons)
-{
+	m_bag.IgnoreMoney(m_bIgnoreMoneyAndRank || ignore);	
 }
 
 bool CUIBuyWnd::IsIgnoreMoneyAndRank()

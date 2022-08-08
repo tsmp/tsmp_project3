@@ -398,6 +398,7 @@ public:
 };
 
 ENGINE_API BOOL r2_sun_static = TRUE;
+ENGINE_API BOOL r2_advanced_pp = FALSE;
 u32 renderer_value = 0;
 
 class CCC_r2 : public CCC_Token
@@ -417,6 +418,7 @@ public:
 
 		psDeviceFlags.set(rsR2, (renderer_value > 0));
 		r2_sun_static = (renderer_value != 2);
+		r2_advanced_pp = (renderer_value == 2);
 	}
 
 	virtual void Save(IWriter *F)
@@ -463,7 +465,6 @@ extern int psNET_DedicatedSleep;
 extern int g_svDedicateServerUpdateReate;
 extern int g_Dump_Export_Obj;
 extern int g_Dump_Import_Obj;
-extern char psNET_Name[32];
 extern Flags32 psEnvFlags;
 extern float r__dtex_range;
 

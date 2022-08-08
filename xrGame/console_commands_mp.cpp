@@ -1397,16 +1397,29 @@ class CCC_SvChat : public IConsole_Command
 {
 public:
 	CCC_SvChat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
 	virtual void Execute(LPCSTR args)
 	{
-		if (!OnServer())
+		if (!OnServer() || !Level().Server || !Level().Server->game)
 			return;
-		if (Level().Server && Level().Server->game)
-		{
-			game_sv_mp *game = smart_cast<game_sv_mp *>(Level().Server->game);
-			if (game)
-				game->SvSendChatMessage(args);
-		}
+
+		if (game_sv_mp* game = smart_cast<game_sv_mp*>(Level().Server->game))
+			game->SvSendChatMessage(args);
+	}
+};
+
+class CCC_SvChatCow : public IConsole_Command
+{
+public:
+	CCC_SvChatCow(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		if (!OnServer() || !Level().Server || !Level().Server->game)
+			return;	
+			
+		if (game_sv_mp* game = smart_cast<game_sv_mp*>(Level().Server->game))
+			game->SvSendChatMessageCow(args);
 	}
 };
 
@@ -1539,6 +1552,8 @@ public:
 };
 
 extern int fz_downloader_enabled;
+extern int fz_downloader_new;
+
 extern std::string fz_downloader_mod_name;
 extern std::string fz_downloader_reconnect_ip;
 
@@ -1997,13 +2012,15 @@ void register_mp_console_commands()
 	CMD1(CCC_Name, "name");
 	CMD1(CCC_SvStatus, "sv_status");
 	CMD1(CCC_SvChat, "chat");
+	CMD1(CCC_SvChatCow, "chat_cow");
 	CMD1(CCC_SvEventMsg, "event_msg");
 
 	CMD1(CCC_ClSpawn, "cl_spawn");
 	CMD1(CCC_SvSpawn, "sv_spawn");
 	CMD4(CCC_Vector3, "sv_spawn_vec", &spavn_vec, Fvector().set(-1000000.0f, -1000000.0f, -1000000.0f ), Fvector().set(1000000.0f, 1000000.0f, 1000000.0f));
 
-	CMD4(CCC_Integer, "fz_downloader_enabled", (int *)&fz_downloader_enabled, 0, 1);
+	CMD4(CCC_Integer, "fz_downloader_enabled", (int*)&fz_downloader_enabled, 0, 1);
+	CMD4(CCC_Integer, "fz_downloader_new", (int*)&fz_downloader_new, 0, 1);
 	CMD1(CCC_fz_reconnect_ip, "fz_downloader_reconnect_ip");
 	CMD1(CCC_fz_mod_name, "fz_downloader_mod_name");
 

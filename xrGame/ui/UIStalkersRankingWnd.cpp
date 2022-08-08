@@ -207,6 +207,9 @@ void CUIStalkersRankingWnd::Reset()
 
 void add_human_to_top_list(u16 id)
 {
+	if (OnClient())
+		return;
+
 	CSE_ALifeTraderAbstract *t = ch_info_get_from_id(id);
 	SStatData d;
 	d.id = id;
@@ -224,6 +227,9 @@ void add_human_to_top_list(u16 id)
 
 void remove_human_from_top_list(u16 id)
 {
+	if (OnClient())
+		return;
+
 	CSE_ALifeTraderAbstract *t = ch_info_get_from_id(id);
 	SStatData d;
 	d.id = id;

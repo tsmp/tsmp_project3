@@ -103,10 +103,9 @@ void CAI_Space::load(LPCSTR level_name)
 
 	R_ASSERT2(cross_table().header().level_guid() == level_graph().header().guid(), "cross_table doesn't correspond to the AI-map");
 	R_ASSERT2(cross_table().header().game_guid() == game_graph().header().guid(), "graph doesn't correspond to the cross table");
-	m_graph_engine = xr_new<CGraphEngine>(
-		_max(
-			game_graph().header().vertex_count(),
-			level_graph().header().vertex_count()));
+
+	xr_delete(m_graph_engine);
+	m_graph_engine = xr_new<CGraphEngine>(_max(game_graph().header().vertex_count(), level_graph().header().vertex_count()));
 
 	R_ASSERT2(current_level.guid() == level_graph().header().guid(), "graph doesn't correspond to the AI-map");
 
@@ -127,13 +126,8 @@ void CAI_Space::load(LPCSTR level_name)
 
 void CAI_Space::unload(bool reload)
 {
-#ifndef ALIFE_MP
-	if (g_dedicated_server)
-		return;
-#endif
-
 	script_engine().unload();
-	xr_delete(m_graph_engine);
+	
 	xr_delete(m_level_graph);
 	xr_delete(m_cross_table);
 

@@ -97,20 +97,20 @@ void CPSLibrary::RenamePGD(PS::CPGDef *src, LPCSTR new_name)
 
 void CPSLibrary::Remove(const char *nm)
 {
-	PS::PEDIt it = FindPEDIt(nm);
-	if (it != m_PEDs.end())
+	PS::PEDIt it_et = FindPEDIt(nm);
+	if (it_et != m_PEDs.end())
 	{
-		(*it)->DestroyShader();
-		xr_delete(*it);
-		m_PEDs.erase(it);
+		(*it_et)->DestroyShader();
+		xr_delete(*it_et);
+		m_PEDs.erase(it_et);
 	}
 	else
 	{
-		PS::PGDIt it = FindPGDIt(nm);
-		if (it != m_PGDs.end())
+		PS::PGDIt it_dt = FindPGDIt(nm);
+		if (it_dt != m_PGDs.end())
 		{
-			xr_delete(*it);
-			m_PGDs.erase(it);
+			xr_delete(*it_dt);
+			m_PGDs.erase(it_dt);
 		}
 	}
 }

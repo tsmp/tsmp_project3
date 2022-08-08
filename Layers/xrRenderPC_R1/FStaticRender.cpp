@@ -513,8 +513,8 @@ void CRender::Calculate()
 							if (o_it == uID_LTRACK && renderable->renderable_ROS())
 							{
 								// track lighting environment
-								CROS_impl *T = (CROS_impl *)renderable->renderable_ROS();
-								T->update(renderable);
+								CROS_impl *T_crs_impl = (CROS_impl *)renderable->renderable_ROS();
+								T_crs_impl->update(renderable);
 							}
 							set_Object(renderable);
 							renderable->renderable_Render();
@@ -772,5 +772,6 @@ HRESULT CRender::shader_compile(
 		FS.w_close(W);
 		_RELEASE(disasm);
 	}
+
 	return _result;
 }

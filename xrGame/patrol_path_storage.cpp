@@ -119,3 +119,50 @@ void CPatrolPathStorage::save(IWriter &stream)
 
 	stream.close_chunk();
 }
+
+#include "patrol_point.h"
+
+// Внимание! Передаются только вейпоинты из одной точки (только имя поинта и координаты). Делалось для работы телепорта на клиенте.
+void CPatrolPathStorage::NetworkExport(NET_Packet &packet)
+{
+	u32 countPos = packet.w_tell();
+	packet.w_u16(0);
+	u16 count = 0;
+
+	for (const auto &path : m_registry)
+	{
+		if (path.second->vertex_count() != 1)
+			continue;
+
+		count++;
+		packet.w_stringZ(*path.first);
+		packet.w_vec3(path.second->vertex(0)->data().position());
+	}
+
+	packet.w_seek(countPos, &count, sizeof(u16));
+}
+
+void CPatrolPathStorage::NetworkImport(NET_Packet &packet)
+{
+	u16 count;
+	packet.r_u16(count);
+	Msg("- Received %hu patrol paths", count);
+
+	m_registry.clear();
+	PATROL_REGISTRY::value_type pair;
+
+	for (u16 i = 0; i < count; i++)
+	{
+		packet.r_stringZ(pair.first);
+		Fvector pos;
+		packet.r_vec3(pos);
+
+		CPatrolPath* path = new CPatrolPath(pair.first);
+		CPatrolPoint point(path);
+		point.SetPosition(pos);
+		path->add_vertex(point, 0);
+
+		pair.second = path;
+		m_registry.insert(pair);
+	}
+}

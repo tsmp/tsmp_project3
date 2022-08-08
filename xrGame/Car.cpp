@@ -1048,14 +1048,12 @@ void CCar::CreateSkeleton(CSE_Abstract *po)
 
 void CCar::Init()
 {
-
 	CPHCollisionDamageReceiver::Init();
 
 	//get reference wheel radius
 	CKinematics *pKinematics = smart_cast<CKinematics *>(Visual());
 	CInifile *ini = pKinematics->LL_UserData();
 	R_ASSERT2(ini, "Car has no description !!! See ActorEditor Object - UserData");
-	///SWheel& ref_wheel=m_wheels_map.find(pKinematics->LL_BoneID(ini->r_string("car_definition","reference_wheel")))->second;
 
 	if (ini->section_exist("air_resistance"))
 	{
@@ -1094,29 +1092,16 @@ void CCar::Init()
 		}
 	}
 
-	{
-		xr_vector<SWheelDrive>::iterator i, e;
-		i = m_driving_wheels.begin();
-		e = m_driving_wheels.end();
-		for (; i != e; ++i)
-			i->Init();
-	}
+	for (SWheelDrive& driveWheel : m_driving_wheels)
+		driveWheel.Init();
 
-	{
-		xr_vector<SWheelBreak>::iterator i, e;
-		i = m_breaking_wheels.begin();
-		e = m_breaking_wheels.end();
-		for (; i != e; ++i)
-			i->Init();
-	}
+	for (SWheelBreak& breakWheel : m_breaking_wheels)
+		breakWheel.Init();
 
-	{
-		xr_vector<SWheelSteer>::iterator i, e;
-		i = m_steering_wheels.begin();
-		e = m_steering_wheels.end();
-		for (; i != e; ++i)
-			i->Init();
-	}
+
+	
+	for (SWheelSteer& steerWheel : m_steering_wheels)
+		steerWheel.Init();
 
 	{
 		xr_vector<SExhaust>::iterator i, e;
@@ -1748,27 +1733,16 @@ bool CCar::DoorOpen(u16 id)
 		return false;
 	}
 }
+
 void CCar::InitParabola()
 {
-	//float t1=(m_power_rpm-m_torque_rpm);
-	//float t2=m_max_power/m_power_rpm;
-	//m_c = t2* (3.f*m_power_rpm - 4.f*m_torque_rpm)/t1/2.f;
-	//t2/=m_power_rpm;
-	//m_a = -t2/t1/2.f;
-	//m_b = t2*m_torque_rpm/t1;
-
-	//m_c = m_max_power* (3.f*m_power_rpm - 4.f*m_torque_rpm)/(m_power_rpm-m_torque_rpm)/2.f/m_power_rpm;
-	//m_a = -m_max_power/(m_power_rpm-m_torque_rpm)/m_power_rpm/m_power_rpm/2.f;
-	//m_b = m_max_power*m_torque_rpm/(m_power_rpm-m_torque_rpm)/m_power_rpm/m_power_rpm;
-
 	m_a = expf((m_power_rpm - m_torque_rpm) / (2.f * m_power_rpm)) * m_max_power / m_power_rpm;
 	m_b = m_torque_rpm;
 	m_c = _sqrt(2.f * m_power_rpm * (m_power_rpm - m_torque_rpm));
 }
+
 float CCar::Parabola(float rpm)
 {
-	//float rpm_2=rpm*rpm;
-	//float value=(m_a*rpm_2*rpm_2*rpm_2+m_b*rpm_2+m_c)*rpm_2;
 	float ex = (rpm - m_b) / m_c;
 	float value = m_a * expf(-ex * ex) * rpm;
 	if (value < 0.f)
@@ -1780,9 +1754,9 @@ float CCar::Parabola(float rpm)
 
 float CCar::EnginePower()
 {
-
 	float value;
 	value = Parabola(m_current_rpm);
+
 	if (b_starting)
 	{
 		if (m_current_rpm < m_min_rpm)
@@ -1792,53 +1766,48 @@ float CCar::EnginePower()
 		else if (Device.dwTimeGlobal - m_dwStartTime > 1000)
 			b_starting = false;
 	}
+
 	if (value > m_current_engine_power)
 		return value * m_power_increment_factor + m_current_engine_power * (1.f - m_power_increment_factor);
 	else
 		return value * m_power_decrement_factor + m_current_engine_power * (1.f - m_power_decrement_factor);
 }
+
 float CCar::DriveWheelsMeanAngleRate()
 {
-	xr_vector<SWheelDrive>::iterator i, e;
-	i = m_driving_wheels.begin();
-	e = m_driving_wheels.end();
 	float drive_speed = 0.f;
-	for (; i != e; ++i)
-	{
-		drive_speed += i->ASpeed();
-		//if(wheel_speed<drive_speed)drive_speed=wheel_speed;
-	}
+
+	for (SWheelDrive &wheel: m_driving_wheels)	
+		drive_speed += wheel.ASpeed();
+	
 	return drive_speed / m_driving_wheels.size();
 }
+
 float CCar::EngineDriveSpeed()
 {
-	//float wheel_speed,drive_speed=dInfinity;
 	float calc_rpm = 0.f;
+
 	if (b_transmission_switching)
 	{
 		calc_rpm = m_max_rpm;
-		if (m_current_rpm > m_power_rpm)
-		{
-			b_transmission_switching = false;
-		}
+
+		if (m_current_rpm > m_power_rpm)		
+			b_transmission_switching = false;		
 	}
 	else
 	{
 		calc_rpm = EngineRpmFromWheels();
 
-		if (!b_clutch && calc_rpm < m_min_rpm)
-		{
+		if (!b_clutch && calc_rpm < m_min_rpm)		
 			calc_rpm = m_min_rpm;
-		}
+		
 		limit_above(calc_rpm, m_max_rpm);
 	}
+
 	if (calc_rpm > m_current_rpm)
 		return (1.f - m_rpm_increment_factor) * m_current_rpm + m_rpm_increment_factor * calc_rpm;
 	else
 		return (1.f - m_rpm_decrement_factor) * m_current_rpm + m_rpm_decrement_factor * calc_rpm;
-
-	//if(drive_speed<dInfinity) return dFabs(drive_speed*m_current_gear_ratio);
-	//else					  return 0.f;
 }
 
 void CCar::UpdateFuel(float time_delta)

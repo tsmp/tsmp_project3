@@ -39,24 +39,12 @@ CALifeSimulator::CALifeSimulator(xrServer *server, shared_str *command_line) : C
 	restart_all();
 
 	ai().set_alife(this);
-
 	setup_command_line(command_line);
 
 	typedef IGame_Persistent::params params;
 	params &p = g_pGamePersistent->m_game_params;
 
-#ifdef ALIFE_MP
-	R_ASSERT2(
-		xr_strlen(p.m_game_or_spawn) &&
-			!xr_strcmp(p.m_alife, "alife"),
-		"Invalid server options!");
-#else
-	R_ASSERT2(
-		xr_strlen(p.m_game_or_spawn) &&
-			!xr_strcmp(p.m_alife, "alife") &&
-			!xr_strcmp(p.m_game_type, "single"),
-		"Invalid server options!");
-#endif
+	R_ASSERT2(xr_strlen(p.m_game_or_spawn) && !xr_strcmp(p.m_alife, "alife"), "Invalid server options!");
 
 	string256 temp;
 	strcpy(temp, p.m_game_or_spawn);
@@ -65,9 +53,8 @@ CALifeSimulator::CALifeSimulator(xrServer *server, shared_str *command_line) : C
 	strcat(temp, "/");
 	strcat(temp, p.m_alife);
 
-#ifndef ALIFE_MP
-	*command_line = temp;
-#endif
+	if(!xr_strcmp(p.m_game_type, "single"))
+		*command_line = temp;
 
 	LPCSTR start_game_callback = pSettings->r_string(alife_section, "start_game_callback");
 	luabind::functor<void> functor;

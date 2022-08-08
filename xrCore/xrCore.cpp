@@ -132,6 +132,12 @@ void xrCore::_destroy()
 	}
 }
 
+#ifndef DEBUG
+constexpr auto IS_DEBUG = 0;
+#else
+constexpr auto IS_DEBUG = 1;
+#endif
+
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
 {
 	switch (ul_reason_for_call)
@@ -147,6 +153,17 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvRese
 		_control87(_RC_CHOP, MCW_RC);
 		_control87(_RC_NEAR, MCW_RC);
 		_control87(_MCW_EM, MCW_EM);
+
+		auto console_cmd = GetCommandLine();
+		if(strstr(console_cmd, "-dbg_console") || IS_DEBUG)
+		{
+			if(AllocConsole())
+			{
+				(void)freopen("CONIN$", "r", stdin);
+				(void)freopen("CONOUT$", "w", stderr);
+				(void)freopen("CONOUT$", "w", stdout);
+			}
+		}
 	}
 	break;
 	case DLL_THREAD_ATTACH:

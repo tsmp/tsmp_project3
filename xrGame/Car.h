@@ -16,6 +16,8 @@
 #include "Explosive.h"
 #include "PHDestroyable.h"
 #include "DelayedActionFuse.h"
+#include "..\TSMP3_Build_Config.h"
+
 // refs
 class ENGINE_API CBoneInstance;
 class CActor;
@@ -213,6 +215,7 @@ public:
 		float ASpeed();
 		void Load(LPCSTR /*section*/){};
 	};
+
 	struct SWheelSteer
 	{
 		SWheel *pwheel;
@@ -620,6 +623,23 @@ public:
 
 public:
 	virtual CEntity *cast_entity() { return this; }
+
+#ifndef PUBLIC_BUILD
+	void ChangeEnginePower(float newPower);
+	void ChangeReferenceRadius(float newRad);
+	void ChangeSteeringSpeed(float newSpeed);
+	void ChangeFrictionFactor(float newFactor);
+	void ChangeHandBreakTorque(float newTorque);
+	void ChangeMaxPowerRpm(float newPower);
+	void ChangeMaxTorqueRpm(float newTorque);
+	float GetEnginePower();
+	float GetReferenceRadius();
+	float GetSteeringSpeed();
+	float GetFrictionFactor();
+	float GetHandBreakTorque();
+	float GetMaxPowerRpm();
+	float GetMaxTorqueRpm();
+#endif
 
 private:
 	template <class T>

@@ -964,8 +964,7 @@ void NvStripifier::SplitUpStripsAndOptimize(NvStripInfoVec &allStrips, NvStripIn
 	NvStripInfoVec tempStrips;
 
 	//split up strips into threshold-sized pieces
-	int i;
-	for (i = 0; i < allStrips.size(); i++)
+	for (u32 i = 0; i < allStrips.size(); i++)
 	{
 		NvStripInfo *currentStrip;
 		NvStripStartInfo startInfo(NULL, NULL, false);
@@ -1033,7 +1032,7 @@ void NvStripifier::SplitUpStripsAndOptimize(NvStripInfoVec &allStrips, NvStripIn
 		int firstIndex = 0;
 		float minCost = 10000.0f;
 
-		for (i = 0; i < tempStrips2.size(); i++)
+		for (u32 i = 0; i < tempStrips2.size(); i++)
 		{
 			int numNeighbors = 0;
 
@@ -1318,7 +1317,7 @@ void NvStripifier::FindAllStrips(NvStripInfoVec &allStrips,
 
 			// build the first strip of the list
 			experiments[i][0]->Build(allEdgeInfos, allFaceInfos);
-			int experimentId = experiments[i][0]->m_experimentId;
+			int exprId = experiments[i][0]->m_experimentId;
 
 			NvStripInfo *stripIter = experiments[i][0];
 			NvStripStartInfo startInfo(NULL, NULL, false);
@@ -1326,7 +1325,7 @@ void NvStripifier::FindAllStrips(NvStripInfoVec &allStrips,
 			{
 
 				// create the _new strip info
-				stripIter = xr_new<NvStripInfo>(startInfo, stripId++, experimentId);
+				stripIter = xr_new<NvStripInfo>(startInfo, stripId++, exprId);
 
 				// build the next strip
 				stripIter->Build(allEdgeInfos, allFaceInfos);

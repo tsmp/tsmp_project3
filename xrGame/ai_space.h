@@ -58,7 +58,7 @@ public:
 	IC const CGameLevelCrossTable &cross_table() const;
 	IC const CGameLevelCrossTable *get_cross_table() const;
 
-	IC const CPatrolPathStorage &patrol_paths() const;
+	IC CPatrolPathStorage &patrol_paths() const;
 	IC CEF_Storage &ef_storage() const;
 	IC CGraphEngine &graph_engine() const;
 	IC const CALifeSimulator &alife() const;

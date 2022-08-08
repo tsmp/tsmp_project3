@@ -10,7 +10,30 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-static INetLog* pSvNetLog = NULL;
+static INetLog* pSvNetLog = nullptr;
+void IC InitSvNetLog(u32 time)
+{
+	string_path LogPath;
+	strcpy(LogPath, "net_sv_log");
+
+	__try
+	{
+		if (FS.path_exist("$logs$"))
+			FS.update_path(LogPath, "$logs$", LogPath);
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		string_path temp;
+		strcpy(temp, LogPath);
+		strcpy(LogPath, "logs/");
+		strcat(LogPath, temp);
+	}
+
+	string_path log_file_name;
+	strconcat(sizeof(log_file_name), log_file_name, LogPath, ".log");
+
+	pSvNetLog = xr_new<INetLog>(log_file_name, time);
+}
 
 #define BASE_PORT_LAN_SV 5445
 #define BASE_PORT 0
@@ -243,7 +266,7 @@ void IPureServer::_Recieve(const void* data, u32 data_size, u32 param)
 	if (psNET_Flags.test(NETFLAG_LOG_SV_PACKETS))
 	{
 		if (!pSvNetLog)
-			pSvNetLog = xr_new<INetLog>("logs\\net_sv_log.log", TimeGlobal(device_timer));
+			InitSvNetLog(TimeGlobal(device_timer));
 
 		if (pSvNetLog)
 			pSvNetLog->LogPacket(TimeGlobal(device_timer), &packet, TRUE);
@@ -663,7 +686,7 @@ void IPureServer::SendTo_LL(ClientID const &ID, void* data, u32 size, u32 dwFlag
 	if (psNET_Flags.test(NETFLAG_LOG_SV_PACKETS))
 	{
 		if (!pSvNetLog)
-			pSvNetLog = xr_new<INetLog>("logs\\net_sv_log.log", TimeGlobal(device_timer));
+			InitSvNetLog(TimeGlobal(device_timer));
 		if (pSvNetLog)
 			pSvNetLog->LogData(TimeGlobal(device_timer), data, size);
 	}

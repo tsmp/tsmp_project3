@@ -93,6 +93,7 @@ void Log(const char *s)
 	}
 	split[j] = 0;
 	AddOne(split);
+	printf("%s\n", split);
 }
 
 void __cdecl Msg(const char *format, ...)

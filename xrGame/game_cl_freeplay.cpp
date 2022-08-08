@@ -5,6 +5,7 @@
 #include "actor.h"
 #include "ui/UIInventoryWnd.h"
 #include "string_table.h"
+#include "ui/UIPdaWnd.h"
 
 game_cl_Freeplay::game_cl_Freeplay() : m_game_ui(nullptr) {}
 game_cl_Freeplay::~game_cl_Freeplay() {}
@@ -53,6 +54,21 @@ bool game_cl_Freeplay::OnKeyboardPress(int key)
 		
 		StartStopMenu(m_game_ui->m_pInventoryMenu, true);
 		return true;		
+	}
+
+	if (kMAP == key)
+	{
+		if (m_game_ui && smart_cast<CActor*>(Level().CurrentControlEntity()))
+		{
+			if (m_game_ui->PdaMenu && m_game_ui->PdaMenu->IsShown())
+				StartStopMenu(m_game_ui->PdaMenu, true);
+			else
+			{
+				m_game_ui->PdaMenu->SetActiveSubdialog(eptMap);
+				StartStopMenu(m_game_ui->PdaMenu, true);
+			}
+			return true;
+		}
 	}
 
 	return inherited::OnKeyboardPress(key);

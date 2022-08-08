@@ -35,6 +35,9 @@ public:
 	virtual void load(IReader &stream);
 	virtual void save(IWriter &stream);
 
+	void NetworkExport(NET_Packet &packet);
+	void NetworkImport(NET_Packet &packet);
+
 public:
 	void load_raw(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, IReader &stream);
 	IC const CPatrolPath *path(shared_str patrol_name, bool no_assert = false) const;

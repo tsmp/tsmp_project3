@@ -98,13 +98,11 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion *info_portion) const
 
 void CActor::AddGameTask(const CInfoPortion *info_portion) const
 {
-	if (Level().CurrentControlEntity() != this)
-		return;
-
 	VERIFY(info_portion);
 
 	if (info_portion->GameTasks().empty())
 		return;
+
 	for (TASK_ID_VECTOR::const_iterator it = info_portion->GameTasks().begin();
 		 it != info_portion->GameTasks().end(); it++)
 	{
@@ -114,7 +112,6 @@ void CActor::AddGameTask(const CInfoPortion *info_portion) const
 
 void CActor::AddGameNews(GAME_NEWS_DATA &news_data)
 {
-
 	GAME_NEWS_VECTOR &news_vector = game_news_registry->registry().objects();
 	news_data.receive_time = Level().GetGameTime();
 	news_vector.push_back(news_data);
@@ -132,6 +129,13 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 {
 	if (!CInventoryOwner::OnReceiveInfo(info_id))
 		return false;
+
+#ifdef DEBUG
+	Msg("- actor: %s received: [%s]", Name(), info_id.c_str());
+#endif
+
+	if (Actor() != this)
+		return true;
 
 	CInfoPortion info_portion;
 	info_portion.Load(info_id);
@@ -157,6 +161,9 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 void CActor::OnDisableInfo(shared_str info_id) const
 {
 	CInventoryOwner::OnDisableInfo(info_id);
+
+	if (Actor() != this)
+		return;
 
 	if (!HUD().GetUI())
 		return;

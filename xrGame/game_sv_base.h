@@ -158,6 +158,7 @@ public:
 	virtual bool load_game(NET_Packet &net_packet, ClientID const &sender);
 	virtual void switch_distance(NET_Packet &net_packet, ClientID const &sender);
 
+	void SendPatrolPaths(const ClientID& idTo);
 	void AddDelayedEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender);
 	void ProcessDelayedEvent();
 	virtual BOOL isFriendlyFireEnabled() { return FALSE; };

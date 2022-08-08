@@ -332,10 +332,8 @@ const u8 CUIMpTradeWnd::GetWeaponIndexInBelt(u32 indexInBelt, u8 &sectionId, u8 
 
 void CUIMpTradeWnd::GetWeaponIndexByName(const shared_str &sectionName, u8 &grpNum, u8 &idx)
 {
-
-	u32 idx__ = m_item_mngr->GetItemIdx(sectionName);
 	grpNum = 0;
-	idx = (u8)idx__;
+	idx = static_cast<u8>(m_item_mngr->GetItemIdx(sectionName));
 }
 
 const u8 CUIMpTradeWnd::GetItemIndex(u32 slotNum, u32 idx, u8 &sectionNum)
