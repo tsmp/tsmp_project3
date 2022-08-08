@@ -22,6 +22,16 @@ void CRenderTarget::phase_combine()
 	// low/hi RTs
 	u_setrt(rt_Generic_0, rt_Generic_1, 0, HW.pBaseZB);
 	RCache.set_CullMode(CULL_NONE);
+
+	if (RImplementation.o.ssao_opt_data)
+	{
+		phase_downsamp();
+	}
+	else if (RImplementation.o.ssao_blur_on)
+	{
+		phase_ssao();
+	}
+
 	RCache.set_Stencil(FALSE);
 
 	BOOL split_the_scene_to_minimize_wait = FALSE;
@@ -80,6 +90,14 @@ void CRenderTarget::phase_combine()
 		envclr.z *= 2 * ps_r2_sun_lumscale_hemi;
 		Fvector4 sunclr, sundir;
 
+		float fSSAONoise = 2.0f;
+		fSSAONoise *= tanf(deg2rad(67.5f / 2.0f));
+		fSSAONoise /= tanf(deg2rad(Device.fFOV / 2.0f));
+
+		float fSSAOKernelSize = 150.0f;
+		fSSAOKernelSize *= tanf(deg2rad(67.5f / 2.0f));
+		fSSAOKernelSize /= tanf(deg2rad(Device.fFOV / 2.0f));
+
 		// sun-params
 		{
 			light *fuckingsun = (light *)RImplementation.Lights.sun_adapted._get();
@@ -132,6 +150,7 @@ void CRenderTarget::phase_combine()
 
 		RCache.set_c("env_color", envclr);
 		RCache.set_c("fog_color", fogclr);
+		RCache.set_c("ssao_params", fSSAONoise, fSSAOKernelSize, 0.0f, 0.0f);
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 	}
 

@@ -772,5 +772,6 @@ HRESULT CRender::shader_compile(
 		FS.w_close(W);
 		_RELEASE(disasm);
 	}
+
 	return _result;
 }

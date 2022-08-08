@@ -425,19 +425,22 @@ void game_sv_Deathmatch::Update()
 			if (!m_pSM_CurViewEntity || m_pSM_CurViewEntity->CLS_ID != CLSID_OBJECT_ACTOR || m_dwSM_LastSwitchTime < Level().timeServer())
 				SM_SwitchOnNextActivePlayer();
 
-			CUIGameDM *GameDM = smart_cast<CUIGameDM *>(HUD().GetUI()->UIGame());
-			if (GameDM)
+			if(HUD().GetUI())
 			{
-				CObject *pObject = Level().CurrentViewEntity();
-				if (pObject && pObject->CLS_ID == CLSID_OBJECT_ACTOR)
+				CUIGameDM *GameDM = smart_cast<CUIGameDM *>(HUD().GetUI()->UIGame());
+				if (GameDM)
 				{
-					string1024 Text;
-					sprintf_s(Text, "Following %s", pObject->cName().c_str());
+					CObject* pObject = Level().CurrentViewEntity();
+					if (pObject && pObject->CLS_ID == CLSID_OBJECT_ACTOR)
+					{
+						string1024 Text;
+						sprintf_s(Text, "Following %s", pObject->cName().c_str());
 
-					GameDM->SetSpectrModeMsgCaption(Text);
+						GameDM->SetSpectrModeMsgCaption(Text);
+					}
+					else
+						GameDM->SetSpectrModeMsgCaption("Server works in spectator mode");
 				}
-				else
-					GameDM->SetSpectrModeMsgCaption("Server works in spectator mode");
 			}
 		};
 	}

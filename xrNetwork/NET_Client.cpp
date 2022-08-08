@@ -13,6 +13,30 @@
 extern void gen_auth_code();
 
 static INetLog *pClNetLog = nullptr;
+void IC InitClNetLog(u32 time)
+{
+	string_path LogPath;
+	strcpy(LogPath, "net_cl_log");
+
+	__try
+	{
+		if (FS.path_exist("$logs$"))
+			FS.update_path(LogPath, "$logs$", LogPath);
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		string_path temp;
+		strcpy(temp, LogPath);
+		strcpy(LogPath, "logs/");
+		strcat(LogPath, temp);
+	}
+
+	string_path log_file_name;
+	strconcat(sizeof(log_file_name), log_file_name, LogPath, ".log");
+
+	pClNetLog = xr_new<INetLog>(log_file_name, time);
+}
+
 static u32 LastTimeCreate = 0;
 
 const u32 BASE_PORT_LAN_SV = 5445;
@@ -205,7 +229,7 @@ void IPureClient::_Recieve(const void *data, u32 data_size, u32 /*param*/)
 	if (psNET_Flags.test(NETFLAG_LOG_CL_PACKETS))
 	{
 		if (!pClNetLog)
-			pClNetLog = xr_new<INetLog>("logs\\net_cl_log.log", timeServer());
+			InitClNetLog(timeServer());
 
 		if (pClNetLog)
 			pClNetLog->LogData(timeServer(), const_cast<void*>(data), data_size, TRUE);
@@ -859,7 +883,7 @@ void IPureClient::SendTo_LL(void *data, u32 size, u32 dwFlags, u32 dwTimeout)
 	if (psNET_Flags.test(NETFLAG_LOG_CL_PACKETS))
 	{
 		if (!pClNetLog)
-			pClNetLog = xr_new<INetLog>("logs\\net_cl_log.log", timeServer());
+			InitClNetLog(timeServer());
 		if (pClNetLog)
 			pClNetLog->LogData(timeServer(), data, size);
 	}

@@ -51,6 +51,14 @@ extern ECORE_API float ps_r2_ssaLOD_A;
 extern ECORE_API float ps_r2_ssaLOD_B;
 extern ECORE_API float ps_r2_tf_Mipbias;
 
+extern ECORE_API u32 ps_r_ssao;
+extern ECORE_API xr_token qssao_token[];
+
+extern ECORE_API u32 ps_r_ssao_mode;
+extern ECORE_API xr_token qssao_mode_token[];
+
+extern ECORE_API Flags32 ps_r2_ls_flags_ext;
+
 // R2-specific
 extern ECORE_API Flags32 ps_r2_ls_flags;			// r2-only
 extern ECORE_API Flags32 ps_r2_new_flags;			// r2-only
@@ -121,7 +129,17 @@ enum
 	R2FLAG_USE_NVDBT = (1 << 15),
 	R2FLAG_USE_NVSTENCIL = (1 << 16),
 
-	R2FLAG_EXP_MT_CALC = (1 << 17)
+	R2FLAG_EXP_MT_CALC = (1 << 17),
+};
+
+enum
+{
+	R2FLAGEXT_SSAO_BLUR = (1 << 0),
+	R2FLAGEXT_SSAO_OPT_DATA = (1 << 1),
+	R2FLAGEXT_SSAO_HALF_DATA = (1 << 2),
+	R2FLAGEXT_SSAO_HBAO = (1 << 3),
+	R2FLAGEXT_SSAO_HDAO = (1 << 4),
+	R2FLAGEXT_ENABLE_TESSELLATION = (1 << 5),
 };
 
 enum class NewFlagsR2

@@ -232,6 +232,7 @@ SVS *CResourceManager::_CreateVS(LPCSTR _name)
 
 		// vertex
 		R_ASSERT2(fs, cname);
+
 		_hr = ::Render->shader_compile(name, LPCSTR(fs->pointer()), fs->length(), NULL, &Includer, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR /*| D3DXSHADER_PREFER_FLOW_CONTROL*/, &pShaderBuf, &pErrorBuf, NULL);
 		//		_hr = D3DXCompileShader		(LPCSTR(fs->pointer()),fs->length(), NULL, &Includer, "main", target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, &pShaderBuf, &pErrorBuf, NULL);
 		FS.r_close(fs);
@@ -262,6 +263,7 @@ SVS *CResourceManager::_CreateVS(LPCSTR _name)
 			VERIFY(pErrorBuf);
 			Log("! error: ", (LPCSTR)pErrorBuf->GetBufferPointer());
 		}
+    
 		_RELEASE(pShaderBuf);
 		_RELEASE(pErrorBuf);
 		pConstants = NULL;
@@ -347,12 +349,14 @@ SPS *CResourceManager::_CreatePS(LPCSTR name)
 		}
 
 		// Compile
+
 		LPD3DXBUFFER pShaderBuf = NULL;
 		LPD3DXBUFFER pErrorBuf = NULL;
 		LPD3DXSHADER_CONSTANTTABLE pConstants = NULL;
 		HRESULT _hr = S_OK;
 		_hr = ::Render->shader_compile(name, data, size, NULL, &Includer, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR /*| D3DXSHADER_PREFER_FLOW_CONTROL*/, &pShaderBuf, &pErrorBuf, NULL);
 		//_hr = D3DXCompileShader		(text,text_size, NULL, &Includer, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, &pShaderBuf, &pErrorBuf, NULL);
+
 		xr_free(data);
 
 		if (SUCCEEDED(_hr))
@@ -387,9 +391,11 @@ SPS *CResourceManager::_CreatePS(LPCSTR name)
 		if (FAILED(_hr))
 			Msg("Can't compile shader %s", name);
 
-		CHECK_OR_EXIT(
-			!FAILED(_hr),
-			make_string("Your video card doesn't meet game requirements\n\nPixel Shaders v1.1 or higher required"));
+		CHECK_OR_EXIT(!FAILED(_hr),
+
+			make_string("Your video card doesn't meet game requirements, or there are errors in shader! (%s).\n\nTry to lower game settings.", name)
+		);
+
 		return _ps;
 	}
 }
