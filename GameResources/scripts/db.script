@@ -21,9 +21,13 @@ function add_obj( obj )
 end
 
 function del_obj( obj )
+	if obj == nil then
+		printfa('ERROR: cant find object to del!')
+		return
+	end
+
 	storage   [obj:id()] = nil
 end
-
 
 function add_zone( zone )
 	zone_by_name[zone:name()] = zone
@@ -35,7 +39,6 @@ function del_zone( zone )
 	del_obj( zone )
 end
 
-
 function add_sl( sl )
 	sl_by_name[sl:name()] = sl
 	add_obj( sl )
@@ -46,27 +49,41 @@ function del_sl( sl )
 	del_obj( sl )
 end
 
-
 function add_actor( obj )
 	actor = obj
+	printfa('local actor now is object: %u', obj:id())
 	actor_proxy:net_spawn( obj )
 	add_obj( obj )
 end
 
-function del_actor()
-	del_obj( actor )
-	actor_proxy:net_destroy()
-	actor = nil
-end
+function del_actor( obj )
+	if IsGameTypeSingle() then
+		del_obj( actor )
+		actor = nil
+		actor_proxy:net_destroy()
+		return
+	end
 
+	if obj == nil then
+		printfa('ERROR: cant find actor to del!')
+		return
+	end
+
+	printfa('del actor: %u', obj:id())
+	del_obj( obj )
+	actor_proxy:net_destroy()
+
+	-- TSMP: in mp can respawn as another actor object and receive del_actor for prev actor object
+	-- actor = nil 
+end
 
 function add_heli(obj)	
 	heli[obj:id()] = obj
-end	
+end
+
 function del_heli(obj)
 	heli[obj:id()] = nil
-end	
-
+end
 
 function add_smart_terrain( obj )
 	smart_terrain_by_id[obj.id] = obj
