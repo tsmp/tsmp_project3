@@ -397,7 +397,7 @@ void game_sv_TeamDeathmatch::OnPlayerHitPlayer_Case(game_PlayerState *ps_hitter,
 {
 	if (pHitS->hit_type != ALife::eHitTypePhysicStrike)
 	{
-		if (ps_hitter && ps_hitted)
+		if (ps_hitter && ps_hitted && ps_hitter != static_cast<xrClientData*>(server().GetServerClient())->ps)
 		{
 			if (!isFriendlyFireEnabled() && ps_hitter->team == ps_hitted->team && ps_hitter != ps_hitted)
 			{
@@ -407,8 +407,9 @@ void game_sv_TeamDeathmatch::OnPlayerHitPlayer_Case(game_PlayerState *ps_hitter,
 			}
 		}
 	}
+
 	inherited::OnPlayerHitPlayer_Case(ps_hitter, ps_hitted, pHitS);
-};
+}
 
 void game_sv_TeamDeathmatch::OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet &P)
 {
