@@ -2,6 +2,7 @@
 #include "..\xrserver.h"
 #include "fz_sysmsgs_defines.h"
 #include "..\Level.h"
+#include "..\xrGameSpyServer.h"
 
 int fz_downloader_new = 0;
 int fz_downloader_enabled = 1;
@@ -84,6 +85,11 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 		moddllinfo.fileinfo.filename = "fz_mod_loader_tsmp_v1.mod";
 		moddllinfo.fileinfo.url = "http://stalker-life.com/stalker_files/mods_shoc/tsmp3/loader/tsmp_mod_loader_v1.dll";
 		moddllinfo.fileinfo.crc32 = 0x110B3AD8;
+
+		shared_str srvPasword = static_cast<xrGameSpyServer*>(server)->Password;
+
+		if (srvPasword.size())
+			ModLoadArgs += " -psw " + std::string(srvPasword.c_str());
 
 		ModLoadArgs += " -includename -preservemessage ";
 	}
