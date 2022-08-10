@@ -1556,6 +1556,7 @@ extern int fz_downloader_new;
 
 extern std::string fz_downloader_mod_name;
 extern std::string fz_downloader_reconnect_ip;
+extern std::string fz_downloader_message;
 
 class CCC_fz_reconnect_ip : public IConsole_Command
 {
@@ -1574,6 +1575,25 @@ public:
 	}
 
 	virtual void Info(TInfo &I) { strcpy(I, "Set reconnect IP for clients who use downloader"); }
+};
+
+class CCC_fz_mod_message : public IConsole_Command
+{
+public:
+	CCC_fz_mod_message(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!xr_strlen(args_))
+		{
+			Msg("- fz_downloader_message %s", fz_downloader_message.c_str());
+			return;
+		}
+
+		fz_downloader_message = args_;
+	}
+
+	virtual void Info(TInfo& I) { strcpy(I, "Set message to show when download mod"); }
 };
 
 class CCC_fz_mod_name : public IConsole_Command
@@ -2023,6 +2043,7 @@ void register_mp_console_commands()
 	CMD4(CCC_Integer, "fz_downloader_new", (int*)&fz_downloader_new, 0, 1);
 	CMD1(CCC_fz_reconnect_ip, "fz_downloader_reconnect_ip");
 	CMD1(CCC_fz_mod_name, "fz_downloader_mod_name");
+	CMD1(CCC_fz_mod_message, "fz_downloader_message");
 
 	CMD1(CCC_CompressorStatus, "net_compressor_status");
 	CMD4(CCC_SV_Integer, "net_compressor_enabled", (int *)&g_net_compressor_enabled, 0, 1);

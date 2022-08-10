@@ -60,7 +60,7 @@ struct FZFileDownloadInfo
     //Используемый тип компрессии
     FZArchiveCompressionType compression;
     //Сообщение, выводимое пользователю во время закачки
-    char *progress_msg;
+    const char *progress_msg;
     //Сообщение, выводимое пользователю при возникновении ошибки во время закачки
     char *error_already_has_dl_msg;
 };

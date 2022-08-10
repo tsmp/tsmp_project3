@@ -9,6 +9,7 @@ int fz_downloader_enabled = 1;
 
 std::string fz_downloader_mod_name = "tsmp";
 std::string fz_downloader_reconnect_ip;
+std::string fz_downloader_message = "Preparing mod";
 
 bool LoadedDLL = false;
 HMODULE dll;
@@ -30,26 +31,25 @@ void LoadDLL()
 	if (LoadedDLL)
 		return;
 
-		dll = LoadLibrary("sysmsgs.dll");
+	dll = LoadLibrary("sysmsgs.dll");
 
-		if (!dll)
-		{
-			Msg("! error, cant load dll with sysmsgs api");
-			return;
-		}
+	if (!dll)
+	{
+		Msg("! error, cant load dll with sysmsgs api");
+		return;
+	}
 
+	FZSysMsgsInit SysInit = reinterpret_cast<FZSysMsgsInit>(GetProcAddress(dll, "FZSysMsgsInit"));
+	(*SysInit)();
 
-		FZSysMsgsInit SysInit = reinterpret_cast<FZSysMsgsInit>(GetProcAddress(dll, "FZSysMsgsInit"));
-		(*SysInit)();
+	ProcSendSysMessage = reinterpret_cast<FZSysMsgsSendSysMessage_SOC>(GetProcAddress(dll, "FZSysMsgsSendSysMessage_SOC"));
+	ProcProcessClientMod = reinterpret_cast<FZSysMsgsProcessClientModDll>(GetProcAddress(dll, "FZSysMsgsProcessClientModDll"));
 
-		ProcSendSysMessage = reinterpret_cast<FZSysMsgsSendSysMessage_SOC>(GetProcAddress(dll, "FZSysMsgsSendSysMessage_SOC"));
-		ProcProcessClientMod = reinterpret_cast<FZSysMsgsProcessClientModDll>(GetProcAddress(dll, "FZSysMsgsProcessClientModDll"));
+	auto SetFlags = reinterpret_cast<SetCommonSysmsgsFlags>(GetProcAddress(dll, "FZSysMsgsSetCommonSysmsgsFlags"));
+	SetFlags(FZ_SYSMSGS_ENABLE_LOGS | FZ_SYSMSGS_PATCH_UI_PROGRESSBAR);
 
-		auto SetFlags = reinterpret_cast<SetCommonSysmsgsFlags>(GetProcAddress(dll, "FZSysMsgsSetCommonSysmsgsFlags"));
-		SetFlags(FZ_SYSMSGS_ENABLE_LOGS | FZ_SYSMSGS_PATCH_UI_PROGRESSBAR);
-
-		LoadedDLL = true;
-		Msg("- sysmsgs.dll loaded successfully");
+	LoadedDLL = true;
+	Msg("- sysmsgs.dll loaded successfully");
 }
 
 void UnloadSysmsgsDLL()
@@ -100,7 +100,7 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 		moddllinfo.fileinfo.crc32 = 0x274A4EBD;
 	}
 
-	moddllinfo.fileinfo.progress_msg = "Враги наследника, берегитесь!";
+	moddllinfo.fileinfo.progress_msg = fz_downloader_message.c_str();
 	moddllinfo.fileinfo.error_already_has_dl_msg = "Error happens";
 	moddllinfo.fileinfo.compression = FZ_COMPRESSION_NO_COMPRESSION;
 	moddllinfo.procname = "ModLoad";
