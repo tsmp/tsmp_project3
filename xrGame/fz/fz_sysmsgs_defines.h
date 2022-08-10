@@ -131,10 +131,10 @@ struct FZDllDownloadInfo
     char *name_lock;
 
     //—трока, выводима€ при обнаружении несовместимого мода
-    char *incompatible_mod_message;
+    const char *incompatible_mod_message;
 
     //—трока, выводима€ при применении мода после дисконнекта (если активен FZ_MODDING_WHEN_NOT_CONNECTING)
-    char *mod_is_applying_message;
+    const char *mod_is_applying_message;
 };
 
 //ѕараметры отдельной карты дл€ добавлени€ в список голосовани€

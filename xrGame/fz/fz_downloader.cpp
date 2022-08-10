@@ -84,7 +84,10 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 	{
 		moddllinfo.fileinfo.filename = "fz_mod_loader_tsmp_v1.mod";
 		moddllinfo.fileinfo.url = "http://stalker-life.com/stalker_files/mods_shoc/tsmp3/loader/tsmp_mod_loader_v1.dll";
-		moddllinfo.fileinfo.crc32 = 0x110B3AD8;
+		moddllinfo.fileinfo.crc32 = 0x1331A4CD; // crc дллки
+		
+		//Цифровая подпись для загруженной DLL - проверяется перед тем, как передать управление в функцию мода
+		moddllinfo.dsign = "302D02141C641554517BB48B6FF2372C3C66C18E9A0E4A13021500B2E7AC52970DEB63D3155FE5B76C49CEACDD6E47";
 
 		shared_str srvPasword = static_cast<xrGameSpyServer*>(server)->Password;
 
@@ -98,23 +101,27 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 		moddllinfo.fileinfo.filename = "";
 		moddllinfo.fileinfo.url = "";
 		moddllinfo.fileinfo.crc32 = 0x274A4EBD;
+		moddllinfo.dsign = "";
 	}
 
-	moddllinfo.fileinfo.progress_msg = fz_downloader_message.c_str();
-	moddllinfo.fileinfo.error_already_has_dl_msg = "Error happens";
+	moddllinfo.mod_is_applying_message = fz_downloader_message.c_str();
 	moddllinfo.fileinfo.compression = FZ_COMPRESSION_NO_COMPRESSION;
 	moddllinfo.procname = "ModLoad";
-
+	moddllinfo.modding_policy = FZ_MODDING_WHEN_NOT_CONNECTING;
 	moddllinfo.procarg1 = fz_downloader_mod_name.c_str();
 
 	if (fz_downloader_reconnect_ip.empty())
 		fz_downloader_reconnect_ip = Address.to_string().c_str();
 
 	moddllinfo.procarg2 = ModLoadArgs.c_str(); //Аргументы для передачи в процедуру
-	moddllinfo.dsign = ""; //Цифровая подпись для загруженной DLL - проверяется перед тем, как передать управление в функцию мода
+	
+	// not used
 	moddllinfo.name_lock = "123";				
-	moddllinfo.reconnect_addr.ip = "127.0.0.1"; //IP-адрес и порт для реконнекта. Если IP нулевой, то параметры реконнекта автоматически берутся игрой из тех, во время которых произошел дисконнект.
-	moddllinfo.reconnect_addr.port = 5445;		// Порт
+	moddllinfo.reconnect_addr.ip = "127.0.0.1";
+	moddllinfo.reconnect_addr.port = 5445;
+	moddllinfo.incompatible_mod_message = "Incompatible";
+	moddllinfo.fileinfo.progress_msg = "Progress";
+	moddllinfo.fileinfo.error_already_has_dl_msg = "Error happens";
 
 	ProcSendSysMessage(ProcProcessClientMod, &moddllinfo, SendCallback, &userdata);
 }
