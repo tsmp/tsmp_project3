@@ -6,6 +6,7 @@
 
 int fz_downloader_new = 0;
 int fz_downloader_enabled = 1;
+int fz_downloader_skip_full_check = 0;
 
 std::string fz_downloader_mod_name = "tsmp";
 std::string fz_downloader_reconnect_ip;
@@ -93,6 +94,9 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 
 		if (srvPasword.size())
 			ModLoadArgs += " -psw " + std::string(srvPasword.c_str());
+
+		if (fz_downloader_skip_full_check)
+			ModLoadArgs += " -skipfullcheck ";
 
 		ModLoadArgs += " -includename -preservemessage ";
 	}

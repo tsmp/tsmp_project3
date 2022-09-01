@@ -1552,6 +1552,7 @@ public:
 };
 
 extern int fz_downloader_enabled;
+extern int fz_downloader_skip_full_check;
 extern int fz_downloader_new;
 
 extern std::string fz_downloader_mod_name;
@@ -2041,6 +2042,7 @@ void register_mp_console_commands()
 
 	CMD4(CCC_Integer, "fz_downloader_enabled", (int*)&fz_downloader_enabled, 0, 1);
 	CMD4(CCC_Integer, "fz_downloader_new", (int*)&fz_downloader_new, 0, 1);
+	CMD4(CCC_Integer, "fz_downloader_skip_full_check", (int*)&fz_downloader_skip_full_check, 0, 1);
 	CMD1(CCC_fz_reconnect_ip, "fz_downloader_reconnect_ip");
 	CMD1(CCC_fz_mod_name, "fz_downloader_mod_name");
 	CMD1(CCC_fz_mod_message, "fz_downloader_message");
