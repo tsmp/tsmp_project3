@@ -3,6 +3,7 @@
 
 #include "ui\UIBuyWndShared.h"
 #include "ui\UIBuyWndBase.h"
+#include "PresetItem.h"
 
 class CUISkinSelectorWnd;
 class CUIDialogWnd;
@@ -37,32 +38,6 @@ public:
 	virtual void LoadSndMessages();
 
 protected:
-	struct PresetItem
-	{
-		u8 SlotID;
-		u8 ItemID;
-		s16 BigID;
-		PresetItem(u8 Slot, u8 Item) { set(Slot, Item); };
-		PresetItem(s16 Big) { set(Big); };
-		bool operator==(const s16 &ID)
-		{
-			return (BigID) == (ID);
-		}
-		void set(s16 Big)
-		{
-			SlotID = u8((Big >> 0x08) & 0x00ff);
-			ItemID = u8(Big & 0x00ff);
-			BigID = Big;
-		}
-		void set(u8 Slot, u8 Item)
-		{
-			SlotID = Slot;
-			ItemID = Item;
-			BigID = (s16(SlotID) << 0x08) | s16(ItemID);
-		};
-	};
-
-	DEF_VECTOR(PRESET_ITEMS, PresetItem);
 
 	PRESET_ITEMS PresetItemsTeam0;
 	PRESET_ITEMS AdditionalPresetItems;
@@ -81,7 +56,6 @@ protected:
 	u32 m_dwVoteEndTime;
 
 	virtual const shared_str GetBaseCostSect() { return "deathmatch_base_cost"; }
-	void CheckItem(PIItem pItem, PRESET_ITEMS *pPresetItems, BOOL OnlyPreset);
 
 	void ClearBuyMenu();
 	IBuyWnd *InitBuyMenu(const shared_str &BasePriceSection, s16 Team);
@@ -103,7 +77,6 @@ protected:
 	virtual void LoadPlayerDefItems(char *TeamName, IBuyWnd *pBuyMenu);
 	virtual void LoadDefItemsForRank(IBuyWnd *pBuyMenu);
 	virtual void ChangeItemsCosts(IBuyWnd* pBuyMenu) {};
-	s16 GetBuyMenuItemIndex(u8 Addons, u8 ItemID);
 
 	virtual void ConvertTime2String(string64 *str, u32 Time);
 	virtual int GetPlayersPlace(game_PlayerState *ps);

@@ -626,6 +626,7 @@
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="damage_manager_inline.h" />
     <ClInclude Include="DamageSource.h" />
+    <ClInclude Include="PresetItem.h" />
     <ClInclude Include="screenshots_common.h" />
     <ClInclude Include="screenshots_writer.h" />
     <ClInclude Include="screenshot_manager.h" />
@@ -2086,6 +2087,7 @@
     <ClCompile Include="game_sv_hardmatch.cpp" />
     <ClCompile Include="game_sv_race.cpp" />
     <ClCompile Include="net_physics_state.cpp" />
+    <ClCompile Include="PresetItem.cpp" />
     <ClCompile Include="screenshots_common.cpp" />
     <ClCompile Include="screenshots_writer.cpp" />
     <ClCompile Include="screenshot_manager.cpp" />

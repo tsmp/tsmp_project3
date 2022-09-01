@@ -317,12 +317,12 @@ const u8 CUIMpTradeWnd::GetWeaponIndex(u32 slotNum)
 }
 
 shared_str _fake;
-const shared_str &CUIMpTradeWnd::GetWeaponNameByIndex(u8 grpNum, u8 idx)
+const shared_str &CUIMpTradeWnd::GetNameByPresetItem(const PresetItem &item)
 {
 	//	return _fake;
-	if (idx >= m_item_mngr->GetItemsCount())
+	if (item.GetItemID() >= m_item_mngr->GetItemsCount())
 		return _fake;
-	return m_item_mngr->GetItemName(u32(idx));
+	return m_item_mngr->GetItemName(u32(item.GetItemID()));
 }
 
 const u8 CUIMpTradeWnd::GetWeaponIndexInBelt(u32 indexInBelt, u8 &sectionId, u8 &itemId, u8 &count)
@@ -330,10 +330,10 @@ const u8 CUIMpTradeWnd::GetWeaponIndexInBelt(u32 indexInBelt, u8 &sectionId, u8 
 	return 0;
 }
 
-void CUIMpTradeWnd::GetWeaponIndexByName(const shared_str &sectionName, u8 &grpNum, u8 &idx)
+void CUIMpTradeWnd::GetPresetItemByName(const shared_str &sectionName, PresetItem &item)
 {
-	grpNum = 0;
-	idx = static_cast<u8>(m_item_mngr->GetItemIdx(sectionName));
+	item.SetSlot(0);
+	item.SetItem(static_cast<u8>(m_item_mngr->GetItemIdx(sectionName)));
 }
 
 const u8 CUIMpTradeWnd::GetItemIndex(u32 slotNum, u32 idx, u8 &sectionNum)

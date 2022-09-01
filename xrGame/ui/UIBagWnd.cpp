@@ -12,6 +12,8 @@
 #include "../xrServer_Objects_ALife_Items.h"
 #include "../game_cl_Deathmatch.h"
 
+extern "C" DLL_Pure * __cdecl xrFactory_Create(CLASS_ID clsid);
+
 CUIBagWnd::CUIBagWnd()
 {
 	m_mlCurrLevel = mlRoot;
@@ -267,23 +269,21 @@ void CUIBagWnd::InitWpnSectStorage()
 	}
 
 	wpnOneType.clear();
+	const CInifile::Items &sectionPriceItems = pSettings->r_section(m_sectionPrice.c_str()).Data;
 
-	CInifile::Sect &sect = pSettings->r_section(m_sectionPrice.c_str());
+	for(const CInifile::Item &item: sectionPriceItems)
+	{		
+		const char* itemName = item.first.c_str();
 
-	for (CInifile::SectCIt it = sect.Data.begin(); it != sect.Data.end(); it++)
-	{
-		u8 group_id, index;
-		GetWeaponIndexByName((*it).first.c_str(), group_id, index);
+		PresetItem itm;
+		GetPresetItemByName(itemName, itm);
 
-		if ((u8)(-1) == group_id || (u8)(-1) == index) // item not found
-		{
-			wpnOneType.push_back((*it).first.c_str()); //
-		}
+		if (!itm.IsValid()) // item not found		
+			wpnOneType.push_back(itemName);
 	}
-	if (!wpnOneType.empty())
-	{
-		m_wpnSectStorage.push_back(wpnOneType);
-	}
+
+	if (!wpnOneType.empty())	
+		m_wpnSectStorage.push_back(wpnOneType);	
 }
 
 void CUIBagWnd::FillUpGroups()
@@ -291,8 +291,6 @@ void CUIBagWnd::FillUpGroups()
 	for (u32 i = 0; i < m_wpnSectStorage.size(); ++i)
 		FillUpGroup(i);
 }
-
-extern "C" DLL_Pure *__cdecl xrFactory_Create(CLASS_ID clsid);
 
 void CUIBagWnd::FillUpGroup(const u32 group)
 {
@@ -472,10 +470,10 @@ CUIDragDropListEx *CUIBagWnd::GetItemList(CUICellItem *pItem)
 	return &m_groups[m_info[pItem->m_index].group_index];
 }
 
-void CUIBagWnd::GetWeaponIndexByName(const shared_str &sectionName, u8 &grpNum, u8 &idx)
+void CUIBagWnd::GetPresetItemByName(const shared_str &sectionName, PresetItem &item)
 {
-	grpNum = (u8)(-1);
-	idx = (u8)(-1);
+	item.SetSlot(static_cast<u8>(-1));
+	item.SetItem(static_cast<u8>(-1));
 
 	for (u8 i = 0; i < m_wpnSectStorage.size(); ++i)
 	{
@@ -483,8 +481,8 @@ void CUIBagWnd::GetWeaponIndexByName(const shared_str &sectionName, u8 &grpNum, 
 		{
 			if (sectionName == m_wpnSectStorage[i][j])
 			{
-				grpNum = i;
-				idx = j;
+				item.SetSlot(i);
+				item.SetItem(j);
 				return;
 			}
 		}
@@ -882,12 +880,11 @@ void CUIBagWnd::SetRank(int r)
 	g_mp_restrictions.SetRank(r);
 }
 
-const shared_str &CUIBagWnd::GetWeaponNameByIndex(u8 grpNum, u8 idx)
+const shared_str &CUIBagWnd::GetNameByPresetItem(const PresetItem& item)
 {
-	R_ASSERT(grpNum < m_wpnSectStorage.size());
-
-	R_ASSERT(idx < m_wpnSectStorage[grpNum].size());
-	return m_wpnSectStorage[grpNum][idx];
+	R_ASSERT(item.GetSlot() < m_wpnSectStorage.size());
+	R_ASSERT(item.GetItemID() < m_wpnSectStorage[item.GetSlot()].size());
+	return m_wpnSectStorage[item.GetSlot()][item.GetItemID()];
 }
 
 void CUIBagWnd::SetExternal(CUICellItem *itm, bool status)

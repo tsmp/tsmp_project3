@@ -6624,6 +6624,9 @@
     <ClInclude Include="game_cl_race.h">
       <Filter>Core\Server\Games\client\race</Filter>
     </ClInclude>
+    <ClInclude Include="PresetItem.h">
+      <Filter>Core\Server\Games\client\deathmatch</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9810,6 +9813,9 @@
     </ClCompile>
     <ClCompile Include="console_commands_car_dbg.cpp">
       <Filter>Core\Common\Console Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="PresetItem.cpp">
+      <Filter>Core\Server\Games\client\deathmatch</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

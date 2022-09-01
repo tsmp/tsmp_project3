@@ -1218,14 +1218,14 @@ const u8 CUIBuyWnd::GetWeaponIndex(u32 slotNum)
 	return GetItemIndex(slotNum, 0, tmp);
 }
 
-void CUIBuyWnd::GetWeaponIndexByName(const shared_str &sectionName, u8 &grpNum, u8 &idx)
+void CUIBuyWnd::GetPresetItemByName(const shared_str &sectionName, PresetItem &item)
 {
-	m_bag.GetWeaponIndexByName(sectionName, grpNum, idx);
+	m_bag.GetPresetItemByName(sectionName, item);
 }
 
-const shared_str &CUIBuyWnd::GetWeaponNameByIndex(u8 grpNum, u8 idx)
+const shared_str &CUIBuyWnd::GetNameByPresetItem(const PresetItem &item)
 {
-	return m_bag.GetWeaponNameByIndex(grpNum, idx);
+	return m_bag.GetNameByPresetItem(item);
 }
 
 const u8 CUIBuyWnd::GetWeaponAddonInfoByIndex(u8 idx)

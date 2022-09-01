@@ -4,6 +4,7 @@
 #include "UIDragDropListEx.h"
 #include "UI3tButton.h"
 #include "../xrServer_Objects_ALife_Items.h"
+#include "../PresetItem.h"
 
 class CUITabButtonMP;
 
@@ -90,8 +91,8 @@ public:
 	void DestroyAllItems();
 
 	u8 GetItemIndex(CUICellItem *pItem, u8 &sectionNum);
-	void GetWeaponIndexByName(const shared_str &sectionName, u8 &grpNum, u8 &idx);
-	const shared_str &GetWeaponNameByIndex(u8 grpNum, u8 idx);
+	void GetPresetItemByName(const shared_str &sectionName, PresetItem &item);
+	const shared_str &GetNameByPresetItem(const PresetItem &item);
 
 	CUICellItem *GetItemBySectoin(const shared_str &sectionName, bool bCreateOnFail = false);
 	CUICellItem *GetItemBySectoin(const u8 grpNum, u8 uIndexInSlot);
