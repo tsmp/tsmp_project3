@@ -83,7 +83,7 @@ protected:
 
 	virtual void OnPlayerBuyFinished(ClientID const &id_who, NET_Packet &P);
 
-	virtual void CheckItem(game_PlayerState *ps, PIItem pItem, xr_vector<s16> *pItemsDesired, xr_vector<u16> *pItemsToDelete, bool ExactMatch);
+	virtual void CheckItem(game_PlayerState *ps, PIItem pItem, xr_vector<PresetItem> &pItemsDesired, xr_vector<u16> *pItemsToDelete, bool ExactMatch);
 	virtual bool HasChampion();
 
 	virtual void check_Player_for_Invincibility(game_PlayerState *ps);

@@ -3,6 +3,7 @@
 #include "game_base_space.h"
 #include "script_export_space.h"
 #include "alife_space.h"
+#include "PresetItem.h"
 
 #pragma pack(push, 1)
 
@@ -110,7 +111,7 @@ public:
 	virtual void net_Export(NET_Packet &P, BOOL Full = FALSE);
 	virtual void net_Import(NET_Packet &P);
 
-	DEF_VECTOR(PLAYER_ITEMS_LIST, u16);
+	DEF_VECTOR(PLAYER_ITEMS_LIST, PresetItem);
 
 	PLAYER_ITEMS_LIST pItemList;
 

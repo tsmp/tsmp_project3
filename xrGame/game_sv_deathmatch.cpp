@@ -20,6 +20,7 @@
 //#define DELAYED_ROUND_TIME	7000
 #include "ui\UIBuyWndShared.h"
 #include "Console.h"
+#include "PresetItem.h"
 
 #define UNBUYABLESLOT 20
 
@@ -804,9 +805,9 @@ bool game_sv_Deathmatch::IsBuyableItem(LPCSTR ItemName)
 	return true;
 }
 
-void game_sv_Deathmatch::CheckItem(game_PlayerState *ps, PIItem pItem, xr_vector<s16> *pItemsDesired, xr_vector<u16> *pItemsToDelete, bool ExactMatch = false)
+void game_sv_Deathmatch::CheckItem(game_PlayerState *ps, PIItem pItem, xr_vector<PresetItem> &ItemsDesired, xr_vector<u16> *pItemsToDelete, bool ExactMatch = false)
 {
-	if (!pItem || !pItemsDesired || !pItemsToDelete)
+	if (!pItem || !pItemsToDelete)
 		return;
 
 	if (m_strWeaponsData->GetItemIdx(pItem->object().cNameSect()) == u32(-1))
@@ -814,26 +815,26 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState *ps, PIItem pItem, xr_vector
 
 	bool found = false;
 
-	for (u32 it = 0; it < pItemsDesired->size(); it++)
+	for (u32 it = 0; it < ItemsDesired.size(); it++)
 	{
-		s16 ItemID = (*pItemsDesired)[it];
+		const PresetItem &item = ItemsDesired[it];
 
-		if ((ItemID & 0x00ff) != u16(m_strWeaponsData->GetItemIdx(pItem->object().cNameSect())))
+		if (item.GetItemID() != u8(m_strWeaponsData->GetItemIdx(pItem->object().cNameSect())))
 			continue;
 
 		found = true;
 
-		if(CWeaponAmmo *pAmmo = smart_cast<CWeaponAmmo *>(pItem))
+		if(CWeaponAmmo *pAmmo = smart_cast<CWeaponAmmo*>(pItem))
 		{
 			if (pAmmo->m_boxCurr != pAmmo->m_boxSize)
 				break;
 		}
 
 		//----- Check for Addon Changes ---------------------
-		if(CWeapon *pWeapon = smart_cast<CWeapon *>(pItem))
+		if(CWeapon *pWeapon = smart_cast<CWeapon*>(pItem))
 		{
 			u8 OldAddons = pWeapon->GetAddonsState();
-			u8 NewAddons = u8((ItemID & 0xff00) >> 0x08) /*u8(ItemID&0x00ff)>>0x05*/;
+			u8 NewAddons = item.GetAddons();
 
 			if (ExactMatch)
 			{
@@ -860,7 +861,7 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState *ps, PIItem pItem, xr_vector
 			}
 		}
 
-		pItemsDesired->erase(pItemsDesired->begin() + it);
+		ItemsDesired.erase(ItemsDesired.begin() + it);
 		break;
 	}
 
@@ -880,15 +881,16 @@ void game_sv_Deathmatch::OnPlayerBuyFinished(ClientID const &id_who, NET_Packet 
 	if (ps->LastBuyAcount != 0)
 		ps->m_bClearRun = false;
 
-	xr_vector<s16> ItemsDesired;
+	xr_vector<PresetItem> ItemsDesired;
 
 	u8 NumItems;
 	P.r_u8(NumItems);
+
 	for (u8 i = 0; i < NumItems; i++)
 	{
-		s16 ItemID;
-		P.r_s16(ItemID);
-		ItemsDesired.push_back(ItemID);
+		PresetItem item;
+		item.Deserialize(P);
+		ItemsDesired.push_back(item);
 	}
 
 	CSE_ALifeCreatureActor *e_Actor = smart_cast<CSE_ALifeCreatureActor *>(get_entity_from_eid(ps->GameID));
@@ -907,7 +909,7 @@ void game_sv_Deathmatch::OnPlayerBuyFinished(ClientID const &id_who, NET_Packet 
 		for (; IBelt != EBelt; ++IBelt)
 		{
 			pItem = (*IBelt);
-			CheckItem(ps, pItem, &ItemsDesired, &ItemsToDelete, ExactMatch);
+			CheckItem(ps, pItem, ItemsDesired, &ItemsToDelete, ExactMatch);
 		}
 
 		//проверяем ruck
@@ -919,7 +921,7 @@ void game_sv_Deathmatch::OnPlayerBuyFinished(ClientID const &id_who, NET_Packet 
 			pItem = (*IRuck);
 			if (!pItem)
 				continue;
-			CheckItem(ps, pItem, &ItemsDesired, &ItemsToDelete, ExactMatch);
+			CheckItem(ps, pItem, ItemsDesired, &ItemsToDelete, ExactMatch);
 		}
 
 		//проверяем слоты
@@ -929,7 +931,7 @@ void game_sv_Deathmatch::OnPlayerBuyFinished(ClientID const &id_who, NET_Packet 
 		for (; ISlot != ESlot; ++ISlot)
 		{
 			pItem = (*ISlot).m_pIItem;
-			CheckItem(ps, pItem, &ItemsDesired, &ItemsToDelete, ExactMatch);
+			CheckItem(ps, pItem, ItemsDesired, &ItemsToDelete, ExactMatch);
 		}
 
 		xr_vector<u16>::iterator IDI = ItemsToDelete.begin();
@@ -967,9 +969,9 @@ void game_sv_Deathmatch::SpawnWeaponsForActor(CSE_Abstract *pE, game_PlayerState
 
 	for (u32 i = 0; i < ps->pItemList.size(); i++)
 	{
-		u16 ItemID = ps->pItemList[i];
-		SpawnWeapon4Actor(pA->ID, *m_strWeaponsData->GetItemName(ItemID & 0x00FF), u8((ItemID & 0xFF00) >> 0x08));
-		Game().m_WeaponUsageStatistic->OnWeaponBought(ps, *m_strWeaponsData->GetItemName(ItemID & 0x00FF));
+		const PresetItem &item = ps->pItemList[i];
+		SpawnWeapon4Actor(pA->ID, *m_strWeaponsData->GetItemName(item.GetItemID()), item.GetSlot());
+		Game().m_WeaponUsageStatistic->OnWeaponBought(ps, *m_strWeaponsData->GetItemName(item.GetItemID()));
 	}
 
 #ifndef NDEBUG
@@ -1027,7 +1029,7 @@ void game_sv_Deathmatch::LoadDefItemsForTeam(const shared_str &caSection, DEF_IT
 	for (u32 i = 0; i < count; ++i)
 	{
 		_GetItem(DefItems, i, ItemName);
-		pDefItems->push_back(u16(m_strWeaponsData->GetItemIdx(ItemName) & 0xffff));
+		pDefItems->push_back(PresetItem(0, m_strWeaponsData->GetItemIdx(ItemName)));
 	}
 }
 

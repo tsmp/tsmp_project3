@@ -4,7 +4,7 @@
 DEF_VECTOR(TEAM_SKINS_NAMES, xr_string);
 
 // Вектор имен скинов комманды
-DEF_VECTOR(DEF_ITEMS_LIST, u16);
+DEF_VECTOR(DEF_ITEMS_LIST, PresetItem);
 
 //структура данных по команде
 struct TeamStruct

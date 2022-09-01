@@ -18,6 +18,7 @@
 #include "CameraBase.h"
 
 #include "game_sv_mp_vote_flags.h"
+#include "PresetItem.h"
 
 u32 g_dwMaxCorpses = 10;
 
@@ -882,12 +883,12 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState *ps)
 
 		for (u32 it = 0; it < ps->pItemList.size(); it++)
 		{
-			u16 *pItemID = &(ps->pItemList[it]);
+			PresetItem &item = ps->pItemList[it];
 
-			if (m_strWeaponsData->GetItemsCount() <= *pItemID)
+			if (m_strWeaponsData->GetItemsCount() <= u32(item.GetItemID()))
 				continue;
 
-			shared_str WeaponName = m_strWeaponsData->GetItemName((*pItemID) & 0x00FF);
+			shared_str WeaponName = m_strWeaponsData->GetItemName(item.GetItemID());
 			strconcat(sizeof(ItemStr), ItemStr, "def_item_repl_", *WeaponName);
 
 			if (!pSettings->line_exist(RankStr, ItemStr))
@@ -898,39 +899,40 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState *ps)
 			if (m_strWeaponsData->GetItemIdx(NewItemStr) == u32(-1))
 				continue;
 
-			*pItemID = u16(m_strWeaponsData->GetItemIdx(NewItemStr) & 0xffff);
+			item.SetItem(m_strWeaponsData->GetItemIdx(NewItemStr));
+			item.SetSlot(0);
 		}
 	}
 
 	for (u32 it = 0; it < ps->pItemList.size(); it++)
 	{
-		u16 *pItemID = &(ps->pItemList[it]);
+		PresetItem& item = ps->pItemList[it];
 
-		if (m_strWeaponsData->GetItemsCount() <= *pItemID)
+		if (m_strWeaponsData->GetItemsCount() <= item.GetItemID())
 			continue;
 
-		shared_str WeaponName = m_strWeaponsData->GetItemName((*pItemID) & 0x00FF);
+		shared_str WeaponName = m_strWeaponsData->GetItemName(item.GetItemID());
 
 		if (!xr_strcmp(*WeaponName, "mp_wpn_knife"))
 			continue;
 
-		u16 AmmoID = u16(-1);
+		u32 AmmoId = u32(-1);
 
 		if (pSettings->line_exist(WeaponName, "ammo_class"))
 		{
 			string1024 wpnAmmos, BaseAmmoName;
 			std::strcpy(wpnAmmos, pSettings->r_string(WeaponName, "ammo_class"));
 			_GetItem(wpnAmmos, 0, BaseAmmoName);
-			AmmoID = u16(m_strWeaponsData->GetItemIdx(BaseAmmoName) & 0xffff);
+			AmmoId = m_strWeaponsData->GetItemIdx(BaseAmmoName);
 		}
 
-		if (AmmoID == u16(-1))
+		if (!AmmoId == u32(-1))
 			continue;
 
 		if (Type() == GAME_ARTEFACTHUNT)
 		{
-			ps->pItemList.push_back(AmmoID);
-			ps->pItemList.push_back(AmmoID);
+			ps->pItemList.push_back(PresetItem(0, AmmoId));
+			ps->pItemList.push_back(PresetItem(0, AmmoId));
 		}
 	}
 }
