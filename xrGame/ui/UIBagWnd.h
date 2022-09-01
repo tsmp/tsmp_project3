@@ -90,13 +90,10 @@ public:
 	void InitItems();
 	void DestroyAllItems();
 
-	u8 GetItemIndex(CUICellItem *pItem, u8 &sectionNum);
 	void GetPresetItemByName(const shared_str &sectionName, PresetItem &item);
 	const shared_str &GetNameByPresetItem(const PresetItem &item);
 
-	CUICellItem *GetItemBySectoin(const shared_str &sectionName, bool bCreateOnFail = false);
-	CUICellItem *GetItemBySectoin(const u8 grpNum, u8 uIndexInSlot);
-	CUICellItem *CreateNewItem(const u8 grpNum, u8 uIndexInSlot);
+	CUICellItem *GetItemBySection(const shared_str &sectionName, bool bCreateOnFail = false);
 
 	void SetExternal(CUICellItem *itm, bool status);
 	bool GetExternal(CUICellItem *itm);

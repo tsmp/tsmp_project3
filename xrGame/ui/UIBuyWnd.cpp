@@ -316,7 +316,7 @@ void CUIBuyWnd::OnBtnBulletBuy(int slot)
 
 	_GetItem(itemsList.c_str(), n, single_item);
 
-	CUICellItem* ammo = m_bag.GetItemBySectoin(single_item);
+	CUICellItem* ammo = m_bag.GetItemBySection(single_item);
 
 	if (ammo && m_bag.CanBuy(ammo))
 		ToBelt(ammo, false);
@@ -339,7 +339,7 @@ void CUIBuyWnd::OnBtnRifleGrenade()
 	itemsList = pSettings->r_string(*wpn->cNameSect(), "grenade_class");
 	_GetItem(*itemsList, 0, single_item);
 
-	CUICellItem* grenade = m_bag.GetItemBySectoin(single_item);
+	CUICellItem* grenade = m_bag.GetItemBySection(single_item);
 
 	if (grenade && m_bag.CanBuy(grenade))	
 		ToBelt(grenade, false);
@@ -1186,38 +1186,6 @@ u32 CUIBuyWnd::GetRank()
 	return 0;
 }
 
-const u8 CUIBuyWnd::GetItemIndex(u32 slotNum, u32 idx, u8 &sectionNum)
-{
-	CUICellItem *itm = nullptr;
-
-	if (m_list[GetLocalSlot(slotNum)]->ItemsCount())
-		itm = m_list[GetLocalSlot(slotNum)]->GetItemIdx(idx);
-
-	return m_bag.GetItemIndex(itm, sectionNum);
-}
-
-const u8 CUIBuyWnd::GetWeaponIndexInBelt(u32 indexInBelt, u8 &sectionId, u8 &itemId, u8 &count)
-{
-	CUICellItem *itm = nullptr;
-
-	if (m_list[GetLocalSlot(BELT_SLOT)]->ItemsCount())
-		itm = m_list[GetLocalSlot(BELT_SLOT)]->GetItemIdx(indexInBelt);
-
-	if (itm)
-		count = u8(itm->ChildsCount() & 0x000f) + 1;
-	else
-		count = 0;
-
-	itemId = m_bag.GetItemIndex(itm, sectionId);
-	return itemId;
-}
-
-const u8 CUIBuyWnd::GetWeaponIndex(u32 slotNum)
-{
-	u8 tmp;
-	return GetItemIndex(slotNum, 0, tmp);
-}
-
 void CUIBuyWnd::GetPresetItemByName(const shared_str &sectionName, PresetItem &item)
 {
 	m_bag.GetPresetItemByName(sectionName, item);
@@ -1226,62 +1194,6 @@ void CUIBuyWnd::GetPresetItemByName(const shared_str &sectionName, PresetItem &i
 const shared_str &CUIBuyWnd::GetNameByPresetItem(const PresetItem &item)
 {
 	return m_bag.GetNameByPresetItem(item);
-}
-
-const u8 CUIBuyWnd::GetWeaponAddonInfoByIndex(u8 idx)
-{
-	return (idx & 0xe0) >> 5;
-}
-
-const u8 CUIBuyWnd::GetBeltSize()
-{
-	return static_cast<u8>(m_list[MP_SLOT_BELT]->ItemsCount());
-}
-
-void CUIBuyWnd::AddonToSlot(int add_on, int slot, bool bRealRepresentationSet)
-{
-	VERIFY(PISTOL_SLOT == slot || RIFLE_SLOT == slot);
-	VERIFY(m_list[GetLocalSlot(slot)]->ItemsCount());
-
-	CUICellItem *wpn = m_list[GetLocalSlot(slot)]->GetItemIdx(0);
-	m_bag.AttachAddon(wpn, (CSE_ALifeItemWeapon::EWeaponAddonState)add_on, bRealRepresentationSet);
-}
-
-void CUIBuyWnd::SectionToSlot(const u8 grpNum, u8 uIndexInSlot, bool bRealRepresentationSet)
-{
-	u8 addon_info = GetWeaponAddonInfoByIndex(uIndexInSlot);
-	uIndexInSlot &= 0x1f; // 0x1f = 00011111;
-
-	CUICellItem *itm = m_bag.GetItemBySectoin(grpNum, uIndexInSlot);
-
-	if (!itm)	
-		itm = m_bag.CreateNewItem(grpNum, uIndexInSlot);	
-
-	R_ASSERT(itm);
-	CInventoryItem *iitm = (CInventoryItem *)itm->m_pData;
-
-	if (!xr_strcmp(iitm->object().cNameSect(), "mp_wpn_knife"))
-		return;
-
-	if (!m_bag.IsInBag(itm))
-		return;
-
-	m_bag.SetExternal(itm, bRealRepresentationSet);
-
-	if (!ToSlot(itm, false))
-		ToBelt(itm, false);
-
-	if (!addon_info)
-		return;
-
-	if (addon_info & CSE_ALifeItemWeapon::eWeaponAddonScope)	
-		AddonToSlot(CSE_ALifeItemWeapon::eWeaponAddonScope, iitm->GetSlot(), false);
-	
-	if (addon_info & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher)	
-		AddonToSlot(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher, iitm->GetSlot(), false);
-	
-	if (addon_info & CSE_ALifeItemWeapon::eWeaponAddonSilencer)	
-		AddonToSlot(CSE_ALifeItemWeapon::eWeaponAddonSilencer, iitm->GetSlot(), false);
 }
 
 void CUIBuyWnd::ClearSlots()
@@ -1320,7 +1232,7 @@ void CUIBuyWnd::DetachAddon(const char *addon_name)
 {
 	if (CurrentIItem()->Detach(addon_name, true))
 	{
-		CUICellItem *itm = m_bag.GetItemBySectoin(addon_name);
+		CUICellItem *itm = m_bag.GetItemBySection(addon_name);
 		R_ASSERT(itm);
 		m_bag.SellItem(itm);
 	}
@@ -1448,15 +1360,15 @@ void CUIBuyWnd::UpdAddon(CUIWeaponCellItem *itm, CSE_ALifeItemWeapon::EWeaponAdd
 	switch (add_on)
 	{
 	case CSE_ALifeItemWeapon::eWeaponAddonScope:
-		add_itm = m_bag.GetItemBySectoin(*wpn->GetScopeName());
+		add_itm = m_bag.GetItemBySection(*wpn->GetScopeName());
 		break;
 
 	case CSE_ALifeItemWeapon::eWeaponAddonSilencer:
-		add_itm = m_bag.GetItemBySectoin(*wpn->GetSilencerName());
+		add_itm = m_bag.GetItemBySection(*wpn->GetSilencerName());
 		break;
 
 	case CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher:
-		add_itm = m_bag.GetItemBySectoin(*wpn->GetGrenadeLauncherName());
+		add_itm = m_bag.GetItemBySection(*wpn->GetGrenadeLauncherName());
 		break;
 
 	default:

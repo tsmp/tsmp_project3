@@ -311,10 +311,6 @@ const u32 CUIMpTradeWnd::GetRank() const
 }
 
 /// iBuyWnd
-const u8 CUIMpTradeWnd::GetWeaponIndex(u32 slotNum)
-{
-	return 0;
-}
 
 shared_str _fake;
 const shared_str &CUIMpTradeWnd::GetNameByPresetItem(const PresetItem &item)
@@ -325,25 +321,10 @@ const shared_str &CUIMpTradeWnd::GetNameByPresetItem(const PresetItem &item)
 	return m_item_mngr->GetItemName(u32(item.GetItemID()));
 }
 
-const u8 CUIMpTradeWnd::GetWeaponIndexInBelt(u32 indexInBelt, u8 &sectionId, u8 &itemId, u8 &count)
-{
-	return 0;
-}
-
 void CUIMpTradeWnd::GetPresetItemByName(const shared_str &sectionName, PresetItem &item)
 {
 	item.SetSlot(0);
 	item.SetItem(static_cast<u8>(m_item_mngr->GetItemIdx(sectionName)));
-}
-
-const u8 CUIMpTradeWnd::GetItemIndex(u32 slotNum, u32 idx, u8 &sectionNum)
-{
-	return 0;
-}
-
-const u8 CUIMpTradeWnd::GetBeltSize()
-{
-	return 0;
 }
 
 void CUIMpTradeWnd::ClearSlots()
@@ -452,16 +433,6 @@ void CUIMpTradeWnd::ResetItems()
 bool CUIMpTradeWnd::CanBuyAllItems()
 {
 	return true;
-}
-
-void CUIMpTradeWnd::AddonToSlot(int add_on, int slot, bool bRealRepresentationSet)
-{
-	// own
-}
-
-void CUIMpTradeWnd::SectionToSlot(const u8 grpNum, u8 uIndexInSlot, bool bRealRepresentationSet)
-{
-	// own
 }
 
 bool CUIMpTradeWnd::CheckBuyAvailabilityInSlots()

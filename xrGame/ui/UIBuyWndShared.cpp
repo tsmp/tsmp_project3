@@ -12,7 +12,7 @@ void CItemMgr::Load(const shared_str &sect_cost)
 	for (CInifile::SectCIt it = sect.Data.begin(); it != sect.Data.end(); ++it, ++idx)
 	{
 		_i &val = m_items[it->first];
-		val.slot_idx = 0xff;
+		val.slot_idx = u8(-1);
 		int c = sscanf(it->second.c_str(), "%d,%d,%d,%d,%d", &val.cost[0], &val.cost[1], &val.cost[2], &val.cost[3], &val.cost[4]);
 		VERIFY(c > 0);
 
@@ -36,7 +36,7 @@ void CItemMgr::Load(const shared_str &sect_cost)
 			shared_str _one_str = _one;
 			COST_MAP_IT it = m_items.find(_one_str);
 			R_ASSERT(it != m_items.end());
-			R_ASSERT3(it->second.slot_idx == 0xff, "item has duplicate record in [buy_menu_items_place] section ", _one);
+			R_ASSERT3(it->second.slot_idx == u8(-1), "item has duplicate record in [buy_menu_items_place] section ", _one);
 			it->second.slot_idx = i;
 		}
 	}
@@ -80,7 +80,7 @@ void CItemMgr::Dump() const
 	for (; it != it_e; ++it)
 	{
 		const _i &val = it->second;
-		R_ASSERT3(it->second.slot_idx != 0xff, "item has no record in [buy_menu_items_place] section ", it->first.c_str());
+		R_ASSERT3(it->second.slot_idx != u8(-1), "item has no record in [buy_menu_items_place] section ", it->first.c_str());
 		Msg("[%s] slot=[%d] cost= %d,%d,%d,%d,%d", it->first.c_str(), val.slot_idx, val.cost[0], val.cost[1], val.cost[2], val.cost[3], val.cost[4]);
 	}
 }

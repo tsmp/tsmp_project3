@@ -653,9 +653,8 @@ void CUIBagWnd::ClearAmmoHighlight()
 }
 
 void CUIBagWnd::HightlightAmmo(LPCSTR ammo)
-{
-	CUICellItem *itm = GetItemBySectoin(ammo);
-	if (itm)
+{	
+	if (CUICellItem* itm = GetItemBySection(ammo))
 		HIGHTLIGHT_ITEM(itm);
 }
 
@@ -705,7 +704,7 @@ bool CUIBagWnd::CanBuy(CUICellItem *itm)
 
 bool CUIBagWnd::CanBuy(LPCSTR item)
 {
-	return CanBuy(GetItemBySectoin(item));
+	return CanBuy(GetItemBySection(item));
 }
 
 CUICellItem *CUIBagWnd::GetItemByKey(int dik, int section)
@@ -827,54 +826,6 @@ void CUIBagWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 	CUIWindow::SendMessage(pWnd, msg, pData);
 }
 
-u8 CUIBagWnd::GetItemIndex(CUICellItem *pItem, u8 &sectionNum)
-{
-	sectionNum = 0;
-	u8 ret = static_cast<u8>(-1);
-
-	if (!pItem)
-		return ret;
-
-	ret = static_cast<u8>(m_info[pItem->m_index].pos_in_section);
-	sectionNum = static_cast<u8>(m_info[pItem->m_index].section);
-
-	CInventoryItem *iitem = (CInventoryItem *)pItem->m_pData;
-
-	if (iitem->GetSlot() == PISTOL_SLOT || iitem->GetSlot() == RIFLE_SLOT)
-	{
-		CWeapon *pWeapon = (CWeapon *)pItem->m_pData;
-
-		u8 addon = pWeapon->GetAddonsState();
-
-		if (addon & CSE_ALifeItemWeapon::eWeaponAddonScope)
-			ret |= 1 << 5;
-		if (addon & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher)
-			ret |= 1 << 6;
-		if (addon & CSE_ALifeItemWeapon::eWeaponAddonSilencer)
-			ret |= 1 << 7;
-	}
-
-	//returnID = static_cast<u8>(pDDItem->GetPosInSectionsGroup());
-	//sectionNum = static_cast<u8>(pDDItem->GetSectionGroupID());
-
-	//// Проверяем на наличие приаттаченых аддонов к оружию
-	//if (pDDItem->bAddonsAvailable)
-	//{
-	//	u8	flags = 0;
-	//	for (int i = 0; i < 3; ++i)
-	//	{
-	//		if (1 == pDDItem->m_AddonInfo[i].iAttachStatus)
-	//			flags |= 1;
-	//		flags = flags << 1;
-	//	}
-	//	flags = flags << 4;
-	//	// В результате старшие 3 бита являются флагами признаков аддонов:
-	//	// FF - Scope, FE - Silencer, FD - Grenade Launcher
-	//	returnID |= flags;
-	//}
-	return ret;
-}
-
 void CUIBagWnd::SetRank(int r)
 {
 	g_mp_restrictions.SetRank(r);
@@ -931,13 +882,13 @@ void CUIBagWnd::AttachAddon(CUICellItem *itm, CSE_ALifeItemWeapon::EWeaponAddonS
 	switch (add_on)
 	{
 	case CSE_ALifeItemWeapon::eWeaponAddonScope:
-		add_itm = GetItemBySectoin(*wpn->GetScopeName());
+		add_itm = GetItemBySection(*wpn->GetScopeName());
 		break;
 	case CSE_ALifeItemWeapon::eWeaponAddonSilencer:
-		add_itm = GetItemBySectoin(*wpn->GetSilencerName());
+		add_itm = GetItemBySection(*wpn->GetSilencerName());
 		break;
 	case CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher:
-		add_itm = GetItemBySectoin(*wpn->GetGrenadeLauncherName());
+		add_itm = GetItemBySection(*wpn->GetGrenadeLauncherName());
 		break;
 	default:
 		NODEFAULT;
@@ -969,80 +920,18 @@ void CUIBagWnd::AttachAddon(CUICellItem *itm, CSE_ALifeItemWeapon::EWeaponAddonS
 	}
 }
 
-CUICellItem *CUIBagWnd::GetItemBySectoin(const shared_str &sectionName, bool bCreateOnFail)
+CUICellItem *CUIBagWnd::GetItemBySection(const shared_str &sectionName, bool bCreateOnFail)
 {
-
-	u32 sz = m_allItems.size();
-
-	for (u32 i = 0; i < sz; i++)
+	for(CUICellItem* pItem: m_allItems)
 	{
-		CInventoryItem *iitem = (CInventoryItem *)m_allItems[i]->m_pData;
+		CInventoryItem *iitem = static_cast<CInventoryItem*>(pItem->m_pData);
 
 		if (iitem->object().cNameSect() == sectionName)
 		{
-			if (IsInBag(m_allItems[i]))
-				return m_allItems[i];
-		}
-	}
-	return NULL;
-}
-
-CUICellItem *CUIBagWnd::GetItemBySectoin(const u8 grpNum, u8 uIndexInSlot)
-{
-	u32 sz = m_allItems.size();
-	CUICellItem *item;
-
-	for (u32 i = 0; i < sz; i++)
-	{
-		item = m_allItems[i];
-
-		if (m_info[item->m_index].pos_in_section == uIndexInSlot && m_info[item->m_index].section == grpNum)
-		{
-			if (IsInBag(item))
-				return item;
+			if (IsInBag(pItem))
+				return pItem;
 		}
 	}
 
-	return NULL;
-}
-
-CUICellItem *CUIBagWnd::CreateNewItem(const u8 grpNum, u8 uIndexInSlot)
-{
-	u32 sz = m_allItems.size();
-	VERIFY(sz);
-	CUICellItem *item;
-	PIItem iitem = NULL;
-	CUICellItem *new_item;
-
-	for (u32 i = 0; i < sz; i++)
-	{
-		item = m_allItems[i];
-
-		if (m_info[item->m_index].pos_in_section == uIndexInSlot && m_info[item->m_index].section == grpNum)
-		{
-			iitem = (PIItem)item->m_pData;
-			break;
-		}
-	}
-
-	R_ASSERT(iitem);
-
-	new_item = CreateItem(iitem->object().cNameSect());
-
-	new_item->m_index = m_allItems.size();
-	m_allItems.push_back(new_item);
-	ItmInfo ii;
-	ii.price = pSettings->r_s32(*m_sectionPrice, m_wpnSectStorage[grpNum][uIndexInSlot].c_str());
-	m_info.push_back(ii);
-
-	m_info[new_item->m_index].short_cut = NULL;
-	m_info[new_item->m_index].active = true;
-	m_info[new_item->m_index].bought = false;
-	m_info[new_item->m_index].section = grpNum;
-	m_info[new_item->m_index].pos_in_section = uIndexInSlot;
-	m_info[new_item->m_index].external = false;
-
-	PutItemToGroup(new_item, grpNum);
-
-	return new_item;
+	return nullptr;
 }

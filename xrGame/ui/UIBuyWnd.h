@@ -33,22 +33,16 @@ public:
 	// IBuyWnd
 	virtual void Init(const shared_str &sectionName, const shared_str &sectionPrice);
 	virtual void BindDragDropListEvents(CUIDragDropListEx *lst, bool bDrag);
-	virtual const u8 GetItemIndex(u32 slotNum, u32 idx, u8 &sectionNum);
-	virtual const u8 GetBeltSize();
-	virtual const u8 GetWeaponIndexInBelt(u32 indexInBelt, u8 &sectionId, u8 &itemId, u8 &count);
 	virtual void GetPresetItemByName(const shared_str &sectionName, PresetItem &item);
 	virtual u32 GetMoneyAmount() const;
 	virtual void IgnoreMoney(bool ignore);
-	virtual void SectionToSlot(const u8 grpNum, u8 uIndexInSlot, bool bRealRepresentationSet);
 	virtual void SetMoneyAmount(u32 money);
 	virtual bool CheckBuyAvailabilityInSlots();
-	virtual void AddonToSlot(int add_on, int slot, bool bRealRepresentationSet);
 	virtual const shared_str &GetNameByPresetItem(const PresetItem &item);
 	virtual void SetSkin(u8 SkinID);
 	virtual void IgnoreMoneyAndRank(bool ignore);
 	virtual void ClearSlots();
 	virtual void ClearRealRepresentationFlags();
-	virtual const u8 GetWeaponIndex(u32 slotNum); //
 	virtual bool CanBuyAllItems();
 	virtual void ResetItems();
 	virtual void SetRank(u32 rank);
@@ -88,10 +82,6 @@ public:
 	bool xr_stdcall OnItemSelected(CUICellItem *itm);
 	bool xr_stdcall OnItemRButtonClick(CUICellItem *itm);
 
-	// Получить данные о аддонах к оружию. Младшие 3 бита, если установлены в 1 означают:
-	// 2 - Silencer, 1 - Grenade Launcher, 0 - Scope
-	const u8 GetWeaponAddonInfoByIndex(u8 idx);
-
 	void ReloadItemsPrices();
 	virtual bool IsIgnoreMoneyAndRank();
 
@@ -118,7 +108,6 @@ protected:
 	void AttachAddon(CInventoryItem *item_to_upgrade);
 	void DetachAddon(const char *addon_name);
 	void ProcessPropertiesBoxClicked();
-	void UpdateOutfit();
 	void Highlight(int slot);
 
 	// data
