@@ -324,7 +324,7 @@ const shared_str &CUIMpTradeWnd::GetNameByPresetItem(const PresetItem &item)
 void CUIMpTradeWnd::GetPresetItemByName(const shared_str &sectionName, PresetItem &item)
 {
 	item.SetSlot(0);
-	item.SetItem(static_cast<u8>(m_item_mngr->GetItemIdx(sectionName)));
+	item.SetItem(static_cast<u16>(m_item_mngr->GetItemIdx(sectionName)));
 }
 
 void CUIMpTradeWnd::ClearSlots()

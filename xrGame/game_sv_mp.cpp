@@ -895,11 +895,12 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState *ps)
 				continue;
 
 			strcpy_s(NewItemStr, sizeof(NewItemStr), pSettings->r_string(RankStr, ItemStr));
+			u32 newItemIdx = m_strWeaponsData->GetItemIdx(NewItemStr);
 
-			if (m_strWeaponsData->GetItemIdx(NewItemStr) == u32(-1))
+			if (newItemIdx == u32(-1))
 				continue;
 
-			item.SetItem(m_strWeaponsData->GetItemIdx(NewItemStr));
+			item.SetItem(static_cast<u16>(newItemIdx));
 			item.SetSlot(0);
 		}
 	}
@@ -926,13 +927,13 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState *ps)
 			AmmoId = m_strWeaponsData->GetItemIdx(BaseAmmoName);
 		}
 
-		if (!AmmoId == u32(-1))
+		if (AmmoId == u32(-1))
 			continue;
 
 		if (Type() == GAME_ARTEFACTHUNT)
 		{
-			ps->pItemList.push_back(PresetItem(0, AmmoId));
-			ps->pItemList.push_back(PresetItem(0, AmmoId));
+			ps->pItemList.emplace_back(PresetItem(0, AmmoId));
+			ps->pItemList.emplace_back(PresetItem(0, AmmoId));
 		}
 	}
 }

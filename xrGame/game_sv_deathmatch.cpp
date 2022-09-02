@@ -819,7 +819,7 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState *ps, PIItem pItem, xr_vector
 	{
 		const PresetItem &item = ItemsDesired[it];
 
-		if (item.GetItemID() != u8(m_strWeaponsData->GetItemIdx(pItem->object().cNameSect())))
+		if (item.GetItemID() != u16(m_strWeaponsData->GetItemIdx(pItem->object().cNameSect())))
 			continue;
 
 		found = true;
@@ -1029,7 +1029,7 @@ void game_sv_Deathmatch::LoadDefItemsForTeam(const shared_str &caSection, DEF_IT
 	for (u32 i = 0; i < count; ++i)
 	{
 		_GetItem(DefItems, i, ItemName);
-		pDefItems->push_back(PresetItem(0, m_strWeaponsData->GetItemIdx(ItemName)));
+		pDefItems->emplace_back(PresetItem(0, m_strWeaponsData->GetItemIdx(ItemName)));
 	}
 }
 

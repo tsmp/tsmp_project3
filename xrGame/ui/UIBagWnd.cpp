@@ -473,11 +473,11 @@ CUIDragDropListEx *CUIBagWnd::GetItemList(CUICellItem *pItem)
 void CUIBagWnd::GetPresetItemByName(const shared_str &sectionName, PresetItem &item)
 {
 	item.SetSlot(static_cast<u8>(-1));
-	item.SetItem(static_cast<u8>(-1));
+	item.SetItem(static_cast<u16>(-1));
 
 	for (u8 i = 0; i < m_wpnSectStorage.size(); ++i)
 	{
-		for (u8 j = 0; j < m_wpnSectStorage[i].size(); ++j)
+		for (u16 j = 0; j < m_wpnSectStorage[i].size(); ++j)
 		{
 			if (sectionName == m_wpnSectStorage[i][j])
 			{
@@ -831,7 +831,7 @@ void CUIBagWnd::SetRank(int r)
 	g_mp_restrictions.SetRank(r);
 }
 
-const shared_str &CUIBagWnd::GetNameByPresetItem(const PresetItem& item)
+const shared_str &CUIBagWnd::GetNameByPresetItem(const PresetItem &item)
 {
 	R_ASSERT(item.GetSlot() < m_wpnSectStorage.size());
 	R_ASSERT(item.GetItemID() < m_wpnSectStorage[item.GetSlot()].size());

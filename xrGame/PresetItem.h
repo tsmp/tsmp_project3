@@ -4,18 +4,18 @@ struct PresetItem
 {
 private:
 	u8 SlotID; // slot + addons
-	u8 ItemID;
+	u16 ItemID;
 
 public:	
-	PresetItem(u8 Slot, u8 Item) { set(Slot, Item); };
-	PresetItem() : PresetItem(static_cast<u8>(-1), static_cast<u8>(-1)) {};
+	PresetItem(u8 Slot, u16 Item) { set(Slot, Item); };
+	PresetItem() : PresetItem(static_cast<u8>(-1), static_cast<u16>(-1)) {};
 
 	bool operator==(const PresetItem &other)
 	{
 		return SlotID == other.SlotID && ItemID == other.ItemID;
 	}
 
-	void set(u8 Slot, u8 Item)
+	void set(u8 Slot, u16 Item)
 	{
 		SlotID = Slot;
 		ItemID = Item;
@@ -26,7 +26,7 @@ public:
 		SlotID = slot;
 	}
 
-	void SetItem(u8 item)
+	void SetItem(u16 item)
 	{
 		ItemID = item;
 	}
@@ -41,14 +41,14 @@ public:
 		return SlotID;
 	}
 
-	u8 GetItemID() const
+	u16 GetItemID() const
 	{
 		return ItemID;
 	}
 
 	bool IsValid() const
 	{
-		return SlotID != static_cast<u8>(-1) && ItemID != static_cast<u8>(-1);
+		return SlotID != static_cast<u8>(-1) && ItemID != static_cast<u16>(-1);
 	}
 
 	void Serialize(NET_Packet &p) const;
