@@ -357,6 +357,7 @@ public:
 		ref_sound snd_engine_start;
 		ref_sound snd_engine_stop;
 		ref_sound snd_transmission;
+		ref_sound snd_beep;
 
 		enum ESoundState
 		{
@@ -382,6 +383,7 @@ public:
 		void Stop();
 		void Stall();
 		void Drive();
+		void Beep();
 		void TransmissionSwitch();
 
 		SCarSound(CCar *car);
@@ -509,6 +511,7 @@ private:
 	void ParseDefinitions();
 	void CreateSkeleton(CSE_Abstract *po); //creates m_pPhysicsShell
 	void Init();
+	void Beep();
 
 	void PlayExhausts();
 	void StopExhausts();

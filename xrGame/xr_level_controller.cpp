@@ -28,7 +28,7 @@ _action actions[] = {
 	{"llookout", kL_LOOKOUT, _both},
 	{"rlookout", kR_LOOKOUT, _both},
 
-	{"turn_engine", kENGINE, _both},
+	{"turn_engine", kENGINE, _both},	
 
 	{"cam_1", kCAM_1, _both},
 	{"cam_2", kCAM_2, _both},
@@ -97,6 +97,7 @@ _action actions[] = {
 	{"use_medkit", kUSE_MEDKIT, _sp},
 	{"quick_save", kQUICK_SAVE, _sp},
 	{"quick_load", kQUICK_LOAD, _sp},
+	{"car_beep", kCarBeep, _both},
 
 	{NULL, kLASTACTION, _both}};
 

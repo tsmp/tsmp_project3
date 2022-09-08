@@ -25,33 +25,35 @@ CCar::SCarSound::SCarSound(CCar *car)
 CCar::SCarSound::~SCarSound()
 {
 }
+
 void CCar::SCarSound::Init()
 {
 	CInifile *ini = smart_cast<CKinematics *>(pcar->Visual())->LL_UserData();
+
 	if (ini->section_exist("car_sound") && ini->line_exist("car_sound", "snd_volume"))
 	{
 		volume = ini->r_float("car_sound", "snd_volume");
 
-		snd_engine.create(ini->r_string("car_sound", "snd_name"), st_Effect, sg_SourceType); //
+		snd_engine.create(ini->r_string("car_sound", "snd_name"), st_Effect, sg_SourceType);
 		snd_engine_start.create(READ_IF_EXISTS(ini, r_string, "car_sound", "engine_start", "car\\test_car_start"), st_Effect, sg_SourceType);
 		snd_engine_stop.create(READ_IF_EXISTS(ini, r_string, "car_sound", "engine_stop", "car\\test_car_stop"), st_Effect, sg_SourceType);
+		snd_beep.create(READ_IF_EXISTS(ini, r_string, "car_sound", "beep", "car\\klakson"), st_Effect, sg_SourceType);
+
 		float fengine_start_delay = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_sound_start_dellay", 0.25f);
 		engine_start_delay = iFloor((snd_engine_start._handle() ? snd_engine_start._handle()->length_ms() : 1.f) * fengine_start_delay);
-		if (ini->line_exist("car_sound", "relative_pos"))
-		{
+		
+		if (ini->line_exist("car_sound", "relative_pos"))		
 			relative_pos.set(ini->r_fvector3("car_sound", "relative_pos"));
-		}
-		if (ini->line_exist("car_sound", "transmission_switch"))
-		{
-			snd_transmission.create(ini->r_string("car_sound", "transmission_switch"), st_Effect, sg_SourceType);
-		}
+		
+		if (ini->line_exist("car_sound", "transmission_switch"))		
+			snd_transmission.create(ini->r_string("car_sound", "transmission_switch"), st_Effect, sg_SourceType);		
 	}
-	else
-	{
+	else	
 		Msg("! Car doesn't contain sound params");
-	}
+	
 	eCarSound = sndOff;
 }
+
 void CCar::SCarSound::SetSoundPosition(ref_sound &snd)
 {
 	VERIFY(!ph_world->Processing());
@@ -144,6 +146,7 @@ void CCar::SCarSound::Destroy()
 	snd_transmission.destroy();
 	snd_engine_stop.destroy();
 	snd_engine_start.destroy();
+	snd_beep.destroy();
 }
 
 void CCar::SCarSound::SwitchOff()
@@ -194,6 +197,7 @@ void CCar::SCarSound::Drive()
 		snd_engine.play(pcar, sm_Looped);
 	SetSoundPosition(snd_engine);
 }
+
 void CCar::SCarSound::TransmissionSwitch()
 {
 	VERIFY(!ph_world->Processing());
@@ -201,5 +205,14 @@ void CCar::SCarSound::TransmissionSwitch()
 	{
 		snd_transmission.play(pcar);
 		SetSoundPosition(snd_transmission);
+	}
+}
+
+void CCar::SCarSound::Beep()
+{
+	if (snd_beep._handle())
+	{
+		snd_beep.play(pcar);
+		SetSoundPosition(snd_beep);
 	}
 }

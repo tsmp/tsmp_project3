@@ -778,9 +778,6 @@
     <Filter Include="AI\AMonsters\monsters\Snork">
       <UniqueIdentifier>{1194b1c0-9597-4cc1-bae5-8dcf5ef60d85}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AI\AMonsters\monsters\Snork\Special Jump">
-      <UniqueIdentifier>{8b44c2a1-0a45-4342-874b-069395b84901}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\AMonsters\monsters\Snork\Script">
       <UniqueIdentifier>{4b8b6619-9348-432b-9f9d-dd1cfd30fa0b}</UniqueIdentifier>
     </Filter>
@@ -3884,9 +3881,6 @@
     </ClInclude>
     <ClInclude Include="ai\Monsters\Snork\snork_state_manager.h">
       <Filter>AI\AMonsters\monsters\Snork</Filter>
-    </ClInclude>
-    <ClInclude Include="ai\Monsters\Snork\snork_jump.h">
-      <Filter>AI\AMonsters\monsters\Snork\Special Jump</Filter>
     </ClInclude>
     <ClInclude Include="ai\Monsters\Controller\controller.h">
       <Filter>AI\AMonsters\monsters\Controller</Filter>
@@ -7342,9 +7336,6 @@
     </ClCompile>
     <ClCompile Include="ai\Monsters\Snork\snork_state_manager.cpp">
       <Filter>AI\AMonsters\monsters\Snork</Filter>
-    </ClCompile>
-    <ClCompile Include="ai\Monsters\Snork\snork_jump.cpp">
-      <Filter>AI\AMonsters\monsters\Snork\Special Jump</Filter>
     </ClCompile>
     <ClCompile Include="ai\Monsters\Snork\snork_script.cpp">
       <Filter>AI\AMonsters\monsters\Snork\Script</Filter>

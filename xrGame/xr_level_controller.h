@@ -89,6 +89,7 @@ enum EGameActions
 
 	kQUICK_SAVE,
 	kQUICK_LOAD,
+	kCarBeep,
 
 	kLASTACTION,
 	kNOTBINDED,

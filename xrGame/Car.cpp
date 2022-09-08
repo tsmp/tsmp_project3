@@ -1160,6 +1160,11 @@ void CCar::Init()
 	Transmission(1);
 }
 
+void CCar::Beep()
+{
+	m_car_sound->Beep();
+}
+
 void CCar::Revert()
 {
 	m_pPhysicsShell->applyForce(0, 1.5f * EffectiveGravity() * m_pPhysicsShell->getMass(), 0);
@@ -1167,7 +1172,6 @@ void CCar::Revert()
 
 void CCar::NeutralDrive()
 {
-
 	xr_vector<SWheelDrive>::iterator i, e;
 	i = m_driving_wheels.begin();
 	e = m_driving_wheels.end();
@@ -1175,6 +1179,7 @@ void CCar::NeutralDrive()
 		i->Neutral();
 	e_state_drive = neutral;
 }
+
 void CCar::ReleaseHandBreak()
 {
 	xr_vector<SWheelBreak>::iterator i, e;
@@ -1185,9 +1190,9 @@ void CCar::ReleaseHandBreak()
 	if (e_state_drive == drive)
 		Drive();
 }
+
 void CCar::Drive()
 {
-
 	if (!b_clutch || !b_engine_on)
 		return;
 	m_pPhysicsShell->Enable();
@@ -1213,6 +1218,7 @@ void CCar::StartEngine()
 	m_current_rpm = 0.f;
 	b_starting = true;
 }
+
 void CCar::StopEngine()
 {
 	if (!b_engine_on)
@@ -1238,6 +1244,7 @@ void CCar::Stall()
 	UpdatePower(); //set engine friction;
 	m_current_rpm = 0.f;
 }
+
 void CCar::ReleasePedals()
 {
 	Clutch();
@@ -1252,6 +1259,7 @@ void CCar::SwitchEngine()
 	else
 		StartEngine();
 }
+
 void CCar::Clutch()
 {
 	b_clutch = true;
@@ -1267,6 +1275,7 @@ void CCar::Starter()
 	b_starting = true;
 	m_dwStartTime = Device.dwTimeGlobal;
 }
+
 void CCar::UpdatePower()
 {
 	m_current_rpm = EngineDriveSpeed();
@@ -1298,6 +1307,7 @@ void CCar::SteerRight()
 		i->SteerRight();
 	e_state_steer = right;
 }
+
 void CCar::SteerLeft()
 {
 	b_wheels_limited = true; //no need to limit wheels when stiring
@@ -1333,6 +1343,7 @@ void CCar::LimitWheels()
 	for (; i != e; ++i)
 		i->Limit();
 }
+
 void CCar::HandBreak()
 {
 	xr_vector<SWheelBreak>::iterator i, e;
@@ -1350,6 +1361,7 @@ void CCar::StartBreaking()
 		m_break_start = Device.fTimeGlobal;
 	}
 }
+
 void CCar::StopBreaking()
 {
 	xr_vector<SWheelBreak>::iterator i, e;
@@ -1361,6 +1373,7 @@ void CCar::StopBreaking()
 		Drive();
 	b_breaks = false;
 }
+
 void CCar::PressRight()
 {
 	if (lsp)
@@ -1372,6 +1385,7 @@ void CCar::PressRight()
 		SteerRight();
 	rsp = true;
 }
+
 void CCar::PressLeft()
 {
 	if (rsp)
@@ -1383,6 +1397,7 @@ void CCar::PressLeft()
 		SteerLeft();
 	lsp = true;
 }
+
 void CCar::PressForward()
 {
 	if (bkp)
@@ -1396,6 +1411,7 @@ void CCar::PressForward()
 	}
 	fwp = true;
 }
+
 void CCar::PressBack()
 {
 	if (fwp)

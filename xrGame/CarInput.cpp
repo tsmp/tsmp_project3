@@ -163,6 +163,9 @@ void CCar::OnKeyboardPress(int cmd)
 	case kBACK:
 		PressBack();
 		break;
+	case kCarBeep:
+		Beep();
+		break;
 	case kR_STRAFE:
 		PressRight();
 		if (OwnerActor())
@@ -173,7 +176,7 @@ void CCar::OnKeyboardPress(int cmd)
 		if (OwnerActor())
 			OwnerActor()->steer_Vehicle(-1);
 		break;
-	case kJUMP:
+	case kJUMP: 
 		PressBreaks();
 		break;
 	case kENGINE:
