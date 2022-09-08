@@ -146,7 +146,6 @@ public:
 	virtual void OnPlayerFire(ClientID const &id_who, NET_Packet &P);
 	// Main
 	virtual void Update();
-	BOOL AllPlayers_Ready();
 
 	virtual void assign_RP(CSE_Abstract *E, game_PlayerState *ps_who);
 	virtual u32 RP_2_Use(CSE_Abstract *E);

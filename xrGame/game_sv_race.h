@@ -33,4 +33,6 @@ private:
 
 	void OnGKill(NET_Packet &P);
 	void OnBaseEnter(NET_Packet &P);
+
+	void UpdatePending();
 };

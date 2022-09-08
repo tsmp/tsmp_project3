@@ -468,7 +468,7 @@ INT g_sv_Wait_For_Players_Ready = 1;
 bool game_sv_Deathmatch::checkForRoundStart()
 {
 	if (m_bFastRestart ||
-		(AllPlayers_Ready() || (
+		(AllPlayersReady() || (
 #ifdef DEBUG
 								   !g_sv_Wait_For_Players_Ready &&
 #endif
@@ -582,7 +582,7 @@ void game_sv_Deathmatch::SM_SwitchOnNextActivePlayer()
 void game_sv_Deathmatch::net_Relcase(CObject *O)
 {
 	if (m_pSM_CurViewEntity == O)
-		m_pSM_CurViewEntity = NULL;
+		m_pSM_CurViewEntity = nullptr;
 }
 
 void game_sv_Deathmatch::SM_SwitchOnPlayer(CObject *pNewObject)
@@ -594,60 +594,17 @@ void game_sv_Deathmatch::SM_SwitchOnPlayer(CObject *pNewObject)
 
 	if (pNewObject != m_pSM_CurViewEntity)
 	{
-		CActor *pActor = smart_cast<CActor *>(m_pSM_CurViewEntity);
-
-		if (pActor)
+		if(CActor *pActor = smart_cast<CActor*>(m_pSM_CurViewEntity))
 			pActor->inventory().Items_SetCurrentEntityHud(false);
 	}
 
-	CActor *pActor = smart_cast<CActor *>(pNewObject);
-	if (pActor)
-	{
-		pActor->inventory().Items_SetCurrentEntityHud(true);
-		/*
-		CHudItem* pHudItem = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
-		if (pHudItem) 
-		{
-			pHudItem->OnStateSwitch(pHudItem->GetState());
-		};
-*/
-	}
+	if(CActor *pActor = smart_cast<CActor*>(pNewObject))
+		pActor->inventory().Items_SetCurrentEntityHud(true);	
 
 	m_pSM_CurViewEntity = pNewObject;
 	m_dwSM_CurViewEntity = pNewObject->ID();
 	m_dwSM_LastSwitchTime = Level().timeServer() + m_dwSM_SwitchDelta;
 }
-
-BOOL game_sv_Deathmatch::AllPlayers_Ready()
-{
-	if (!m_server->GetServerClient())
-		return FALSE;
-	// Check if all players ready
-	u32 ready = 0;
-	u32 cnt = m_server->GetClientsCount();
-	
-	m_server->ForEachClientDo([&](IClient* client)
-	{
-		xrClientData* l_pC = static_cast<xrClientData*>(client);
-		game_PlayerState *ps = l_pC->ps;
-
-		if (!l_pC->net_Ready)
-		{
-			if (l_pC->ID == m_server->GetServerClient()->ID)			
-				return;			
-			++ready;
-		}
-
-		if (ps->testFlag(GAME_PLAYER_FLAG_READY))
-			++ready;
-		else if (ps->IsSkip())
-			++ready;
-	});
-
-	if (ready == cnt && ready != 0)
-		return TRUE;
-	return FALSE;
-};
 
 void game_sv_Deathmatch::OnPlayerReady(ClientID const &id)
 {

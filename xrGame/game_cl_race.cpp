@@ -7,6 +7,8 @@
 #include "string_table.h"
 #include "LevelGameDef.h"
 
+extern ENGINE_API bool g_dedicated_server;
+
 game_cl_Race::game_cl_Race() : m_game_ui(nullptr) {}
 game_cl_Race::~game_cl_Race() {}
 
@@ -24,9 +26,30 @@ CUIGameCustom* game_cl_Race::createGameUI()
 void game_cl_Race::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
+
+	if (g_dedicated_server)
+		return;
+
+	switch (Phase())
+	{
+	case GAME_PHASE_PENDING:
+	{
+		if (m_game_ui)
+			m_game_ui->ShowPlayersList(true);
+	}
+	break;
+
+	case GAME_PHASE_INPROGRESS:
+	{
+		if (m_game_ui)
+			m_game_ui->ShowPlayersList(false);
+	}
+	break;
+
+	}
 }
 
-void game_cl_Race::Init()
+void game_cl_Race::LoadTeamBaseParticles()
 {
 	string_path fn_game;
 	if (!FS.exist(fn_game, "$level$", "level.game"))
@@ -80,6 +103,11 @@ void game_cl_Race::Init()
 	FS.r_close(F);
 }
 
+void game_cl_Race::Init()
+{
+	LoadTeamBaseParticles();
+}
+
 bool game_cl_Race::OnKeyboardPress(int key)
 {
 	if (key == kSCORES)
@@ -93,7 +121,7 @@ bool game_cl_Race::OnKeyboardPress(int key)
 
 bool game_cl_Race::OnKeyboardRelease(int key)
 {
-	if (key == kSCORES)
+	if (key == kSCORES && Phase() != GAME_PHASE_PENDING)
 		m_game_ui->ShowPlayersList(false);
 
 	return inherited::OnKeyboardRelease(key);

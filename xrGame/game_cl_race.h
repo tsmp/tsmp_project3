@@ -9,6 +9,8 @@ private:
 	typedef game_cl_mp inherited;
 	CUIGameDM* m_game_ui;
 
+	void LoadTeamBaseParticles();
+
 public:
 
 	game_cl_Race();

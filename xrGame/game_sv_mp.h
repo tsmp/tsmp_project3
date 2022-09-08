@@ -76,6 +76,7 @@ protected:
 
 	u8 SpectatorModes_Pack();
 	void SpectatorModes_UnPack(u8 SpectrModesPacked);
+	bool AllPlayersReady();
 
 public:
 	game_sv_mp();

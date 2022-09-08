@@ -10,7 +10,9 @@ ENGINE_API bool g_dedicated_server;
 game_sv_Race::game_sv_Race()
 {
 	m_phase = GAME_PHASE_NONE;
-	m_type = GAME_FREEPLAY;
+	m_type = GAME_RACE;
+	m_WinnerId = u16(-1);
+	m_CurrentRpoint = 0;
 }
 
 game_sv_Race::~game_sv_Race() {}
@@ -26,6 +28,12 @@ void game_sv_Race::Create(shared_str& options)
 	switch_Phase(GAME_PHASE_PENDING);
 }
 
+void game_sv_Race::UpdatePending()
+{
+	if(AllPlayersReady())
+		OnRoundStart();
+}
+
 void game_sv_Race::Update()
 {
 	inherited::Update();
@@ -33,7 +41,7 @@ void game_sv_Race::Update()
 	switch (Phase())
 	{
 	case GAME_PHASE_PENDING:
-		OnRoundStart();
+		UpdatePending();
 		break;
 	}
 }
@@ -64,11 +72,10 @@ void game_sv_Race::OnPlayerConnect(ClientID const &id_who)
 }
 
 void game_sv_Race::OnPlayerConnectFinished(ClientID const &id_who)
-{
-	xrClientData* xrCData = m_server->ID_to_client(id_who);
+{	
 	SpawnPlayer(id_who, "spectator");
 
-	if (xrCData)
+	if (xrClientData* xrCData = m_server->ID_to_client(id_who))
 	{
 		NET_Packet P;
 		GenerateGameMessage(P);
@@ -131,9 +138,11 @@ void game_sv_Race::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID const &se
 
 void game_sv_Race::OnRoundStart()
 {
+	Msg("- RACE: round start");
 	inherited::OnRoundStart();
 	m_WinnerId = u16(-1);
 	m_CurrentRpoint = 0;
+	switch_Phase(GAME_PHASE_INPROGRESS);
 
 	// Respawn all players
 	m_server->ForEachClientDoSender([this](IClient* cl)
@@ -144,8 +153,11 @@ void game_sv_Race::OnRoundStart()
 			return;
 
 		game_PlayerState* ps = l_pC->ps;
-		ps->clear();
+		ps->clear();		
 		SpawnPlayer(l_pC->ID, "spectator");
+			
+		if (!ps->IsSkip())
+			SpawnPlayerInCar(l_pC->ID);
 	});
 }
 
@@ -213,20 +225,16 @@ void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
 
 void game_sv_Race::OnPlayerReady(ClientID const &id)
 {
-	if (m_phase == GAME_PHASE_INPROGRESS)
+	if(m_phase == GAME_PHASE_PENDING)
 	{
-		xrClientData* xrCData = m_server->ID_to_client(id);
-		game_PlayerState* ps = get_id(id);
-		if (ps->IsSkip())
-			return;
+		if (game_PlayerState* ps = get_id(id))
+		{
+			if (ps->testFlag(GAME_PLAYER_FLAG_READY))
+				ps->resetFlag(GAME_PLAYER_FLAG_READY);
+			else
+				ps->setFlag(GAME_PLAYER_FLAG_READY);
 
-		if (!(ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)))
-			return;
-
-		xrClientData* xrSCData = (xrClientData*)m_server->GetServerClient();
-		CSE_Abstract* pOwner = xrCData->owner;
-
-		SpawnPlayerInCar(id);
-		pOwner = xrCData->owner;
+			signal_Syncronize();
+		}
 	}
 }

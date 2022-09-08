@@ -301,7 +301,43 @@ void game_sv_mp::SpectatorModes_UnPack(u8 SpectrModesPacked)
 	g_sv_mp_bSpectator_LookAt = (SpectrModesPacked & (1 << CSpectator::eacLookAt)) != 0;
 	g_sv_mp_bSpectator_FreeLook = (SpectrModesPacked & (1 << CSpectator::eacFreeLook)) != 0;
 	g_sv_mp_bSpectator_TeamCamera = (SpectrModesPacked & (1 << CSpectator::eacMaxCam)) != 0;
-};
+}
+
+bool game_sv_mp::AllPlayersReady()
+{
+	if (!m_server->GetServerClient())
+		return false;
+
+	// Check if all players ready
+	u32 ready = 0;
+	u32 cnt = m_server->GetClientsCount();
+	u32 netReady = 0;
+
+	m_server->ForEachClientDo([&](IClient* client)
+	{
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
+		game_PlayerState* ps = l_pC->ps;
+
+		if (!l_pC->net_Ready)
+		{
+			if (l_pC->ID == m_server->GetServerClient()->ID)
+				return;
+
+			++ready;
+			return;
+		}
+
+		++netReady;
+
+		if (ps->testFlag(GAME_PLAYER_FLAG_READY) || ps->IsSkip())
+			++ready;
+	});
+
+	if (g_dedicated_server && netReady == 1)
+		return false;
+
+	return ready == cnt;
+}
 
 void game_sv_mp::net_Export_State(NET_Packet &P, ClientID const &id_to)
 {
