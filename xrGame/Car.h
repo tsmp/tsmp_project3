@@ -458,8 +458,6 @@ private:
 	void LimitWheels();
 	void Drive();
 	void Starter();
-	void StartEngine();
-	void StopEngine();
 	void Stall();
 	void Clutch();
 	void Unclutch();
@@ -608,6 +606,9 @@ public:
 	// Inventory for the car
 	CInventory *GetInventory() { return inventory; }
 	void VisualUpdate(float fov = 90.0f);
+
+	void StartEngine();
+	void StopEngine();
 
 protected:
 	virtual void SpawnInitPhysics(CSE_Abstract *D);

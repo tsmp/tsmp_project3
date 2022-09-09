@@ -1322,6 +1322,12 @@ void game_cl_mp::LoadSndMessages()
 	LoadSndMessage("mp_snd_messages", "assassin", ID_ASSASSIN);
 	LoadSndMessage("mp_snd_messages", "ready", ID_READY);
 	LoadSndMessage("mp_snd_messages", "match_started", ID_MATCH_STARTED);
+
+	LoadSndMessage("dm_snd_messages", "countdown_5", ID_COUNTDOWN_5);
+	LoadSndMessage("dm_snd_messages", "countdown_4", ID_COUNTDOWN_4);
+	LoadSndMessage("dm_snd_messages", "countdown_3", ID_COUNTDOWN_3);
+	LoadSndMessage("dm_snd_messages", "countdown_2", ID_COUNTDOWN_2);
+	LoadSndMessage("dm_snd_messages", "countdown_1", ID_COUNTDOWN_1);
 };
 
 void game_cl_mp::OnRankChanged(u8 OldRank)

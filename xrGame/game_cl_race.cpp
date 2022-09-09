@@ -6,10 +6,16 @@
 #include "ui/UIInventoryWnd.h"
 #include "string_table.h"
 #include "LevelGameDef.h"
+#include "Car.h"
 
 extern ENGINE_API bool g_dedicated_server;
+extern u32 TimeBeforeRaceStart;
 
-game_cl_Race::game_cl_Race() : m_game_ui(nullptr) {}
+game_cl_Race::game_cl_Race() : m_game_ui(nullptr) 
+{
+	LoadSounds();
+}
+
 game_cl_Race::~game_cl_Race() {}
 
 CUIGameCustom* game_cl_Race::createGameUI()
@@ -21,6 +27,46 @@ CUIGameCustom* game_cl_Race::createGameUI()
 	m_game_ui->SetClGame(this);
 	m_game_ui->Init();
 	return m_game_ui;
+}
+
+void game_cl_Race::LoadSounds()
+{
+	LoadSndMessage("race_snd_messages", "go", ID_RACE_GO);
+
+	if (m_pSndMessages.back().SoundID != ID_RACE_GO)
+	{
+		m_pSndMessages.push_back(SND_Message());
+		m_pSndMessages.back().Load(ID_RACE_GO, 50, "characters_voice\\human_01\\stalker\\fight\\attack\\attack_4.ogg");
+	}
+}
+
+void game_cl_Race::UpdateRaceStart()
+{
+	if (m_game_ui)
+		m_game_ui->ShowPlayersList(false);
+
+	if (m_start_time + TimeBeforeRaceStart <= Level().timeServer())
+		return;
+
+	static u32 LastTimeRemains = 0;
+
+	u32 timeBeforeStart = m_start_time + TimeBeforeRaceStart - Level().timeServer();
+	u32 secRemains = timeBeforeStart / 1000;
+
+	if (LastTimeRemains != secRemains)
+	{
+		if (secRemains == 6)
+		{
+			if (CActor* act = Actor())
+				if (CCar* car = smart_cast<CCar*>(act->Holder()))
+					car->StartEngine();
+		}
+
+		if (secRemains > 0 && secRemains <= 5)
+			PlaySndMessage(ID_COUNTDOWN_1 + secRemains - 1);
+	}
+
+	LastTimeRemains = secRemains;
 }
 
 void game_cl_Race::shedule_Update(u32 dt)
@@ -39,13 +85,9 @@ void game_cl_Race::shedule_Update(u32 dt)
 	}
 	break;
 
-	case GAME_PHASE_INPROGRESS:
-	{
-		if (m_game_ui)
-			m_game_ui->ShowPlayersList(false);
-	}
-	break;
-
+	case GAME_PHASE_RACE_START:
+		UpdateRaceStart();
+		break;
 	}
 }
 
@@ -125,4 +167,12 @@ bool game_cl_Race::OnKeyboardRelease(int key)
 		m_game_ui->ShowPlayersList(false);
 
 	return inherited::OnKeyboardRelease(key);
+}
+
+void game_cl_Race::OnSwitchPhase(u32 oldPhase, u32 newPhase)
+{
+	inherited::OnSwitchPhase(oldPhase, newPhase);
+
+	if (oldPhase == GAME_PHASE_RACE_START && newPhase == GAME_PHASE_INPROGRESS)
+		PlaySndMessage(ID_RACE_GO);
 }

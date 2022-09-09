@@ -135,6 +135,7 @@ public:
 
 	virtual u8 GetSpectatorModes() { return m_u8SpectatorModes; };
 	virtual u32 GetNumTeams() { return 0; };
+	virtual bool SwitchPhaseOnRoundStart() { return true; }
 
 	virtual void DumpOnlineStatistic();
 	void SvSendChatMessage(LPCSTR str);

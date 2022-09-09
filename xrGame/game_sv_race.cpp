@@ -6,6 +6,7 @@
 #include "Level.h"
 
 ENGINE_API bool g_dedicated_server;
+u32 TimeBeforeRaceStart = 10000; // 10 sec
 
 game_sv_Race::game_sv_Race()
 {
@@ -34,6 +35,12 @@ void game_sv_Race::UpdatePending()
 		OnRoundStart();
 }
 
+void game_sv_Race::UpdateRaceStart()
+{
+	if (m_start_time + TimeBeforeRaceStart <= Level().timeServer())
+		switch_Phase(GAME_PHASE_INPROGRESS);
+}
+
 void game_sv_Race::Update()
 {
 	inherited::Update();
@@ -42,6 +49,10 @@ void game_sv_Race::Update()
 	{
 	case GAME_PHASE_PENDING:
 		UpdatePending();
+		break;
+
+	case GAME_PHASE_RACE_START:
+		UpdateRaceStart();
 		break;
 	}
 }
@@ -142,7 +153,7 @@ void game_sv_Race::OnRoundStart()
 	inherited::OnRoundStart();
 	m_WinnerId = u16(-1);
 	m_CurrentRpoint = 0;
-	switch_Phase(GAME_PHASE_INPROGRESS);
+	switch_Phase(GAME_PHASE_RACE_START);
 
 	// Respawn all players
 	m_server->ForEachClientDoSender([this](IClient* cl)

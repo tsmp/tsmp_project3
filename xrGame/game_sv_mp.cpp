@@ -117,7 +117,9 @@ void game_sv_mp::OnRoundStart()
 
 	m_CorpseList.clear();
 
-	switch_Phase(GAME_PHASE_INPROGRESS);
+	if(SwitchPhaseOnRoundStart())
+		switch_Phase(GAME_PHASE_INPROGRESS);
+	
 	++m_round;
 	m_round_start_time = Level().timeServer();
 	timestamp(m_round_start_time_str);

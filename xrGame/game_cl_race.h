@@ -10,16 +10,19 @@ private:
 	CUIGameDM* m_game_ui;
 
 	void LoadTeamBaseParticles();
+	void UpdateRaceStart();
+	void LoadSounds();
 
 public:
 
 	game_cl_Race();
 	virtual ~game_cl_Race();
 
-	virtual CUIGameCustom* createGameUI();
-	virtual void shedule_Update(u32 dt);
+	virtual CUIGameCustom* createGameUI() override;
+	virtual void shedule_Update(u32 dt) override;
 	virtual void Init() override;
 
-	virtual bool OnKeyboardPress(int key);
-	virtual bool OnKeyboardRelease(int key);
+	virtual bool OnKeyboardPress(int key) override;
+	virtual bool OnKeyboardRelease(int key) override;
+	virtual void OnSwitchPhase(u32 old_phase, u32 new_phase) override;
 };

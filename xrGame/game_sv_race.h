@@ -25,6 +25,7 @@ public:
 	virtual void OnPlayerConnect(ClientID const &id_who) override;
 	virtual void OnPlayerConnectFinished(ClientID const &id_who) override;
 	virtual void OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 GameID) override;
+	virtual bool SwitchPhaseOnRoundStart() override { return false; }
 
 private:
 	void SpawnPlayerInCar(ClientID const &playerId);
@@ -35,4 +36,5 @@ private:
 	void OnBaseEnter(NET_Packet &P);
 
 	void UpdatePending();
+	void UpdateRaceStart();
 };

@@ -978,12 +978,6 @@ void game_cl_Deathmatch::LoadSndMessages()
 	LoadSndMessage("dm_snd_messages", "dm_rank2", ID_RANK_2);
 	LoadSndMessage("dm_snd_messages", "dm_rank3", ID_RANK_3);
 	LoadSndMessage("dm_snd_messages", "dm_rank4", ID_RANK_4);
-
-	LoadSndMessage("dm_snd_messages", "countdown_5", ID_COUNTDOWN_5);
-	LoadSndMessage("dm_snd_messages", "countdown_4", ID_COUNTDOWN_4);
-	LoadSndMessage("dm_snd_messages", "countdown_3", ID_COUNTDOWN_3);
-	LoadSndMessage("dm_snd_messages", "countdown_2", ID_COUNTDOWN_2);
-	LoadSndMessage("dm_snd_messages", "countdown_1", ID_COUNTDOWN_1);
 };
 
 void game_cl_Deathmatch::OnSwitchPhase_InProgress()
