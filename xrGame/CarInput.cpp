@@ -164,8 +164,12 @@ void CCar::OnKeyboardPress(int cmd)
 		PressBack();
 		break;
 	case kCarBeep:
-		Beep();
+	{
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GE_CAR_BEEP, ID());
+		CGameObject::u_EventSend(P);
 		break;
+	}
 	case kR_STRAFE:
 		PressRight();
 		if (OwnerActor())

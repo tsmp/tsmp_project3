@@ -50,7 +50,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		game->AddDelayedEvent(P, game_event_type, timestamp, sender);
 	}
 	break;
-	
+		
 	case GE_WPN_STATE_CHANGE:
 	case GE_ZONE_STATE_CHANGE:
 	case GEG_PLAYER_PLAY_HEADSHOT_PARTICLE:
@@ -61,10 +61,9 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 	case GEG_PLAYER_ITEM2BELT:
 	case GEG_PLAYER_ITEM2RUCK:
 	case GE_GRENADE_EXPLODE:
-	{
+	case GE_CAR_BEEP:	
 		SendBroadcast(BroadcastCID, P, MODE);
-	}
-	break;
+		break;
 
 	case GE_INFO_TRANSFER:
 	{

@@ -1911,6 +1911,10 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 		}
 	}
 	break;
+
+	case GE_CAR_BEEP:
+		Beep();
+		break;
 	}
 }
 
