@@ -6,6 +6,7 @@ class ClientID;
 class game_sv_Race : public game_sv_mp
 {
 	using inherited = game_sv_mp;
+	u32 m_WinnerFinishTime;
 	u16 m_WinnerId;
 	u8 m_CurrentRpoint;
 
@@ -20,6 +21,7 @@ public:
 
 	virtual void OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &sender) override;
 	virtual void OnRoundStart() override;
+	virtual void OnRoundEnd() override;
 
 	virtual void OnPlayerReady(ClientID const &id) override;
 	virtual void OnPlayerConnect(ClientID const &id_who) override;
@@ -37,4 +39,5 @@ private:
 
 	void UpdatePending();
 	void UpdateRaceStart();
+	void UpdateScores();
 };

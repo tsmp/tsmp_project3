@@ -6,6 +6,7 @@
 #include "Level.h"
 
 ENGINE_API bool g_dedicated_server;
+extern int G_DELAYED_ROUND_TIME;
 u32 TimeBeforeRaceStart = 10000; // 10 sec
 
 game_sv_Race::game_sv_Race()
@@ -14,6 +15,7 @@ game_sv_Race::game_sv_Race()
 	m_type = GAME_RACE;
 	m_WinnerId = u16(-1);
 	m_CurrentRpoint = 0;
+	m_WinnerFinishTime = 0;
 }
 
 game_sv_Race::~game_sv_Race() {}
@@ -41,6 +43,15 @@ void game_sv_Race::UpdateRaceStart()
 		switch_Phase(GAME_PHASE_INPROGRESS);
 }
 
+void game_sv_Race::UpdateScores()
+{
+	if (m_WinnerFinishTime + G_DELAYED_ROUND_TIME * 1000 < Level().timeServer())
+	{
+		round_end_reason = eRoundEnd_Finish;
+		OnRoundEnd();
+	}
+}
+
 void game_sv_Race::Update()
 {
 	inherited::Update();
@@ -53,6 +64,10 @@ void game_sv_Race::Update()
 
 	case GAME_PHASE_RACE_START:
 		UpdateRaceStart();
+		break;
+
+	case GAME_PHASE_PLAYER_SCORES:
+		UpdateScores();
 		break;
 	}
 }
@@ -111,6 +126,7 @@ void game_sv_Race::OnBaseEnter(NET_Packet &P)
 
 	if (m_WinnerId == u16(-1))
 	{
+		m_WinnerFinishTime = Level().timeServer();
 		m_WinnerId = playerId;
 		switch_Phase(GAME_PHASE_PLAYER_SCORES);
 
@@ -170,6 +186,22 @@ void game_sv_Race::OnRoundStart()
 		if (!ps->IsSkip())
 			SpawnPlayerInCar(l_pC->ID);
 	});
+}
+
+void game_sv_Race::OnRoundEnd()
+{
+	m_server->ForEachClientDoSender([this](IClient* cl)
+	{
+		xrClientData* l_pC = dynamic_cast<xrClientData*>(cl);
+		game_PlayerState* ps = l_pC->ps;
+		if (!ps)
+			return;
+		if (ps->IsSkip())
+			return;
+		SpawnPlayer(l_pC->ID, "spectator");
+	});
+	
+	inherited::OnRoundEnd();
 }
 
 void game_sv_Race::OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 GameID)
