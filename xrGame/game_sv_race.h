@@ -6,9 +6,12 @@ class ClientID;
 class game_sv_Race : public game_sv_mp
 {
 	using inherited = game_sv_mp;
+
+	shared_str m_PlayerSkin;
 	u32 m_WinnerFinishTime;
 	u16 m_WinnerId;
 	u8 m_CurrentRpoint;
+	u8 m_MaxPlayers;
 
 public:
 
@@ -41,4 +44,6 @@ private:
 	void UpdateRaceStart();
 	void UpdateScores();
 	void UpdateInProgress();
+
+	void LoadRaceSettings();
 };

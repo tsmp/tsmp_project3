@@ -17,16 +17,40 @@ game_sv_Race::game_sv_Race()
 	m_WinnerId = u16(-1);
 	m_CurrentRpoint = 0;
 	m_WinnerFinishTime = 0;
+
+	LoadRaceSettings();
 }
 
 game_sv_Race::~game_sv_Race() {}
+
+void game_sv_Race::LoadRaceSettings()
+{
+	string_path temp;
+	m_PlayerSkin = "stalker_killer_antigas";
+
+	if (!FS.exist(temp, "$level$", "race.ltx"))	
+		Msg("- race ltx not found, using default settings");	
+	else
+	{
+		Msg("- race ltx found, using it");		
+		CInifile* settings = xr_new<CInifile>(temp);
+
+		if (settings->section_exist("settings"))
+		{
+			if (settings->line_exist("settings", "player_visual"))
+				m_PlayerSkin = settings->r_string("settings", "player_visual");
+		}
+
+		xr_delete(settings);
+	}		
+}
 
 void game_sv_Race::Create(shared_str& options)
 {
 	inherited::Create(options);
 
 	TeamStruct NewTeam;
-	NewTeam.aSkins.push_back("stalker_killer_antigas");
+	NewTeam.aSkins.push_back(m_PlayerSkin.c_str());
 	TeamList.push_back(NewTeam);
 
 	switch_Phase(GAME_PHASE_PENDING);
