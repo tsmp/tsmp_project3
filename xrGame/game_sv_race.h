@@ -40,4 +40,5 @@ private:
 	void UpdatePending();
 	void UpdateRaceStart();
 	void UpdateScores();
+	void UpdateInProgress();
 };

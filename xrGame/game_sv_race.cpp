@@ -53,6 +53,12 @@ void game_sv_Race::UpdateScores()
 	}
 }
 
+void game_sv_Race::UpdateInProgress()
+{
+	if (g_dedicated_server && m_server->GetClientsCount() == 1)
+		OnRoundEnd();
+}
+
 void game_sv_Race::Update()
 {
 	inherited::Update();
@@ -69,6 +75,10 @@ void game_sv_Race::Update()
 
 	case GAME_PHASE_PLAYER_SCORES:
 		UpdateScores();
+		break;
+
+	case GAME_PHASE_INPROGRESS:
+		UpdateInProgress();
 		break;
 	}
 }
@@ -194,6 +204,8 @@ void game_sv_Race::OnRoundStart()
 
 void game_sv_Race::OnRoundEnd()
 {
+	Msg("- RACE: round end");
+
 	m_server->ForEachClientDoSender([this](IClient* cl)
 	{
 		xrClientData* l_pC = dynamic_cast<xrClientData*>(cl);
