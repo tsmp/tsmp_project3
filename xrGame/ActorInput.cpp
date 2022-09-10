@@ -406,7 +406,10 @@ void CActor::ActorUse()
 
 	if (m_holder)
 	{
-		CGameObject *GO = smart_cast<CGameObject *>(m_holder);
+		if (Game().Type() == GAME_RACE)
+			return;
+
+		CGameObject *GO = smart_cast<CGameObject*>(m_holder);
 		NET_Packet P;
 		CGameObject::u_EventGen(P, GEG_PLAYER_DETACH_HOLDER, ID());
 		P.w_u32(GO->ID());
