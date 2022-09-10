@@ -14,6 +14,7 @@ class game_sv_Race : public game_sv_mp
 	u16 m_WinnerId;
 	u8 m_CurrentRpoint;
 	u8 m_CurrentRoundCar;
+	u8 m_MaxPlayers;
 
 public:
 

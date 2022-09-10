@@ -144,6 +144,9 @@ void xrServer::CheckClientHWID(IClient* CL)
 
 void xrServer::OnHardwareVerifyRespond(IClient* CL, NET_Packet& P)
 {
+	if (!CL)
+		return;
+
 	CL->m_HWID.NetDeserialize(P);	
 	Msg("get respond with hwid: %s", CL->m_HWID.ToString().c_str());
 
@@ -160,6 +163,9 @@ void xrServer::OnHardwareVerifyRespond(IClient* CL, NET_Packet& P)
 
 void xrServer::OnPlayersBaseVerifyRespond(IClient* CL, bool banned)
 {
+	if (!CL)
+		return;
+
 	if (!banned)
 	{
 		OnConnectionVerificationStepComplete(CL);
@@ -172,6 +178,9 @@ void xrServer::OnPlayersBaseVerifyRespond(IClient* CL, bool banned)
 
 void xrServer::OnBuildVersionRespond(IClient *CL, NET_Packet &P)
 {
+	if (!CL)
+		return;
+
 	u16 Type;
 	P.r_begin(Type);
 	u64 _our = FS.auth_get();

@@ -4,6 +4,7 @@
 #include "xrServer.h"
 #include "..\xrNetwork\client_id.h"
 #include "Level.h"
+#include "xrGameSpyServer.h"
 
 ENGINE_API bool g_dedicated_server;
 extern int G_DELAYED_ROUND_TIME;
@@ -18,6 +19,7 @@ game_sv_Race::game_sv_Race()
 	m_CurrentRpoint = 0;
 	m_WinnerFinishTime = 0;
 	m_CurrentRoundCar = u8(-1);
+	m_MaxPlayers = 4;
 
 	LoadRaceSettings();
 }
@@ -43,6 +45,9 @@ void game_sv_Race::LoadRaceSettings()
 				m_PlayerSkin = settings->r_string("settings", "player_visual");
 		}
 
+		if (settings->line_exist("settings", "max_players"))
+			m_MaxPlayers = settings->r_s32("settings", "max_players");
+		
 		if (settings->section_exist("available_cars"))
 		{
 			m_AvailableCars.clear();
@@ -59,7 +64,7 @@ void game_sv_Race::LoadRaceSettings()
 		}
 
 		xr_delete(settings);
-	}		
+	}
 }
 
 void game_sv_Race::Create(shared_str& options)
@@ -126,6 +131,7 @@ void game_sv_Race::Update()
 
 void game_sv_Race::OnPlayerConnect(ClientID const &id_who)
 {
+	smart_cast<xrGameSpyServer*>(m_server)->m_iMaxPlayers = m_MaxPlayers;
 	inherited::OnPlayerConnect(id_who);
 	xrClientData* xrCData = m_server->ID_to_client(id_who);
 	game_PlayerState* ps_who = get_id(id_who);

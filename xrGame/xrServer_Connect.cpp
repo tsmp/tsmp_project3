@@ -12,6 +12,7 @@
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <malloc.h>
+#include "xrGameSpyServer.h"
 #pragma warning(pop)
 
 extern void fz_download_mod(xrServer *server, ClientID const &ID);
@@ -121,6 +122,17 @@ void xrServer::AttachNewClient(IClient *CL)
 	{
 		SendTo_LL(CL->ID, &msgConfig, sizeof(msgConfig), net_flags(TRUE, TRUE, TRUE, TRUE));
 		Server_Client_Check(CL);
+	}
+
+	if (!IsGameTypeSingle())
+	{
+		int clCnt = g_dedicated_server ? GetClientsCount() - 1 : GetClientsCount();
+		
+		if (clCnt > smart_cast<xrGameSpyServer*>(this)->m_iMaxPlayers)
+		{
+			SendConnectResult(CL, 0, 0, "Server is full!");
+			return;
+		}
 	}
 
 	CL->flags.bVerified = FALSE;
