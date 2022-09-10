@@ -8,6 +8,7 @@
 ENGINE_API bool g_dedicated_server;
 extern int G_DELAYED_ROUND_TIME;
 u32 TimeBeforeRaceStart = 10000; // 10 sec
+BOOL g_sv_race_invulnerability = FALSE;
 
 game_sv_Race::game_sv_Race()
 {
@@ -142,8 +143,11 @@ void game_sv_Race::OnBaseEnter(NET_Packet &P)
 	}
 }
 
-void game_sv_Race::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID const &sender)
+void game_sv_Race::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &sender)
 {
+	if (g_sv_race_invulnerability && type == GAME_EVENT_ON_HIT)
+		return;
+
 	switch (type)
 	{
 	case GAME_EVENT_PLAYER_KILL:

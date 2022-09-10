@@ -71,6 +71,7 @@ extern BOOL g_sv_ah_bShildedBases;
 extern BOOL g_sv_ah_bAfReturnPlayersToBases;
 extern BOOL g_sv_crosshair_players_names;
 extern BOOL g_sv_crosshair_color_players;
+extern BOOL g_sv_race_invulnerability;
 extern u32 g_dwDemoDeltaFrame;
 extern u32 g_sv_dwMaxClientPing;
 extern int g_be_message_out;
@@ -2015,6 +2016,7 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer, "sv_teamkill_punish", (int *)&g_sv_tdm_bTeamKillPunishment, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_crosshair_players_names", (int*)&g_sv_crosshair_players_names, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_crosshair_color_players", (int*)&g_sv_crosshair_color_players, 0, 1);
+	CMD4(CCC_SV_Integer, "sv_race_invulnerability", (int*)&g_sv_race_invulnerability, 0, 1);
 
 	CMD4(CCC_SV_Integer, "sv_artefact_respawn_delta", (int *)&g_sv_ah_dwArtefactRespawnDelta, 0, 600); //sec
 	CMD4(CCC_SV_Integer, "sv_artefacts_count", (int *)&g_sv_ah_dwArtefactsNum, 1, 1000000);
