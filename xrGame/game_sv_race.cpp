@@ -17,6 +17,7 @@ game_sv_Race::game_sv_Race()
 	m_WinnerId = u16(-1);
 	m_CurrentRpoint = 0;
 	m_WinnerFinishTime = 0;
+	m_CurrentRoundCar = u8(-1);
 
 	LoadRaceSettings();
 }
@@ -27,6 +28,7 @@ void game_sv_Race::LoadRaceSettings()
 {
 	string_path temp;
 	m_PlayerSkin = "stalker_killer_antigas";
+	m_AvailableCars.push_back("physics\\vehicles\\kamaz\\veh_kamaz_u_01.ogf");
 
 	if (!FS.exist(temp, "$level$", "race.ltx"))	
 		Msg("- race ltx not found, using default settings");	
@@ -39,6 +41,21 @@ void game_sv_Race::LoadRaceSettings()
 		{
 			if (settings->line_exist("settings", "player_visual"))
 				m_PlayerSkin = settings->r_string("settings", "player_visual");
+		}
+
+		if (settings->section_exist("available_cars"))
+		{
+			m_AvailableCars.clear();
+			CInifile::Sect& sect = settings->r_section("available_cars");
+
+			for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
+			{
+				const CInifile::Item& item = *I;
+				m_AvailableCars.push_back(item.first.c_str());
+
+				if (m_AvailableCars.back().find(".ogf") == std::string::npos)
+					m_AvailableCars.back() += ".ogf";
+			}
 		}
 
 		xr_delete(settings);
@@ -207,6 +224,7 @@ void game_sv_Race::OnRoundStart()
 	inherited::OnRoundStart();
 	m_WinnerId = u16(-1);
 	m_CurrentRpoint = 0;
+	m_CurrentRoundCar = m_CarRandom.randI(static_cast<int>(m_AvailableCars.size()));
 	switch_Phase(GAME_PHASE_RACE_START);
 
 	// Respawn all players
@@ -269,7 +287,7 @@ CSE_Abstract* game_sv_Race::SpawnCar()
 	AssignRPoint(E);
 
 	CSE_Visual* pV = smart_cast<CSE_Visual*>(E);
-	pV->set_visual("physics\\vehicles\\kamaz\\veh_kamaz_u_01.ogf");
+	pV->set_visual(m_AvailableCars[m_CurrentRoundCar].c_str());
 
 	CSE_Abstract* spawned = spawn_end(E, m_server->GetServerClient()->ID);
 	signal_Syncronize();
