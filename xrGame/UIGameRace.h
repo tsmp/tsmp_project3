@@ -17,10 +17,12 @@ public:
 
 	void ShowPlayersList(bool bShow);
 	void SetCountdownCaption(const char* str);
+	void SetRoundResultCaption(const char* str);
 
 protected:
 
 	shared_str m_CountdownCaption;
+	shared_str m_RoundResultCaption;
 	game_cl_Race* m_game;
 	CUIWindow* m_pPlayerLists;
 	using inherited = CUIGameCustom;

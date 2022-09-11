@@ -1329,6 +1329,8 @@ void game_cl_mp::LoadSndMessages()
 	LoadSndMessage("dm_snd_messages", "countdown_3", ID_COUNTDOWN_3);
 	LoadSndMessage("dm_snd_messages", "countdown_2", ID_COUNTDOWN_2);
 	LoadSndMessage("dm_snd_messages", "countdown_1", ID_COUNTDOWN_1);
+
+	LoadSndMessage("dm_snd_messages", "you_won", ID_YOU_WON);
 };
 
 void game_cl_mp::OnRankChanged(u8 OldRank)

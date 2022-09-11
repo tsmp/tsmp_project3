@@ -14,6 +14,7 @@ enum
 	ID_COUNTDOWN_4,
 	ID_COUNTDOWN_5,
 	ID_RACE_GO,
+	ID_YOU_WON,
 
 	ID_forcedword = u32(-1)
 };

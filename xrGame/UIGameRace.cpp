@@ -7,6 +7,7 @@
 #include "HUDManager.h"
 
 const u32 CountdownColor = 0xff00ff00;
+const u32 RoundResultColor = 0xfff0fff0;
 
 #define DI2PX(x) float(iFloor((x + 1) * float(UI_BASE_WIDTH) * 0.5f))
 #define DI2PY(y) float(iFloor((y + 1) * float(UI_BASE_HEIGHT) * 0.5f))
@@ -16,8 +17,11 @@ CUIGameRace::CUIGameRace() : m_game(nullptr)
 {
 	m_pPlayerLists = xr_new<CUIWindow>();
 
-	m_CountdownCaption = "";
+	m_CountdownCaption = "countdown";
 	GameCaptions()->addCustomMessage(m_CountdownCaption, DI2PX(0.0f), DI2PY(-0.75f), SZ(0.05f), HUD().Font().pFontGraffiti19Russian, CGameFont::alCenter, CountdownColor, "");
+
+	m_RoundResultCaption = "round_res";
+	GameCaptions()->addCustomMessage(m_RoundResultCaption, DI2PX(0.0f), DI2PY(-0.1f), SZ(0.03f), HUD().Font().pFontGraffiti19Russian, CGameFont::alCenter, RoundResultColor, "");
 }
 
 CUIGameRace::~CUIGameRace()
@@ -61,4 +65,9 @@ void CUIGameRace::ShowPlayersList(bool bShow)
 void CUIGameRace::SetCountdownCaption(const char* str)
 {
 	GameCaptions()->setCaption(m_CountdownCaption, str, CountdownColor, true);
+}
+
+void CUIGameRace::SetRoundResultCaption(const char* str)
+{
+	GameCaptions()->setCaption(m_RoundResultCaption, str, RoundResultColor, true);
 }

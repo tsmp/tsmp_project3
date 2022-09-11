@@ -35,6 +35,8 @@ public:
 	virtual void OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 GameID) override;
 	virtual bool SwitchPhaseOnRoundStart() override { return false; }
 
+	virtual void net_Export_State(NET_Packet &P, ClientID const &id_to) override;
+
 private:
 	void SpawnPlayerInCar(ClientID const &playerId);
 	CSE_Abstract* SpawnCar();

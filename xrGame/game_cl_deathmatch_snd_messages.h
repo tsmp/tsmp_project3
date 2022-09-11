@@ -1,8 +1,7 @@
 #pragma once
 enum
-{
-	ID_YOU_WON = 100,
-	ID_RANK_0,
+{	
+	ID_RANK_0 = 101,
 	ID_RANK_1,
 	ID_RANK_2,
 	ID_RANK_3,

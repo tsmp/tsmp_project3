@@ -186,17 +186,7 @@ void game_sv_Race::OnBaseEnter(NET_Packet &P)
 	{
 		m_WinnerFinishTime = Level().timeServer();
 		m_WinnerId = playerId;
-		switch_Phase(GAME_PHASE_PLAYER_SCORES);
-
-		if (auto eActor = smart_cast<CSE_ALifeCreatureActor*>(m_server->ID_to_entity(playerId)))
-		{
-			if (auto ps = eActor->owner->ps)
-			{
-				std::string str = ps->getName();
-				str += " wins!";
-				SvSendChatMessage(str.c_str());
-			}
-		}		
+		switch_Phase(GAME_PHASE_PLAYER_SCORES);	
 	}
 }
 
@@ -344,4 +334,12 @@ void game_sv_Race::OnPlayerReady(ClientID const &id)
 			signal_Syncronize();
 		}
 	}
+}
+
+void game_sv_Race::net_Export_State(NET_Packet &P, ClientID const &id_to)
+{
+	inherited::net_Export_State(P, id_to);
+
+	if (m_phase == GAME_PHASE_PLAYER_SCORES)
+		P.w_u16(m_WinnerId);
 }

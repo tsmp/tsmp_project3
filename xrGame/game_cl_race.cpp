@@ -7,6 +7,7 @@
 #include "string_table.h"
 #include "LevelGameDef.h"
 #include "Car.h"
+#include "GameObject.h"
 
 CStringTable g_St;
 
@@ -14,7 +15,7 @@ extern ENGINE_API bool g_dedicated_server;
 extern u32 TimeBeforeRaceStart;
 u32 GoMessageShowTime = 5000; // 5 sec
 
-game_cl_Race::game_cl_Race() : m_game_ui(nullptr) 
+game_cl_Race::game_cl_Race() : m_game_ui(nullptr), m_WinnerId(static_cast<u16>(-1)), m_WinnerMessageSet(false)
 {
 	LoadSounds();
 }
@@ -96,6 +97,28 @@ void game_cl_Race::UpdateRaceInProgress()
 		m_game_ui->SetCountdownCaption("");	
 }
 
+void game_cl_Race::UpdateRaceScores()
+{
+	if (!m_game_ui)
+		return;
+
+	m_game_ui->SetCountdownCaption("");
+
+	if (!m_WinnerMessageSet && m_WinnerId != -1)
+	{
+		if (CGameObject* obj = smart_cast<CGameObject*>(Level().Objects.net_Find(m_WinnerId)))
+		{
+			string128 tmp;
+			sprintf_s(tmp, *g_St.translate("mp_player_wins"), obj->cName().c_str());
+			m_game_ui->SetRoundResultCaption(tmp);
+			m_WinnerMessageSet = true;
+
+			if(local_player->GameID == m_WinnerId)
+				PlaySndMessage(ID_YOU_WON);
+		}
+	}
+}
+
 void game_cl_Race::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
@@ -111,9 +134,14 @@ void game_cl_Race::shedule_Update(u32 dt)
 		{
 			m_game_ui->ShowPlayersList(true);
 			m_game_ui->SetCountdownCaption("");
+			m_game_ui->SetRoundResultCaption("");
 		}
 	}
 	break;
+
+	case GAME_PHASE_PLAYER_SCORES:
+		UpdateRaceScores();
+		break;
 
 	case GAME_PHASE_RACE_START:
 		UpdateRaceStart();
@@ -205,8 +233,17 @@ bool game_cl_Race::OnKeyboardRelease(int key)
 
 void game_cl_Race::OnSwitchPhase(u32 oldPhase, u32 newPhase)
 {
+	m_WinnerMessageSet = false;
 	inherited::OnSwitchPhase(oldPhase, newPhase);
 
 	if (oldPhase == GAME_PHASE_RACE_START && newPhase == GAME_PHASE_INPROGRESS)
 		PlaySndMessage(ID_RACE_GO);
+}
+
+void game_cl_Race::net_import_state(NET_Packet &P)
+{
+	inherited::net_import_state(P);
+
+	if (m_phase == GAME_PHASE_PLAYER_SCORES)
+		P.r_u16(m_WinnerId);
 }
