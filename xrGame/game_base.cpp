@@ -26,6 +26,7 @@ game_PlayerState::game_PlayerState()
 	m_bCurrentVoteAgreed = 2;
 	RespawnTime = 0;
 	m_bPayForSpawn = false;
+	CarID = u16(-1);
 
 	clear();
 }
@@ -51,6 +52,7 @@ void game_PlayerState::clear()
 	DeathTime = 0;
 	mOldIDs.clear();
 	money_added = 0;
+	CarID = u16(-1);
 	m_aBonusMoney.clear();
 }
 

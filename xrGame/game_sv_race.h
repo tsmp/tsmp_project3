@@ -40,8 +40,8 @@ public:
 
 private:
 	void SpawnPlayerInCar(ClientID const &playerId);
-	CSE_Abstract* SpawnCar();
-	void AssignRPoint(CSE_Abstract* E);
+	CSE_Abstract* SpawnCar(u32 rpoint);
+	void AssignRPoint(CSE_Abstract* E, u32 rpoint);
 
 	void OnGKill(NET_Packet &P);
 	void OnBaseEnter(NET_Packet &P);

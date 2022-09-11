@@ -5,11 +5,15 @@
 #include "..\xrNetwork\client_id.h"
 #include "Level.h"
 #include "xrGameSpyServer.h"
+#include "Actor.h"
+#include "GameObject.h"
+#include "holder_custom.h"
 
 ENGINE_API bool g_dedicated_server;
 extern int G_DELAYED_ROUND_TIME;
 u32 TimeBeforeRaceStart = 10000; // 10 sec
 BOOL g_sv_race_invulnerability = FALSE;
+u32 g_sv_race_reinforcementTime = 10; // 10 sec
 
 game_sv_Race::game_sv_Race()
 {
@@ -32,11 +36,11 @@ void game_sv_Race::LoadRaceSettings()
 	m_PlayerSkin = "stalker_killer_antigas";
 	m_AvailableCars.push_back("physics\\vehicles\\kamaz\\veh_kamaz_u_01.ogf");
 
-	if (!FS.exist(temp, "$level$", "race.ltx"))	
-		Msg("- race ltx not found, using default settings");	
+	if (!FS.exist(temp, "$level$", "race.ltx"))
+		Msg("- race ltx not found, using default settings");
 	else
 	{
-		Msg("- race ltx found, using it");		
+		Msg("- race ltx found, using it");
 		CInifile* settings = xr_new<CInifile>(temp);
 
 		if (settings->section_exist("settings"))
@@ -47,7 +51,7 @@ void game_sv_Race::LoadRaceSettings()
 
 		if (settings->line_exist("settings", "max_players"))
 			m_MaxPlayers = settings->r_s32("settings", "max_players");
-		
+
 		if (settings->section_exist("available_cars"))
 		{
 			m_AvailableCars.clear();
@@ -80,7 +84,7 @@ void game_sv_Race::Create(shared_str& options)
 
 void game_sv_Race::UpdatePending()
 {
-	if(AllPlayersReady())
+	if (AllPlayersReady())
 		OnRoundStart();
 }
 
@@ -103,6 +107,32 @@ void game_sv_Race::UpdateInProgress()
 {
 	if (g_dedicated_server && m_server->GetClientsCount() == 1)
 		OnRoundEnd();
+
+	m_server->ForEachClientDoSender([&](IClient* client)
+	{
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
+		game_PlayerState* ps = l_pC->ps;
+
+		if (!l_pC->net_Ready || ps->IsSkip())
+			return;
+
+		if (!ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
+			return;
+
+		if (ps->DeathTime + g_sv_race_reinforcementTime * 1000 < Level().timeServer())
+		{
+			if (ps->CarID != u16(-1))
+			{
+				NET_Packet P;
+				u_EventGen(P, GE_DESTROY, ps->CarID);
+				Level().Server->SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
+				ps->CarID = u16(-1);
+			}
+
+			SpawnPlayer(l_pC->ID, "spectator");
+			SpawnPlayerInCar(l_pC->ID);
+		}
+	});
 }
 
 void game_sv_Race::Update()
@@ -263,24 +293,24 @@ void game_sv_Race::OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 Ga
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
 }
 
-void game_sv_Race::AssignRPoint(CSE_Abstract* E)
+void game_sv_Race::AssignRPoint(CSE_Abstract* E, u32 rpoint)
 {
 	R_ASSERT(E);
 	const xr_vector<RPoint> &rp = rpoints[0];
 
-	RPoint r = rp[m_CurrentRpoint];
-	m_CurrentRpoint++;
+	RPoint r = rp[rpoint];
 
 	E->o_Position.set(r.P);
 	E->o_Angle.set(r.A);
 }
 
-CSE_Abstract* game_sv_Race::SpawnCar()
+CSE_Abstract* game_sv_Race::SpawnCar(u32 rpoint)
 {
 	CSE_Abstract* E = nullptr;
 	E = spawn_begin("m_car");
 	E->s_flags.assign(M_SPAWN_OBJECT_LOCAL); // flags
-	AssignRPoint(E);
+		
+	AssignRPoint(E, rpoint);
 
 	CSE_Visual* pV = smart_cast<CSE_Visual*>(E);
 	pV->set_visual(m_AvailableCars[m_CurrentRoundCar].c_str());
@@ -298,16 +328,25 @@ void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
 		return;
 	}
 
-	CSE_Abstract* car = SpawnCar();
-	R_ASSERT(smart_cast<CSE_ALifeCar*>(car));
-
 	xrClientData* xrCData = m_server->ID_to_client(playerId);
-	if (!xrCData || !xrCData->owner)
+	if (!xrCData || !xrCData->owner || !xrCData->ps)
 		return;
 
 	CSE_Abstract* pOwner = xrCData->owner;
 	CSE_Spectator* pS = smart_cast<CSE_Spectator*>(pOwner);
 	R_ASSERT(pS);
+
+	u16 rpoint = xrCData->ps->m_s16LastSRoint;
+
+	if (rpoint == static_cast<u16>(-1))
+	{
+		rpoint = m_CurrentRpoint;
+		xrCData->ps->m_s16LastSRoint = rpoint;
+		m_CurrentRpoint++;
+	}
+	
+	CSE_Abstract* car = SpawnCar(rpoint);
+	R_ASSERT(smart_cast<CSE_ALifeCar*>(car));
 
 	xrCData->ps->resetFlag(GAME_PLAYER_FLAG_SPECTATOR);	
 
@@ -318,6 +357,7 @@ void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
 	NET_Packet P;
 	u_EventGen(P, GE_DESTROY, pS->ID);
 	Level().Send(P, net_flags(TRUE, TRUE));
+	xrCData->ps->CarID = car->ID;
 
 	SpawnPlayer(playerId, "mp_actor", car->ID);
 }
@@ -354,7 +394,7 @@ void game_sv_Race::OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerSt
 	ps_killed->setFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
 	ps_killed->m_iDeaths++;
 	ps_killed->m_iKillsInRowCurr = 0;
-	ps_killed->DeathTime = Device.dwTimeGlobal;
+	ps_killed->DeathTime = Level().timeServer();
 
 	signal_Syncronize();
 }

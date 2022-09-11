@@ -77,6 +77,7 @@ struct game_PlayerState
 	u32 lastPingUpdateTime;
 
 	u16 GameID;
+	u16 CarID;
 
 	s8 skin;
 	u32 RespawnTime;

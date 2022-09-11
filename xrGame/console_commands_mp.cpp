@@ -66,6 +66,7 @@ extern u32 g_sv_ah_dwArtefactRespawnDelta;
 extern int g_sv_ah_dwArtefactsNum;
 extern u32 g_sv_ah_dwArtefactStayTime;
 extern int g_sv_ah_iReinforcementTime;
+extern u32 g_sv_race_reinforcementTime;
 extern BOOL g_sv_ah_bBearerCantSprint;
 extern BOOL g_sv_ah_bShildedBases;
 extern BOOL g_sv_ah_bAfReturnPlayersToBases;
@@ -2022,6 +2023,7 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer, "sv_artefacts_count", (int *)&g_sv_ah_dwArtefactsNum, 1, 1000000);
 	CMD4(CCC_SV_Integer, "sv_artefact_stay_time", (int *)&g_sv_ah_dwArtefactStayTime, 0, 180);	 //min
 	CMD4(CCC_SV_Integer, "sv_reinforcement_time", (int *)&g_sv_ah_iReinforcementTime, -1, 3600); //sec
+	CMD4(CCC_SV_Integer, "sv_race_reinforcement_time", (int *)&g_sv_race_reinforcementTime, 0, 3600); //sec
 	CMD4(CCC_SV_Integer, "sv_bearercantsprint", (int *)&g_sv_ah_bBearerCantSprint, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_shieldedbases", (int *)&g_sv_ah_bShildedBases, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_returnplayers", (int *)&g_sv_ah_bAfReturnPlayersToBases, 0, 1);
