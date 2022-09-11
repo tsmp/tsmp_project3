@@ -2,6 +2,7 @@
 #include "game_cl_mp.h"
 
 class CUIGameRace;
+class CStringTable;
 
 class game_cl_Race : public game_cl_mp
 {
@@ -11,6 +12,7 @@ private:
 
 	void LoadTeamBaseParticles();
 	void UpdateRaceStart();
+	void UpdateRaceInProgress();
 	void LoadSounds();
 
 public:

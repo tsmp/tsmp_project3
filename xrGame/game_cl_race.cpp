@@ -8,8 +8,11 @@
 #include "LevelGameDef.h"
 #include "Car.h"
 
+CStringTable g_St;
+
 extern ENGINE_API bool g_dedicated_server;
 extern u32 TimeBeforeRaceStart;
+u32 GoMessageShowTime = 5000; // 5 sec
 
 game_cl_Race::game_cl_Race() : m_game_ui(nullptr) 
 {
@@ -42,8 +45,10 @@ void game_cl_Race::LoadSounds()
 
 void game_cl_Race::UpdateRaceStart()
 {
-	if (m_game_ui)
-		m_game_ui->ShowPlayersList(false);
+	if (!m_game_ui)
+		return;
+
+	m_game_ui->ShowPlayersList(false);
 
 	if (m_start_time + TimeBeforeRaceStart <= Level().timeServer())
 		return;
@@ -55,6 +60,15 @@ void game_cl_Race::UpdateRaceStart()
 
 	if (LastTimeRemains != secRemains)
 	{
+		string256 caption;
+
+		if (secRemains >= 1)		
+			sprintf_s(caption, "%s %u", *g_St.translate("mp_time2start"), secRemains);
+		else
+			sprintf_s(caption, "%s", *g_St.translate("mp_ready"));
+
+		m_game_ui->SetCountdownCaption(caption);
+
 		if (secRemains == 6)
 		{
 			if (CActor* act = Actor())
@@ -69,6 +83,19 @@ void game_cl_Race::UpdateRaceStart()
 	LastTimeRemains = secRemains;
 }
 
+void game_cl_Race::UpdateRaceInProgress()
+{
+	if (!m_game_ui)
+		return;
+	
+	m_game_ui->ShowPlayersList(false);
+
+	if (m_start_time + GoMessageShowTime > Level().timeServer())	
+		m_game_ui->SetCountdownCaption(*g_St.translate("mp_go"));	
+	else
+		m_game_ui->SetCountdownCaption("");	
+}
+
 void game_cl_Race::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
@@ -81,12 +108,19 @@ void game_cl_Race::shedule_Update(u32 dt)
 	case GAME_PHASE_PENDING:
 	{
 		if (m_game_ui)
+		{
 			m_game_ui->ShowPlayersList(true);
+			m_game_ui->SetCountdownCaption("");
+		}
 	}
 	break;
 
 	case GAME_PHASE_RACE_START:
 		UpdateRaceStart();
+		break;
+
+	case GAME_PHASE_INPROGRESS:
+		UpdateRaceInProgress();
 		break;
 	}
 }

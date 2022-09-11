@@ -3,10 +3,21 @@
 #include "game_cl_race.h"
 #include "ui/UIXmlInit.h"
 #include "ui/UIFrags.h"
+#include "ui/UIMultiTextStatic.h"
+#include "HUDManager.h"
+
+const u32 CountdownColor = 0xff00ff00;
+
+#define DI2PX(x) float(iFloor((x + 1) * float(UI_BASE_WIDTH) * 0.5f))
+#define DI2PY(y) float(iFloor((y + 1) * float(UI_BASE_HEIGHT) * 0.5f))
+#define SZ(x) x *UI_BASE_WIDTH
 
 CUIGameRace::CUIGameRace() : m_game(nullptr)
 {
 	m_pPlayerLists = xr_new<CUIWindow>();
+
+	m_CountdownCaption = "";
+	GameCaptions()->addCustomMessage(m_CountdownCaption, DI2PX(0.0f), DI2PY(-0.75f), SZ(0.05f), HUD().Font().pFontGraffiti19Russian, CGameFont::alCenter, CountdownColor, "");
 }
 
 CUIGameRace::~CUIGameRace()
@@ -45,4 +56,9 @@ void CUIGameRace::ShowPlayersList(bool bShow)
 		AddDialogToRender(m_pPlayerLists);
 	else
 		RemoveDialogToRender(m_pPlayerLists);
+}
+
+void CUIGameRace::SetCountdownCaption(const char* str)
+{
+	GameCaptions()->setCaption(m_CountdownCaption, str, CountdownColor, true);
 }

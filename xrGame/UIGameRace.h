@@ -16,9 +16,11 @@ public:
 	virtual void ReInitShownUI() override {};
 
 	void ShowPlayersList(bool bShow);
+	void SetCountdownCaption(const char* str);
 
 protected:
 
+	shared_str m_CountdownCaption;
 	game_cl_Race* m_game;
 	CUIWindow* m_pPlayerLists;
 	using inherited = CUIGameCustom;
