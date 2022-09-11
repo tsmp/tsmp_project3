@@ -64,18 +64,16 @@ void CCar::SCarSound::SetSoundPosition(ref_sound &snd)
 		snd.set_position(pos);
 	}
 }
+
 void CCar::SCarSound::UpdateStarting()
 {
 	VERIFY(!ph_world->Processing());
 	SetSoundPosition(snd_engine_start);
 
-	if (snd_engine._feedback())
-	{
-		UpdateDrive();
-	}
+	if (snd_engine._feedback())	
+		UpdateDrive();	
 	else
 	{
-
 		if (time_state_start + engine_start_delay < Device.dwTimeGlobal)
 		{
 			snd_engine.play(pcar, sm_Looped);
@@ -86,19 +84,24 @@ void CCar::SCarSound::UpdateStarting()
 	if (!snd_engine_start._feedback())
 		Drive();
 }
+
 void CCar::SCarSound::UpdateStoping()
 {
 	VERIFY(!ph_world->Processing());
 	SetSoundPosition(snd_engine_stop);
+
 	if (!snd_engine_stop._feedback())
 		SwitchOff();
 }
+
 void CCar::SCarSound::UpdateStalling()
 {
 	SetSoundPosition(snd_engine_stop);
+
 	if (!snd_engine_stop._feedback())
 		SwitchOff();
 }
+
 void CCar::SCarSound::UpdateDrive()
 {
 	VERIFY(!ph_world->Processing());
@@ -107,16 +110,21 @@ void CCar::SCarSound::UpdateDrive()
 	snd_engine.set_frequency(scale);
 	SetSoundPosition(snd_engine);
 }
+
 void CCar::SCarSound::SwitchState(ESoundState new_state)
 {
 	eCarSound = new_state;
 	time_state_start = Device.dwTimeGlobal;
 }
+
 void CCar::SCarSound::Update()
 {
 	VERIFY(!ph_world->Processing());
 	if (eCarSound == sndOff)
 		return;
+
+	if (snd_beep._feedback())
+		SetSoundPosition(snd_beep);
 
 	switch (eCarSound)
 	{
@@ -139,6 +147,7 @@ void CCar::SCarSound::SwitchOn()
 {
 	pcar->processing_activate();
 }
+
 void CCar::SCarSound::Destroy()
 {
 	SwitchOff();
