@@ -32,12 +32,8 @@ void game_PlayerState::script_register(lua_State *L)
 			 .def_readwrite("flags", &BaseType::flags__)
 			 .def_readwrite("ping", &BaseType::ping)
 			 .def_readwrite("GameID", &BaseType::GameID)
-			 //.			.def_readwrite("Skip",				&BaseType::Skip)
-			 .def_readwrite("lasthitter", &BaseType::lasthitter)
-			 .def_readwrite("lasthitweapon", &BaseType::lasthitweapon)
 			 .def_readwrite("skin", &BaseType::skin)
 			 .def_readwrite("RespawnTime", &BaseType::RespawnTime)
-			 .def_readwrite("money_delta", &BaseType::money_delta)
 
 			 .def_readwrite("pItemList", &BaseType::pItemList)
 			 .def_readwrite("LastBuyAcount", &BaseType::LastBuyAcount)
@@ -49,7 +45,6 @@ void game_PlayerState::script_register(lua_State *L)
 			 .def("clear", &BaseType::clear, &WrapType::clear_static)
 			 .def("net_Export", &BaseType::net_Export, &WrapType::net_Export_static)
 			 .def("net_Import", &BaseType::net_Import, &WrapType::net_Import_static)
-
 	];
 }
 

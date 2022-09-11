@@ -78,12 +78,9 @@ struct game_PlayerState
 
 	u16 GameID;
 
-	u16 lasthitter;
-	u16 lasthitweapon;
 	s8 skin;
 	u32 RespawnTime;
 	u32 DeathTime;
-	s16 money_delta;
 	u8 m_bCurrentVoteAgreed;
 	DEF_DEQUE(OLD_GAME_ID, u16);
 	OLD_GAME_ID mOldIDs;
@@ -115,9 +112,6 @@ public:
 
 	PLAYER_ITEMS_LIST pItemList;
 
-	DEF_VECTOR(SPAWN_POINTS_LIST, s16);
-
-	SPAWN_POINTS_LIST pSpawnPointsList;
 	s16 m_s16LastSRoint;
 
 	s32 LastBuyAcount;

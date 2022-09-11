@@ -39,15 +39,12 @@ void game_PlayerState::clear()
 	m_iKillsInRowCurr = 0;
 	m_iKillsInRowMax = 0;
 	m_iDeaths = 0;
-	lasthitter = 0;
-	lasthitweapon = 0;
 	experience_D = 0;
 	experience_Real = 0;
 	rank = 0;
 	af_count = 0;
 	experience_New = 0;
 	pItemList.clear();
-	pSpawnPointsList.clear();
 	m_s16LastSRoint = -1;
 	LastBuyAcount = 0;
 	m_bClearRun = false;
@@ -60,8 +57,7 @@ void game_PlayerState::clear()
 game_PlayerState::~game_PlayerState()
 {
 	pItemList.clear();
-	pSpawnPointsList.clear();
-};
+}
 
 bool game_PlayerState::testFlag(u16 f) const
 {

@@ -1024,12 +1024,6 @@ void game_sv_Deathmatch::OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Pac
 	HitS.whoID = ps_hitter->GameID;
 	OnPlayerHitPlayer_Case(ps_hitter, ps_hitted, &HitS);
 
-	if (HitS.power > 0)
-	{
-		ps_hitted->lasthitter = ps_hitter->GameID;
-		ps_hitted->lasthitweapon = HitS.weaponID;
-	}
-
 	HitS.Write_Packet(P);
 }
 

@@ -989,9 +989,6 @@ void game_sv_mp::ClearPlayerState(game_PlayerState *ps)
 	ps->m_iKillsInRowCurr = 0;
 	ps->m_iKillsInRowMax = 0;
 
-	ps->lasthitter = 0;
-	ps->lasthitweapon = 0;
-
 	ClearPlayerItems(ps);
 }
 
