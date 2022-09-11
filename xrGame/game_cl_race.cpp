@@ -214,9 +214,9 @@ void game_cl_Race::Init()
 
 bool game_cl_Race::OnKeyboardPress(int key)
 {
-	if (key == kSCORES)
-	{
-		m_game_ui->ShowPlayersList(true);
+	if (key == kSCORES && Phase() != GAME_PHASE_PENDING)
+	{		
+		m_game_ui->ShowFragList(true);
 		return true;
 	}
 
@@ -225,8 +225,8 @@ bool game_cl_Race::OnKeyboardPress(int key)
 
 bool game_cl_Race::OnKeyboardRelease(int key)
 {
-	if (key == kSCORES && Phase() != GAME_PHASE_PENDING)
-		m_game_ui->ShowPlayersList(false);
+	if (key == kSCORES)
+		m_game_ui->ShowFragList(false);
 
 	return inherited::OnKeyboardRelease(key);
 }

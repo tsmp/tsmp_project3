@@ -173,7 +173,7 @@ void game_sv_Race::OnGKill(NET_Packet &P)
 {
 	u16 ID = P.r_u16();
 
-	if (xrClientData* l_pC = get_client(ID))
+	if (xrClientData* l_pC = get_client(ID))	
 		KillPlayer(l_pC->ID, l_pC->ps->GameID);	
 }
 
@@ -309,6 +309,8 @@ void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
 	CSE_Spectator* pS = smart_cast<CSE_Spectator*>(pOwner);
 	R_ASSERT(pS);
 
+	xrCData->ps->resetFlag(GAME_PLAYER_FLAG_SPECTATOR);	
+
 	if (pOwner->owner != m_server->GetServerClient())
 		pOwner->owner = (xrClientData*)m_server->GetServerClient();
 
@@ -342,4 +344,17 @@ void game_sv_Race::net_Export_State(NET_Packet &P, ClientID const &id_to)
 
 	if (m_phase == GAME_PHASE_PLAYER_SCORES)
 		P.w_u16(m_WinnerId);
+}
+
+void game_sv_Race::OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA)
+{
+	if (!ps_killed)
+		return;
+
+	ps_killed->setFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
+	ps_killed->m_iDeaths++;
+	ps_killed->m_iKillsInRowCurr = 0;
+	ps_killed->DeathTime = Device.dwTimeGlobal;
+
+	signal_Syncronize();
 }

@@ -15,6 +15,7 @@ public:
 	virtual void Init() override;
 	virtual void ReInitShownUI() override {};
 
+	void ShowFragList(bool bShow);
 	void ShowPlayersList(bool bShow);
 	void SetCountdownCaption(const char* str);
 	void SetRoundResultCaption(const char* str);
@@ -25,5 +26,6 @@ protected:
 	shared_str m_RoundResultCaption;
 	game_cl_Race* m_game;
 	CUIWindow* m_pPlayerLists;
+	CUIWindow* m_pFragLists;
 	using inherited = CUIGameCustom;
 };

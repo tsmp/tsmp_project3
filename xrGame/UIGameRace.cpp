@@ -16,6 +16,7 @@ const u32 RoundResultColor = 0xfff0fff0;
 CUIGameRace::CUIGameRace() : m_game(nullptr)
 {
 	m_pPlayerLists = xr_new<CUIWindow>();
+	m_pFragLists = xr_new<CUIWindow>();
 
 	m_CountdownCaption = "countdown";
 	GameCaptions()->addCustomMessage(m_CountdownCaption, DI2PX(0.0f), DI2PY(-0.75f), SZ(0.05f), HUD().Font().pFontGraffiti19Russian, CGameFont::alCenter, CountdownColor, "");
@@ -26,7 +27,11 @@ CUIGameRace::CUIGameRace() : m_game(nullptr)
 
 CUIGameRace::~CUIGameRace()
 {
+	m_pFragLists->DetachAll();
+	m_pPlayerLists->DetachAll();
+
 	xr_delete(m_pPlayerLists);
+	xr_delete(m_pFragLists);
 }
 
 void CUIGameRace::SetClGame(game_cl_GameState* g)
@@ -44,14 +49,28 @@ void CUIGameRace::Init()
 	R_ASSERT2(xml_result, "xml file not found");
 
 	CUIFrags* pFragList = xr_new<CUIFrags>();
+	CUIFrags* pPlayerList = xr_new<CUIFrags>();
 	pFragList->SetAutoDelete(true);
+	pPlayerList->SetAutoDelete(true);
+
+	float ScreenW = UI_BASE_WIDTH;
+	float ScreenH = UI_BASE_HEIGHT;
 	pFragList->Init(xml_doc, "stats_wnd", "frag_wnd_dm");
+	pPlayerList->Init(xml_doc, "players_wnd", "frag_wnd_dm");
 
 	Frect FrameRect = pFragList->GetWndRect();
 	float FrameW = FrameRect.right - FrameRect.left;
 	float FrameH = FrameRect.bottom - FrameRect.top;
-	pFragList->SetWndPos((UI_BASE_WIDTH - FrameW) / 2.0f, (UI_BASE_HEIGHT - FrameH) / 2.0f);
-	m_pPlayerLists->AttachChild(pFragList);
+	pFragList->SetWndPos((ScreenW - FrameW) / 2.0f, (ScreenH - FrameH) / 2.0f);
+
+	m_pFragLists->AttachChild(pFragList);
+
+	FrameRect = pPlayerList->GetWndRect();
+	FrameW = FrameRect.right - FrameRect.left;
+	FrameH = FrameRect.bottom - FrameRect.top;
+	pPlayerList->SetWndPos((ScreenW - FrameW) / 2.0f, (ScreenH - FrameH) / 2.0f);
+
+	m_pPlayerLists->AttachChild(pPlayerList);
 }
 
 void CUIGameRace::ShowPlayersList(bool bShow)
@@ -60,6 +79,14 @@ void CUIGameRace::ShowPlayersList(bool bShow)
 		AddDialogToRender(m_pPlayerLists);
 	else
 		RemoveDialogToRender(m_pPlayerLists);
+}
+
+void CUIGameRace::ShowFragList(bool bShow)
+{
+	if (bShow)
+		AddDialogToRender(m_pFragLists);
+	else
+		RemoveDialogToRender(m_pFragLists);
 }
 
 void CUIGameRace::SetCountdownCaption(const char* str)

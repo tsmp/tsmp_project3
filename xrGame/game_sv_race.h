@@ -33,8 +33,9 @@ public:
 	virtual void OnPlayerConnect(ClientID const &id_who) override;
 	virtual void OnPlayerConnectFinished(ClientID const &id_who) override;
 	virtual void OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 GameID) override;
-	virtual bool SwitchPhaseOnRoundStart() override { return false; }
+	virtual void OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA) override;
 
+	virtual bool SwitchPhaseOnRoundStart() override { return false; }
 	virtual void net_Export_State(NET_Packet &P, ClientID const &id_to) override;
 
 private:

@@ -61,8 +61,16 @@ void CUIStatsPlayerList::Init(CUIXml &xml_doc, LPCSTR path)
 		LPCSTR name = xml_doc.ReadAttrib("field", i, "name");
 		float width = xml_doc.ReadAttribFlt("field", i, "width");
 
-		if (0 == xr_strcmp(name, "artefacts") && GameID() != GAME_ARTEFACTHUNT)
+		if (!xr_strcmp(name, "artefacts") && GameID() != GAME_ARTEFACTHUNT)
 			continue;
+
+		if (!xr_strcmp(name, "frags") && GameID() == GAME_RACE)
+		{
+			if (tabsCount == 3)
+				AddField("ping", width);
+
+			continue;
+		}			
 
 		AddField(name, width);
 	}
@@ -80,6 +88,9 @@ void CUIStatsPlayerList::Init(CUIXml &xml_doc, LPCSTR path)
 		if (!m_bSpectator || m_bStatus_mode)
 			InitTeamHeader(xml_doc, path);
 	case GAME_DEATHMATCH:
+	case GAME_FREEPLAY:
+	case GAME_RACE:
+	case GAME_HARDMATCH:
 		InitHeader(xml_doc, path);
 	default:
 		break;
