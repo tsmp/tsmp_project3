@@ -15,7 +15,7 @@ extern ENGINE_API bool g_dedicated_server;
 extern u32 TimeBeforeRaceStart;
 u32 GoMessageShowTime = 5000; // 5 sec
 
-game_cl_Race::game_cl_Race() : m_game_ui(nullptr), m_WinnerId(static_cast<u16>(-1)), m_WinnerMessageSet(false)
+game_cl_Race::game_cl_Race() : m_game_ui(nullptr), m_WinnerId(static_cast<u16>(-1)), m_WinnerMessageSet(false), m_ReinforcementTime(10), m_DeathTime(0)
 {
 	LoadSounds();
 }
@@ -91,10 +91,29 @@ void game_cl_Race::UpdateRaceInProgress()
 	
 	m_game_ui->ShowPlayersList(false);
 
-	if (m_start_time + GoMessageShowTime > Level().timeServer())	
-		m_game_ui->SetCountdownCaption(*g_St.translate("mp_go"));	
+	if (!Actor() || !Actor()->g_Alive())
+	{
+		if (!m_DeathTime)
+			m_DeathTime = Level().timeServer();
+
+		u32 timeSecToResp = (m_DeathTime + m_ReinforcementTime * 1000 - Level().timeServer()) / 1000;
+
+		if (timeSecToResp > 0)
+		{
+			string128 str;
+			sprintf_s(str, "%s: %u", *g_St.translate("mp_time2respawn"), timeSecToResp);
+			m_game_ui->SetCountdownCaption(str);
+		}
+	}
 	else
-		m_game_ui->SetCountdownCaption("");	
+	{
+		m_DeathTime = 0;
+
+		if (m_start_time + GoMessageShowTime > Level().timeServer())
+			m_game_ui->SetCountdownCaption(*g_St.translate("mp_go"));
+		else
+			m_game_ui->SetCountdownCaption("");
+	}
 }
 
 void game_cl_Race::UpdateRaceScores()
@@ -233,6 +252,7 @@ bool game_cl_Race::OnKeyboardRelease(int key)
 
 void game_cl_Race::OnSwitchPhase(u32 oldPhase, u32 newPhase)
 {
+	m_DeathTime = 0;
 	m_WinnerMessageSet = false;
 	inherited::OnSwitchPhase(oldPhase, newPhase);
 
@@ -243,6 +263,7 @@ void game_cl_Race::OnSwitchPhase(u32 oldPhase, u32 newPhase)
 void game_cl_Race::net_import_state(NET_Packet &P)
 {
 	inherited::net_import_state(P);
+	P.r_u16(m_ReinforcementTime);
 
 	if (m_phase == GAME_PHASE_PLAYER_SCORES)
 		P.r_u16(m_WinnerId);

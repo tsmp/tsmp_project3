@@ -381,6 +381,7 @@ void game_sv_Race::OnPlayerReady(ClientID const &id)
 void game_sv_Race::net_Export_State(NET_Packet &P, ClientID const &id_to)
 {
 	inherited::net_Export_State(P, id_to);
+	P.w_u16(static_cast<u16>(g_sv_race_reinforcementTime));
 
 	if (m_phase == GAME_PHASE_PLAYER_SCORES)
 		P.w_u16(m_WinnerId);

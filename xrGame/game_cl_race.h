@@ -9,7 +9,9 @@ class game_cl_Race : public game_cl_mp
 private:
 	typedef game_cl_mp inherited;
 	CUIGameRace* m_game_ui;
+	u32 m_DeathTime;
 	u16 m_WinnerId;
+	u16 m_ReinforcementTime;
 	bool m_WinnerMessageSet;
 
 	void LoadTeamBaseParticles();
