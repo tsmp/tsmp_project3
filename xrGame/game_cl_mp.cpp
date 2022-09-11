@@ -992,20 +992,21 @@ void game_cl_mp::OnSwitchPhase(u32 old_phase, u32 new_phase)
 	switch (new_phase)
 	{
 	case GAME_PHASE_INPROGRESS:
+	case GAME_PHASE_RACE_START:
 	{
 		m_bSpectatorSelected = FALSE;
 
-		if (Level().pHUD && HUD().GetUI())
-		{
-			HUD().GetUI()->ShowGameIndicators();
-		};
+		if (Level().pHUD && HUD().GetUI())		
+			HUD().GetUI()->ShowGameIndicators();		
 	}
 	break;
+
 	case GAME_PHASE_PENDING:
 	{
 		m_bJustRestarted = true;
 		HideMessageMenus();
-	};
+	}
+	break;
 
 	case GAME_PHASE_TEAM1_SCORES:
 	case GAME_PHASE_TEAM2_SCORES:

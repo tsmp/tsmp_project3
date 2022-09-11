@@ -1,13 +1,13 @@
 #pragma once
 #include "game_cl_mp.h"
 
-class CUIGameDM;
+class CUIGameRace;
 
 class game_cl_Race : public game_cl_mp
 {
 private:
 	typedef game_cl_mp inherited;
-	CUIGameDM* m_game_ui;
+	CUIGameRace* m_game_ui;
 
 	void LoadTeamBaseParticles();
 	void UpdateRaceStart();

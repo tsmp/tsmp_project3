@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "game_cl_race.h"
-#include "UIGameDM.h"
+#include "UIGameRace.h"
 #include "clsid_game.h"
 #include "actor.h"
 #include "ui/UIInventoryWnd.h"
@@ -21,8 +21,8 @@ game_cl_Race::~game_cl_Race() {}
 CUIGameCustom* game_cl_Race::createGameUI()
 {
 	inherited::createGameUI();
-	CLASS_ID clsid = CLSID_GAME_UI_DEATHMATCH;
-	m_game_ui = smart_cast<CUIGameDM*>(NEW_INSTANCE(clsid));
+	CLASS_ID clsid = CLSID_GAME_UI_RACE;
+	m_game_ui = smart_cast<CUIGameRace*>(NEW_INSTANCE(clsid));
 	R_ASSERT(m_game_ui);
 	m_game_ui->SetClGame(this);
 	m_game_ui->Init();

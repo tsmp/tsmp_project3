@@ -2320,6 +2320,9 @@
     <Filter Include="Core\Server\Games\server\race">
       <UniqueIdentifier>{5e4048f8-1c11-4991-8487-2efe06dd297a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\GameTypes\Race">
+      <UniqueIdentifier>{240a4c0a-9a87-4dbf-a983-dda0eab299d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6621,6 +6624,9 @@
     <ClInclude Include="PresetItem.h">
       <Filter>Core\Server\Games\client\deathmatch</Filter>
     </ClInclude>
+    <ClInclude Include="UIGameRace.h">
+      <Filter>UI\GameTypes\Race</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9807,6 +9813,9 @@
     </ClCompile>
     <ClCompile Include="PresetItem.cpp">
       <Filter>Core\Server\Games\client\deathmatch</Filter>
+    </ClCompile>
+    <ClCompile Include="UIGameRace.cpp">
+      <Filter>UI\GameTypes\Race</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

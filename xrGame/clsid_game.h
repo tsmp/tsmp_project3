@@ -224,5 +224,6 @@
 #define CLSID_GAME_UI_TEAMDEATHMATCH MK_CLSID('U', 'I', '_', 'T', 'D', 'M', ' ', ' ')
 #define CLSID_GAME_UI_ARTEFACTHUNT MK_CLSID('U', 'I', '_', 'A', 'H', 'U', 'N', 'T')
 #define CLSID_GAME_UI_FREEPLAY MK_CLSID('U', 'I', '_', 'F', 'R', 'E', 'E', 'P')
+#define CLSID_GAME_UI_RACE MK_CLSID('U', 'I', '_', 'R', 'A', 'C', 'E', ' ')
 
 #define CLSID_ONLINE_OFFLINE_GROUP MK_CLSID('O', 'N', '_', 'O', 'F', 'F', '_', 'G')
