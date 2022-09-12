@@ -459,6 +459,9 @@ void CCar::VisualUpdate(float fov)
 	
 	if (Owner())
 	{
+		if (!IsMyCar() && !Owner()->getVisible())
+			Owner()->setVisible(true);
+
 		Owner()->XFORM().mul_43(XFORM(), m_sits_transforms[0]);		
 
 		if (HUD().GetUI() && Owner() == Actor())
