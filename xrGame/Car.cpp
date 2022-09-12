@@ -460,7 +460,13 @@ void CCar::VisualUpdate(float fov)
 	if (Owner())
 	{
 		if (!IsMyCar() && !Owner()->getVisible())
+		{
 			Owner()->setVisible(true);
+
+			// голова водителя смотрит прямо перед собой
+			OwnerActor()->Orientation().yaw = -0.0236152373;
+			OwnerActor()->Orientation().pitch = -0.0728002042;
+		}
 
 		Owner()->XFORM().mul_43(XFORM(), m_sits_transforms[0]);		
 
