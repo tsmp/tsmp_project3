@@ -116,8 +116,11 @@ void game_sv_Race::UpdateInProgress()
 		if (!l_pC->net_Ready || ps->IsSkip())
 			return;
 
-		if (!ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
-			return;
+		if (!ps->DeathTime)
+			ps->DeathTime = Level().timeServer();
+
+		if (!ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+			return;			
 
 		if (ps->DeathTime + g_sv_race_reinforcementTime * 1000 < Level().timeServer())
 		{
@@ -174,6 +177,7 @@ void game_sv_Race::OnPlayerConnect(ClientID const &id_who)
 	}
 
 	ps_who->setFlag(GAME_PLAYER_FLAG_SPECTATOR);
+	ps_who->setFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
 	ps_who->resetFlag(GAME_PLAYER_FLAG_SKIP);
 
 	if (g_dedicated_server && xrCData == m_server->GetServerClient())
