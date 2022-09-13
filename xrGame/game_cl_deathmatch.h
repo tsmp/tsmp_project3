@@ -66,7 +66,7 @@ protected:
 	virtual BOOL CanCallSkinMenu();
 	virtual BOOL CanCallInventoryMenu();
 
-	void Check_Invincible_Players();
+	void Check_Invincible_Players() {};
 
 	virtual void shedule_Update(u32 dt);
 	virtual bool OnKeyboardPress(int key);
@@ -110,8 +110,6 @@ public:
 	virtual void OnVoteStart(NET_Packet &P);
 	virtual void OnVoteStop(NET_Packet &P);
 	virtual void OnVoteEnd(NET_Packet &P);
-
-	virtual void GetMapEntities(xr_vector<SZoneMapEntityData> &dst);
 
 	virtual void OnRender();
 	virtual bool IsEnemy(game_PlayerState *ps);

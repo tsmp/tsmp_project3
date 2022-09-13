@@ -28,7 +28,6 @@ struct CWrapperBase : public T, public luabind::wrap_base
 	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1(net_import_state, NET_Packet)
 	DEFINE_LUA_WRAPPER_METHOD_0(createGameUI, CUIGameCustom *)
 	DEFINE_LUA_WRAPPER_METHOD_V1(shedule_Update, u32)
-	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1(GetMapEntities, xr_vector<SZoneMapEntityData>)
 
 	virtual game_PlayerState *createPlayerState()
 	{
@@ -128,7 +127,6 @@ void game_cl_mp_script::script_register(lua_State *L)
 			 .def("OnKeyboardRelease", &BaseType::OnKeyboardRelease, &WrapType::OnKeyboardRelease_static)
 			 .def("net_import_state", &BaseType::net_import_state, &WrapType::net_import_state_static)
 			 .def("shedule_Update", &BaseType::shedule_Update, &WrapType::shedule_Update_static)
-			 .def("FillMapEntities", &BaseType::GetMapEntities, &WrapType::GetMapEntities_static)
 			 .def("TranslateGameMessage", &BaseType::TranslateGameMessage, &WrapType::TranslateGameMessage_static)
 
 			 .def("createPlayerState", &BaseType::createPlayerState, &WrapType::createPlayerState_static, adopt<result>())

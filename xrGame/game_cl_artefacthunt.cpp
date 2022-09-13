@@ -25,7 +25,6 @@
 #include "string_table.h"
 #include "CustomOutfit.h"
 
-#define TEAM0_MENU "artefacthunt_team0"
 #define TEAM1_MENU "artefacthunt_team1"
 #define TEAM2_MENU "artefacthunt_team2"
 
@@ -146,9 +145,8 @@ void game_cl_ArtefactHunt::TranslateGameMessage(u32 msg, NET_Packet &P)
 	char Color_Main[] = "%c[255,192,192,192]";
 	char Color_Artefact[] = "%c[255,255,255,0]";
 
-	switch (msg) //-------------------UI MESSAGES
-	{
-		
+	switch (msg)
+	{		
 	case GAME_EVENT_ARTEFACT_TAKEN:
 	{
 		u16 PlayerID, Team;
@@ -248,55 +246,13 @@ CUIGameCustom *game_cl_ArtefactHunt::createGameUI()
 	game_cl_mp::createGameUI();
 
 	CLASS_ID clsid = CLSID_GAME_UI_ARTEFACTHUNT;
-	m_game_ui = smart_cast<CUIGameAHunt *>(NEW_INSTANCE(clsid));
+	m_game_ui = smart_cast<CUIGameAHunt*>(NEW_INSTANCE(clsid));
 	R_ASSERT(m_game_ui);
 	m_game_ui->SetClGame(this);
 	m_game_ui->Init();
 
 	LoadMessagesMenu(MESSAGE_MENUS);
 	return m_game_ui;
-}
-
-void game_cl_ArtefactHunt::GetMapEntities(xr_vector<SZoneMapEntityData> &dst)
-{
-	inherited::GetMapEntities(dst);
-
-	SZoneMapEntityData D;
-	u32 color_enemy_with_artefact = 0xffff0000;
-	u32 color_artefact = 0xffffffff;
-	u32 color_friend_with_artefact = 0xffffff00;
-
-	s16 local_team = local_player->team;
-
-	CObject *pObject = Level().Objects.net_Find(artefactID);
-	if (!pObject)
-		return;
-
-	CArtefact *pArtefact = smart_cast<CArtefact *>(pObject);
-	VERIFY(pArtefact);
-
-	CObject *pParent = pArtefact->H_Parent();
-	if (!pParent) // Artefact alone
-	{ 
-		D.color = color_artefact;
-		D.pos = pArtefact->Position();
-		dst.push_back(D);
-		return;
-	}
-
-	if (pParent && pParent->ID() == artefactBearerID && GetPlayerByGameID(artefactBearerID))
-	{
-		CObject *pBearer = Level().Objects.net_Find(artefactBearerID);
-		VERIFY(pBearer);
-		D.pos = pBearer->Position();
-
-		game_PlayerState *ps = GetPlayerByGameID(artefactBearerID);
-		(ps->team == local_team) ? D.color = color_friend_with_artefact : D.color = color_enemy_with_artefact;
-
-		//remove previous record about this actor !!!
-		dst.push_back(D);
-		return;
-	}
 }
 
 void game_cl_ArtefactHunt::shedule_Update(u32 dt)
@@ -349,7 +305,7 @@ void game_cl_ArtefactHunt::shedule_Update(u32 dt)
 			{
 				if (m_bTeamSelected && m_bSkinSelected)
 				{
-					if (iReinforcementTime != 0)
+					if (iReinforcementTime)
 					{
 						if (!m_game_ui->m_pBuySpawnMsgBox->IsShown() && local_player->money_for_round + m_iSpawn_Cost >= 0)
 							m_game_ui->SetPressJumpMsgCaption(*st.translate("mp_press_jump2pay_spaw"));
@@ -397,9 +353,6 @@ void game_cl_ArtefactHunt::shedule_Update(u32 dt)
 		SetScore();
 	}
 	break;
-
-	default:
-		break;
 	}
 
 	if (m_game_ui->m_pBuySpawnMsgBox->IsShown())
@@ -425,10 +378,7 @@ void game_cl_ArtefactHunt::SetScore()
 
 BOOL game_cl_ArtefactHunt::CanCallBuyMenu()
 {
-	if (!m_bBuyEnabled)
-		return FALSE;
-
-	if (Phase() != GAME_PHASE_INPROGRESS)
+	if (!m_bBuyEnabled || Phase() != GAME_PHASE_INPROGRESS)
 		return false;
 
 	if (m_game_ui->m_pUITeamSelectWnd && m_game_ui->m_pUITeamSelectWnd->IsShown())	
@@ -440,11 +390,10 @@ BOOL game_cl_ArtefactHunt::CanCallBuyMenu()
 	if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())	
 		return FALSE;	
 
-	CActor *pCurActor = smart_cast<CActor *>(Level().CurrentEntity());
-	if (!pCurActor || !pCurActor->g_Alive())
-		return FALSE;
+	if (CActor* pCurActor = smart_cast<CActor*>(Level().CurrentEntity()))
+		return pCurActor->g_Alive();
 
-	return TRUE;
+	return FALSE;
 }
 
 bool game_cl_ArtefactHunt::CanBeReady()
@@ -494,7 +443,7 @@ char *game_cl_ArtefactHunt::getTeamSection(int Team)
 
 	default:
 		NODEFAULT;
-	};
+	}
 
 	return nullptr;
 }
@@ -508,7 +457,7 @@ bool game_cl_ArtefactHunt::PlayerCanSprint(CActor *pActor)
 		return false;
 
 	return true;
-};
+}
 
 #define ARTEFACT_NEUTRAL "mp_af_neutral_location"
 #define ARTEFACT_FRIEND "mp_af_friend_location"
