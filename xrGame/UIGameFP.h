@@ -1,11 +1,11 @@
 #pragma once
-#include "UIGameCustom.h"
+#include "UIGameBaseMP.h"
 
 class game_cl_GameState;
 class game_cl_Freeplay;
 class CUIInventoryWnd;
 
-class CUIGameFP : public CUIGameCustom
+class CUIGameFP : public CUIGameBaseMP
 {
 public:
 
@@ -31,5 +31,5 @@ protected:
 	shared_str m_pressjump_caption;
 	game_cl_Freeplay *m_game;
 	CUIWindow *m_pPlayerLists;
-	using inherited = CUIGameCustom;
+	using inherited = CUIGameBaseMP;
 };

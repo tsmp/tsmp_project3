@@ -2323,6 +2323,9 @@
     <Filter Include="UI\GameTypes\Race">
       <UniqueIdentifier>{240a4c0a-9a87-4dbf-a983-dda0eab299d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\GameTypes\BaseMP">
+      <UniqueIdentifier>{8e4064e8-a07d-4692-96af-d13a8749d6dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6627,6 +6630,9 @@
     <ClInclude Include="UIGameRace.h">
       <Filter>UI\GameTypes\Race</Filter>
     </ClInclude>
+    <ClInclude Include="UIGameBaseMP.h">
+      <Filter>UI\GameTypes\BaseMP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9816,6 +9822,9 @@
     </ClCompile>
     <ClCompile Include="UIGameRace.cpp">
       <Filter>UI\GameTypes\Race</Filter>
+    </ClCompile>
+    <ClCompile Include="UIGameBaseMP.cpp">
+      <Filter>UI\GameTypes\BaseMP</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

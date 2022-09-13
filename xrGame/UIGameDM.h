@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIGameCustom.h"
+#include "UIGameBaseMP.h"
 #include "ui/KillMessageStruct.h"
 
 #include "game_cl_mp.h"
@@ -17,12 +17,12 @@ class CUIInventoryWnd;
 class CUIMapDesc;
 class CInventoryBox;
 
-class CUIGameDM : public CUIGameCustom
+class CUIGameDM : public CUIGameBaseMP
 {
 private:
 	//game_cl_Deathmatch *m_game;
 	game_cl_mp *m_game;
-	using inherited = CUIGameCustom;
+	using inherited = CUIGameBaseMP;
 	bool m_IsHardmatch;
 
 public:
@@ -55,7 +55,6 @@ protected:
 	CUIMoneyIndicator* m_pMoneyIndicator;
 	CUIRankIndicator* m_pRankIndicator;
 	CUIStatic* m_pFragLimitIndicator;
-	UIVoteStatusWnd* m_voteStatusWnd;
 
 	virtual void ClearLists();
 
@@ -85,9 +84,6 @@ public:
 	void SetForceRespawnTimeCaption(LPCSTR str);
 	void SetDemoPlayCaption(LPCSTR str);
 	void SetWarmUpCaption(LPCSTR str);
-
-	void SetVoteMessage(LPCSTR str);
-	void SetVoteTimeResultMsg(LPCSTR str);
 
 	virtual bool IR_OnKeyboardPress(int dik);
 	virtual bool IR_OnKeyboardRelease(int dik);

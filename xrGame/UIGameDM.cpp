@@ -18,7 +18,6 @@
 #include "game_cl_Deathmatch.h"
 #include "ui/UIMoneyIndicator.h"
 #include "ui/UIRankIndicator.h"
-#include "ui/UIVoteStatusWnd.h"
 #include "ui/UITalkWnd.h"
 
 #include "ui/UICarBodyWnd.h"
@@ -76,8 +75,7 @@ CUIGameDM::CUIGameDM()
 	m_pRankIndicator->InitFromXml(uiXml);
 	m_pFragLimitIndicator = xr_new<CUIStatic>();
 	CUIXmlInit::InitStatic(uiXml, "fraglimit", 0, m_pFragLimitIndicator);
-
-	m_voteStatusWnd = nullptr;
+		
 	m_pInventoryMenu = xr_new<CUIInventoryWnd>();
 	m_pMapDesc = nullptr;
 }
@@ -155,7 +153,6 @@ CUIGameDM::~CUIGameDM()
 	xr_delete(m_pMoneyIndicator);
 	xr_delete(m_pRankIndicator);
 	xr_delete(m_pFragLimitIndicator);
-	xr_delete(m_voteStatusWnd);
 
 	delete_data(m_pInventoryMenu);
 	delete_data(m_pMapDesc);
@@ -250,30 +247,6 @@ void CUIGameDM::SetWarmUpCaption(LPCSTR str)
 	GameCaptions()->setCaption(m_warm_up_caption, str, WARM_UP_COLOR, true);
 }
 
-void CUIGameDM::SetVoteMessage(LPCSTR str)
-{
-	if (!str)
-		xr_delete(m_voteStatusWnd);
-	else
-	{
-		if (!m_voteStatusWnd)
-		{
-			CUIXml uiXml;
-			uiXml.Init(CONFIG_PATH, UI_PATH, "ui_game_dm.xml");
-			m_voteStatusWnd = xr_new<UIVoteStatusWnd>();
-			m_voteStatusWnd->InitFromXML(uiXml);
-		}
-		m_voteStatusWnd->Show(true);
-		m_voteStatusWnd->SetVoteMsg(str);
-	}
-};
-
-void CUIGameDM::SetVoteTimeResultMsg(LPCSTR str)
-{
-	if (m_voteStatusWnd)
-		m_voteStatusWnd->SetVoteTimeResultMsg(str);
-}
-
 bool CUIGameDM::IR_OnKeyboardPress(int dik)
 {
 	if (inherited::IR_OnKeyboardPress(dik))
@@ -307,8 +280,6 @@ void CUIGameDM::OnFrame()
 	m_pRankIndicator->Update();
 
 	m_pFragLimitIndicator->Update();
-	if (m_voteStatusWnd && m_voteStatusWnd->IsShown())
-		m_voteStatusWnd->Update();
 }
 
 void CUIGameDM::Render()
@@ -322,8 +293,6 @@ void CUIGameDM::Render()
 	}
 
 	m_pFragLimitIndicator->Draw();
-	if (m_voteStatusWnd && m_voteStatusWnd->IsShown())
-		m_voteStatusWnd->Draw();
 }
 
 void CUIGameDM::DisplayMoneyChange(LPCSTR deltaMoney)

@@ -612,6 +612,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="UIGameBaseMP.h" />
     <ClInclude Include="filetransfer\filereceiver_node.h" />
     <ClInclude Include="filetransfer\filetransfer_common.h" />
     <ClInclude Include="filetransfer\filetransfer_node.h" />
@@ -2058,6 +2059,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="console_commands_car_dbg.cpp" />
+    <ClCompile Include="UIGameBaseMP.cpp" />
     <ClCompile Include="damage_manager.cpp" />
     <ClCompile Include="action_base_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>

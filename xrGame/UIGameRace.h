@@ -1,10 +1,11 @@
 #pragma once
-#include "UIGameCustom.h"
+#include "UIGameBaseMP.h"
 
 class game_cl_GameState;
 class game_cl_Race;
+class UIVoteStatusWnd;
 
-class CUIGameRace : public CUIGameCustom
+class CUIGameRace : public CUIGameBaseMP
 {
 public:
 
@@ -27,5 +28,5 @@ protected:
 	game_cl_Race* m_game;
 	CUIWindow* m_pPlayerLists;
 	CUIWindow* m_pFragLists;
-	using inherited = CUIGameCustom;
+	using inherited = CUIGameBaseMP;
 };
