@@ -34,4 +34,5 @@ public:
 	virtual void OnSwitchPhase(u32 old_phase, u32 new_phase) override;
 
 	virtual void net_import_state(NET_Packet &P) override;
+	virtual CUIGameBaseMP* GetMpGameUI() override { return reinterpret_cast<CUIGameBaseMP*>(m_game_ui); }
 };

@@ -14,7 +14,6 @@
 #include "ui/UIInventoryWnd.h"
 #include "ui/UIMapDesc.h"
 #include "ui/UIMessageBoxEx.h"
-#include "ui/UIVote.h"
 #include "dinput.h"
 #include "gamepersistent.h"
 #include "string_table.h"
@@ -512,28 +511,7 @@ void game_cl_Deathmatch::shedule_Update(u32 dt)
 					m_game_ui->SetSpectatorMsgCaption(SpectatorStr);
 				}
 			}
-
-			u32 CurTime = Level().timeServer();
-
-			if (IsVotingEnabled() && IsVotingActive() && m_dwVoteEndTime >= CurTime)
-			{
-				u32 TimeLeft = m_dwVoteEndTime - Level().timeServer();
-				string1024 VoteTimeResStr;
-				u32 SecsLeft = (TimeLeft % 60000) / 1000;
-				u32 MinitsLeft = (TimeLeft - SecsLeft) / 60000;
-
-				u32 NumAgreed = 0;
-
-				for (const auto &it: players)
-				{
-					if (it.second->m_bCurrentVoteAgreed == 1)
-						NumAgreed++;
-				}
-
-				sprintf_s(VoteTimeResStr, st.translate("mp_timeleft").c_str(), MinitsLeft, SecsLeft, float(NumAgreed) / players.size());
-				m_game_ui->SetVoteTimeResultMsg(VoteTimeResStr);
-			}
-
+			
 			if (local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) &&
 				m_u32ForceRespawn &&
 				!local_player->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
@@ -704,103 +682,6 @@ bool game_cl_Deathmatch::OnKeyboardRelease(int key)
 	}
 
 	return inherited::OnKeyboardRelease(key);
-}
-
-#define MAX_VOTE_PARAMS 5
-
-void game_cl_Deathmatch::OnVoteStart(NET_Packet &P)
-{
-	CStringTable st;
-	inherited::OnVoteStart(P);
-
-	string1024 Command = "";
-	string64 Player = "";
-	P.r_stringZ(Command);
-	P.r_stringZ(Player);
-	m_dwVoteEndTime = Level().timeServer() + P.r_u32();
-
-	if (!m_game_ui)
-		return;
-
-	string4096 CmdName = "";
-	string1024 NewCmd;
-	strcpy(NewCmd, Command);
-	string1024 CmdParams[MAX_VOTE_PARAMS] = { "", "", "", "", "" };
-	sscanf(Command, "%s %s %s %s %s %s", CmdName, CmdParams[0], CmdParams[1], CmdParams[2], CmdParams[3], CmdParams[4]);
-
-	if (!xr_strcmp(CmdName, "restart"))
-	{
-		sprintf_s(NewCmd, "%s",
-			*st.translate("mp_restart"));
-	}
-	else if (!xr_strcmp(CmdName, "restart_fast"))
-	{
-		sprintf_s(NewCmd, "%s",
-			*st.translate("mp_restart_fast"));
-	}
-	else if (!xr_strcmp(CmdName, "kick"))
-	{
-		sprintf_s(NewCmd, "%s %s", *st.translate("mp_kick"), CmdParams[0]);
-
-		for (int i = 1; i < MAX_VOTE_PARAMS; i++)
-		{
-			if (xr_strlen(CmdParams[i]))
-			{
-				strcat(NewCmd, " ");
-				strcat(NewCmd, CmdParams[i]);
-			}
-		}
-	}
-	else if (!xr_strcmp(CmdName, "ban"))
-	{
-		sprintf_s(NewCmd, "%s %s", *st.translate("mp_ban"), CmdParams[0]);
-
-		for (int i = 1; i < MAX_VOTE_PARAMS; i++)
-		{
-			if (xr_strlen(CmdParams[i]))
-			{
-				strcat(NewCmd, " ");
-				strcat(NewCmd, CmdParams[i]);
-			}
-		}
-	}
-	else if (!xr_strcmp(CmdName, "changemap"))	
-		sprintf_s(NewCmd, "%s %s", *st.translate("mp_change_map"), *st.translate(CmdParams[0]));	
-	else if (!xr_strcmp(CmdName, "changeweather"))	
-		sprintf_s(NewCmd, "%s %s", *st.translate("mp_change_weather"), *st.translate(CmdParams[0]));	
-
-	string1024 VoteStr;
-	sprintf_s(VoteStr, *st.translate("mp_voting_started"), NewCmd, Player);
-
-	m_game_ui->SetVoteMessage(VoteStr);
-	m_game_ui->SetVoteTimeResultMsg("");
-
-	if (!m_pVoteRespondWindow)
-		m_pVoteRespondWindow = xr_new<CUIVote>();
-
-	m_pVoteRespondWindow->SetVoting(VoteStr);
-}
-
-void game_cl_Deathmatch::OnVoteStop(NET_Packet &P)
-{
-	inherited::OnVoteStop(P);
-
-	if (m_game_ui)
-	{
-		m_game_ui->SetVoteMessage(NULL);
-		m_game_ui->SetVoteTimeResultMsg(NULL);
-	}
-}
-
-void game_cl_Deathmatch::OnVoteEnd(NET_Packet &P)
-{
-	inherited::OnVoteEnd(P);
-
-	if (m_game_ui)
-	{
-		m_game_ui->SetVoteMessage(NULL);
-		m_game_ui->SetVoteTimeResultMsg(NULL);
-	}
 }
 
 bool game_cl_Deathmatch::IsEnemy(game_PlayerState *ps)

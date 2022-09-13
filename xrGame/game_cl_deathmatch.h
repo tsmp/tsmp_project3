@@ -53,8 +53,6 @@ protected:
 	BOOL m_bBuyEnabled;
 	s32 m_iCurrentPlayersMoney;
 
-	u32 m_dwVoteEndTime;
-
 	virtual const shared_str GetBaseCostSect() { return "deathmatch_base_cost"; }
 
 	void ClearBuyMenu();
@@ -107,9 +105,7 @@ public:
 	virtual CUIDialogWnd *GetBuyWnd() { return (CUIDialogWnd *)pCurBuyMenu; };
 	virtual CUIDialogWnd *GetSkinWnd() { return (CUIDialogWnd *)pCurSkinMenu; };
 
-	virtual void OnVoteStart(NET_Packet &P);
-	virtual void OnVoteStop(NET_Packet &P);
-	virtual void OnVoteEnd(NET_Packet &P);
+	virtual CUIGameBaseMP* GetMpGameUI() override { return reinterpret_cast<CUIGameBaseMP*>(m_game_ui); }
 
 	virtual void OnRender();
 	virtual bool IsEnemy(game_PlayerState *ps);

@@ -9,6 +9,7 @@
 
 class CUISpeechMenu;
 class CUIMessageBoxEx;
+class CUIGameBaseMP;
 
 struct SND_Message
 {
@@ -126,6 +127,7 @@ protected:
 	CUIVote *m_pVoteRespondWindow;
 	CUIMessageBoxEx *m_pMessageBox;
 	BOOL m_bSpectatorSelected;
+	u32 m_dwVoteEndTime;
 
 	virtual void LoadTeamData(const shared_str &TeamName);
 	virtual void ChatSayTeam(const shared_str &phrase);
@@ -232,6 +234,7 @@ public:
 
 	virtual u8 GetTeamCount() { return 0; };
 	virtual s16 ModifyTeam(s16 Team) { return Team; };
+	virtual CUIGameBaseMP* GetMpGameUI() { return nullptr; }
 
 	void draw_downloads(bool draw);
 	virtual bool Is_Spectator_TeamCamera_Allowed() { return m_bSpectator_TeamCamera; };

@@ -19,6 +19,7 @@
 #include "game_base_kill_type.h"
 #include "game_base_menu_events.h"
 #include "UIGameDM.h"
+#include "UIGameBaseMP.h"
 #include "ui/UITextureMaster.h"
 #include "ui/UIVotingCategory.h"
 #include "ui/UIVote.h"
@@ -829,14 +830,13 @@ void game_cl_mp::CommonMessageOut(LPCSTR msg)
 
 	if (HUD().GetUI())
 		HUD().GetUI()->m_pMessagesWnd->AddLogMessage(msg);
-};
+}
 
 void game_cl_mp::shedule_Update(u32 dt)
 {
 	UpdateSndMessages();
 
 	inherited::shedule_Update(dt);
-	//-----------------------------------------
 
 	if (g_dedicated_server)
 		return;
@@ -861,12 +861,33 @@ void game_cl_mp::shedule_Update(u32 dt)
 	break;
 	case GAME_PHASE_INPROGRESS:
 	{
-		if (!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
-		{
+		if (!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))		
 			HideMessageMenus();
-		};
+		
+		if (IsVotingEnabled() && IsVotingActive() && m_dwVoteEndTime >= Level().timeServer())
+		{
+			CStringTable st;
+			u32 TimeLeft = m_dwVoteEndTime - Level().timeServer();
+			string1024 VoteTimeResStr;
+			u32 SecsLeft = (TimeLeft % 60000) / 1000;
+			u32 MinitsLeft = (TimeLeft - SecsLeft) / 60000;
+
+			u32 NumAgreed = 0;
+
+			for (const auto &it : players)
+			{
+				if (it.second->m_bCurrentVoteAgreed == 1)
+					NumAgreed++;
+			}
+
+			sprintf_s(VoteTimeResStr, st.translate("mp_timeleft").c_str(), MinitsLeft, SecsLeft, float(NumAgreed) / players.size());
+
+			if(CUIGameBaseMP *mpUI = GetMpGameUI())
+				mpUI->SetVoteTimeResultMsg(VoteTimeResStr);
+		}
 	}
 	break;
+
 	default:
 	{
 		CUIChatWnd *pChatWnd = HUD().GetUI()->m_pMessagesWnd->GetChatWnd();
@@ -915,7 +936,8 @@ void game_cl_mp::SendVoteYesMessage()
 	Game().u_EventGen(P, GE_GAME_EVENT, Game().local_player->GameID);
 	P.w_u16(GAME_EVENT_VOTE_YES);
 	Game().u_EventSend(P);
-};
+}
+
 void game_cl_mp::SendVoteNoMessage()
 {
 	if (!IsVotingEnabled() || !IsVotingActive())
@@ -924,25 +946,104 @@ void game_cl_mp::SendVoteNoMessage()
 	Game().u_EventGen(P, GE_GAME_EVENT, Game().local_player->GameID);
 	P.w_u16(GAME_EVENT_VOTE_NO);
 	Game().u_EventSend(P);
-};
+}
+
+const u32 MAX_VOTE_PARAMS = 5;
 
 void game_cl_mp::OnVoteStart(NET_Packet &P)
 {
 	SetVotingActive(true);
-};
+	CStringTable st;
+
+	string128 Command = "";
+	string64 Player = "";
+	P.r_stringZ(Command);
+	P.r_stringZ(Player);
+
+	m_dwVoteEndTime = Level().timeServer() + P.r_u32();
+	CUIGameBaseMP* mpGameUi = GetMpGameUI();
+
+	if (!mpGameUi)
+		return;
+
+	string1024 CmdName = "";
+	string1024 NewCmd;
+	strcpy(NewCmd, Command);
+	string1024 CmdParams[MAX_VOTE_PARAMS] = { "", "", "", "", "" };
+	sscanf(Command, "%s %s %s %s %s %s", CmdName, CmdParams[0], CmdParams[1], CmdParams[2], CmdParams[3], CmdParams[4]);
+
+	if (!xr_strcmp(CmdName, "restart"))	
+		sprintf_s(NewCmd, "%s", *st.translate("mp_restart"));	
+	else if (!xr_strcmp(CmdName, "restart_fast"))	
+		sprintf_s(NewCmd, "%s", *st.translate("mp_restart_fast"));	
+	else if (!xr_strcmp(CmdName, "kick"))
+	{
+		sprintf_s(NewCmd, "%s %s", *st.translate("mp_kick"), CmdParams[0]);
+
+		for (int i = 1; i < MAX_VOTE_PARAMS; i++)
+		{
+			if (xr_strlen(CmdParams[i]))
+			{
+				strcat(NewCmd, " ");
+				strcat(NewCmd, CmdParams[i]);
+			}
+		}
+	}
+	else if (!xr_strcmp(CmdName, "ban"))
+	{
+		sprintf_s(NewCmd, "%s %s", *st.translate("mp_ban"), CmdParams[0]);
+
+		for (int i = 1; i < MAX_VOTE_PARAMS; i++)
+		{
+			if (xr_strlen(CmdParams[i]))
+			{
+				strcat(NewCmd, " ");
+				strcat(NewCmd, CmdParams[i]);
+			}
+		}
+	}
+	else if (!xr_strcmp(CmdName, "changemap"))
+		sprintf_s(NewCmd, "%s %s", *st.translate("mp_change_map"), *st.translate(CmdParams[0]));
+	else if (!xr_strcmp(CmdName, "changeweather"))
+		sprintf_s(NewCmd, "%s %s", *st.translate("mp_change_weather"), *st.translate(CmdParams[0]));
+
+	string1024 VoteStr;
+	sprintf_s(VoteStr, *st.translate("mp_voting_started"), NewCmd, Player);
+
+	mpGameUi->SetVoteMessage(VoteStr);
+	mpGameUi->SetVoteTimeResultMsg("");
+
+	if (!m_pVoteRespondWindow)
+		m_pVoteRespondWindow = xr_new<CUIVote>();
+
+	m_pVoteRespondWindow->SetVoting(VoteStr);
+}
+
 void game_cl_mp::OnVoteStop(NET_Packet &P)
 {
 	SetVotingActive(false);
+
 	if (m_pVoteRespondWindow && m_pVoteRespondWindow->IsShown())
-	{
 		StartStopMenu(m_pVoteRespondWindow, true);
+
+	if (CUIGameBaseMP* mpGameUi = GetMpGameUI())
+	{
+		mpGameUi->SetVoteMessage(nullptr);
+		mpGameUi->SetVoteTimeResultMsg(nullptr);
 	}
-};
+}
 
 void game_cl_mp::OnVoteEnd(NET_Packet &P)
 {
 	SetVotingActive(false);
-};
+
+	if (CUIGameBaseMP* mpGameUi = GetMpGameUI())
+	{
+		mpGameUi->SetVoteMessage(nullptr);
+		mpGameUi->SetVoteTimeResultMsg(nullptr);
+	}
+}
+
 void game_cl_mp::OnPlayerVoted(game_PlayerState *ps)
 {
 	if (!IsVotingActive())
@@ -1371,11 +1472,12 @@ void game_cl_mp::net_import_state(NET_Packet &P)
 {
 	u8 OldRank = u8(-1);
 	s16 OldTeam = -1;
+
 	if (local_player)
 	{
 		OldRank = local_player->rank;
 		OldTeam = local_player->team;
-	};
+	}
 
 	inherited::net_import_state(P);
 
@@ -1383,10 +1485,11 @@ void game_cl_mp::net_import_state(NET_Packet &P)
 	{
 		if (OldTeam != local_player->team)
 			OnTeamChanged();
+
 		if (OldRank != local_player->rank)
 			OnRankChanged(OldRank);
-	};
-	//-------------------------------------------------------------
+	}
+
 	m_u8SpectatorModes = P.r_u8();
 
 	m_bSpectator_FreeFly = (m_u8SpectatorModes & (1 << CSpectator::eacFreeFly)) != 0;
@@ -1398,18 +1501,8 @@ void game_cl_mp::net_import_state(NET_Packet &P)
 
 bool game_cl_mp::Is_Spectator_Camera_Allowed(CSpectator::EActorCameras Camera)
 {
-	/*
-	switch (Camera)
-	{
-	case CSpectator::eacFreeFly		 : return m_bSpectator_FreeFly	;
-	case CSpectator::eacFirstEye	 : return m_bSpectator_FirstEye	;
-	case CSpectator::eacLookAt		 : return m_bSpectator_LookAt	;
-	case CSpectator::eacFreeLook	 : return m_bSpectator_FreeLook	;	
-	}
-	return false;
-	*/
 	return (!!(m_u8SpectatorModes & (1 << Camera)));
-};
+}
 
 void game_cl_mp::OnEventMoneyChanged(NET_Packet &P)
 {

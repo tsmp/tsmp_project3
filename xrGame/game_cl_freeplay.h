@@ -19,4 +19,6 @@ public:
 
 	virtual bool OnKeyboardPress(int key);
 	virtual bool OnKeyboardRelease(int key);
+
+	virtual CUIGameBaseMP* GetMpGameUI() override { return reinterpret_cast<CUIGameBaseMP*>(m_game_ui); }
 };
