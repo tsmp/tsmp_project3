@@ -254,17 +254,29 @@ SVehicleAnimCollection::SVehicleAnimCollection()
 void SVehicleAnimCollection::Create(CKinematicsAnimated *V, u16 num)
 {
 	string128 buf, buff1, buff2;
-	strconcat(sizeof(buff1), buff1, itoa(num, buf, 10), "_");
-	steer_left = V->ID_Cycle(strconcat(sizeof(buf), buf, "steering_idle_", buff1, "ls"));
-	steer_right = V->ID_Cycle(strconcat(sizeof(buf), buf, "steering_idle_", buff1, "rs"));
 
-	for (int i = 0; MAX_IDLES > i; ++i)
+	if (Game().Type() == GAME_RACE)
 	{
-		idles[i] = V->ID_Cycle_Safe(strconcat(sizeof(buf), buf, "steering_idle_", buff1, itoa(i, buff2, 10)));
-		if (idles[i])
-			idles_num++;
-		else
-			break;
+		steer_left = V->ID_Cycle("steering_torso_ls");
+		steer_right = V->ID_Cycle("steering_torso_rs");
+
+		idles[0] = V->ID_Cycle_Safe("steering_torso_idle");
+		idles[1] = V->ID_Cycle_Safe("steering_idle_0_2");
+	}
+	else
+	{
+		strconcat(sizeof(buff1), buff1, itoa(num, buf, 10), "_");
+		steer_left = V->ID_Cycle(strconcat(sizeof(buf), buf, "steering_idle_", buff1, "ls"));
+		steer_right = V->ID_Cycle(strconcat(sizeof(buf), buf, "steering_idle_", buff1, "rs"));
+
+		for (int i = 0; MAX_IDLES > i; ++i)
+		{
+			idles[i] = V->ID_Cycle_Safe(strconcat(sizeof(buf), buf, "steering_idle_", buff1, itoa(i, buff2, 10)));
+			if (idles[i])
+				idles_num++;
+			else
+				break;
+		}
 	}
 }
 
