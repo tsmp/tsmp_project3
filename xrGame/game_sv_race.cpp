@@ -324,14 +324,57 @@ CSE_Abstract* game_sv_Race::SpawnCar(u32 rpoint)
 	return spawned;
 }
 
-void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
+u32 game_sv_Race::GetRpointIdx(game_PlayerState* ps)
 {
-	if (m_CurrentRpoint >= rpoints[0].size())
+	const u32 rpointsTeam = 0;
+	u16 rpoint = ps->m_s16LastSRoint;
+
+	// player has associated rpoint
+	if (rpoint != static_cast<u16>(-1))
+		return rpoint;
+
+	// assign next free rpoint
+	if (m_CurrentRpoint < rpoints[rpointsTeam].size())
 	{
-		Msg("! ERROR: there are no free rpoints for players");
-		return;
+		rpoint = m_CurrentRpoint;
+		ps->m_s16LastSRoint = rpoint;
+		m_CurrentRpoint++;
+		return rpoint;
 	}
 
+	// try to find free rpoint 
+	std::vector<u16> freeRpointsVec;
+
+	for (u32 i = 0, cnt = rpoints[rpointsTeam].size(); i < cnt; i++)
+		freeRpointsVec.push_back(true);
+
+	m_server->ForEachClientDoSender([&](IClient* client)
+	{
+		xrClientData* l_pC = static_cast<xrClientData*>(client);
+		game_PlayerState* state = l_pC->ps;
+
+		if (!l_pC->net_Ready || !state || state->IsSkip())
+			return;
+
+		if (state->m_s16LastSRoint != static_cast<u16>(-1))
+			freeRpointsVec[state->m_s16LastSRoint] = false;
+	});
+
+	for (u16 i = 0; i < freeRpointsVec.size(); i++)
+	{
+		if (freeRpointsVec[i])
+		{
+			rpoint = i;
+			break;
+		}
+	}
+
+	R_ASSERT2(rpoint != static_cast<u16>(-1), "There are no free rpoints for players!");
+	return rpoint;
+}
+
+void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
+{
 	xrClientData* xrCData = m_server->ID_to_client(playerId);
 	if (!xrCData || !xrCData->owner || !xrCData->ps)
 		return;
@@ -340,16 +383,7 @@ void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
 	CSE_Spectator* pS = smart_cast<CSE_Spectator*>(pOwner);
 	R_ASSERT(pS);
 
-	u16 rpoint = xrCData->ps->m_s16LastSRoint;
-
-	if (rpoint == static_cast<u16>(-1))
-	{
-		rpoint = m_CurrentRpoint;
-		xrCData->ps->m_s16LastSRoint = rpoint;
-		m_CurrentRpoint++;
-	}
-	
-	CSE_Abstract* car = SpawnCar(rpoint);
+	CSE_Abstract* car = SpawnCar(GetRpointIdx(xrCData->ps));
 	R_ASSERT(smart_cast<CSE_ALifeCar*>(car));
 
 	xrCData->ps->resetFlag(GAME_PLAYER_FLAG_SPECTATOR);	

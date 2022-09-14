@@ -51,5 +51,6 @@ private:
 	void UpdateScores();
 	void UpdateInProgress();
 
+	u32 GetRpointIdx(game_PlayerState* ps);
 	void LoadRaceSettings();
 };
