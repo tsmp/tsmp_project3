@@ -45,7 +45,10 @@ function actor_binder:net_spawn(data)
 		level.enable_input()
 	end
 
-	self.weather_manager:reset()
+	if IsGameTypeSingle() then
+		self.weather_manager:reset()
+	end
+
 --	game_stats.initialize ()
 
 	if(actor_stats.add_to_ranking~=nil)then
@@ -222,7 +225,9 @@ function actor_binder:update(delta)
 	game_stats.update (delta, self.object)
 
 	-- апдейт погоды
-	self.weather_manager:update()
+	if IsGameTypeSingle() then
+		self.weather_manager:update()
+	end
 	
 	-- апдейт схемы детектора
 	self.actor_detector:update()
