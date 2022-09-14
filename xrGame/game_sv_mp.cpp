@@ -529,8 +529,8 @@ bool game_sv_mp::GetPosAngleFromActor(ClientID const &id, Fvector &Pos, Fvector 
 	if (!pObject || pObject->CLS_ID != CLSID_OBJECT_ACTOR)
 		return false;
 
-	CActor *pActor = smart_cast<CActor *>(pObject);
-	if (!pActor)
+	CActor *pActor = smart_cast<CActor*>(pObject);
+	if (!pActor || pActor->Holder())
 		return false;
 
 	Angle.set(-pActor->cam_Active()->pitch, -pActor->cam_Active()->yaw, 0);
