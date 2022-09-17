@@ -179,7 +179,6 @@ public:
 };
 
 typedef _rect<float> Frect;
-typedef _rect<double> Drect;
 typedef _rect<int> Irect;
 
 template <class T>

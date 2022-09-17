@@ -657,8 +657,6 @@ public:
 };
 typedef _vector3<float> Fvector;
 typedef _vector3<float> Fvector3;
-typedef _vector3<double> Dvector;
-typedef _vector3<double> Dvector3;
 typedef _vector3<s32> Ivector;
 typedef _vector3<s32> Ivector3;
 

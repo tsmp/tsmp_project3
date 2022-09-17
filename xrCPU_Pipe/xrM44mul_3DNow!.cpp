@@ -20,7 +20,7 @@
 
 #ifndef _WIN64
 
-void	__stdcall	xrM44_Mul_3DNow	(_matrix<float>* D, _matrix<float>* M1, _matrix<float>* M2)
+void	__stdcall	xrM44_Mul_3DNow	(Fmatrix* D, Fmatrix* M1, Fmatrix* M2)
 {
     __asm
     {

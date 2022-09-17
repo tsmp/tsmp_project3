@@ -13,7 +13,6 @@
 
 // Initialized on startup
 XRCORE_API Fmatrix Fidentity;
-XRCORE_API Dmatrix Didentity;
 XRCORE_API CRandom Random;
 
 #ifdef _M_AMD64
@@ -288,7 +287,6 @@ void _initialize_cpu(void)
 	Msg("* CPU Features: %s\n", features);
 
 	Fidentity.identity();  // Identity matrix
-	Didentity.identity();  // Identity matrix
 	pvInitializeStatics(); // Lookup table for compressed normals
 	FPU::initialize();
 	_initialize_cpu_thread();

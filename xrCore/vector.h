@@ -99,19 +99,19 @@ struct _quaternion;
 #include "_vector3d.h"
 #include "_vector2.h"
 #include "_vector4.h"
-#include "_matrix.h"
-#include "_matrix33.h"
-#include "_quaternion.h"
+#include "Fmatrix.h"
+#include "Fmatrix33.h"
+#include "Fquaternion.h"
 #include "_rect.h"
-#include "_fbox.h"
-#include "_fbox2.h"
-#include "_obb.h"
-#include "_sphere.h"
-#include "_cylinder.h"
+#include "Fbox.h"
+#include "Fbox2.h"
+#include "Fobb.h"
+#include "Fsphere.h"
+#include "Fcylinder.h"
 #include "_random.h"
 #include "_compressed_normal.h"
-#include "_plane.h"
-#include "_plane2.h"
+#include "Fplane.h"
+#include "Fplane2.h"
 #include "_flags.h"
 
 #pragma pack(pop)
@@ -238,18 +238,17 @@ IC float angle_inertion_var(float src, float tgt, float min_speed, float max_spe
 	return src;
 }
 
-template <class T>
-IC _matrix<T> &_matrix<T>::rotation(const _quaternion<T> &Q)
+IC Fmatrix &Fmatrix::rotation(const Fquaternion &Q)
 {
-	T xx = Q.x * Q.x;
-	T yy = Q.y * Q.y;
-	T zz = Q.z * Q.z;
-	T xy = Q.x * Q.y;
-	T xz = Q.x * Q.z;
-	T yz = Q.y * Q.z;
-	T wx = Q.w * Q.x;
-	T wy = Q.w * Q.y;
-	T wz = Q.w * Q.z;
+	float xx = Q.x * Q.x;
+	float yy = Q.y * Q.y;
+	float zz = Q.z * Q.z;
+	float xy = Q.x * Q.y;
+	float xz = Q.x * Q.z;
+	float yz = Q.y * Q.z;
+	float wx = Q.w * Q.x;
+	float wy = Q.w * Q.y;
+	float wz = Q.w * Q.z;
 
 	_11 = 1 - 2 * (yy + zz);
 	_12 = 2 * (xy - wz);
@@ -270,18 +269,17 @@ IC _matrix<T> &_matrix<T>::rotation(const _quaternion<T> &Q)
 	return *this;
 }
 
-template <class T>
-IC _matrix<T> &_matrix<T>::mk_xform(const _quaternion<T> &Q, const Tvector &V)
+IC Fmatrix& Fmatrix::mk_xform(const Fquaternion &Q, const Fvector3 &V)
 {
-	T xx = Q.x * Q.x;
-	T yy = Q.y * Q.y;
-	T zz = Q.z * Q.z;
-	T xy = Q.x * Q.y;
-	T xz = Q.x * Q.z;
-	T yz = Q.y * Q.z;
-	T wx = Q.w * Q.x;
-	T wy = Q.w * Q.y;
-	T wz = Q.w * Q.z;
+	float xx = Q.x * Q.x;
+	float yy = Q.y * Q.y;
+	float zz = Q.z * Q.z;
+	float xy = Q.x * Q.y;
+	float xz = Q.x * Q.z;
+	float yz = Q.y * Q.z;
+	float wx = Q.w * Q.x;
+	float wy = Q.w * Q.y;
+	float wz = Q.w * Q.z;
 
 	_11 = 1 - 2 * (yy + zz);
 	_12 = 2 * (xy - wz);
@@ -303,12 +301,12 @@ IC _matrix<T> &_matrix<T>::mk_xform(const _quaternion<T> &Q, const Tvector &V)
 }
 
 #define TRACE_QZERO_TOLERANCE 0.1f
-template <class T>
-IC _quaternion<T> &_quaternion<T>::set(const _matrix<T> &M)
+
+IC Fquaternion &Fquaternion::set(const Fmatrix &M)
 {
 	float trace, s;
-
 	trace = M._11 + M._22 + M._33;
+
 	if (trace > 0.0f)
 	{
 		s = _sqrt(trace + 1.0f);
@@ -328,6 +326,7 @@ IC _quaternion<T> &_quaternion<T>::set(const _matrix<T> &M)
 			E,
 			I
 		};
+
 		if (M._11 > M._22)
 		{
 			if (M._33 > M._11)
@@ -359,6 +358,7 @@ IC _quaternion<T> &_quaternion<T>::set(const _matrix<T> &M)
 			}
 			// I
 			s = _sqrt(M._33 - (M._11 + M._22) + 1.0f);
+
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				z = s * 0.5f;
@@ -370,6 +370,7 @@ IC _quaternion<T> &_quaternion<T>::set(const _matrix<T> &M)
 			}
 			// E
 			s = _sqrt(M._22 - (M._33 + M._11) + 1.0f);
+
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				y = s * 0.5f;
@@ -382,6 +383,7 @@ IC _quaternion<T> &_quaternion<T>::set(const _matrix<T> &M)
 			break;
 		case E:
 			s = _sqrt(M._22 - (M._33 + M._11) + 1.0f);
+
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				y = s * 0.5f;
@@ -404,6 +406,7 @@ IC _quaternion<T> &_quaternion<T>::set(const _matrix<T> &M)
 			}
 			// A
 			s = _sqrt(M._11 - (M._22 + M._33) + 1.0f);
+
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				x = s * 0.5f;
@@ -416,6 +419,7 @@ IC _quaternion<T> &_quaternion<T>::set(const _matrix<T> &M)
 			break;
 		case I:
 			s = _sqrt(M._33 - (M._11 + M._22) + 1.0f);
+
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				z = s * 0.5f;
@@ -427,6 +431,7 @@ IC _quaternion<T> &_quaternion<T>::set(const _matrix<T> &M)
 			}
 			// A
 			s = _sqrt(M._11 - (M._22 + M._33) + 1.0f);
+
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				x = s * 0.5f;
@@ -438,6 +443,7 @@ IC _quaternion<T> &_quaternion<T>::set(const _matrix<T> &M)
 			}
 			// E
 			s = _sqrt(M._22 - (M._33 + M._11) + 1.0f);
+
 			if (s > TRACE_QZERO_TOLERANCE)
 			{
 				y = s * 0.5f;
@@ -450,6 +456,7 @@ IC _quaternion<T> &_quaternion<T>::set(const _matrix<T> &M)
 			break;
 		}
 	}
+
 	return *this;
 }
 

@@ -1,5 +1,4 @@
-#ifndef __Q__
-#define __Q__
+#pragma once
 
 /***************************************************************************
 	The quatern module contains basic support for a quaternion object.
@@ -139,37 +138,31 @@
 #define AA_QZERO_TOLERANCE 0.0001f
 #define QEPSILON 0.00001f
 
-template <class T>
-struct /*XRCORE_API*/ _quaternion
+struct Fquaternion
 {
-public:
-	typedef T TYPE;
-	typedef _quaternion<T> Self;
-	typedef Self &SelfRef;
-	typedef const Self &SelfCRef;
-
 private:
-	IC T _asin_(T _x)
+	IC float _asin_(float _x)
 	{
-		const T c1 = 0.892399f;
-		const T c3 = 1.693204f;
-		const T c5 = -3.853735f;
-		const T c7 = 2.838933f;
+		const float c1 = 0.892399f;
+		const float c3 = 1.693204f;
+		const float c5 = -3.853735f;
+		const float c7 = 2.838933f;
 
-		const T x2 = _x * _x;
-		const T d = _x * (c1 + x2 * (c3 + x2 * (c5 + x2 * c7)));
+		const float x2 = _x * _x;
+		const float d = _x * (c1 + x2 * (c3 + x2 * (c5 + x2 * c7)));
 
 		return d;
 	}
-	IC T _acos_(T _x)
+
+	IC float _acos_(float _x)
 	{
 		return PI_DIV_2 - _asin_(_x);
 	}
 
 public:
-	T x, y, z, w;
+	float x, y, z, w;
 
-	IC SelfRef set(T W, T X, T Y, T Z) // don't normalize
+	IC Fquaternion& set(float W, float X, float Y, float Z) // don't normalize
 	{
 		x = X;
 		y = Y;
@@ -177,25 +170,16 @@ public:
 		w = W;
 		return *this;
 	}
-	IC SelfRef set(SelfCRef Q) // don't normalize
+
+	IC Fquaternion& set(const Fquaternion& Q) // don't normalize
 	{
 		set(Q.w, Q.x, Q.y, Q.z);
 		return *this;
 	}
 
-	IC SelfRef set(const _matrix<T> &m);
+	IC Fquaternion& set(const Fmatrix &m);
 
-	// multiplies q1 * q2, and places the result in *this.
-	// no failure. 	renormalization not automatic
-
-	/*
-	q1*q2 = q3 =
-		(w1*w2 - x1*x2 - y1*y2 - z1*z2)     {w3}
-		(w1*x2 + x1*w2 + y1*z2 - z1*y2)i	{x3}
-		(w1*y2 - x1*z2 + y1*w2 + z1*x2)j    {y3}
-		(w1*z2 + x1*y2 - y1*x2 + z1*w2)k	{z3}
-*/
-	IC SelfRef mul(SelfCRef q1l, SelfCRef q2l)
+	IC Fquaternion& mul(const Fquaternion& q1l, const Fquaternion& q2l)
 	{
 		VERIFY(q1l.isValid());
 		VERIFY(q2l.isValid());
@@ -210,7 +194,7 @@ public:
 		return *this;
 	}
 
-	IC SelfRef add(SelfCRef q1, SelfCRef q2)
+	IC Fquaternion& add(const Fquaternion& q1, const Fquaternion& q2)
 	{
 		x = q1.x + q2.x;
 		y = q1.y + q2.y;
@@ -218,7 +202,8 @@ public:
 		w = q1.w + q2.w;
 		return *this;
 	}
-	IC SelfRef sub(SelfCRef q1, SelfCRef q2)
+
+	IC Fquaternion& sub(const Fquaternion& q1, const Fquaternion& q2)
 	{
 		x = q1.x - q2.x;
 		y = q1.y - q2.y;
@@ -227,7 +212,7 @@ public:
 		return *this;
 	}
 
-	IC SelfRef add(SelfCRef q)
+	IC Fquaternion& add(const Fquaternion& q)
 	{
 		x += q.x;
 		y += q.y;
@@ -235,7 +220,8 @@ public:
 		w += q.w;
 		return *this;
 	}
-	IC SelfRef sub(SelfCRef q)
+
+	IC Fquaternion& sub(const Fquaternion& q)
 	{
 		x -= q.x;
 		y -= q.y;
@@ -245,7 +231,7 @@ public:
 	}
 
 	// validates numerical stability
-	IC const BOOL isValid(void) const
+	IC const bool isValid(void) const
 	{
 		if ((w * w) < 0.0f)
 			return false;
@@ -259,9 +245,9 @@ public:
 	}
 
 	// checks for Unit-length quanternion
-	IC const BOOL isUnit(void)
+	IC const bool isUnit(void)
 	{
-		T m = magnitude();
+		float m = magnitude();
 
 		if ((m < 1.0 + UNIT_TOLERANCE) && (m > 1.0 - UNIT_TOLERANCE))
 			return true;
@@ -269,9 +255,9 @@ public:
 	}
 
 	// normalizes Q to be a unit geQuaternion
-	IC SelfRef normalize(void)
+	IC Fquaternion& normalize(void)
 	{
-		T m, one_over_magnitude;
+		float m, one_over_magnitude;
 
 		m = _sqrt(magnitude());
 
@@ -288,44 +274,47 @@ public:
 	}
 
 	// inversion
-	IC SelfRef inverse(SelfCRef Q)
+	IC Fquaternion& inverse(const Fquaternion& Q)
 	{
 		return set(Q.w, -Q.x, -Q.y, -Q.z);
 	}
-	IC SelfRef inverse()
+
+	IC Fquaternion& inverse()
 	{
 		return set(w, -x, -y, -z);
 	}
-	IC SelfRef inverse_with_w(SelfCRef Q)
+
+	IC Fquaternion& inverse_with_w(const Fquaternion& Q)
 	{
 		return set(-Q.w, -Q.x, -Q.y, -Q.z);
 	}
-	IC SelfRef inverse_with_w()
+
+	IC Fquaternion& inverse_with_w()
 	{
 		return set(-w, -x, -y, -z);
 	}
 
 	// identity - no rotation
-	IC SelfRef identity(void)
+	IC Fquaternion& identity(void)
 	{
 		return set(1.f, 0.f, 0.f, 0.f);
 	}
 
 	// square length
-	IC T magnitude(void)
+	IC float magnitude(void)
 	{
 		return w * w + x * x + y * y + z * z;
 	}
 
 	// makes unit rotation
-	IC SelfRef rotationYawPitchRoll(T _x, T _y, T _z)
+	IC Fquaternion& rotationYawPitchRoll(float _x, float _y, float _z)
 	{
-		T fSinYaw = _sin(_x * .5f);
-		T fCosYaw = _cos(_x * .5f);
-		T fSinPitch = _sin(_y * .5f);
-		T fCosPitch = _cos(_y * .5f);
-		T fSinRoll = _sin(_z * .5f);
-		T fCosRoll = _cos(_z * .5f);
+		float fSinYaw = _sin(_x * .5f);
+		float fCosYaw = _cos(_x * .5f);
+		float fSinPitch = _sin(_y * .5f);
+		float fCosPitch = _cos(_y * .5f);
+		float fSinRoll = _sin(_z * .5f);
+		float fCosRoll = _cos(_z * .5f);
 
 		x = fSinRoll * fCosPitch * fCosYaw - fCosRoll * fSinPitch * fSinYaw;
 		y = fCosRoll * fSinPitch * fCosYaw + fSinRoll * fCosPitch * fSinYaw;
@@ -335,15 +324,15 @@ public:
 	}
 
 	// makes unit rotation
-	IC SelfRef rotationYawPitchRoll(const Fvector &ypr)
+	IC Fquaternion& rotationYawPitchRoll(const Fvector &ypr)
 	{
 		return rotationYawPitchRoll(ypr.x, ypr.y, ypr.z);
 	}
 
 	// set a quaternion from an axis and a rotation around the axis
-	IC SelfRef rotation(Fvector &axis, T angle)
+	IC Fquaternion& rotation(Fvector &axis, float angle)
 	{
-		T sinTheta;
+		float sinTheta;
 
 		w = _cos(angle * 0.5f);
 		sinTheta = _sin(angle * 0.5f);
@@ -356,11 +345,11 @@ public:
 	// gets an axis and angle of rotation around the axis from a quaternion
 	// returns TRUE if there is an axis.
 	// returns FALSE if there is no axis (and Axis is set to 0,0,0, and Theta is 0)
-	IC BOOL get_axis_angle(Fvector &axis, T &angle)
+	IC bool get_axis_angle(Fvector &axis, float &angle)
 	{
-		T OneOverSinTheta;
+		float OneOverSinTheta;
 
-		T HalfTheta = acosf(w);
+		float HalfTheta = acosf(w);
 		if (HalfTheta > QZERO_TOLERANCE)
 		{
 			OneOverSinTheta = 1.0f / _sin(HalfTheta);
@@ -383,32 +372,30 @@ public:
 	// with t==0 being all q0, and t==1 being all q1.
 	// returns a quaternion with a positive W - always takes shortest route
 	// through the positive W domain.
-	ICF SelfRef slerp(SelfCRef Q0, SelfCRef Q1, T tm)
+	ICF Fquaternion& slerp(const Fquaternion& Q0, const Fquaternion& Q1, float tm)
 	{
-		T Scale0, Scale1, sign;
+		float Scale0, Scale1, sign;
 
 #ifdef DEBUG
-		if (!((T(0) <= tm) && (tm <= T(1))))
+		if (!((float(0) <= tm) && (tm <= float(1))))
 			Debug.fatal(DEBUG_INFO, "Quaternion::slerp - invalid 'tm' arrived: %f", tm);
 #endif
 
-		T cosom = (Q0.w * Q1.w) + (Q0.x * Q1.x) + (Q0.y * Q1.y) + (Q0.z * Q1.z);
+		float cosom = (Q0.w * Q1.w) + (Q0.x * Q1.x) + (Q0.y * Q1.y) + (Q0.z * Q1.z);
 
 		if (cosom < 0)
 		{
 			cosom = -cosom;
 			sign = -1.f;
 		}
-		else
-		{
+		else		
 			sign = 1.f;
-		}
-
+		
 		if ((1.0f - cosom) > EPS)
 		{
-			T omega = _acos_(cosom);
-			T i_sinom = 1.f / _sin(omega);
-			T t_omega = tm * omega;
+			float omega = _acos_(cosom);
+			float i_sinom = 1.f / _sin(omega);
+			float t_omega = tm * omega;
 			Scale0 = _sin(omega - t_omega) * i_sinom;
 			Scale1 = _sin(t_omega) * i_sinom;
 		}
@@ -419,6 +406,7 @@ public:
 			Scale0 = 1.0f - tm;
 			Scale1 = tm;
 		}
+
 		Scale1 *= sign;
 
 		x = Scale0 * Q0.x + Scale1 * Q1.x;
@@ -429,7 +417,7 @@ public:
 	}
 
 	// return TRUE if quaternions differ elementwise by less than Tolerance.
-	IC BOOL cmp(SelfCRef Q, T Tolerance = 0.0001f)
+	IC bool cmp(const Fquaternion& Q, float Tolerance = 0.0001f)
 	{
 		if (																																  // they are the same but with opposite signs
 			((_abs(x + Q.x) <= Tolerance) && (_abs(y + Q.y) <= Tolerance) && (_abs(z + Q.z) <= Tolerance) && (_abs(w + Q.w) <= Tolerance)) || // they are the same with same signs
@@ -438,22 +426,12 @@ public:
 		else
 			return false;
 	}
-	IC SelfRef ln(SelfCRef Q)
+
+	IC Fquaternion& exp(const Fquaternion& Q)
 	{
-		T n = Q.x * Q.x + Q.y * Q.y + Q.z * Q.z;
-		T r = _sqrt(n);
-		T t = (r > EPS_S) ? atan2f(r, Q.w) / r : 0.f;
-		x = t * Q.x;
-		y = t * Q.y;
-		z = t * Q.z;
-		w = .5f * _log(n + Q.w * Q.w);
-		return *this;
-	}
-	IC SelfRef exp(SelfCRef Q)
-	{
-		T r = _sqrt(Q.x * Q.x + Q.y * Q.y + Q.z * Q.z);
-		T et = expf(Q.w);
-		T s = (r >= EPS_S) ? et * _sin(r) / r : 0.f;
+		float r = _sqrt(Q.x * Q.x + Q.y * Q.y + Q.z * Q.z);
+		float et = expf(Q.w);
+		float s = (r >= EPS_S) ? et * _sin(r) / r : 0.f;
 		x = s * Q.x;
 		y = s * Q.y;
 		z = s * Q.z;
@@ -462,16 +440,10 @@ public:
 	}
 };
 
-typedef _quaternion<float> Fquaternion;
-typedef _quaternion<double> Dquaternion;
-
-template <class T>
-BOOL _valid(const _quaternion<T> &s) { return _valid(s.x) && _valid(s.y) && _valid(s.z) && _valid(s.w); }
+ICF bool _valid(const Fquaternion &s) { return _valid(s.x) && _valid(s.y) && _valid(s.z) && _valid(s.w); }
 
 #undef UNIT_TOLERANCE
 #undef QZERO_TOLERANCE
 #undef TRACE_QZERO_TOLERANCE
 #undef AA_QZERO_TOLERANCE
 #undef QEPSILON
-
-#endif
