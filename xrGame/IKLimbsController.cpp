@@ -42,19 +42,23 @@ void CIKLimbsController::Create(CGameObject *O)
 	O->add_visual_callback(IKVisualCallback);
 }
 
-struct envc : private boost::noncopyable,
-			  public SEnumVerticesCallback
+struct envc : public SEnumVerticesCallback
 {
 	Fvector &pos;
 	Fvector start_pos;
 	const Fmatrix &i_bind_transform;
 	const Fvector &ax;
+
 	envc(const Fmatrix &_i_bind_transform, const Fvector &_ax, Fvector &_pos) : SEnumVerticesCallback(), i_bind_transform(_i_bind_transform), ax(_ax), pos(_pos) { start_pos.set(0, 0, 0); }
+	
+	envc(const envc&) = delete;
+	const envc& operator=(const envc&) = delete;
+
 	void operator()(const Fvector &p)
 	{
 		Fvector lpos;
 		i_bind_transform.transform_tiny(lpos, p);
-		//Fvector diff;diff.sub( lpos, pos );
+
 		if (Fvector().sub(lpos, start_pos).dotproduct(ax) > Fvector().sub(pos, start_pos).dotproduct(ax))
 			pos.set(lpos);
 	}

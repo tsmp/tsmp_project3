@@ -1,8 +1,4 @@
-#ifndef STDAFX_3DA
-#define STDAFX_3DA
-
 #pragma once
-
 #include "../xrCore/xrCore.h"
 
 #ifdef _DEBUG
@@ -41,7 +37,6 @@
 #include "fs.h"
 
 #include "xrXRC.h"
-
 #include "../xrSound/sound.h"
 
 extern ENGINE_API CInifile *pGameIni;
@@ -64,16 +59,12 @@ extern ENGINE_API CInifile *pGameIni;
 #if !defined(DEBUG) || defined(FORCE_NO_EXCEPTIONS)
 // release: no error checking, no exceptions
 #define LUABIND_NO_EXCEPTIONS
-#define BOOST_THROW_EXCEPTION_HPP_INCLUDED
+
 namespace std
 {
 	class exception;
 }
-namespace boost
-{
-	ENGINE_API void throw_exception(const std::exception &A);
-};
-#endif
-#define LUABIND_DONT_COPY_STRINGS
 
-#endif // !defined STDAFX_3DA
+#endif
+
+#define LUABIND_DONT_COPY_STRINGS

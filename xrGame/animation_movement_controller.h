@@ -1,7 +1,8 @@
 #pragma once
-#include <boost/noncopyable.hpp>
+
 class CBlend;
-class animation_movement_controller : private boost::noncopyable
+
+class animation_movement_controller
 {
 	Fmatrix &m_pObjXForm;
 	Fmatrix m_startObjXForm;
@@ -13,6 +14,8 @@ class animation_movement_controller : private boost::noncopyable
 
 public:
 	animation_movement_controller(Fmatrix *_pObjXForm, CKinematics *_pKinematicsC, CBlend *b);
+	animation_movement_controller(const animation_movement_controller&) = delete;
+	const animation_movement_controller& operator=(const animation_movement_controller&) = delete;
 	~animation_movement_controller();
 	void ObjStartXform(Fmatrix &m) const { m.set(m_startObjXForm); }
 	CBlend *ControlBlend() const { return m_control_blend; }

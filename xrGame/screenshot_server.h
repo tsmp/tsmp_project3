@@ -1,6 +1,5 @@
 #pragma once 
 #include "filetransfer/file_transfer.h"
-#include <boost/noncopyable.hpp>
 
 enum clientdata_event_t
 {
@@ -15,7 +14,7 @@ enum clientdata_event_t
 LPCSTR make_file_name(LPCSTR session_id, string_path& dest);
 void generate_file_name(string_path& file_name, LPCSTR file_suffix, SYSTEMTIME const& date_time);
 
-class clientdata_proxy : boost::noncopyable
+class clientdata_proxy
 {
 private:
 	ClientID m_admin_id;   //for file transfer
@@ -35,7 +34,10 @@ private:
 
 public:
 	clientdata_proxy(file_transfer::server_site *ft_server);
+	clientdata_proxy(const clientdata_proxy&) = delete;
 	~clientdata_proxy();
+
+	const clientdata_proxy& operator=(const clientdata_proxy&) = delete;
 
 	void make_screenshot(ClientID const &admin_id, ClientID const &cheater_id);
 	void make_config_dump(ClientID const &admin_id, ClientID const &cheater_id);

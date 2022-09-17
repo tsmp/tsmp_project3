@@ -18,8 +18,6 @@
 
 extern "C"
 {
-	//#define BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"

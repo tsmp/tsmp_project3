@@ -8,15 +8,6 @@
 
 #pragma once
 
-//#define USE_BOOST
-
-#ifdef USE_BOOST
-#include <boost/type_traits/is_base_and_derived.hpp>
-#include <boost/type_traits/is_pointer.hpp>
-#include <boost/type_traits/remove_pointer.hpp>
-#include <boost/type_traits/remove_const.hpp>
-namespace object_type_traits = boost;
-#else
 #define declare_has(a)                                             \
 	template <typename T>                                          \
 	struct has_##a                                                 \
@@ -283,11 +274,8 @@ namespace object_type_traits
 
 	declare_has(iterator);
 	declare_has(const_iterator);
-	//		declare_has(reference);
-	//		declare_has(const_reference);
 	declare_has(value_type);
 	declare_has(size_type);
-	//		declare_has(value_compare);
 
 	template <typename T>
 	struct is_stl_container
@@ -297,19 +285,8 @@ namespace object_type_traits
 			value =
 				has_iterator<T>::value &&
 				has_const_iterator<T>::value &&
-				//					has_reference<T>::value &&
-				//					has_const_reference<T>::value &&
 				has_size_type<T>::value &&
 				has_value_type<T>::value
 		};
-	};
-
-	//		template <typename _T>
-	//		struct is_tree_structure {
-	//			enum {
-	//				value =
-	//					has_value_compare<_T>::value
-	//			};
-	//		};
+	};	
 }; // namespace object_type_traits
-#endif

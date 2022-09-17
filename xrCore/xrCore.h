@@ -19,7 +19,6 @@
 //	#define _HAS_EXCEPTIONS		1	// STL
 #define XRAY_EXCEPTIONS 0 // XRAY
 #define LUABIND_NO_EXCEPTIONS
-#define BOOST_NO_EXCEPTIONS
 #pragma warning(disable : 4530)
 #endif
 

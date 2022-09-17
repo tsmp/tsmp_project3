@@ -10,7 +10,7 @@
 
 #if 0 //def DEBUG
 
-#ifndef BOOST_NO_STRINGSTREAM
+#ifndef NO_STRINGSTREAM
 #include <sstream>
 #else
 #include <strstream>
@@ -23,7 +23,7 @@ xr_string to_string					(luabind::object const& o)
 	lua_State* L = o.lua_state();
 	LUABIND_CHECK_STACK(L);
 
-#ifdef BOOST_NO_STRINGSTREAM
+#ifdef NO_STRINGSTREAM
 	std::strstream s;
 #else
 	std::stringstream s;
@@ -36,7 +36,7 @@ xr_string to_string					(luabind::object const& o)
 	}
 
 	s << "<" << lua_typename(L, o.type()) << ">";
-#ifdef BOOST_NO_STRINGSTREAM
+#ifdef NO_STRINGSTREAM
 	s << std::ends;
 #endif
 	return s.str().c_str();
@@ -78,7 +78,7 @@ xr_string member_to_string			(luabind::object const& e, LPCSTR function_signatur
 			if (lua_touserdata(L, -1) != reinterpret_cast<void*>(0x1337)) return to_string(e);
 		}
 
-#ifdef BOOST_NO_STRINGSTREAM
+#ifdef NO_STRINGSTREAM
 		std::strstream s;
 #else
 		std::stringstream s;
@@ -103,7 +103,7 @@ xr_string member_to_string			(luabind::object const& e, LPCSTR function_signatur
 				s << function_signature << process_signature(str) << ";";
 			}
 		}
-#ifdef BOOST_NO_STRINGSTREAM
+#ifdef NO_STRINGSTREAM
 		s << std::ends;
 #endif
 		return s.str().c_str();

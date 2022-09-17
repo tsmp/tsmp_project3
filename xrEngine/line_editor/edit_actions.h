@@ -1,15 +1,17 @@
 #pragma once
-#include <boost/noncopyable.hpp>
 
 namespace text_editor
 {
 	enum key_state;
 	class line_edit_control;
 
-	class base : private boost::noncopyable
+	class base
 	{
 	public:
 		base();
+		base(const base&) = delete;
+		const base& operator=(const base&) = delete;
+
 		virtual ~base();
 
 		void on_assign(base *const prev_action);
