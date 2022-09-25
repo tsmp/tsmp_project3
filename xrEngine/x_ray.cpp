@@ -4,7 +4,7 @@
 //	Oles		- Oles Shishkovtsov
 //	AlexMX		- Alexander Maksimchuk
 
-#include "stdafx.h"
+#include "pch_xrengine.h"
 #include <process.h>
 #include "igame_persistent.h"
 #include "xr_input.h"

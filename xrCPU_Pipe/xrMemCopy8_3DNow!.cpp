@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrcpupipe.h"
 
 void	__stdcall xrMemCopy_x86					(LPVOID dest, const void* src, u32 n)
 {

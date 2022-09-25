@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "uber_deffer.h"
 void fix_texture_name(LPSTR fn);
 

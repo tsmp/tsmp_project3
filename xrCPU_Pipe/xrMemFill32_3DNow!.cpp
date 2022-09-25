@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrcpupipe.h"
 
 /*
 block fill:fill a number of DWORDs at DWORD aligned destination

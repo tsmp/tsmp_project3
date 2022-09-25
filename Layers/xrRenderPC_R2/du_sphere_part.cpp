@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #pragma hdrstop
 
 #include "du_sphere_part.h"

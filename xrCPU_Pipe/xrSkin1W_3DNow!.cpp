@@ -1,5 +1,5 @@
 // -- includes ------------------------------------------------------
-#include "stdafx.h"
+#include "pch_xrcpupipe.h"
 #include "..\skeletonX.h"
 #include "..\SkeletonCustom.h"
 #pragma warning(disable:4537)

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrengine.h"
 
 #define DECLARE_RP(name) void __fastcall rp_##name(void *p) { ((pure##name *)p)->On##name(); }
 

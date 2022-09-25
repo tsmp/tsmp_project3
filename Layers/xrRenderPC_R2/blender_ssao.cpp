@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "blender_SSAO.h"
 
 CBlender_SSAO::CBlender_SSAO() { description.CLS = 0; }

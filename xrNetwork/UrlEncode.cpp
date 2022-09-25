@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrnetwork.h"
 
 static bool IsUnreserved(unsigned char in)
 {

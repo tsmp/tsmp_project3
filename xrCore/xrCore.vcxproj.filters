@@ -60,7 +60,7 @@
     <ClCompile Include="FTimer.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="pch_xrcore.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
     <ClCompile Include="xrCore.cpp">
@@ -179,7 +179,7 @@
     <ClInclude Include="FTimer.h">
       <Filter>Kernel</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="pch_xrcore.h">
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrCore.h">

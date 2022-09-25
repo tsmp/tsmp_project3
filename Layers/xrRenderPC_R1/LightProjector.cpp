@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "LightProjector.h"
 #include "xr_object.h"
 #include "..\xrRender\lighttrack.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrengine.h"
 #include "xr_area.h"
 #include "xr_object.h"
 

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrsound.h"
 #pragma hdrstop
 
 #include "SoundRender_CoreA.h"

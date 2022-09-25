@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 
 IRender_Sector *CRender::detectSector(const Fvector &P)
 {

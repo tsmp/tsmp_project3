@@ -1,7 +1,7 @@
 // xrCDB.cpp : Defines the entry point for the DLL application.
 //
 
-#include "stdafx.h"
+#include "pch_xrcdb.h"
 #pragma hdrstop
 
 #include "xrCDB.h"

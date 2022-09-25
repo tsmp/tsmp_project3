@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 
 #include "..\xrRender\uber_deffer.h"
 

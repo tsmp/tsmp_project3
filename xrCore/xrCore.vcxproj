@@ -177,6 +177,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>4146</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>pch_xrcore.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -222,6 +223,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>4146</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>pch_xrcore.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -268,6 +270,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>4146</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>pch_xrcore.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -316,6 +319,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>4146</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>pch_xrcore.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -365,6 +369,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>4146</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>pch_xrcore.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -413,6 +418,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>4146</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>pch_xrcore.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -461,6 +467,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>4146</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>pch_xrcore.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -510,6 +517,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>4146</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>pch_xrcore.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -552,6 +560,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4146</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>pch_xrcore.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -594,6 +603,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4146</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>pch_xrcore.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -626,7 +636,7 @@
     <ClCompile Include="memory_usage.cpp" />
     <ClCompile Include="PPMD\Model.cpp" />
     <ClCompile Include="PPMD\ppmd_compressor.cpp" />
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="pch_xrcore.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>
@@ -715,7 +725,7 @@
     <ClInclude Include="PPMD\PPMdType.h" />
     <ClInclude Include="PPMD\ppmd_compressor.h" />
     <ClInclude Include="PPMD\SubAlloc.hpp" />
-    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="pch_xrcore.h" />
     <ClInclude Include="stream_reader.h" />
     <ClInclude Include="stream_reader_inline.h" />
     <ClInclude Include="threading\xrCriticalSection.h" />

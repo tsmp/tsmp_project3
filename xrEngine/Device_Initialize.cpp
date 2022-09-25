@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrengine.h"
 #include "resource.h"
 
 extern LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

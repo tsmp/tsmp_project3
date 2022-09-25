@@ -1,7 +1,7 @@
 //----------------------------------------------------
 // file: TempObject.cpp
 //----------------------------------------------------
-#include "stdafx.h"
+#include "pch_xrengine.h"
 #pragma hdrstop
 
 #include "ps_instance.h"

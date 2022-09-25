@@ -1,8 +1,12 @@
 // stdafx.cpp : source file that includes just the standard includes
-//	xrCPU_Pipe.pch will be the pre-compiled header
+//	xrCDB.pch will be the pre-compiled header
 //	stdafx.obj will contain the pre-compiled type information
 
-#include "stdafx.h"
+#include "pch_xrcdb.h"
+#pragma hdrstop
+
+#pragma comment(lib, "xrCore.lib")
+#pragma comment(lib, "winmm.lib")
 
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file

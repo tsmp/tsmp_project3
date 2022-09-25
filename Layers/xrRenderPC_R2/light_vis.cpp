@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch_xrrender.h"
 #include "..\xrRender\light.h"
 #include "cl_intersect.h"
 

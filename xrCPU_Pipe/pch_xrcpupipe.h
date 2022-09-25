@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\xrEngine\stdafx.h"
+#include "..\xrEngine\pch_xrengine.h"
 
 #pragma warning(disable:4995)
 #include <xmmintrin.h>

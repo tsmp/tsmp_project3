@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "resourcemanager.h"
 #include "blender_light_occq.h"
 #include "blender_light_mask.h"

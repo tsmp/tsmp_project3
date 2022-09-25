@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "fbasicvisual.h"
 #include "fmesh.h"
 #include "xrLevel.h"

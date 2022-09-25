@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrengine.h"
 #include "xr_effgamma.h"
 #include "device.h"
 

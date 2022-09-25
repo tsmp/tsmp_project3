@@ -6,7 +6,7 @@
     <ClCompile Include="NET_Compressor.cpp" />
     <ClCompile Include="NET_Log.cpp" />
     <ClCompile Include="NET_Server.cpp" />
-    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="pch_xrnetwork.cpp" />
     <ClCompile Include="PlayersBase.cpp">
       <Filter>PlayersBase</Filter>
     </ClCompile>
@@ -28,7 +28,7 @@
     <ClInclude Include="NET_Server.h" />
     <ClInclude Include="NET_Shared.h" />
     <ClInclude Include="NET_utils.h" />
-    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="pch_xrnetwork.h" />
     <ClInclude Include="PlayersBase.h">
       <Filter>PlayersBase</Filter>
     </ClInclude>

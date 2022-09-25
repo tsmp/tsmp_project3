@@ -12,7 +12,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="StdAfx.cpp">
+    <ClCompile Include="pch_xrxmlparser.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
     <ClCompile Include="xrXMLParser.cpp">
@@ -32,7 +32,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="pch_xrxmlparser.h">
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrXMLParser.h">

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch_xrrender.h"
 #include "flight.h"
 #include "xrLevel.h"
 #include "igame_persistent.h"

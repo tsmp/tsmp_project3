@@ -1,6 +1,6 @@
 // Console.cpp: implementation of the CConsole class.
 
-#include "stdafx.h"
+#include "pch_xrengine.h"
 #include "igame_level.h"
 #include "igame_persistent.h"
 #include "Console.h"

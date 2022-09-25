@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrnetwork.h"
 #include "HWID.h"
 
 #pragma warning(push)

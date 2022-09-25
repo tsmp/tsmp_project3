@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "HOM.h"
 #include "occRasterizer.h"
 #include "GameFont.h"

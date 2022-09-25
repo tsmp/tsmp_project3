@@ -159,7 +159,7 @@
     <ClInclude Include="defines.h">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="pch_xrengine.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="xrApplication.h">
@@ -518,7 +518,7 @@
     <ClCompile Include="defines.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="pch_xrengine.cpp">
       <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="x_ray.cpp">

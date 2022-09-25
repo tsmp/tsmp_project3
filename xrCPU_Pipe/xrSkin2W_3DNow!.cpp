@@ -37,7 +37,7 @@
 		float	u,v;
 	};
 */
-#include "stdafx.h"
+#include "pch_xrcpupipe.h"
 #pragma hdrstop
 
 

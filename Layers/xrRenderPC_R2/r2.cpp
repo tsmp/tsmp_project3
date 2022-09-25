@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "r2.h"
 #include "fbasicvisual.h"
 #include "xr_object.h"

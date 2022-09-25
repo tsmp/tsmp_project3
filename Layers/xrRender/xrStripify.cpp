@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "xrstripify.h"
 
 #include "NvTriStrip.h"

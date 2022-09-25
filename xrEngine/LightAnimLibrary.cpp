@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
+#include "pch_xrengine.h"
 #pragma hdrstop
 
 #include "LightAnimLibrary.h"

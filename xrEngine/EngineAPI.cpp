@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch_xrengine.h"
 #include "EngineAPI.h"
 #include "xrXRC.h"
 

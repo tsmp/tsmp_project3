@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrxmlparser.h"
 #pragma hdrstop
 
 #include "xrXMLParser.h"

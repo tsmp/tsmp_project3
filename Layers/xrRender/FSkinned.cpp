@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #pragma hdrstop
 
 #pragma warning(disable : 4995)

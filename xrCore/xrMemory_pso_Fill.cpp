@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrcore.h"
 #pragma hdrstop
 
 void __stdcall xrMemFill_x86(void *dest, int value, u32 count)

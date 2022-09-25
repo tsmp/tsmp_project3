@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrcore.h"
 #include "ppmd_compressor.h"
 #include "ppmd.h"
 

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "pch_xrcore.h"
 #pragma hdrstop
 
 #ifndef DEBUG_MEMORY_MANAGER

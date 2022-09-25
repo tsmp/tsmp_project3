@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "customhud.h"
 
 float g_fSCREEN;

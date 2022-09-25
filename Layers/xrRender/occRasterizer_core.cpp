@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "occRasterizer.h"
 
 static occTri *currentTri = 0;

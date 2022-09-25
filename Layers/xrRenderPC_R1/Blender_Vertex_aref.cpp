@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #pragma hdrstop
 
 #include "Blender_Vertex_aref.h"

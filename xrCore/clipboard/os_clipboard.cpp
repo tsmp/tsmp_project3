@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrcore.h"
 #include "os_clipboard.h"
 
 void os_clipboard::copy_to_clipboard(LPCSTR buf)

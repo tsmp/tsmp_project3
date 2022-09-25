@@ -1,7 +1,7 @@
 // xrCPU_Pipe.cpp : Defines the entry point for the DLL application.
 //
 
-#include "stdafx.h"
+#include "pch_xrcpupipe.h"
 #pragma hdrstop
 
 #pragma comment(lib,"xrEngine")

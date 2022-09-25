@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4018)
 

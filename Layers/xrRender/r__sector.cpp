@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "r__sector.h"
 #include "xrLevel.h"
 #include "xr_object.h"

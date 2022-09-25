@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrcpupipe.h"
 
 // D3D Matrix offsets
 #define a_11 0

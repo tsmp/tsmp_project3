@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrcpupipe.h"
 #include "mmintrin.h"
 
 void __stdcall xrSlerp_x86(Fquaternion* D, Fquaternion* Q1, Fquaternion* Q2, float t)

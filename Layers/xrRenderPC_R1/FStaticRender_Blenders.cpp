@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 
 #include "blenderdefault.h"
 #include "blender_default_aref.h"

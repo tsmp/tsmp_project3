@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #pragma hdrstop
 
 #include "Blender_light_reflected.h"

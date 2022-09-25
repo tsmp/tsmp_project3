@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrengine.h"
 #include "resource.h"
 #include "..\xrCustomRes\resource.h"
 

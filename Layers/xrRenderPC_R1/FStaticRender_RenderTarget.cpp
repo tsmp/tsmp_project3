@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "fstaticrender_rendertarget.h"
 #include "IGame_Persistent.h"
 

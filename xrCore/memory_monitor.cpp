@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrcore.h"
 
 #ifdef USE_MEMORY_MONITOR
 #include <time.h>

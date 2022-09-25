@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "r__pixel_calculator.h"
 #define rt_dimensions 1024
 

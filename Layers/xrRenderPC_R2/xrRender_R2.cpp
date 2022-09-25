@@ -1,6 +1,6 @@
 // xrRender_R2.cpp : Defines the entry point for the DLL application.
 //
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "..\xrRender\xrRender_console.h"
 
 #pragma comment(lib, "xrEngine")

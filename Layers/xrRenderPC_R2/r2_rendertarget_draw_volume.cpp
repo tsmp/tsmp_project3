@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "du_sphere_part.h"
 
 void CRenderTarget::draw_volume(light *L)

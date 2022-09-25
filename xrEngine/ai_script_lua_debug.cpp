@@ -6,7 +6,7 @@
 //	Description : XRay Script debugging system
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch_xrengine.h"
 #include "ai_script_space.h"
 #include "ai_script_lua_extension.h"
 

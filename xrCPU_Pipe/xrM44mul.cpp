@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrcpupipe.h"
 
 #ifndef _WIN64
 

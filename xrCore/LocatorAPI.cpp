@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch_xrcore.h"
 #pragma hdrstop
 
 #pragma warning(disable : 4995)

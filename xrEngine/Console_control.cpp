@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrengine.h"
 #include "Console.h"
 
 void CConsole::add_cmd_history(shared_str const &str)

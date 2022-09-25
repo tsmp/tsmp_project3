@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 
 // startup
 void CRenderTarget::phase_scene_prepare()

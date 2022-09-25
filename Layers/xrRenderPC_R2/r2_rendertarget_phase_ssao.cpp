@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "r2_rendertarget.h"
 
 #pragma pack(push,4)

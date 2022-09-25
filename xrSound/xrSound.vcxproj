@@ -175,6 +175,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch_xrsound.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
@@ -219,6 +220,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch_xrsound.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
@@ -264,6 +266,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch_xrsound.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libvorbisfile_static.lib;libvorbis_static.lib;libogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -312,6 +315,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch_xrsound.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libvorbisfile_static.lib;libvorbis_static.lib;libogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -361,6 +365,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch_xrsound.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libvorbisfile_static.lib;libvorbis_static.lib;libogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -409,6 +414,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch_xrsound.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libvorbisfile_static.lib;libvorbis_static.lib;libogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -456,6 +462,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch_xrsound.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libvorbisfile_static.lib;libvorbis_static.lib;libogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -504,6 +511,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch_xrsound.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libvorbisfile_static.lib;libvorbis_static.lib;libogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -544,6 +552,7 @@
       <BrowseInformation />
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PrecompiledHeaderFile>pch_xrsound.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libvorbisfile_static.lib;libvorbis_static.lib;libogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -584,6 +593,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PrecompiledHeaderFile>pch_xrsound.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>vorbisfile_static.lib;ogg_static.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -609,7 +619,7 @@
     <ClInclude Include="SoundRender_Source.h" />
     <ClInclude Include="SoundRender_Target.h" />
     <ClInclude Include="SoundRender_TargetA.h" />
-    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="pch_xrsound.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="guids.cpp">
@@ -656,7 +666,7 @@
     <ClCompile Include="SoundRender_Source_loader.cpp" />
     <ClCompile Include="SoundRender_Target.cpp" />
     <ClCompile Include="SoundRender_TargetA.cpp" />
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="pch_xrsound.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">Create</PrecompiledHeader>

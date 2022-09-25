@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "xr_effgamma.h"
 #include "..\xrRender\tga.h"
 #include "xrImage_Resampler.h"

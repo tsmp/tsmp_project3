@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="StdAfx.cpp">
+    <ClCompile Include="pch_xrcpupipe.cpp">
       <Filter>Kernel</Filter>
     </ClCompile>
     <ClCompile Include="xrCPU_Pipe.cpp">
@@ -68,7 +68,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StdAfx.h">
+    <ClInclude Include="pch_xrcpupipe.h">
       <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrCPU_Pipe.h">

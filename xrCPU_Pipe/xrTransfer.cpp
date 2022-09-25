@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrcpupipe.h"
 
 #define GeomBytes		24	// pos+norm
 

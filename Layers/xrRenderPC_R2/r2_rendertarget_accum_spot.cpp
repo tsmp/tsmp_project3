@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 
 extern Fvector du_cone_vertices[DU_CONE_NUMVERTEX];
 

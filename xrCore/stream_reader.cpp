@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrcore.h"
 #include "stream_reader.h"
 
 void CStreamReader::construct(

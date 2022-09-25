@@ -1,7 +1,7 @@
 //  ритическа€ секци€ - класс дл€ защиты общих данных 
 // от параллельного изменени€ разными потоками
 
-#include "stdafx.h"
+#include "pch_xrcore.h"
 #include "xrCriticalSection.h"
 
 #pragma TODO(TSMP: test profile critical sections)

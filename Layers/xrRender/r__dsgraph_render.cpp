@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_xrrender.h"
 #include "render.h"
 #include "irenderable.h"
 #include "igame_persistent.h"
@@ -585,7 +585,6 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector *_sector, CFr
 	View = 0;
 }
 
-#include "stdafx.h"
 #include "fhierrarhyvisual.h"
 #include "SkeletonCustom.h"
 #include "fmesh.h"
