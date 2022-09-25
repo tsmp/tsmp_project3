@@ -287,6 +287,8 @@ void CRender::reset_begin()
 		{
 			if (0 == Lights_LastFrame[it])
 				continue;
+			
+#ifdef DEBUG
 			try
 			{
 				Lights_LastFrame[it]->svis.resetoccq();
@@ -295,6 +297,9 @@ void CRender::reset_begin()
 			{
 				Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32 *)(&Lights_LastFrame[it]));
 			}
+#else
+			Lights_LastFrame[it]->svis.resetoccq();
+#endif
 		}
 		Lights_LastFrame.clear();
 	}

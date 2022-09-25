@@ -465,6 +465,8 @@ void CWallmarksEngine::Render()
 				}
 
 				FVF::LIT *w_save = w_verts;
+				
+#ifdef DEBUG
 				try
 				{
 					W->Parent()->RenderWallmark(W, w_verts);
@@ -474,6 +476,9 @@ void CWallmarksEngine::Render()
 					Msg("! Failed to render dynamic wallmark");
 					w_verts = w_save;
 				}
+#else
+				W->Parent()->RenderWallmark(W, w_verts);
+#endif
 			}
 #ifdef DEBUG
 			W->used_in_render = u32(-1);

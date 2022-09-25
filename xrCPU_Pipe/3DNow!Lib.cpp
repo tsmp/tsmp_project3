@@ -32,17 +32,17 @@ static const __m64f  ones		=	{ 1.0f		,	1.0f			};
 static const __m64f  twos		=	{ 2.0f		,	2.0f			};
 static const __m64i izeros      =   { 0,            0               };
 static const __m64i pinfs       =   { 0x7f800000,   0x7f800000      }; // dword PINH, PINH
-static const __m64i smh_masks   =   { 0x807fffff,   0x807fffff      }; // dword MASKSMH, MASKSMH
+//static const __m64i smh_masks   =   { 0x807fffff,   0x807fffff      }; // dword MASKSMH, MASKSMH
 static const __m64i sign_mask   =   { 0x7fffffff,   0x7fffffff      };
-static const __m64i sh_masks    =   { 0x80000000,   0x80000000      }; // dword MASKSH, MASKSH
+//static const __m64i sh_masks    =   { 0x80000000,   0x80000000      }; // dword MASKSH, MASKSH
 static const __m64i two_126s    =   { 126,          126             };
 // ; SINCOS specific values
 static const __m64f mo2s		=	{ -0.5f			,-0.5f			};
 static const __m64f mo12_6		=	{ -0.0833333333f,-0.166666667f	};	
 static const __m64f mo30_20		=	{ -0.0333333333f,-0.05f			};
 static const __m64f mo56_42		=	{ -0.0178571f	,-0.0238095f	};
-static const __m64i pio4ht      =   { 0xbf490000,   0xb97daa22      };  // approximately -0.000241913 | -0.785156
-static const __m64i pio4s       =   { 0x3f490fdb,   0x3f490fdb      };  // approximately 0.785398 | 0.785398
+//static const __m64i pio4ht      =   { 0xbf490000,   0xb97daa22      };  // approximately -0.000241913 | -0.785156
+//static const __m64i pio4s       =   { 0x3f490fdb,   0x3f490fdb      };  // approximately 0.785398 | 0.785398
 #pragma warning(pop)
 //;******************************************************************************
 //; Scalar (single float) data
@@ -114,7 +114,7 @@ static const __int64 _msgn_		=	0x8000000080000000;
 //;   © by ManOwaR™
 //;******************************************************************************
 
-#ifndef _WIN64
+#if !defined(_WIN64) && !defined(__clang__)
 
 __declspec(naked)	void alt_acos(void)
 {	__asm {

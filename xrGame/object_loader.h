@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////
 //	Module 		: object_loader.h
 //	Created 	: 21.01.2003
 //  Modified 	: 09.07.2004
@@ -39,7 +39,7 @@ struct CLoader
 		{
 			CHelper1<T>::load_data<
 				object_type_traits::is_base_and_derived_or_same_from_template<
-					IPureL�adableObject,
+					IPureLоadableObject,
 					T>::value>(data, stream, p);
 		}
 

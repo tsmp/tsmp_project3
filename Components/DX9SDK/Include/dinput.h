@@ -2001,18 +2001,18 @@ typedef struct _DIMOUSESTATE2 {
 #endif
 
 
-#define DIMOFS_X        FIELD_OFFSET(DIMOUSESTATE, lX)
-#define DIMOFS_Y        FIELD_OFFSET(DIMOUSESTATE, lY)
-#define DIMOFS_Z        FIELD_OFFSET(DIMOUSESTATE, lZ)
-#define DIMOFS_BUTTON0 (FIELD_OFFSET(DIMOUSESTATE, rgbButtons) + 0)
-#define DIMOFS_BUTTON1 (FIELD_OFFSET(DIMOUSESTATE, rgbButtons) + 1)
-#define DIMOFS_BUTTON2 (FIELD_OFFSET(DIMOUSESTATE, rgbButtons) + 2)
-#define DIMOFS_BUTTON3 (FIELD_OFFSET(DIMOUSESTATE, rgbButtons) + 3)
+#define DIMOFS_X        offsetof(DIMOUSESTATE, lX)
+#define DIMOFS_Y        offsetof(DIMOUSESTATE, lY)
+#define DIMOFS_Z        offsetof(DIMOUSESTATE, lZ)
+#define DIMOFS_BUTTON0 (offsetof(DIMOUSESTATE, rgbButtons) + 0)
+#define DIMOFS_BUTTON1 (offsetof(DIMOUSESTATE, rgbButtons) + 1)
+#define DIMOFS_BUTTON2 (offsetof(DIMOUSESTATE, rgbButtons) + 2)
+#define DIMOFS_BUTTON3 (offsetof(DIMOUSESTATE, rgbButtons) + 3)
 #if (DIRECTINPUT_VERSION >= 0x0700)
-#define DIMOFS_BUTTON4 (FIELD_OFFSET(DIMOUSESTATE2, rgbButtons) + 4)
-#define DIMOFS_BUTTON5 (FIELD_OFFSET(DIMOUSESTATE2, rgbButtons) + 5)
-#define DIMOFS_BUTTON6 (FIELD_OFFSET(DIMOUSESTATE2, rgbButtons) + 6)
-#define DIMOFS_BUTTON7 (FIELD_OFFSET(DIMOUSESTATE2, rgbButtons) + 7)
+#define DIMOFS_BUTTON4 (offsetof(DIMOUSESTATE2, rgbButtons) + 4)
+#define DIMOFS_BUTTON5 (offsetof(DIMOUSESTATE2, rgbButtons) + 5)
+#define DIMOFS_BUTTON6 (offsetof(DIMOUSESTATE2, rgbButtons) + 6)
+#define DIMOFS_BUTTON7 (offsetof(DIMOUSESTATE2, rgbButtons) + 7)
 #endif
 #endif /* DIJ_RINGZERO */
 

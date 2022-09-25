@@ -5,7 +5,7 @@ block fill:fill a number of DWORDs at DWORD aligned destination
 with DWORD initializer using cacheable stores
 */
 
-#ifndef _WIN64
+#if !defined(_WIN64) && !defined(__clang__)
 
 void	__stdcall	xrMemFill32_MMX		(LPVOID dest,  u32 count, u32 value)
 {

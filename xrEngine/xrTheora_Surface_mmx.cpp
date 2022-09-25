@@ -43,7 +43,7 @@ typedef tv_sshort tv_sshort_tables[256][4];
 		}
 */
 
-#ifndef _WIN64
+#if !defined(_WIN64) && !defined(__clang__)
 
 lp_tv_uchar tv_yuv2argb(
 	lp_tv_uchar argb_plane,

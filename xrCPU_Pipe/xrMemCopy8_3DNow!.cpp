@@ -27,7 +27,7 @@ void	__stdcall xrMemCopy_x86					(LPVOID dest, const void* src, u32 n)
 //This is faster than using software prefetch.The technique is great for
 //getting maximum read bandwidth,especially in DDR memory systems.
 
-#ifndef _WIN64
+#if !defined(_WIN64) && !defined(__clang__)
 
 void __stdcall xrMemCopy_MMXSSE3DNow			(LPVOID dest, const void* src, u32 n)
 {

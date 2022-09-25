@@ -91,7 +91,11 @@ namespace text_editor
 				actions.begin(),
 				actions.end()),
 			actions.end());
+
+#pragma TODO("TSMP: fix clang")
+#ifndef __clang__
 		delete_data(actions);
+#endif
 	}
 	
 	void line_edit_control::update_key_states()

@@ -296,7 +296,10 @@ public:
             using Ret = std::decay_t<std::result_of_t<Handler&&(const T&)>>;
             return empty() ? option<Ret>() : option<Ret>(get());
         } else {
+#pragma TODO("TSMP: fix clang")
+#ifndef __clang__
             static_assert(false, "Invalid handler");
+#endif
             return option();
         }
     }
@@ -307,7 +310,10 @@ public:
             using Ret = std::decay_t<std::result_of_t<Handler&&(T&&)>>;
             return empty() ? option<Ret>() : option<Ret>(std::move(get()));
         } else {
+#pragma TODO("TSMP: fix clang")
+#ifndef __clang__
             static_assert(false, "Invalid handler");
+#endif
             return option();
         }
     }
@@ -320,7 +326,10 @@ public:
             const T& value = get();
             return value.empty() ? T() : option<Value>(value.get());
         } else {
+#pragma TODO("TSMP: fix clang")
+#ifndef __clang__
             static_assert(false, "Optional type needs to be an option");
+#endif
             return option();
         }
     }
@@ -333,7 +342,10 @@ public:
             T& value = get();
             return value.empty() ? T() : option<Value>(std::move(value.get()));
         } else {
+#pragma TODO("TSMP: fix clang")
+#ifndef __clang__
             static_assert(false, "Optional type needs to be an option");
+#endif
             return option();
         }
     }
