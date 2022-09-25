@@ -95,7 +95,7 @@ private:
 #pragma warning(push)
 #pragma warning(disable : 4200) // nonstandard extension used : zero-sized array in struct/union
 		/// Pointer to the string.
-		TCHAR m_szData[0];
+		TCHAR m_szData[1];
 #pragma warning(pop)
 	};
 

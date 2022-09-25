@@ -1456,7 +1456,7 @@ void CSymEngine::InitStackFrame(LPSTACKFRAME64 pStackFrame, const CONTEXT* pCont
  */
 BOOL CSymEngine::GetCurrentThreadContext(PCONTEXT pContext)
 {
-#if defined _M_IX86
+#if defined _M_IX86 && !defined(__clang__)
 	__asm
 	{
 		push eax
@@ -1513,7 +1513,7 @@ BOOL CSymEngine::GetCurrentThreadContext(PCONTEXT pContext)
 		pop edi
 		pop eax
 	}
-#elif defined _M_X64
+#elif defined _M_X64 || defined(__clang__)
 	RtlCaptureContext(pContext);
 #else
  #error CPU architecture is not supported.
