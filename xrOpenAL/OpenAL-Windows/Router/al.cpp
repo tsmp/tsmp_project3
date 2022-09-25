@@ -116,7 +116,7 @@ static ALfunction  function[]=   {
 //*****************************************************************************
 
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(__clang__)
 // fix for Mingw32.
 #define AL_VOID_FXN(fxn)                                                    \
     ALCcontext* context;                                                     \

@@ -196,14 +196,15 @@ public:
 	}
 #endif
 
-	const_reference operator[](size_type _Pos) const
+	const T& operator[](size_type _Pos) const
 	{
 		{
 			VERIFY(_Pos < size());
 		}
 		return (*(begin() + _Pos));
 	}
-	reference operator[](size_type _Pos)
+
+	T& operator[](size_type _Pos)
 	{
 		{
 			VERIFY(_Pos < size());

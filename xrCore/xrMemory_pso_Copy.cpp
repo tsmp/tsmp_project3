@@ -7,7 +7,7 @@ void __stdcall xrMemCopy_x86(LPVOID dest, const void *src, u32 n)
 	memcpy(dest, src, n);
 }
 
-#if defined(_M_AMD64)
+#if defined(_M_AMD64) || defined(__clang__)
 void __stdcall xrMemCopy_MMX(LPVOID dest, const void *src, u32 n)
 {
 	memcpy(dest, src, n);

@@ -60,22 +60,22 @@ public:
 	IC BOOL is(const T mask) const { return mask == (flags & mask); }
 	IC BOOL is_any(const T mask) const { return BOOL(flags & mask); }
 	IC BOOL test(const T mask) const { return BOOL(flags & mask); }
-	IC SelfRef or (const T mask)
+	IC SelfRef or_ (const T mask)
 	{
 		flags |= mask;
 		return *this;
 	}
-	IC SelfRef or (const Self &f, const T mask)
+	IC SelfRef or_ (const Self &f, const T mask)
 	{
 		flags = f.flags | mask;
 		return *this;
 	}
-	IC SelfRef and (const T mask)
+	IC SelfRef and_ (const T mask)
 	{
 		flags &= mask;
 		return *this;
 	}
-	IC SelfRef and (const Self &f, const T mask)
+	IC SelfRef and_ (const Self &f, const T mask)
 	{
 		flags = f.flags & mask;
 		return *this;

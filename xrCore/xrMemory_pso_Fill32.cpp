@@ -9,7 +9,7 @@ void __stdcall xrMemFill32_x86(LPVOID dest, u32 value, u32 count)
 		*ptr++ = value;
 }
 
-#if defined(_M_AMD64)
+#if defined(_M_AMD64) || defined(__clang__)
 void __stdcall xrMemFill32_MMX(LPVOID dest, u32 value, u32 count)
 {
 	u32 *ptr = (u32 *)dest;
