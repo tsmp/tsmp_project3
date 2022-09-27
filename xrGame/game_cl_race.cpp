@@ -8,14 +8,18 @@
 #include "LevelGameDef.h"
 #include "Car.h"
 #include "GameObject.h"
+#include "map_manager.h"
+#include "map_location.h"
 
 CStringTable g_St;
 
 extern ENGINE_API bool g_dedicated_server;
 extern u32 TimeBeforeRaceStart;
+
 u32 GoMessageShowTime = 5000; // 5 sec
 constexpr u32 COLOR_PLAYER_NAME = 0xff40ff40;
 const Fvector NameIndicatorPosition = { 0.f, 0.3f,0.f };
+const char* LocationOtherPlayer = "mp_friend_location";
 
 game_cl_Race::game_cl_Race() : m_game_ui(nullptr), m_WinnerId(static_cast<u16>(-1)), m_WinnerMessageSet(false), m_ReinforcementTime(10), m_DeathTime(0)
 {
@@ -257,6 +261,32 @@ void game_cl_Race::OnRender()
 		CActor* pActor = smart_cast<CActor*>(pObject);
 		VERIFY(pActor);		
 		pActor->RenderText(ps->getName(), NameIndicatorPosition, &dup, COLOR_PLAYER_NAME);
+	}
+}
+
+void game_cl_Race::UpdateMapLocations()
+{
+	if (!local_player)
+		return;
+
+	for (const auto &it : players)
+	{
+		game_PlayerState* ps = it.second;
+		u16 id = ps->GameID;
+
+		if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+		{
+			Level().MapManager().RemoveMapLocation(LocationOtherPlayer, id);
+			continue;
+		}
+
+		CObject* pObject = Level().Objects.net_Find(id);
+
+		if (!pObject || pObject->CLS_ID != CLSID_OBJECT_ACTOR)
+			continue;
+
+		if (!Level().MapManager().HasMapLocation(LocationOtherPlayer, id))
+			(Level().MapManager().AddMapLocation(LocationOtherPlayer, id))->EnablePointer();
 	}
 }
 

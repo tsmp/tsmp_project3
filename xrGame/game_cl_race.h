@@ -29,6 +29,7 @@ public:
 	virtual void shedule_Update(u32 dt) override;
 	virtual void Init() override;
 	virtual void OnRender() override;
+	virtual void UpdateMapLocations() override;
 
 	virtual bool OnKeyboardPress(int key) override;
 	virtual bool OnKeyboardRelease(int key) override;
