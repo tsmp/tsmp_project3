@@ -14,6 +14,8 @@ CStringTable g_St;
 extern ENGINE_API bool g_dedicated_server;
 extern u32 TimeBeforeRaceStart;
 u32 GoMessageShowTime = 5000; // 5 sec
+constexpr u32 COLOR_PLAYER_NAME = 0xff40ff40;
+const Fvector NameIndicatorPosition = { 0.f, 0.3f,0.f };
 
 game_cl_Race::game_cl_Race() : m_game_ui(nullptr), m_WinnerId(static_cast<u16>(-1)), m_WinnerMessageSet(false), m_ReinforcementTime(10), m_DeathTime(0)
 {
@@ -229,6 +231,33 @@ void game_cl_Race::LoadTeamBaseParticles()
 void game_cl_Race::Init()
 {
 	LoadTeamBaseParticles();
+}
+
+void game_cl_Race::OnRender()
+{
+	inherited::OnRender();
+
+	if (!local_player)
+		return;
+
+	for (const auto &it : players)
+	{
+		game_PlayerState* ps = it.second;
+
+		if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+			continue;
+
+		u16 id = ps->GameID;
+		CObject* pObject = Level().Objects.net_Find(id);
+
+		if (!pObject || pObject->CLS_ID != CLSID_OBJECT_ACTOR || ps == local_player)
+			continue;
+
+		float dup = 0.0f;
+		CActor* pActor = smart_cast<CActor*>(pObject);
+		VERIFY(pActor);		
+		pActor->RenderText(ps->getName(), NameIndicatorPosition, &dup, COLOR_PLAYER_NAME);
+	}
 }
 
 bool game_cl_Race::OnKeyboardPress(int key)

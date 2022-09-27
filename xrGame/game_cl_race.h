@@ -28,6 +28,7 @@ public:
 	virtual CUIGameCustom* createGameUI() override;
 	virtual void shedule_Update(u32 dt) override;
 	virtual void Init() override;
+	virtual void OnRender() override;
 
 	virtual bool OnKeyboardPress(int key) override;
 	virtual bool OnKeyboardRelease(int key) override;
