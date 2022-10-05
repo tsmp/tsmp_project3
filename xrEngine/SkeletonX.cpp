@@ -323,6 +323,7 @@ void CSkeletonX::_Load(const char *N, IReader *data, u32 &dwVertCount)
 	switch (dwVertType)
 	{
 	case OGF_VERTEXFORMAT_FVF_1L: // 1-Link
+	case 1:
 	{
 		size = dwVertCount * sizeof(vertBoned1W);
 		vertBoned1W *VO = (vertBoned1W *)data->pointer();
@@ -359,6 +360,7 @@ void CSkeletonX::_Load(const char *N, IReader *data, u32 &dwVertCount)
 	}
 	break;
 	case OGF_VERTEXFORMAT_FVF_2L: // 2-Link
+	case 2:
 	{
 		size = dwVertCount * sizeof(vertBoned2W);
 		vertBoned2W *VO = (vertBoned2W *)data->pointer();
