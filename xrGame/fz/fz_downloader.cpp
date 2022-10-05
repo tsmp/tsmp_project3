@@ -83,12 +83,12 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 
 	if (fz_downloader_new)
 	{
-		moddllinfo.fileinfo.filename = "fz_mod_loader_tsmp_v1.mod";
-		moddllinfo.fileinfo.url = "http://stalker-life.com/stalker_files/mods_shoc/tsmp3/loader/tsmp_mod_loader_v1.dll";
-		moddllinfo.fileinfo.crc32 = 0x1331A4CD; // crc дллки
+		moddllinfo.fileinfo.filename = "fz_mod_loader_tsmp_v2.mod";
+		moddllinfo.fileinfo.url = "http://stalker-life.com/stalker_files/mods_shoc/tsmp3/loader/tsmp_mod_loader_v2.dll";
+		moddllinfo.fileinfo.crc32 = 0xB2D51956; // crc дллки
 		
 		//Цифровая подпись для загруженной DLL - проверяется перед тем, как передать управление в функцию мода
-		moddllinfo.dsign = "302D02141C641554517BB48B6FF2372C3C66C18E9A0E4A13021500B2E7AC52970DEB63D3155FE5B76C49CEACDD6E47";
+		moddllinfo.dsign = "302D021450268FA62C6B30BCA1DE8E3586BA1ED6749CD1890215008B30D01EB47529A9E5F9D49CE3CA56E84F3AD09F";
 
 		shared_str srvPasword = static_cast<xrGameSpyServer*>(server)->Password;
 
@@ -124,7 +124,7 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 	moddllinfo.reconnect_addr.ip = "127.0.0.1";
 	moddllinfo.reconnect_addr.port = 5445;
 	moddllinfo.incompatible_mod_message = "Incompatible";
-	moddllinfo.fileinfo.progress_msg = "Progress";
+	moddllinfo.fileinfo.progress_msg = fz_downloader_message.c_str();
 	moddllinfo.fileinfo.error_already_has_dl_msg = "Error happens";
 
 	ProcSendSysMessage(ProcProcessClientMod, &moddllinfo, SendCallback, &userdata);
