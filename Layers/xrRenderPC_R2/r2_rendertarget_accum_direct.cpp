@@ -252,7 +252,8 @@ void CRenderTarget::accum_direct_blend()
 		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00);
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 	}
-	dwLightMarkerID += 2;
+
+	increment_light_marker();
 }
 
 void CRenderTarget::accum_direct_f(u32 sub_phase)
