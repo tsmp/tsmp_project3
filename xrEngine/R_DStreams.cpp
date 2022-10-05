@@ -8,7 +8,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-int rsDVB_Size = 4096;
+int rsDVB_Size = 8192;
 int rsDIB_Size = 512;
 
 void _VertexStream::Create()
