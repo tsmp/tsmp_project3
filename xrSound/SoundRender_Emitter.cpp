@@ -5,10 +5,8 @@
 #include "soundrender_core.h"
 
 extern u32 psSoundModel;
-extern u32 psSoundFreq;
 extern float psSoundVEffects;
 
-//////////////////////////////////////////////////////////////////////
 CSoundRender_Emitter::CSoundRender_Emitter(void)
 {
 
@@ -46,7 +44,6 @@ CSoundRender_Emitter::~CSoundRender_Emitter(void)
 	Event_ReleaseOwner();
 }
 
-//////////////////////////////////////////////////////////////////////
 void CSoundRender_Emitter::Event_ReleaseOwner()
 {
 	if (!(owner_data))
@@ -65,6 +62,7 @@ void CSoundRender_Emitter::Event_ReleaseOwner()
 void CSoundRender_Emitter::Event_Propagade()
 {
 	dwTimeToPropagade += ::Random.randI(sdef_event_pulse - 30, sdef_event_pulse + 30);
+	
 	if (!(owner_data))
 		return;
 	if (0 == owner_data->g_type)

@@ -8,53 +8,18 @@
 
 void CSoundRender_Emitter::fill_data(u8 *_dest, u32 offset, u32 size)
 {
-	/*
-	Msg				("stream: %10s - %d",*source->fname,size);
-	CopyMemory	(_dest,&source->m_buffer.front()+offset,size);
-	return;
-//*/
-	/*
-	Memory.mem_fill	(_dest,0,size);	// debug only
-	//	Msg			("stream: %10s - %d",*source->fname,size);
-	int				dummy;
-	ov_pcm_seek		(source->ovf,(psSoundFreq==sf_22K)?offset:offset/2);
-//	ov_pcm_seek		(source->ovf,0);
-	char* dest		= (char*)_dest;
-	u32	left		= size;
-	while (left)
-	{                     
-		int ret		= ov_read(source->ovf,dest,left,0,2,1,&dummy);
-//		Msg			("Part: %d - %d",left,ret);
-		if (ret==0){	
-        	ret=0;
-        	break;
-        }if (ret>0){
-			left		-= ret;
-			dest		+= ret;
-		}else{
-			switch (ret){
-			case OV_HOLE:		Msg("OV_HOLE");		continue; break;
-			case OV_EBADLINK:	Msg("OV_EBADLINK"); continue; break;
-			}
-			break;
-		}
-	}
-//	Msg			("Final: %d - %d",size,size-left);
-/*/
-	//*
 	u32 line_size = SoundRender->cache.get_linesize();
 	u32 line = offset / line_size;
 
 	// prepare for first line (it can be unaligned)
 	u32 line_offs = offset - line * line_size;
 	u32 line_amount = line_size - line_offs;
+
 	while (size)
 	{
 		// cache access
-		if (SoundRender->cache.request(source->CAT, line))
-		{
-			source->decompress(line, target->get_data());
-		}
+		if (SoundRender->cache.request(source->CAT, line))		
+			source->decompress(line, target->get_data());		
 
 		// fill block
 		u32 blk_size = _min(size, line_amount);
@@ -69,15 +34,13 @@ void CSoundRender_Emitter::fill_data(u8 *_dest, u32 offset, u32 size)
 		line_offs = 0;
 		line_amount = line_size;
 	}
-	//*/
-	//  --- previously it was something like this
-	//	CopyMemory		(ptr,wave+offset,size);
 }
 
 void CSoundRender_Emitter::fill_block(void *ptr, u32 size)
 {
 	//Msg			("stream: %10s - [%X]:%d, p=%d, t=%d",*source->fname,ptr,size,position,source->dwBytesTotal);
 	LPBYTE dest = LPBYTE(ptr);
+
 	if ((position + size) > source->dwBytesTotal)
 	{
 		// We are reaching the end of data, what to do?
@@ -105,6 +68,7 @@ void CSoundRender_Emitter::fill_block(void *ptr, u32 size)
 			position += size;
 		}
 		break;
+
 		case stPlayingLooped:
 		{
 			u32 hw_position = 0;
@@ -117,27 +81,9 @@ void CSoundRender_Emitter::fill_block(void *ptr, u32 size)
 				position += sz_write;
 				position %= source->dwBytesTotal;
 			} while (0 != (size - hw_position));
-			/*				            	
-				// Fill in two parts - looping :)
-				u32		sz_first	= source->dwBytesTotal - position;
-                u32		sz_second	= 0;
-                if (0==sz_first)
-                {
-					fill_data			(dest,0,size);
-//					Msg					("        playing: zero");
-                } else {
-                    sz_second			= (position+size) - source->dwBytesTotal;
-                    VERIFY				(size == (sz_first+sz_second));
-                    VERIFY				(position<source->dwBytesTotal);
-					fill_data			(dest,			position,	sz_first);
-					fill_data			(dest+sz_first,	0,			sz_second);
-                }
-//				Msg					("        looping: [%d]-first,[%d]-second",sz_first,sz_second);
-				position			+= size;
-				position			%= source->dwBytesTotal;
-*/
 		}
 		break;
+
 		default:
 			FATAL("SOUND: Invalid emitter state");
 			break;

@@ -1,5 +1,3 @@
-#ifndef SoundH
-#define SoundH
 #pragma once
 
 #ifdef XRSOUND_EXPORTS
@@ -21,8 +19,6 @@ class XRSOUND_API CSound_emitter;
 class XRSOUND_API CSound_stream_interface;
 class XRSOUND_API CSound_environment;
 
-//
-XRSOUND_API extern u32 psSoundFreq;
 XRSOUND_API extern u32 psSoundModel;
 XRSOUND_API extern float psSoundVEffects;
 XRSOUND_API extern float psSoundVFactor;
@@ -40,12 +36,7 @@ enum
 	ss_EAX = (1ul << 2ul),		//!< Use eax
 	ss_forcedword = u32(-1)
 };
-enum
-{
-	sf_22K,
-	sf_44K,
-	sf_forcedword = u32(-1)
-};
+
 enum
 {
 	sq_DEFAULT,
@@ -54,6 +45,7 @@ enum
 	sq_HIGH,
 	sq_forcedword = u32(-1)
 };
+
 enum
 {
 	sg_Undefined = 0,
@@ -66,6 +58,7 @@ enum
 	sm_2D = (1ul << 1ul),	  //!< 2D mode
 	sm_forcedword = u32(-1),
 };
+
 enum esound_type
 {
 	st_Effect = 0,
@@ -438,4 +431,3 @@ IC void ref_sound::set_params(CSound_params *p)
 		_feedback()->set_volume(p->volume);
 	}
 }
-#endif

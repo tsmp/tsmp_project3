@@ -23,14 +23,17 @@ BOOL CSoundRender_CoreA::EAXQuerySupport(BOOL bDeferred, const GUID *guid, u32 p
 {
 	if (AL_NO_ERROR != eaxGet(guid, prop, 0, val, sz))
 		return FALSE;
+
 	if (AL_NO_ERROR != eaxSet(guid, (bDeferred ? DSPROPERTY_EAXLISTENER_DEFERRED : 0) | prop, 0, val, sz))
 		return FALSE;
+
 	return TRUE;
 }
 
 BOOL CSoundRender_CoreA::EAXTestSupport(BOOL bDeferred)
 {
 	EAXLISTENERPROPERTIES ep;
+
 	if (!EAXQuerySupport(bDeferred, &DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_ROOM, &ep.lRoom, sizeof(LONG)))
 		return FALSE;
 	if (!EAXQuerySupport(bDeferred, &DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_ROOMHF, &ep.lRoomHF, sizeof(LONG)))
@@ -55,6 +58,7 @@ BOOL CSoundRender_CoreA::EAXTestSupport(BOOL bDeferred)
 		return FALSE;
 	if (!EAXQuerySupport(bDeferred, &DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_FLAGS, &ep.dwFlags, sizeof(DWORD)))
 		return FALSE;
+
 	return TRUE;
 }
 
@@ -79,7 +83,8 @@ void CSoundRender_CoreA::_initialize(u64 window)
 
 	// OpenAL device
 	pDevice = alcOpenDevice(deviceDesc.name.c_str());
-	if (pDevice == NULL)
+
+	if (!pDevice)
 	{
 		Log("SOUND: OpenAL: Failed to create device.");
 		bPresent = FALSE;
@@ -93,7 +98,8 @@ void CSoundRender_CoreA::_initialize(u64 window)
 
 	// Create context
 	pContext = alcCreateContext(pDevice, NULL);
-	if (0 == pContext)
+
+	if (!pContext)
 	{
 		Log("SOUND: OpenAL: Failed to create context.");
 		bPresent = FALSE;
@@ -132,16 +138,8 @@ void CSoundRender_CoreA::_initialize(u64 window)
 	}
 
 	ZeroMemory(&wfm, sizeof(WAVEFORMATEX));
-	switch (psSoundFreq)
-	{
-	default:
-	case sf_22K:
-		wfm.nSamplesPerSec = 22050;
-		break;
-	case sf_44K:
-		wfm.nSamplesPerSec = 44100;
-		break;
-	}
+	wfm.nSamplesPerSec = 44100;
+	
 	wfm.wFormatTag = WAVE_FORMAT_PCM;
 	wfm.nChannels = 2;		 //(dsCaps.dwFlags&DSCAPS_PRIMARYSTEREO)?2:1;
 	wfm.wBitsPerSample = 16; //(dsCaps.dwFlags&DSCAPS_PRIMARY16BIT)?16:8;
@@ -203,6 +201,7 @@ void CSoundRender_CoreA::i_eax_set(const GUID *guid, u32 prop, void *val, u32 sz
 {
 	eaxSet(guid, prop, 0, val, sz);
 }
+
 void CSoundRender_CoreA::i_eax_get(const GUID *guid, u32 prop, void *val, u32 sz)
 {
 	eaxGet(guid, prop, 0, val, sz);
@@ -217,6 +216,7 @@ void CSoundRender_CoreA::update_listener(const Fvector &P, const Fvector &D, con
 		Listener.position.set(P);
 		bListenerMoved = TRUE;
 	}
+
 	Listener.orientation[0].set(D.x, D.y, -D.z);
 	Listener.orientation[1].set(N.x, N.y, -N.z);
 
