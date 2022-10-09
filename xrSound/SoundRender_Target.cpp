@@ -20,14 +20,6 @@ CSoundRender_Target::~CSoundRender_Target(void)
 
 BOOL CSoundRender_Target::_initialize()
 {
-	// Calc format
-	wfx.wFormatTag = WAVE_FORMAT_PCM;
-	wfx.nChannels = 1;
-	wfx.nSamplesPerSec = SoundRender->wfm.nSamplesPerSec;
-	wfx.wBitsPerSample = 16;
-	wfx.nBlockAlign = wfx.nChannels * wfx.wBitsPerSample / 8;
-	wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
-	wfx.cbSize = 0;
 	return TRUE;
 }
 
@@ -84,8 +76,8 @@ void CSoundRender_Target::attach()
 	VERIFY(0 == wave);
 	VERIFY(pEmitter);
 	ov_callbacks ovc = {ov_read_func, ov_seek_func, ov_close_func, ov_tell_func};
-	wave = FS.r_open(pEmitter->source->pname.c_str());
-	R_ASSERT3(wave && wave->length(), "Can't open wave file:", pEmitter->source->pname.c_str());
+	wave = FS.r_open(pEmitter->source()->pname.c_str());
+	R_ASSERT3(wave && wave->length(), "Can't open wave file:", pEmitter->source()->pname.c_str());
 	ov_open_callbacks(wave, &ovf, NULL, 0, ovc);
 	VERIFY(0 != wave);
 }

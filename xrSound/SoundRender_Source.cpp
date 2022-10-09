@@ -68,46 +68,21 @@ bool ov_error(int res)
 
 void CSoundRender_Source::i_decompress_fr(OggVorbis_File *ovf, char *_dest, u32 left)
 {
-    float **pcm;
-    int val;
-    long channels = ov_info(ovf, -1)->channels;
-    long bytespersample = 2 * channels;
-    int dummy;
-    left /= bytespersample;
-    short *buffer = (short *)_dest;
+    int	current_section;
+    long TotalRet = 0, ret;
 
-    while (left)
+    // Read loop
+    while (TotalRet < (long)left)
     {
-        int samples = ov_read_float(ovf, &pcm, left, &dummy);
+        ret = ov_read(ovf, /*PCM*/ _dest + TotalRet, left - TotalRet, 0, 2, 1, &current_section);
 
-        if (samples > 0)
-        {
-            for (int i = 0; i < channels; i++)
-            {
-                float *src = pcm[i];
-                short *dest = ((short *)buffer) + i;
+        // if end of file or read limit exceeded
+        if (!ret) 
+            break;
+        
+        // ret < 0 means error in bitstream
 
-                for (int j = 0; j < samples; j++)
-                {
-                    val = iFloor(src[j] * 32768.f);
-                    if (val > 32767)
-                        val = 32767;
-                    else if (val < -32768)
-                        val = -32768;
-                    *dest = short(val);
-                    dest += channels;
-                }
-            }
-
-            left -= samples;
-            buffer += samples;
-        }
-        else
-        {
-            if (ov_error(samples))
-                continue;
-            else
-                break;
-        }
+        if (ret >= 0)
+            TotalRet += ret;        
     }
 }

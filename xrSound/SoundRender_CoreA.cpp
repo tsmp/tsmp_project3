@@ -62,6 +62,12 @@ BOOL CSoundRender_CoreA::EAXTestSupport(BOOL bDeferred)
 	return TRUE;
 }
 
+void CSoundRender_CoreA::_restart()
+{
+	bPresent = FALSE;
+	inherited::_restart();
+}
+
 void CSoundRender_CoreA::_initialize(u64 window)
 {
 	bPresent = FALSE;
@@ -136,15 +142,6 @@ void CSoundRender_CoreA::_initialize(u64 window)
 		bDeferredEAX = EAXTestSupport(TRUE);
 		bEAX = EAXTestSupport(FALSE);
 	}
-
-	ZeroMemory(&wfm, sizeof(WAVEFORMATEX));
-	wfm.nSamplesPerSec = 44100;
-	
-	wfm.wFormatTag = WAVE_FORMAT_PCM;
-	wfm.nChannels = 2;		 //(dsCaps.dwFlags&DSCAPS_PRIMARYSTEREO)?2:1;
-	wfm.wBitsPerSample = 16; //(dsCaps.dwFlags&DSCAPS_PRIMARY16BIT)?16:8;
-	wfm.nBlockAlign = wfm.wBitsPerSample / 8 * wfm.nChannels;
-	wfm.nAvgBytesPerSec = wfm.nSamplesPerSec * wfm.nBlockAlign;
 
 	// inherited initialize
 	inherited::_initialize(window);

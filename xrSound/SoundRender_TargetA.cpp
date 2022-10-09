@@ -49,12 +49,18 @@ void CSoundRender_TargetA::_destroy()
     A_CHK(alDeleteBuffers(sdef_target_count, pBuffers));
 }
 
+void CSoundRender_TargetA::_restart()
+{
+    _destroy();
+    _initialize();
+}
+
 void CSoundRender_TargetA::start(CSoundRender_Emitter *E)
 {
     inherited::start(E);
 
     // Calc storage
-    buf_block = sdef_target_block * wfx.nAvgBytesPerSec / 1000;
+    buf_block = sdef_target_block * E->source()->m_wformat.nAvgBytesPerSec / 1000;
     g_target_temp_data.resize(buf_block);
 }
 
@@ -133,21 +139,21 @@ void CSoundRender_TargetA::fill_parameters()
     inherited::fill_parameters();
 
     // 3D params
-    VERIFY2(pEmitter, SE->source->file_name());
+    VERIFY2(pEmitter, SE->source()->file_name());
     A_CHK(alSourcef(pSource, AL_REFERENCE_DISTANCE, pEmitter->p_source.min_distance));
 
-    VERIFY2(pEmitter, SE->source->file_name());
+    VERIFY2(pEmitter, SE->source()->file_name());
     A_CHK(alSourcef(pSource, AL_MAX_DISTANCE, pEmitter->p_source.max_distance));
 
-    VERIFY2(pEmitter, SE->source->file_name());
+    VERIFY2(pEmitter, SE->source()->file_name());
     A_CHK(alSource3f(pSource, AL_POSITION, pEmitter->p_source.position.x, pEmitter->p_source.position.y, -pEmitter->p_source.position.z));
 
-    VERIFY2(pEmitter, SE->source->file_name());
+    VERIFY2(pEmitter, SE->source()->file_name());
     A_CHK(alSourcei(pSource, AL_SOURCE_RELATIVE, pEmitter->b2D));
 
     A_CHK(alSourcef(pSource, AL_ROLLOFF_FACTOR, psSoundRolloff));
 
-    VERIFY2(pEmitter, SE->source->file_name());
+    VERIFY2(pEmitter, SE->source()->file_name());
     float _gain = pEmitter->smooth_volume;
     clamp(_gain, EPS_S, 1.f);
     if (!fsimilar(_gain, cache_gain))
@@ -156,7 +162,7 @@ void CSoundRender_TargetA::fill_parameters()
         A_CHK(alSourcef(pSource, AL_GAIN, _gain));
     }
 
-    VERIFY2(pEmitter, SE->source->file_name());
+    VERIFY2(pEmitter, SE->source()->file_name());
     float _pitch = pEmitter->p_source.freq;
     clamp(_pitch, EPS_L, 2.f);
     if (!fsimilar(_pitch, cache_pitch))
@@ -164,17 +170,20 @@ void CSoundRender_TargetA::fill_parameters()
         cache_pitch = _pitch;
         A_CHK(alSourcef(pSource, AL_PITCH, _pitch));
     }
-    VERIFY2(pEmitter, SE->source->file_name());
+    VERIFY2(pEmitter, SE->source()->file_name());
 }
 
 void CSoundRender_TargetA::fill_block(ALuint BufferID)
 {
-#pragma todo("check why pEmitter is NULL")
-    if (0 == pEmitter)
-        return;
-
+    R_ASSERT(pEmitter);
     pEmitter->fill_block(&g_target_temp_data.front(), buf_block);
 
-    ALuint format = (wfx.nChannels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-    A_CHK(alBufferData(BufferID, format, &g_target_temp_data.front(), buf_block, wfx.nSamplesPerSec));
+    ALuint format = (pEmitter->source()->m_wformat.nChannels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+    A_CHK(alBufferData(BufferID, format, &g_target_temp_data.front(), buf_block, pEmitter->source()->m_wformat.nSamplesPerSec));
+}
+
+void CSoundRender_TargetA::source_changed()
+{
+    dettach();
+    attach();
 }

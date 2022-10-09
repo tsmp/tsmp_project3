@@ -1,5 +1,3 @@
-#ifndef SoundRender_EmitterH
-#define SoundRender_EmitterH
 #pragma once
 
 #include "soundrender.h"
@@ -35,8 +33,11 @@ public:
 #endif
 
 	CSoundRender_Target *target;
-	CSoundRender_Source *source;
+	IC CSoundRender_Source* source() { return (CSoundRender_Source*)owner_data->handle; };
 	ref_sound_data_ptr owner_data;
+
+	u32 get_bytes_total() const;
+	float get_length_sec() const;
 
 	float priority_scale;
 	float smooth_volume;
@@ -44,8 +45,10 @@ public:
 	float fade_volume;
 	Fvector occluder[3];
 
-	State state;
-	u32 position;
+	State m_current_state;
+	u32 m_stream_cursor;
+	u32 m_cur_handle_cursor;
+
 	CSound_params p_source;
 	CSoundRender_Environment e_current;
 	CSoundRender_Environment e_target;
@@ -55,26 +58,27 @@ public:
 	BOOL b2D;
 	BOOL bStopping;
 	BOOL bRewind;
-	u32 dwTimeStarted; // time of "Start"
-	u32 dwTimeToStop;  // time to "Stop"
-	u32 dwTimeToPropagade;
+	float fTimeStarted;			// time of "Start"
+	float fTimeToStop;			// time to "Stop"
+	float fTimeToPropagade;
 
 	u32 marker;
 	void i_stop();
 
+	void set_cursor(u32 p);
+	u32 get_cursor(bool b_absolute) const;
+	void move_cursor(int offset);
+
 public:
 	void Event_Propagade();
 	void Event_ReleaseOwner();
-	BOOL isPlaying(void) { return state != stStopped; }
+	bool isPlaying(void) { return m_current_state != stStopped; }
 
 	virtual BOOL is_2D() { return b2D; }
 	virtual void switch_to_2D();
 	virtual void switch_to_3D();
-	virtual void set_position(const Fvector &pos)
-	{
-		p_source.position = pos;
-		bMoved = TRUE;
-	}
+	virtual void set_position(const Fvector &pos);
+
 	virtual void set_frequency(float scale)
 	{
 		VERIFY(_valid(scale));
@@ -112,4 +116,3 @@ public:
 	CSoundRender_Emitter();
 	~CSoundRender_Emitter();
 };
-#endif

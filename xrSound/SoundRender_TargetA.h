@@ -1,5 +1,3 @@
-#ifndef SoundRender_TargetAH
-#define SoundRender_TargetAH
 #pragma once
 
 #include "soundrender_Target.h"
@@ -26,6 +24,7 @@ public:
 
 	virtual BOOL _initialize();
 	virtual void _destroy();
+	virtual void _restart();
 
 	virtual void start(CSoundRender_Emitter *E);
 	virtual void render();
@@ -33,5 +32,5 @@ public:
 	virtual void stop();
 	virtual void update();
 	virtual void fill_parameters();
+	void source_changed();
 };
-#endif

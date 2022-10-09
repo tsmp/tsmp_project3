@@ -7,7 +7,6 @@
 class CSoundRender_Target
 {
 protected:
-	WAVEFORMATEX wfx;
 	CSoundRender_Emitter *pEmitter;
 	BOOL rendering;
 

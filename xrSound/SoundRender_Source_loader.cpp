@@ -51,7 +51,7 @@ void CSoundRender_Source::decompress(u32 line, OggVorbis_File *ovf)
 	// decompression of one cache-line
 	u32 line_size = SoundRender->cache.get_linesize();
 	char *dest = (char *)SoundRender->cache.get_dataptr(CAT, line);
-	u32 buf_offs = (line * line_size) / 2;
+	u32 buf_offs = (line * line_size) / 2 / m_wformat.nChannels;
 	u32 left_file = dwBytesTotal - buf_offs;
 	u32 left = (u32)_min(left_file, line_size);
 
@@ -78,18 +78,25 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
 	vorbis_info *ovi = ov_info(&ovf, -1);
 	// verify
 	R_ASSERT3(ovi, "Invalid source info:", pName);
-	R_ASSERT3(ovi->channels == 1, "Invalid source num channels:", pName);
-	R_ASSERT3(ovi->rate == 44100, "Invalid source rate:", pName);
 
-	WAVEFORMATEX wfxdest = SoundRender->wfm;
-	wfxdest.nChannels = u16(ovi->channels);
-	wfxdest.nBlockAlign = wfxdest.nChannels * wfxdest.wBitsPerSample / 8;
-	wfxdest.nAvgBytesPerSec = wfxdest.nSamplesPerSec * wfxdest.nBlockAlign;
+#ifdef DEBUG
+	if (ovi->channels == 2)	
+		Msg("stereo sound source [%s]", pName);	
+#endif // #ifdef DEBUG
+
+	ZeroMemory(&m_wformat, sizeof(WAVEFORMATEX));
+
+	m_wformat.nSamplesPerSec = (ovi->rate); //44100;
+	m_wformat.wFormatTag = WAVE_FORMAT_PCM;
+	m_wformat.nChannels = u16(ovi->channels);
+	m_wformat.wBitsPerSample = 16;
+
+	m_wformat.nBlockAlign = m_wformat.wBitsPerSample / 8 * m_wformat.nChannels;
+	m_wformat.nAvgBytesPerSec = m_wformat.nSamplesPerSec * m_wformat.nBlockAlign;
 
 	s64 pcm_total = ov_pcm_total(&ovf, -1);
-	dwBytesTotal = u32(pcm_total * wfxdest.nBlockAlign);
-	dwBytesPerMS = wfxdest.nAvgBytesPerSec / 1000;
-	dwTimeTotal = u32(sdef_source_footer + u64((u64(dwBytesTotal) * u64(1000)) / u64(wfxdest.nAvgBytesPerSec)));
+	dwBytesTotal = u32(pcm_total * m_wformat.nBlockAlign);
+	fTimeTotal = s_f_def_source_footer + dwBytesTotal / float(m_wformat.nAvgBytesPerSec);
 
 	vorbis_comment *ovm = ov_comment(&ovf, -1);
 
@@ -139,11 +146,11 @@ void CSoundRender_Source::load(LPCSTR name)
 	string_path fn, N;
 	strcpy(N, name);
 	strlwr(N);
+
 	if (strext(N))
 		*strext(N) = 0;
 
 	fname = N;
-
 	strconcat(sizeof(fn), fn, N, ".ogg");
 
 
@@ -156,14 +163,13 @@ void CSoundRender_Source::load(LPCSTR name)
 		FS.update_path (fn,"$game_sounds$","$no_sound.ogg");
 	}
 
-	LoadWave(fn); //.R_ASSERT(wave);
+	LoadWave(fn);
 	SoundRender->cache.cat_create(CAT, dwBytesTotal);
 }
 
 void CSoundRender_Source::unload()
 {
 	SoundRender->cache.cat_destroy(CAT);
-	dwTimeTotal = 0;
+	fTimeTotal = 0.0f;
 	dwBytesTotal = 0;
-	dwBytesPerMS = 0;
 }

@@ -43,8 +43,8 @@ CSoundRender_Core::CSoundRender_Core()
 	bListenerMoved = FALSE;
 	bReady = FALSE;
 	bLocked = FALSE;
-	Timer_Value = Timer.GetElapsed_ms();
-	Timer_Delta = 0;
+	fTimer_Value = Timer.GetElapsed_sec();
+	fTimer_Delta = 0.0f;
 	m_iPauseCounter = 1;
 }
 
@@ -66,7 +66,7 @@ void CSoundRender_Core::_initialize(u64 window)
 	bPresent = TRUE;
 
 	// Cache
-	cache_bytes_per_line = (sdef_target_block / 8) * wfm.nAvgBytesPerSec / 1000;
+	cache_bytes_per_line = (sdef_target_block / 8) * 276400 / 1000;
 	cache.initialize(psSoundCacheSizeMB * 1024, cache_bytes_per_line);
 
 	bReady = TRUE;
@@ -189,6 +189,7 @@ void CSoundRender_Core::set_geometry_som(IReader *I)
 
 	geom_SOM = xr_new<CDB::MODEL>();
 	geom_SOM->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, false);
+	geom->close();
 }
 
 void CSoundRender_Core::set_geometry_env(IReader *I)
@@ -248,31 +249,45 @@ void CSoundRender_Core::set_geometry_env(IReader *I)
 	xr_free(_data);
 }
 
-void CSoundRender_Core::verify_refsound(ref_sound &S)
-{
-	/*
-#ifdef	DEBUG
-	int			local_value		= 0;
-	void*		ptr_refsound	= &S;
-	void*		ptr_local		= &local_value;
-	ptrdiff_t	difference		= (ptrdiff_t)_abs(s64(ptrdiff_t(ptr_local) - ptrdiff_t(ptr_refsound)));
-	string256	err_str;
-	if(difference < (4*1024))
-	{
-		sprintf		(err_str,"diff=[%d] local/stack-based ref_sound passed. memory corruption will accur.",difference);
-		VERIFY2		(0, err_str);
-	}
-#endif
-*/
-}
-
 void CSoundRender_Core::create(ref_sound &S, const char *fName, esound_type sound_type, int game_type)
 {
 	if (!bPresent)
 		return;
 
-	verify_refsound(S);
 	S._p = xr_new<ref_sound_data>(fName, sound_type, game_type);
+}
+
+void	CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
+{
+	if (!bPresent)		
+		return;
+
+	string_path fn;
+	strcpy_s(fn, fName);
+
+	if (strext(fn))
+		*strext(fn) = 0;
+
+	if (S._p->fn_attached[0].size() && S._p->fn_attached[1].size())
+	{
+#ifdef DEBUG
+		Msg("! 2 file already in queue [%s][%s]", S._p->fn_attached[0].c_str(), S._p->fn_attached[1].c_str());
+#endif // #ifdef DEBUG
+		return;
+	}
+
+	u32 idx = S._p->fn_attached[0].size() ? 1 : 0;
+
+	S._p->fn_attached[idx] = fn;
+
+	CSoundRender_Source* s = SoundRender->i_create_source(fn);
+	S._p->dwBytesTotal += s->bytes_total();
+	S._p->fTimeTotal += s->length_sec();
+
+	if (S._feedback())
+		((CSoundRender_Emitter*)S._feedback())->fTimeToStop += s->length_sec();
+
+	SoundRender->i_destroy_source(s);
 }
 
 void CSoundRender_Core::clone(ref_sound &S, const ref_sound &from, esound_type sound_type, int game_type)
@@ -282,6 +297,10 @@ void CSoundRender_Core::clone(ref_sound &S, const ref_sound &from, esound_type s
 
 	S._p = xr_new<ref_sound_data>();
 	S._p->handle = from._p->handle;
+	S._p->dwBytesTotal = from._p->dwBytesTotal;
+	S._p->fTimeTotal = from._p->fTimeTotal;
+	S._p->fn_attached[0] = from._p->fn_attached[0];
+	S._p->fn_attached[1] = from._p->fn_attached[1];
 	S._p->g_type = (game_type == sg_SourceType) ? S._p->handle->game_type() : game_type;
 	S._p->s_type = sound_type;
 }
@@ -291,7 +310,6 @@ void CSoundRender_Core::play(ref_sound &S, CObject *O, u32 flags, float delay)
 	if (!bPresent || 0 == S._handle())
 		return;
 
-	verify_refsound(S);
 	S._p->g_object = O;
 
 	if (S._feedback())
@@ -299,7 +317,7 @@ void CSoundRender_Core::play(ref_sound &S, CObject *O, u32 flags, float delay)
 	else
 		i_play(&S, flags & sm_Looped, delay);
 
-	if (flags & sm_2D)
+	if (flags & sm_2D || S._handle()->channels_num() == 2)
 		S._feedback()->switch_to_2D();
 }
 void CSoundRender_Core::play_no_feedback(ref_sound &S, CObject *O, u32 flags, float delay, Fvector *pos, float *vol, float *freq, Fvector2 *range)
@@ -307,16 +325,20 @@ void CSoundRender_Core::play_no_feedback(ref_sound &S, CObject *O, u32 flags, fl
 	if (!bPresent || 0 == S._handle())
 		return;
 
-	verify_refsound(S);
 	ref_sound_data_ptr orig = S._p;
 	S._p = xr_new<ref_sound_data>();
 	S._p->handle = orig->handle;
 	S._p->g_type = orig->g_type;
 	S._p->g_object = O;
+	S._p->dwBytesTotal = orig->dwBytesTotal;
+	S._p->fTimeTotal = orig->fTimeTotal;
+	S._p->fn_attached[0] = orig->fn_attached[0];
+	S._p->fn_attached[1] = orig->fn_attached[1];
 	i_play(&S, flags & sm_Looped, delay);
 
-	if (flags & sm_2D)
+	if (flags & sm_2D || S._handle()->channels_num() == 2)
 		S._feedback()->switch_to_2D();
+
 	if (pos)
 		S._feedback()->set_position(*pos);
 	if (freq)
@@ -334,16 +356,16 @@ void CSoundRender_Core::play_at_pos(ref_sound &S, CObject *O, const Fvector &pos
 	if (!bPresent || 0 == S._handle())
 		return;
 
-	verify_refsound(S);
 	S._p->g_object = O;
 
 	if (S._feedback())
 		((CSoundRender_Emitter *)S._feedback())->rewind();
 	else
 		i_play(&S, flags & sm_Looped, delay);
+
 	S._feedback()->set_position(pos);
 
-	if (flags & sm_2D)
+	if (flags & sm_2D || S._handle()->channels_num() == 2)
 		S._feedback()->switch_to_2D();
 }
 
@@ -369,9 +391,11 @@ void CSoundRender_Core::_create_data(ref_sound_data &S, LPCSTR fName, esound_typ
 	S.handle = (CSound_source *)SoundRender->i_create_source(fn);
 	S.g_type = (game_type == sg_SourceType) ? S.handle->game_type() : game_type;
 	S.s_type = sound_type;
-	S.feedback = 0;
-	S.g_object = 0;
-	S.g_userdata = 0;
+	S.feedback = nullptr;
+	S.g_object = nullptr;
+	S.g_userdata = nullptr;
+	S.dwBytesTotal = S.handle->bytes_total();
+	S.fTimeTotal = S.handle->length_sec();
 }
 
 void CSoundRender_Core::_destroy_data(ref_sound_data &S)

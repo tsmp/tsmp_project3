@@ -67,6 +67,7 @@ public:
 
 	virtual void _initialize(u64 window);
 	virtual void _clear();
+	virtual void _restart();
 
 	virtual void set_master_volume(float f);
 

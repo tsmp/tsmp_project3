@@ -18,12 +18,12 @@ void CSoundRender_Emitter::fill_data(u8 *_dest, u32 offset, u32 size)
 	while (size)
 	{
 		// cache access
-		if (SoundRender->cache.request(source->CAT, line))		
-			source->decompress(line, target->get_data());		
+		if (SoundRender->cache.request(source()->CAT, line))
+			source()->decompress(line, target->get_data());
 
 		// fill block
 		u32 blk_size = _min(size, line_amount);
-		u8 *ptr = (u8 *)SoundRender->cache.get_dataptr(source->CAT, line);
+		u8 *ptr = (u8 *)SoundRender->cache.get_dataptr(source()->CAT, line);
 		CopyMemory(_dest, ptr + line_offs, blk_size);
 
 		// advance
@@ -40,16 +40,17 @@ void CSoundRender_Emitter::fill_block(void *ptr, u32 size)
 {
 	//Msg			("stream: %10s - [%X]:%d, p=%d, t=%d",*source->fname,ptr,size,position,source->dwBytesTotal);
 	LPBYTE dest = LPBYTE(ptr);
+	u32 dwBytesTotal = get_bytes_total();
 
-	if ((position + size) > source->dwBytesTotal)
+	if ((get_cursor(true) + size) > dwBytesTotal)
 	{
 		// We are reaching the end of data, what to do?
-		switch (state)
+		switch (m_current_state)
 		{
 		case stPlaying:
 		{
 			// Fill as much data as we can, zeroing remainder
-			if (position >= source->dwBytesTotal)
+			if (get_cursor(true) >= dwBytesTotal)
 			{
 				// ??? We requested the block after remainder - just zero
 				Memory.mem_fill(dest, 0, size);
@@ -58,14 +59,14 @@ void CSoundRender_Emitter::fill_block(void *ptr, u32 size)
 			else
 			{
 				// Calculate remainder
-				u32 sz_data = source->dwBytesTotal - position;
-				u32 sz_zero = (position + size) - source->dwBytesTotal;
+				u32	sz_data = dwBytesTotal - get_cursor(true);
+				u32 sz_zero = (get_cursor(true) + size) - dwBytesTotal;
 				VERIFY(size == (sz_data + sz_zero));
-				fill_data(dest, position, sz_data);
+				fill_data(dest, get_cursor(false), sz_data);
 				Memory.mem_fill(dest + sz_data, 0, sz_zero);
 				//					Msg				("        playing: [%d]-normal,[%d]-zero",sz_data,sz_zero);
 			}
-			position += size;
+			move_cursor(size);
 		}
 		break;
 
@@ -74,12 +75,12 @@ void CSoundRender_Emitter::fill_block(void *ptr, u32 size)
 			u32 hw_position = 0;
 			do
 			{
-				u32 sz_data = source->dwBytesTotal - position;
+				u32	sz_data = dwBytesTotal - get_cursor(true);
 				u32 sz_write = _min(size - hw_position, sz_data);
-				fill_data(dest + hw_position, position, sz_write);
+				fill_data(dest + hw_position, get_cursor(true), sz_write);
 				hw_position += sz_write;
-				position += sz_write;
-				position %= source->dwBytesTotal;
+				move_cursor(sz_write);
+				set_cursor(get_cursor(true) % dwBytesTotal);
 			} while (0 != (size - hw_position));
 		}
 		break;
@@ -91,9 +92,47 @@ void CSoundRender_Emitter::fill_block(void *ptr, u32 size)
 	}
 	else
 	{
-		// Everything OK, just stream
-		//		Msg				("        normal");
-		fill_data(dest, position, size);
-		position += size;
+		u32 bt_handle = ((CSoundRender_Source*)owner_data->handle)->dwBytesTotal;
+
+		if (get_cursor(true) + size > m_cur_handle_cursor + bt_handle)
+		{
+			R_ASSERT(owner_data->fn_attached[0].size());
+			u32 rem = 0;
+
+			if ((m_cur_handle_cursor + bt_handle) > get_cursor(true))
+			{
+				rem = (m_cur_handle_cursor + bt_handle) - get_cursor(true);
+
+#ifdef DEBUG
+				Msg("reminder from prev source %d", rem);
+#endif // #ifdef DEBUG
+
+				fill_data(dest, get_cursor(false), rem);
+				move_cursor(rem);
+			}
+#ifdef DEBUG
+			Msg("recurce from next source %d", size - rem);
+#endif // #ifdef DEBUG
+
+			fill_block(dest + rem, size - rem);
+		}
+		else
+		{
+			// Everything OK, just stream
+			fill_data(dest, get_cursor(false), size);
+			move_cursor(size);
+		}	
 	}
+}
+
+u32	CSoundRender_Emitter::get_bytes_total()	const
+{
+	u32 res = owner_data->dwBytesTotal;
+	return res;
+}
+
+float CSoundRender_Emitter::get_length_sec() const
+{
+	float res = owner_data->get_length_sec();
+	return res;
 }
