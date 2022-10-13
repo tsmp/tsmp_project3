@@ -91,6 +91,8 @@ void XRNETWORK_API DumpNetCompressorStats(bool brief);
 BOOL XRNETWORK_API g_net_compressor_enabled;
 BOOL XRNETWORK_API g_net_compressor_gather_stats;
 
+Fvector SvSpawnPos{ 0.f, 0.f, 0.f };
+
 static xrClientData* GetCommandInitiator(LPCSTR commandLine)
 {
 	LPCSTR tmp_str = strrchr(commandLine, ' ');
@@ -1453,44 +1455,39 @@ public:
 	}
 };
 
-#include "Actor.h"
-#include "ai_object_location.h"
-
-Fvector spavn_vec{0, 0, 0};
+void FillTipsForSpawnCmd(IConsole_Command::vecTips &tips)
+{
+	for (auto *sect : pSettings->sections())
+	{
+		if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
+			|| sect->line_exist("species"))
+			tips.push_back(sect->Name);
+	}
+}
 
 class CCC_SvSpawn : public IConsole_Command
 {
 public:
 	CCC_SvSpawn(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
 	virtual void Execute(LPCSTR args)
 	{
 		if (!OnServer())
-			return;
-		
-		if (!Actor())
-			return;
-
-		if (!pSettings->section_exist(args))
 		{
-			Msg("! cant find section %s", args);
+			Msg("! this command is for server only!");
 			return;
-		}		
-
-		if (Level().Server && Level().Server->game)
-		{
-			if (game_sv_GameState* game = smart_cast<game_sv_GameState*>(Level().Server->game))
-				game->alife().spawn_item(args, spavn_vec, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
 		}
+
+		if (!Level().Server || !Level().Server->game)
+			return;
+
+		if (game_sv_GameState* svGame = smart_cast<game_sv_GameState*>(Level().Server->game))
+			svGame->SpawnObject(args, SvSpawnPos);
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void fill_tips(vecTips &tips, u32 mode)
 	{
-		for (auto sect : pSettings->sections())
-		{
-			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
-				|| sect->line_exist("species"))
-				tips.push_back(sect->Name);
-		}
+		FillTipsForSpawnCmd(tips);
 	}
 };
 
@@ -1504,52 +1501,43 @@ public:
 		if (!g_pGameLevel) 
 			return;
 
-		if (!Level().CurrentControlEntity()) 
-			return;
-
-		if (!Actor())
-			return;
-
 		if (!pSettings->section_exist(args))
 		{
-			Msg("! Section [%s] isn`t exist...", args);
+			Msg("! Section [%s] doesn`t exist", args);
 			return;
 		}
 
-		Fvector result;
+		Fvector resultPos;
 
 		if (g_dedicated_server)		
-			result = spavn_vec;
+			resultPos = SvSpawnPos;
 		else
 		{
+			if (!Level().CurrentControlEntity())
+				return;
+
 			collide::rq_result RQ;
 			Level().ObjectSpace.RayPick(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, collide::rqtBoth, RQ, Level().CurrentControlEntity());
-			result = Fvector(Device.vCameraPosition).add(Fvector(Device.vCameraDirection).mul(RQ.range));
+			resultPos = Fvector(Device.vCameraPosition).add(Fvector(Device.vCameraDirection).mul(RQ.range));
 		}
 
-		if (OnServer())
-		{			
-			if (game_sv_GameState* tpGame = smart_cast<game_sv_GameState*>(Level().Server->game))
-				tpGame->alife().spawn_item(args, result, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
-		}
-		else
+		if (!OnServer())
 		{
 			NET_Packet P;
 			CGameObject::u_EventGen(P, GE_CLIENT_SPAWN, Level().CurrentControlEntity()->ID());
-			P.w_vec3(result);
+			P.w_vec3(resultPos);
 			P.w_stringZ(args);
 			CGameObject::u_EventSend(P);
-		}		
+			return;
+		}
+
+		if (game_sv_GameState* svGame = smart_cast<game_sv_GameState*>(Level().Server->game))
+			svGame->SpawnObject(args, resultPos);		
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void fill_tips(vecTips &tips, u32 mode)
 	{
-		for (auto sect : pSettings->sections())
-		{
-			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
-				|| sect->line_exist("species"))
-				tips.push_back(sect->Name);
-		}
+		FillTipsForSpawnCmd(tips);
 	}
 };
 
@@ -2042,7 +2030,7 @@ void register_mp_console_commands()
 
 	CMD1(CCC_ClSpawn, "cl_spawn");
 	CMD1(CCC_SvSpawn, "sv_spawn");
-	CMD4(CCC_Vector3, "sv_spawn_vec", &spavn_vec, Fvector().set(-1000000.0f, -1000000.0f, -1000000.0f ), Fvector().set(1000000.0f, 1000000.0f, 1000000.0f));
+	CMD4(CCC_Vector3, "sv_spawn_pos", &SvSpawnPos, Fvector().set(-1000000.0f, -1000000.0f, -1000000.0f ), Fvector().set(1000000.0f, 1000000.0f, 1000000.0f));
 
 	CMD4(CCC_Integer, "fz_downloader_enabled", (int*)&fz_downloader_enabled, 0, 1);
 	CMD4(CCC_Integer, "fz_downloader_new", (int*)&fz_downloader_new, 0, 1);

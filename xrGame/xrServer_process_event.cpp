@@ -371,13 +371,10 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		P.r_vec3(pos);
 		P.r_stringZ(name_sect);
 
-		if (!Actor())
-			break;
-
 #ifdef PUBLIC_BUILD
 		if (!receiver->owner->m_admin_rights.m_has_admin_rights)
 		{
-			Msg("! Attempt to spawn object is player without admin rights! Section: %s, player name: %s.", name_sect.c_str(), receiver->name_replace());
+			Msg("! Attempt to spawn object from player without admin rights! Section: %s, player name: %s", name_sect.c_str(), receiver->name_replace());
 		
 			NET_Packet P_answ;
 			P_answ.w_begin(M_REMOTE_CONTROL_CMD);
@@ -387,8 +384,8 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		}
 #endif // PUBLIC_BUILD
 				
-		if (game_sv_mp* tpGame = smart_cast<game_sv_mp*>(Level().Server->game))
-			tpGame->alife().spawn_item(name_sect.c_str(), pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		if (game_sv_mp* svGame = smart_cast<game_sv_mp*>(Level().Server->game))
+			svGame->SpawnObject(name_sect.c_str(), pos);
 	}
 	break;
 
