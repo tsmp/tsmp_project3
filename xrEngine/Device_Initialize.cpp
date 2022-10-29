@@ -42,19 +42,4 @@ void CRenderDevice::Initialize()
         // Create the render window
         m_hWnd = CreateWindow(wndClassName, wndText, wndStyle, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, hInstance, 0);
     }
-
-    // Command line
-    char *lpCmdLine = Core.Params;
-    if (strstr(lpCmdLine, "-gpu_sw") != NULL)
-        HW.Caps.bForceGPU_SW = TRUE;
-    else
-        HW.Caps.bForceGPU_SW = FALSE;
-    if (strstr(lpCmdLine, "-gpu_nopure") != NULL)
-        HW.Caps.bForceGPU_NonPure = TRUE;
-    else
-        HW.Caps.bForceGPU_NonPure = FALSE;
-    if (strstr(lpCmdLine, "-gpu_ref") != NULL)
-        HW.Caps.bForceGPU_REF = TRUE;
-    else
-        HW.Caps.bForceGPU_REF = FALSE;
 }

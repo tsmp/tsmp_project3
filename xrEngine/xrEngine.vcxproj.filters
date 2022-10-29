@@ -151,6 +151,21 @@
     <Filter Include="Engine\Text editor\Line editor control">
       <UniqueIdentifier>{40d48367-76e2-40b8-ad7c-c72122bd741c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render\Execution &amp; 3D\ClearSky">
+      <UniqueIdentifier>{777c7351-2b14-4d33-a147-55028cfbf900}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderRef">
+      <UniqueIdentifier>{3b832d0b-662c-4728-8014-bfb50e76dea8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderRef\Execution &amp; 3D">
+      <UniqueIdentifier>{ea4a2f41-9ca1-4757-992b-5e2f61791d23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderRef\Visuals">
+      <UniqueIdentifier>{0de14ebf-337e-4a37-925e-704ec007f440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderRef\Visuals\Skeleton">
+      <UniqueIdentifier>{14bf5313-0d21-4f56-96fa-1e6bff439f70}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="flight.h">
@@ -297,9 +312,6 @@
     <ClInclude Include="FHierrarhyVisual.h">
       <Filter>Render\Visuals</Filter>
     </ClInclude>
-    <ClInclude Include="Fmesh.h">
-      <Filter>Render\Visuals</Filter>
-    </ClInclude>
     <ClInclude Include="ParticleCustom.h">
       <Filter>Render\Visuals</Filter>
     </ClInclude>
@@ -310,9 +322,6 @@
       <Filter>Render\Visuals\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="SkeletonCustom.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletonMotions.h">
       <Filter>Render\Visuals\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="SkeletonX.h">
@@ -335,15 +344,6 @@
     </ClInclude>
     <ClInclude Include="MbHelpers.h">
       <Filter>Render\Font output</Filter>
-    </ClInclude>
-    <ClInclude Include="device.h">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClInclude>
-    <ClInclude Include="StatGraph.h">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Stats.h">
-      <Filter>Render\Execution &amp; 3D</Filter>
     </ClInclude>
     <ClInclude Include="HW.h">
       <Filter>Render\Execution &amp; 3D\HW</Filter>
@@ -513,6 +513,24 @@
     <ClInclude Include="..\Layers\xrRender\Blenders\Blender.h" />
     <ClInclude Include="..\Layers\xrRender\Blenders\Blender_CLSID.h" />
     <ClInclude Include="..\Layers\xrRender\Blenders\Blender_Recorder.h" />
+    <ClInclude Include="..\Layers\xrRender\dxRenderDeviceRender.h">
+      <Filter>Render\Execution &amp; 3D\ClearSky</Filter>
+    </ClInclude>
+    <ClInclude Include="device.h">
+      <Filter>RenderRef\Execution &amp; 3D</Filter>
+    </ClInclude>
+    <ClInclude Include="StatGraph.h">
+      <Filter>RenderRef\Execution &amp; 3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Stats.h">
+      <Filter>RenderRef\Execution &amp; 3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Fmesh.h">
+      <Filter>RenderRef\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonMotions.h">
+      <Filter>RenderRef\Visuals\Skeleton</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -659,9 +677,6 @@
     <ClCompile Include="FHierrarhyVisual.cpp">
       <Filter>Render\Visuals</Filter>
     </ClCompile>
-    <ClCompile Include="fmesh.cpp">
-      <Filter>Render\Visuals</Filter>
-    </ClCompile>
     <ClCompile Include="ParticleCustom.cpp">
       <Filter>Render\Visuals</Filter>
     </ClCompile>
@@ -669,9 +684,6 @@
       <Filter>Render\Visuals\Skeleton</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonCustom.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonMotions.cpp">
       <Filter>Render\Visuals\Skeleton</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonRigid.cpp">
@@ -694,33 +706,6 @@
     </ClCompile>
     <ClCompile Include="MbHelpers.cpp">
       <Filter>Render\Font output</Filter>
-    </ClCompile>
-    <ClCompile Include="device.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_create.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_destroy.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_Initialize.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_Misc.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_overdraw.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Device_wndproc.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="StatGraph.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Stats.cpp">
-      <Filter>Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="HW.cpp">
       <Filter>Render\Execution &amp; 3D\HW</Filter>
@@ -899,6 +884,42 @@
     <ClCompile Include="..\Layers\xrRender\Blenders\Blender.cpp" />
     <ClCompile Include="..\Layers\xrRender\Blenders\Blender_Palette.cpp" />
     <ClCompile Include="..\Layers\xrRender\Blenders\Blender_Recorder.cpp" />
+    <ClCompile Include="..\Layers\xrRender\dxRenderDeviceRender.cpp">
+      <Filter>Render\Execution &amp; 3D\ClearSky</Filter>
+    </ClCompile>
+    <ClCompile Include="device.cpp">
+      <Filter>RenderRef\Execution &amp; 3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Device_create.cpp">
+      <Filter>RenderRef\Execution &amp; 3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Device_destroy.cpp">
+      <Filter>RenderRef\Execution &amp; 3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Device_Initialize.cpp">
+      <Filter>RenderRef\Execution &amp; 3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Device_Misc.cpp">
+      <Filter>RenderRef\Execution &amp; 3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Device_overdraw.cpp">
+      <Filter>RenderRef\Execution &amp; 3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Device_wndproc.cpp">
+      <Filter>RenderRef\Execution &amp; 3D</Filter>
+    </ClCompile>
+    <ClCompile Include="StatGraph.cpp">
+      <Filter>RenderRef\Execution &amp; 3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Stats.cpp">
+      <Filter>RenderRef\Execution &amp; 3D</Filter>
+    </ClCompile>
+    <ClCompile Include="fmesh.cpp">
+      <Filter>RenderRef\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonMotions.cpp">
+      <Filter>RenderRef\Visuals\Skeleton</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="OutOfVirtError.RES">

@@ -1101,6 +1101,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Layers\xrRender\dxRenderDeviceRender.h" />
     <ClInclude Include="ai_script_lua_extension.h" />
     <ClInclude Include="ai_script_lua_space.h" />
     <ClInclude Include="ai_script_space.h" />
@@ -1225,6 +1226,7 @@
     <ClInclude Include="flight.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Layers\xrRender\dxRenderDeviceRender.cpp" />
     <ClCompile Include="ai_script_lua_debug.cpp" />
     <ClCompile Include="ai_script_lua_extension.cpp" />
     <ClCompile Include="..\Layers\xrRender\Blenders\Blender.cpp" />

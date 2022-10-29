@@ -6,8 +6,8 @@
 #define XRAPI_API __declspec(dllimport)
 #endif
 
-class IRender_interface;
-extern XRAPI_API IRender_interface* Render;
+//class IRender_interface;
+//extern XRAPI_API IRender_interface* Render;
 
 class IRenderFactory;
 extern XRAPI_API IRenderFactory* RenderFactory;
