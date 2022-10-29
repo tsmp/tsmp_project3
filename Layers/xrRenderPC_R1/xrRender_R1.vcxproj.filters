@@ -43,6 +43,18 @@
     <Filter Include="Lights">
       <UniqueIdentifier>{5e8e3e90-176f-447d-a06c-fb1cbac6a3cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations">
+      <UniqueIdentifier>{613f7830-e981-422b-b2ab-c07d7b8834f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\RenderFactory">
+      <UniqueIdentifier>{2f776ab8-b381-48f8-bdab-b4c4946844df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\FactoryPtr">
+      <UniqueIdentifier>{a67bc95a-b06f-4979-bbaa-49cf9f55d82f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\RenderDeviceRender">
+      <UniqueIdentifier>{25f362b6-9491-4d99-a9ac-50a62d6d04a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -209,6 +221,21 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\LightTrack.h">
       <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\FactoryPtr.h">
+      <Filter>Interface implementations\FactoryPtr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\RenderFactory.h">
+      <Filter>Interface implementations\RenderFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxRenderFactory.h">
+      <Filter>Interface implementations\RenderFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxRenderDeviceRender.h">
+      <Filter>Interface implementations\RenderDeviceRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\RenderDeviceRender.h">
+      <Filter>Interface implementations\RenderDeviceRender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -412,6 +439,12 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\LightTrack.cpp">
       <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxRenderFactory.cpp">
+      <Filter>Interface implementations\RenderFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxRenderDeviceRender.cpp">
+      <Filter>Interface implementations\RenderDeviceRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
