@@ -28,7 +28,7 @@ BOOL CLevel::Load_GameSpecific_Before()
 		ai().load(net_SessionName());
 
 #ifdef ALIFE_MP
-	if (!ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
+	if (!ai().get_alife() && FS.exist(fn_game, "$level$", "level.game"))
 #else
 	if (!g_dedicated_server && !ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
 #endif
@@ -38,7 +38,7 @@ BOOL CLevel::Load_GameSpecific_Before()
 		FS.r_close(stream);
 	}
 
-	return (TRUE);
+	return TRUE;
 }
 
 BOOL CLevel::Load_GameSpecific_After()
