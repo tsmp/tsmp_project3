@@ -2,6 +2,7 @@
 
 #include "render.h"
 #include "IGame_Persistent.h"
+#include "..\include\xrRender\RenderFactory.h"
 
 #include "..\TSMP3_Build_Config.h"
 
@@ -43,8 +44,7 @@ void CRenderDevice::Destroy(void)
 	seqDeviceReset.Clear();
 	seqParallel.clear();
 
-#pragma TODO("TSMP: factory")
-	delete m_pRender; //RenderFactory->DestroyRenderDeviceRender(m_pRender);
+	RenderFactory->DestroyRenderDeviceRender(m_pRender);
 	m_pRender = 0;
 	xr_delete(Statistic);
 }

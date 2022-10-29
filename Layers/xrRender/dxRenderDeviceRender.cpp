@@ -4,10 +4,7 @@
 #include "ResourceManager.h"
 #include "Render.h"
 
-// fake to test factory
-#if !defined(XRRENDER_R1_EXPORTS) && !defined(XRRENDER_R2_EXPORTS)
-
-extern bool g_dedicated_server;
+ENGINE_API bool g_dedicated_server;
 
 #pragma TODO("TSMP: remove this, use class members")
 ref_shader& dxRenderDeviceRender::m_WireShader()
@@ -366,5 +363,3 @@ void dxRenderDeviceRender::OnAssetsChanged()
 	Resources->m_textures_description.UnLoad();
 	Resources->m_textures_description.Load();
 }
-
-#endif
