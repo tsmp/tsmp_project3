@@ -224,11 +224,7 @@ void CActor::reinit()
 	material().reinit();
 
 	m_pUsableObject = NULL;
-
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-		memory().reinit();
+	memory().reinit();
 
 	set_input_external_handler(0);
 	m_time_lock_accel = 0;
@@ -1621,10 +1617,8 @@ void CActor::AnimTorsoPlayCallBack(CBlend *B)
 
 void CActor::SetActorVisibility(u16 who, float value)
 {
-#ifdef ALIFE_MP
 	if (g_dedicated_server)
 		return;
-#endif
 
 	CUIMotionIcon &motion_icon = HUD().GetUI()->UIMainIngameWnd->MotionIcon();
 	motion_icon.SetActorVisibility(who, value);

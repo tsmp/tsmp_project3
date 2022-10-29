@@ -244,11 +244,7 @@ void CEntity::net_Destroy()
 	if (m_registered_member)
 	{
 		m_registered_member = false;
-
-#ifndef ALIFE_MP
-		if (IsGameTypeSingle())
-#endif
-			Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
+		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
 	}
 
 	inherited::net_Destroy();

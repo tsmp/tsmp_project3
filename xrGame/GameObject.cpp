@@ -896,11 +896,7 @@ u32 CGameObject::ef_detector_type() const
 void CGameObject::net_Relcase(CObject *O)
 {
 	inherited::net_Relcase(O);
-
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-		CScriptBinder::net_Relcase(O);
+	CScriptBinder::net_Relcase(O);
 }
 
 CGameObject::CScriptCallbackExVoid &CGameObject::callback(GameObject::ECallbackType type) const
