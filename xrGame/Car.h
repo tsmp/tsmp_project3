@@ -627,6 +627,7 @@ public:
 
 public:
 	virtual CEntity *cast_entity() { return this; }
+	void Teleport(Fvector outPos);
 
 #ifndef PUBLIC_BUILD
 	void ChangeEnginePower(float newPower);

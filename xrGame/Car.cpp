@@ -2217,6 +2217,25 @@ void CCar::ASCUpdate(EAsyncCalls c)
 	}
 }
 
+void CCar::Teleport(Fvector outPos)
+{
+	CPhysicsShell* P = PPhysicsShell();
+	if (!P || !P->isActive())
+	{
+		Msg("! cant get physics shell to teleport car!no shell");
+		return;
+	}
+
+	Fmatrix F = XFORM();
+	Fvector pos = outPos;
+	pos.y += 2.5; // TSMP: на всякий случай поднимем повыше точку появления
+	F.c = pos;
+
+	XFORM().set(F);
+	P->SetTransform(F);
+	P->Enable();
+}
+
 void CCar::AscCall(EAsyncCalls c)
 {
 	async_calls.set(u16(c), TRUE);

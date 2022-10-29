@@ -325,6 +325,7 @@ void CScriptGameObject::GetStartDialog()
 		return;
 	pDialogManager->GetStartDialog();
 }
+
 void CScriptGameObject::RestoreDefaultStartDialog()
 {
 	CAI_PhraseDialogManager *pDialogManager = smart_cast<CAI_PhraseDialogManager *>(&object());
@@ -334,39 +335,36 @@ void CScriptGameObject::RestoreDefaultStartDialog()
 }
 
 void CScriptGameObject::SetActorPosition(Fvector pos)
-{
-	CActor *actor = smart_cast<CActor *>(&object());
-	if (actor)
+{	
+	if (CActor* actor = smart_cast<CActor*>(&object()))
 	{
-		Fmatrix F = actor->XFORM();
-		F.c = pos;
-		actor->ForceTransform(F);
-		//		actor->XFORM().c = pos;
+		if (CCar* car = smart_cast<CCar*>(actor->Holder()))		
+			car->Teleport(pos);		
+		else
+		{
+			Fmatrix F = actor->XFORM();
+			F.c = pos;
+			actor->ForceTransform(F);			
+		}
 	}
 	else
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call SetActorPosition method for non-actor object");
 }
 
 void CScriptGameObject::SetActorDirection(float dir)
-{
-	CActor *actor = smart_cast<CActor *>(&object());
-	if (actor)
-	{
+{	
+	if (CActor* actor = smart_cast<CActor*>(&object()))	
 		actor->cam_Active()->Set(dir, 0, 0);
-		//		actor->XFORM().setXYZ(0,dir,0);
-	}
 	else
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call SetActorDirection method for non-actor object");
 }
 
-CHolderCustom *CScriptGameObject::get_current_holder()
+CHolderCustom* CScriptGameObject::get_current_holder()
 {
-	CActor *actor = smart_cast<CActor *>(&object());
-
-	if (actor)
+	if (CActor* actor = smart_cast<CActor*>(&object()))
 		return actor->Holder();
-	else
-		return NULL;
+
+	return nullptr;
 }
 
 void CScriptGameObject::set_ignore_monster_threshold(float ignore_monster_threshold)
