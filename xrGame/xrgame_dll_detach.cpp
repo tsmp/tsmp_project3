@@ -41,23 +41,18 @@ extern void CreateUIGeom();
 extern void DestroyUIGeom();
 
 #include "IGame_Persistent.h"
-#include "..\TSMP3_Build_Config.h"
 
 void init_game_globals()
 {
 	CreateUIGeom();
+	CInfoPortion::InitInternal();
 
 	if (!g_dedicated_server)
-	{
-		CInfoPortion::InitInternal();
+	{		
 		CEncyclopediaArticle::InitInternal();
 		CPhraseDialog::InitInternal();
 		InventoryUtilities::CreateShaders();
 	}
-#ifdef ALIFE_MP
-	else
-		CInfoPortion::InitInternal();
-#endif
 
 	CCharacterInfo::InitInternal();
 	CSpecificCharacter::InitInternal();
@@ -93,18 +88,11 @@ void clean_game_globals()
 		CEncyclopediaArticle::DeleteSharedData();
 		CEncyclopediaArticle::DeleteIdToIndexData();
 
-		CPhraseDialog::DeleteSharedData();
-		CPhraseDialog::DeleteIdToIndexData();
-
 		InventoryUtilities::DestroyShaders();
 	}
-#ifdef ALIFE_MP
-	else
-	{
-		CInfoPortion::DeleteSharedData();
-		CInfoPortion::DeleteIdToIndexData();
-	}
-#endif
+
+	CInfoPortion::DeleteSharedData();
+	CInfoPortion::DeleteIdToIndexData();
 
 	CCharacterInfo::DeleteSharedData();
 	CCharacterInfo::DeleteIdToIndexData();

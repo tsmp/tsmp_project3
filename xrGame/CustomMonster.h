@@ -12,8 +12,6 @@
 #include "skeletonanimated.h"
 #include "associative_vector.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 namespace MonsterSpace
 {
 	struct SBoneRotation;
@@ -156,12 +154,9 @@ public:
 
 	virtual void SelectAnimation(const Fvector &_view, const Fvector &_move, float speed) = 0;
 
-#ifdef ALIFE_MP
 	virtual bool NeedToDestroyObject() const;
 	virtual ALife::_TIME_ID TimePassedAfterDeath() const;
-#endif
 
-	// debug
 #ifdef DEBUG
 	virtual void OnRender();
 	virtual void OnHUDDraw(CCustomHUD *hud);

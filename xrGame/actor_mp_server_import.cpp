@@ -1,11 +1,9 @@
 #include "stdafx.h"
 #include "actor_mp_server.h"
 #include "../../xrNetwork/net_utils.h"
-#include "..\TSMP3_Build_Config.h"
 
 void CSE_ActorMP::UPDATE_Read(NET_Packet &packet)
 {
-#ifdef ALIFE_MP
 	if (CSE_Abstract::firstUpdate)
 	{
 		CSE_ALifeCreatureActor::UPDATE_Read(packet);
@@ -14,7 +12,6 @@ void CSE_ActorMP::UPDATE_Read(NET_Packet &packet)
 		CSE_Abstract::firstUpdate = false;
 		return;
 	}
-#endif
 
 	flags = 0;
 	m_u16NumItems = 1;
@@ -26,6 +23,7 @@ void CSE_ActorMP::UPDATE_Read(NET_Packet &packet)
 		tmp_state_holder.read(packet);
 		return;
 	}
+
 	m_state_holder.read(packet);
 
 	m_AliveState.quaternion = m_state_holder.state().physics_quaternion;

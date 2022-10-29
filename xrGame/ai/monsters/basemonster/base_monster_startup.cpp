@@ -27,8 +27,6 @@
 #include "../../../inventory_item.h"
 #include "../../../xrServer_Objects_ALife.h"
 
-#include "..\..\..\..\TSMP3_Build_Config.h"
-
 void CBaseMonster::Load(LPCSTR section)
 {
 	// load parameters from ".ltx" file
@@ -39,30 +37,20 @@ void CBaseMonster::Load(LPCSTR section)
 	m_cover_evaluator_close_point = xr_new<CCoverEvaluatorCloseToEnemy>(&movement().restrictions());
 
 	movement().Load(section);
-
 	MeleeChecker.load(section);
 	Morale.load(section);
 
 	m_pPhysics_support->in_Load(section);
-
 	SetfHealth((float)pSettings->r_u32(section, "Health"));
 
 	m_controlled = smart_cast<CControlledEntityBase *>(this);
-
 	settings_load(section);
-
 	control().load(section);
 
 	m_anomaly_detector->load(section);
 	CoverMan->load();
 
 	m_rank = (pSettings->line_exist(section, "rank")) ? int(pSettings->r_u32(section, "rank")) : 0;
-
-	//	if (pSettings->line_exist(section,"Spawn_Inventory_Item_Section")) {
-	//		m_item_section					= pSettings->r_string(section,"Spawn_Inventory_Item_Section");
-	//		m_spawn_probability				= pSettings->r_float(section,"Spawn_Inventory_Item_Probability");
-	//	} else m_spawn_probability			= 0.f;
-
 	m_melee_rotation_factor = READ_IF_EXISTS(pSettings, r_float, section, "Melee_Rotation_Factor", 1.5f);
 	berserk_always = READ_IF_EXISTS(!!pSettings, r_bool, section, "berserk_always", false);
 }
@@ -177,25 +165,25 @@ BOOL CBaseMonster::net_Spawn(CSE_Abstract *DC)
 										//поэтому в основной версии на всякий случай пусть будет здесь,
 										//но для animation movement controllr он должен быть в конце чтобы знать что он создался на споне
 
-#ifndef ALIFE_MP
-	R_ASSERT2(ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)), "There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
-#else
-	if (!ai().get_level_graph())
-		Msg("- spawn monster on client");
+	if(IsGameTypeSingle())
+		R_ASSERT2(ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)), "There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
 	else
-		Msg("- spawn monster on server");
+	{
+		if (!ai().get_level_graph())
+			Msg("- spawn monster on client");
+		else
+			Msg("- spawn monster on server");
+	}
 
 	m_bInInterpolation = false;
 	m_bInterpolate = false;
 	m_dwILastUpdateTime = 0;
-#endif
 
 	monster_squad().register_member((u8)g_Team(), (u8)g_Squad(), (u8)g_Group(), this);
-
 	settings_overrides();
 
 	// spawn inventory item
-	return (TRUE);
+	return TRUE;
 }
 
 void CBaseMonster::net_Destroy()
@@ -207,9 +195,7 @@ void CBaseMonster::net_Destroy()
 		StateMan->critical_finalize();
 
 	inherited::net_Destroy();
-
 	CInventoryOwner::net_Destroy();
-
 	m_pPhysics_support->in_NetDestroy();
 
 	monster_squad().remove_member((u8)g_Team(), (u8)g_Squad(), (u8)g_Group(), this);

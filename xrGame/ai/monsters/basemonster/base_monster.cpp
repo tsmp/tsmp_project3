@@ -43,8 +43,6 @@
 #include "../../../ai_space.h"
 #include "../../../script_engine.h"
 
-#include "..\..\..\..\TSMP3_Build_Config.h"
-
 CBaseMonster::CBaseMonster()
 {
 	m_pPhysics_support = xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etBitting, this);
@@ -71,7 +69,6 @@ CBaseMonster::CBaseMonster()
 	Morale.init_external(this);
 
 	m_controlled = nullptr;
-
 	control().add(&m_com_manager, ControlCom::eControlCustom);
 
 	m_com_manager.add_ability(ControlCom::eControlSequencer);
@@ -81,7 +78,6 @@ CBaseMonster::CBaseMonster()
 	CoverMan = xr_new<CMonsterCoverManager>(this);
 
 	Home = xr_new<CMonsterHome>(this);
-
 	com_man().add_ability(ControlCom::eComCriticalWound);
 }
 
@@ -108,18 +104,13 @@ void CBaseMonster::UpdateCL()
 {
 	inherited::UpdateCL();
 
-#ifdef ALIFE_MP
 	if (g_Alive() && Remote())
 		make_Interpolation();
-#endif
 
-	if (g_Alive())
-	{
-		CStepManager::update();
-	}
+	if (g_Alive())	
+		CStepManager::update();	
 
 	control().update_frame();
-
 	m_pPhysics_support->in_UpdateCL();
 }
 
@@ -138,10 +129,6 @@ void CBaseMonster::shedule_Update(u32 dt)
 	show_debug_info();
 #endif
 }
-
-//////////////////////////////////////////////////////////////////////
-// Other functions
-//////////////////////////////////////////////////////////////////////
 
 void CBaseMonster::Die(CObject *who)
 {
@@ -173,7 +160,6 @@ void CBaseMonster::Hit(SHit *pHDS)
 		if (!critically_wounded())
 			update_critical_wounded(pHDS->boneID, pHDS->power);
 
-	//	inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
 	inherited::Hit(pHDS);
 }
 
@@ -269,23 +255,8 @@ void CBaseMonster::set_state_sound(u32 type, u32 SoundDelay, bool once)
 
 		switch (type)
 		{
-		case MonsterSound::eMonsterSoundIdle:			
-
-#ifndef ALIFE_MP
-			// check distance to actor
-			if (Actor()->Position().distance_to(Position()) > db().m_fDistantIdleSndRange)
-			{
-				delay = u32(float(db().m_dwDistantIdleSndDelay) * _sqrt(float(objects_count)));
-				type = MonsterSound::eMonsterSoundIdleDistant;
-			}
-			else
-			{
-				delay = u32(float(db().m_dwIdleSndDelay) * _sqrt(float(objects_count)));
-			}
-#else
+		case MonsterSound::eMonsterSoundIdle:
 			delay = u32(float(db().m_dwIdleSndDelay) * _sqrt(float(objects_count)));
-#endif
-
 			break;
 
 		case MonsterSound::eMonsterSoundEat:

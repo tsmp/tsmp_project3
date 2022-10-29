@@ -27,19 +27,18 @@
 #include "debug_renderer.h"
 #endif
 
-#include "..\TSMP3_Build_Config.h"
-
 #define ITEM_REMOVE_TIME 30000
+
 struct net_update_IItem
 {
 	u32 dwTimeStamp;
 	SPHNetState State;
 };
+
 struct net_updateData
 {
-
 	xr_deque<net_update_IItem> NET_IItem;
-	/// spline coeff /////////////////////
+	// spline coeff
 	float SCoeff[3][4];
 
 #ifdef DEBUG
@@ -298,50 +297,44 @@ void CInventoryItem::OnEvent(NET_Packet &P, u16 type)
 //объекте, поэтому функция должна быть переопределена
 bool CInventoryItem::Detach(const char *item_section_name, bool b_spawn_item)
 {
-	if (OnClient())
+	if (OnClient() || !b_spawn_item)
 		return true;
-	if (b_spawn_item)
+
+	CSE_Abstract* D = F_entity_Create(item_section_name);
+	R_ASSERT(D);
+	CSE_ALifeDynamicObject* l_tpALifeDynamicObject = smart_cast<CSE_ALifeDynamicObject*>(D);
+	R_ASSERT(l_tpALifeDynamicObject);
+
+	l_tpALifeDynamicObject->m_tNodeID = object().ai_location().level_vertex_id();
+
+	// Fill
+	D->s_name = item_section_name;
+	D->set_name_replace("");
+	D->s_gameid = u8(GameID());
+	D->s_RP = 0xff;
+	D->ID = 0xffff;
+
+	if (GameID() == GAME_SINGLE)	
+		D->ID_Parent = u16(object().H_Parent()->ID());	
+	else 
 	{
-		CSE_Abstract *D = F_entity_Create(item_section_name);
-		R_ASSERT(D);
-		CSE_ALifeDynamicObject *l_tpALifeDynamicObject =
-			smart_cast<CSE_ALifeDynamicObject *>(D);
-		R_ASSERT(l_tpALifeDynamicObject);
-
-#ifdef ALIFE_MP
-		l_tpALifeDynamicObject->m_tNodeID = object().ai_location().level_vertex_id();
-#else
-		l_tpALifeDynamicObject->m_tNodeID = (g_dedicated_server) ? u32(-1) : object().ai_location().level_vertex_id();
-#endif
-
-		// Fill
-		D->s_name = item_section_name;
-		D->set_name_replace("");
-		D->s_gameid = u8(GameID());
-		D->s_RP = 0xff;
-		D->ID = 0xffff;
-		if (GameID() == GAME_SINGLE)
-		{
+		// i'm not sure this is right but it is simpliest way to avoid exception in MP BuyWnd... [Satan]
+		if (object().H_Parent())
 			D->ID_Parent = u16(object().H_Parent()->ID());
-		}
-		else // i'm not sure this is right
-		{	 // but it is simpliest way to avoid exception in MP BuyWnd... [Satan]
-			if (object().H_Parent())
-				D->ID_Parent = u16(object().H_Parent()->ID());
-			else
-				D->ID_Parent = NULL;
-		}
-		D->ID_Phantom = 0xffff;
-		D->o_Position = object().Position();
-		D->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
-		D->RespawnTime = 0;
-		// Send
-		NET_Packet P;
-		D->Spawn_Write(P, TRUE);
-		Level().Send(P, net_flags(TRUE));
-		// Destroy
-		F_entity_Destroy(D);
+		else
+			D->ID_Parent = NULL;
 	}
+
+	D->ID_Phantom = 0xffff;
+	D->o_Position = object().Position();
+	D->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
+	D->RespawnTime = 0;
+
+	NET_Packet P;
+	D->Spawn_Write(P, TRUE);
+	Level().Send(P, net_flags(TRUE));
+	F_entity_Destroy(D);
+
 	return true;
 }
 
@@ -350,22 +343,18 @@ BOOL CInventoryItem::net_Spawn(CSE_Abstract *DC)
 {
 	m_flags.set(FInInterpolation, FALSE);
 	m_flags.set(FInInterpolate, FALSE);
-	//	m_bInInterpolation				= false;
-	//	m_bInterpolate					= false;
 
 	m_flags.set(Fuseful_for_NPC, TRUE);
 	CSE_Abstract *e = (CSE_Abstract *)(DC);
-	CSE_ALifeObject *alife_object = smart_cast<CSE_ALifeObject *>(e);
-	if (alife_object)
-	{
-		m_flags.set(Fuseful_for_NPC, alife_object->m_flags.test(CSE_ALifeObject::flUsefulForAI));
-	}
+	
+	if (CSE_ALifeObject* alife_object = smart_cast<CSE_ALifeObject*>(e))	
+		m_flags.set(Fuseful_for_NPC, alife_object->m_flags.test(CSE_ALifeObject::flUsefulForAI));	
 
-	CSE_ALifeInventoryItem *pSE_InventoryItem = smart_cast<CSE_ALifeInventoryItem *>(e);
+	CSE_ALifeInventoryItem *pSE_InventoryItem = smart_cast<CSE_ALifeInventoryItem*>(e);
+
 	if (!pSE_InventoryItem)
 		return TRUE;
 
-	//!!!
 	m_fCondition = pSE_InventoryItem->m_fCondition;
 	if (GameID() != GAME_SINGLE)
 		object().processing_activate();

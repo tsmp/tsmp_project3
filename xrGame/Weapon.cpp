@@ -27,8 +27,6 @@
 #include "object_broker.h"
 #include "igame_persistent.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 #define WEAPON_REMOVE_TIME 60000
 #define ROTATION_TIME 0.25f
 
@@ -320,22 +318,17 @@ void CWeapon::Load(LPCSTR section)
 		camRelaxSpeed_AI = camRelaxSpeed;
 	}
 
-	//	camDispersion		= pSettings->r_float		(section,"cam_dispersion"	);
-	//	camDispersion		= deg2rad					(camDispersion);
-
 	camMaxAngleHorz = pSettings->r_float(section, "cam_max_angle_horz");
 	camMaxAngleHorz = deg2rad(camMaxAngleHorz);
 	camStepAngleHorz = pSettings->r_float(section, "cam_step_angle_horz");
 	camStepAngleHorz = deg2rad(camStepAngleHorz);
 	camDispertionFrac = READ_IF_EXISTS(pSettings, r_float, section, "cam_dispertion_frac", 0.7f);
-	//  [8/2/2005]
-	//m_fParentDispersionModifier = READ_IF_EXISTS(pSettings, r_float, section, "parent_dispersion_modifier",1.0f);
+
 	m_fPDM_disp_base = READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_base", 1.0f);
 	m_fPDM_disp_vel_factor = READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_vel_factor", 1.0f);
 	m_fPDM_disp_accel_factor = READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_accel_factor", 1.0f);
 	m_fPDM_disp_crouch = READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_crouch", 1.0f);
 	m_fPDM_disp_crouch_no_acc = READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_crouch_no_acc", 1.0f);
-	//  [8/2/2005]
 
 	fireDispersionConditionFactor = pSettings->r_float(section, "fire_dispersion_condition_factor");
 	misfireProbability = pSettings->r_float(section, "misfire_probability");
@@ -446,21 +439,6 @@ void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
 	if (pSettings->line_exist(hud_sect, "zoom_rotate_time"))
 		m_fZoomRotateTime = pSettings->r_float(hud_sect, "zoom_rotate_time");
 }
-/*
-void CWeapon::animGet	(MotionSVec& lst, LPCSTR prefix)
-{
-	const MotionID		&M = m_pHUD->animGet(prefix);
-	if (M)				lst.push_back(M);
-	for (int i=0; i<MAX_ANIM_COUNT; ++i)
-	{
-		string128		sh_anim;
-		sprintf_s			(sh_anim,"%s%d",prefix,i);
-		const MotionID	&M = m_pHUD->animGet(sh_anim);
-		if (M)			lst.push_back(M);
-	}
-	R_ASSERT2			(!lst.empty(),prefix);
-}
-*/
 
 BOOL CWeapon::net_Spawn(CSE_Abstract *DC)
 {
@@ -468,20 +446,17 @@ BOOL CWeapon::net_Spawn(CSE_Abstract *DC)
 	CSE_Abstract *e = (CSE_Abstract *)(DC);
 	CSE_ALifeItemWeapon *E = smart_cast<CSE_ALifeItemWeapon *>(e);
 
-	//iAmmoCurrent					= E->a_current;
 	iAmmoElapsed = E->a_elapsed;
 	m_flagsAddOnState = E->m_addon_flags.get();
 	m_ammoType = E->ammo_type;
 	SetState(E->wpn_state);
 	SetNextState(E->wpn_state);
 
-#ifdef ALIFE_MP
 	if (m_ammoType >= m_ammoTypes.size())
 	{
 		Msg("! ERROR: invalid ammo type!");
 		m_ammoType = 0;
 	}
-#endif
 
 	m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
 	if (iAmmoElapsed)
@@ -917,11 +892,7 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 		D->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
 		D->RespawnTime = 0;
 
-#ifdef ALIFE_MP
 		l_pA->m_tNodeID = ai_location().level_vertex_id();
-#else
-		l_pA->m_tNodeID = g_dedicated_server ? u32(-1) : ai_location().level_vertex_id();
-#endif
 
 		if (boxCurr == 0xffffffff)
 			boxCurr = l_pA->m_boxSize;

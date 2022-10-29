@@ -49,8 +49,6 @@
 #include "InventoryOwner.h"
 #include "game_sv_deathmatch.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 #ifdef DEBUG
 #include "debug_renderer.h"
 #endif
@@ -101,13 +99,8 @@ CCustomMonster::~CCustomMonster()
 		Level().client_spawn_manager().dump(ID());
 #endif // DEBUG
 
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-		Level().client_spawn_manager().clear(ID());
+	Level().client_spawn_manager().clear(ID());
 }
-
-#ifdef ALIFE_MP
 
 extern int g_iCorpseRemove;
 
@@ -132,7 +125,6 @@ ALife::_TIME_ID CCustomMonster::TimePassedAfterDeath() const
 	else
 		return 0;
 }
-#endif
 
 void CCustomMonster::Load(LPCSTR section)
 {
@@ -273,21 +265,13 @@ void CCustomMonster::shedule_Update(u32 DT)
 	VERIFY(_valid(Position()));
 	u32 dwTimeCL = Level().timeServer() - NET_Latency;
 
-#ifndef ALIFE_MP
-	VERIFY(!NET.empty());
-#endif
-
 	while ((NET.size() > 2) && (NET[1].dwTimeStamp < dwTimeCL))
 		NET.pop_front();
 
 	float dt = float(DT) / 1000.f;
 	// *** general stuff
 
-#ifdef ALIFE_MP
 	if (g_Alive() && !Remote())
-#else
-	if (g_Alive())
-#endif
 	{
 		if (IsGameTypeSingle() && g_mt_config.test(mtAiVision))
 #ifndef DEBUG
@@ -302,6 +286,7 @@ void CCustomMonster::shedule_Update(u32 DT)
 #endif // DEBUG
 		else
 			Exec_Visibility();
+
 		memory().update(dt);
 	}
 	inherited::shedule_Update(DT);

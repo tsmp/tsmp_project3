@@ -26,8 +26,6 @@
 #include "../../../inventoryowner.h"
 #include "../../../PHNetState.h"
 
-#include "..\..\..\..\TSMP3_Build_Config.h"
-
 class CCharacterPhysicsSupport;
 class CMonsterCorpseCoverEvaluator;
 class CCoverEvaluatorFarFromEnemy;
@@ -47,7 +45,7 @@ class CMonsterCoverManager;
 
 class CMonsterHome;
 
-#ifdef ALIFE_MP
+
 namespace monster_interpolation
 {
 	struct InterpData
@@ -63,8 +61,8 @@ namespace monster_interpolation
 		SRotation o_torso;
 		u32 dwTimeStamp = 0;
 	};
-}; // namespace monster_interpolation
-#endif
+};
+
 
 class CBaseMonster : public CCustomMonster, public CStepManager, public CInventoryOwner
 {
@@ -138,13 +136,11 @@ public:
 	virtual void PHFreeze() { return inherited::PHFreeze(); }
 	virtual BOOL UsedAI_Locations() { return inherited::UsedAI_Locations(); }
 
-#ifdef ALIFE_MP
 	virtual void PH_B_CrPr(); // actions & operations before physic correction-prediction steps
 	virtual void PH_I_CrPr(); // actions & operations after correction before prediction steps
 	virtual void PH_A_CrPr(); // actions & operations after phisic correction-prediction steps
 
 	void postprocess_packet(monster_interpolation::net_update_A &packet);
-#endif
 
 	virtual const SRotation Orientation() const
 	{
@@ -318,7 +314,6 @@ public:
 private:
 	CAnomalyDetector *m_anomaly_detector;
 
-#ifdef ALIFE_MP
 	// for interpolation
 	SPHNetState LastState;
 	SPHNetState RecalculatedState;
@@ -343,8 +338,7 @@ private:
 
 	void CalculateInterpolationParams();
 	virtual void make_Interpolation();
-	// for interpolation
-#endif
+	// for interpolation end
 
 public:
 	CAnomalyDetector &anomaly_detector() { return (*m_anomaly_detector); }

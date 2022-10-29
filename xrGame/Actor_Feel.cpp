@@ -17,8 +17,6 @@
 #include "Level.h"
 #include "CameraBase.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 ENGINE_API bool g_dedicated_server;
 BOOL g_b_COD_PickUpMode = TRUE;
 
@@ -163,18 +161,17 @@ void CActor::PickupModeUpdate_COD()
 	{
 		HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(NULL);
 		return;
-	};
+	}
 
 	CFrustum frustum;
 	frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
 
-	//---------------------------------------------------------------------------
 	ISpatialResult.clear_not_free();
 	g_SpatialSpace->q_frustum(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
-	//---------------------------------------------------------------------------
 
 	float maxlen = 1000.0f;
-	CInventoryItem *pNearestItem = NULL;
+	CInventoryItem *pNearestItem = nullptr;
+
 	for (u32 o_it = 0; o_it < ISpatialResult.size(); o_it++)
 	{
 		ISpatial *spatial = ISpatialResult[o_it];
@@ -211,13 +208,14 @@ void CActor::PickupModeUpdate_COD()
 		{
 			maxlen = len;
 			pNearestItem = pIItem;
-		};
+		}
 	}
 
 	if (pNearestItem)
 	{
 		CFrustum frustum;
 		frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+
 		if (!CanPickItem(frustum, Device.vCameraPosition, &pNearestItem->object()))
 			pNearestItem = NULL;
 	}
@@ -228,9 +226,8 @@ void CActor::PickupModeUpdate_COD()
 			pNearestItem = NULL;
 	}
 
-#ifdef ALIFE_MP
+
 	if (!g_dedicated_server)
-#endif
 		HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
 
 	if (pNearestItem && m_bPickupMode)
@@ -240,7 +237,7 @@ void CActor::PickupModeUpdate_COD()
 
 		PickupModeOff();
 	}
-};
+}
 
 void CActor::PickupInfoDraw(CObject *object)
 {

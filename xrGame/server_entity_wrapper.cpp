@@ -11,7 +11,6 @@
 #include "xrServer_Objects.h"
 #include "xrmessages.h"
 #include "../../xrNetwork/net_utils.h"
-#include "..\TSMP3_Build_Config.h"
 
 struct ISE_Abstract;
 
@@ -78,10 +77,7 @@ void CServerEntityWrapper::load(IReader &stream)
 	net_packet.r_begin(ID);
 	R_ASSERT2(M_UPDATE == ID, "Invalid packet ID (!= M_UPDATE)!");
 
-#ifdef ALIFE_MP
 	m_object->MarkAsFisrtUpdate();
-#endif
-
 	m_object->UPDATE_Read(net_packet);
 }
 

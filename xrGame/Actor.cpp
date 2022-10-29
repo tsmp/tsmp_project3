@@ -65,8 +65,6 @@
 #include "InventoryBox.h"
 #include "location_manager.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 const u32 patch_frames = 50;
 const float respawn_delay = 1.f;
 const float respawn_auto = 7.f;
@@ -175,17 +173,11 @@ CActor::CActor() : CEntityAlive(), m_DeadInRace(false)
 	m_iLastHittingWeaponID = u16(-1);
 	m_game_task_manager = NULL;
 	m_statistic_manager = NULL;
-
-#ifdef ALIFE_MP
 	m_memory = xr_new<CActorMemory>(this);
-#else
-	m_memory = g_dedicated_server ? 0 : xr_new<CActorMemory>(this);
-#endif
 
 	m_bOutBorder = false;
 	hit_probability = 1.f;
 	m_feel_touch_characters = 0;
-	//-----------------------------------------------------------------------------------
 	m_dwILastUpdateTime = 0;
 
 	m_location_manager = xr_new<CLocationManager>(this);
@@ -248,12 +240,7 @@ void CActor::reload(LPCSTR section)
 	CInventoryOwner::reload(section);
 	material().reload(section);
 	CStepManager::reload(section);
-
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-		memory().reload(section);
-#endif
-
+	memory().reload(section);
 	m_location_manager->reload(section);
 }
 
@@ -267,58 +254,47 @@ void CActor::Load(LPCSTR section)
 
 	if (GameID() == GAME_SINGLE)
 		OnDifficultyChanged();
-	//////////////////////////////////////////////////////////////////////////
-	ISpatial *self = smart_cast<ISpatial *>(this);
-	if (self)
+		
+	if (ISpatial* self = smart_cast<ISpatial*>(this))
 	{
 		self->spatial.type |= STYPE_VISIBLEFORAI;
 		self->spatial.type &= ~STYPE_REACTTOSOUND;
 	}
-	//////////////////////////////////////////////////////////////////////////
 
-	// m_PhysicMovementControl: General
-	//m_PhysicMovementControl->SetParent		(this);
 	Fbox bb;
 	Fvector vBOX_center, vBOX_size;
-	// m_PhysicMovementControl: BOX
 	vBOX_center = pSettings->r_fvector3(section, "ph_box2_center");
 	vBOX_size = pSettings->r_fvector3(section, "ph_box2_size");
 	bb.set(vBOX_center, vBOX_center);
 	bb.grow(vBOX_size);
 	character_physics_support()->movement()->SetBox(2, bb);
 
-	// m_PhysicMovementControl: BOX
 	vBOX_center = pSettings->r_fvector3(section, "ph_box1_center");
 	vBOX_size = pSettings->r_fvector3(section, "ph_box1_size");
 	bb.set(vBOX_center, vBOX_center);
 	bb.grow(vBOX_size);
 	character_physics_support()->movement()->SetBox(1, bb);
 
-	// m_PhysicMovementControl: BOX
 	vBOX_center = pSettings->r_fvector3(section, "ph_box0_center");
 	vBOX_size = pSettings->r_fvector3(section, "ph_box0_size");
 	bb.set(vBOX_center, vBOX_center);
 	bb.grow(vBOX_size);
 	character_physics_support()->movement()->SetBox(0, bb);
 
-	//// m_PhysicMovementControl: Foots
-	//Fvector	vFOOT_center= pSettings->r_fvector3	(section,"ph_foot_center"	);
-	//Fvector	vFOOT_size	= pSettings->r_fvector3	(section,"ph_foot_size"		);
-	//bb.set	(vFOOT_center,vFOOT_center); bb.grow(vFOOT_size);
-	////m_PhysicMovementControl->SetFoots	(vFOOT_center,vFOOT_size);
-
-	// m_PhysicMovementControl: Crash speed and mass
 	float cs_min = pSettings->r_float(section, "ph_crash_speed_min");
 	float cs_max = pSettings->r_float(section, "ph_crash_speed_max");
 	float mass = pSettings->r_float(section, "ph_mass");
+
 	character_physics_support()->movement()->SetCrashSpeeds(cs_min, cs_max);
 	character_physics_support()->movement()->SetMass(mass);
+
 	if (pSettings->line_exist(section, "stalker_restrictor_radius"))
 		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalker, pSettings->r_float(section, "stalker_restrictor_radius"));
 	if (pSettings->line_exist(section, "stalker_small_restrictor_radius"))
 		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalkerSmall, pSettings->r_float(section, "stalker_small_restrictor_radius"));
 	if (pSettings->line_exist(section, "medium_monster_restrictor_radius"))
 		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtMonsterMedium, pSettings->r_float(section, "medium_monster_restrictor_radius"));
+	
 	character_physics_support()->movement()->Load(section);
 
 	m_fWalkAccel = pSettings->r_float(section, "walk_accel");
@@ -344,21 +320,16 @@ void CActor::Load(LPCSTR section)
 	character_physics_support()->in_Load(section);
 
 	//загрузить параметры эффектора
-	//	LoadShootingEffector	("shooting_effector");
 	LoadSleepEffector("sleep_effector");
 
 	//загрузить параметры смещения firepoint
 	m_vMissileOffset = pSettings->r_fvector3(section, "missile_throw_offset");
 
-	//Weapons				= xr_new<CWeaponList> (this);
-
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#else
 #pragma todo("TSMP: не уверен надо ли это выделенному или нет")
-#endif
+	//if (!g_dedicated_server)	
 	{
 		LPCSTR hit_snd_sect = pSettings->r_string(section, "hit_sounds");
+
 		for (int hit_type = 0; hit_type < (int)ALife::eHitTypeMax; ++hit_type)
 		{
 			LPCSTR hit_name = ALife::g_cafHitType2String((ALife::EHitType)hit_type);
@@ -366,11 +337,13 @@ void CActor::Load(LPCSTR section)
 			int cnt = _GetItemCount(hit_snds);
 			string128 tmp;
 			VERIFY(cnt != 0);
+
 			for (int i = 0; i < cnt; ++i)
 			{
 				sndHit[hit_type].push_back(ref_sound());
 				sndHit[hit_type].back().create(_GetItem(hit_snds, i, tmp), st_Effect, sg_SourceType);
 			}
+			
 			char buf[256];
 
 			::Sound->create(sndDie[0], strconcat(sizeof(buf), buf, *cName(), "\\die0"), st_Effect, SOUND_TYPE_MONSTER_DYING);
@@ -382,6 +355,7 @@ void CActor::Load(LPCSTR section)
 			m_BloodSnd.create(pSettings->r_string(section, "heavy_blood_snd"), st_Effect, SOUND_TYPE_MONSTER_INJURING);
 		}
 	}
+
 	if (psActorFlags.test(AF_PSP))
 		cam_Set(eacLookAt);
 	else
@@ -407,7 +381,7 @@ void CActor::Load(LPCSTR section)
 
 	invincibility_fire_shield_1st = READ_IF_EXISTS(pSettings, r_string, section, "Invincibility_Shield_1st", 0);
 	invincibility_fire_shield_3rd = READ_IF_EXISTS(pSettings, r_string, section, "Invincibility_Shield_3rd", 0);
-	//-----------------------------------------
+
 	m_AutoPickUp_AABB = READ_IF_EXISTS(pSettings, r_fvector3, section, "AutoPickUp_AABB", Fvector().set(0.02f, 0.02f, 0.02f));
 	m_AutoPickUp_AABB_Offset = READ_IF_EXISTS(pSettings, r_fvector3, section, "AutoPickUp_AABB_offs", Fvector().set(0, 0, 0));
 
@@ -418,7 +392,7 @@ void CActor::Load(LPCSTR section)
 	m_sCarCharacterUseAction = "car_character_use";
 	m_sInventoryItemUseAction = "inventory_item_use";
 	m_sInventoryBoxUseAction = "inventory_box_use";
-	//---------------------------------------------------------------------
+
 	m_sHeadShotParticle = READ_IF_EXISTS(pSettings, r_string, section, "HeadShotParticle", 0);
 	m_dontAllowLookouts = READ_IF_EXISTS(pSettings, r_bool, "lookout_settings", "disable_lookout", false);
 }
@@ -1658,16 +1632,13 @@ void CActor::SetActorVisibility(u16 who, float value)
 
 void CActor::UpdateMotionIcon(u32 mstate_rl)
 {
-#ifdef ALIFE_MP
 	if (g_dedicated_server)
 		return;
-#endif
 
 	CUIMotionIcon &motion_icon = HUD().GetUI()->UIMainIngameWnd->MotionIcon();
-	if (mstate_rl & mcClimb)
-	{
-		motion_icon.ShowState(CUIMotionIcon::stClimb);
-	}
+
+	if (mstate_rl & mcClimb)	
+		motion_icon.ShowState(CUIMotionIcon::stClimb);	
 	else
 	{
 		if (mstate_rl & mcCrouch)
@@ -1684,15 +1655,6 @@ void CActor::UpdateMotionIcon(u32 mstate_rl)
 		else
 			motion_icon.ShowState(CUIMotionIcon::stNormal);
 	}
-
-	/*
-						stNormal, --
-						stCrouch, --
-						stCreep,  --
-						stClimb,  --
-						stRun,    --
-						stSprint, --
-*/
 }
 
 CPHDestroyable *CActor::ph_destroyable()

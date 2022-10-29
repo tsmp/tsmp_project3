@@ -34,24 +34,16 @@
 #include "PHDebug.h"
 #endif
 
-#include "..\TSMP3_Build_Config.h"
-
 ENGINE_API bool g_dedicated_server;
 
 CGameObject::CGameObject()
 {
 	init();
-	//-----------------------------------------
 	m_bCrPr_Activated = false;
 	m_dwCrPr_ActivationStep = 0;
 	m_spawn_time = 0;
 
-#ifdef ALIFE_MP
 	m_ai_location = xr_new<CAI_ObjectLocation>();
-#else
-	m_ai_location = !g_dedicated_server ? xr_new<CAI_ObjectLocation>() : 0;
-#endif
-
 	m_server_flags.one();
 
 	m_callbacks = xr_new<CALLBACK_MAP>();
@@ -91,11 +83,7 @@ void CGameObject::Load(LPCSTR section)
 void CGameObject::reinit()
 {
 	m_visual_callback.clear();
-
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-		ai_location().reinit();
+	ai_location().reinit();
 
 	// clear callbacks
 	for (CALLBACK_MAP_IT it = m_callbacks->begin(); it != m_callbacks->end(); ++it)
@@ -312,18 +300,10 @@ BOOL CGameObject::net_Spawn(CSE_Abstract *DC)
 	}
 
 	reload(*cNameSect());
-
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-		CScriptBinder::reload(*cNameSect());
+	CScriptBinder::reload(*cNameSect());
 
 	reinit();
-
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-		CScriptBinder::reinit();
+	CScriptBinder::reinit();
 
 #ifdef DEBUG
 	if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
@@ -331,22 +311,17 @@ BOOL CGameObject::net_Spawn(CSE_Abstract *DC)
 		Msg("CGameObject::net_Spawn obj %s After Script Binder reinit %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
 	}
 #endif
+
 	//load custom user data from server
 	if (!E->client_data.empty())
 	{
-		//		Msg				("client data is present for object [%d][%s], load is processed",ID(),*cName());
 		IReader ireader = IReader(&*E->client_data.begin(), E->client_data.size());
 		net_Load(ireader);
-	}
-	else
-	{
-		//		Msg				("no client data for object [%d][%s], load is skipped",ID(),*cName());
 	}
 
 	// if we have a parent
 	if (0xffff != E->ID_Parent)
 	{
-
 		if (!Parent)
 		{
 			// // we need this to prevent illegal ref_dec/ref_add
@@ -389,8 +364,8 @@ BOOL CGameObject::net_Spawn(CSE_Abstract *DC)
 	}
 
 	m_bObjectRemoved = false;
-
 	spawn_supplies();
+
 #ifdef DEBUG
 	if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
 	{
@@ -855,13 +830,8 @@ void CGameObject::shedule_Update(u32 dt)
 		DestroyObject();
 	}
 
-	// Msg							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
 	inherited::shedule_Update(dt);
-
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-		CScriptBinder::shedule_Update(dt);
+	CScriptBinder::shedule_Update(dt);
 }
 
 BOOL CGameObject::net_SaveRelevant()
@@ -889,7 +859,6 @@ u32 CGameObject::ef_equipment_type() const
 	CLSID2TEXT(CLS_ID, temp);
 	R_ASSERT3(false, "Invalid equipment type request, virtual function is not properly overridden!", temp);
 	return (u32(-1));
-	//	return		(6);
 }
 
 u32 CGameObject::ef_main_weapon_type() const
@@ -898,7 +867,6 @@ u32 CGameObject::ef_main_weapon_type() const
 	CLSID2TEXT(CLS_ID, temp);
 	R_ASSERT3(false, "Invalid main weapon type request, virtual function is not properly overridden!", temp);
 	return (u32(-1));
-	//	return		(5);
 }
 
 u32 CGameObject::ef_anomaly_type() const
@@ -915,7 +883,6 @@ u32 CGameObject::ef_weapon_type() const
 	CLSID2TEXT(CLS_ID, temp);
 	R_ASSERT3(false, "Invalid weapon type request, virtual function is not properly overridden!", temp);
 	return (u32(-1));
-	//	return		(u32(0));
 }
 
 u32 CGameObject::ef_detector_type() const

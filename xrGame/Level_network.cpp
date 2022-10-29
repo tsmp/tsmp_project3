@@ -59,20 +59,12 @@ void CLevel::remove_objects()
 	BulletManager().Clear();
 	ph_commander().clear();
 	ph_commander_scripts().clear();
-
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-		space_restriction_manager().clear();
+	space_restriction_manager().clear();
 
 	psDeviceFlags.set(rsDisableObjectsAsCrows, b_stored);
 	g_b_ClearGameCaptions = true;
 
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-		ai().script_engine().collect_all_garbage();
-
+	ai().script_engine().collect_all_garbage();
 	stalker_animation_data_storage().clear();
 
 	VERIFY(Render);
@@ -85,14 +77,9 @@ void CLevel::remove_objects()
 			client_spawn_manager().dump();
 #endif // DEBUG
 
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-	{
-		DEBUG_VERIFY(client_spawn_manager().registry().empty());
-		client_spawn_manager().clear();
-	}
-
+	DEBUG_VERIFY(client_spawn_manager().registry().empty());
+	client_spawn_manager().clear();
+	
 	for (int i = 0; i < 6; i++)
 	{
 		++(Device.CurrentFrameNumber);
@@ -100,11 +87,7 @@ void CLevel::remove_objects()
 	}
 
 	g_pGamePersistent->destroy_particles(false);
-
-	//.	xr_delete									(m_seniority_hierarchy_holder);
-	//.	m_seniority_hierarchy_holder				= xr_new<CSeniorityHierarchyHolder>();
-	if (!IsGameTypeSingle())
-		Msg("CLevel::remove_objects - End");
+	Msg("CLevel::remove_objects - End");
 }
 
 #ifdef DEBUG
@@ -132,10 +115,7 @@ void CLevel::net_Stop()
 		xr_delete(Server);
 	}
 
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-		ai().script_engine().collect_all_garbage();
+	ai().script_engine().collect_all_garbage();
 
 #ifdef DEBUG
 	show_animation_stats();
@@ -148,7 +128,7 @@ void CLevel::ClientSend()
 	{
 		if (!net_HasBandwidth())
 			return;
-	};
+	}
 
 	NET_Packet P;
 	u32 start = 0;

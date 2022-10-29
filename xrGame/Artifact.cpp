@@ -12,8 +12,6 @@
 #include "restriction_space.h"
 #include "IGame_Persistent.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 #define FASTMODE_DISTANCE (50.f) //distance to camera from sphere, when zone switches to fast update sequence
 
 #define CHOOSE_MAX(x, inst_x, y, inst_y, z, inst_z) \
@@ -624,14 +622,7 @@ void SArtefactActivation::SpawnAnomaly()
 	Fvector pos;
 	m_af->Center(pos);
 
-	CSE_Abstract *object = Level().spawn_item(zone_sect, pos,
-#ifdef ALIFE_MP
-											  m_af->ai_location().level_vertex_id(),
-#else
-											  (g_dedicated_server) ? u32(-1) : m_af->ai_location().level_vertex_id(),
-#endif
-											  0xffff, true);
-
+	CSE_Abstract *object = Level().spawn_item(zone_sect, pos, m_af->ai_location().level_vertex_id(), 0xffff, true);
 	CSE_ALifeAnomalousZone *AlifeZone = smart_cast<CSE_ALifeAnomalousZone *>(object);
 	VERIFY(AlifeZone);
 	CShapeData::shape_def _shape;

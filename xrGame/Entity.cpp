@@ -18,8 +18,6 @@
 #include "monster_community.h"
 #include "ai_space.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 #define BODY_REMOVE_TIME 30000
 
 //////////////////////////////////////////////////////////////////////
@@ -85,23 +83,20 @@ void CEntity::Die(CObject *who)
 	{
 		VERIFY(m_registered_member);
 	}
-	m_registered_member = false;
 
-#ifndef ALIFE_MP
-	if (IsGameTypeSingle())
-#endif
-		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
+	m_registered_member = false;
+	Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
 }
 
 //обновление состояния
 float CEntity::CalcCondition(float hit)
 {
-	// If Local() - perform some logic
 	if (Local() && g_Alive())
 	{
 		SetfHealth(GetfHealth() - hit);
 		SetfHealth((GetfHealth() < -1000) ? -1000 : GetfHealth());
 	}
+
 	return hit;
 }
 
@@ -210,11 +205,7 @@ BOOL CEntity::net_Spawn(CSE_Abstract *DC)
 		}
 	}
 
-#ifdef ALIFE_MP
 	if (g_Alive())
-#else
-	if (g_Alive() && IsGameTypeSingle())
-#endif
 	{
 		m_registered_member = true;
 		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).register_member(this);

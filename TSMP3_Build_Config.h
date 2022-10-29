@@ -1,6 +1,5 @@
 #pragma once
 
-#define ALIFE_MP
 //#define DEDICATED_SERVER // Выделенный сервер
 #if defined(DEDICATED_BUILD) && !defined(DEDICATED_SERVER)
 //Собираем выделенный в любом случае 

@@ -14,8 +14,6 @@
 #include "level_sounds.h"
 #include "GamePersistent.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 ENGINE_API bool g_dedicated_server;
 
 BOOL CLevel::Load_GameSpecific_Before()
@@ -27,11 +25,7 @@ BOOL CLevel::Load_GameSpecific_Before()
 	if (GamePersistent().GameType() == GAME_SINGLE && !ai().get_alife() && FS.exist(fn_game, "$level$", "level.ai"))
 		ai().load(net_SessionName());
 
-#ifdef ALIFE_MP
 	if (!ai().get_alife() && FS.exist(fn_game, "$level$", "level.game"))
-#else
-	if (!g_dedicated_server && !ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
-#endif
 	{
 		IReader *stream = FS.r_open(fn_game);
 		ai().patrol_path_storage_raw(*stream);
@@ -102,18 +96,13 @@ BOOL CLevel::Load_GameSpecific_After()
 		}
 	}
 
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-	{
-		// loading scripts
-		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
+	// loading scripts
+	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 
-		if (pLevel->section_exist("level_scripts") && pLevel->line_exist("level_scripts", "script"))
-			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel, xr_new<CScriptProcess>("level", pLevel->r_string("level_scripts", "script")));
-		else
-			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel, xr_new<CScriptProcess>("level", ""));
-	}
+	if (pLevel->section_exist("level_scripts") && pLevel->line_exist("level_scripts", "script"))
+		ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel, xr_new<CScriptProcess>("level", pLevel->r_string("level_scripts", "script")));
+	else
+		ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel, xr_new<CScriptProcess>("level", ""));
 
 	if (!g_dedicated_server)
 	{

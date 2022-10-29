@@ -11,12 +11,9 @@
 #include "Console.h"
 #include "MainMenu.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 {
 	net_start_result_total = TRUE;
-
 	pApp->LoadBegin();
 
 	//make Client Name if options doesn't have it
@@ -48,10 +45,10 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 		else
 		{
 			m_caClientOptions = op_client;
-		};
-	};
+		}
+	}
+
 	m_caServerOptions = op_server;
-	//---------------------------------------------------------------------
 	m_bDemoPlayMode = FALSE;
 	m_aDemoData.clear();
 	m_bDemoStarted = FALSE;
@@ -76,12 +73,10 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 	}
 	else
 	{
-		if (m_caServerOptions.size() == 0 || !strstr(*m_caServerOptions, "single"))
-		{
-			Demo_PrepareToStore();
-		}
+		if (m_caServerOptions.size() == 0 || !strstr(*m_caServerOptions, "single"))		
+			Demo_PrepareToStore();		
 	}
-	//---------------------------------------------------------------------------
+
 	g_loading_events.push_back(LOADING_EVENT(this, &CLevel::net_start1));
 	g_loading_events.push_back(LOADING_EVENT(this, &CLevel::net_start2));
 	g_loading_events.push_back(LOADING_EVENT(this, &CLevel::net_start3));
@@ -107,11 +102,7 @@ bool CLevel::net_start1()
 		else
 			Server = xr_new<xrGameSpyServer>();
 
-#ifdef ALIFE_MP
 		if (xr_strcmp(p.m_game_type, "single"))
-#else
-		if (xr_strcmp(p.m_alife, "alife"))
-#endif
 		{
 			string64 l_name = "";
 			const char *SOpts = *m_caServerOptions;

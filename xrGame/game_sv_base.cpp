@@ -15,8 +15,6 @@
 #include "object_broker.h"
 #include "debug_renderer.h"
 
-
-#include "..\TSMP3_Build_Config.h"
 #include "Actor.h"
 #include "ai_object_location.h"
 
@@ -381,25 +379,23 @@ void game_sv_GameState::Create(shared_str &options)
 		FS.r_close(F);
 	}
 
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
+	// loading scripts
+	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
+	string_path S;
+	FS.update_path(S, "$game_config$", "script.ltx");
+	CInifile* l_tpIniFile = xr_new<CInifile>(S);
+	R_ASSERT(l_tpIniFile);
+
+	if (l_tpIniFile->section_exist(type_name()))
 	{
-		// loading scripts
-		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
-		string_path S;
-		FS.update_path(S, "$game_config$", "script.ltx");
-		CInifile *l_tpIniFile = xr_new<CInifile>(S);
-		R_ASSERT(l_tpIniFile);
-
-		if (l_tpIniFile->section_exist(type_name()))
-			if (l_tpIniFile->r_string(type_name(), "script"))
-				ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, xr_new<CScriptProcess>("game", l_tpIniFile->r_string(type_name(), "script")));
-			else
-				ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, xr_new<CScriptProcess>("game", ""));
-
-		xr_delete(l_tpIniFile);
+		if (l_tpIniFile->r_string(type_name(), "script"))
+			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, xr_new<CScriptProcess>("game", l_tpIniFile->r_string(type_name(), "script")));
+		else
+			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, xr_new<CScriptProcess>("game", ""));
 	}
+
+	xr_delete(l_tpIniFile);
+
 
 	ConsoleCommands_Create();
 	LPCSTR svcfg_ltx_name = "-svcfg ";
@@ -620,15 +616,9 @@ void game_sv_GameState::Update()
 		UpdateClientPing(C);
 	});
 
-#ifdef ALIFE_MP
 	if (Level().game)
-#else
-	if (!g_dedicated_server && Level().game)
-#endif
 	{
-		CScriptProcess *script_process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame);
-
-		if (script_process)
+		if (CScriptProcess* script_process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame))
 			script_process->update();
 	}
 }
@@ -652,10 +642,7 @@ game_sv_GameState::game_sv_GameState()
 
 game_sv_GameState::~game_sv_GameState()
 {
-#ifndef ALIFE_MP
-	if (!g_dedicated_server)
-#endif
-		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
+	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
 
 	xr_delete(m_event_queue);
 	SaveMapList();
@@ -669,7 +656,7 @@ game_sv_GameState::~game_sv_GameState()
 
 bool game_sv_GameState::change_level(NET_Packet &net_packet, ClientID const &sender)
 {
-	return (true);
+	return true;
 }
 
 void game_sv_GameState::save_game(NET_Packet &net_packet, ClientID const &sender)
@@ -678,7 +665,7 @@ void game_sv_GameState::save_game(NET_Packet &net_packet, ClientID const &sender
 
 bool game_sv_GameState::load_game(NET_Packet &net_packet, ClientID const &sender)
 {
-	return (true);
+	return true;
 }
 
 void game_sv_GameState::switch_distance(NET_Packet &net_packet, ClientID const &sender)

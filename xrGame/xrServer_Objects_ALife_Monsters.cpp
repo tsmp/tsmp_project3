@@ -1680,7 +1680,6 @@ void CSE_ALifeMonsterBase::STATE_Write(NET_Packet &tNetPacket)
 	tNetPacket.w_u16(m_spec_object_id);
 }
 
-#ifdef ALIFE_MP
 void CSE_ALifeMonsterBase::UPDATE_Read(NET_Packet &tNetPacket)
 {
 	if (CSE_Abstract::firstUpdate)
@@ -1717,15 +1716,7 @@ void CSE_ALifeMonsterBase::UPDATE_Read(NET_Packet &tNetPacket)
 		m_SoundDelays.push_back(delay);
 	}
 }
-#else
-void CSE_ALifeMonsterBase::UPDATE_Read(NET_Packet &tNetPacket)
-{
-	inherited1::UPDATE_Read(tNetPacket);
-	inherited2::UPDATE_Read(tNetPacket);
-}
-#endif
 
-#ifdef ALIFE_MP
 void CSE_ALifeMonsterBase::UPDATE_Write(NET_Packet &tNetPacket)
 {
 	tNetPacket.w_u8(phSyncFlag);
@@ -1753,13 +1744,6 @@ void CSE_ALifeMonsterBase::UPDATE_Write(NET_Packet &tNetPacket)
 		m_SoundTypes.pop_front();
 	}
 }
-#else
-void CSE_ALifeMonsterBase::UPDATE_Write(NET_Packet &tNetPacket)
-{
-	inherited1::UPDATE_Write(tNetPacket);
-	inherited2::UPDATE_Write(tNetPacket);
-}
-#endif
 
 void CSE_ALifeMonsterBase::load(NET_Packet &tNetPacket)
 {
@@ -1988,14 +1972,12 @@ void CSE_ALifeHumanStalker::UPDATE_Read_Original(NET_Packet& tNetPacket)
 
 void CSE_ALifeHumanStalker::UPDATE_Read_MP(NET_Packet& tNetPacket)
 {
-#ifdef ALIFE_MP
 	if (firstUpdate)
 	{
 		UPDATE_Read_Original(tNetPacket);
 		firstUpdate = false;
 		return;
 	}
-#endif
 
 	tNetPacket.r_u8(phSyncFlag);
 	if (phSyncFlag)

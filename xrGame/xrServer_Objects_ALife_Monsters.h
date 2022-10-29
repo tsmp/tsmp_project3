@@ -6,15 +6,12 @@
 //	Description : Server objects monsters for ALife simulator
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef xrServer_Objects_ALife_MonstersH
-#define xrServer_Objects_ALife_MonstersH
+#pragma once
 
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "character_info_defs.h"
 #include "associative_vector.h"
-
-#include "..\TSMP3_Build_Config.h"
 #include "net_physics_state.h"
 
 class CALifeMonsterBrain;
@@ -397,11 +394,10 @@ add_to_type_list(CSE_ALifeMonsterZombie)
 	SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase, CSE_ALifeMonsterAbstract, CSE_PHSkeleton)
 		u16 m_spec_object_id;
 
-#ifdef ALIFE_MP
+
 net_physics_state physics_state;
 u8 phSyncFlag = 0;
 u16 motionIdx;
-#endif
 
 std::deque<u32> m_SoundTypes;
 std::deque<u32> m_SoundDelays;
@@ -577,5 +573,3 @@ add_to_type_list(CSE_ALifeOnlineOfflineGroup)
 #define script_type_list save_type_list(CSE_ALifeOnlineOfflineGroup)
 
 #pragma warning(pop)
-
-#endif

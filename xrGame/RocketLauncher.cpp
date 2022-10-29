@@ -11,8 +11,6 @@
 #include "ai_object_location.h"
 #include "IGame_Persistent.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 CRocketLauncher::CRocketLauncher()
 {
 	//	m_pRocket =  NULL;
@@ -29,7 +27,6 @@ void CRocketLauncher::Load(LPCSTR section)
 
 void CRocketLauncher::SpawnRocket(LPCSTR rocket_section, CGameObject *parent_rocket_launcher)
 {
-	//	VERIFY(m_pRocket == NULL);
 	if (OnClient())
 		return;
 
@@ -38,11 +35,7 @@ void CRocketLauncher::SpawnRocket(LPCSTR rocket_section, CGameObject *parent_roc
 	CSE_Temporary *l_tpTemporary = smart_cast<CSE_Temporary *>(D);
 	R_ASSERT(l_tpTemporary);
 
-#ifdef ALIFE_MP
 	l_tpTemporary->m_tNodeID = parent_rocket_launcher->ai_location().level_vertex_id();
-#else
-	l_tpTemporary->m_tNodeID = (g_dedicated_server) ? u32(-1) : parent_rocket_launcher->ai_location().level_vertex_id();
-#endif
 
 	// Fill
 	D->s_name = rocket_section;

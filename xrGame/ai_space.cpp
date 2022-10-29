@@ -19,10 +19,7 @@
 #include "patrol_path_storage.h"
 #include "alife_simulator.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 ENGINE_API bool g_dedicated_server;
-
 CAI_Space *g_ai_space = 0;
 
 CAI_Space::CAI_Space()
@@ -40,11 +37,6 @@ CAI_Space::CAI_Space()
 
 void CAI_Space::init()
 {
-#ifndef ALIFE_MP
-	if (g_dedicated_server)
-		return;
-#endif
-
 	VERIFY(!m_ef_storage);
 	m_ef_storage = xr_new<CEF_Storage>();
 
@@ -171,11 +163,6 @@ void CAI_Space::validate(const u32 level_id) const
 
 void CAI_Space::patrol_path_storage_raw(IReader &stream)
 {
-#ifndef ALIFE_MP
-	if (g_dedicated_server)
-		return;
-#endif
-
 	xr_delete(m_patrol_path_storage);
 	m_patrol_path_storage = xr_new<CPatrolPathStorage>();
 	m_patrol_path_storage->load_raw(get_level_graph(), get_cross_table(), get_game_graph(), stream);
@@ -183,11 +170,6 @@ void CAI_Space::patrol_path_storage_raw(IReader &stream)
 
 void CAI_Space::patrol_path_storage(IReader &stream)
 {
-#ifndef ALIFE_MP
-	if (g_dedicated_server)
-		return;
-#endif
-
 	xr_delete(m_patrol_path_storage);
 	m_patrol_path_storage = xr_new<CPatrolPathStorage>();
 	m_patrol_path_storage->load(stream);

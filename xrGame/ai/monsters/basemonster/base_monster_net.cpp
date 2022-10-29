@@ -10,17 +10,13 @@
 #include "../../../CharacterPhysicsSupport.h"
 #include "../../../sound_player.h"
 
-#include "..\..\..\..\TSMP3_Build_Config.h"
-
-#ifdef ALIFE_MP
-#include "..\..\..\PHSynchronize.h"
-#include "..\..\..\net_physics_state.h"
-#include "..\..\..\PHWorld.h"
-#include "..\..\..\PHMovementControl.h"
-#include "..\control_animation_base.h"
+#include "../../../PHSynchronize.h"
+#include "../../../net_physics_state.h"
+#include "../../../PHWorld.h"
+#include "../../../PHMovementControl.h"
+#include "../control_animation_base.h"
 
 extern int g_cl_InterpolationType;
-#endif
 
 void CBaseMonster::net_Save(NET_Packet &P)
 {
@@ -52,7 +48,6 @@ void CBaseMonster::net_Import_Sounds(NET_Packet& P)
 		sound().play(soundType, 0, 0, soundDelay);	
 }
 
-#ifdef ALIFE_MP
 void CBaseMonster::net_Export(NET_Packet &P)
 {
 	CPHSynchronize *sync = PHGetSyncItem(0);
@@ -81,48 +76,6 @@ void CBaseMonster::net_Export(NET_Packet &P)
 	net_Export_Sounds(P);
 }
 
-#else
-
-void CBaseMonster::net_Export(NET_Packet &P)
-{
-	R_ASSERT(Local());
-
-	// export last known packet
-	R_ASSERT(!NET.empty());
-	net_update &N = NET.back();
-	P.w_float(GetfHealth());
-	P.w_u32(N.dwTimeStamp);
-	P.w_u8(0);
-	P.w_vec3(N.p_pos);
-	P.w_float /*w_angle8*/ (N.o_model);
-	P.w_float /*w_angle8*/ (N.o_torso.yaw);
-	P.w_float /*w_angle8*/ (N.o_torso.pitch);
-	P.w_float /*w_angle8*/ (N.o_torso.roll);
-	P.w_u8(u8(g_Team()));
-	P.w_u8(u8(g_Squad()));
-	P.w_u8(u8(g_Group()));
-
-	GameGraph::_GRAPH_ID l_game_vertex_id = ai_location().game_vertex_id();
-	P.w(&l_game_vertex_id, sizeof(l_game_vertex_id));
-	P.w(&l_game_vertex_id, sizeof(l_game_vertex_id));
-	float f1 = 0;
-
-	if (ai().game_graph().valid_vertex_id(l_game_vertex_id))
-	{
-		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.w(&f1, sizeof(f1));
-		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.w(&f1, sizeof(f1));
-	}
-	else
-	{
-		P.w(&f1, sizeof(f1));
-		P.w(&f1, sizeof(f1));
-	}
-}
-#endif
-
-#ifdef ALIFE_MP
 void CBaseMonster::net_Import(NET_Packet &P)
 {
 	net_physics_state physics_state;
@@ -185,62 +138,6 @@ void CBaseMonster::net_Import(NET_Packet &P)
 	net_Import_Sounds(P);
 }
 
-#else
-
-void CBaseMonster::net_Import(NET_Packet &P)
-{
-	R_ASSERT(Remote());
-	net_update N;
-
-	u8 flags;
-
-	float health;
-	P.r_float(health);
-	SetfHealth(health);
-
-	P.r_u32(N.dwTimeStamp);
-	P.r_u8(flags);
-	P.r_vec3(N.p_pos);
-	P.r_float /*r_angle8*/ (N.o_model);
-	P.r_float /*r_angle8*/ (N.o_torso.yaw);
-	P.r_float /*r_angle8*/ (N.o_torso.pitch);
-	P.r_float /*r_angle8*/ (N.o_torso.roll);
-	id_Team = P.r_u8();
-	id_Squad = P.r_u8();
-	id_Group = P.r_u8();
-
-	GameGraph::_GRAPH_ID l_game_vertex_id = ai_location().game_vertex_id();
-	P.r(&l_game_vertex_id, sizeof(l_game_vertex_id));
-	P.r(&l_game_vertex_id, sizeof(l_game_vertex_id));
-
-	if (NET.empty() || (NET.back().dwTimeStamp < N.dwTimeStamp))
-	{
-		NET.push_back(N);
-		NET_WasInterpolating = TRUE;
-	}
-
-	float f1 = 0;
-
-	if (ai().game_graph().valid_vertex_id(l_game_vertex_id))
-	{
-		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.r(&f1, sizeof(f1));
-		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.r(&f1, sizeof(f1));
-	}
-	else
-	{
-		P.r(&f1, sizeof(f1));
-		P.r(&f1, sizeof(f1));
-	}
-
-	setVisible(TRUE);
-	setEnabled(TRUE);
-}
-
-#endif
-
-#ifdef ALIFE_MP
 void CBaseMonster::postprocess_packet(monster_interpolation::net_update_A &N_A)
 {
 	N_A.State.previous_position = N_A.State.position;
@@ -339,17 +236,11 @@ void CBaseMonster::PH_I_CrPr()
 		return;
 	}
 
-	if (!CrPr_IsActivated())
+	if (!CrPr_IsActivated() || !g_Alive())
 		return;
 
-	if (g_Alive())
-	{
-		CPHSynchronize *pSyncObj = nullptr;
-		pSyncObj = PHGetSyncItem(0);
-		if (!pSyncObj)
-			return;
+	if (CPHSynchronize* pSyncObj = PHGetSyncItem(0))
 		pSyncObj->get_State(RecalculatedState);
-	}
 }
 
 void CBaseMonster::PH_A_CrPr()
@@ -365,8 +256,7 @@ void CBaseMonster::PH_A_CrPr()
 	if (!g_Alive())
 		return;
 
-	CPHSynchronize *pSyncObj = nullptr;
-	pSyncObj = PHGetSyncItem(0);
+	CPHSynchronize *pSyncObj = PHGetSyncItem(0);
 
 	if (!pSyncObj)
 		return;
@@ -382,9 +272,7 @@ void CBaseMonster::PH_A_CrPr()
 
 void CBaseMonster::CalculateInterpolationParams()
 {
-	CPHSynchronize *pSyncObj = nullptr;
-	pSyncObj = PHGetSyncItem(0);
-
+	CPHSynchronize *pSyncObj = PHGetSyncItem(0);
 	monster_interpolation::InterpData *pIStart = &IStart;
 	monster_interpolation::InterpData *pIEnd = &IEnd;
 
@@ -594,5 +482,4 @@ void CBaseMonster::make_Interpolation()
 	}
 	else
 		m_bInInterpolation = false;
-};
-#endif
+}

@@ -13,7 +13,6 @@
 #include "script_value_container.h"
 #include "alife_space.h"
 #include "../../xrNetwork/client_id.h"
-#include "..\TSMP3_Build_Config.h"
 
 class NET_Packet;
 class xrClientData;
@@ -59,12 +58,10 @@ add_to_type_list(CPureServerObject)
 	};
 
 private:
-LPSTR s_name_replace;
+	LPSTR s_name_replace;
 
-#ifdef ALIFE_MP
 protected:
-bool firstUpdate = false;
-#endif
+	bool firstUpdate = false;
 
 public:
 BOOL net_Ready;
@@ -106,14 +103,10 @@ Flags32 m_spawn_flags;
 xr_vector<u8> client_data;
 virtual void load(NET_Packet &tNetPacket);
 
-#ifdef ALIFE_MP
 void MarkAsFisrtUpdate()
 {
 	firstUpdate = true;
 }
-#endif
-
-//////////////////////////////////////////////////////////////////////////
 
 CSE_Abstract(LPCSTR caSection);
 virtual ~CSE_Abstract();

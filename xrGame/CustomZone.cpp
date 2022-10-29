@@ -17,8 +17,6 @@
 #include "zone_effector.h"
 #include "breakableobject.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 #define PREFETCHED_ARTEFACTS_NUM 1 //количество предварительно проспавненых артефактов
 #define WIND_RADIUS (4 * Radius()) //расстояние до актера, когда появляется ветер
 #define FASTMODE_DISTANCE (50.f)   //distance to camera from sphere, when zone switches to fast update sequence
@@ -834,17 +832,17 @@ void CCustomZone::PlayEntranceParticles(CGameObject *pObject)
 	else
 		vel.set(0, 0, 0);
 
-	//выбрать случайную косточку на объекте
-	CParticlesPlayer *PP = smart_cast<CParticlesPlayer *>(pObject);
-	if (PP)
+	//выбрать случайную косточку на объекте	
+	if (CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject))
 	{
 		u16 play_bone = PP->GetRandomBone();
+
 		if (play_bone != BI_NONE)
 		{
 			CParticlesObject *pParticles = CParticlesObject::Create(*particle_str, TRUE);
 			Fmatrix xform;
-
 			Fvector dir;
+
 			if (fis_zero(vel.magnitude()))
 				dir.set(0, 1, 0);
 			else
@@ -855,11 +853,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject *pObject)
 
 			PP->MakeXFORM(pObject, play_bone, dir, Fvector().set(0, 0, 0), xform);
 			pParticles->UpdateParent(xform, vel);
-			{
-				pParticles->Play();
-				//. <-->
-				//. PP->StartParticles (particle_str, play_bone, dir, ID());
-			}
+			pParticles->Play();
 		}
 	}
 }
@@ -1114,7 +1108,8 @@ void CCustomZone::OnEvent(NET_Packet &P, u16 type)
 	}
 	}
 	inherited::OnEvent(P, type);
-};
+}
+
 void CCustomZone::OnOwnershipTake(u16 id)
 {
 	CGameObject *GO = smart_cast<CGameObject *>(Level().Objects.net_Find(id));
@@ -1154,7 +1149,7 @@ void CCustomZone::OnStateSwitch(EZoneState new_state)
 
 	m_eZoneState = new_state;
 	m_iPreviousStateTime = m_iStateTime = 0;
-};
+}
 
 void CCustomZone::SwitchZoneState(EZoneState new_state)
 {
@@ -1165,7 +1160,7 @@ void CCustomZone::SwitchZoneState(EZoneState new_state)
 		u_EventGen(P, GE_ZONE_STATE_CHANGE, ID());
 		P.w_u8(u8(new_state));
 		u_EventSend(P);
-	};
+	}
 
 	m_iPreviousStateTime = m_iStateTime = 0;
 }
@@ -1185,7 +1180,7 @@ bool CCustomZone::Enable()
 		PlayObjectIdleParticles(pObject);
 	}
 	return true;
-};
+}
 
 bool CCustomZone::Disable()
 {
@@ -1201,17 +1196,17 @@ bool CCustomZone::Disable()
 		StopObjectIdleParticles(pObject);
 	}
 	return false;
-};
+}
 
 void CCustomZone::ZoneEnable()
 {
 	SwitchZoneState(eZoneStateIdle);
-};
+}
 
 void CCustomZone::ZoneDisable()
 {
 	SwitchZoneState(eZoneStateDisabled);
-};
+}
 
 void CCustomZone::SpawnArtefact()
 {
@@ -1232,11 +1227,7 @@ void CCustomZone::SpawnArtefact()
 	Fvector pos;
 	Center(pos);
 
-#ifdef ALIFE_MP
 	Level().spawn_item(*m_ArtefactSpawn[i].section, pos, ai_location().level_vertex_id(), ID());
-#else
-	Level().spawn_item(*m_ArtefactSpawn[i].section, pos, (g_dedicated_server) ? u32(-1) : ai_location().level_vertex_id(), ID());
-#endif
 }
 
 void CCustomZone::BornArtefact()

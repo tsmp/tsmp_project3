@@ -10,8 +10,6 @@
 #include "xr_object.h"
 #include "IGame_Persistent.h"
 
-#include "..\TSMP3_Build_Config.h"
-
 void CLevel::cl_Process_Spawn(NET_Packet &P)
 {
 	// Begin analysis
@@ -88,9 +86,7 @@ void CLevel::g_sv_Spawn(CSE_Abstract *E)
 		E_mem = Memory.mem_usage();
 		Memory.stat_calls = 0;
 	}
-#endif // DEBUG_MEMORY_MANAGER \
-	//----------------------------------------------------------------- \
-	//	CTimer		T(false);
+#endif // DEBUG_MEMORY_MANAGER
 
 #ifdef DEBUG
 //	Msg					("* CLIENT: Spawn: %s, ID=%d", *E->s_name, E->ID);
@@ -102,26 +98,21 @@ void CLevel::g_sv_Spawn(CSE_Abstract *E)
 	else
 		psNET_Flags.set(NETFLAG_MINIMIZEUPDATES, FALSE);
 
-	// Client spawn
-	//	T.Start		();
-	CObject *O = Objects.Create(*E->s_name);
-	// Msg				("--spawn--CREATE: %f ms",1000.f*T.GetAsync());
 
-//	T.Start		();
+	CObject *O = Objects.Create(*E->s_name);
+
 #ifdef DEBUG_MEMORY_MANAGER
 	mem_alloc_gather_stats(false);
 #endif // DEBUG_MEMORY_MANAGER
-	if (0 == O || (!O->net_Spawn(E)))
+	
+	if (!O->net_Spawn(E))
 	{
 		O->net_Destroy();
-
-#ifndef ALIFE_MP
-		if (!g_dedicated_server)
-#endif
-			client_spawn_manager().clear(O->ID());
+		client_spawn_manager().clear(O->ID());
 
 		Objects.Destroy(O);
 		Msg("! Failed to spawn entity '%s'", *E->s_name);
+
 #ifdef DEBUG_MEMORY_MANAGER
 		mem_alloc_gather_stats(!!psAI_Flags.test(aiDebugOnFrameAllocs));
 #endif // DEBUG_MEMORY_MANAGER
@@ -132,12 +123,8 @@ void CLevel::g_sv_Spawn(CSE_Abstract *E)
 		mem_alloc_gather_stats(!!psAI_Flags.test(aiDebugOnFrameAllocs));
 #endif // DEBUG_MEMORY_MANAGER
 
-#ifndef ALIFE_MP
-		if (!g_dedicated_server)
-#endif
-			client_spawn_manager().callback(O);
+		client_spawn_manager().callback(O);
 
-		//Msg			("--spawn--SPAWN: %f ms",1000.f*T.GetAsync());
 		if ((E->s_flags.is(M_SPAWN_OBJECT_LOCAL)) && (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)))
 		{
 			if (CurrentEntity() != NULL)
@@ -146,9 +133,9 @@ void CLevel::g_sv_Spawn(CSE_Abstract *E)
 				if (pGO)
 					pGO->On_B_NotCurrentEntity();
 			}
+
 			SetEntity(O);
 			SetControlEntity(O);
-			//			if (net_Syncronised)net_Syncronize	();	// start sync-thread again
 		}
 
 		if (0xffff != E->ID_Parent)
@@ -160,9 +147,9 @@ void CLevel::g_sv_Spawn(CSE_Abstract *E)
 			cl_Process_Event(E->ID_Parent, GE_OWNERSHIP_TAKE, GEN);
 		}
 	}
-	//---------------------------------------------------------
+
 	Game().OnSpawn(O);
-	//---------------------------------------------------------
+
 #ifdef DEBUG_MEMORY_MANAGER
 	if (g_bMEMO)
 	{
@@ -178,16 +165,17 @@ CSE_Abstract *CLevel::spawn_item(LPCSTR section, const Fvector &position, u32 le
 	CSE_Abstract *abstract = F_entity_Create(section);
 	R_ASSERT3(abstract, "Cannot find item with section", section);
 	CSE_ALifeDynamicObject *dynamic_object = smart_cast<CSE_ALifeDynamicObject *>(abstract);
+
 	if (dynamic_object && ai().get_level_graph())
 	{
 		dynamic_object->m_tNodeID = level_vertex_id;
+
 		if (ai().level_graph().valid_vertex_id(level_vertex_id) && ai().get_game_graph() && ai().get_cross_table())
 			dynamic_object->m_tGraphID = ai().cross_table().vertex(level_vertex_id).game_vertex_id();
 	}
 
-	//оружие спавним с полным магазинои
-	CSE_ALifeItemWeapon *weapon = smart_cast<CSE_ALifeItemWeapon *>(abstract);
-	if (weapon)
+	//оружие спавним с полным магазинои	
+	if (CSE_ALifeItemWeapon* weapon = smart_cast<CSE_ALifeItemWeapon*>(abstract))
 		weapon->a_elapsed = weapon->get_ammo_magsize();
 
 	// Fill
@@ -219,11 +207,8 @@ void CLevel::ProcessGameSpawns()
 	while (!game_spawn_queue.empty())
 	{
 		CSE_Abstract *E = game_spawn_queue.front();
-
 		g_sv_Spawn(E);
-
 		F_entity_Destroy(E);
-
 		game_spawn_queue.pop_front();
 	}
 }
