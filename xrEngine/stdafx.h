@@ -1,5 +1,6 @@
 #pragma once
 #include "../xrCore/xrCore.h"
+#include "../Include/xrAPI/xrAPI.h"
 
 #ifdef _DEBUG
 #define D3D_DEBUG_INFO
