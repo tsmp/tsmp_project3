@@ -2,12 +2,11 @@
 #include "dxRenderFactory.h"
 //#include "dxStatGraphRender.h"
 //#include "dxLensFlareRender.h"
-//#include "dxConsoleRender.h"
 //#include "dxThunderboltRender.h"
 //#include "dxThunderboltDescRender.h"
 //#include "dxRainRender.h"
 //#include "dxLensFlareRender.h"
-//#include "dxEnvironmentRender.h"
+#include "dxEnvironmentRender.h"
 #include "dxRenderDeviceRender.h"
 //#include "dxObjectSpaceRender.h"
 //#include "dxFontRender.h"
@@ -35,7 +34,6 @@ dxRenderFactory RenderFactoryImpl;
 //RENDER_FACTORY_IMPLEMENT(UISequenceVideoItem)
 //RENDER_FACTORY_IMPLEMENT(UIShader)
 //RENDER_FACTORY_IMPLEMENT(StatGraphRender)
-//RENDER_FACTORY_IMPLEMENT(ConsoleRender)
 RENDER_FACTORY_IMPLEMENT(RenderDeviceRender)
 
 //#ifdef DEBUG
@@ -50,9 +48,9 @@ RENDER_FACTORY_IMPLEMENT(ApplicationRender)
 //RENDER_FACTORY_IMPLEMENT(ThunderboltDescRender)
 //RENDER_FACTORY_IMPLEMENT(RainRender)
 //RENDER_FACTORY_IMPLEMENT(LensFlareRender)
-//RENDER_FACTORY_IMPLEMENT(EnvironmentRender)
-//RENDER_FACTORY_IMPLEMENT(EnvDescriptorMixerRender)
-//RENDER_FACTORY_IMPLEMENT(EnvDescriptorRender)
+RENDER_FACTORY_IMPLEMENT(EnvironmentRender)
+RENDER_FACTORY_IMPLEMENT(EnvDescriptorMixerRender)
+RENDER_FACTORY_IMPLEMENT(EnvDescriptorRender)
 //RENDER_FACTORY_IMPLEMENT(FlareRender)
 
 //RENDER_FACTORY_IMPLEMENT(FontRender)

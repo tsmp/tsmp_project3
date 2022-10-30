@@ -11,7 +11,6 @@ class dxRenderFactory : public IRenderFactory
 	//RENDER_FACTORY_DECLARE(UISequenceVideoItem)
 	//RENDER_FACTORY_DECLARE(UIShader)
 	//RENDER_FACTORY_DECLARE(StatGraphRender)
-	//RENDER_FACTORY_DECLARE(ConsoleRender)
 	RENDER_FACTORY_DECLARE(RenderDeviceRender)
 
 #ifdef DEBUG
@@ -27,9 +26,9 @@ class dxRenderFactory : public IRenderFactory
 	//RENDER_FACTORY_DECLARE(ThunderboltDescRender)
 	//RENDER_FACTORY_DECLARE(RainRender)
 	//RENDER_FACTORY_DECLARE(LensFlareRender)
-	//RENDER_FACTORY_DECLARE(EnvironmentRender)
-	//RENDER_FACTORY_DECLARE(EnvDescriptorMixerRender)
-	//RENDER_FACTORY_DECLARE(EnvDescriptorRender)
+	RENDER_FACTORY_DECLARE(EnvironmentRender)
+	RENDER_FACTORY_DECLARE(EnvDescriptorMixerRender)
+	RENDER_FACTORY_DECLARE(EnvDescriptorRender)
 
 	//RENDER_FACTORY_DECLARE(FontRender)
 };

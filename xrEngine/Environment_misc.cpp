@@ -5,11 +5,7 @@
 #include "xr_efflensflare.h"
 #include "thunderbolt.h"
 #include "rain.h"
-#include "resourcemanager.h"
 
-//-----------------------------------------------------------------------------
-// Environment modifier
-//-----------------------------------------------------------------------------
 void CEnvModifier::load(IReader *fs)
 {
 	//	Fvector			dummy;
@@ -194,19 +190,12 @@ void CEnvDescriptor::load(LPCSTR exec_tm, LPCSTR S, CEnvironment *parent)
 
 void CEnvDescriptor::on_device_create()
 {
-	if (sky_texture_name.size())
-		sky_texture.create(sky_texture_name.c_str());
-	if (sky_texture_env_name.size())
-		sky_texture_env.create(sky_texture_env_name.c_str());
-	if (clouds_texture_name.size())
-		clouds_texture.create(clouds_texture_name.c_str());
+	m_pDescriptor->OnDeviceCreate(*this);
 }
 
 void CEnvDescriptor::on_device_destroy()
 {
-	sky_texture.destroy();
-	sky_texture_env.destroy();
-	clouds_texture.destroy();
+	m_pDescriptor->OnDeviceDestroy();
 }
 
 //-----------------------------------------------------------------------------
@@ -214,32 +203,15 @@ void CEnvDescriptor::on_device_destroy()
 //-----------------------------------------------------------------------------
 void CEnvDescriptorMixer::destroy()
 {
-	sky_r_textures.clear();
-	sky_r_textures_env.clear();
-	clouds_r_textures.clear();
+	m_pDescriptorMixer->Destroy();
 
-	sky_texture.destroy();
-	sky_texture_env.destroy();
-	clouds_texture.destroy();
+	//	Reuse existing code
+	on_device_destroy();
 }
 
 void CEnvDescriptorMixer::clear()
 {
-	std::pair<u32, ref_texture> zero = mk_pair(u32(0), ref_texture(0));
-	sky_r_textures.clear();
-	sky_r_textures.push_back(zero);
-	sky_r_textures.push_back(zero);
-	sky_r_textures.push_back(zero);
-
-	sky_r_textures_env.clear();
-	sky_r_textures_env.push_back(zero);
-	sky_r_textures_env.push_back(zero);
-	sky_r_textures_env.push_back(zero);
-
-	clouds_r_textures.clear();
-	clouds_r_textures.push_back(zero);
-	clouds_r_textures.push_back(zero);
-	clouds_r_textures.push_back(zero);
+	m_pDescriptorMixer->Clear();
 }
 int get_ref_count(IUnknown *ii);
 void CEnvDescriptorMixer::lerp(CEnvironment *, CEnvDescriptor &A, CEnvDescriptor &B, float f, CEnvModifier &M, float m_power)
@@ -247,19 +219,8 @@ void CEnvDescriptorMixer::lerp(CEnvironment *, CEnvDescriptor &A, CEnvDescriptor
 	float _power = 1.f / (m_power + 1); // the environment itself
 	float fi = 1 - f;
 
-	sky_r_textures.clear();
-	sky_r_textures.push_back(mk_pair(0, A.sky_texture));
-	sky_r_textures.push_back(mk_pair(1, B.sky_texture));
-
-	sky_r_textures_env.clear();
-
-	sky_r_textures_env.push_back(mk_pair(0, A.sky_texture_env));
-	sky_r_textures_env.push_back(mk_pair(1, B.sky_texture_env));
-
-	clouds_r_textures.clear();
-	clouds_r_textures.push_back(mk_pair(0, A.clouds_texture));
-	clouds_r_textures.push_back(mk_pair(1, B.clouds_texture));
-
+	m_pDescriptorMixer->lerp(&*A.m_pDescriptor, &*B.m_pDescriptor);
+	
 	weight = f;
 
 	clouds_color.lerp(A.clouds_color, B.clouds_color, f);
@@ -316,9 +277,9 @@ void CEnvironment::mods_load()
 		u32 id = 0;
 		while (fs->find_chunk(id))
 		{
-			CEnvModifier E;
-			E.load(fs);
-			Modifiers.push_back(E);
+				CEnvModifier E;
+				E.load(fs);
+				Modifiers.push_back(E);
 			id++;
 		}
 		FS.r_close(fs);
@@ -331,7 +292,7 @@ void CEnvironment::mods_unload()
 
 void CEnvironment::load()
 {
-	tonemap = Device.Resources->_CreateTexture("$user$tonemap"); //. hack
+	m_pRender->OnLoad();
 	if (!eff_Rain)
 		eff_Rain = xr_new<CEffect_Rain>();
 	if (!eff_LensFlare)
@@ -459,5 +420,6 @@ void CEnvironment::unload()
 	CurrentWeatherName = 0;
 	CurrentEnv.clear();
 	Invalidate();
-	tonemap = 0;
+
+	m_pRender->OnUnload();
 }
