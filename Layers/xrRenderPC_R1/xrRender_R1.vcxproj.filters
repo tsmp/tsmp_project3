@@ -61,6 +61,9 @@
     <Filter Include="Interface implementations\EnvironmentRender">
       <UniqueIdentifier>{f642ef92-0fb5-4a54-b92b-922bab7c4661}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\FontRender">
+      <UniqueIdentifier>{2ffe3a64-35e6-4afe-ba37-5b207fae7ee6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -254,6 +257,12 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\dxEnvironmentRender.h">
       <Filter>Interface implementations\EnvironmentRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxFontRender.h">
+      <Filter>Interface implementations\FontRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\FontRender.h">
+      <Filter>Interface implementations\FontRender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -469,6 +478,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxEnvironmentRender.cpp">
       <Filter>Interface implementations\EnvironmentRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxFontRender.cpp">
+      <Filter>Interface implementations\FontRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

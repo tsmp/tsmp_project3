@@ -51,5 +51,5 @@ public:
 	//RENDER_FACTORY_INTERFACE(ThunderboltDescRender)
 	//RENDER_FACTORY_INTERFACE(FlareRender)
 
-	//RENDER_FACTORY_INTERFACE(FontRender)
+	RENDER_FACTORY_INTERFACE(FontRender)
 };

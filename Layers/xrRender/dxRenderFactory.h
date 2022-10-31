@@ -30,7 +30,7 @@ class dxRenderFactory : public IRenderFactory
 	RENDER_FACTORY_DECLARE(EnvDescriptorMixerRender)
 	RENDER_FACTORY_DECLARE(EnvDescriptorRender)
 
-	//RENDER_FACTORY_DECLARE(FontRender)
+	RENDER_FACTORY_DECLARE(FontRender)
 };
 
 extern dxRenderFactory RenderFactoryImpl;
