@@ -64,6 +64,9 @@
     <Filter Include="Interface implementations\FontRender">
       <UniqueIdentifier>{2ffe3a64-35e6-4afe-ba37-5b207fae7ee6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\LensFlare">
+      <UniqueIdentifier>{a94cd75d-d44d-4856-994f-3c9b625cb610}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -263,6 +266,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\xrRender\FontRender.h">
       <Filter>Interface implementations\FontRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\LensFlareRender.h">
+      <Filter>Interface implementations\LensFlare</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxLensFlareRender.h">
+      <Filter>Interface implementations\LensFlare</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -481,6 +490,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxFontRender.cpp">
       <Filter>Interface implementations\FontRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxLensFlareRender.cpp">
+      <Filter>Interface implementations\LensFlare</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

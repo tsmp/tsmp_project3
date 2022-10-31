@@ -1,9 +1,12 @@
-#ifndef xr_efflensflareH
-#define xr_efflensflareH
+#pragma once
 
 #include "xr_collide_defs.h"
 
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/LensFlareRender.h"
+
 class ENGINE_API CInifile;
+class ENGINE_API CEnvironment;
 
 class ENGINE_API CLensFlareDescriptor
 {
@@ -15,7 +18,7 @@ public:
 		float fPosition;
 		shared_str texture;
 		shared_str shader;
-		ref_shader hShader;
+		FactoryPtr<IFlareRender> m_pRender;		
 		SFlare() { fOpacity = fRadius = fPosition = 0; }
 	};
 	struct SSource : public SFlare
@@ -45,7 +48,6 @@ public:
 	void SetGradient(float fMaxRadius, float fOpacity, LPCSTR tex_name, LPCSTR sh_name);
 	void SetSource(float fRadius, BOOL ign_color, LPCSTR tex_name, LPCSTR sh_name);
 	void AddFlare(float fRadius, float fOpacity, float fPosition, LPCSTR tex_name, LPCSTR sh_name);
-	ref_shader CreateShader(LPCSTR tex_name, LPCSTR sh_name);
 
 	shared_str section;
 
@@ -64,6 +66,8 @@ DEFINE_VECTOR(CLensFlareDescriptor, LensFlareDescVec, LensFlareDescIt);
 
 class ENGINE_API CLensFlare
 {
+	friend class dxLensFlareRender;
+
 private:
 	collide::rq_results r_dest;
 
@@ -73,6 +77,7 @@ protected:
 
 	Fvector vSunDir;
 	Fvector vecLight;
+
 	Fvector vecX, vecY, vecDir, vecAxis, vecCenter;
 	BOOL bRender;
 
@@ -80,7 +85,7 @@ protected:
 	Fcolor LightColor;
 	float fGradientValue;
 
-	ref_geom hGeom;
+	FactoryPtr<ILensFlareRender> m_pRender;
 
 	LensFlareDescVec m_Palette;
 	CLensFlareDescriptor *m_Current;
@@ -111,5 +116,3 @@ public:
 
 	void Invalidate() { m_State = lfsNone; }
 };
-
-#endif // xr_efflensflareH

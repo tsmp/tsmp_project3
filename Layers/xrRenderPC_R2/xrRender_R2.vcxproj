@@ -445,6 +445,7 @@
     <ClInclude Include="..\..\include\xrRender\EnvironmentRender.h" />
     <ClInclude Include="..\..\include\xrRender\FactoryPtr.h" />
     <ClInclude Include="..\..\include\xrRender\FontRender.h" />
+    <ClInclude Include="..\..\include\xrRender\LensFlareRender.h" />
     <ClInclude Include="..\..\include\xrRender\RenderDeviceRender.h" />
     <ClInclude Include="..\..\include\xrRender\RenderFactory.h" />
     <ClInclude Include="..\xrRender\Blender_BmmD.h" />
@@ -461,6 +462,7 @@
     <ClInclude Include="..\xrRender\dxApplicationRender.h" />
     <ClInclude Include="..\xrRender\dxEnvironmentRender.h" />
     <ClInclude Include="..\xrRender\dxFontRender.h" />
+    <ClInclude Include="..\xrRender\dxLensFlareRender.h" />
     <ClInclude Include="..\xrRender\dxRenderDeviceRender.h" />
     <ClInclude Include="..\xrRender\dxRenderFactory.h" />
     <ClInclude Include="..\xrRender\FLOD.h" />
@@ -563,6 +565,7 @@
     <ClCompile Include="..\xrRender\dxApplicationRender.cpp" />
     <ClCompile Include="..\xrRender\dxEnvironmentRender.cpp" />
     <ClCompile Include="..\xrRender\dxFontRender.cpp" />
+    <ClCompile Include="..\xrRender\dxLensFlareRender.cpp" />
     <ClCompile Include="..\xrRender\dxRenderDeviceRender.cpp" />
     <ClCompile Include="..\xrRender\dxRenderFactory.cpp" />
     <ClCompile Include="..\xrRender\FLOD.cpp" />
