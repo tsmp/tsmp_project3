@@ -2,8 +2,8 @@
 #include "dxRenderFactory.h"
 //#include "dxStatGraphRender.h"
 #include "dxLensFlareRender.h"
-//#include "dxThunderboltRender.h"
-//#include "dxThunderboltDescRender.h"
+#include "dxThunderboltRender.h"
+#include "dxThunderboltDescRender.h"
 #include "dxRainRender.h"
 #include "dxEnvironmentRender.h"
 #include "dxRenderDeviceRender.h"
@@ -43,8 +43,8 @@ RENDER_FACTORY_IMPLEMENT(ApplicationRender)
 //RENDER_FACTORY_IMPLEMENT(WallMarkArray)
 RENDER_FACTORY_IMPLEMENT(StatsRender)
 
-//RENDER_FACTORY_IMPLEMENT(ThunderboltRender)
-//RENDER_FACTORY_IMPLEMENT(ThunderboltDescRender)
+RENDER_FACTORY_IMPLEMENT(ThunderboltRender)
+RENDER_FACTORY_IMPLEMENT(ThunderboltDescRender)
 RENDER_FACTORY_IMPLEMENT(RainRender)
 RENDER_FACTORY_IMPLEMENT(LensFlareRender)
 RENDER_FACTORY_IMPLEMENT(EnvironmentRender)
