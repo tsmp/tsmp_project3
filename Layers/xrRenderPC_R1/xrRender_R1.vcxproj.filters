@@ -70,6 +70,9 @@
     <Filter Include="Interface implementations\RainRender">
       <UniqueIdentifier>{4a02466a-f0df-49e5-8be4-d8ba1caec2de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\StatsRender">
+      <UniqueIdentifier>{efb40367-05ed-4799-9be2-8a163fe64231}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -284,6 +287,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\xrRender\RainRender.h">
       <Filter>Interface implementations\RainRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\StatsRender.h">
+      <Filter>Interface implementations\StatsRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxStatsRender.h">
+      <Filter>Interface implementations\StatsRender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -508,6 +517,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxRainRender.cpp">
       <Filter>Interface implementations\RainRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxStatsRender.cpp">
+      <Filter>Interface implementations\StatsRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

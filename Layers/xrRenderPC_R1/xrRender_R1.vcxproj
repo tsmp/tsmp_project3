@@ -446,6 +446,7 @@
     <ClInclude Include="..\..\include\xrRender\RainRender.h" />
     <ClInclude Include="..\..\include\xrRender\RenderDeviceRender.h" />
     <ClInclude Include="..\..\include\xrRender\RenderFactory.h" />
+    <ClInclude Include="..\..\include\xrRender\StatsRender.h" />
     <ClInclude Include="..\xrRender\Blender_BmmD.h" />
     <ClInclude Include="..\xrRender\Blender_detail_still.h" />
     <ClInclude Include="..\xrRender\Blender_Editor_Selection.h" />
@@ -467,6 +468,7 @@
     <ClInclude Include="..\xrRender\dxRainRender.h" />
     <ClInclude Include="..\xrRender\dxRenderDeviceRender.h" />
     <ClInclude Include="..\xrRender\dxRenderFactory.h" />
+    <ClInclude Include="..\xrRender\dxStatsRender.h" />
     <ClInclude Include="..\xrRender\FLOD.h" />
     <ClInclude Include="..\xrRender\FProgressive.h" />
     <ClInclude Include="..\xrRender\FSkinned.h" />
@@ -565,6 +567,7 @@
     <ClCompile Include="..\xrRender\dxRainRender.cpp" />
     <ClCompile Include="..\xrRender\dxRenderDeviceRender.cpp" />
     <ClCompile Include="..\xrRender\dxRenderFactory.cpp" />
+    <ClCompile Include="..\xrRender\dxStatsRender.cpp" />
     <ClCompile Include="..\xrRender\FLOD.cpp" />
     <ClCompile Include="..\xrRender\FProgressive.cpp" />
     <ClCompile Include="..\xrRender\FSkinned.cpp" />

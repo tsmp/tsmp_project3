@@ -19,7 +19,7 @@ class dxRenderFactory : public IRenderFactory
 
 	RENDER_FACTORY_DECLARE(ApplicationRender)
 	//RENDER_FACTORY_DECLARE(WallMarkArray)
-	//RENDER_FACTORY_DECLARE(StatsRender)
+	RENDER_FACTORY_DECLARE(StatsRender)
 
 	RENDER_FACTORY_DECLARE(FlareRender)
 	//RENDER_FACTORY_DECLARE(ThunderboltRender)
