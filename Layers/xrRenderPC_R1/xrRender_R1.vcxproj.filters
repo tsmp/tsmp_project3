@@ -67,6 +67,9 @@
     <Filter Include="Interface implementations\LensFlare">
       <UniqueIdentifier>{a94cd75d-d44d-4856-994f-3c9b625cb610}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\RainRender">
+      <UniqueIdentifier>{4a02466a-f0df-49e5-8be4-d8ba1caec2de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -272,6 +275,15 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\dxLensFlareRender.h">
       <Filter>Interface implementations\LensFlare</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\xrD3DDefs.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxRainRender.h">
+      <Filter>Interface implementations\RainRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\RainRender.h">
+      <Filter>Interface implementations\RainRender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -493,6 +505,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxLensFlareRender.cpp">
       <Filter>Interface implementations\LensFlare</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxRainRender.cpp">
+      <Filter>Interface implementations\RainRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
