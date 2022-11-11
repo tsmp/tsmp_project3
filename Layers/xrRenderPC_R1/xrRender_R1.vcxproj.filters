@@ -79,6 +79,12 @@
     <Filter Include="Interface implementations\ThunderboltRender">
       <UniqueIdentifier>{554fa8db-9ecd-4730-b81c-caa749d9cded}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\UI">
+      <UniqueIdentifier>{c5ebd247-14c8-4ed0-bdfe-8d7ec15e1830}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\UI\UIRender">
+      <UniqueIdentifier>{8e8ab7a4-51a3-4c7e-b9bf-e1127d616273}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -312,6 +318,12 @@
     <ClInclude Include="..\..\include\xrRender\ThunderboltDescRender.h">
       <Filter>Interface implementations\ThunderboltDescRender</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\UIRender.h">
+      <Filter>Interface implementations\UI\UIRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxUIRender.h">
+      <Filter>Interface implementations\UI\UIRender</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -544,6 +556,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxThunderboltDescRender.cpp">
       <Filter>Interface implementations\ThunderboltDescRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxUIRender.cpp">
+      <Filter>Interface implementations\UI\UIRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
