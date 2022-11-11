@@ -439,6 +439,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\xrRender\ApplicationRender.h" />
+    <ClInclude Include="..\..\include\xrRender\DebugShader.h" />
     <ClInclude Include="..\..\include\xrRender\EnvironmentRender.h" />
     <ClInclude Include="..\..\include\xrRender\FactoryPtr.h" />
     <ClInclude Include="..\..\include\xrRender\FontRender.h" />
@@ -450,6 +451,7 @@
     <ClInclude Include="..\..\include\xrRender\ThunderboltDescRender.h" />
     <ClInclude Include="..\..\include\xrRender\ThunderboltRender.h" />
     <ClInclude Include="..\..\include\xrRender\UIRender.h" />
+    <ClInclude Include="..\..\include\xrRender\UIShader.h" />
     <ClInclude Include="..\xrRender\Blender_BmmD.h" />
     <ClInclude Include="..\xrRender\Blender_detail_still.h" />
     <ClInclude Include="..\xrRender\Blender_Editor_Selection.h" />
@@ -475,6 +477,7 @@
     <ClInclude Include="..\xrRender\dxThunderboltDescRender.h" />
     <ClInclude Include="..\xrRender\dxThunderboltRender.h" />
     <ClInclude Include="..\xrRender\dxUIRender.h" />
+    <ClInclude Include="..\xrRender\dxUIShader.h" />
     <ClInclude Include="..\xrRender\FLOD.h" />
     <ClInclude Include="..\xrRender\FProgressive.h" />
     <ClInclude Include="..\xrRender\FSkinned.h" />
@@ -577,6 +580,7 @@
     <ClCompile Include="..\xrRender\dxThunderboltDescRender.cpp" />
     <ClCompile Include="..\xrRender\dxThunderboltRender.cpp" />
     <ClCompile Include="..\xrRender\dxUIRender.cpp" />
+    <ClCompile Include="..\xrRender\dxUIShader.cpp" />
     <ClCompile Include="..\xrRender\FLOD.cpp" />
     <ClCompile Include="..\xrRender\FProgressive.cpp" />
     <ClCompile Include="..\xrRender\FSkinned.cpp" />

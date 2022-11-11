@@ -91,6 +91,12 @@
     <Filter Include="Interface implementations\UI\UIRender">
       <UniqueIdentifier>{e14e7ec8-c89a-42b4-adb4-54bfd96cd416}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\UI\UIShader">
+      <UniqueIdentifier>{c13c5131-beb2-41a0-980f-efb63a951f99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface implementations\Debug">
+      <UniqueIdentifier>{94166981-5198-4c43-b121-73fbc4fc1cb3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -359,6 +365,15 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\dxUIRender.h">
       <Filter>Interface implementations\UI\UIRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxUIShader.h">
+      <Filter>Interface implementations\UI\UIShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\UIShader.h">
+      <Filter>Interface implementations\UI\UIShader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\DebugShader.h">
+      <Filter>Interface implementations\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -694,6 +709,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxUIRender.cpp">
       <Filter>Interface implementations\UI\UIRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxUIShader.cpp">
+      <Filter>Interface implementations\UI\UIShader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
