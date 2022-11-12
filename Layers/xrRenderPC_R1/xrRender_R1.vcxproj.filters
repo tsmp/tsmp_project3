@@ -94,6 +94,9 @@
     <Filter Include="Interface implementations\UI\UISequenceVideoItem">
       <UniqueIdentifier>{5da9f653-4546-4f65-897b-b19b62729118}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\StatGraphRender">
+      <UniqueIdentifier>{36aab262-0492-4edd-ad37-1e28619eea3b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -348,6 +351,12 @@
     <ClInclude Include="..\xrRender\dxUISequenceVideoItem.h">
       <Filter>Interface implementations\UI\UISequenceVideoItem</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrRender\dxStatGraphRender.h">
+      <Filter>Interface implementations\StatGraphRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\StatGraphRender.h">
+      <Filter>Interface implementations\StatGraphRender</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -589,6 +598,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxUISequenceVideoItem.cpp">
       <Filter>Interface implementations\UI\UISequenceVideoItem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxStatGraphRender.cpp">
+      <Filter>Interface implementations\StatGraphRender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

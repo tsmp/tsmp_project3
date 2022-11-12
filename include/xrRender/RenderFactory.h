@@ -31,7 +31,7 @@ class IRenderFactory
 public:
 	RENDER_FACTORY_INTERFACE(UISequenceVideoItem)
 	RENDER_FACTORY_INTERFACE(UIShader)
-	//RENDER_FACTORY_INTERFACE(StatGraphRender)
+	RENDER_FACTORY_INTERFACE(StatGraphRender)
 	RENDER_FACTORY_INTERFACE(RenderDeviceRender)
 
 #ifdef DEBUG
