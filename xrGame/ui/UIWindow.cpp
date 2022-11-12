@@ -6,6 +6,9 @@
 #include "../UICursor.h"
 #include "../MainMenu.h"
 
+#include "../Include/xrRender/DebugRender.h"
+#include "../Include/xrRender/UIRender.h"
+
 //#define LOG_ALL_WNDS
 #ifdef LOG_ALL_WNDS
 int ListWndCount = 0;
@@ -38,41 +41,35 @@ BOOL g_show_wnd_rect2 = FALSE;
 
 void clean_wnd_rects()
 {
-	dbg_draw_sh.destroy();
-	dbg_draw_gm.destroy();
+#ifdef DEBUG
+	DRender->DestroyDebugShader(IDebugRender::dbgShaderWindow);
+#endif // DEBUG
 }
 
 void add_rect_to_draw(Frect r)
 {
 	g_wnds_rects.push_back(r);
 }
-void draw_rect(Frect &r, u32 color)
+
+void draw_rect(Frect& r, u32 color)
 {
-#pragma TODO("TSMP: replace with DRender and UIRender")
-	if (!dbg_draw_sh)
-	{
-		dbg_draw_sh.create("hud\\default", "ui\\ui_pop_up_active_back");
-		dbg_draw_gm.create(FVF::F_TL, RCache.Vertex.Buffer(), 0);
-	}
-	RCache.set_Shader(dbg_draw_sh);
-	u32 vOffset;
-	FVF::TL *pv = (FVF::TL *)RCache.Vertex.Lock(5, dbg_draw_gm.stride(), vOffset);
+#ifdef DEBUG
 
-	pv->set(r.lt.x, r.lt.y, color, 0, 0);
-	++pv;
-	pv->set(r.rb.x, r.lt.y, color, 0, 0);
-	++pv;
-	pv->set(r.rb.x, r.rb.y, color, 0, 0);
-	++pv;
-	pv->set(r.lt.x, r.rb.y, color, 0, 0);
-	++pv;
-	pv->set(r.lt.x, r.lt.y, color, 0, 0);
-	++pv;
+	DRender->SetDebugShader(IDebugRender::dbgShaderWindow);
 
-	RCache.Vertex.Unlock(5, dbg_draw_gm.stride());
-	RCache.set_Geometry(dbg_draw_gm);
-	RCache.Render(D3DPT_LINESTRIP, vOffset, 4);
+	UIRender->StartPrimitive(5, IUIRender::ptLineStrip, IUIRender::ePointType::pttTL);
+
+	UIRender->PushPoint(r.lt.x, r.lt.y, 0, color, 0, 0);
+	UIRender->PushPoint(r.rb.x, r.lt.y, 0, color, 0, 0);
+	UIRender->PushPoint(r.rb.x, r.rb.y, 0, color, 0, 0);
+	UIRender->PushPoint(r.lt.x, r.rb.y, 0, color, 0, 0);
+	UIRender->PushPoint(r.lt.x, r.lt.y, 0, color, 0, 0);
+
+	UIRender->FlushPrimitive();
+
+#endif // DEBUG
 }
+
 void draw_wnds_rects()
 {
 	if (0 == g_wnds_rects.size())

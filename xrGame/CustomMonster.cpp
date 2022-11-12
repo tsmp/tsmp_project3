@@ -1084,7 +1084,7 @@ void draw_visiblity_rays(CCustomMonster *self, const CObject *object, collide::r
 
 void CCustomMonster::OnRender()
 {
-	RCache.OnFrameEnd();
+	DRender->OnFrameEnd();
 
 	for (int i = 0; i < 1; ++i)
 	{

@@ -24,6 +24,8 @@
 #include "xr_input.h"
 #include "saved_game_wrapper.h"
 
+#include "../Include/xrRender/DebugRender.h"
+
 #ifdef DEBUG
 #include "ai/monsters/BaseMonster/base_monster.h"
 #endif
@@ -230,7 +232,7 @@ void CLevel::IR_OnKeyboardPress(int key)
 
 	case DIK_BACK:
 		if (GameID() == GAME_SINGLE)
-			HW.Caps.SceneMode = (HW.Caps.SceneMode + 1) % 3;
+			DRender->NextSceneMode();
 		return;
 
 	case DIK_F4:

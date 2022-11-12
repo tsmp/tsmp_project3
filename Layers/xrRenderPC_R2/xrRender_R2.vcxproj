@@ -442,6 +442,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\xrRender\ApplicationRender.h" />
+    <ClInclude Include="..\..\include\xrRender\DebugRender.h" />
     <ClInclude Include="..\..\include\xrRender\DebugShader.h" />
     <ClInclude Include="..\..\include\xrRender\EnvironmentRender.h" />
     <ClInclude Include="..\..\include\xrRender\FactoryPtr.h" />
@@ -470,6 +471,7 @@
     <ClInclude Include="..\xrRender\DetailManager.h" />
     <ClInclude Include="..\xrRender\DetailModel.h" />
     <ClInclude Include="..\xrRender\dxApplicationRender.h" />
+    <ClInclude Include="..\xrRender\dxDebugRender.h" />
     <ClInclude Include="..\xrRender\dxEnvironmentRender.h" />
     <ClInclude Include="..\xrRender\dxFontRender.h" />
     <ClInclude Include="..\xrRender\dxLensFlareRender.h" />
@@ -583,6 +585,7 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">Level2</WarningLevel>
     </ClCompile>
     <ClCompile Include="..\xrRender\dxApplicationRender.cpp" />
+    <ClCompile Include="..\xrRender\dxDebugRender.cpp" />
     <ClCompile Include="..\xrRender\dxEnvironmentRender.cpp" />
     <ClCompile Include="..\xrRender\dxFontRender.cpp" />
     <ClCompile Include="..\xrRender\dxLensFlareRender.cpp" />

@@ -83,8 +83,8 @@ struct SPHDBGDrawTri : public SPHDBGDrawAbsract
 	{
 		if (solid)
 		{
-			RCache.dbg_DrawTRI(Fidentity, v[0], v[1], v[2], c);
-			RCache.dbg_DrawTRI(Fidentity, v[2], v[1], v[0], c);
+			DRender->dbg_DrawTRI(Fidentity, v[0], v[1], v[2], c);
+			DRender->dbg_DrawTRI(Fidentity, v[2], v[1], v[0], c);
 		}
 		else
 		{
@@ -509,7 +509,8 @@ void PH_DBG_Clear()
 void PH_DBG_Render()
 {
 	if (ph_dbg_draw_mask.test(phDbgDrawZDisable))
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE, 0));
+		DRender->ZEnable(false);
+
 	HUD().Font().pFontStat->OutSet(550, 250);
 
 	if (ph_dbg_draw_mask.test(phDbgDrawEnabledAABBS))
@@ -567,7 +568,7 @@ void PH_DBG_Render()
 #endif
 
 	if (ph_dbg_draw_mask.test(phDbgDrawZDisable))
-		CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE, 1));
+		DRender->ZEnable(true);
 }
 
 void DBG_DrawStatBeforeFrameStep()
