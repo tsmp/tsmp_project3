@@ -7,6 +7,9 @@
 #include "xr_input.h"
 #include "../xr_level_controller.h"
 
+#include "../Include/xrRender/UIShader.h"
+#include "../Include/xrRender/UIRender.h"
+
 extern ENGINE_API BOOL bShowPauseString;
 
 //-----------------------------------------------------------------------------
@@ -145,9 +148,10 @@ void CUISequenceVideoItem::Update()
 
 void CUISequenceVideoItem::OnRender()
 {
-	if (NULL == m_texture && m_wnd->GetShader())
+	if (!m_texture && m_wnd->GetShader() && m_wnd->GetShader()->inited())
 	{
-		RCache.set_Shader(m_wnd->GetShader());
+		UIRender->SetShader(*m_wnd->GetShader());
+#pragma TODO("TSMP: CaptureTexture")
 		m_texture = RCache.get_ActiveTexture(0);
 		m_texture->video_Stop();
 	}

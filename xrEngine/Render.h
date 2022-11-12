@@ -5,6 +5,13 @@
 #include "vis_common.h"
 #include "IRenderDetailModel.h"
 
+#include "../Include/xrAPI/xrAPI.h"
+#include "../Include/xrRender/FactoryPtr.h"
+
+class IUIShader;
+
+using wm_shader = FactoryPtr<IUIShader>;
+
 // refs
 class ENGINE_API IRenderable;
 class ENGINE_API IRender_Visual;

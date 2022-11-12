@@ -48,7 +48,7 @@ void add_rect_to_draw(Frect r)
 }
 void draw_rect(Frect &r, u32 color)
 {
-
+#pragma TODO("TSMP: replace with DRender and UIRender")
 	if (!dbg_draw_sh)
 	{
 		dbg_draw_sh.create("hud\\default", "ui\\ui_pop_up_active_back");

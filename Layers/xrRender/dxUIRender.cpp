@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "dxUIRender.h"
 
-//#include "dxUIShader.h"
+#include "dxUIShader.h"
 
 dxUIRender UIRenderImpl;
 
@@ -13,17 +13,16 @@ void dxUIRender::CreateUIGeom()
 
 void dxUIRender::DestroyUIGeom()
 {
-	hGeom_TL = NULL;
-	hGeom_LIT = NULL;
+	hGeom_TL = nullptr;
+	hGeom_LIT = nullptr;
 }
 
 void dxUIRender::SetShader(IUIShader &shader)
 {
-#pragma TODO("TSMP: uncomment this")
-	//dxUIShader *pShader = (dxUIShader *)&shader;
-	//VERIFY(&pShader);
-	//VERIFY(pShader->hShader);
-	//RCache.set_Shader(pShader->hShader);
+	dxUIShader *pShader = (dxUIShader*)&shader;
+	VERIFY(&pShader);
+	R_ASSERT(pShader->inited());
+	RCache.set_Shader(pShader->hShader);
 }
 
 void dxUIRender::SetAlphaRef(int aref)
