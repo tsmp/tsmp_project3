@@ -1,5 +1,4 @@
-#ifndef __XR_AREA_H__
-#define __XR_AREA_H__
+#pragma once
 
 #include "xr_collide_form.h"
 #include "xr_collide_defs.h"
@@ -8,6 +7,9 @@
 class ENGINE_API ISpatial;
 class ENGINE_API ICollisionForm;
 class ENGINE_API CObject;
+
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/ObjectSpaceRender.h"
 
 //-----------------------------------------------------------------------------------------------------------
 //Space Area
@@ -23,10 +25,9 @@ private:
 	collide::rq_results r_temp;		 // MT: dangerous
 	xr_vector<ISpatial *> r_spatial; // MT: dangerous
 public:
+
 #ifdef DEBUG
-	ref_shader sh_debug;
-	clQueryCollision q_debug;				  // MT: dangerous
-	xr_vector<std::pair<Fsphere, u32>> dbg_S; // MT: dangerous
+	FactoryPtr<IObjectSpaceRender> m_pRender;
 #endif
 
 private:
@@ -65,8 +66,5 @@ public:
 	// Debugging
 #ifdef DEBUG
 	void dbgRender();
-	ref_shader dbgGetShader() { return sh_debug; }
 #endif
 };
-
-#endif //__XR_AREA_H__

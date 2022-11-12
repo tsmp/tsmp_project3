@@ -7,7 +7,7 @@
 #include "dxRainRender.h"
 #include "dxEnvironmentRender.h"
 #include "dxRenderDeviceRender.h"
-//#include "dxObjectSpaceRender.h"
+#include "dxObjectSpaceRender.h"
 #include "dxFontRender.h"
 #include "dxApplicationRender.h"
 //#include "dxWallMarkArray.h"
@@ -34,9 +34,9 @@ RENDER_FACTORY_IMPLEMENT(UIShader)
 RENDER_FACTORY_IMPLEMENT(StatGraphRender)
 RENDER_FACTORY_IMPLEMENT(RenderDeviceRender)
 
-//#ifdef DEBUG
-//RENDER_FACTORY_IMPLEMENT(ObjectSpaceRender)
-//#endif // DEBUG
+#ifdef DEBUG
+RENDER_FACTORY_IMPLEMENT(ObjectSpaceRender)
+#endif // DEBUG
 
 RENDER_FACTORY_IMPLEMENT(ApplicationRender)
 //RENDER_FACTORY_IMPLEMENT(WallMarkArray)

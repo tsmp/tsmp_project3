@@ -35,7 +35,7 @@ public:
 	RENDER_FACTORY_INTERFACE(RenderDeviceRender)
 
 #ifdef DEBUG
-	//RENDER_FACTORY_INTERFACE(ObjectSpaceRender)
+	RENDER_FACTORY_INTERFACE(ObjectSpaceRender)
 #endif // DEBUG
 
 	RENDER_FACTORY_INTERFACE(ApplicationRender)
