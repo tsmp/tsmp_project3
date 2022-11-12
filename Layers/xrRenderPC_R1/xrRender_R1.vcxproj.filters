@@ -91,6 +91,9 @@
     <Filter Include="Interface implementations\Debug">
       <UniqueIdentifier>{7de57762-b358-4cdd-b9d7-d5e047abb69f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface implementations\UI\UISequenceVideoItem">
+      <UniqueIdentifier>{5da9f653-4546-4f65-897b-b19b62729118}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRender\cl_intersect.h">
@@ -339,6 +342,12 @@
     <ClInclude Include="..\..\include\xrRender\DebugShader.h">
       <Filter>Interface implementations\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\UISequenceVideoItem.h">
+      <Filter>Interface implementations\UI\UISequenceVideoItem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\dxUISequenceVideoItem.h">
+      <Filter>Interface implementations\UI\UISequenceVideoItem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -577,6 +586,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxUIShader.cpp">
       <Filter>Interface implementations\UI\UIShader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxUISequenceVideoItem.cpp">
+      <Filter>Interface implementations\UI\UISequenceVideoItem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

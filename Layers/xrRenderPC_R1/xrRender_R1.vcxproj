@@ -451,6 +451,7 @@
     <ClInclude Include="..\..\include\xrRender\ThunderboltDescRender.h" />
     <ClInclude Include="..\..\include\xrRender\ThunderboltRender.h" />
     <ClInclude Include="..\..\include\xrRender\UIRender.h" />
+    <ClInclude Include="..\..\include\xrRender\UISequenceVideoItem.h" />
     <ClInclude Include="..\..\include\xrRender\UIShader.h" />
     <ClInclude Include="..\xrRender\Blender_BmmD.h" />
     <ClInclude Include="..\xrRender\Blender_detail_still.h" />
@@ -477,6 +478,7 @@
     <ClInclude Include="..\xrRender\dxThunderboltDescRender.h" />
     <ClInclude Include="..\xrRender\dxThunderboltRender.h" />
     <ClInclude Include="..\xrRender\dxUIRender.h" />
+    <ClInclude Include="..\xrRender\dxUISequenceVideoItem.h" />
     <ClInclude Include="..\xrRender\dxUIShader.h" />
     <ClInclude Include="..\xrRender\FLOD.h" />
     <ClInclude Include="..\xrRender\FProgressive.h" />
@@ -580,6 +582,7 @@
     <ClCompile Include="..\xrRender\dxThunderboltDescRender.cpp" />
     <ClCompile Include="..\xrRender\dxThunderboltRender.cpp" />
     <ClCompile Include="..\xrRender\dxUIRender.cpp" />
+    <ClCompile Include="..\xrRender\dxUISequenceVideoItem.cpp" />
     <ClCompile Include="..\xrRender\dxUIShader.cpp" />
     <ClCompile Include="..\xrRender\FLOD.cpp" />
     <ClCompile Include="..\xrRender\FProgressive.cpp" />
