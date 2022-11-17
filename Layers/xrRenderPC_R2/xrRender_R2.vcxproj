@@ -459,6 +459,7 @@
     <ClInclude Include="..\..\include\xrRender\UIRender.h" />
     <ClInclude Include="..\..\include\xrRender\UISequenceVideoItem.h" />
     <ClInclude Include="..\..\include\xrRender\UIShader.h" />
+    <ClInclude Include="..\..\include\xrRender\WallMarkArray.h" />
     <ClInclude Include="..\xrRender\Blender_BmmD.h" />
     <ClInclude Include="..\xrRender\Blender_detail_still.h" />
     <ClInclude Include="..\xrRender\Blender_Editor_Selection.h" />
@@ -486,6 +487,7 @@
     <ClInclude Include="..\xrRender\dxUIRender.h" />
     <ClInclude Include="..\xrRender\dxUISequenceVideoItem.h" />
     <ClInclude Include="..\xrRender\dxUIShader.h" />
+    <ClInclude Include="..\xrRender\dxWallMarkArray.h" />
     <ClInclude Include="..\xrRender\FLOD.h" />
     <ClInclude Include="..\xrRender\FProgressive.h" />
     <ClInclude Include="..\xrRender\FSkinned.h" />
@@ -600,6 +602,7 @@
     <ClCompile Include="..\xrRender\dxUIRender.cpp" />
     <ClCompile Include="..\xrRender\dxUISequenceVideoItem.cpp" />
     <ClCompile Include="..\xrRender\dxUIShader.cpp" />
+    <ClCompile Include="..\xrRender\dxWallMarkArray.cpp" />
     <ClCompile Include="..\xrRender\FLOD.cpp" />
     <ClCompile Include="..\xrRender\FProgressive.cpp" />
     <ClCompile Include="..\xrRender\FSkinned.cpp" />

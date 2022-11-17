@@ -10,7 +10,7 @@
 #include "dxObjectSpaceRender.h"
 #include "dxFontRender.h"
 #include "dxApplicationRender.h"
-//#include "dxWallMarkArray.h"
+#include "dxWallMarkArray.h"
 #include "dxStatsRender.h"
 #include "dxUISequenceVideoItem.h"
 #include "dxUIShader.h"
@@ -39,7 +39,7 @@ RENDER_FACTORY_IMPLEMENT(ObjectSpaceRender)
 #endif // DEBUG
 
 RENDER_FACTORY_IMPLEMENT(ApplicationRender)
-//RENDER_FACTORY_IMPLEMENT(WallMarkArray)
+RENDER_FACTORY_IMPLEMENT(WallMarkArray)
 RENDER_FACTORY_IMPLEMENT(StatsRender)
 
 RENDER_FACTORY_IMPLEMENT(ThunderboltRender)
