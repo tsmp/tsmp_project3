@@ -1288,9 +1288,6 @@
     <Filter Include="Core\Client\Level">
       <UniqueIdentifier>{1a2aa673-2d0f-4eee-a902-0af31aba02bf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Level\Map Fog Of War">
-      <UniqueIdentifier>{af8c5f48-4b42-4b53-acb4-d484b4044dba}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Client\Level\Bullet Manager">
       <UniqueIdentifier>{db6b84d2-7681-4c36-9ecc-92a45e0a909a}</UniqueIdentifier>
     </Filter>
@@ -4773,9 +4770,6 @@
     <ClInclude Include="LevelGameDef.h">
       <Filter>Core\Client\Level</Filter>
     </ClInclude>
-    <ClInclude Include="LevelFogOfWar.h">
-      <Filter>Core\Client\Level\Map Fog Of War</Filter>
-    </ClInclude>
     <ClInclude Include="Level_Bullet_Manager.h">
       <Filter>Core\Client\Level\Bullet Manager</Filter>
     </ClInclude>
@@ -7969,9 +7963,6 @@
     </ClCompile>
     <ClCompile Include="LevelGameDef.cpp">
       <Filter>Core\Client\Level</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelFogOfWar.cpp">
-      <Filter>Core\Client\Level\Map Fog Of War</Filter>
     </ClCompile>
     <ClCompile Include="Level_Bullet_Manager.cpp">
       <Filter>Core\Client\Level\Bullet Manager</Filter>
