@@ -408,16 +408,7 @@ void CUILevelMap::UpdateSpots()
 	GetAbsoluteRect(_r);
 	if (FALSE == MapWnd()->ActiveMapRect().intersected(_r))
 		return;
-	/*
-	if(m_anomalies_map){
-		m_anomalies_map->SetWndPos	(0.0f,0.0f);
-		m_anomalies_map->SetWndSize	(GetWndSize());
-		AttachChild					(m_anomalies_map);
-	}
 
-	CLevelFogOfWar* F	= Level().FogOfWarMngr().GetFogOfWar(MapName());
-	AttachChild		(F);
-*/
 	Locations &ls = Level().MapManager().Locations();
 	for (Locations_it it = ls.begin(); it != ls.end(); ++it)
 	{

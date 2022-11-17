@@ -221,6 +221,8 @@ void CBulletManager::FireShotmark(SBullet *bullet, const Fvector &vDir, const Fv
 
 	if (R.O)
 	{
+#pragma TODO("TSMP: Maybe try to port cs code")
+		/*  add_SkeletonWallmark not implemented now...
 		particle_dir = vDir;
 		particle_dir.invert();
 
@@ -240,6 +242,7 @@ void CBulletManager::FireShotmark(SBullet *bullet, const Fvector &vDir, const Fv
 										   PKinematics(R.O->Visual()), *pWallmarkShader,
 										   p, bullet->dir, bullet->wallmark_size);
 		}
+		*/
 	}
 	else
 	{
@@ -248,13 +251,10 @@ void CBulletManager::FireShotmark(SBullet *bullet, const Fvector &vDir, const Fv
 		Fvector *pVerts = Level().ObjectSpace.GetStaticVerts();
 		CDB::TRI *pTri = Level().ObjectSpace.GetStaticTris() + R.element;
 
-		ref_shader *pWallmarkShader = (!mtl_pair || mtl_pair->CollideMarks.empty()) ? NULL : &mtl_pair->CollideMarks[::Random.randI(0, mtl_pair->CollideMarks.size())];
-		;
-
-		if (pWallmarkShader && ShowMark)
+		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
 		{
 			//добавить отметку на материале
-			::Render->add_StaticWallmark(*pWallmarkShader, vEnd, bullet->wallmark_size, pTri, pVerts);
+			::Render->add_StaticWallmark(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
 		}
 	}
 

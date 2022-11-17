@@ -2,18 +2,23 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef ThunderboltH
-#define ThunderboltH
 #pragma once
 
 //refs
 class ENGINE_API IRender_DetailModel;
 class ENGINE_API CLAItem;
 
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/LensFlareRender.h"
+#include "../Include/xrRender/ThunderboltDescRender.h"
+#include "../Include/xrRender/ThunderboltRender.h"
+
+class CEnvironment;
+
 struct SThunderboltDesc
 {
-	// geom
-	IRender_DetailModel *l_model;
+	FactoryPtr<IThunderboltDescRender> m_pRender;
+
 	// sound
 	ref_sound snd;
 	// gradient
@@ -22,8 +27,9 @@ struct SThunderboltDesc
 		float fOpacity;
 		Fvector2 fRadius;
 		shared_str texture;
-		shared_str shader;
-		ref_shader hShader;
+		shared_str shader;	
+		FactoryPtr<IFlareRender> m_pFlare;
+		
 		SFlare()
 		{
 			fOpacity = 0;
@@ -37,7 +43,7 @@ struct SThunderboltDesc
 
 public:
 	SThunderboltDesc(CInifile *pIni, LPCSTR sect);
-	~SThunderboltDesc();
+	~SThunderboltDesc();	
 };
 
 struct SThunderboltCollection
@@ -60,6 +66,8 @@ public:
 //
 class ENGINE_API CEffect_Thunderbolt
 {
+	friend class dxThunderboltRender;
+
 protected:
 	DEFINE_VECTOR(SThunderboltCollection *, CollectionVec, CollectionVecIt);
 	CollectionVec collection;
@@ -69,7 +77,8 @@ private:
 	Fmatrix current_xform;
 	Fvector3 current_direction;
 
-	ref_geom hGeom_model;
+	FactoryPtr<IThunderboltRender> m_pRender;
+	
 	// states
 	enum EState
 	{
@@ -77,8 +86,6 @@ private:
 		stWorking
 	};
 	EState state;
-
-	ref_geom hGeom_gradient;
 
 	Fvector lightning_center;
 	float lightning_size;
@@ -98,7 +105,6 @@ private:
 	float p_sky_color;
 	float p_sun_color;
 	float p_fog_color;
-
 private:
 	BOOL RayPick(const Fvector &s, const Fvector &d, float &range);
 	void Bolt(int id, float period, float life_time);
@@ -112,5 +118,3 @@ public:
 
 	int AppendDef(CInifile *pIni, LPCSTR sect);
 };
-
-#endif //ThunderboltH

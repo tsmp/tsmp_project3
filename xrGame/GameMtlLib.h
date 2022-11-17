@@ -51,7 +51,8 @@
 #else
 DEFINE_VECTOR(ref_sound, SoundVec, SoundIt);
 DEFINE_VECTOR(shared_str, PSVec, PSIt);
-DEFINE_VECTOR(ref_shader, ShaderVec, ShaderIt);
+#include "../Include/xrRender/WallMarkArray.h"
+#include "../Include/xrRender/RenderFactory.h"
 #endif
 
 struct ECORE_API SGameMtl
@@ -157,7 +158,7 @@ public:
     SoundVec StepSounds;
     SoundVec CollideSounds;
     PSVec CollideParticles;
-    ShaderVec CollideMarks;
+    FactoryPtr<IWallMarkArray> m_pCollideMarks;
 
 public:
     SGameMtlPair(CGameMtlLibrary *owner)

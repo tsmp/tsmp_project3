@@ -3,10 +3,15 @@
 // refs
 class ENGINE_API CGameFont;
 
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/ApplicationRender.h"
+
 // definition
 class ENGINE_API CApplication : public pureFrame,
 								public IEventReceiver
 {
+	friend class dxApplicationRender;
+
 	// levels
 	struct sLevelInfo
 	{
@@ -16,12 +21,9 @@ class ENGINE_API CApplication : public pureFrame,
 	string256 app_title;
 
 private:
+	FactoryPtr<IApplicationRender> m_pRender;
 
-	ref_shader hLevelLogo;
-	ref_geom ll_hGeom;
-	ref_geom ll_hGeom2;
-
-	ref_shader sh_progress;
+	int max_load_stage;
 	int load_stage;
 
 	u32 ll_dwReference;

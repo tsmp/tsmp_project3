@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "frustum.h"
 
+#pragma TODO("TSMP: port device files from from cs if they are better")
+
 #pragma warning(disable : 4995)
 // mmsystem.h
 #define MMNOSOUND
@@ -27,30 +29,27 @@ ref_light precache_light = 0;
 BOOL CRenderDevice::Begin()
 {
 #ifndef DEDICATED_SERVER
-	HW.Validate();
-	HRESULT _hr = HW.pDevice->TestCooperativeLevel();
-	if (FAILED(_hr))
+	switch (m_pRender->GetDeviceState())
 	{
-		// If the device was lost, do not render until we get it back
-		if (D3DERR_DEVICELOST == _hr)
-		{
-			Sleep(33);
-			return FALSE;
-		}
+	case IRenderDeviceRender::dsOK:
+		break;
 
+	case IRenderDeviceRender::dsLost:
+		// If the device was lost, do not render until we get it back
+		Sleep(33);
+		return FALSE;
+		break;
+
+	case IRenderDeviceRender::dsNeedReset:
 		// Check if the device is ready to be reset
-		if (D3DERR_DEVICENOTRESET == _hr)
-		{
-			Reset();
-		}
+		Reset();
+		break;
+
+	default:
+		R_ASSERT(0);
 	}
 
-	CHK_DX(HW.pDevice->BeginScene());
-	RCache.OnFrameBegin();
-	RCache.set_CullMode(CULL_CW);
-	RCache.set_CullMode(CULL_CCW);
-	if (HW.Caps.SceneMode)
-		overdrawBegin();
+	m_pRender->Begin();
 	FPU::m24r();
 	g_bRendering = TRUE;
 #endif
@@ -59,25 +58,12 @@ BOOL CRenderDevice::Begin()
 
 void CRenderDevice::Clear()
 {
-	CHK_DX(HW.pDevice->Clear(0, 0,
-							 D3DCLEAR_ZBUFFER |
-								 (psDeviceFlags.test(rsClearBB) ? D3DCLEAR_TARGET : 0) |
-								 (HW.Caps.bStencil ? D3DCLEAR_STENCIL : 0),
-							 D3DCOLOR_XRGB(0, 0, 0), 1, 0));
+	m_pRender->Clear();
 }
 
-#include "resourcemanager.h"
-extern void DoAsyncScreenshot();
 
 void CRenderDevice::End(void)
 {
-	VERIFY(HW.pDevice);
-
-	if (HW.Caps.SceneMode)
-		overdrawEnd();
-
-	Render->getTarget()->DoAsyncScreenshot();	
-
 	if (dwPrecacheFrame)
 	{
 		::Sound->set_master_volume(0.f);
@@ -86,7 +72,7 @@ void CRenderDevice::End(void)
 
 		if (!dwPrecacheFrame)
 		{
-			Gamma.Update();
+			m_pRender->updateGamma();
 
 			if (precache_light)
 				precache_light->set_active(false);
@@ -96,7 +82,8 @@ void CRenderDevice::End(void)
 
 			::Sound->set_master_volume(1.f);
 			pApp->destroy_loading_shaders();
-			Resources->DestroyNecessaryTextures();
+
+			m_pRender->ResourcesDestroyNecessaryTextures();
 			Memory.mem_compact();
 			Msg("* MEMORY USAGE: %d K", Memory.mem_usage() / 1024);
 		}
@@ -104,11 +91,8 @@ void CRenderDevice::End(void)
 
 	g_bRendering = FALSE;
 	// end scene
-	RCache.OnFrameEnd();
-	Memory.dbg_check();
-	CHK_DX(HW.pDevice->EndScene());
 
-	HW.pDevice->Present(NULL, NULL, NULL, NULL);
+	m_pRender->End();
 }
 
 // ¬ыполн€ютс€ задачи то в основном то во втором потоке
@@ -152,14 +136,14 @@ void mt_Thread(void *ptr)
 #include "igame_level.h"
 void CRenderDevice::PreCache(u32 amount)
 {
-	if (HW.Caps.bForceGPU_REF)
+	if (m_pRender->GetForceGPU_REF())
 		amount = 0;
 #ifdef DEDICATED_SERVER
 	amount = 0;
 #endif
 	// Msg			("* PCACHE: start for %d...",amount);
 	dwPrecacheFrame = dwPrecacheTotal = amount;
-	if (amount && !precache_light && g_pGameLevel)
+	if (amount && !precache_light && g_pGameLevel) 
 	{
 		precache_light = ::Render->light_create();
 		precache_light->set_shadow(false);
@@ -204,17 +188,17 @@ void CRenderDevice::PrepareToRun()
 
 	// Startup timers and calculate timer delta
 	dwTimeGlobal = 0;
-		
+
 	// —истемное врем€ (врем€ с момента запуска системы)
 	u32 time_mm = timeGetTime();
 
 	while (timeGetTime() == time_mm)
 		; // wait for next tick
-	
+
 	u32 time_system = timeGetTime();
 	u32 time_local = TimerAsync();
 	m_SystemLocalTimersDelta = time_system - time_local;
-	
+
 #ifndef DEDICATED_SERVER
 	// Start all threads
 	mt_csEnter.Enter();
@@ -234,7 +218,7 @@ void CRenderDevice::Run()
 
 	seqAppStart.Process(rp_AppStart);
 
-	CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1, 0));
+	m_pRender->ClearTarget();
 
 	while (WM_QUIT != msg.message)
 	{
@@ -284,8 +268,8 @@ void CRenderDevice::Run()
 
 				// Matrices
 				mFullTransform.mul(mProject, mView);
-				RCache.set_xform_view(mView);
-				RCache.set_xform_project(mProject);				
+				m_pRender->SetCacheXform(mView, mProject);
+				D3DXMatrixInverse((D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
 
 				// *** Resume threads
 				// Capture end point - thread must run only ONE cycle
@@ -304,7 +288,7 @@ void CRenderDevice::Run()
 
 				// Ensure, that second thread gets chance to execute anyway
 				if (CurrentFrameNumber != mt_Thread_marker)
-					ProcessTasksForMT();	
+					ProcessTasksForMT();
 
 #else // DEDICATED_SERVER
 				Device.seqFrameMT.Process(rp_Frame);
@@ -320,11 +304,11 @@ void CRenderDevice::Run()
 			}
 			else
 				Sleep(100);
-			
+
 			if (!b_is_Active)
 				Sleep(1);
+			}
 		}
-	}
 	seqAppEnd.Process(rp_AppEnd);
 
 #ifndef DEDICATED_SERVER
@@ -362,7 +346,7 @@ void CRenderDevice::FrameMove()
 		float fPreviousFrameTime = m_FrameTimer.GetElapsed_sec();
 		m_FrameTimer.Start();												// previous frame
 		fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime; // smooth random system activity - worst case ~7% error
-
+		
 		if (fTimeDelta > .1f)
 			fTimeDelta = .1f; // limit to 15fps minimum
 
@@ -418,8 +402,8 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 	}
 	else
 	{
-		if (bTimer && /*g_pGamePersistent->CanBePaused() &&*/ g_pauseMngr.Paused())
-			g_pauseMngr.Pause(FALSE);
+		if (bTimer && /*g_pGamePersistent->CanBePaused() &&*/ g_pauseMngr.Paused())		
+			g_pauseMngr.Pause(FALSE);		
 
 		if (bSound)
 		{
@@ -461,7 +445,7 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 		{
 			Device.seqAppActivate.Process(rp_AppActivate);
 #ifndef DEDICATED_SERVER
-			ShowCursor(FALSE);
+				ShowCursor(FALSE);
 #endif
 		}
 		else

@@ -31,7 +31,7 @@ public:
 //----------------------------------------------------
 // Utilities
 //----------------------------------------------------
-class ECORE_API CDrawUtilities : public CDUInterface, public pureRender
+class ENGINE_API CDrawUtilities : public CDUInterface, public pureRender
 {
     SPrimitiveBuffer m_SolidCone;
     SPrimitiveBuffer m_WireCone;
@@ -161,6 +161,6 @@ public:
 
     virtual void OnRender();
 };
-extern ECORE_API CDrawUtilities DU;
+extern ENGINE_API CDrawUtilities DU;
 //----------------------------------------------------
 #endif /*_INCDEF_D3DUtils_H_*/

@@ -21,6 +21,8 @@ class ENGINE_API CGammaControl;
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 
+#include "../Include/xrRender/RenderDeviceRender.h"
+
 // refs
 class ENGINE_API CRenderDevice
 {
@@ -38,7 +40,7 @@ private:
 	ICF void ProcessRender();
 	void PrepareToRun();
 
-public:	
+public:
 	HWND m_hWnd;
 
 	u32 CurrentFrameNumber;
@@ -52,8 +54,14 @@ public:
 	void OnWM_Activate(WPARAM wParam, LPARAM lParam);
 
 public:
+
+	// #pragma TODO("TSMP: remove them!")
 	ref_shader m_WireShader;
 	ref_shader m_SelectionShader;
+	CResourceManager* Resources;
+	CGammaControl Gamma;
+
+	IRenderDeviceRender *m_pRender;
 
 	BOOL m_bNearer;
 	void SetNearer(BOOL enabled)
@@ -68,7 +76,7 @@ public:
 			m_bNearer = FALSE;
 			mProject._43 += EPS_L;
 		}
-		RCache.set_xform_project(mProject);
+		m_pRender->SetCacheXform(mView, mProject);
 	}
 
 public:
@@ -84,9 +92,7 @@ public:
 	xr_vector<fastdelegate::FastDelegate0<>> seqParallel;
 
 	// Dependent classes
-	CResourceManager *Resources;
-	CStats *Statistic;
-	CGammaControl Gamma;
+	CStats *Statistic;	
 
 	// Engine flow-control
 	float fTimeDelta;
@@ -103,6 +109,7 @@ public:
 	Fmatrix mView;
 	Fmatrix mProject;
 	Fmatrix mFullTransform;
+	Fmatrix mInvFullTransform;
 	float fFOV;
 	float fASPECT;
 
@@ -116,6 +123,7 @@ public:
 		b_is_Ready = FALSE;
 		m_FrameTimer.Start();
 		m_bNearer = FALSE;
+		m_pRender = nullptr;
 	};
 
 	void Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);

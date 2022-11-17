@@ -99,7 +99,8 @@ void CScriptZone::OnRender()
 {
 	if (!bDebug)
 		return;
-	RCache.OnFrameEnd();
+
+	DRender->OnFrameEnd();
 	Fvector l_half;
 	l_half.set(.5f, .5f, .5f);
 	Fmatrix l_ball, l_box;

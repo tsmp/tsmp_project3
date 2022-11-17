@@ -1,7 +1,10 @@
 // xrRender_R2.cpp : Defines the entry point for the DLL application.
 //
 #include "stdafx.h"
-#include "..\xrRender\xrRender_console.h"
+#include "../xrRender/xrRender_console.h"
+#include "../xrRender/dxRenderFactory.h"
+#include "../xrRender/dxUIRender.h"
+#include "../xrRender/dxDebugRender.h"
 
 #pragma comment(lib, "xrEngine")
 
@@ -15,6 +18,13 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 		if (!xrRender_test_hw())
 			return FALSE;
 		::Render = &RImplementation;
+		::RenderFactory = &RenderFactoryImpl;
+		UIRender = &UIRenderImpl;
+
+#ifdef DEBUG
+		DRender = &DebugRenderImpl;
+#endif // DEBUG
+
 		xrRender_initconsole();
 		break;
 	case DLL_THREAD_ATTACH:

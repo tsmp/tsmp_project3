@@ -17,12 +17,11 @@ CUICustomItem::~CUICustomItem()
 {
 }
 
-void CUICustomItem::Render(FVF::TL *&Pointer, const Fvector2 &pos, u32 color,
-						   float x1, float y1, float x2, float y2)
+void CUICustomItem::Render(const Fvector2 &pos, u32 color,
+	float x1, float y1, float x2, float y2)
 {
-	CTexture *T = RCache.get_ActiveTexture(0);
 	Fvector2 ts;
-	ts.set(float(T->get_Width()), float(T->get_Height()));
+	UIRender->GetActiveTextureResolution(ts);
 
 	if (!(uFlags & flValidRect))
 	{
@@ -52,45 +51,42 @@ void CUICustomItem::Render(FVF::TL *&Pointer, const Fvector2 &pos, u32 color,
 		std::swap(LTt.x, RBt.x);
 	if (tmMirrorVertical == eMirrorMode || tmMirrorBoth == eMirrorMode)
 		std::swap(LTt.y, RBt.y);
+
+	float offset = -0.5f;
+
 	// clip poly
 	sPoly2D S;
 	S.resize(4);
-	S[0].set(LTp.x - 0.5f, LTp.y - 0.5f, LTt.x, LTt.y); // LT
-	S[1].set(RBp.x - 0.5f, LTp.y - 0.5f, RBt.x, LTt.y); // RT
-	S[2].set(RBp.x - 0.5f, RBp.y - 0.5f, RBt.x, RBt.y); // RB
-	S[3].set(LTp.x - 0.5f, RBp.y - 0.5f, LTt.x, RBt.y); // LB
+	S[0].set(LTp.x + offset, LTp.y + offset, LTt.x, LTt.y); // LT
+	S[1].set(RBp.x + offset, LTp.y + offset, RBt.x, LTt.y); // RT
+	S[2].set(RBp.x + offset, RBp.y + offset, RBt.x, RBt.y); // RB
+	S[3].set(LTp.x + offset, RBp.y + offset, LTt.x, RBt.y); // LB
 
 	sPoly2D D;
-	//	const C2DFrustum& FF = UI()->ScreenFrustum();
-	sPoly2D *R = UI()->ScreenFrustum().ClipPoly(S, D);
-	//	sPoly2D* R		= &S;
+	sPoly2D* R = UI()->ScreenFrustum().ClipPoly(S, D);
+
 	if (R && R->size())
 	{
-		for (u32 k = 0; k < R->size() - 2; k++)
+		for (u32 k = 0; k < R->size() - 2; ++k)
 		{
-			Pointer->set((*R)[0 + 0].pt.x, (*R)[0 + 0].pt.y, color, (*R)[0 + 0].uv.x, (*R)[0 + 0].uv.y);
-			Pointer++;
-			Pointer->set((*R)[k + 1].pt.x, (*R)[k + 1].pt.y, color, (*R)[k + 1].uv.x, (*R)[k + 1].uv.y);
-			Pointer++;
-			Pointer->set((*R)[k + 2].pt.x, (*R)[k + 2].pt.y, color, (*R)[k + 2].uv.x, (*R)[k + 2].uv.y);
-			Pointer++;
+			UIRender->PushPoint((*R)[0 + 0].pt.x, (*R)[0 + 0].pt.y, 0, color, (*R)[0 + 0].uv.x, (*R)[0 + 0].uv.y);
+			UIRender->PushPoint((*R)[k + 1].pt.x, (*R)[k + 1].pt.y, 0, color, (*R)[k + 1].uv.x, (*R)[k + 1].uv.y);
+			UIRender->PushPoint((*R)[k + 2].pt.x, (*R)[k + 2].pt.y, 0, color, (*R)[k + 2].uv.x, (*R)[k + 2].uv.y);
 		}
 	}
 }
-//--------------------------------------------------------------------
-void CUICustomItem::Render(FVF::TL *&Pointer, const Fvector2 &pos, u32 color)
-{
-	Render(Pointer, pos, color, iVisRect.x1, iVisRect.y1, iVisRect.x2, iVisRect.y2);
-}
-//--------------------------------------------------------------------
 
-void CUICustomItem::Render(FVF::TL *&Pointer, const Fvector2 &pos_ns, u32 color, float angle)
+void CUICustomItem::Render(const Fvector2 &pos, u32 color)
 {
-	//.	angle = -0.3f;
-	CTexture *T = RCache.get_ActiveTexture(0);
+	Render(pos, color, iVisRect.x1, iVisRect.y1, iVisRect.x2, iVisRect.y2);
+}
+
+void CUICustomItem::Render(const Fvector2 &pos_ns, u32 color, float angle)
+{
 	Fvector2 ts;
 	Fvector2 hp;
-	ts.set(float(T->get_Width()), float(T->get_Height()));
+
+	UIRender->GetActiveTextureResolution(ts);
 	hp.set(0.5f / ts.x, 0.5f / ts.y);
 
 	if (!(uFlags & flValidRect))
@@ -105,8 +101,6 @@ void CUICustomItem::Render(FVF::TL *&Pointer, const Fvector2 &pos_ns, u32 color,
 	Fvector2 pivot, offset, SZ;
 	SZ.set(iVisRect.rb);
 
-	//	UI()->ClientToScreenScaled			(SZ, iVisRect.x2, iVisRect.y2);
-
 	float cosA = _cos(angle);
 	float sinA = _sin(angle);
 
@@ -116,7 +110,6 @@ void CUICustomItem::Render(FVF::TL *&Pointer, const Fvector2 &pos_ns, u32 color,
 	else
 		pivot.set(iHeadingPivot.x, iHeadingPivot.y);
 
-	//.	UI()->ClientToScreenScaled			(pivot, pivot.x, pivot.y);
 	pivot.set(pivot);
 	offset.set(pos_ns);
 
@@ -156,14 +149,15 @@ void CUICustomItem::Render(FVF::TL *&Pointer, const Fvector2 &pos_ns, u32 color,
 
 	sPoly2D D;
 	sPoly2D *R = UI()->ScreenFrustum().ClipPoly(S, D);
-	if (R && R->size())
-		for (u32 k = 0; k < R->size(); k++, Pointer++)
+	if (R && R->size()) 
+	{
+		for (u32 k = 0; k < R->size() - 2; k++)
 		{
-			//.			Fvector2 _pt;
-			//.			UI()->ClientToScreenScaled			(_pt, (*R)[k].pt.x, (*R)[k].pt.y);
-			//.			Pointer->set						(_pt.x, _pt.y,	color, (*R)[k].uv.x, (*R)[k].uv.y);
-			Pointer->set((*R)[k].pt.x, (*R)[k].pt.y, color, (*R)[k].uv.x, (*R)[k].uv.y);
+			UIRender->PushPoint((*R)[0 + 0].pt.x, (*R)[0 + 0].pt.y, 0, color, (*R)[0 + 0].uv.x, (*R)[0 + 0].uv.y);
+			UIRender->PushPoint((*R)[k + 1].pt.x, (*R)[k + 1].pt.y, 0, color, (*R)[k + 1].uv.x, (*R)[k + 1].uv.y);
+			UIRender->PushPoint((*R)[k + 2].pt.x, (*R)[k + 2].pt.y, 0, color, (*R)[k + 2].uv.x, (*R)[k + 2].uv.y);
 		}
+	}
 }
 
 Frect CUICustomItem::GetOriginalRectScaled()

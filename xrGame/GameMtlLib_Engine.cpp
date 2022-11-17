@@ -10,12 +10,6 @@ void DestroySounds(SoundVec &lst)
 		it->destroy();
 }
 
-void DestroyMarks(ShaderVec &lst)
-{
-	for (ShaderIt it = lst.begin(); lst.end() != it; ++it)
-		it->destroy();
-}
-
 void DestroyPSs(PSVec &lst)
 {
 	//	for (PSIt it=lst.begin(); lst.end() != it; ++it)
@@ -32,17 +26,14 @@ void CreateSounds(SoundVec &lst, LPCSTR buf)
 		lst[k].create(_GetItem(buf, k, tmp), st_Effect, sg_SourceType);
 }
 
-void CreateMarks(ShaderVec &lst, LPCSTR buf)
+void CreateMarks(IWallMarkArray* pMarks, LPCSTR buf)
 {
 	string256 tmp;
 	int cnt = _GetItemCount(buf);
 	R_ASSERT(cnt <= GAMEMTL_SUBITEM_COUNT);
-	ref_shader s;
+
 	for (int k = 0; k < cnt; ++k)
-	{
-		s.create("effects\\wallmark", _GetItem(buf, k, tmp));
-		lst.push_back(s);
-	}
+		pMarks->AppendMark(_GetItem(buf, k, tmp));
 }
 
 void CreatePSs(PSVec &lst, LPCSTR buf)
@@ -61,7 +52,6 @@ SGameMtlPair::~SGameMtlPair()
 	DestroySounds(StepSounds);
 	DestroySounds(CollideSounds);
 	DestroyPSs(CollideParticles);
-	DestroyMarks(CollideMarks);
 }
 
 void SGameMtlPair::Load(IReader &fs)
@@ -89,5 +79,5 @@ void SGameMtlPair::Load(IReader &fs)
 	fs.r_stringZ(buf);
 	CreatePSs(CollideParticles, *buf);
 	fs.r_stringZ(buf);
-	CreateMarks(CollideMarks, *buf);
+	CreateMarks(&*m_pCollideMarks, *buf);
 }
