@@ -121,7 +121,7 @@ void CScriptEngine::setup_callbacks()
 	lua_atpanic(lua(), CScriptEngine::lua_panic);
 }
 
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 #include "script_thread.h"
 void CScriptEngine::lua_hook_call(lua_State *L, lua_Debug *dbg)
 {
@@ -168,14 +168,12 @@ void CScriptEngine::init()
 	export_classes(lua());
 	setup_auto_load();
 
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 	m_stack_is_ready = true;
 #endif
 
-#ifdef DEBUG
 #ifdef USE_DEBUGGER
 	if (!debugger() || !debugger()->Active())
-#endif
 		lua_sethook(lua(), lua_hook_call, LUA_MASKLINE | LUA_MASKCALL | LUA_MASKRET, 0);
 #endif
 
@@ -251,19 +249,13 @@ void CScriptEngine::process_file_if_exists(LPCSTR file_name, bool warn_if_not_ex
 		string_path S, S1;
 		FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, file_name, SCRIPTS_EXTENSION));
 
-		if (!FS.exist(S))
-		{
-			if (IsGameTypeSingle())
-				FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, "singleplayer\\", file_name, SCRIPTS_EXTENSION));
-			else
-				FS.update_path(S, "$game_scripts$", strconcat(sizeof(S1), S1, "multiplayer\\", file_name, SCRIPTS_EXTENSION));
-		}
-
 		if (!warn_if_not_exist && !FS.exist(S))
 		{
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 
+#ifdef DEBUG
 			if (psAI_Flags.test(aiNilObjectAccess))
+#endif
 
 			{
 				print_stack();

@@ -8,13 +8,13 @@
 
 #pragma once
 
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 #include "script_stack_tracker.h"
 #endif
 
 struct lua_State;
 
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 class CScriptThread : public CScriptStackTracker
 #else
 class CScriptThread
@@ -26,7 +26,7 @@ private:
 	bool m_active;
 	lua_State *m_virtual_machine;
 
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 protected:
 	static void lua_hook_call(lua_State *L, lua_Debug *dbg);
 #endif

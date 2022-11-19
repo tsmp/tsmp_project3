@@ -158,15 +158,6 @@ bool CScriptThread::update()
 			}
 			else
 			{
-#ifdef DEBUG
-#ifdef USE_DEBUGGER
-				if (!ai().script_engine().debugger() || !ai().script_engine().debugger()->Active())
-#endif
-				{
-					//					VERIFY2		(m_current_stack_level,*script_name());
-					//					--m_current_stack_level;
-				}
-#endif
 				VERIFY2(!lua_gettop(lua()), "Do not pass any value to coroutine.yield()!");
 				//VERIFY(lua()->status == LUA_YIELD);
 			}

@@ -100,7 +100,7 @@ CScriptStorage::CScriptStorage()
 {
 	m_current_thread = 0;
 
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 	m_stack_is_ready = false;
 #endif // DEBUG
 
@@ -141,7 +141,7 @@ void CScriptStorage::reinit()
 
 int CScriptStorage::vscript_log(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker)
 {
-#ifndef DEBUG
+#ifndef USE_DEBUGGER
 	if (tLuaMessageType != ScriptStorage::eLuaMessageTypeMessageShowAlways)
 		return 0;
 #endif
@@ -231,7 +231,7 @@ int CScriptStorage::vscript_log(ScriptStorage::ELuaMessageType tLuaMessageType, 
 	return (l_iResult);
 }
 
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 void CScriptStorage::print_stack()
 {
 	if (!m_stack_is_ready)
@@ -261,7 +261,7 @@ int __cdecl CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessag
 	int result = vscript_log(tLuaMessageType, caFormat, marker);
 	va_end(marker);
 
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 #ifndef ENGINE_BUILD
 	static bool reenterability = false;
 	if (!reenterability)
@@ -348,7 +348,7 @@ bool CScriptStorage::load_buffer(lua_State *L, LPCSTR caBuffer, size_t tSize, LP
 
 	if (l_iErrorCode)
 	{
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 		print_output(L, caScriptName, l_iErrorCode);
 #endif
 		return (false);
@@ -402,7 +402,7 @@ bool CScriptStorage::do_file(LPCSTR caScriptName, LPCSTR caNameSpaceName)
 	if (l_iErrorCode)
 	{
 
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 		print_output(lua(), caScriptName, l_iErrorCode);
 #endif
 		lua_settop(lua(), start);

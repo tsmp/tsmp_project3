@@ -12,6 +12,8 @@
 #include "ai_space.h"
 #include "script_engine.h"
 
+#ifdef USE_DEBUGGER
+
 CScriptStackTracker::CScriptStackTracker()
 {
 	m_current_stack_level = 0;
@@ -88,3 +90,5 @@ void CScriptStackTracker::print_stack(lua_State *L)
 	}
 	m_current_stack_level = 0;
 }
+
+#endif

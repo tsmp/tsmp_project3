@@ -14,11 +14,11 @@
 struct lua_State;
 class CScriptThread;
 
-#ifdef DEBUG
+//#ifdef DEBUG
 #ifndef ENGINE_BUILD
 #define USE_DEBUGGER
 #endif
-#endif
+//#endif
 
 using namespace ScriptStorage;
 
@@ -29,7 +29,7 @@ private:
 	CScriptThread *m_current_thread;
 	BOOL m_jit;
 
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 public:
 	bool m_stack_is_ready;
 #endif
@@ -46,7 +46,7 @@ protected:
 	void reinit();
 
 public:
-#ifdef DEBUG
+#ifdef USE_DEBUGGER
 	void print_stack();
 #endif
 

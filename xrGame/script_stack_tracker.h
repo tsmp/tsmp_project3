@@ -8,6 +8,10 @@
 
 #pragma once
 
+#include "script_storage.h"
+
+#ifdef USE_DEBUGGER
+
 struct lua_Debug;
 struct lua_State;
 
@@ -31,3 +35,5 @@ public:
 };
 
 #include "script_stack_tracker_inline.h"
+
+#endif
