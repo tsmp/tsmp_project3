@@ -939,12 +939,15 @@ void xrServer::OnVoiceMessage(NET_Packet& P, ClientID sender)
 {
 	xrClientData* pClient = (xrClientData*)ID_to_client(sender);
 
-	if (!pClient || !pClient->net_Ready) return;
+	if (!pClient || !pClient->net_Ready) 
+		return;
+	
 	game_PlayerState* ps = pClient->ps;
-	if (!ps) return;
-	if (!pClient->owner) return;
+	
+	if (!ps || !pClient->owner) 
+		return;
 
-	Msg("VoiceMessage size: %u", P.B.count);
+	//Msg("VoiceMessage size: %u", P.B.count);
 
 	struct send_voice_message
 	{

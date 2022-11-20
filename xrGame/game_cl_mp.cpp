@@ -595,7 +595,6 @@ void game_cl_mp::OnCantVoteMsg(LPCSTR Text)
 
 void game_cl_mp::OnVoiceMessage(NET_Packet* P)
 {
-	Msg("- OnVoiceMessage");
 	m_pVoiceChat->ReceiveMessage(P);
 }
 

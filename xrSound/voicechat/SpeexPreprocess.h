@@ -1,5 +1,5 @@
 #pragma once
-#include "libspeexdsp/speex/speex_preprocess.h"
+#include "libspeexdsp/include/speex_preprocess.h"
 
 class CSpeexPreprocess
 {

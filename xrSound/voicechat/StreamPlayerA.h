@@ -1,7 +1,7 @@
 #pragma once
 #include "al.h"
 #include "alc.h"
-#include "..\Components\opus\opus.h"
+#include "opus\include\opus.h"
 #include "RingBuffer.h"
 #include "IStreamPlayer.h"
 
