@@ -2323,6 +2323,9 @@
     <Filter Include="UI\GameTypes\BaseMP">
       <UniqueIdentifier>{8e4064e8-a07d-4692-96af-d13a8749d6dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Client\VoiceChat">
+      <UniqueIdentifier>{3ad365e9-e43a-4cc1-91b7-d470545b2c6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6627,6 +6630,12 @@
     <ClInclude Include="UIGameBaseMP.h">
       <Filter>UI\GameTypes\BaseMP</Filter>
     </ClInclude>
+    <ClInclude Include="VoiceChat.h">
+      <Filter>Core\Client\VoiceChat</Filter>
+    </ClInclude>
+    <ClInclude Include="VoiceSender.h">
+      <Filter>Core\Client\VoiceChat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9816,6 +9825,12 @@
     </ClCompile>
     <ClCompile Include="UIGameBaseMP.cpp">
       <Filter>UI\GameTypes\BaseMP</Filter>
+    </ClCompile>
+    <ClCompile Include="VoiceChat.cpp">
+      <Filter>Core\Client\VoiceChat</Filter>
+    </ClCompile>
+    <ClCompile Include="VoiceSender.cpp">
+      <Filter>Core\Client\VoiceChat</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

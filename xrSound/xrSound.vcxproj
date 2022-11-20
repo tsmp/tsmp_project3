@@ -487,6 +487,16 @@
     <ClInclude Include="SoundRender_Target.h" />
     <ClInclude Include="SoundRender_TargetA.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="voicechat\ISoundRecorder.h" />
+    <ClInclude Include="voicechat\ISoundVoiceChat.h" />
+    <ClInclude Include="voicechat\IStreamPlayer.h" />
+    <ClInclude Include="voicechat\IVoicePacketSender.h" />
+    <ClInclude Include="voicechat\SoundRecorderA.h" />
+    <ClInclude Include="voicechat\SoundVoiceChat.h" />
+    <ClInclude Include="voicechat\SpeexPreprocess.h" />
+    <ClInclude Include="voicechat\StreamPlayerA.h" />
+    <ClInclude Include="voicechat\VoicePacket.h" />
+    <ClInclude Include="voicechat\VoicePacketsPacker.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="guids.cpp">
@@ -539,6 +549,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="voicechat\SoundRecorderA.cpp" />
+    <ClCompile Include="voicechat\SoundVoiceChat.cpp" />
+    <ClCompile Include="voicechat\SpeexPreprocess.cpp" />
+    <ClCompile Include="voicechat\StreamPlayerA.cpp" />
+    <ClCompile Include="voicechat\VoicePacketsPacker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\xrCDB\xrCDB.vcxproj">

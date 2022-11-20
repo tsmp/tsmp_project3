@@ -29,6 +29,8 @@ XRSOUND_API extern Flags32 psSoundFlags;
 XRSOUND_API extern int psSoundTargets;
 XRSOUND_API extern int psSoundCacheSizeMB;
 
+class XRSOUND_API ISoundVoiceChat;
+
 // Flags
 enum
 {
@@ -309,6 +311,7 @@ public:
 
 	virtual void object_relcase(CObject *obj) = 0;
 	virtual const Fvector &listener_position() = 0;
+	virtual ISoundVoiceChat* GetSoundVoiceChat() = 0;
 };
 extern XRSOUND_API CSound_manager_interface *Sound;
 

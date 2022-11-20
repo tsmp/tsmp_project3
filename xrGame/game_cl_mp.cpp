@@ -30,6 +30,7 @@
 #include "MainMenu.h"
 #include "screenshot_server.h"
 #include "screenshot_manager.h"
+#include "VoiceChat.h"
 
 #define EQUIPMENT_ICONS "ui\\ui_mp_icon_kill"
 #define KILLEVENT_ICONS "ui\\ui_hud_mp_icon_death"
@@ -71,6 +72,11 @@ game_cl_mp::game_cl_mp()
 
 	buffer_for_compress = nullptr;
 	buffer_for_compress_size = 0;
+
+	if (!g_dedicated_server)
+		m_pVoiceChat = xr_new<CVoiceChat>();
+	else
+		m_pVoiceChat = nullptr;
 };
 
 game_cl_mp::~game_cl_mp()
@@ -91,6 +97,8 @@ game_cl_mp::~game_cl_mp()
 	xr_delete(m_pVoteRespondWindow);
 	xr_delete(m_pVoteStartWindow);
 	xr_delete(m_pMessageBox);
+
+	xr_delete(m_pVoiceChat);
 }
 
 CUIGameCustom *game_cl_mp::createGameUI()
@@ -158,6 +166,17 @@ bool game_cl_mp::OnKeyboardPress(int key)
 		else
 			return false;
 	};
+
+	if (key == kVoiceChat)
+	{
+		if (local_player && !local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+		{
+			if (!m_pVoiceChat->IsStarted())
+				m_pVoiceChat->Start();
+		}
+
+		return true;
+	}
 
 	if ((Phase() != GAME_PHASE_INPROGRESS) && (kQUIT != key) && (kCONSOLE != key))
 		return true;
@@ -574,8 +593,20 @@ void game_cl_mp::OnCantVoteMsg(LPCSTR Text)
 	StartStopMenu(m_pMessageBox, true);
 }
 
+void game_cl_mp::OnVoiceMessage(NET_Packet* P)
+{
+	Msg("- OnVoiceMessage");
+	m_pVoiceChat->ReceiveMessage(P);
+}
+
 bool game_cl_mp::OnKeyboardRelease(int key)
 {
+	if (key == kVoiceChat)
+	{
+		m_pVoiceChat->Stop();
+		return true;
+	}
+
 	return inherited::OnKeyboardRelease(key);
 }
 
@@ -893,6 +924,17 @@ void game_cl_mp::shedule_Update(u32 dt)
 	if (m_pMessageBox && m_pMessageBox->IsShown() && cur_game_state != GAME_PHASE_INPROGRESS)
 	{
 		m_pMessageBox->GetHolder()->StartStopMenu(m_pMessageBox, true);
+	}
+
+	if (m_pVoiceChat)
+	{
+		const bool started = m_pVoiceChat->IsStarted();
+		const bool is_dead = !local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
+
+		if (started && is_dead)		
+			m_pVoiceChat->Stop();
+		
+		m_pVoiceChat->Update();
 	}
 }
 

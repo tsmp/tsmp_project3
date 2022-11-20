@@ -634,6 +634,8 @@
     <ClInclude Include="screenshot_server.h" />
     <ClInclude Include="UIGameFP.h" />
     <ClInclude Include="UIGameRace.h" />
+    <ClInclude Include="VoiceChat.h" />
+    <ClInclude Include="VoiceSender.h" />
     <ClInclude Include="wrapper_abstract.h" />
     <ClInclude Include="wrapper_abstract_inline.h" />
     <ClInclude Include="action_management_config.h" />
@@ -4983,6 +4985,8 @@
     <ClCompile Include="pp_effector_custom.cpp" />
     <ClCompile Include="pp_effector_distance.cpp" />
     <ClCompile Include="PostprocessAnimator.cpp" />
+    <ClCompile Include="VoiceChat.cpp" />
+    <ClCompile Include="VoiceSender.cpp" />
     <ClCompile Include="xr_dsa_signer.cpp" />
     <ClCompile Include="zone_effector.cpp" />
     <ClCompile Include="EffectorShot.cpp" />

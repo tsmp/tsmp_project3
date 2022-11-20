@@ -11,6 +11,8 @@
 
 #include "OpenALDeviceList.h"
 
+class SoundVoiceChat;
+
 #ifdef DEBUG
 #define A_CHK(expr)                                                \
 	{                                                              \
@@ -52,6 +54,7 @@ class CSoundRender_CoreA : public CSoundRender_Core
 		Fvector orientation[2];
 	};
 	SListener Listener;
+	SoundVoiceChat* pSoundVoiceChat = nullptr;
 
 	BOOL EAXQuerySupport(BOOL bDeferred, const GUID *guid, u32 prop, void *val, u32 sz);
 	BOOL EAXTestSupport(BOOL bDeferred);
@@ -68,10 +71,12 @@ public:
 	virtual void _initialize(u64 window);
 	virtual void _clear();
 	virtual void _restart();
-
+	virtual void update(const Fvector& P, const Fvector& D, const Fvector& N);
 	virtual void set_master_volume(float f);
 
 	virtual const Fvector &listener_position() { return Listener.position; }
+
+	virtual ISoundVoiceChat* GetSoundVoiceChat() { return (ISoundVoiceChat*)pSoundVoiceChat; }
 };
 extern CSoundRender_CoreA *SoundRenderA;
 #endif

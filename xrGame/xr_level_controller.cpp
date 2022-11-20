@@ -98,6 +98,7 @@ _action actions[] = {
 	{"quick_save", kQUICK_SAVE, _sp},
 	{"quick_load", kQUICK_LOAD, _sp},
 	{"car_beep", kCarBeep, _both},
+	{"voice_chat", kVoiceChat, _mp},
 
 	{NULL, kLASTACTION, _both}};
 

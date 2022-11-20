@@ -10,6 +10,7 @@
 class CUISpeechMenu;
 class CUIMessageBoxEx;
 class CUIGameBaseMP;
+class CVoiceChat;
 
 struct SND_Message
 {
@@ -131,6 +132,7 @@ protected:
 	virtual void OnChatMessage(NET_Packet *P);
 	virtual void OnWarnMessage(NET_Packet *P);
 	virtual void OnRadminMessage(u16 type, NET_Packet *P);
+	virtual void OnVoiceMessage(NET_Packet* P) override;
 
 	virtual void UpdateMapLocations(){};
 
@@ -257,6 +259,9 @@ public:
 	fr_callback_binder m_client_receiver_cbs[/*MAX_PLAYERS_COUNT*/ 32];
 	fr_callback_binder* get_receiver_cb_binder();
 	void __stdcall sending_screenshot_callback(file_transfer::sending_status_t status, u32 bytes_sent, u32 data_size);
+
+private:
+	CVoiceChat* m_pVoiceChat = nullptr;
 
 #include "game_cl_mp_messages_menu.h"
 

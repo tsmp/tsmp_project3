@@ -169,7 +169,8 @@ protected:
 	virtual void OnConnectionVerificationStepComplete(IClient *CL);
 
 	void SendConnectionData(IClient *CL);
-	void OnChatMessage(NET_Packet *P, xrClientData *CL);	
+	void OnChatMessage(NET_Packet *P, xrClientData *CL);
+	void OnVoiceMessage(NET_Packet& P, ClientID sender);
 
 public:
 	// constr / destr

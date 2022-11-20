@@ -311,6 +311,15 @@ void CLevel::ClientReceive()
 			Game().OnRadminMessage(m_type, P);
 		}
 		break;
+
+		case M_VOICE_MESSAGE:
+		{
+			if (!game) 
+				break;
+			Game().OnVoiceMessage(P);
+		}
+		break;
+
 		case M_CHANGE_LEVEL_GAME:
 		{
 			Msg("- M_CHANGE_LEVEL_GAME Received");
