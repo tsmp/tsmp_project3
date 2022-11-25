@@ -16,17 +16,18 @@ CVoiceChat::~CVoiceChat()
 {
 	xr_delete(m_pSender);
 
-	for (auto I = m_soundPlayersMap.begin(); I != m_soundPlayersMap.end(); ++I)
+	if (m_pSoundVoiceChat)
 	{
-		m_pSoundVoiceChat->DestroySoundPlayer(I->second);
+		for (auto I = m_soundPlayersMap.begin(); I != m_soundPlayersMap.end(); ++I)
+			m_pSoundVoiceChat->DestroySoundPlayer(I->second);
 	}
+
 	m_soundPlayersMap.clear();
 }
 
-
-bool CVoiceChat::CreateRecorder()
+void CVoiceChat::CreateRecorder()
 {
-	if (m_pSender != nullptr)
+	if (m_pSender)
 	{
 		xr_delete(m_pSender);
 		m_pSender = nullptr;
@@ -34,25 +35,30 @@ bool CVoiceChat::CreateRecorder()
 
 	m_pSender = xr_new<CVoiceSender>();
 	m_pSender->SetDistance(10); // default
+	m_pRecorder = nullptr;
 
-	m_pRecorder = m_pSoundVoiceChat->CreateRecorder((IVoicePacketSender*)m_pSender);
-
-	return m_pRecorder != nullptr;
+	if(m_pSoundVoiceChat)
+		m_pRecorder = m_pSoundVoiceChat->CreateRecorder((IVoicePacketSender*)m_pSender);
 }
 
 void CVoiceChat::Start()
 {
-	m_pRecorder->Start();
+	if (m_pRecorder)
+		m_pRecorder->Start();
 }
 
 void CVoiceChat::Stop()
 {
-	m_pRecorder->Stop();
+	if (m_pRecorder)
+		m_pRecorder->Stop();
 }
 
 bool CVoiceChat::IsStarted()
 {
-	return m_pRecorder->IsStarted();
+	if (m_pRecorder)
+		return m_pRecorder->IsStarted();
+
+	return false;
 }
 
 u8 CVoiceChat::GetDistance() const
@@ -62,7 +68,7 @@ u8 CVoiceChat::GetDistance() const
 
 u8 CVoiceChat::SwitchDistance()
 {
-	R_ASSERT(m_pSender != nullptr);
+	R_ASSERT(m_pSender);
 
 	switch (m_pSender->GetDistance())
 	{
@@ -123,29 +129,24 @@ void CVoiceChat::Update()
 void CVoiceChat::ReceiveMessage(NET_Packet* P)
 {
 	game_PlayerState* local_player = Game().local_player;
-	if (!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || !Actor())
-	{
+
+	if (!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || !Actor() || !m_pSoundVoiceChat)
 		return;
-	}
 
 	u8 voiceDistance = P->r_u8();
 
 	u16 clientId = P->r_u16();
 	CObject* obj = Level().Objects.net_Find(clientId);
+
 	if (!obj)
-	{
 		return;
-	}
 
-	const bool isValidDistance = (Actor()->Position().distance_to(obj->Position()) <= voiceDistance);
-
-	if (isValidDistance == false)
+	if (Actor()->Position().distance_to(obj->Position()) > voiceDistance)
 		return;
 
 	IStreamPlayer* player = GetStreamPlayer(clientId);
 	player->SetPosition(obj->Position());
 	player->SetDistance(voiceDistance);
-
 	u8 packetsCount = P->r_u8();
 
 	for (u32 i = 0; i < packetsCount; ++i)
@@ -155,10 +156,7 @@ void CVoiceChat::ReceiveMessage(NET_Packet* P)
 		player->PushToPlay(m_buffer, length);
 	}
 
-	if (isValidDistance)
-	{
-		m_voiceTimeMap[clientId] = SVoiceIconInfo(GetTickCount());
-	}
+	m_voiceTimeMap[clientId] = SVoiceIconInfo(GetTickCount());
 }
 
 
@@ -172,40 +170,33 @@ void CVoiceChat::ReceiveMessage(NET_Packet* P)
 
 IStreamPlayer* CVoiceChat::GetStreamPlayer(u16 clientId)
 {
-	IStreamPlayer* player = m_soundPlayersMap[clientId];
-	if (!player)
-	{
-		player = m_pSoundVoiceChat->CreateStreamPlayer();
-		m_soundPlayersMap[clientId] = player;
-	}
+	if (IStreamPlayer* player = m_soundPlayersMap[clientId])
+		return player;
+
+	IStreamPlayer* player = m_pSoundVoiceChat->CreateStreamPlayer();
+	m_soundPlayersMap[clientId] = player;
 	return player;
 }
 
 void CVoiceChat::CheckAndClearPlayers(SOUND_PLAYERS& players)
 {
-	auto I = players.begin();
-	auto E = players.end();
-	decltype(I) J;
-
-	for (; I != E;)
+	for (auto I = players.begin(), E = players.end(); I != E; )
 	{
-		CObject* obj = Level().Objects.net_Find(I->first);
-		if (!obj)
+		if (CObject* obj = Level().Objects.net_Find(I->first))
 		{
-			J = I;
 			++I;
+			continue;
+		}
 
-			auto voiceTimeIt = m_voiceTimeMap.find(J->first);
-			if (voiceTimeIt != m_voiceTimeMap.end())
-			{
-				m_voiceTimeMap.erase(voiceTimeIt);
-			}
+		auto J = I;
+		++I;
 
+		if (auto voiceTimeIt = m_voiceTimeMap.find(J->first) != m_voiceTimeMap.end())
+			m_voiceTimeMap.erase(voiceTimeIt);
+
+		if (m_pSoundVoiceChat)
 			m_pSoundVoiceChat->DestroySoundPlayer(J->second);
-			players.erase(J);
-		}
-		else {
-			++I;
-		}
+
+		players.erase(J);
 	}
 }

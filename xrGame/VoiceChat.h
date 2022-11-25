@@ -26,7 +26,7 @@ public:
 	CVoiceChat();
 	~CVoiceChat();
 
-	bool CreateRecorder();
+	void CreateRecorder();
 
 	void Start();
 	void Stop();
@@ -36,7 +36,7 @@ public:
 	u8 SwitchDistance();
 
 	void Update();
-	void OnRender();
+	//void OnRender();
 
 	void ReceiveMessage(NET_Packet* P);
 
