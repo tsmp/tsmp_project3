@@ -976,7 +976,7 @@ bool CInventory::Eat(PIItem pIItem)
 
 	pItemToEat->UseBy(entity_alive);
 
-	if (IsGameTypeSingle() && Actor()->m_inventory == this)
+	if (Actor()->m_inventory == this)
 		Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject *>(pIItem))->lua_game_object());
 
 #ifdef MP_LOGGING
