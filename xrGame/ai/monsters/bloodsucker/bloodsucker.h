@@ -35,6 +35,8 @@ public:
 	virtual bool check_start_conditions(ControlCom::EControlType);
 	virtual void HitEntity(const CEntity *pEntity, float fDamage, float impulse, Fvector &dir);
 
+	virtual void OnEvent(NET_Packet& P, u16 type) override;
+
 	//--------------------------------------------------------------------
 	// Utils
 	//--------------------------------------------------------------------
@@ -47,6 +49,8 @@ private:
 	static void BoneCallback(CBoneInstance *B);
 	void vfAssignBones();
 	void LookDirection(Fvector to_dir, float bone_turn_speed);
+
+	void OnPredatorStateChanged(bool started);
 
 	bonesManipulation Bones;
 
@@ -125,8 +129,6 @@ public:
 
 		eAlien = eAdditionalSounds | 7,
 	};
-
-	//--------------------------------------------------------------------
 
 public:
 	void set_manual_control(bool value) {}

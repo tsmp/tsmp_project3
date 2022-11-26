@@ -361,13 +361,12 @@ void CAI_Bloodsucker::predator_start()
 {
 	if (m_predator)
 		return;
+
 	cNameVisual_set(m_visual_predator);
 	CDamageManager::reload(*cNameSect(), "damage", pSettings);
 
 	control().animation().restart();
-
 	CParticlesPlayer::StartParticles(invisible_particle_name, Fvector().set(0.0f, 0.1f, 0.0f), ID());
-
 	inherited::set_state_sound(CAI_Bloodsucker::eChangeVisibility);
 
 	m_predator = true;
@@ -427,15 +426,45 @@ void CAI_Bloodsucker::HitEntity(const CEntity *pEntity, float fDamage, float imp
 	}
 }
 
+void CAI_Bloodsucker::OnEvent(NET_Packet& P, u16 type)
+{
+	inherited::OnEvent(P, type);
+
+	if (OnClient() && type == GE_BLOODSUCKER_PREDATOR_CHANGE)
+	{
+		u8 predatorStarted;
+		P.r_u8(predatorStarted);
+
+		if (predatorStarted)
+			predator_start();
+		else
+			predator_stop();
+	}
+}
+
+void CAI_Bloodsucker::OnPredatorStateChanged(bool started)
+{
+	if (OnServer() && !IsGameTypeSingle())
+	{
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GE_BLOODSUCKER_PREDATOR_CHANGE, ID());
+		P.w_u8(static_cast<u8>(started));
+		CGameObject::u_EventSend(P);
+	}
+}
+
 void CAI_Bloodsucker::start_invisible_predator()
 {
 	state_invisible = true;
 	predator_start();
+	OnPredatorStateChanged(true);
 }
+
 void CAI_Bloodsucker::stop_invisible_predator()
 {
 	state_invisible = false;
 	predator_stop();
+	OnPredatorStateChanged(false);
 }
 
 void CAI_Bloodsucker::manual_activate()
