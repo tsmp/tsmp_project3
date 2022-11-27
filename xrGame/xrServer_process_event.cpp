@@ -63,6 +63,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 	case GE_GRENADE_EXPLODE:
 	case GE_CAR_BEEP:
 	case GE_BLOODSUCKER_PREDATOR_CHANGE:
+	case GE_CONTROLLER_PSY_FIRE:
 		SendBroadcast(BroadcastCID, P, MODE);
 		break;
 

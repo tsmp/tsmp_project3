@@ -5,6 +5,15 @@
 class CPsyHitEffectorCam;
 class CPsyHitEffectorPP;
 
+enum class PsyHitMpSyncStages : u8
+{
+	Prepare = 0,
+	Deactivate,
+	GlideStart,
+	Stop,
+	Hit
+};
+
 class CControllerPsyHit : public CControl_ComCustom<>
 {
 	typedef CControl_ComCustom<> inherited;
@@ -14,15 +23,6 @@ class CControllerPsyHit : public CControl_ComCustom<>
 
 	CPsyHitEffectorCam *m_effector_cam;
 	CPsyHitEffectorPP *m_effector_pp;
-
-	enum ESoundState
-	{
-		ePrepare,
-		eStart,
-		ePull,
-		eHit,
-		eNone
-	} m_sound_state;
 
 	float m_min_tube_dist;
 
@@ -41,15 +41,28 @@ public:
 
 	void on_death();
 
-private:
-	void stop();
-	void play_anim();
+	void SendEventMP(u16 idTo, PsyHitMpSyncStages stage);
+
+	enum ESoundState
+	{
+		ePrepare,
+		eStart,
+		ePull,
+		eHit,
+		eNone
+	} m_sound_state;
+
+	void set_sound_state(ESoundState state);
 	void death_glide_start();
 	void death_glide_end();
 
-	void set_sound_state(ESoundState state);
+private:
+	void stop();
+	void play_anim();
 	void hit();
 	bool check_conditions_final();
 
+	u16 enemyId;
+	bool enemyIsActor;
 	const CEntityAlive* GetEnemy();
 };

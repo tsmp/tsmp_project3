@@ -101,6 +101,7 @@ public:
 	virtual const MonsterSpace::SBoneRotation &head_orientation() const;
 
 	virtual void TranslateActionToPathParams();
+	virtual void OnEvent(NET_Packet& P, u16 type) override;
 
 	virtual bool ability_pitch_correction() { return false; }
 
@@ -165,6 +166,8 @@ public:
 #endif
 
 private:
+	void OnNetPsyHitEvent(u8 stage);
+
 #ifdef _DEBUG
 	virtual void debug_on_key(int key);
 

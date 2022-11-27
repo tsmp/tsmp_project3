@@ -563,6 +563,64 @@ bool CController::can_tube_fire()
 	return true;
 }
 
+void HideActorsWeapon(bool hide)
+{
+	NET_Packet P;
+	CGameObject::u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
+	P.w_u32(INV_STATE_BLOCK_ALL);
+	P.w_u8(u8(hide));
+	CGameObject::u_EventSend(P);
+}
+
+void CController::OnNetPsyHitEvent(u8 stage)
+{
+	PsyHitMpSyncStages hitStage = static_cast<PsyHitMpSyncStages>(stage);
+
+	switch (hitStage)
+	{
+	case PsyHitMpSyncStages::Prepare:
+		m_psy_hit->set_sound_state(CControllerPsyHit::ePrepare);
+		break;
+
+	case PsyHitMpSyncStages::Deactivate:
+		HideActorsWeapon(false);
+		m_psy_hit->set_sound_state(CControllerPsyHit::eNone);
+		break;
+
+	case PsyHitMpSyncStages::GlideStart:
+		m_psy_hit->death_glide_start();
+		HideActorsWeapon(true);
+		break;
+
+	case PsyHitMpSyncStages::Stop:
+		m_psy_hit->death_glide_end();
+		break;
+
+	case PsyHitMpSyncStages::Hit:
+		m_psy_hit->set_sound_state(CControllerPsyHit::eHit);
+		break;
+	}
+}
+
+void CController::OnEvent(NET_Packet& P, u16 type)
+{
+	inherited::OnEvent(P, type);
+
+	if (OnServer())
+		return;
+
+	if (type == GE_CONTROLLER_PSY_FIRE)
+	{
+		u16 actorId;
+		u8 fireEventType;
+		P.r_u16(actorId);
+		P.r_u8(fireEventType);
+
+		if (Actor() && Actor()->ID() == actorId)
+			OnNetPsyHitEvent(fireEventType);
+	}
+}
+
 const MonsterSpace::SBoneRotation &CController::head_orientation() const
 {
 	return m_custom_dir_base->get_head_orientation();

@@ -81,7 +81,7 @@ BOOL CPPEffectorControllerAura::update()
 
 void CControllerAura::update_schedule()
 {
-	if (!m_object->g_Alive())
+	if (!m_object->g_Alive() || !Actor())
 		return;
 
 	float dist_to_actor = Actor()->Position().distance_to(m_object->Position());
@@ -177,7 +177,7 @@ void CControllerAura::update_schedule()
 
 void CControllerAura::update_frame()
 {
-	if (m_hit_state == eNone)
+	if (m_hit_state == eNone || !Actor())
 		return;
 
 	switch (m_hit_state)
