@@ -3966,9 +3966,6 @@
     <ClInclude Include="ai\Monsters\Controller\controller_psy_hit.h">
       <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
     </ClInclude>
-    <ClInclude Include="ai\Monsters\Controller\controller_psy_hit_effector.h">
-      <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
-    </ClInclude>
     <ClInclude Include="ai\Monsters\Cat\cat.h">
       <Filter>AI\AMonsters\monsters\Cat</Filter>
     </ClInclude>
@@ -7374,9 +7371,6 @@
       <Filter>AI\AMonsters\monsters\Controller\Base Controllers\Direction</Filter>
     </ClCompile>
     <ClCompile Include="ai\Monsters\Controller\controller_psy_hit.cpp">
-      <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
-    </ClCompile>
-    <ClCompile Include="ai\Monsters\Controller\controller_psy_hit_effector.cpp">
       <Filter>AI\AMonsters\monsters\Controller\Psy hit</Filter>
     </ClCompile>
     <ClCompile Include="ai\Monsters\Cat\cat.cpp">

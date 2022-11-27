@@ -290,7 +290,7 @@ public:
 	void LL_GetBindTransform(xr_vector<Fmatrix> &matrices);
 	int LL_GetBoneGroups(xr_vector<xr_vector<u16>> &groups);
 
-	u16 LL_GetBoneRoot() { return iRoot; }
+	u16 LL_GetBoneRoot() const { return iRoot; }
 	void LL_SetBoneRoot(u16 bone_id)
 	{
 		VERIFY(bone_id < LL_BoneCount());

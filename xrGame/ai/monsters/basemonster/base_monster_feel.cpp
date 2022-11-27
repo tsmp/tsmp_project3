@@ -226,19 +226,19 @@ void CBaseMonster::Hit_Psy(CObject *object, float value)
 	u_EventSend(P);
 }
 
-void CBaseMonster::Hit_Wound(CObject *object, float value, const Fvector &dir, float impulse)
+void CBaseMonster::Hit_Wound(const CObject *object, float value, const Fvector &dir, float impulse)
 {
 	NET_Packet P;
 	SHit HS;
-	HS.GenHeader(GE_HIT, object->ID());											 //	u_EventGen	(P,GE_HIT, object->ID());
-	HS.whoID = (ID());															 //	P.w_u16		(ID());
-	HS.weaponID = (ID());														 //	P.w_u16		(ID());
-	HS.dir = (dir);																 //	P.w_dir		(dir);
-	HS.power = (value);															 //	P.w_float	(value);
-	HS.boneID = (smart_cast<CKinematics *>(object->Visual())->LL_GetBoneRoot()); //	P.w_s16		(smart_cast<CKinematics*>(object->Visual())->LL_GetBoneRoot());
-	HS.p_in_bone_space = (Fvector().set(0.f, 0.f, 0.f));						 //	P.w_vec3	(Fvector().set(0.f,0.f,0.f));
-	HS.impulse = (impulse);														 //	P.w_float	(impulse);
-	HS.hit_type = (ALife::eHitTypeWound);										 //	P.w_u16		(u16(ALife::eHitTypeWound));
+	HS.GenHeader(GE_HIT, object->ID());
+	HS.whoID = (ID());
+	HS.weaponID = (ID());
+	HS.dir = (dir);
+	HS.power = (value);
+	HS.boneID = (smart_cast<const CKinematics*>(object->cVisual())->LL_GetBoneRoot());
+	HS.p_in_bone_space = (Fvector().set(0.f, 0.f, 0.f));
+	HS.impulse = (impulse);
+	HS.hit_type = (ALife::eHitTypeWound);
 	HS.Write_Packet(P);
 	u_EventSend(P);
 }

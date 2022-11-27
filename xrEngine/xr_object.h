@@ -127,6 +127,7 @@ public:
 
 	// Accessors and converters
 	ICF IRender_Visual *Visual() { return renderable.visual; }
+	ICF const IRender_Visual* cVisual() const { return renderable.visual; }
 	ICF ICollisionForm *CFORM() const { return collidable.model; }
 	virtual CObject *dcast_CObject() { return this; }
 	virtual IRenderable *dcast_Renderable() { return this; }

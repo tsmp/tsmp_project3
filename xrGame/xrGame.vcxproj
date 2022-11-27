@@ -1178,7 +1178,6 @@
     <ClInclude Include="ai\Monsters\Controller\controller_animation.h" />
     <ClInclude Include="ai\Monsters\Controller\controller_direction.h" />
     <ClInclude Include="ai\Monsters\Controller\controller_psy_hit.h" />
-    <ClInclude Include="ai\Monsters\Controller\controller_psy_hit_effector.h" />
     <ClInclude Include="ai\Monsters\Cat\cat.h" />
     <ClInclude Include="ai\Monsters\Cat\cat_state_manager.h" />
     <ClInclude Include="ai\Monsters\Tushkano\tushkano.h" />
@@ -3249,7 +3248,6 @@
     <ClCompile Include="ai\Monsters\Controller\controller_animation.cpp" />
     <ClCompile Include="ai\Monsters\Controller\controller_direction.cpp" />
     <ClCompile Include="ai\Monsters\Controller\controller_psy_hit.cpp" />
-    <ClCompile Include="ai\Monsters\Controller\controller_psy_hit_effector.cpp" />
     <ClCompile Include="ai\Monsters\Cat\cat.cpp" />
     <ClCompile Include="ai\Monsters\Cat\cat_state_manager.cpp" />
     <ClCompile Include="ai\Monsters\Cat\cat_script.cpp">

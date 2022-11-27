@@ -42,6 +42,7 @@ public:
 	void on_death();
 
 private:
+	void stop();
 	void play_anim();
 	void death_glide_start();
 	void death_glide_end();
@@ -49,4 +50,6 @@ private:
 	void set_sound_state(ESoundState state);
 	void hit();
 	bool check_conditions_final();
+
+	const CEntityAlive* GetEnemy();
 };

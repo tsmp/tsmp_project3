@@ -11,6 +11,17 @@
 #include "CameraBase.h"
 #include "../../../CharacterPhysicsSupport.h"
 #include "../../../level_debug.h"
+#include "../../../clsid_game.h"
+
+bool IsActor(const CEntityAlive* entity)
+{
+	return entity->CLS_ID == CLSID_OBJECT_ACTOR;
+}
+
+const CEntityAlive* CControllerPsyHit::GetEnemy()
+{
+	return m_object->EnemyMan.get_enemy();
+}
 
 void CControllerPsyHit::load(LPCSTR section)
 {
@@ -42,10 +53,9 @@ bool CControllerPsyHit::check_start_conditions()
 	if (m_man->is_captured_pure())
 		return false;
 
-	if (Actor()->Cameras().GetCamEffector(eCEControllerPsyHit))
-		return false;
+	const CEntityAlive* enemy = GetEnemy();
 
-	if (m_object->Position().distance_to(Actor()->Position()) < m_min_tube_dist)
+	if (!enemy || !enemy->g_Alive() || !m_object->EnemyMan.see_enemy_now())
 		return false;
 
 	return true;
@@ -53,6 +63,11 @@ bool CControllerPsyHit::check_start_conditions()
 
 void CControllerPsyHit::activate()
 {
+	const CEntityAlive* enemy = GetEnemy();
+
+	if (!enemy)
+		return;
+
 	m_man->capture_pure(this);
 	m_man->subscribe(this, ControlCom::eventAnimationEnd);
 
@@ -64,14 +79,12 @@ void CControllerPsyHit::activate()
 	SControlDirectionData *ctrl_dir = (SControlDirectionData *)m_man->data(this, ControlCom::eControlDir);
 	VERIFY(ctrl_dir);
 	ctrl_dir->heading.target_speed = 3.f;
-	ctrl_dir->heading.target_angle = m_man->direction().angle_to_target(Actor()->Position());
+	ctrl_dir->heading.target_angle = m_man->direction().angle_to_target(enemy->Position());
 
-	//////////////////////////////////////////////////////////////////////////
 	m_current_index = 0;
 	play_anim();
 
 	m_blocked = false;
-
 	set_sound_state(ePrepare);
 }
 
@@ -136,85 +149,14 @@ bool CControllerPsyHit::check_conditions_final()
 {
 	if (!m_object->g_Alive())
 		return false;
-	if (!Actor())
-		return false;
-	if (m_object->EnemyMan.get_enemy() != Actor())
-		return false;
-	if (!Actor()->g_Alive())
+
+	const CEntityAlive* enemy = GetEnemy();
+
+	if (!enemy || !enemy->g_Alive())
 		return false;
 
 	if (!m_object->EnemyMan.see_enemy_now())
 		return false;
-	if (m_object->Position().distance_to(Actor()->Position()) < m_min_tube_dist)
-		return false;
-
-	//// trace enemy (extended check visibility)
-	//
-	//DBG().level_info(this).clear		();
-
-	//// 1. head-2-head
-	//Fvector trace_from, trace_to;
-	//trace_from	= get_head_position(m_object);
-	//trace_to	= get_head_position(Actor());
-
-	//float dist = trace_from.distance_to(trace_to);
-	//Fvector trace_dir;
-	//trace_dir.sub(trace_to,trace_from);
-
-	//collide::rq_result	l_rq;
-	//if (Level().ObjectSpace.RayPick(trace_from, trace_dir, dist, collide::rqtBoth, l_rq, m_object)) {
-	//	if (l_rq.O == Actor())
-	//		return true;
-	//}
-
-	//trace_to.mad(trace_from,trace_dir,l_rq.range);
-	//DBG().level_info(this).add_item	(trace_from,trace_to,COLOR_BLUE);
-	//
-	//// 2. head 2 center
-	//trace_from	= get_head_position(m_object);
-	//Actor()->Center(trace_to);
-
-	//
-
-	//dist = trace_from.distance_to(trace_to);
-	//trace_dir.sub(trace_to,trace_from);
-
-	//if (Level().ObjectSpace.RayPick(trace_from, trace_dir, dist, collide::rqtBoth, l_rq, m_object))
-	//	if (l_rq.O == Actor())
-	//		return true;
-
-	//trace_to.mad(trace_from,trace_dir,l_rq.range);
-	//DBG().level_info(this).add_item	(trace_from,trace_to,COLOR_RED);
-
-	//
-	//
-	//// 3. center 2 head
-	//m_object->Center(trace_from);
-	//trace_to	= get_head_position(Actor());
-
-	//dist = trace_from.distance_to(trace_to);
-	//trace_dir.sub(trace_to,trace_from);
-
-	//if (Level().ObjectSpace.RayPick(trace_from, trace_dir, dist, collide::rqtBoth, l_rq, m_object))
-	//	if (l_rq.O == Actor()) return true;
-
-	//
-	//trace_to.mad(trace_from,trace_dir,l_rq.range);
-	//DBG().level_info(this).add_item	(trace_from,trace_to,COLOR_GREEN);
-	//
-	//// 4. center 2 center
-	//m_object->Center(trace_from);
-	//Actor()->Center	(trace_to);
-
-	//dist = trace_from.distance_to(trace_to);
-	//trace_dir.sub(trace_to,trace_from);
-
-	//if (Level().ObjectSpace.RayPick(trace_from, trace_dir, dist, collide::rqtBoth, l_rq, m_object))
-	//	if (l_rq.O == Actor()) return true;
-
-	//
-	//trace_to.mad(trace_from,trace_dir,l_rq.range);
-	//DBG().level_info(this).add_item	(trace_from,trace_to,D3DCOLOR_XRGB(0,150,150));
 
 	return true;
 }
@@ -244,7 +186,7 @@ void CControllerPsyHit::death_glide_start()
 	target_pos.mad(src_pos, dir, dist - 4.8f);
 
 	Actor()->Cameras().AddCamEffector(xr_new<CControllerPsyHitCamEffector>(eCEControllerPsyHit, src_pos, target_pos, m_man->animation().motion_time(m_stage[1], m_object->Visual())));
-	smart_cast<CController *>(m_object)->draw_fire_particles();
+	smart_cast<CController*>(m_object)->draw_fire_particles();
 
 	dir.sub(src_pos, target_pos);
 	dir.normalize();
@@ -255,32 +197,30 @@ void CControllerPsyHit::death_glide_start()
 
 	set_sound_state(eStart);
 
-	NET_Packet P;
-	Actor()->u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
-	P.w_u32(INV_STATE_BLOCK_ALL);
-	P.w_u8(u8(true));
-	Actor()->u_EventSend(P);
+	const CEntityAlive* enemy = m_object->EnemyMan.get_enemy();
+
+	if (IsActor(enemy))
+	{
+		NET_Packet P;
+		enemy->u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, enemy->ID());
+		P.w_u32(INV_STATE_BLOCK_ALL);
+		P.w_u8(u8(true));
+		enemy->u_EventSend(P);
+	}
 
 	m_blocked = true;
 
-	//////////////////////////////////////////////////////////////////////////
 	// set direction
 	SControlDirectionData *ctrl_dir = (SControlDirectionData *)m_man->data(this, ControlCom::eControlDir);
 	VERIFY(ctrl_dir);
 	ctrl_dir->heading.target_speed = 3.f;
-	ctrl_dir->heading.target_angle = m_man->direction().angle_to_target(Actor()->Position());
-
-	//////////////////////////////////////////////////////////////////////////
+	ctrl_dir->heading.target_angle = m_man->direction().angle_to_target(enemy->Position());
 }
 
 void CControllerPsyHit::death_glide_end()
 {
-	// Stop camera effector
-
-	CEffectorCam *ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit);
-	VERIFY(ce);
-	Actor()->Cameras().RemoveCamEffector(eCEControllerPsyHit);
-	CController *monster = smart_cast<CController *>(m_object);
+	stop();
+	CController *monster = smart_cast<CController*>(m_object);
 	monster->draw_fire_particles();
 
 	monster->m_sound_tube_hit_left.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
@@ -292,13 +232,6 @@ void CControllerPsyHit::death_glide_end()
 
 void CControllerPsyHit::update_frame()
 {
-	//if (m_sound_state == eStart) {
-	//	CController *monster = smart_cast<CController *>(m_object);
-	//	if (!monster->m_sound_tube_start._feedback()) {
-	//		m_sound_state = ePull;
-	//		monster->m_sound_tube_pull.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
-	//	}
-	//}
 }
 
 void CControllerPsyHit::set_sound_state(ESoundState state)
@@ -341,10 +274,14 @@ void CControllerPsyHit::set_sound_state(ESoundState state)
 
 void CControllerPsyHit::hit()
 {
-	//CController *monster	= smart_cast<CController *>(m_object);
-
 	set_sound_state(eHit);
-	//m_object->Hit_Psy		(Actor(), monster->m_tube_damage);
+}
+
+
+void CControllerPsyHit::stop()
+{	
+	if(CEffectorCam* ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit))
+		Actor()->Cameras().RemoveCamEffector(eCEControllerPsyHit);
 }
 
 void CControllerPsyHit::on_death()
@@ -352,12 +289,6 @@ void CControllerPsyHit::on_death()
 	if (!is_active())
 		return;
 
-	// Stop camera effector
-	CEffectorCam *ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit);
-	if (ce)
-	{
-		Actor()->Cameras().RemoveCamEffector(eCEControllerPsyHit);
-	}
-
+	stop();
 	m_man->deactivate(this);
 }
