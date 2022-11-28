@@ -20,6 +20,8 @@
 #define MAX_SATIETY 1.0f
 #define START_SATIETY 0.5f
 
+extern ENGINE_API bool g_dedicated_server;
+
 BOOL GodMode()
 {
 	if (GameID() == GAME_SINGLE)
@@ -128,7 +130,7 @@ void CActorCondition::UpdateCondition()
 	m_fAlcohol += m_fV_Alcohol * m_fDeltaTime;
 	clamp(m_fAlcohol, 0.0f, 1.0f);
 
-	if (IsGameTypeSingle())
+	if (Actor() && g_dedicated_server)
 	{
 		CEffectorCam *ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effAlcohol);
 		if ((m_fAlcohol > 0.0001f))
@@ -143,17 +145,20 @@ void CActorCondition::UpdateCondition()
 		}
 
 		CEffectorPP *ppe = object().Cameras().GetPPEffector((EEffectorPPType)effPsyHealth);
-		string64 pp_sect_name;
-		shared_str ln = Level().name();
-		strconcat(sizeof(pp_sect_name), pp_sect_name, "effector_psy_health", "_", *ln);
-
-		if (!pSettings->section_exist(pp_sect_name))
-			strcpy_s(pp_sect_name, "effector_psy_health");
-
+		
 		if (!fsimilar(GetPsyHealth(), 1.0f, 0.05f))
 		{
-			if (!ppe)			
-				AddEffector(m_object, effPsyHealth, pp_sect_name, GET_KOEFF_FUNC(this, &CActorCondition::GetPsy));			
+			if (!ppe)
+			{
+				string64 pp_sect_name;
+				shared_str ln = Level().name();
+				strconcat(sizeof(pp_sect_name), pp_sect_name, "effector_psy_health", "_", *ln);
+
+				if (!pSettings->section_exist(pp_sect_name))
+					strcpy_s(pp_sect_name, "effector_psy_health");
+
+				AddEffector(m_object, effPsyHealth, pp_sect_name, GET_KOEFF_FUNC(this, &CActorCondition::GetPsy));
+			}
 		}
 		else
 		{
