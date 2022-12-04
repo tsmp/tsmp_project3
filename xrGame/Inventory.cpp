@@ -118,10 +118,11 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 	{
 		Msg("! ERROR CInventory::Take but object has m_pCurrentInventory");
 		Msg("! Inventory Owner is [%d]", GetOwner()->object_id());
-		Msg("! Object Inventory Owner is [%d]", pIItem->m_pCurrentInventory->GetOwner()->object_id());
 
-		CObject *p = pObj->H_Parent();
-		if (p)
+		if(CInventoryOwner* itemCurInvOwner = pIItem->m_pCurrentInventory->GetOwner())
+			Msg("! Object Inventory Owner is [%d]", itemCurInvOwner->object_id());
+
+		if (CObject* p = pObj->H_Parent())
 			Msg("! object parent is [%s] [%d]", p->cName().c_str(), p->ID());
 	}
 
