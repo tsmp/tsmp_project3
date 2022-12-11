@@ -258,20 +258,15 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 	local console = get_console()
 	
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-		if dik == DIK_keys.DIK_ESCAPE then
-			if level.present() and (db.actor ~= nil) and db.actor:alive() then
+		if dik == DIK_keys.DIK_ESCAPE and level.present() then
+			if not IsGameTypeSingle() or (db.actor ~= nil and db.actor:alive()) then
 				console:execute("main_menu off")
 			end
 		end
 		
---		if dik == DIK_keys.DIK_S then
---			self:OnButton_load_spawn()
-			
---		else
 		if dik == DIK_keys.DIK_Q then
 			self:OnMessageQuitWin()
 		end
-	
 	end
    
 	return true
