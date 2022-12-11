@@ -69,12 +69,15 @@ function del_actor( obj )
 		return
 	end
 
+	-- TSMP: in mp can respawn as another actor object and receive del_actor for prev actor object
+	if actor ~= nil and obj:id() == actor:id() then
+		actor = nil
+		printfa('actor set to nil')
+	end
+
 	printfa('del actor: %u', obj:id())
 	del_obj( obj )
 	actor_proxy:net_destroy()
-
-	-- TSMP: in mp can respawn as another actor object and receive del_actor for prev actor object
-	-- actor = nil 
 end
 
 function add_heli(obj)	
