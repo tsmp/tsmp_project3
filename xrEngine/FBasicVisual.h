@@ -42,7 +42,7 @@ private:
 };
 
 // The class itself
-class ENGINE_API IRender_Visual
+class ENGINE_API dxRender_Visual
 {
 public:
 #ifdef DEBUG
@@ -57,7 +57,7 @@ public:
 	virtual void Render(float LOD){}; // LOD - Level Of Detail  [0..1], Ignored
 	virtual void Load(const char *N, IReader *data, u32 dwFlags);
 	virtual void Release(); // Shared memory release
-	virtual void Copy(IRender_Visual *from);
+	virtual void Copy(dxRender_Visual *from);
 	virtual void Spawn(){};
 	virtual void Depart(){};
 
@@ -65,8 +65,8 @@ public:
 	virtual CKinematicsAnimated *dcast_PKinematicsAnimated() { return 0; }
 	virtual IParticleCustom *dcast_ParticleCustom() { return 0; }
 
-	IRender_Visual();
-	virtual ~IRender_Visual();
+	dxRender_Visual();
+	virtual ~dxRender_Visual();
 };
 
 #endif // !FBasicVisualH

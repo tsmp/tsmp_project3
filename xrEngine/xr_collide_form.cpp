@@ -185,7 +185,7 @@ void CCF_Skeleton::BuildState()
 void CCF_Skeleton::BuildTopLevel()
 {
 	dwFrameTL = Device.CurrentFrameNumber;
-	IRender_Visual *K = owner->Visual();
+	dxRender_Visual *K = owner->Visual();
 	Fbox &B = K->vis.box;
 	bv_box.min.average(B.min);
 	bv_box.max.average(B.max);
@@ -292,7 +292,7 @@ CCF_EventBox::CCF_EventBox(CObject *O) : ICollisionForm(O, cftShape)
 
 BOOL CCF_EventBox::Contact(CObject *O)
 {
-	IRender_Visual *V = O->Visual();
+	dxRender_Visual *V = O->Visual();
 	Fvector &P = V->vis.sphere.P;
 	float R = V->vis.sphere.R;
 

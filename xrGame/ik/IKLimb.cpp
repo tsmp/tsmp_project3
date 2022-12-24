@@ -680,7 +680,7 @@ void CIKLimb::Collide(SIKCollideData &cld, CGameObject *O, const Fmatrix &foot, 
 		else
 		{
 
-			IRender_Visual *V = R.O->Visual();
+			dxRender_Visual *V = R.O->Visual();
 			if (V)
 			{
 				CKinematics *K = V->dcast_PKinematics();

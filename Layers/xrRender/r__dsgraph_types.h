@@ -12,14 +12,14 @@ namespace R_dsgraph // Elementary types
 	struct _NormalItem
 	{
 		float ssa;
-		IRender_Visual *pVisual;
+		dxRender_Visual *pVisual;
 	};
 
 	struct _MatrixItem
 	{
 		float ssa;
 		IRenderable *pObject;
-		IRender_Visual *pVisual;
+		dxRender_Visual *pVisual;
 		Fmatrix Matrix; // matrix (copy)
 	};
 
@@ -31,7 +31,7 @@ namespace R_dsgraph // Elementary types
 	struct _LodItem
 	{
 		float ssa;
-		IRender_Visual *pVisual;
+		dxRender_Visual *pVisual;
 	};
 
 #ifdef USE_RESOURCE_DEBUGGER

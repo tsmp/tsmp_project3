@@ -20,7 +20,7 @@ float r_ssaLOD_A, r_ssaLOD_B;
 float r_ssaGLOD_start, r_ssaGLOD_end;
 float r_ssaHZBvsTEX;
 
-ICF float CalcSSA(float &distSQ, Fvector &C, IRender_Visual *V)
+ICF float CalcSSA(float &distSQ, Fvector &C, dxRender_Visual *V)
 {
 	float R = V->vis.sphere.R + 0;
 	distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
@@ -32,7 +32,7 @@ ICF float CalcSSA(float &distSQ, Fvector &C, float R)
 	return R / distSQ;
 }
 
-void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual *pVisual, Fvector &Center)
+void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual *pVisual, Fvector &Center)
 {
 	CRender &RI = RImplementation;
 
@@ -197,7 +197,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRender_Visual *pVisual, Fvec
 #endif
 }
 
-void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual *pVisual)
+void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual *pVisual)
 {
 	CRender &RI = RImplementation;
 
@@ -329,13 +329,13 @@ void R_dsgraph_structure::r_dsgraph_insert_static(IRender_Visual *pVisual)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void CRender::add_leafs_Dynamic(IRender_Visual *pVisual)
+void CRender::add_leafs_Dynamic(dxRender_Visual *pVisual)
 {
 	if (0 == pVisual)
 		return;
 
 	// Visual is 100% visible - simply add it
-	xr_vector<IRender_Visual *>::iterator I, E; // it may be useful for 'hierrarhy' visual
+	xr_vector<dxRender_Visual *>::iterator I, E; // it may be useful for 'hierrarhy' visual
 
 	switch (pVisual->Type)
 	{
@@ -348,9 +348,9 @@ void CRender::add_leafs_Dynamic(IRender_Visual *pVisual)
 			PS::CParticleGroup::SItem &Itm = *i_it;
 			if (Itm._effect)
 				add_leafs_Dynamic(Itm._effect);
-			for (xr_vector<IRender_Visual *>::iterator pit = Itm._children_related.begin(); pit != Itm._children_related.end(); pit++)
+			for (xr_vector<dxRender_Visual *>::iterator pit = Itm._children_related.begin(); pit != Itm._children_related.end(); pit++)
 				add_leafs_Dynamic(*pit);
-			for (xr_vector<IRender_Visual *>::iterator pit = Itm._children_free.begin(); pit != Itm._children_free.end(); pit++)
+			for (xr_vector<dxRender_Visual *>::iterator pit = Itm._children_free.begin(); pit != Itm._children_free.end(); pit++)
 				add_leafs_Dynamic(*pit);
 		}
 	}
@@ -407,13 +407,13 @@ void CRender::add_leafs_Dynamic(IRender_Visual *pVisual)
 	}
 }
 
-void CRender::add_leafs_Static(IRender_Visual *pVisual)
+void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 {
 	if (!HOM.visible(pVisual->vis))
 		return;
 
 	// Visual is 100% visible - simply add it
-	xr_vector<IRender_Visual *>::iterator I, E; // it may be usefull for 'hierrarhy' visuals
+	xr_vector<dxRender_Visual *>::iterator I, E; // it may be usefull for 'hierrarhy' visuals
 
 	switch (pVisual->Type)
 	{
@@ -426,9 +426,9 @@ void CRender::add_leafs_Static(IRender_Visual *pVisual)
 			PS::CParticleGroup::SItem &Itm = *i_it;
 			if (Itm._effect)
 				add_leafs_Dynamic(Itm._effect);
-			for (xr_vector<IRender_Visual *>::iterator pit = Itm._children_related.begin(); pit != Itm._children_related.end(); pit++)
+			for (xr_vector<dxRender_Visual *>::iterator pit = Itm._children_related.begin(); pit != Itm._children_related.end(); pit++)
 				add_leafs_Dynamic(*pit);
-			for (xr_vector<IRender_Visual *>::iterator pit = Itm._children_free.begin(); pit != Itm._children_free.end(); pit++)
+			for (xr_vector<dxRender_Visual *>::iterator pit = Itm._children_free.begin(); pit != Itm._children_free.end(); pit++)
 				add_leafs_Dynamic(*pit);
 		}
 	}
@@ -498,7 +498,7 @@ void CRender::add_leafs_Static(IRender_Visual *pVisual)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL CRender::add_Dynamic(IRender_Visual *pVisual, u32 planes)
+BOOL CRender::add_Dynamic(dxRender_Visual *pVisual, u32 planes)
 {
 	// Check frustum visibility and calculate distance to visual's center
 	Fvector Tpos; // transformed position
@@ -510,7 +510,7 @@ BOOL CRender::add_Dynamic(IRender_Visual *pVisual, u32 planes)
 		return FALSE;
 
 	// If we get here visual is visible or partially visible
-	xr_vector<IRender_Visual *>::iterator I, E; // it may be usefull for 'hierrarhy' visuals
+	xr_vector<dxRender_Visual *>::iterator I, E; // it may be usefull for 'hierrarhy' visuals
 
 	switch (pVisual->Type)
 	{
@@ -525,18 +525,18 @@ BOOL CRender::add_Dynamic(IRender_Visual *pVisual, u32 planes)
 			{
 				if (Itm._effect)
 					add_Dynamic(Itm._effect, planes);
-				for (xr_vector<IRender_Visual *>::iterator pit = Itm._children_related.begin(); pit != Itm._children_related.end(); pit++)
+				for (xr_vector<dxRender_Visual *>::iterator pit = Itm._children_related.begin(); pit != Itm._children_related.end(); pit++)
 					add_Dynamic(*pit, planes);
-				for (xr_vector<IRender_Visual *>::iterator pit = Itm._children_free.begin(); pit != Itm._children_free.end(); pit++)
+				for (xr_vector<dxRender_Visual *>::iterator pit = Itm._children_free.begin(); pit != Itm._children_free.end(); pit++)
 					add_Dynamic(*pit, planes);
 			}
 			else
 			{
 				if (Itm._effect)
 					add_leafs_Dynamic(Itm._effect);
-				for (xr_vector<IRender_Visual *>::iterator pit = Itm._children_related.begin(); pit != Itm._children_related.end(); pit++)
+				for (xr_vector<dxRender_Visual *>::iterator pit = Itm._children_related.begin(); pit != Itm._children_related.end(); pit++)
 					add_leafs_Dynamic(*pit);
-				for (xr_vector<IRender_Visual *>::iterator pit = Itm._children_free.begin(); pit != Itm._children_free.end(); pit++)
+				for (xr_vector<dxRender_Visual *>::iterator pit = Itm._children_free.begin(); pit != Itm._children_free.end(); pit++)
 					add_leafs_Dynamic(*pit);
 			}
 		}
@@ -609,7 +609,7 @@ BOOL CRender::add_Dynamic(IRender_Visual *pVisual, u32 planes)
 	return TRUE;
 }
 
-void CRender::add_Static(IRender_Visual *pVisual, u32 planes)
+void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 {
 	// Check frustum visibility and calculate distance to visual's center
 	EFC_Visible VIS;
@@ -621,7 +621,7 @@ void CRender::add_Static(IRender_Visual *pVisual, u32 planes)
 		return;
 
 	// If we get here visual is visible or partially visible
-	xr_vector<IRender_Visual *>::iterator I, E; // it may be usefull for 'hierrarhy' visuals
+	xr_vector<dxRender_Visual *>::iterator I, E; // it may be usefull for 'hierrarhy' visuals
 
 	switch (pVisual->Type)
 	{
@@ -636,18 +636,18 @@ void CRender::add_Static(IRender_Visual *pVisual, u32 planes)
 			{
 				if (Itm._effect)
 					add_Dynamic(Itm._effect, planes);
-				for (xr_vector<IRender_Visual *>::iterator pit = Itm._children_related.begin(); pit != Itm._children_related.end(); pit++)
+				for (xr_vector<dxRender_Visual *>::iterator pit = Itm._children_related.begin(); pit != Itm._children_related.end(); pit++)
 					add_Dynamic(*pit, planes);
-				for (xr_vector<IRender_Visual *>::iterator pit = Itm._children_free.begin(); pit != Itm._children_free.end(); pit++)
+				for (xr_vector<dxRender_Visual *>::iterator pit = Itm._children_free.begin(); pit != Itm._children_free.end(); pit++)
 					add_Dynamic(*pit, planes);
 			}
 			else
 			{
 				if (Itm._effect)
 					add_leafs_Dynamic(Itm._effect);
-				for (xr_vector<IRender_Visual *>::iterator pit = Itm._children_related.begin(); pit != Itm._children_related.end(); pit++)
+				for (xr_vector<dxRender_Visual *>::iterator pit = Itm._children_related.begin(); pit != Itm._children_related.end(); pit++)
 					add_leafs_Dynamic(*pit);
-				for (xr_vector<IRender_Visual *>::iterator pit = Itm._children_free.begin(); pit != Itm._children_free.end(); pit++)
+				for (xr_vector<dxRender_Visual *>::iterator pit = Itm._children_free.begin(); pit != Itm._children_free.end(); pit++)
 					add_leafs_Dynamic(*pit);
 			}
 		}

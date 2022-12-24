@@ -12,7 +12,7 @@ class r_pixel_calculator
 
 public:
 	void begin();
-	r_aabb_ssa calculate(IRender_Visual *V);
+	r_aabb_ssa calculate(dxRender_Visual *V);
 	void end();
 
 	void run();
