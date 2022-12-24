@@ -441,6 +441,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\xrRender\animation_blend.h" />
     <ClInclude Include="..\..\include\xrRender\animation_motion.h" />
     <ClInclude Include="..\..\include\xrRender\ApplicationRender.h" />
     <ClInclude Include="..\..\include\xrRender\DebugRender.h" />

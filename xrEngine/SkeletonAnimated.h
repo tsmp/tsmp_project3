@@ -1,7 +1,4 @@
-//---------------------------------------------------------------------------
-#ifndef SkeletonAnimatedH
-#define SkeletonAnimatedH
-
+#pragma once
 #include "skeletoncustom.h"
 #include "skeletonmotions.h"
 
@@ -17,110 +14,7 @@ class ENGINE_API CBoneInstanceAnimated;
 struct ENGINE_API CKey;
 class ENGINE_API CInifile;
 
-#include "..\include\xrRender\animation_motion.h"
-
-//*** Run-time Blend definition *******************************************************************
-class ENGINE_API CBlend
-{
-public:
-	enum ECurvature
-	{
-		eFREE_SLOT = 0,
-		//		eFixed,
-		eAccrue,
-		eFalloff,
-		eFORCEDWORD = u32(-1)
-	};
-
-public:
-	float blendAmount;
-	float timeCurrent;
-	float timeTotal;
-	MotionID motionID;
-	u16 bone_or_part; // startup parameters
-	u8 channel;
-	ECurvature blend;
-	float blendAccrue;	// increasing
-	float blendFalloff; // decreasing
-	float blendPower;
-	float speed;
-
-	BOOL playing;
-	BOOL stop_at_end;
-	BOOL fall_at_end;
-	PlayCallback Callback;
-	void *CallbackParam;
-
-	u32 dwFrame;
-
-	u32 mem_usage() { return sizeof(*this); }
-	IC void update_play(float dt);
-	IC bool update_falloff(float dt);
-	IC bool update(float dt);
-};
-
-IC bool UpdateFalloffBlend(CBlend& B, float dt)
-{
-	B.blendAmount -= dt * B.blendFalloff * B.blendPower;
-	return B.blendAmount <= 0;
-}
-
-//returns true if play time out
-IC bool UpdatePlayBlend(CBlend& B, float dt)
-{
-	B.blendAmount += dt * B.blendAccrue * B.blendPower;
-
-	if (B.blendAmount > B.blendPower)
-		B.blendAmount = B.blendPower;
-
-	if (B.stop_at_end && (B.timeCurrent > (B.timeTotal - SAMPLE_SPF)))
-	{
-		B.timeCurrent = B.timeTotal - SAMPLE_SPF; // stop@end - time frozen at the end
-		if (B.playing && B.Callback)
-			B.Callback(&B); // callback only once
-		B.playing = FALSE;
-
-		return true;
-	}
-
-	return false;
-}
-
-IC void CBlend::update_play(float dt)
-{
-	CBlend &B = *this;
-
-	if (UpdatePlayBlend(B, dt))
-	{
-		if (B.fall_at_end)
-		{
-			B.blend = CBlend::eFalloff;
-			B.blendFalloff = 2.f;
-		}
-	}
-}
-
-IC bool CBlend::update_falloff(float dt)
-{
-	return UpdateFalloffBlend(*this, dt);
-}
-
-IC bool CBlend::update(float dt)
-{
-	switch (blend)
-	{
-	case eAccrue:
-		update_play(dt);
-		break;
-	case eFalloff:
-		if (update_falloff(dt))
-			return true;
-		break;
-	default:
-		NODEFAULT;
-	}
-	return false;
-}
+#include "..\include\xrRender\animation_blend.h"
 
 typedef svector<CBlend *, MAX_BLENDED * MAX_CHANNELS> BlendSVec; //*MAX_CHANNELS
 typedef BlendSVec::iterator BlendSVecIt;
@@ -287,6 +181,5 @@ public:
 		return (blend_cycles[bone_part_id]);
 	}
 };
+
 IC CKinematicsAnimated *PKinematicsAnimated(IRender_Visual *V) { return V ? V->dcast_PKinematicsAnimated() : 0; }
-//---------------------------------------------------------------------------
-#endif
