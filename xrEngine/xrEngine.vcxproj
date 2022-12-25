@@ -1188,6 +1188,7 @@
     <ClInclude Include="SH_Texture.h" />
     <ClInclude Include="SkeletonAnimated.h" />
     <ClInclude Include="SkeletonCustom.h" />
+    <ClInclude Include="SkeletonMotionDefs.h" />
     <ClInclude Include="SkeletonMotions.h" />
     <ClInclude Include="SkeletonX.h" />
     <ClInclude Include="StatGraph.h" />

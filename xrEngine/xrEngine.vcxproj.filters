@@ -525,6 +525,9 @@
     <ClInclude Include="SkeletonMotions.h">
       <Filter>RenderRef\Visuals\Skeleton</Filter>
     </ClInclude>
+    <ClInclude Include="SkeletonMotionDefs.h">
+      <Filter>RenderRef\Visuals\Skeleton</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
