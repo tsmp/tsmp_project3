@@ -46,7 +46,7 @@ class CControlAnimation : public CControl_ComPure<SControlAnimationData>
 {
 	typedef CControl_ComPure<SControlAnimationData> inherited;
 
-	CKinematicsAnimated *m_skeleton_animated;
+	IKinematicsAnimated *m_skeleton_animated;
 
 	// animation events
 	struct SAnimationEvent
@@ -88,7 +88,7 @@ public:
 	void unfreeze();
 
 	// Services
-	IC float motion_time(MotionID motion_id, dxRender_Visual *visual);
+	IC float motion_time(MotionID motion_id, IRenderVisual *visual);
 
 private:
 	void play();
@@ -107,9 +107,9 @@ public:
 };
 
 // get motion time, when just MotionID available
-IC float CControlAnimation::motion_time(MotionID motion_id, dxRender_Visual *visual)
+IC float CControlAnimation::motion_time(MotionID motion_id, IRenderVisual *visual)
 {
-	CKinematicsAnimated *skeleton_animated = smart_cast<CKinematicsAnimated *>(visual);
+	IKinematicsAnimated *skeleton_animated = smart_cast<IKinematicsAnimated *>(visual);
 	VERIFY(skeleton_animated);
 	CMotionDef *motion_def = skeleton_animated->LL_GetMotionDef(motion_id);
 	VERIFY(motion_def);

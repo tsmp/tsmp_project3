@@ -446,11 +446,14 @@
     <ClInclude Include="..\..\include\xrRender\EnvironmentRender.h" />
     <ClInclude Include="..\..\include\xrRender\FactoryPtr.h" />
     <ClInclude Include="..\..\include\xrRender\FontRender.h" />
+    <ClInclude Include="..\..\include\xrRender\Kinematics.h" />
+    <ClInclude Include="..\..\include\xrRender\KinematicsAnimated.h" />
     <ClInclude Include="..\..\include\xrRender\LensFlareRender.h" />
     <ClInclude Include="..\..\include\xrRender\ObjectSpaceRender.h" />
     <ClInclude Include="..\..\include\xrRender\RainRender.h" />
     <ClInclude Include="..\..\include\xrRender\RenderDeviceRender.h" />
     <ClInclude Include="..\..\include\xrRender\RenderFactory.h" />
+    <ClInclude Include="..\..\include\xrRender\RenderVisual.h" />
     <ClInclude Include="..\..\include\xrRender\StatGraphRender.h" />
     <ClInclude Include="..\..\include\xrRender\StatsRender.h" />
     <ClInclude Include="..\..\include\xrRender\ThunderboltDescRender.h" />

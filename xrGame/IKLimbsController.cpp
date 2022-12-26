@@ -17,7 +17,7 @@ void CIKLimbsController::Create(CGameObject *O)
 {
 	m_legs_blend = 0;
 
-	CKinematicsAnimated *K = smart_cast<CKinematicsAnimated *>(O->Visual());
+	IKinematics *K = smart_cast<IKinematicsAnimated *>(O->Visual())->dcast_PKinematics();
 	m_object = O;
 	VERIFY(K);
 	{
@@ -64,7 +64,7 @@ struct envc : public SEnumVerticesCallback
 	}
 };
 
-void get_toe(CKinematics *skeleton, Fvector &toe, const u16 bones[4])
+void get_toe(IKinematics *skeleton, Fvector &toe, const u16 bones[4])
 {
 	VERIFY(skeleton);
 	xr_vector<Fmatrix> binds;
@@ -92,11 +92,11 @@ void get_toe(CKinematics *skeleton, Fvector &toe, const u16 bones[4])
 void CIKLimbsController::LimbSetup(const u16 bones[4])
 {
 	_bone_chains.push_back(CIKLimb());
-	CKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
+	IKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 	VERIFY(skeleton_animated);
 	Fvector toe;
-	get_toe(skeleton_animated, toe, bones);
-	_bone_chains.back().Create((u16)_bone_chains.size() - 1, skeleton_animated, bones, toe, true); //Fvector( ).set( 0.13143f, 0, 0.20f )
+	get_toe(skeleton_animated->dcast_PKinematics(), toe, bones);
+	_bone_chains.back().Create((u16)_bone_chains.size() - 1, skeleton_animated->dcast_PKinematics(), bones, toe, true); //Fvector( ).set( 0.13143f, 0, 0.20f )
 }
 
 void CIKLimbsController::LimbCalculate(SCalculateData &cd)
@@ -107,7 +107,7 @@ void CIKLimbsController::LimbCalculate(SCalculateData &cd)
 
 void CIKLimbsController::LimbUpdate(CIKLimb &L, u16 i)
 {
-	CKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
+	IKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 	VERIFY(skeleton_animated);
 	L.Update(m_object, m_legs_blend, i);
 }
@@ -117,11 +117,11 @@ IC void update_blend(CBlend *&b)
 	if (b && CBlend::eFREE_SLOT == b->blend)
 		b = 0;
 }
+
 void CIKLimbsController::Calculate()
 {
-
 	update_blend(m_legs_blend);
-	CKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
+	IKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 	const Fmatrix &obj = m_object->XFORM();
 	VERIFY(skeleton_animated);
 
@@ -134,18 +134,6 @@ void CIKLimbsController::Calculate()
 		SCalculateData cd(_bone_chains[right_leg], skeleton_animated, obj); //,m_anim_base,m_uneffected
 		LimbCalculate(cd);
 	}
-	/*
-	{
-		SCalculateData cd(m_left_arm,K,obj);//,m_anim_base,m_uneffected
-		//cd.anim_goal = true;
-		LimbCalculate(cd);
-	}
-	{
-		SCalculateData cd(m_right_arm,K,obj);//,m_anim_base,m_uneffected
-		//cd.anim_goal = true;
-		LimbCalculate(cd);
-	}
-*/
 }
 
 void CIKLimbsController::Destroy(CGameObject *O)
@@ -165,14 +153,14 @@ void CIKLimbsController::Destroy(CGameObject *O)
 	_bone_chains.clear();
 }
 
-void _stdcall CIKLimbsController::IKVisualCallback(CKinematics *K)
+void _stdcall CIKLimbsController::IKVisualCallback(IKinematics *K)
 {
 #ifdef DEBUG
 	if (ph_dbg_draw_mask1.test(phDbgIKOff))
 		return;
 #endif
 
-	CGameObject *O = ((CGameObject *)K->Update_Callback_Param);
+	CGameObject *O = ((CGameObject *)K->GetUpdateCallbackParam());
 	CPhysicsShellHolder *Sh = smart_cast<CPhysicsShellHolder *>(O);
 	VERIFY(Sh);
 	CIKLimbsController *ik = Sh->character_ik_controller();
@@ -183,7 +171,7 @@ void CIKLimbsController::PlayLegs(CBlend *b)
 {
 	m_legs_blend = b;
 #ifdef DEBUG
-	CKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
+	IKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 	VERIFY(skeleton_animated);
 	anim_name = skeleton_animated->LL_MotionDefName_dbg(b->motionID).first;
 	anim_set_name = skeleton_animated->LL_MotionDefName_dbg(b->motionID).second;
@@ -191,7 +179,7 @@ void CIKLimbsController::PlayLegs(CBlend *b)
 }
 void CIKLimbsController::Update()
 {
-	CKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
+	IKinematicsAnimated *skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 	VERIFY(skeleton_animated);
 
 	skeleton_animated->UpdateTracks();

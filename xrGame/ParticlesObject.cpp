@@ -84,12 +84,15 @@ void CParticlesObject::UpdateSpatial()
 		return;
 
 	// spatial	(+ workaround occasional bug inside particle-system)
-	if (_valid(renderable.visual->vis.sphere))
+	vis_data& vis = renderable.visual->getVisData();
+
+	if (_valid(vis.sphere))
 	{
 		Fvector P;
 		float R;
-		renderable.xform.transform_tiny(P, renderable.visual->vis.sphere.P);
-		R = renderable.visual->vis.sphere.R;
+		renderable.xform.transform_tiny(P, vis.sphere.P);
+		R = vis.sphere.R;
+
 		if (0 == spatial.type)
 		{
 			// First 'valid' update - register
@@ -123,7 +126,6 @@ const shared_str CParticlesObject::Name()
 	return (V) ? V->Name() : "";
 }
 
-//----------------------------------------------------
 void CParticlesObject::Play()
 {
 	if (g_dedicated_server)
@@ -257,7 +259,8 @@ Fvector &CParticlesObject::Position()
 		static Fvector _pos = Fvector().set(0, 0, 0);
 		return _pos;
 	}
-	return renderable.visual->vis.sphere.P;
+
+	return renderable.visual->getVisData().sphere.P;
 }
 
 float CParticlesObject::shedule_Scale()

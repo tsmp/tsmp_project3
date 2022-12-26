@@ -694,11 +694,11 @@ void CActor::HitSignal(float perc, Fvector &vLocalDir, CObject *who, s16 element
 
 		float yaw, pitch;
 		D.getHP(yaw, pitch);
-		CKinematicsAnimated *tpKinematics = smart_cast<CKinematicsAnimated *>(Visual());
+		IKinematicsAnimated *tpKinematics = smart_cast<IKinematicsAnimated*>(Visual());
 		VERIFY(tpKinematics);
 
 		//#pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
-		MotionID motion_ID = m_anims->m_normal.m_damage[iFloor(tpKinematics->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta, yaw) <= PI_DIV_2 ? 0 : 1))];
+		MotionID motion_ID = m_anims->m_normal.m_damage[iFloor(tpKinematics->dcast_PKinematics()->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta, yaw) <= PI_DIV_2 ? 0 : 1))];
 		float power_factor = perc / 100.f;
 		clamp(power_factor, 0.f, 1.f);
 		VERIFY(motion_ID.valid());
@@ -1300,9 +1300,9 @@ void CActor::RenderIndicator(Fvector dpos, float r1, float r2, const ui_shader& 
 
 	UIRender->StartPrimitive(4, IUIRender::ptTriStrip, IUIRender::pttLIT);
 
-	CBoneInstance &BI = smart_cast<CKinematics *>(Visual())->LL_GetBoneInstance(u16(m_head));
+	CBoneInstance &BI = smart_cast<IKinematics *>(Visual())->LL_GetBoneInstance(u16(m_head));
 	Fmatrix M;
-	smart_cast<CKinematics *>(Visual())->CalculateBones();
+	smart_cast<IKinematics *>(Visual())->CalculateBones();
 	M.mul(XFORM(), BI.mTransform);
 
 	Fvector pos = M.c; 
@@ -1342,9 +1342,9 @@ void CActor::RenderText(LPCSTR Text, Fvector dpos, float *pdup, u32 color)
 	if (!g_Alive())
 		return;
 
-	CBoneInstance &BI = smart_cast<CKinematics *>(Visual())->LL_GetBoneInstance(u16(m_head));
+	CBoneInstance &BI = smart_cast<IKinematics *>(Visual())->LL_GetBoneInstance(u16(m_head));
 	Fmatrix M;
-	smart_cast<CKinematics *>(Visual())->CalculateBones();
+	smart_cast<IKinematics *>(Visual())->CalculateBones();
 	M.mul(XFORM(), BI.mTransform);
 	//------------------------------------------------
 	Fvector v0, v1;

@@ -1,13 +1,8 @@
-//---------------------------------------------------------------------------
-#ifndef SkeletonCustomH
-#define SkeletonCustomH
-
+#pragma once
 #include "fhierrarhyvisual.h"
 #include "bone.h"
+#include "../Include/xrRender/Kinematics.h"
 
-// consts
-const u32 MAX_BONE_PARAMS = 4;
-const u32 UCalc_Interval = 100; // 10 fps
 extern xrCriticalSection UCalc_Mutex;
 
 // refs
@@ -22,7 +17,6 @@ typedef vecBones::iterator vecBonesIt;
 
 // callback
 typedef void (*BoneCallback)(CBoneInstance *P);
-typedef void (*UpdateCallback)(CKinematics *P);
 
 // MT-locker
 struct UCalc_mtlock
@@ -184,7 +178,7 @@ struct dbg_marker
 #define _DBG_SINGLE_USE_MARKER
 #endif
 
-class ENGINE_API CKinematics : public FHierrarhyVisual
+class ENGINE_API CKinematics : public FHierrarhyVisual, public IKinematics
 {
 	typedef FHierrarhyVisual inherited;
 	friend class CBoneData;
@@ -315,6 +309,13 @@ public:
 		Update_Callback_Param = Param;
 	}
 
+	// Callback: data manipulation
+	virtual void SetUpdateCallback(UpdateCallback pCallback) { Update_Callback = pCallback; }
+	virtual void SetUpdateCallbackParam(void* pCallbackParam) { Update_Callback_Param = pCallbackParam; }
+
+	virtual UpdateCallback GetUpdateCallback() { return Update_Callback; }
+	virtual void* GetUpdateCallbackParam() { return Update_Callback_Param; }
+
 	// debug
 #ifdef DEBUG
 	void DebugRender(Fmatrix &XFORM);
@@ -327,7 +328,9 @@ public:
 	virtual void Depart();
 	virtual void Release();
 
-	virtual CKinematics *dcast_PKinematics() { return this; }
+	virtual	IKinematicsAnimated *dcast_PKinematicsAnimated() { return 0; }
+	virtual IRenderVisual *dcast_RenderVisual() { return this; }
+	virtual IKinematics *dcast_PKinematics() { return this; }
 
 	virtual u32 mem_usage(bool bInstance)
 	{
@@ -342,6 +345,5 @@ public:
 		return sz;
 	}
 };
-IC CKinematics *PKinematics(dxRender_Visual *V) { return V ? V->dcast_PKinematics() : 0; }
-//---------------------------------------------------------------------------
-#endif
+
+IC CKinematics *PCKinematics(dxRender_Visual *V) { return V ? (CKinematics*)V->dcast_PKinematics() : 0; }

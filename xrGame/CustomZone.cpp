@@ -658,7 +658,7 @@ BOOL CCustomZone::feel_touch_contact(CObject *O)
 		return FALSE;
 	if (smart_cast<CBreakableObject *>(O))
 		return FALSE;
-	if (0 == smart_cast<CKinematics *>(O->Visual()))
+	if (0 == smart_cast<IKinematics *>(O->Visual()))
 		return FALSE;
 
 	if (O->ID() == ID())

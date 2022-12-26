@@ -4,7 +4,7 @@
 #include "SkeletonAnimated.h"
 #include "..\ik_anim_state.h"
 
-class CKinematics;
+class IKinematics;
 class CDB::TRI;
 struct SCalculateData;
 struct SIKCollideData;
@@ -53,7 +53,7 @@ class CIKLimb
 {
 public:
 	CIKLimb();
-	void Create(u16 id, CKinematics *K, const u16 bones[3], const Fvector &toe_pos, bool collide_);
+	void Create(u16 id, IKinematics *K, const u16 bones[3], const Fvector &toe_pos, bool collide_);
 	void Destroy();
 	void Calculate(SCalculateData &cd);
 	void Update(CGameObject *O, const CBlend *b, u16 interval);
@@ -67,7 +67,7 @@ private:
 	void ApplyContext(SCalculateData &cd);
 	void Solve(SCalculateData &cd);
 	void Collide(SIKCollideData &cld, CGameObject *O, const Fmatrix &foot, bool foot_step);
-	IC void AnimGoal(Fmatrix &gl, CKinematicsAnimated &K);
+	IC void AnimGoal(Fmatrix &gl, IKinematicsAnimated &K);
 	void SetAnimGoal(SCalculateData &cd);
 	void SetNewGoal(const SIKCollideData &cld, SCalculateData &cd);
 	void CalculateBones(SCalculateData &cd);
@@ -102,7 +102,7 @@ class ik_anim_state;
 struct SCalculateData
 {
 	float const *m_angles;
-	CKinematicsAnimated *m_K;
+	IKinematicsAnimated *m_K;
 	CIKLimb &m_limb;
 	Fmatrix const &m_obj;
 
@@ -112,7 +112,7 @@ struct SCalculateData
 	bool apply;
 	bool foot_step;
 
-	SCalculateData(CIKLimb &l, CKinematicsAnimated *K, const Fmatrix &o) : m_limb(l), m_obj(o), m_K(K), m_angles(0), apply(false),
+	SCalculateData(CIKLimb &l, IKinematicsAnimated *K, const Fmatrix &o) : m_limb(l), m_obj(o), m_K(K), m_angles(0), apply(false),
 																		   do_collide(false), foot_step(false) {}
 
 	SCalculateData(const SCalculateData&) = delete;

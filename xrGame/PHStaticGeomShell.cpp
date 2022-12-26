@@ -63,16 +63,16 @@ CPHStaticGeomShell *P_BuildStaticGeomShell(CGameObject *obj, ObjectContactCallba
 CPHStaticGeomShell *P_BuildStaticGeomShell(CGameObject *obj, ObjectContactCallbackFun *object_contact_callback)
 {
 	Fobb b;
-	dxRender_Visual *V = obj->Visual();
+	IRenderVisual* V = obj->Visual();
 	R_ASSERT2(V, "need visual to build");
 
-	smart_cast<CKinematics *>(V)->CalculateBones(); //. bForce - was TRUE
-	V->vis.box.getradius(b.m_halfsize);
+	smart_cast<IKinematics *>(V)->CalculateBones(); //. bForce - was TRUE
+	V->getVisData().box.getradius(b.m_halfsize);
 
 	b.xform_set(Fidentity);
 	CPHStaticGeomShell *pUnbrokenObject = P_BuildStaticGeomShell(obj, object_contact_callback, b);
 
-	CKinematics *K = smart_cast<CKinematics *>(V);
+	IKinematics *K = smart_cast<IKinematics *>(V);
 	VERIFY(K);
 	K->CalculateBones();
 	for (u16 k = 0; k < K->LL_BoneCount(); k++)

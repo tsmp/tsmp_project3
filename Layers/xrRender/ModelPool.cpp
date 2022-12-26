@@ -447,7 +447,7 @@ void CModelPool::dump()
 	u32 k = 0;
 	for (xr_vector<ModelDef>::iterator I = Models.begin(); I != Models.end(); I++)
 	{
-		CKinematics *K = PKinematics(I->model);
+		CKinematics *K = PCKinematics(I->model);
 		if (K)
 		{
 			u32 cur = K->mem_usage(false);
@@ -461,7 +461,7 @@ void CModelPool::dump()
 	int free_cnt = 0;
 	for (REGISTRY_IT it = Registry.begin(); it != Registry.end(); it++)
 	{
-		CKinematics *K = PKinematics((dxRender_Visual *)it->first);
+		CKinematics *K = PCKinematics((dxRender_Visual *)it->first);
 		VERIFY(K);
 		if (K)
 		{

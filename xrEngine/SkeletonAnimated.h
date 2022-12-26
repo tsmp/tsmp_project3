@@ -1,6 +1,7 @@
 #pragma once
 #include "skeletoncustom.h"
 #include "skeletonmotions.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 
 // refs
 class ENGINE_API CKinematicsAnimated;
@@ -41,7 +42,7 @@ public:
 #pragma pack(pop)
 
 //*** The visual itself ***************************************************************************
-class ENGINE_API CKinematicsAnimated : public CKinematics
+class ENGINE_API CKinematicsAnimated : public CKinematics, public IKinematicsAnimated
 {
 	typedef CKinematics inherited;
 	friend class CBoneData;
@@ -158,7 +159,11 @@ public:
 	virtual void Load(const char *N, IReader *data, u32 dwFlags);
 	virtual void Release();
 	virtual void Spawn();
-	virtual CKinematicsAnimated *dcast_PKinematicsAnimated() { return this; }
+	
+	virtual	IKinematicsAnimated* dcast_PKinematicsAnimated() { return this; }
+	virtual IRenderVisual* dcast_RenderVisual() { return this; }
+	virtual IKinematics* dcast_PKinematics() { return this; }
+
 	virtual ~CKinematicsAnimated();
 
 	virtual u32 mem_usage(bool bInstance)
@@ -174,4 +179,4 @@ public:
 	}
 };
 
-IC CKinematicsAnimated *PKinematicsAnimated(dxRender_Visual *V) { return V ? V->dcast_PKinematicsAnimated() : 0; }
+IC CKinematicsAnimated *PKinematicsAnimated(dxRender_Visual *V) { return V ? (CKinematicsAnimated*)V->dcast_PKinematicsAnimated() : 0; }
