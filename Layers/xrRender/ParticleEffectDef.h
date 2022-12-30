@@ -1,6 +1,5 @@
 #pragma once
 #include "FBasicVisual.h"
-#include "ParticleCustom.h"
 
 namespace PAPI
 {

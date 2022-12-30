@@ -2,7 +2,7 @@
 
 class IKinematics;
 class IKinematicsAnimated;
-//class IParticleCustom; // TSMP: TODO
+class IParticleCustom;
 
 struct vis_data;
 
@@ -20,5 +20,5 @@ public:
 
 	virtual IKinematics *dcast_PKinematics() { return nullptr; }
 	virtual IKinematicsAnimated *dcast_PKinematicsAnimated() { return nullptr; }
-	//virtual IParticleCustom *dcast_ParticleCustom() { return nullptr; } // TSMP: TODO
+	virtual IParticleCustom *dcast_ParticleCustom() { return nullptr; }
 };

@@ -1,5 +1,5 @@
 #pragma once
-#include "ParticleCustom.h"
+#include "../xrRender/dxParticleCustom.h"
 
 namespace PS
 {
@@ -49,7 +49,7 @@ namespace PS
 	};
 	DEFINE_VECTOR(CPGDef *, PGDVec, PGDIt);
 
-	class ECORE_API CParticleGroup : public IParticleCustom
+	class ECORE_API CParticleGroup : public dxParticleCustom
 	{
 		const CPGDef *m_Def;
 		float m_CurrentTime;
@@ -139,8 +139,8 @@ namespace PS
 	};
 
 } // namespace PS
+
 #define PGD_VERSION 0x0003
-//----------------------------------------------------
 #define PGD_CHUNK_VERSION 0x0001
 #define PGD_CHUNK_NAME 0x0002
 #define PGD_CHUNK_FLAGS 0x0003

@@ -1,13 +1,11 @@
-//---------------------------------------------------------------------------
-#ifndef ParticleEffectH
-#define ParticleEffectH
-//---------------------------------------------------------------------------
+#pragma once
 
 #include "ParticleEffectDef.h"
+#include "../xrRender/dxParticleCustom.h"
 
 namespace PS
 {
-	class ECORE_API CParticleEffect : public IParticleCustom
+	class ECORE_API CParticleEffect : public dxParticleCustom
 	{
 		friend class CPEDef;
 
@@ -95,5 +93,3 @@ namespace PS
 	extern const u32 uDT_STEP;
 	extern const float fDT_STEP;
 } // namespace PS
-//---------------------------------------------------------------------------
-#endif
