@@ -124,6 +124,9 @@
     <Filter Include="Refactored\Execution &amp; 3D\Visuals\Skeleton">
       <UniqueIdentifier>{5bcb6c4c-c100-49a3-94d1-9af712ab910a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\DebugDraw">
+      <UniqueIdentifier>{c7a149cb-4b13-4bf1-b3f9-c18b69a78d16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -309,9 +312,6 @@
     <ClInclude Include="..\xrRender\occRasterizer.h">
       <Filter>Visibility\HOM Occlusion</Filter>
     </ClInclude>
-    <ClInclude Include="du_sphere_part.h">
-      <Filter>Core_Target</Filter>
-    </ClInclude>
     <ClInclude Include="r2_rendertarget.h">
       <Filter>Core_Target</Filter>
     </ClInclude>
@@ -455,6 +455,27 @@
     </ClInclude>
     <ClInclude Include="..\..\include\xrRender\ParticleCustom.h">
       <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xrRender\DrawUtils.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\D3DUtils.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\du_box.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\du_cone.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\du_cylinder.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\du_sphere.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\du_sphere_part.h">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -692,9 +713,6 @@
     <ClCompile Include="..\xrRender\occRasterizer_core.cpp">
       <Filter>Visibility\HOM Occlusion</Filter>
     </ClCompile>
-    <ClCompile Include="du_sphere_part.cpp">
-      <Filter>Core_Target</Filter>
-    </ClCompile>
     <ClCompile Include="r2_rendertarget.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
@@ -811,6 +829,24 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxParticleCustom.cpp">
       <Filter>Refactored\Execution &amp; 3D\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\D3DUtils.cpp">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\du_box.cpp">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\du_cone.cpp">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\du_cylinder.cpp">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\du_sphere.cpp">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\du_sphere_part.cpp">
+      <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

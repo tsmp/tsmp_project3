@@ -115,9 +115,6 @@
     <Filter Include="Render\Execution &amp; 3D\TextConsole">
       <UniqueIdentifier>{b6e2542b-4865-4ee1-8c0b-aee1b2bf26b9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\DebugDraw">
-      <UniqueIdentifier>{9326d608-2da2-4ed4-9d93-b31b861e1805}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render\Backend">
       <UniqueIdentifier>{7573e81f-5075-4a71-afba-e3f625043052}</UniqueIdentifier>
     </Filter>
@@ -410,27 +407,6 @@
     </ClInclude>
     <ClInclude Include="r_constants_cache.h">
       <Filter>Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
-    </ClInclude>
-    <ClInclude Include="D3DUtils.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawUtils.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="du_box.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="du_cone.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="du_cylinder.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="du_sphere.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClInclude>
-    <ClInclude Include="du_sphere_part.h">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="FVF.h">
       <Filter>Render\Backend</Filter>
@@ -775,24 +751,6 @@
     </ClCompile>
     <ClCompile Include="r_constants_cache.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Resources\dx9_R_shader</Filter>
-    </ClCompile>
-    <ClCompile Include="D3DUtils.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_box.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_cone.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_cylinder.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_sphere.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
-    </ClCompile>
-    <ClCompile Include="du_sphere_part.cpp">
-      <Filter>Render\Execution &amp; 3D\DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="R_Backend.cpp">
       <Filter>Render\Backend</Filter>

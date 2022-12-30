@@ -4,6 +4,7 @@
 
 class CPsyHitEffectorCam;
 class CPsyHitEffectorPP;
+class CEntityAlive;
 
 enum class PsyHitMpSyncStages : u8
 {

@@ -41,6 +41,7 @@ class ENGINE_API dxRender_Visual : public IRenderVisual
 public:
 #ifdef DEBUG
 	shared_str dbg_name;
+	virtual shared_str getDebugName() { return dbg_name; }
 #endif
 public:
 	// Common data for rendering

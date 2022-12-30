@@ -340,6 +340,8 @@ public:
 
 extern ENGINE_API CBackend RCache;
 
-#include "D3DUtils.h"
+#ifndef ENGINE_BUILD
+#include "..\Layers\xrRender\D3DUtils.h"
+#endif
 
 #endif

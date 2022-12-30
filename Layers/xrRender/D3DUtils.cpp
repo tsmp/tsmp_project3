@@ -16,7 +16,7 @@
 #include "d3dx9.h"
 #pragma warning(pop)
 
-ENGINE_API CDrawUtilities DU;
+CDrawUtilities DUImpl;
 
 #define LINE_DIVISION 32 // не меньше 6!!!!!
 // for drawing sphere

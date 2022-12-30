@@ -1,16 +1,8 @@
-//----------------------------------------------------
-// file: DrawUtils.h
-//----------------------------------------------------
+#pragma once
 
-#ifndef DrawUtilsH
-#define DrawUtilsH
-//----------------------------------------------------
-// Utilities
-//----------------------------------------------------
 class ECORE_API CDUInterface
 {
 public:
-    //----------------------------------------------------
     virtual void __stdcall DrawCross(const Fvector &p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, BOOL bRot45 = false) = 0;
     virtual void __stdcall DrawCross(const Fvector &p, float sz, u32 clr, BOOL bRot45 = false) = 0;
     virtual void __stdcall DrawFlag(const Fvector &p, float heading, float height, float sz, float sz_fl, u32 clr, BOOL bDrawEntity) = 0;
@@ -31,7 +23,6 @@ public:
 
     virtual void __stdcall DrawFace(const Fvector &p0, const Fvector &p1, const Fvector &p2, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire) = 0;
     virtual void __stdcall DrawLine(const Fvector &p0, const Fvector &p1, u32 clr) = 0;
-    virtual void __stdcall DrawLine(const Fvector *p, u32 clr) = 0;
     virtual void __stdcall DrawLink(const Fvector &p0, const Fvector &p1, float sz, u32 clr) = 0;
     virtual void __stdcall DrawFaceNormal(const Fvector &p0, const Fvector &p1, const Fvector &p2, float size, u32 clr) = 0;
     virtual void __stdcall DrawFaceNormal(const Fvector *p, float size, u32 clr) = 0;
@@ -63,6 +54,5 @@ public:
     virtual void __stdcall DrawSelectionRect(const Ivector2 &m_SelStart, const Ivector2 &m_SelEnd) = 0;
 
     virtual void __stdcall OutText(const Fvector &pos, LPCSTR text, u32 color = 0xFF000000, u32 shadow_color = 0xFF909090) = 0;
+    virtual void __stdcall OnDeviceDestroy() = 0;
 };
-//----------------------------------------------------
-#endif

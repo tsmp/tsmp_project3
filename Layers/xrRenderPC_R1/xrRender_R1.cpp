@@ -18,6 +18,7 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 	case DLL_PROCESS_ATTACH:
 		::Render = &RImplementation;
 		::RenderFactory = &RenderFactoryImpl;
+		::DU = &DUImpl;
 		UIRender = &UIRenderImpl;
 
 #ifdef DEBUG

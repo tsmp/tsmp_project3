@@ -12,8 +12,8 @@
 class IRenderFactory;
 extern XRAPI_API IRenderFactory* RenderFactory;
 
-//class CDUInterface;
-//extern XRAPI_API CDUInterface* DU;
+class CDUInterface;
+extern XRAPI_API CDUInterface* DU;
 
 struct xr_token;
 extern XRAPI_API xr_token* vid_mode_token;

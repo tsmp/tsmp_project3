@@ -3,12 +3,13 @@
 #include "render.h"
 #include "IGame_Persistent.h"
 #include "..\include\xrRender\RenderFactory.h"
+#include "../Include/xrRender/DrawUtils.h"
 
 #include "..\TSMP3_Build_Config.h"
 
 void CRenderDevice::_Destroy(BOOL bKeepTextures)
 {
-	DU.OnDeviceDestroy();
+	DU->OnDeviceDestroy();
 
 	// before destroy
 	b_is_Ready = FALSE;
