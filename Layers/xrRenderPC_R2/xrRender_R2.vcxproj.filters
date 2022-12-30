@@ -127,6 +127,9 @@
     <Filter Include="Refactored\Execution &amp; 3D\DebugDraw">
       <UniqueIdentifier>{c7a149cb-4b13-4bf1-b3f9-c18b69a78d16}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Refactored\Execution &amp; 3D\Gamma">
+      <UniqueIdentifier>{be40f587-76e1-4398-9c5e-65868f6c04d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -476,6 +479,9 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\du_sphere_part.h">
       <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\xr_effgamma.h">
+      <Filter>Refactored\Execution &amp; 3D\Gamma</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -847,6 +853,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\du_sphere_part.cpp">
       <Filter>Refactored\Execution &amp; 3D\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\xr_effgamma.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Gamma</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

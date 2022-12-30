@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "dxRenderDeviceRender.h"
-
 #include "ResourceManager.h"
 #include "Render.h"
 
@@ -17,11 +16,6 @@ ref_shader& dxRenderDeviceRender::m_SelectionShader()
 	return Device.m_SelectionShader;
 }
 
-CGammaControl& dxRenderDeviceRender::m_Gamma()
-{
-	return Device.Gamma;
-}
-
 dxRenderDeviceRender::dxRenderDeviceRender() : Resources(0)
 {
 }
@@ -33,22 +27,22 @@ void dxRenderDeviceRender::Copy(IRenderDeviceRender &_in)
 
 void dxRenderDeviceRender::setGamma(float fGamma)
 {
-	m_Gamma().Gamma(fGamma);
+	m_Gamma.Gamma(fGamma);
 }
 
 void dxRenderDeviceRender::setBrightness(float fGamma)
 {
-	m_Gamma().Brightness(fGamma);
+	m_Gamma.Brightness(fGamma);
 }
 
 void dxRenderDeviceRender::setContrast(float fGamma)
 {
-	m_Gamma().Contrast(fGamma);
+	m_Gamma.Contrast(fGamma);
 }
 
 void dxRenderDeviceRender::updateGamma()
 {
-	m_Gamma().Update();
+	m_Gamma.Update();
 }
 
 void dxRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
@@ -149,7 +143,7 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 {
 	// Signal everyone - device created
 	RCache.OnDeviceCreate();
-	m_Gamma().Update();
+	m_Gamma.Update();
 	Resources->OnDeviceCreate(shName);
 	::Render->create();
 	Device.Statistic->OnDeviceCreate();

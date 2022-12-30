@@ -63,6 +63,8 @@ void CEngineAPI::Initialize(void)
 		R_ASSERT(hRender);
 	}
 
+	Device.ConnectToRender();
+
 	// game
 	{
 		LPCSTR g_name = "xrGame.dll";

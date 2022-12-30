@@ -56,6 +56,12 @@ void CRenderDevice::_Create(LPCSTR shName)
 	CurrentFrameNumber = 0;
 }
 
+void CRenderDevice::ConnectToRender()
+{
+	if (!m_pRender)
+		m_pRender = RenderFactory->CreateRenderDeviceRender();
+}
+
 void CRenderDevice::Create()
 {
 	if (b_is_Ready)

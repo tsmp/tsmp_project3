@@ -1,5 +1,3 @@
-#ifndef xr_device
-#define xr_device
 #pragma once
 
 // Note:
@@ -7,13 +5,11 @@
 // ZFar  - always 1.0f
 
 class ENGINE_API CResourceManager;
-class ENGINE_API CGammaControl;
 
 #include "pure.h"
 #include "hw.h"
 #include "ftimer.h"
 #include "stats.h"
-#include "xr_effgamma.h"
 #include "shader.h"
 #include "R_Backend.h"
 
@@ -59,7 +55,6 @@ public:
 	ref_shader m_WireShader;
 	ref_shader m_SelectionShader;
 	CResourceManager* Resources;
-	CGammaControl Gamma;
 
 	IRenderDeviceRender *m_pRender;
 
@@ -146,6 +141,7 @@ public:
 	u32 TimerAsync_MMT() { return TimerMM.GetElapsed_ms() + m_SystemLocalTimersDelta; }
 
 	// Creation & Destroying
+	void ConnectToRender();
 	void Create(void);
 	void Run(void);
 	void Destroy(void);
@@ -175,5 +171,3 @@ typedef fastdelegate::FastDelegate0<bool> LOADING_EVENT;
 extern ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
 
 #include "R_Backend_Runtime.h"
-
-#endif

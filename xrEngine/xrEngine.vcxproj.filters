@@ -88,9 +88,6 @@
     <Filter Include="Render\Execution &amp; 3D\HW">
       <UniqueIdentifier>{d758e951-e561-4955-abf3-25e66e1e4380}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Execution &amp; 3D\Gamma">
-      <UniqueIdentifier>{ed8ed785-3d4f-40b7-87cc-0b5622c4991d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render\Execution &amp; 3D\Shaders">
       <UniqueIdentifier>{292e15e6-df1c-4df2-98af-49097a469016}</UniqueIdentifier>
     </Filter>
@@ -341,9 +338,6 @@
     </ClInclude>
     <ClInclude Include="HWCaps.h">
       <Filter>Render\Execution &amp; 3D\HW</Filter>
-    </ClInclude>
-    <ClInclude Include="xr_effgamma.h">
-      <Filter>Render\Execution &amp; 3D\Gamma</Filter>
     </ClInclude>
     <ClInclude Include="Shader_xrLC.h">
       <Filter>Render\Execution &amp; 3D\Shaders</Filter>
@@ -676,9 +670,6 @@
     </ClCompile>
     <ClCompile Include="HWCaps.cpp">
       <Filter>Render\Execution &amp; 3D\HW</Filter>
-    </ClCompile>
-    <ClCompile Include="xr_effgamma.cpp">
-      <Filter>Render\Execution &amp; 3D\Gamma</Filter>
     </ClCompile>
     <ClCompile Include="Blender_Recorder_R2.cpp">
       <Filter>Render\Execution &amp; 3D\Shaders\Blender</Filter>
