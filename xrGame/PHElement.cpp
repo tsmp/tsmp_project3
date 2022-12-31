@@ -7,7 +7,7 @@
 #include "MathUtils.h"
 #include "PhysicsShellHolder.h"
 #include "game_object_space.h"
-#include "skeletonanimated.h"
+////#include "SkeletonAnimated.h"
 #include "../../xrODE/ode/src/util.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"

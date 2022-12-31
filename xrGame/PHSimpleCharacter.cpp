@@ -14,7 +14,7 @@
 #include "gamemtllib.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "PHSimpleCharacterInline.h"
 #include "DamageSource.h"
 #include "PHCollideValidator.h"

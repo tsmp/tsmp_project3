@@ -17,7 +17,8 @@
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
-#include "skeletonanimated.h"
+#include "..\include\xrRender\RenderVisual.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 #include "clsid_game.h"
 #include "ai_object_location.h"
 #include "game_cl_base.h"
@@ -316,7 +317,7 @@ void CActor::g_SetSprintAnimation(u32 mstate_rl, MotionID &head, MotionID &torso
 
 CMotion *FindMotionKeys(MotionID motion_ID, dxRender_Visual *V)
 {
-	IKinematicsAnimated *VA = PKinematicsAnimated(V);
+	IKinematicsAnimated* VA = smart_cast<IKinematicsAnimated*>((IRenderVisual*)V);
 	return (VA && motion_ID.valid()) ? VA->LL_GetRootMotion(motion_ID) : 0;
 }
 

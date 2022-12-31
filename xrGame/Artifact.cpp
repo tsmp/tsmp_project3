@@ -3,7 +3,7 @@
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
 #include "game_cl_base.h"
-#include "skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "inventory.h"
 #include "level.h"
 #include "ai_object_location.h"

@@ -6,7 +6,8 @@
 #include "Physics.h"
 #include "xrserver_objects_alife.h"
 #include "PHElement.h"
-#include "skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
@@ -52,14 +53,14 @@ void CHangingLamp::RespawnInit()
 void CHangingLamp::Center(Fvector &C) const
 {
 	if (renderable.visual)	
-		renderable.xform.transform_tiny(C, renderable.visual->getVisData().sphere.P);	
+		renderable.xform.transform_tiny(C, ((IRenderVisual*)renderable.visual)->getVisData().sphere.P);	
 	else	
 		C.set(XFORM().c);
 }
 
 float CHangingLamp::Radius() const
 {
-	return (renderable.visual) ? renderable.visual->getVisData().sphere.R : EPS;
+	return (renderable.visual) ? ((IRenderVisual*)renderable.visual)->getVisData().sphere.R : EPS;
 }
 
 void CHangingLamp::Load(LPCSTR section)

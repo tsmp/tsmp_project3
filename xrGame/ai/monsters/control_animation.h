@@ -1,7 +1,9 @@
 #pragma once
 
 #include "control_combase.h"
-#include "SkeletonAnimated.h"
+#include "..\include\xrRender\RenderVisual.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
+#include "..\xrEngine\SkeletonMotions.h"
 
 struct SAnimationPart
 {

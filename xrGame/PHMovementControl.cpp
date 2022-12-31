@@ -14,7 +14,7 @@
 #include "Level.h"
 #include "ElevatorState.h"
 #include "CalculateTriangle.h"
-#include "SkeletonCustom.h"
+#include "..\include\xrRender\Kinematics.h"
 
 #define GROUND_FRICTION 10.0f
 #define AIR_FRICTION 0.01f
@@ -1193,7 +1193,7 @@ void CPHMovementControl::UpdateObjectBox(CPHCharacter *ach)
 	if (!ach || !ach->b_exist)
 		return;
 	Fvector cbox;
-	PKinematics(pObject->Visual())->CalculateBones();
+	smart_cast<IKinematics*>(pObject->Visual())->CalculateBones();
 	pObject->BoundingBox().getradius(cbox);
 	const Fvector &pa = cast_fv(dBodyGetPosition(ach->get_body()));
 	const Fvector &p = cast_fv(dBodyGetPosition(m_character->get_body()));

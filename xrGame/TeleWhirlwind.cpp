@@ -6,7 +6,7 @@
 #include "hit.h"
 #include "phdestroyable.h"
 #include "xrmessages.h"
-#include "SkeletonCustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "PHWorld.h"
 
 CTeleWhirlwind ::CTeleWhirlwind()
@@ -155,29 +155,28 @@ void CTeleWhirlwindObject::release()
 }
 
 bool CTeleWhirlwindObject::destroy_object(const Fvector dir, float val)
-{
-	CPHDestroyable *D = object->ph_destroyable();
-	if (D)
+{	
+	if (CPHDestroyable* D = object->ph_destroyable())
 	{
 		D->PhysicallyRemoveSelf();
 		D->Destroy(m_telekinesis->OwnerObject()->ID());
 
 		m_telekinesis->add_impact(dir, val * 10.f);
-
-		CParticlesPlayer *PP = smart_cast<CParticlesPlayer *>(object);
-		if (PP)
+				
+		if (CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(object))
 		{
-			u16 root = (smart_cast<IKinematics *>(object->Visual()))->LL_GetBoneRoot();
+			u16 root = (smart_cast<IKinematics*>(object->Visual()))->LL_GetBoneRoot();
 			PP->StartParticles(m_telekinesis->destroing_particles(), root, Fvector().set(0, 1, 0), m_telekinesis->OwnerObject()->ID());
 		}
+
 		return true;
 	}
+
 	return false;
 }
 
 void CTeleWhirlwindObject::raise(float step)
 {
-
 	CPhysicsShell *p = get_object()->PPhysicsShell();
 
 	if (!p || !p->isActive())

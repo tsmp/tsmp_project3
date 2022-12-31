@@ -1,6 +1,6 @@
 #pragma once
 #include "control_combase.h"
-#include "SkeletonAnimated.h"
+#include "..\include\xrRender\animation_motion.h"
 
 struct SControlRotationJumpData : public ControlCom::IComData
 {

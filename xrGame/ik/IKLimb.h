@@ -1,7 +1,7 @@
 #pragma once
 
 #include "limb.h"
-#include "SkeletonAnimated.h"
+////#include "SkeletonAnimated.h"
 #include "..\ik_anim_state.h"
 
 class IKinematics;

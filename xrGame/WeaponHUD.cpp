@@ -7,7 +7,7 @@
 #include "WeaponHUD.h"
 #include "Weapon.h"
 #include "Motion.h"
-#include "skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "level.h"
 #include "MathUtils.h"
 
@@ -26,7 +26,7 @@ BOOL weapon_hud_value::load(const shared_str &section, CHudItem *owner)
 
 	// Visual
 	LPCSTR visual_name = pSettings->r_string(section, "visual");
-	m_animations = smart_cast<IKinematicsAnimated *>(::Render->model_Create(visual_name));
+	m_animations = smart_cast<IKinematicsAnimated *>((IRenderVisual*)::Render->model_Create(visual_name));
 
 	// fire bone
 	if (smart_cast<CWeapon *>(owner))
@@ -58,7 +58,7 @@ BOOL weapon_hud_value::load(const shared_str &section, CHudItem *owner)
 
 weapon_hud_value::~weapon_hud_value()
 {
-	dxRender_Visual* temp = smart_cast<dxRender_Visual*>(m_animations);
+	dxRender_Visual* temp = (dxRender_Visual*)m_animations;
 	::Render->model_Delete(temp);
 }
 

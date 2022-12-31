@@ -10,7 +10,7 @@
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "PHWorld.h"
 
 extern CPHWorld *ph_world;

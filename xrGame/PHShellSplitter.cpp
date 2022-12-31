@@ -6,7 +6,7 @@
 #include "PHJointDestroyInfo.h"
 #include "Geometry.h"
 #include "MathUtils.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "PHCollideValidator.h"
 
 CPHShellSplitterHolder::CPHShellSplitterHolder(CPHShell *shell)

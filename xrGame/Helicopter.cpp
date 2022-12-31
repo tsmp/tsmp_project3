@@ -5,7 +5,8 @@
 #include "level.h"
 #include "ai_sounds.h"
 #include "clsid_game.h"
-#include "skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 #include "script_callback_ex.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
@@ -210,9 +211,8 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract *DC)
 	m_bind_rot.y = matrices[m_rotate_y_bone].k.getH();
 	m_bind_x.set(matrices[m_rotate_x_bone].c);
 	m_bind_y.set(matrices[m_rotate_y_bone].c);
-
-	IKinematicsAnimated *A = smart_cast<IKinematicsAnimated *>(Visual());
-	if (A)
+		
+	if (IKinematicsAnimated* A = smart_cast<IKinematicsAnimated*>(Visual()))
 	{
 		A->PlayCycle(*heli->startup_animation);
 		A->dcast_PKinematics()->CalculateBones();

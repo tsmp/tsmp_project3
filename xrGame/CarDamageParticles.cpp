@@ -11,7 +11,7 @@
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "PHWorld.h"
 
 extern CPHWorld *ph_world;

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "IKLimb.h"
-#include "SkeletonCustom.h"
+#include "..\include\xrRender\Kinematics.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 #include "../ode_include.h"
 #include "../MathUtils.h"
 #include "../GameObject.h"

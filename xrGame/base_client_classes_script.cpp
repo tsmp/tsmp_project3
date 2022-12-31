@@ -11,7 +11,7 @@
 #include "base_client_classes_wrappers.h"
 #include "feel_sound.h"
 #include "fbasicvisual.h"
-#include "skeletonanimated.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 #include "ai/stalker/ai_stalker.h"
 #include "../xrNetwork/net_utils.h"
 

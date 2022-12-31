@@ -10,7 +10,7 @@
 #include "script_entity.h"
 #include "CustomMonster.h"
 #include "feel_vision.h"
-#include "skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "script_entity_action.h"
 #include "weapon.h"
 #include "ParticlesObject.h"

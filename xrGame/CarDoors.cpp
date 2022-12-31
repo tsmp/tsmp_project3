@@ -11,7 +11,7 @@
 #include "PHDestroyable.h"
 #include "car.h"
 #include "../xrNetwork/net_utils.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "MathUtils.h"
 #include "game_object_space.h"
 

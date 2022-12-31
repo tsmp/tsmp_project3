@@ -14,7 +14,8 @@
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
-#include "skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 #include "PHShellSplitter.h"
 
 #include "actor_anim_defs.h"

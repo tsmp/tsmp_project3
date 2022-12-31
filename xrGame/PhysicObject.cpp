@@ -3,7 +3,8 @@
 #include "PhysicsShell.h"
 #include "Physics.h"
 #include "xrserver_objects_alife.h"
-#include "skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 #include "xr_collide_form.h"
 #include "game_object_space.h"
 #include "Level.h"
@@ -470,7 +471,7 @@ void CPhysicObject::PH_A_CrPr()
 		return;
 
 	VERIFY(Visual());
-	IKinematics* K = Visual()->dcast_PKinematics();
+	IKinematics* K = ((IRenderVisual*)Visual())->dcast_PKinematics();
 	VERIFY(K);
 
 	if (!PPhysicsShell())

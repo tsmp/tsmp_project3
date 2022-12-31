@@ -3,7 +3,7 @@
 #include "fmesh.h"
 #include "Console.h"
 #include "gamemtllib.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "profiler.h"
 #include "MainMenu.h"
 #include "UICursor.h"
@@ -95,15 +95,17 @@ CGamePersistent::~CGamePersistent(void)
 
 void CGamePersistent::RegisterModel(dxRender_Visual *V)
 {
+	IRenderVisual* VV = (IRenderVisual*)V;
+
 	// Check types
-	switch (V->Type)
+	switch (VV->getType())
 	{
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID:
 	{
 		u16 def_idx = GMLib.GetMaterialIdx("default_object");
 		R_ASSERT2(GMLib.GetMaterialByIdx(def_idx)->Flags.is(SGameMtl::flDynamic), "'default_object' - must be dynamic");
-		IKinematics *K = smart_cast<IKinematics *>(V);
+		IKinematics *K = smart_cast<IKinematics *>(VV);
 		VERIFY(K);
 		int cnt = K->LL_BoneCount();
 		for (u16 k = 0; k < cnt; k++)

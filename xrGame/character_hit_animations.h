@@ -1,5 +1,5 @@
 #pragma once
-#include "SkeletonAnimated.h"
+#include "..\include\xrRender\animation_motion.h"
 
 class CEntityAlive;
 

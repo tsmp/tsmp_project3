@@ -1,6 +1,6 @@
 #pragma once
 
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "../../../actor.h"
 #include "CameraBase.h"
 

@@ -12,6 +12,7 @@
 #include "../../../CharacterPhysicsSupport.h"
 #include "../../../level_debug.h"
 #include "../../../clsid_game.h"
+#include "..\include\xrRender\animation_motion.h"
 
 bool IsActor(const CEntityAlive* entity)
 {

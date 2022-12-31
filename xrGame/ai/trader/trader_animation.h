@@ -1,5 +1,7 @@
 #pragma once
-#include "SkeletonAnimated.h"
+#include "..\xrEngine\SkeletonMotions.h"
+#include "..\include\xrRender\animation_motion.h"
+#include "..\include\xrRender\animation_blend.h"
 
 class CAI_Trader;
 

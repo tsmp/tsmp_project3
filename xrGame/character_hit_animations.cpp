@@ -1,22 +1,15 @@
 #include "stdafx.h"
-
 #include "character_hit_animations.h"
-
+#include "..\include\xrRender\Kinematics.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 #include "entity_alive.h"
+
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
 
 void character_hit_animation_controller::SetupHitMotions(IKinematicsAnimated &ca)
 {
-	//IKinematicsAnimated* ca = smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual());
-	/*
-	bkhit_motion= ca.LL_MotionID("hitback");	//hitback2.skl
-	fvhit_motion= ca.LL_MotionID("hitfront");
-	rthit_motion= ca.LL_MotionID("hitright");
-	lthit_motion= ca.LL_MotionID("hitleft");
-*/
-
 	bkhit_motion = ca.LL_MotionID("hitback17"); //hitback2.skl
 	fvhit_motion = ca.LL_MotionID("hitfront17");
 	rthit_motion = ca.LL_MotionID("hitf_right17"); //hitright
@@ -30,9 +23,11 @@ void character_hit_animation_controller::SetupHitMotions(IKinematicsAnimated &ca
 	hit_downr = ca.LL_MotionID("hit_downr");
 
 	base_bone = ca.dcast_PKinematics()->LL_BoneID("bip01_spine1"); //bip01_spine1
+
 	for (u16 i = 0; num_anims > i; ++i)
 		block_times[i] = 0;
 }
+
 ICF int sign(float x)
 {
 	return x < 0 ? -1 : 1;
@@ -67,7 +62,6 @@ void character_hit_animation_controller::PlayHitMotion(const Fvector &dir, const
 {
 	IKinematicsAnimated *CA = smart_cast<IKinematicsAnimated *>(ea.Visual());
 
-	//play_cycle(CA,all_shift_down,1,block_times[6],1) ;
 	if (!(CA->dcast_PKinematics()->LL_BoneCount() > bi))
 		return;
 
@@ -83,10 +77,11 @@ void character_hit_animation_controller::PlayHitMotion(const Fvector &dir, const
 		DBG_ClosedCashedDraw(1000);
 	}
 #endif
-	const float power_factor = 2.f; // 2.f;
+
+	const float power_factor = 2.f;
 	m.invert();
 	m.transform_dir(dr);
-	//
+	
 	Fvector hit_point;
 	CA->dcast_PKinematics()->LL_GetTransform(bi).transform_tiny(hit_point, bone_pos);
 	ea.XFORM().transform_tiny(hit_point);
@@ -109,8 +104,6 @@ void character_hit_animation_controller::PlayHitMotion(const Fvector &dir, const
 	else
 		play_cycle(CA, turn_left, 1, block_times[5], rotational_ammount);
 
-	//CA->LL_SetChannelFactor(3,rotational_ammount);
-
 	dr.x = 0;
 	dr.normalize_safe();
 
@@ -126,29 +119,22 @@ void character_hit_animation_controller::PlayHitMotion(const Fvector &dir, const
 	else
 		play_cycle(CA, bkhit_motion, 1, block_times[3], _abs(dr.z));
 	CA->LL_SetChannelFactor(1, 3.f);
-	//CA->LL_SetChannelFactor(1,_abs(dr.z));
-	//CA->LL_SetChannelFactor(2,_abs(dr.y));
-
-	//BOOL bMixIn=TRUE, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channal = 0
-	//CA->PlayCycle(hit_motion,TRUE,0,0,1) ;
-	//CA->PlayCycle(hit_motion,TRUE,0,0,2) ;
-	//CA->PlayCycle(hit_motion,TRUE,0,0,3) ;
-	//const float fade = 0.1f;
-	//for(u16 ii=0;MAX_PARTS>ii;++ii)
-	//CA->LL_FadeCycle(ii,fade,1<<1);
-	//smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual())->LL_MotionID("actor_hit_ani_180_2");
 }
 
 bool character_hit_animation_controller::IsEffected(u16 bi, IKinematics &ca) const
 {
 	u16 root = ca.LL_GetBoneRoot();
+
 	for (; bi != root;)
 	{
 		CBoneData &bd = ca.LL_GetData(bi);
+
 		if (bi == base_bone)
 			return true;
+
 		bi = bd.GetParentID();
 	}
+
 	return false;
 }
 
