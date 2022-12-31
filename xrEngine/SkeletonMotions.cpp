@@ -3,7 +3,7 @@
 #pragma hdrstop
 
 #include "SkeletonMotions.h"
-#include "SkeletonAnimated.h"
+#include "..\Include\xrRender\Kinematics.h"
 #include "fmesh.h"
 #include "motion.h"
 
@@ -172,14 +172,13 @@ MotionVec *motions_value::bone_motions(shared_str bone_name)
 motions_container::motions_container()
 {
 }
-extern shared_str s_bones_array_const;
+
 motions_container::~motions_container()
 {
 	//	clean	(false);
 	//	clean	(true);
 	//	dump	();
 	VERIFY(container.empty());
-	s_bones_array_const = 0;
 }
 
 bool motions_container::has(shared_str key)

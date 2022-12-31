@@ -5,6 +5,7 @@
 #include "xr_area.h"
 #include "render.h"
 #include "xrLevel.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "fbasicvisual.h"
 
 #include "GameFont.h"
@@ -18,11 +19,12 @@ void CObject::cName_set(shared_str N)
 {
 	NameObject = N;
 }
+
 void CObject::cNameSect_set(shared_str N)
 {
 	NameSection = N;
 }
-#include "SkeletonCustom.h"
+
 void CObject::cNameVisual_set(shared_str N)
 {
 	// check if equal

@@ -5,13 +5,12 @@
 
 #include "igame_persistent.h"
 #include "Environment.h"
-#include "SkeletonCustom.h"
+#include "bone.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "cl_intersect.h"
 
 #include "xr_object.h"
 #include "igame_level.h"
-
-#pragma TODO("TSMP use IKinematics")
 
 #include "../xrGame/object_broker.h"
 
@@ -167,7 +166,7 @@ IC BOOL material_callback(collide::rq_result &result, LPVOID params)
 	if (result.O)
 	{
 		vis = 0.f;
-		IKinematics *K = PKinematics(result.O->renderable.visual);		
+		IKinematics *K = PKinematics((IRenderVisual*)result.O->renderable.visual);		
 		if (K && (result.element > 0))
 			vis = g_pGamePersistent->MtlTransparent(K->LL_GetData(u16(result.element)).game_mtl_idx);
 	}

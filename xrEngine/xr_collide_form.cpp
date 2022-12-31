@@ -5,8 +5,9 @@
 #include "xr_area.h"
 #include "xrLevel.h"
 #include "fmesh.h"
-#include "skeletoncustom.h"
 #include "frustum.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "bone.h"
 
 using namespace collide;
 //----------------------------------------------------------------------

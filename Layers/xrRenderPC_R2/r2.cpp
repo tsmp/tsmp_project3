@@ -5,7 +5,7 @@
 #include "CustomHUD.h"
 #include "igame_persistent.h"
 #include "environment.h"
-#include "SkeletonCustom.h"
+#include "..\xrRender\SkeletonCustom.h"
 #include "..\xrRender\LightTrack.h"
 #include "GameFont.h"
 #include "../xrRender/dxWallMarkArray.h"
@@ -500,7 +500,7 @@ void CRender::add_SkeletonWallmark(const Fmatrix *xf, CKinematics *obj, ref_shad
 	Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
 }
 
-void CRender::add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size)
+void CRender::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size)
 {
 	dxWallMarkArray* pWMA = (dxWallMarkArray*)pArray;
 	

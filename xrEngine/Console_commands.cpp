@@ -7,7 +7,7 @@
 #include "environment.h"
 #include "xr_input.h"
 #include "CustomHUD.h"
-#include "SkeletonAnimated.h"
+#include "..\Include\xrRender\Kinematics.h"
 #include "ResourceManager.h"
 #include "xr_object.h"
 #include "..\TSMP3_Build_Config.h"

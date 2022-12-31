@@ -4,7 +4,7 @@
 // TSMP: бленд из тч, чн вариант не перенесен
 
 //*** Run-time Blend definition *******************************************************************
-class ENGINE_API CBlend
+class CBlend
 {
 public:
 	enum ECurvature

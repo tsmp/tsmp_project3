@@ -6,7 +6,7 @@
 #include "LightProjector.h"
 #include "xr_object.h"
 #include "..\xrRender\lighttrack.h"
-#include "SkeletonCustom.h"
+#include "..\xrRender\SkeletonCustom.h"
 
 // tir2.xrdemo		-> 45.2
 // tir2.xrdemo		-> 61.8

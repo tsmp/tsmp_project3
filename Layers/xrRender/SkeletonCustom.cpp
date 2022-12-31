@@ -1,110 +1,76 @@
-//---------------------------------------------------------------------------
-#include 	"stdafx.h"
-#pragma hdrstop
+#include "stdafx.h"
+#include "SkeletonCustom.h"
+#include "SkeletonX.h"
+#include "fmesh.h"
+#include "Render.h"
 
-#include 	"SkeletonCustom.h"
-#include	"SkeletonX.h"
-#include	"fmesh.h"
+int psSkeletonUpdate = 32;
 
-    #include	"Render.h"
-
-int			psSkeletonUpdate	= 32;
-xrCriticalSection	UCalc_Mutex
+xrCriticalSection UCalc_Mutex
 #ifdef PROFILE_CRITICAL_SECTIONS
 	(MUTEX_PROFILE_ID(UCalc_Mutex))
 #endif // PROFILE_CRITICAL_SECTIONS
 ;
 
-//////////////////////////////////////////////////////////////////////////
-// BoneInstance methods
-void		CBoneInstance::construct	()
+bool pred_N(const std::pair<shared_str, u32>& N, LPCSTR B)
 {
-	ZeroMemory					(this,sizeof(*this));
-	mTransform.identity			();
-
-	mRenderTransform.identity	();
-	Callback_overwrite			= FALSE;
-}
-void		CBoneInstance::set_callback	(u32 Type, BoneCallback C, void* Param, BOOL overwrite)
-{	
-	Callback			= C; 
-	Callback_Param		= Param; 
-	Callback_overwrite	= overwrite;
-	Callback_type		= Type;
-}
-void		CBoneInstance::reset_callback()
-{
-	Callback			= 0; 
-	Callback_Param		= 0; 
-	Callback_overwrite	= FALSE;
-	Callback_type		= 0;
-}
-
-void		CBoneInstance::set_param	(u32 idx, float data)
-{
-	VERIFY		(idx<MAX_BONE_PARAMS);
-	param[idx]	= data;
-}
-float		CBoneInstance::get_param	(u32 idx)
-{
-	VERIFY		(idx<MAX_BONE_PARAMS);
-	return		param[idx];
-}
-
-#ifdef	DEBUG
-void	CBoneData::DebugQuery		(BoneDebug& L)
-{
-	for (u32 i=0; i<children.size(); i++)
-	{
-		L.push_back(SelfID);
-		L.push_back(children[i]->SelfID);
-		children[i]->DebugQuery(L);
-	}
-}
-#endif
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-bool	pred_N(const std::pair<shared_str,u32>&	N, LPCSTR B)			{
 	return xr_strcmp(*N.first,B)<0;
 }
-u16		CKinematics::LL_BoneID		(LPCSTR B)			{
-	accel::iterator I	= std::lower_bound	(bone_map_N->begin(),bone_map_N->end(),B,pred_N);
-	if (I == bone_map_N->end())			return BI_NONE;
-	if (0 != xr_strcmp(*(I->first),B))	return BI_NONE;
-	return				u16(I->second);
-}
-bool	pred_P(const std::pair<shared_str,u32>&	N, const shared_str& B)	{
-	return N.first._get() < B._get();
-}
-u16		CKinematics::LL_BoneID		(const shared_str& B)	{
-	accel::iterator I	= std::lower_bound	(bone_map_P->begin(),bone_map_P->end(),B,pred_P);
-	if (I == bone_map_P->end())			return BI_NONE;
-	if (I->first._get() != B._get() )	return BI_NONE;
-	return				u16(I->second);
+
+u16	CKinematics::LL_BoneID(LPCSTR B)
+{
+	accel::iterator I = std::lower_bound(bone_map_N->begin(), bone_map_N->end(), B, pred_N);
+
+	if (I == bone_map_N->end())
+		return BI_NONE;
+
+	if (0 != xr_strcmp(*(I->first),B))
+		return BI_NONE;
+
+	return u16(I->second);
 }
 
-//
-LPCSTR CKinematics::LL_BoneName_dbg	(u16 ID)
+bool pred_P(const std::pair<shared_str,u32>& N, const shared_str& B)
 {
-	CKinematics::accel::iterator _I, _E=bone_map_N->end();
-	for (_I	= bone_map_N->begin(); _I!=_E; ++_I)	if (_I->second==ID) return *_I->first;
-	return 0;
+	return N.first._get() < B._get();
+}
+
+u16 CKinematics::LL_BoneID(const shared_str& B)	
+{
+	accel::iterator I	= std::lower_bound	(bone_map_P->begin(),bone_map_P->end(),B,pred_P);
+	
+	if (I == bone_map_P->end())
+		return BI_NONE;
+
+	if (I->first._get() != B._get())
+		return BI_NONE;
+
+	return u16(I->second);
+}
+
+LPCSTR CKinematics::LL_BoneName_dbg(u16 ID)
+{
+	for(const auto &it: *bone_map_N)
+		if (it.second==ID) 
+			return *it.first;
+
+	return nullptr;
 }
 
 #ifdef DEBUG
 void CKinematics::DebugRender(Fmatrix& XFORM)
 {
-	CalculateBones	();
+	CalculateBones();
 
-	CBoneData::BoneDebug	dbgLines;
+	CBoneData::BoneDebugdbgLines;
 	(*bones)[iRoot]->DebugQuery	(dbgLines);
 
 	Fvector Z;  Z.set(0,0,0);
 	Fvector H1; H1.set(0.01f,0.01f,0.01f);
 	Fvector H2; H2.mul(H1,2);
-	for (u32 i=0; i<dbgLines.size(); i+=2)	{
+
+	for (u32 i=0; i<dbgLines.size(); i+=2)
+	{
 		Fmatrix& M1 = bone_instances[dbgLines[i]].mTransform;
 		Fmatrix& M2 = bone_instances[dbgLines[i+1]].mTransform;
 
@@ -121,11 +87,14 @@ void CKinematics::DebugRender(Fmatrix& XFORM)
 
 	for (u32 b=0; b<bones->size(); b++)
 	{
-		Fobb&		obb		= (*bones)[b]->obb;
-		Fmatrix&	Mbone	= bone_instances[b].mTransform;
-		Fmatrix		Mbox;	obb.xform_get(Mbox);
-		Fmatrix		X;		X.mul(Mbone,Mbox);
-		Fmatrix		W;		W.mul(XFORM,X);
+		Fobb& obb = (*bones)[b]->obb;
+		Fmatrix& Mbone = bone_instances[b].mTransform;
+		Fmatrix Mbox;
+		obb.xform_get(Mbox);
+		Fmatrix X;
+		X.mul(Mbone,Mbox);
+		Fmatrix W;
+		W.mul(XFORM,X);
 		RCache.dbg_DrawOBB(W,obb.m_halfsize,D3DCOLOR_XRGB(0,0,255));
 	}
 }
@@ -134,34 +103,36 @@ void CKinematics::DebugRender(Fmatrix& XFORM)
 CKinematics::CKinematics()
 {
 #ifdef DEBUG
-	dbg_single_use_marker		= FALSE;
+	dbg_single_use_marker = FALSE;
 #endif
 }
 
-CKinematics::~CKinematics	()
+CKinematics::~CKinematics()
 {
-	IBoneInstances_Destroy	();
+	IBoneInstances_Destroy();
 	// wallmarks
-	ClearWallmarks			();
+	ClearWallmarks();
 
 	if(m_lod)
 		::Render->model_Delete(m_lod);
 }
 
-void	CKinematics::IBoneInstances_Create()
+void CKinematics::IBoneInstances_Create()
 {
-	// VERIFY2				(bones->size() < 64, "More than 64 bones is a crazy thing!");
-	u32				size	= bones->size();
-	bone_instances			=xr_alloc<CBoneInstance>(size);
-	for (u32 i=0; i<size; i++)
+	// VERIFY2(bones->size() < 64, "More than 64 bones is a crazy thing!");
+	u32 size = bones->size();
+	bone_instances = xr_alloc<CBoneInstance>(size);
+
+	for (u32 i = 0; i < size; i++)
 		bone_instances[i].construct();
 }
 
-void	CKinematics::IBoneInstances_Destroy()
+void CKinematics::IBoneInstances_Destroy()
 {
-	if (bone_instances) {
+	if (bone_instances) 
+	{
 		xr_free(bone_instances);
-		bone_instances = NULL;
+		bone_instances = nullptr;
 	}
 }
 
@@ -170,18 +141,6 @@ bool	pred_sort_N(const std::pair<shared_str,u32>& A, const std::pair<shared_str,
 }
 bool	pred_sort_P(const std::pair<shared_str,u32>& A, const std::pair<shared_str,u32>& B)	{
 	return A.first._get() < B.first._get();
-}
-
-void CBoneData::CalculateM2B(const Fmatrix& parent)
-{
-    // Build matrix
-    m2b_transform.mul_43	(parent,bind_transform);
-
-    // Calculate children
-    for (xr_vector<CBoneData*>::iterator C=children.begin(); C!=children.end(); C++)
-        (*C)->CalculateM2B	(m2b_transform);
-
-    m2b_transform.invert	();            
 }
 
 CSkeletonX* CKinematics::LL_GetChild	(u32 idx)

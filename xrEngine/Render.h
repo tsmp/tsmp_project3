@@ -17,8 +17,7 @@ using wm_shader = FactoryPtr<IUIShader>;
 class ENGINE_API IRenderable;
 class ENGINE_API dxRender_Visual;
 class ENGINE_API IBlender;
-class ENGINE_API CSkeletonWallmark;
-class ENGINE_API CKinematics;
+class CSkeletonWallmark;
 struct ENGINE_API FSlideWindowItem;
 
 //	Igor
@@ -236,7 +235,7 @@ public:
 
 	// TSMP: remove this
 	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) = 0;
-	virtual void add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) = 0;
+	virtual void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) = 0;
 
 	virtual IBlender *blender_create(CLASS_ID cls) = 0;
 	virtual void blender_destroy(IBlender *&) = 0;

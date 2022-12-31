@@ -251,7 +251,7 @@ public:
 	virtual void clear_static_wallmarks();
 	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm);
 	virtual void add_SkeletonWallmark(const Fmatrix *xf, CKinematics *obj, ref_shader &sh, const Fvector &start, const Fvector &dir, float size);
-	virtual void add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size);
+	virtual void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size);
 
 
 	//

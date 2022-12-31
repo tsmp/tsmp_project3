@@ -1121,7 +1121,6 @@
     <ClInclude Include="EffectorPP.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EngineAPI.h" />
-    <ClInclude Include="EnnumerateVertices.h" />
     <ClInclude Include="envelope.h" />
     <ClInclude Include="Environment.h" />
     <ClInclude Include="ETextureParams.h" />
@@ -1178,11 +1177,8 @@
     <ClInclude Include="SH_Matrix.h" />
     <ClInclude Include="SH_RT.h" />
     <ClInclude Include="SH_Texture.h" />
-    <ClInclude Include="SkeletonAnimated.h" />
-    <ClInclude Include="SkeletonCustom.h" />
     <ClInclude Include="SkeletonMotionDefs.h" />
     <ClInclude Include="SkeletonMotions.h" />
-    <ClInclude Include="SkeletonX.h" />
     <ClInclude Include="StatGraph.h" />
     <ClInclude Include="Stats.h" />
     <ClInclude Include="stdafx.h" />
@@ -1224,6 +1220,7 @@
     <ClCompile Include="..\Layers\xrRender\Blenders\Blender_Recorder.cpp" />
     <ClCompile Include="Blender_Recorder_R2.cpp" />
     <ClCompile Include="Blender_Recorder_StandartBinding.cpp" />
+    <ClCompile Include="bone.cpp" />
     <ClCompile Include="CameraBase.cpp" />
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="Console_callback.cpp" />
@@ -1382,22 +1379,7 @@
     <ClCompile Include="SH_Matrix.cpp" />
     <ClCompile Include="SH_RT.cpp" />
     <ClCompile Include="SH_Texture.cpp" />
-    <ClCompile Include="SkeletonAnimated.cpp" />
-    <ClCompile Include="SkeletonCustom.cpp" />
     <ClCompile Include="SkeletonMotions.cpp" />
-    <ClCompile Include="SkeletonRigid.cpp" />
-    <ClCompile Include="SkeletonX.cpp">
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedciated|Win32'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedciated|x64'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|Win32'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_Dedicated|x64'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">All</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">All</AssemblerOutput>
-    </ClCompile>
     <ClCompile Include="StatGraph.cpp" />
     <ClCompile Include="Stats.cpp" />
     <ClCompile Include="stdafx.cpp">

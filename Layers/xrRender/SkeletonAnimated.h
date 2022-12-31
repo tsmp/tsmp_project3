@@ -4,8 +4,8 @@
 #include "../Include/xrRender/KinematicsAnimated.h"
 
 // refs
-class ENGINE_API CKinematicsAnimated;
-class ENGINE_API CBoneInstanceAnimated;
+class CKinematicsAnimated;
+class CBoneInstanceAnimated;
 struct ENGINE_API CKey;
 class ENGINE_API CInifile;
 
@@ -14,7 +14,7 @@ class ENGINE_API CInifile;
 
 //*** Bone Instance *******************************************************************************
 #pragma pack(push, 8)
-class ENGINE_API CBlendInstance // Bone Instance Blend List (per-bone data)
+class CBlendInstance // Bone Instance Blend List (per-bone data)
 {
 public:
 	typedef svector<CBlend *, MAX_BLENDED> BlendSVec;
@@ -42,7 +42,7 @@ public:
 #pragma pack(pop)
 
 //*** The visual itself ***************************************************************************
-class ENGINE_API CKinematicsAnimated : public CKinematics, public IKinematicsAnimated
+class CKinematicsAnimated : public CKinematics, public IKinematicsAnimated
 {
 	typedef CKinematics inherited;
 	friend class CBoneData;

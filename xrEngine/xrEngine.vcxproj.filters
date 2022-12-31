@@ -64,9 +64,6 @@
     <Filter Include="Render\Visuals">
       <UniqueIdentifier>{bb539ed6-c240-46b3-9996-3fc02e19ccd0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Visuals\Skeleton">
-      <UniqueIdentifier>{b107e469-0a19-42fe-9c53-57751e5b5dae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render\Visibility">
       <UniqueIdentifier>{59520338-5c4a-4b89-903a-12be71d5eeb5}</UniqueIdentifier>
     </Filter>
@@ -302,18 +299,6 @@
     </ClInclude>
     <ClInclude Include="FHierrarhyVisual.h">
       <Filter>Render\Visuals</Filter>
-    </ClInclude>
-    <ClInclude Include="EnnumerateVertices.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletonAnimated.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletonCustom.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletonX.h">
-      <Filter>Render\Visuals\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="vis_common.h">
       <Filter>Render\Visibility</Filter>
@@ -638,18 +623,6 @@
     <ClCompile Include="FHierrarhyVisual.cpp">
       <Filter>Render\Visuals</Filter>
     </ClCompile>
-    <ClCompile Include="SkeletonAnimated.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonCustom.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonRigid.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonX.cpp">
-      <Filter>Render\Visuals\Skeleton</Filter>
-    </ClCompile>
     <ClCompile Include="Frustum.cpp">
       <Filter>Render\Visibility\Frustum</Filter>
     </ClCompile>
@@ -853,6 +826,9 @@
     </ClCompile>
     <ClCompile Include="SkeletonMotions.cpp">
       <Filter>RenderRef\Visuals\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="bone.cpp">
+      <Filter>Game API\Animator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

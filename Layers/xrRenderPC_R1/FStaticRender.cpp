@@ -9,7 +9,7 @@
 #include "CustomHUD.h"
 #include "xr_object.h"
 #include "fmesh.h"
-#include "SkeletonCustom.h"
+#include "..\xrRender\SkeletonCustom.h"
 #include "..\xrRender\lighttrack.h"
 #include "PS_instance.h"
 #include "GameFont.h"
@@ -282,7 +282,7 @@ void CRender::add_SkeletonWallmark(const Fmatrix *xf, CKinematics *obj, ref_shad
 	Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
 }
 
-void CRender::add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size)
+void CRender::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size)
 {
 	dxWallMarkArray* pWMA = (dxWallMarkArray*)pArray;
 	
