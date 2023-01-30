@@ -1438,6 +1438,7 @@
     <ClInclude Include="pp_effector_custom.h" />
     <ClInclude Include="pp_effector_distance.h" />
     <ClInclude Include="PostprocessAnimator.h" />
+    <ClInclude Include="xrServerRespawnManager.h" />
     <ClInclude Include="xr_dsa_signer.h" />
     <ClInclude Include="zone_effector.h" />
     <ClInclude Include="EffectorShot.h" />
@@ -4985,6 +4986,7 @@
     <ClCompile Include="PostprocessAnimator.cpp" />
     <ClCompile Include="VoiceChat.cpp" />
     <ClCompile Include="VoiceSender.cpp" />
+    <ClCompile Include="xrServerRespawnManager.cpp" />
     <ClCompile Include="xr_dsa_signer.cpp" />
     <ClCompile Include="zone_effector.cpp" />
     <ClCompile Include="EffectorShot.cpp" />

@@ -6633,6 +6633,7 @@
     <ClInclude Include="VoiceSender.h">
       <Filter>Core\Client\VoiceChat</Filter>
     </ClInclude>
+    <ClInclude Include="xrServerRespawnManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9826,5 +9827,6 @@
     <ClCompile Include="VoiceSender.cpp">
       <Filter>Core\Client\VoiceChat</Filter>
     </ClCompile>
+    <ClCompile Include="xrServerRespawnManager.cpp" />
   </ItemGroup>
 </Project>
