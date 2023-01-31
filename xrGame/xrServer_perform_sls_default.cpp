@@ -11,9 +11,6 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #endif
 
-
-extern ObjectRespawnClass ServerRespawnManager;
-
 void xrServer::SLS_Default()
 {
 	if (game->custom_sls_default())
@@ -27,7 +24,7 @@ void xrServer::SLS_Default()
 	CSE_ALifeCreatureActor *_actor = 0;
 #endif
 
-	ServerRespawnManager.DestroyRespawner(); // очищаем список респавнера
+	ObjectRespawnClass::DestroyRespawner(); // очищаем список респавнера
 
 	string_path fn_spawn;
 	if (FS.exist(fn_spawn, "$level$", "level.spawn"))
@@ -49,21 +46,11 @@ void xrServer::SLS_Default()
 			CSE_Abstract* entity = Process_spawn(P, clientID);
 			if (entity)
 			{
-				string str = entity->s_name.c_str();
-
-				// TODO: уточнить, какие секции можно добавл€ть в список дл€ респавна. ќЅя«ј“≈Ћ№Ќќ !!! ѕока перенес также, как и в хрее. 
-
-				if (str.find("zone") != string::npos || str.find("mp_actor") != string::npos || str.find("spec") != string::npos || str.find("ligh") != string::npos
-					|| str.find("spec") != string::npos || str.find("phys") != string::npos || str.find("m_ph") != string::npos || str.find("scri") != string::npos)
-					continue;
-
-				ServerRespawnManager.AddObject(
-					entity->s_name.c_str(),
+				ObjectRespawnClass::AddObject(
+					entity->s_name,
 					entity->ID,
 					entity->RespawnTime,
-					entity->o_Position.x,
-					entity->o_Position.y,
-					entity->o_Position.z);
+					entity->o_Position);
 			}
 
 

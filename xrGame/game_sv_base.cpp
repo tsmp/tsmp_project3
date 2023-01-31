@@ -527,12 +527,12 @@ CSE_Abstract *game_sv_GameState::spawn_end(CSE_Abstract *E, ClientID const &id)
 	return N;
 }
 
-void game_sv_GameState::SpawnObject(const char* section, Fvector &pos)
+CSE_Abstract *game_sv_GameState::SpawnObject(const char* section, Fvector &pos)
 {
 	if (!pSettings->section_exist(section))
 	{
 		Msg("! Section [%s] doesn`t exist", section);
-		return;
+		return nullptr;
 	}
 
 	if (HasAlifeSimulator())
@@ -540,17 +540,17 @@ void game_sv_GameState::SpawnObject(const char* section, Fvector &pos)
 		if (!Actor())
 		{
 			Msg("! there is no actor!");
-			return;
+			return nullptr;
 		}
 
-		alife().spawn_item(section, pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		return alife().spawn_item(section, pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
 	}
 	else
 	{
 		CSE_Abstract* E = spawn_begin(section);
 
 		if (!E)
-			return;
+			return nullptr;
 
 		E->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
 		E->o_Position.set(pos);
@@ -558,6 +558,7 @@ void game_sv_GameState::SpawnObject(const char* section, Fvector &pos)
 
 		CSE_Abstract* spawned = spawn_end(E, m_server->GetServerClient()->ID);
 		signal_Syncronize();
+		return spawned;
 	}
 }
 

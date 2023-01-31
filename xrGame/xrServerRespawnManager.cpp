@@ -1,48 +1,34 @@
 #include "stdafx.h"
 #include "xrServer.h"
-#include "game_sv_single.h"
 #include "xrserver_objects.h"
 #include "game_base.h"
-#include "game_cl_base.h"
-#include "game_sv_deathmatch.h"
 #include "Level.h"
 #include "..\TSMP3_Build_Config.h"
-#include <iostream>
-#include <string>
 #include "xrServerRespawnManager.h"
 #include <vector>
 #include "xrserver.h"
 #include "game_sv_base.h"
-
 using namespace std;
 
-#define RESPAWN_TIMER 11111
-
-int RespawnTimer = 0;
-
-ObjectRespawnClass ServerRespawnManager;
-
+UINT_PTR RespawnTimer = 0;
 vector <ObjectRespawnClass> xr_add_object;
 
-
-void ObjectRespawnClass::AddObject(string _section, int _id, int _time_respawn, float _pos_x, float _pos_y, float _pos_z)
+void ObjectRespawnClass::AddObject(shared_str &pSection, u16 pID, int pTimeRespawn, Fvector& XYZ)
 {
-    if (_time_respawn != 0)
+    if (pTimeRespawn != 0)
     {
         ObjectRespawnClass add;
         xr_add_object.push_back(add);
 
         for (vector<ObjectRespawnClass>::iterator respawn = xr_add_object.begin(); respawn != xr_add_object.end(); respawn++)
         {
-            if (respawn->section.length() != 0)
+            if (respawn->section.size() != 0)
                 continue;
 
-            respawn->section = _section;
-            respawn->id_object = _id;
-            respawn->time_respawn = _time_respawn;
-            respawn->pos_x = _pos_x;
-            respawn->pos_y = _pos_y;
-            respawn->pos_z = _pos_z;
+            respawn->section = pSection;
+            respawn->id_object = pID;
+            respawn->time_respawn = pTimeRespawn;
+            respawn->spawn_position = Fvector().set(XYZ);
             respawn->time_tick = 0;
         }
     }
@@ -58,24 +44,19 @@ void ObjectRespawnClass::CheckRespawnObjects()
             if (respawn->time_respawn <= respawn->time_tick)
             {
                 respawn->time_tick = 0;
-                CSE_Abstract* E = NULL;
-                E = Level().Server->game->spawn_begin(respawn->section.c_str());
-                E->s_flags.assign(M_SPAWN_OBJECT_LOCAL); // flags
-                E->o_Position.x = respawn->pos_x;
-                E->o_Position.y = respawn->pos_y;
-                E->o_Position.z = respawn->pos_z;
-                E = Level().Server->game->spawn_end(E, Level().Server->GetServerClient()->ID);
 
-                respawn->id_object = E->ID;
-
-                Msg("- Object spawned: [%s], id: [%d], X: [%3.2f], Y: [%3.2f], Z: [%3.2f], Time respawn: [%d]",
-                    respawn->section.c_str(), respawn->id_object, respawn->pos_x, respawn->pos_y, respawn->pos_z, respawn->time_respawn);
+                if (CSE_Abstract* resp = Level().Server->game->SpawnObject(respawn->section.c_str(), respawn->spawn_position))
+                {
+                    respawn->id_object = resp->ID;
+                    Msg("- Object spawned: [%s], id: [%d], X: [%3.2f], Y: [%3.2f], Z: [%3.2f], Time respawn: [%u]",
+                        respawn->section.c_str(), respawn->id_object, respawn->spawn_position.x, respawn->spawn_position.y, respawn->spawn_position.z, respawn->time_respawn);
+                }
             }
         }
     }
 }
 
-int ObjectRespawnClass::DestroyRespawnID(int id)
+int ObjectRespawnClass::DestroyRespawnID(u16 id)
 {
     for (vector<ObjectRespawnClass>::iterator respawn = xr_add_object.begin(); respawn != xr_add_object.end(); respawn++)
     {
@@ -88,22 +69,17 @@ int ObjectRespawnClass::DestroyRespawnID(int id)
     return 0;
 }
 
-
 void CALLBACK TimerProc(HWND, UINT, UINT, DWORD)
 {
-    ServerRespawnManager.CheckRespawnObjects();
+    ObjectRespawnClass::CheckRespawnObjects();
 }
 
-
-// переделать таймер, но пока будет так :) 
 void ObjectRespawnClass::DestroyRespawner()
 {
     xr_add_object.clear();
-
     if (RespawnTimer) 
     {
         KillTimer(NULL, RespawnTimer);
     }
-
     RespawnTimer = SetTimer(NULL, 0, 1000, &TimerProc);
 }

@@ -9,8 +9,6 @@
 #include "alife_object_registry.h"
 #include "xrServerRespawnManager.h"
 
-extern ObjectRespawnClass ServerRespawnManager;
-
 xr_string xrServer::ent_name_safe(u16 eid)
 {
 	string1024 buff;
@@ -36,7 +34,7 @@ void xrServer::Process_event_destroy(NET_Packet &P, ClientID const &sender, u32 
 		return;
 	};
 
-	ServerRespawnManager.DestroyRespawnID(id_dest); // объект удален, обнуляем id в нашем респавнере
+	ObjectRespawnClass::DestroyRespawnID(id_dest); // объект удален, обнуляем id в нашем респавнере
 
 	R_ASSERT(e_dest);
 	xrClientData *c_dest = e_dest->owner; // клиент, чей юнит
