@@ -502,6 +502,8 @@
     <ClInclude Include="..\xrRender\dxUISequenceVideoItem.h" />
     <ClInclude Include="..\xrRender\dxUIShader.h" />
     <ClInclude Include="..\xrRender\dxWallMarkArray.h" />
+    <ClInclude Include="..\xrRender\FBasicVisual.h" />
+    <ClInclude Include="..\xrRender\FHierrarhyVisual.h" />
     <ClInclude Include="..\xrRender\FLOD.h" />
     <ClInclude Include="..\xrRender\FProgressive.h" />
     <ClInclude Include="..\xrRender\FSkinned.h" />
@@ -629,6 +631,8 @@
     <ClCompile Include="..\xrRender\dxUISequenceVideoItem.cpp" />
     <ClCompile Include="..\xrRender\dxUIShader.cpp" />
     <ClCompile Include="..\xrRender\dxWallMarkArray.cpp" />
+    <ClCompile Include="..\xrRender\FBasicVisual.cpp" />
+    <ClCompile Include="..\xrRender\FHierrarhyVisual.cpp" />
     <ClCompile Include="..\xrRender\FLOD.cpp" />
     <ClCompile Include="..\xrRender\FProgressive.cpp" />
     <ClCompile Include="..\xrRender\FSkinned.cpp" />

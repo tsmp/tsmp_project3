@@ -2,7 +2,6 @@
 #include "igame_level.h"
 #include "console.h"
 #include "console_commands.h"
-#include "fbasicvisual.h"
 #include "cameramanager.h"
 #include "environment.h"
 #include "xr_input.h"

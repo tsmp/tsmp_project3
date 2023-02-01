@@ -315,9 +315,9 @@ void CActor::g_SetSprintAnimation(u32 mstate_rl, MotionID &head, MotionID &torso
 		legs = sprint.legs_rs;
 }
 
-CMotion *FindMotionKeys(MotionID motion_ID, dxRender_Visual *V)
+CMotion *FindMotionKeys(MotionID motion_ID, IRenderVisual *V)
 {
-	IKinematicsAnimated* VA = smart_cast<IKinematicsAnimated*>((IRenderVisual*)V);
+	IKinematicsAnimated* VA = smart_cast<IKinematicsAnimated*>(V);
 	return (VA && motion_ID.valid()) ? VA->LL_GetRootMotion(motion_ID) : 0;
 }
 

@@ -1,15 +1,8 @@
-// FHierrarhyVisual.h: interface for the FHierrarhyVisual class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#ifndef FHierrarhyVisualH
-#define FHierrarhyVisualH
-
 #pragma once
 
 #include "fbasicvisual.h"
 
-class ENGINE_API FHierrarhyVisual : public dxRender_Visual
+class FHierrarhyVisual : public dxRender_Visual
 {
 public:
 	xr_vector<dxRender_Visual *> children;
@@ -23,5 +16,3 @@ public:
 	virtual void Copy(dxRender_Visual *pFrom);
 	virtual void Release();
 };
-
-#endif //FHierrarhyVisualH

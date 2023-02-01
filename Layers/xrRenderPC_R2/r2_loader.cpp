@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "r2.h"
 #include "resourcemanager.h"
-#include "fbasicvisual.h"
+#include "..\xrRender\FBasicVisual.h"
 #include "fmesh.h"
 #include "xrLevel.h"
 #include "xrApplication.h"

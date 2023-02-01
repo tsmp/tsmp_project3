@@ -54,9 +54,6 @@ void IGame_Level::net_Stop()
 	bReady = false;
 }
 
-//-------------------------------------------------------------------------------------------
-extern CStatTimer tscreate;
-
 BOOL IGame_Level::Load(u32 dwNum)
 {
 	// Initialize level data
@@ -89,8 +86,6 @@ BOOL IGame_Level::Load(u32 dwNum)
 
 	// Render-level Load
 	Render->level_Load(LL_Stream);
-	tscreate.FrameEnd();
-	// Msg						("* S-CREATE: %f ms, %d times",tscreate.result,tscreate.count);
 
 	// Objects
 	g_pGamePersistent->Environment().mods_load();

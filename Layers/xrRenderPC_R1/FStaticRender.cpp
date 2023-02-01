@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "igame_persistent.h"
 #include "environment.h"
-#include "fbasicvisual.h"
+#include "..\xrRender\FBasicVisual.h"
 #include "CustomHUD.h"
 #include "xr_object.h"
 #include "fmesh.h"
@@ -142,10 +142,14 @@ void CRender::OnFrame()
 // Implementation
 IRender_ObjectSpecific *CRender::ros_create(IRenderable *parent) { return xr_new<CROS_impl>(); }
 void CRender::ros_destroy(IRender_ObjectSpecific *&p) { xr_delete(p); }
-dxRender_Visual *CRender::model_Create(LPCSTR name, IReader *data) { return Models->Create(name, data); }
-dxRender_Visual *CRender::model_CreateChild(LPCSTR name, IReader *data) { return Models->CreateChild(name, data); }
-dxRender_Visual *CRender::model_Duplicate(dxRender_Visual *V) { return Models->Instance_Duplicate(V); }
-void CRender::model_Delete(dxRender_Visual *&V, BOOL bDiscard) { Models->Delete(V, bDiscard); }
+IRenderVisual *CRender::model_Create(LPCSTR name, IReader *data) { return Models->Create(name, data); }
+IRenderVisual *CRender::model_CreateChild(LPCSTR name, IReader *data) { return Models->CreateChild(name, data); }
+IRenderVisual *CRender::model_Duplicate(IRenderVisual *V) { return Models->Instance_Duplicate((dxRender_Visual*)V); }
+void CRender::model_Delete(IRenderVisual *&V, BOOL bDiscard) 
+{
+	dxRender_Visual* pVisual = (dxRender_Visual*)V;
+	Models->Delete(pVisual, bDiscard);
+}
 IRender_DetailModel *CRender::model_CreateDM(IReader *F)
 {
 	CDetail *D = xr_new<CDetail>();
@@ -162,14 +166,14 @@ void CRender::model_Delete(IRender_DetailModel *&F)
 		F = NULL;
 	}
 }
-dxRender_Visual *CRender::model_CreatePE(LPCSTR name)
+IRenderVisual *CRender::model_CreatePE(LPCSTR name)
 {
 	PS::CPEDef *SE = PSLibrary.FindPED(name);
 	R_ASSERT3(SE, "Particle effect doesn't exist", name);
 	return Models->CreatePE(SE);
 }
 
-dxRender_Visual *CRender::model_CreateParticles(LPCSTR name)
+IRenderVisual *CRender::model_CreateParticles(LPCSTR name)
 {
 	PS::CPEDef *SE = PSLibrary.FindPED(name);
 	if (SE)
@@ -200,7 +204,7 @@ IRender_Sector *CRender::getSector(int id)
 	return Sectors[id];
 }
 IRender_Sector *CRender::getSectorActive() { return pLastSector; }
-dxRender_Visual *CRender::getVisual(int id)
+IRenderVisual *CRender::getVisual(int id)
 {
 	VERIFY(id < int(Visuals.size()));
 	return Visuals[id];
@@ -243,7 +247,7 @@ void CRender::add_Visual(IRenderVisual *V)
 	add_leafs_Dynamic((dxRender_Visual*)V);
 }
 
-void CRender::add_Geometry(dxRender_Visual *V) { add_Static(V, View->getMask()); }
+void CRender::add_Geometry(IRenderVisual *V) { add_Static((dxRender_Visual*)V, View->getMask()); }
 
 void CRender::add_StaticWallmark(ref_shader &S, const Fvector &P, float s, CDB::TRI *T, Fvector *verts)
 {
@@ -522,7 +526,7 @@ void CRender::Calculate()
 						else
 						{
 							// Occlusion
-							vis_data &v_orig = renderable->renderable.visual->vis;
+							vis_data& v_orig = renderable->renderable.visual->getVisData();
 							vis_data v_copy = v_orig;
 							v_copy.box.xform(renderable->renderable.xform);
 							BOOL bVisible = HOM.visible(v_copy);

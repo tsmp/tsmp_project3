@@ -61,9 +61,6 @@
     <Filter Include="Render">
       <UniqueIdentifier>{6b8c0060-7d16-49bf-a3af-c09966f1090a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Visuals">
-      <UniqueIdentifier>{bb539ed6-c240-46b3-9996-3fc02e19ccd0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render\Visibility">
       <UniqueIdentifier>{59520338-5c4a-4b89-903a-12be71d5eeb5}</UniqueIdentifier>
     </Filter>
@@ -293,12 +290,6 @@
     </ClInclude>
     <ClInclude Include="FDemoRecord.h">
       <Filter>Game API\Demo</Filter>
-    </ClInclude>
-    <ClInclude Include="FBasicVisual.h">
-      <Filter>Render\Visuals</Filter>
-    </ClInclude>
-    <ClInclude Include="FHierrarhyVisual.h">
-      <Filter>Render\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="vis_common.h">
       <Filter>Render\Visibility</Filter>
@@ -616,12 +607,6 @@
     </ClCompile>
     <ClCompile Include="FDemoRecord.cpp">
       <Filter>Game API\Demo</Filter>
-    </ClCompile>
-    <ClCompile Include="FBasicVisual.cpp">
-      <Filter>Render\Visuals</Filter>
-    </ClCompile>
-    <ClCompile Include="FHierrarhyVisual.cpp">
-      <Filter>Render\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="Frustum.cpp">
       <Filter>Render\Visibility\Frustum</Filter>

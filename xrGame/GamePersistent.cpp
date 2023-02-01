@@ -93,10 +93,8 @@ CGamePersistent::~CGamePersistent(void)
 	Engine.Event.Handler_Detach(eQuickLoad, this);
 }
 
-void CGamePersistent::RegisterModel(dxRender_Visual *V)
+void CGamePersistent::RegisterModel(IRenderVisual *VV)
 {
-	IRenderVisual* VV = (IRenderVisual*)V;
-
 	// Check types
 	switch (VV->getType())
 	{

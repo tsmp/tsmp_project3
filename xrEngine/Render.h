@@ -15,7 +15,6 @@ using wm_shader = FactoryPtr<IUIShader>;
 
 // refs
 class ENGINE_API IRenderable;
-class ENGINE_API dxRender_Visual;
 class ENGINE_API IBlender;
 class CSkeletonWallmark;
 struct ENGINE_API FSlideWindowItem;
@@ -205,7 +204,7 @@ public:
 	virtual LPCSTR getShaderPath() = 0;
 	virtual ref_shader getShader(int id) = 0;
 	virtual IRender_Sector *getSector(int id) = 0;
-	virtual dxRender_Visual *getVisual(int id) = 0;
+	virtual IRenderVisual *getVisual(int id) = 0;
 	virtual IRender_Sector *detectSector(const Fvector &P) = 0;
 	virtual IRender_Target *getTarget() = 0;
 
@@ -226,7 +225,7 @@ public:
 	virtual void set_Object(IRenderable *O) = 0;
 	virtual void add_Occluder(Fbox2 &bb_screenspace) = 0; // mask screen region as oclluded (-1..1, -1..1)
 	virtual void add_Visual(IRenderVisual *V) = 0;		  // add visual leaf	(no culling performed at all)
-	virtual void add_Geometry(dxRender_Visual *V) = 0;	  // add visual(s)	(all culling performed)
+	virtual void add_Geometry(IRenderVisual *V) = 0;	  // add visual(s)	(all culling performed)
 	virtual void add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) = 0;
 	//	Prefer this function when possible
 	virtual void add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V) = 0;
@@ -250,12 +249,12 @@ public:
 	virtual void glow_destroy(IRender_Glow *p_){};
 
 	// Models
-	virtual dxRender_Visual *model_CreateParticles(LPCSTR name) = 0;
+	virtual IRenderVisual *model_CreateParticles(LPCSTR name) = 0;
 	virtual IRender_DetailModel *model_CreateDM(IReader *F) = 0;
-	virtual dxRender_Visual *model_Create(LPCSTR name, IReader *data = 0) = 0;
-	virtual dxRender_Visual *model_CreateChild(LPCSTR name, IReader *data) = 0;
-	virtual dxRender_Visual *model_Duplicate(dxRender_Visual *V) = 0;
-	virtual void model_Delete(dxRender_Visual *&V, BOOL bDiscard = FALSE) = 0;
+	virtual IRenderVisual *model_Create(LPCSTR name, IReader *data = 0) = 0;
+	virtual IRenderVisual *model_CreateChild(LPCSTR name, IReader *data) = 0;
+	virtual IRenderVisual *model_Duplicate(IRenderVisual *V) = 0;
+	virtual void model_Delete(IRenderVisual *&V, BOOL bDiscard = FALSE) = 0;
 	virtual void model_Delete(IRender_DetailModel *&F) = 0;
 	virtual void model_Logging(BOOL bEnable) = 0;
 	virtual void models_Prefetch() = 0;

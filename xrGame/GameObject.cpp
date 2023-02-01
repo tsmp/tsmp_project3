@@ -1,6 +1,6 @@
 #include "pch_script.h"
 #include "GameObject.h"
-#include "fbasicvisual.h"
+#include "..\Include\xrRender\RenderVisual.h"
 #include "PhysicsShell.h"
 #include "ai_space.h"
 #include "CustomMonster.h"

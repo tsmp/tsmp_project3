@@ -108,7 +108,7 @@ public:
 	FSlideWindowItem *getSWI(int id);
 	IRender_Portal *getPortal(int id);
 	IRender_Sector *getSectorActive();
-	dxRender_Visual *model_CreatePE(LPCSTR name);
+	IRenderVisual *model_CreatePE(LPCSTR name);
 	void ApplyBlur4(FVF::TL4uv *dest, u32 w, u32 h, float k);
 	void apply_object(IRenderable *O);
 	IC void apply_lmaterial(){};
@@ -145,7 +145,7 @@ public:
 	virtual LPCSTR getShaderPath() { return "r1\\"; }
 	virtual ref_shader getShader(int id);
 	virtual IRender_Sector *getSector(int id);
-	virtual dxRender_Visual *getVisual(int id);
+	virtual IRenderVisual *getVisual(int id);
 	virtual IRender_Sector *detectSector(const Fvector &P);
 	virtual IRender_Target *getTarget();
 
@@ -154,7 +154,7 @@ public:
 	virtual void set_Object(IRenderable *O);
 	virtual void add_Occluder(Fbox2 &bb_screenspace); // mask screen region as oclluded
 	virtual void add_Visual(IRenderVisual *V);		  // add visual leaf (no culling performed at all)
-	virtual void add_Geometry(dxRender_Visual *V);	  // add visual(s)	(all culling performed)
+	virtual void add_Geometry(IRenderVisual *V);	  // add visual(s)	(all culling performed)
 
 	// wallmarks
 	virtual void add_StaticWallmark(ref_shader &S, const Fvector &P, float s, CDB::TRI *T, Fvector *V);
@@ -181,12 +181,12 @@ public:
 	virtual IRender_Glow *glow_create();
 
 	// Models
-	virtual dxRender_Visual *model_CreateParticles(LPCSTR name);
+	virtual IRenderVisual *model_CreateParticles(LPCSTR name);
 	virtual IRender_DetailModel *model_CreateDM(IReader *F);
-	virtual dxRender_Visual *model_Create(LPCSTR name, IReader *data = 0);
-	virtual dxRender_Visual *model_CreateChild(LPCSTR name, IReader *data);
-	virtual dxRender_Visual *model_Duplicate(dxRender_Visual *V);
-	virtual void model_Delete(dxRender_Visual *&V, BOOL bDiscard);
+	virtual IRenderVisual *model_Create(LPCSTR name, IReader *data = 0);
+	virtual IRenderVisual *model_CreateChild(LPCSTR name, IReader *data);
+	virtual IRenderVisual *model_Duplicate(IRenderVisual *V);
+	virtual void model_Delete(IRenderVisual *&V, BOOL bDiscard);
 	virtual void model_Delete(IRender_DetailModel *&F);
 	virtual void model_Logging(BOOL bEnable) { Models->Logging(bEnable); }
 	virtual void models_Prefetch();

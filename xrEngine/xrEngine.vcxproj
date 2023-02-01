@@ -1125,13 +1125,11 @@
     <ClInclude Include="Environment.h" />
     <ClInclude Include="ETextureParams.h" />
     <ClInclude Include="EventAPI.h" />
-    <ClInclude Include="FBasicVisual.h" />
     <ClInclude Include="FDemoPlay.h" />
     <ClInclude Include="FDemoRecord.h" />
     <ClInclude Include="Feel_Sound.h" />
     <ClInclude Include="Feel_Touch.h" />
     <ClInclude Include="Feel_Vision.h" />
-    <ClInclude Include="FHierrarhyVisual.h" />
     <ClInclude Include="Fmesh.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="FVF.h" />
@@ -1289,12 +1287,10 @@
     <ClCompile Include="Environment_render.cpp" />
     <ClCompile Include="ETextureParams.cpp" />
     <ClCompile Include="EventAPI.cpp" />
-    <ClCompile Include="FBasicVisual.cpp" />
     <ClCompile Include="FDemoPlay.cpp" />
     <ClCompile Include="FDemoRecord.cpp" />
     <ClCompile Include="Feel_Touch.cpp" />
     <ClCompile Include="Feel_Vision.cpp" />
-    <ClCompile Include="FHierrarhyVisual.cpp" />
     <ClCompile Include="fmesh.cpp" />
     <ClCompile Include="Frustum.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>

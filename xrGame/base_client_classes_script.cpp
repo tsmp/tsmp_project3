@@ -10,7 +10,7 @@
 #include "base_client_classes.h"
 #include "base_client_classes_wrappers.h"
 #include "feel_sound.h"
-#include "fbasicvisual.h"
+#include "..\Include\xrRender\RenderVisual.h"
 #include "..\include\xrRender\KinematicsAnimated.h"
 #include "ai/stalker/ai_stalker.h"
 #include "../xrNetwork/net_utils.h"
@@ -147,9 +147,9 @@ void CObjectScript::script_register(lua_State *L)
 void IRender_VisualScript::script_register(lua_State *L)
 {
 	module(L)
-		[class_<dxRender_Visual>("IRender_Visual")
-			 .def(constructor<>())
-			 .def("dcast_PKinematicsAnimated", &dxRender_Visual::dcast_PKinematicsAnimated)];
+		[class_<IRenderVisual>("IRender_Visual")
+			 //.def(constructor<>())
+			 .def("dcast_PKinematicsAnimated", &IRenderVisual::dcast_PKinematicsAnimated)];
 }
 
 void CKinematicsAnimated_PlayCycle(IKinematicsAnimated *sa, LPCSTR anim)

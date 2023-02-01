@@ -1,14 +1,10 @@
-#ifndef __XR_OBJECT_H__
-#define __XR_OBJECT_H__
-
+#pragma once
 #include "ispatial.h"
 #include "isheduled.h"
-//#include "iinputreceiver.h"
 #include "irenderable.h"
 #include "icollidable.h"
 
 // refs
-class ENGINE_API IRender_Visual;
 class ENGINE_API IRender_Sector;
 class ENGINE_API IRender_ObjectSpecific;
 class ENGINE_API CCustomHUD;
@@ -126,8 +122,8 @@ public:
 	virtual BOOL renderable_ShadowReceive() { return TRUE; }
 
 	// Accessors and converters
-	ICF IRenderVisual *Visual() { return (IRenderVisual*)renderable.visual; }
-	ICF const IRenderVisual* cVisual() const { return (IRenderVisual*)renderable.visual; }
+	ICF IRenderVisual *Visual() { return renderable.visual; }
+	ICF const IRenderVisual* cVisual() const { return renderable.visual; }
 	ICF ICollisionForm *CFORM() const { return collidable.model; }
 	virtual CObject *dcast_CObject() { return this; }
 	virtual IRenderable *dcast_Renderable() { return this; }
@@ -200,5 +196,3 @@ public:
 };
 
 #pragma pack(pop)
-
-#endif //__XR_OBJECT_H__

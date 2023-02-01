@@ -6,7 +6,6 @@
 
 class IKinematics;
 class CBlend;
-class CBoneInstanceAnimated;
 struct CKey;
 class CInifile;
 class IKinematicsAnimated;

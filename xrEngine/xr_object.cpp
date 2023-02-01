@@ -6,7 +6,6 @@
 #include "render.h"
 #include "xrLevel.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "fbasicvisual.h"
 
 #include "GameFont.h"
 
@@ -35,7 +34,7 @@ void CObject::cNameVisual_set(shared_str N)
 	// replace model
 	if (*N && N[0])
 	{
-		dxRender_Visual *old_v = renderable.visual;
+		IRenderVisual *old_v = renderable.visual;
 
 		NameVisual = N;
 		renderable.visual = Render->model_Create(*N);
@@ -107,13 +106,13 @@ void CObject::setVisible(BOOL _visible)
 void CObject::Center(Fvector &C) const
 {
 	VERIFY2(renderable.visual, *cName());
-	renderable.xform.transform_tiny(C, renderable.visual->vis.sphere.P);
+	renderable.xform.transform_tiny(C, renderable.visual->getVisData().sphere.P);
 }
 
 float CObject::Radius() const
 {
 	VERIFY2(renderable.visual, *cName());
-	return renderable.visual->vis.sphere.R;
+	return renderable.visual->getVisData().sphere.R;
 }
 
 const Fbox &CObject::BoundingBox() const

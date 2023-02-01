@@ -5,7 +5,6 @@
 
 // refs
 class CKinematicsAnimated;
-class CBoneInstanceAnimated;
 struct ENGINE_API CKey;
 class ENGINE_API CInifile;
 

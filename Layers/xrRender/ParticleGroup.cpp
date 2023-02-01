@@ -127,7 +127,11 @@ void CParticleGroup::SItem::Clear()
     VisualVec visuals;
     GetVisuals(visuals);
     for (VisualVecIt it = visuals.begin(); it != visuals.end(); it++)
-        ::Render->model_Delete(*it);
+    {
+        IRenderVisual* pVisual = static_cast<IRenderVisual*>(*it);
+        ::Render->model_Delete(pVisual);
+        *it = nullptr;
+    }
 }
 void CParticleGroup::SItem::StartRelatedChild(CParticleEffect *emitter, LPCSTR eff_name, PAPI::Particle &m)
 {
@@ -207,9 +211,17 @@ void CParticleGroup::SItem::Stop(BOOL def_stop)
     if (!def_stop)
     {
         for (it = _children_related.begin(); it != _children_related.end(); it++)
-            ::Render->model_Delete(*it);
+        {
+            IRenderVisual* pVisual = static_cast<IRenderVisual*>(*it);
+            ::Render->model_Delete(pVisual);
+            *it = nullptr;
+        }
         for (it = _children_free.begin(); it != _children_free.end(); it++)
-            ::Render->model_Delete(*it);
+        {
+            IRenderVisual* pVisual = static_cast<IRenderVisual*>(*it);
+            ::Render->model_Delete(pVisual);
+            *it = nullptr;
+        }
         _children_related.clear();
         _children_free.clear();
     }
@@ -339,7 +351,9 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect &def, Fbox &
                 else
                 {
                     rem_cnt++;
-                    ::Render->model_Delete(*it);
+                    IRenderVisual* pVisual = static_cast<IRenderVisual*>(*it);
+                    ::Render->model_Delete(pVisual);
+                    *it = nullptr;
                 }
             }
         }

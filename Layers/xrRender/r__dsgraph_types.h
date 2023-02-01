@@ -4,6 +4,7 @@
 #define render_alloc xalloc
 
 using render_allocator = xr_allocator;
+class dxRender_Visual;
 
 // #define	USE_RESOURCE_DEBUGGER
 

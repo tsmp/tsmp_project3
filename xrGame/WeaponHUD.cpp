@@ -26,7 +26,7 @@ BOOL weapon_hud_value::load(const shared_str &section, CHudItem *owner)
 
 	// Visual
 	LPCSTR visual_name = pSettings->r_string(section, "visual");
-	m_animations = smart_cast<IKinematicsAnimated *>((IRenderVisual*)::Render->model_Create(visual_name));
+	m_animations = smart_cast<IKinematicsAnimated *>(::Render->model_Create(visual_name));
 
 	// fire bone
 	if (smart_cast<CWeapon *>(owner))
@@ -58,8 +58,9 @@ BOOL weapon_hud_value::load(const shared_str &section, CHudItem *owner)
 
 weapon_hud_value::~weapon_hud_value()
 {
-	dxRender_Visual* temp = (dxRender_Visual*)m_animations;
+	IRenderVisual* temp = (IRenderVisual*)m_animations;
 	::Render->model_Delete(temp);
+	m_animations = nullptr;
 }
 
 u32 shared_weapon_hud::motion_length(MotionID M)

@@ -1,18 +1,7 @@
-// dxRender_Visual.cpp: implementation of the dxRender_Visual class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
-#pragma hdrstop
-
-#include "render.h"
-
+#include "../../xrEngine/render.h"
 #include "fbasicvisual.h"
-#include "fmesh.h"
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
+#include "../../xrEngine/fmesh.h"
 
 IRender_Mesh::~IRender_Mesh()
 {
@@ -34,8 +23,6 @@ dxRender_Visual::~dxRender_Visual()
 void dxRender_Visual::Release()
 {
 }
-
-CStatTimer tscreate;
 
 void dxRender_Visual::Load(const char *N, IReader *data, u32)
 {

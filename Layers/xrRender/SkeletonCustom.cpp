@@ -113,8 +113,11 @@ CKinematics::~CKinematics()
 	// wallmarks
 	ClearWallmarks();
 
-	if(m_lod)
-		::Render->model_Delete(m_lod);
+	if (m_lod)
+	{
+		IRenderVisual* pVisual = static_cast<IRenderVisual*>(m_lod);
+		::Render->model_Delete(pVisual);
+	}
 }
 
 void CKinematics::IBoneInstances_Create()
@@ -170,7 +173,7 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 		{
 			string_path		lod_name;
 			LD->r_string	(lod_name, sizeof(lod_name));
-            m_lod 			= ::Render->model_CreateChild(lod_name, NULL);
+            m_lod 			= (dxRender_Visual*) ::Render->model_CreateChild(lod_name, NULL);
             VERIFY3(m_lod,"Cant create LOD model for", N);
         }
         LD->close	();
@@ -369,7 +372,7 @@ void CKinematics::Copy(dxRender_Visual *P)
 
 	CalculateBones_Invalidate	();
 
-    m_lod 			= (pFrom->m_lod)?::Render->model_Duplicate	(pFrom->m_lod):0;
+    m_lod 			= (pFrom->m_lod)? (dxRender_Visual*)::Render->model_Duplicate	(pFrom->m_lod):0;
 }
 
 void CKinematics::CalculateBones_Invalidate	()

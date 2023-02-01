@@ -6,6 +6,7 @@
 
 #include "IGame_ObjectPool.h"
 
+class IRenderVisual;
 class IMainMenu;
 class ENGINE_API CPS_Instance;
 //-----------------------------------------------------------------------------------------------------------
@@ -87,7 +88,7 @@ public:
 
 	virtual void UpdateGameType(){};
 
-	virtual void RegisterModel(dxRender_Visual *V)
+	virtual void RegisterModel(IRenderVisual *V)
 
 		= 0;
 
