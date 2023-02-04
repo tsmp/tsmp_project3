@@ -58,7 +58,7 @@ BOOL weapon_hud_value::load(const shared_str &section, CHudItem *owner)
 
 weapon_hud_value::~weapon_hud_value()
 {
-	IRenderVisual* temp = (IRenderVisual*)m_animations;
+	IRenderVisual* temp = smart_cast<IRenderVisual*>(m_animations);
 	::Render->model_Delete(temp);
 	m_animations = nullptr;
 }

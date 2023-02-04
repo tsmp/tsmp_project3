@@ -149,6 +149,7 @@ void CRender::model_Delete(IRenderVisual *&V, BOOL bDiscard)
 {
 	dxRender_Visual* pVisual = (dxRender_Visual*)V;
 	Models->Delete(pVisual, bDiscard);
+	V = nullptr;
 }
 IRender_DetailModel *CRender::model_CreateDM(IReader *F)
 {
