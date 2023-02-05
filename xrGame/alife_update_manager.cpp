@@ -22,6 +22,7 @@
 #include "profiler.h"
 #include "mt_config.h"
 #include "igame_persistent.h"
+#include "xrServerRespawnManager.h"
 
 using namespace ALife;
 
@@ -245,11 +246,20 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
 
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator I = objects().objects().begin();
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator E = objects().objects().end();
+	ObjectRespawnClass::DestroyRespawner();
 	for (; I != E; ++I)
+	{
 		(*I).second->on_register();
-
+		if (CSE_Abstract* entity = (*I).second)
+		{
+			ObjectRespawnClass::AddObject(
+				entity->s_name,
+				entity->ID,
+				entity->RespawnTime,
+				entity->o_Position);
+		}
+	}
 	save(save_name);
-
 	Msg("* New game is successfully created!");
 }
 

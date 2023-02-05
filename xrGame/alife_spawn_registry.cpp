@@ -111,24 +111,6 @@ void CALifeSpawnRegistry::load(IReader &file_stream, xrGUID *save_guid)
 	m_spawns.load(*chunk);
 	chunk->close();
 
-#if 0
-	SPAWN_GRAPH::vertex_iterator			I = m_spawns.vertices().begin();
-	SPAWN_GRAPH::vertex_iterator			E = m_spawns.vertices().end();
-	for ( ; I != E; ++I) {
-		luabind::wrap_base		*base = smart_cast<luabind::wrap_base*>(&(*I).second->data()->object());
-		if (!base)
-			continue;
-
-		if (xr_strcmp((*I).second->data()->object().name_replace(),"rostok_stalker_outfit"))
-			continue;
-
-		dummy					*_dummy = (dummy*)((void*)base->m_self.m_impl);
-		lua_State				**_state = &_dummy->state;
-		Msg						("0x%08x",*(int*)&_state);
-		break;
-	}
-#endif
-
 	chunk = file_stream.open_chunk(2);
 	load_data(m_artefact_spawn_positions, *chunk);
 	chunk->close();

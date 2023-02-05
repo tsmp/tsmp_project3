@@ -16,8 +16,8 @@ public:
 	static void DestroyRespawner();
 
 	u16 id_object;
-	int time_tick;
 	u16 time_respawn;
-	Fvector spawn_position;
+	int time_tick;
 	shared_str section;
+	Fvector spawn_position;
 };
