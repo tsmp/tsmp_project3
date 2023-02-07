@@ -556,9 +556,9 @@ CSE_Abstract *game_sv_GameState::SpawnObject(const char* section, Fvector &pos)
 		E->o_Position.set(pos);
 		E->o_Angle.set(0.f, 0.f, 0.f);
 
-		CSE_Abstract* spawned = spawn_end(E, m_server->GetServerClient()->ID);
+		E = spawn_end(E, m_server->GetServerClient()->ID);
 		signal_Syncronize();
-		return spawned;
+		return E;
 	}
 }
 

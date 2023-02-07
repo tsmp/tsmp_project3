@@ -13,7 +13,7 @@ using namespace std;
 UINT_PTR RespawnTimer = 0;
 vector <ObjectRespawnClass> xr_add_object;
 
-void ObjectRespawnClass::AddObject(shared_str &pSection, u16 pID, int pTimeRespawn, Fvector& XYZ)
+void ObjectRespawnClass::AddObject(shared_str &pSection, shared_str& pCustomData, u16 pID, int pTimeRespawn, Fvector& XYZ)
 {
     if (pTimeRespawn != 0)
     {
@@ -25,6 +25,7 @@ void ObjectRespawnClass::AddObject(shared_str &pSection, u16 pID, int pTimeRespa
             if (respawn->section.size() != 0)
                 continue;
 
+            respawn->custom_data = pCustomData;
             respawn->section = pSection;
             respawn->id_object = pID;
             respawn->time_respawn = pTimeRespawn;

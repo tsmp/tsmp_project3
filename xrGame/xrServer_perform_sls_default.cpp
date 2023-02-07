@@ -48,6 +48,7 @@ void xrServer::SLS_Default()
 			{
 				ObjectRespawnClass::AddObject(
 					entity->s_name,
+					entity->m_ini_string,
 					entity->ID,
 					entity->RespawnTime,
 					entity->o_Position);
