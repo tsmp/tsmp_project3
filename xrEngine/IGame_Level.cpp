@@ -25,18 +25,17 @@ IGame_Level::IGame_Level()
 	pHUD = NULL;
 }
 
-#include "resourcemanager.h"
-
 IGame_Level::~IGame_Level()
 {
 	if (strstr(Core.Params, "-nes_texture_storing"))
-		Device.Resources->StoreNecessaryTextures();
-	//.	DEL_INSTANCE				( pHUD			);
+		Device.m_pRender->ResourcesStoreNecessaryTextures();
+
 	xr_delete(pLevel);
 
 	// Render-level unload
 	Render->level_Unload();
 	xr_delete(m_pCameras);
+
 	// Unregister
 	Device.seqRender.Remove(this);
 	Device.seqFrame.Remove(this);
@@ -47,6 +46,7 @@ void IGame_Level::net_Stop()
 {
 	for (int i = 0; i < 6; i++)
 		Objects.Update(true);
+
 	// Destroy all objects
 	Objects.Unload();
 	IR_Release();

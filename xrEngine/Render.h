@@ -1,13 +1,10 @@
-#ifndef _RENDER_H_
-#define _RENDER_H_
+#pragma once
 
 #include "frustum.h"
 #include "vis_common.h"
-#include "IRenderDetailModel.h"
 
 #include "../Include/xrAPI/xrAPI.h"
 #include "../Include/xrRender/FactoryPtr.h"
-
 
 class IUIShader;
 
@@ -15,7 +12,6 @@ using wm_shader = FactoryPtr<IUIShader>;
 
 // refs
 class ENGINE_API IRenderable;
-class ENGINE_API IBlender;
 class CSkeletonWallmark;
 struct ENGINE_API FSlideWindowItem;
 
@@ -202,7 +198,6 @@ public:
 	virtual void Statistics(CGameFont *F){};
 
 	virtual LPCSTR getShaderPath() = 0;
-	virtual ref_shader getShader(int id) = 0;
 	virtual IRender_Sector *getSector(int id) = 0;
 	virtual IRenderVisual *getVisual(int id) = 0;
 	virtual IRender_Sector *detectSector(const Fvector &P) = 0;
@@ -236,9 +231,6 @@ public:
 	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) = 0;
 	virtual void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) = 0;
 
-	virtual IBlender *blender_create(CLASS_ID cls) = 0;
-	virtual void blender_destroy(IBlender *&) = 0;
-
 	virtual IRender_ObjectSpecific *ros_create(IRenderable *parent) = 0;
 	virtual void ros_destroy(IRender_ObjectSpecific *&) = 0;
 
@@ -250,12 +242,10 @@ public:
 
 	// Models
 	virtual IRenderVisual *model_CreateParticles(LPCSTR name) = 0;
-	virtual IRender_DetailModel *model_CreateDM(IReader *F) = 0;
 	virtual IRenderVisual *model_Create(LPCSTR name, IReader *data = 0) = 0;
 	virtual IRenderVisual *model_CreateChild(LPCSTR name, IReader *data) = 0;
 	virtual IRenderVisual *model_Duplicate(IRenderVisual *V) = 0;
 	virtual void model_Delete(IRenderVisual *&V, BOOL bDiscard = FALSE) = 0;
-	virtual void model_Delete(IRender_DetailModel *&F) = 0;
 	virtual void model_Logging(BOOL bEnable) = 0;
 	virtual void models_Prefetch() = 0;
 	virtual void models_Clear(BOOL b_complete) = 0;
@@ -281,5 +271,3 @@ public:
 };
 
 extern ENGINE_API IRender_interface *Render;
-
-#endif

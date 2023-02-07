@@ -6,7 +6,6 @@
 
 #include "IGame_Level.h"
 #include "Console.h"
-#include "resourcemanager.h"
 #include "Render.h"
 #include "ps_instance.h"
 #include "CustomHUD.h"
@@ -121,8 +120,8 @@ void IGame_Persistent::OnGameStart()
 	Log("Loading objects...");
 	ObjectPool.prefetch();
 	Log("Loading models...");
-	Render->models_Prefetch();
-	Device.Resources->DeferredUpload();
+	Render->models_Prefetch();	
+	Device.m_pRender->ResourcesDeferredUpload();
 
 	p_time = 1000.f * Device.GetTimerGlobal()->GetElapsed_sec() - p_time;
 	u32 p_mem = Memory.mem_usage() - mem_0;

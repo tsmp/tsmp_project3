@@ -7,7 +7,6 @@
 #include "xr_input.h"
 #include "CustomHUD.h"
 #include "..\Include\xrRender\Kinematics.h"
-#include "ResourceManager.h"
 #include "xr_object.h"
 #include "..\TSMP3_Build_Config.h"
 
@@ -426,16 +425,6 @@ public:
 	}
 };
 
-class CCC_DumpResources : public IConsole_Command
-{
-public:
-	CCC_DumpResources(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args)
-	{
-		Device.Resources->Dump(args != NULL);
-	}
-};
-
 XRCORE_API void _dump_open_files(int mode);
 class CCC_DumpOpenFiles : public IConsole_Command
 {
@@ -540,7 +529,6 @@ void CCC_Register()
 		CMD4(CCC_DR_UsePoints, "demo_record_step", &g_iDR_LM_Step, 0, 3);
 	}
 
-	CMD1(CCC_DumpResources, "dump_resources");
 	CMD1(CCC_DumpOpenFiles, "dump_open_files");
 
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
