@@ -60,9 +60,9 @@ void IBlender::CreatePalette(xr_vector<IBlender *> &palette)
 #include "render.h"
 IBlender *IBlender::Create(CLASS_ID cls)
 {
-	return ::Render->blender_create(cls);
+	return ::RImplementation.blender_create(cls);
 }
 void IBlender::Destroy(IBlender *&B)
 {
-	::Render->blender_destroy(B);
+	::RImplementation.blender_destroy(B);
 }

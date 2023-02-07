@@ -1,9 +1,3 @@
-// Shader.h: interface for the CShader class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(SHADER__INCLUDED_)
-#define SHADER__INCLUDED_
 #pragma once
 
 #include "r_constants.h"
@@ -16,14 +10,13 @@
 #include "sh_rt.h"
 
 typedef xr_vector<shared_str> sh_list;
-class ENGINE_API CBlender_Compile;
-class ENGINE_API IBlender;
+class CBlender_Compile;
+class IBlender;
 #define SHADER_PASSES_MAX 2
 
 #pragma pack(push, 4)
 
-//////////////////////////////////////////////////////////////////////////
-struct ENGINE_API STextureList : public xr_resource_flagged, public xr_vector<std::pair<u32, ref_texture>>
+struct STextureList : public xr_resource_flagged, public xr_vector<std::pair<u32, ref_texture>>
 {
 	typedef xr_vector<std::pair<u32, ref_texture>> inherited_vec;
 	~STextureList();
@@ -45,21 +38,20 @@ struct ENGINE_API STextureList : public xr_resource_flagged, public xr_vector<st
 	virtual void clear_not_free();
 };
 typedef resptr_core<STextureList, resptr_base<STextureList>> ref_texture_list;
-//////////////////////////////////////////////////////////////////////////
-struct ENGINE_API SMatrixList : public xr_resource_flagged, public svector<ref_matrix, 4>
+
+struct SMatrixList : public xr_resource_flagged, public svector<ref_matrix, 4>
 {
 	~SMatrixList();
 };
 typedef resptr_core<SMatrixList, resptr_base<SMatrixList>> ref_matrix_list;
-//////////////////////////////////////////////////////////////////////////
-struct ENGINE_API SConstantList : public xr_resource_flagged, public svector<ref_constant_obsolette, 4>
+
+struct SConstantList : public xr_resource_flagged, public svector<ref_constant_obsolette, 4>
 {
 	~SConstantList();
 };
 typedef resptr_core<SConstantList, resptr_base<SConstantList>> ref_constant_list;
 
-//////////////////////////////////////////////////////////////////////////
-struct ENGINE_API SGeometry : public xr_resource_flagged
+struct SGeometry : public xr_resource_flagged
 {
 	ref_declaration dcl;
 	IDirect3DVertexBuffer9 *vb;
@@ -67,7 +59,8 @@ struct ENGINE_API SGeometry : public xr_resource_flagged
 	u32 vb_stride;
 	~SGeometry();
 };
-struct ENGINE_API resptrcode_geom : public resptr_base<SGeometry>
+
+struct resptrcode_geom : public resptr_base<SGeometry>
 {
 	void create(D3DVERTEXELEMENT9 *decl, IDirect3DVertexBuffer9 *vb, IDirect3DIndexBuffer9 *ib);
 	void create(u32 FVF, IDirect3DVertexBuffer9 *vb, IDirect3DIndexBuffer9 *ib);
@@ -76,8 +69,7 @@ struct ENGINE_API resptrcode_geom : public resptr_base<SGeometry>
 };
 typedef resptr_core<SGeometry, resptrcode_geom> ref_geom;
 
-//////////////////////////////////////////////////////////////////////////
-struct ENGINE_API SPass : public xr_resource_flagged
+struct SPass : public xr_resource_flagged
 {
 	ref_state state;	  // Generic state, like Z-Buffering, samplers, etc
 	ref_ps ps;			  // may be NULL = FFP, in that case "state" must contain TSS setup
@@ -92,8 +84,7 @@ struct ENGINE_API SPass : public xr_resource_flagged
 };
 typedef resptr_core<SPass, resptr_base<SPass>> ref_pass;
 
-//////////////////////////////////////////////////////////////////////////
-struct ENGINE_API ShaderElement : public xr_resource_flagged
+struct ShaderElement : public xr_resource_flagged
 {
 public:
 	struct Sflags
@@ -116,8 +107,7 @@ public:
 };
 typedef resptr_core<ShaderElement, resptr_base<ShaderElement>> ref_selement;
 
-//////////////////////////////////////////////////////////////////////////
-struct ENGINE_API Shader : public xr_resource_flagged
+struct Shader : public xr_resource_flagged
 {
 public:
 	ref_selement E[6]; // R1 - 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models,
@@ -126,7 +116,8 @@ public:
 	BOOL equal(Shader &S);
 	BOOL equal(Shader *S);
 };
-struct ENGINE_API resptrcode_shader : public resptr_base<Shader>
+
+struct resptrcode_shader : public resptr_base<Shader>
 {
 	void create(LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
 	void create(IBlender *B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
@@ -144,5 +135,3 @@ enum SE_R1
 };
 
 #pragma pack(pop)
-
-#endif // !defined(AFX_SHADER_H__9CBD70DD_E147_446B_B4EE_5DA321EB726F__INCLUDED_)

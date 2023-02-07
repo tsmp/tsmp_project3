@@ -1,32 +1,18 @@
-// TextureManager.cpp: implementation of the CResourceManager class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
-#pragma hdrstop
 
 #pragma warning(disable : 4995)
 #include <d3dx9.h>
 #pragma warning(default : 4995)
 
 #include "ResourceManager.h"
-#include "tss.h"
+#include "blenders\tss.h"
 #include "..\Layers\xrRender\blenders\blender.h"
 #include "..\Layers\xrRender\blenders\blender_recorder.h"
 
 #include "..\TSMP3_Build_Config.h"
 
-void fix_texture_name(LPSTR fn)
-{
-	LPSTR _ext = strext(fn);
-	if (_ext &&
-		(0 == stricmp(_ext, ".tga") ||
-		 0 == stricmp(_ext, ".dds") ||
-		 0 == stricmp(_ext, ".bmp") ||
-		 0 == stricmp(_ext, ".ogm")))
-		*_ext = 0;
-}
-//--------------------------------------------------------------------------------------------------------------
+void fix_texture_name(LPSTR fn);
+
 template <class T>
 BOOL reclaim(xr_vector<T *> &vec, const T *ptr)
 {
@@ -41,7 +27,6 @@ BOOL reclaim(xr_vector<T *> &vec, const T *ptr)
 	return FALSE;
 }
 
-//--------------------------------------------------------------------------------------------------------------
 IBlender *CResourceManager::_GetBlender(LPCSTR Name)
 {
 	R_ASSERT(Name && Name[0]);

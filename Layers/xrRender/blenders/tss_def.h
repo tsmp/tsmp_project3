@@ -1,9 +1,6 @@
-#ifndef TSS_DEF_H
-#define TSS_DEF_H
-
 #pragma once
 
-class ENGINE_API SimulatorStates
+class SimulatorStates
 {
 private:
 	struct State
@@ -45,4 +42,3 @@ public:
 	void clear();
 	IDirect3DStateBlock9 *record();
 };
-#endif

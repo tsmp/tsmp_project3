@@ -1,5 +1,3 @@
-#ifndef r_constants_cacheH
-#define r_constants_cacheH
 #pragma once
 
 #include "r_constants.h"
@@ -141,7 +139,7 @@ public:
 	}
 };
 
-class ENGINE_API R_constants
+class R_constants
 {
 public:
 	ALIGN(16)
@@ -227,4 +225,3 @@ public:
 			flush_cache();
 	}
 };
-#endif

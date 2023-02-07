@@ -1,19 +1,13 @@
-// TextureManager.h: interface for the CTextureManager class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#ifndef ResourceManagerH
-#define ResourceManagerH
 #pragma once
 
 #include "shader.h"
-#include "tss_def.h"
+#include "blenders/tss_def.h"
 #include "TextureDescrManager.h"
 // refs
 struct lua_State;
 
 // defs
-class ENGINE_API CResourceManager
+class CResourceManager
 {
 private:
 	struct str_pred
@@ -180,5 +174,3 @@ public:
 	void DestroyNecessaryTextures();
 	void Dump(bool bBrief);
 };
-
-#endif //ResourceManagerH

@@ -4,8 +4,6 @@
 // ZNear - always 0.0f
 // ZFar  - always 1.0f
 
-class ENGINE_API CResourceManager;
-
 #include "pure.h"
 #include "hw.h"
 #include "ftimer.h"

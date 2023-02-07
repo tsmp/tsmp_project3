@@ -10,6 +10,7 @@
 #include "GameFont.h"
 #include "../xrRender/dxWallMarkArray.h"
 #include "../xrRender/dxUIShader.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 
 CRender RImplementation;
 
@@ -245,7 +246,7 @@ void CRender::create()
 	}
 
 	// constants
-	::Device.Resources->RegisterConstantSetup("parallax", &binder_parallax);
+	DEV->RegisterConstantSetup("parallax", &binder_parallax);
 
 	c_lmaterial = "L_material";
 	c_sbase = "s_base";

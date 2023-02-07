@@ -6363,9 +6363,6 @@
     <ClInclude Include="ui\UISubLine.h">
       <Filter>UI\UIWindows\Lines</Filter>
     </ClInclude>
-    <ClInclude Include="ui\UIVideoPlayerWnd.h">
-      <Filter>UI\UIWindows\VideoPlayer</Filter>
-    </ClInclude>
     <ClInclude Include="ui\UICellCustomItems.h">
       <Filter>UI\UIWindows\DragDrop2</Filter>
     </ClInclude>
@@ -9532,9 +9529,6 @@
     </ClCompile>
     <ClCompile Include="ui\UISubLine.cpp">
       <Filter>UI\UIWindows\Lines</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\UIVideoPlayerWnd.cpp">
-      <Filter>UI\UIWindows\VideoPlayer</Filter>
     </ClCompile>
     <ClCompile Include="ui\UICellCustomItems.cpp">
       <Filter>UI\UIWindows\DragDrop2</Filter>

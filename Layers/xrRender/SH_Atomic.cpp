@@ -1,27 +1,29 @@
 #include "stdafx.h"
-#pragma hdrstop
-
 #include "sh_atomic.h"
 #include "ResourceManager.h"
+#include "dxRenderDeviceRender.h"
 
 // Atomic
 SVS::~SVS()
 {
     _RELEASE(vs);
-    Device.Resources->_DeleteVS(this);
+    DEV->_DeleteVS(this);
 }
+
 SPS::~SPS()
 {
     _RELEASE(ps);
-    Device.Resources->_DeletePS(this);
+    DEV->_DeletePS(this);
 }
+
 SState::~SState()
 {
     _RELEASE(state);
-    Device.Resources->_DeleteState(this);
+    DEV->_DeleteState(this);
 }
+
 SDeclaration::~SDeclaration()
 {
     _RELEASE(dcl);
-    Device.Resources->_DeleteDecl(this);
+    DEV->_DeleteDecl(this);
 }

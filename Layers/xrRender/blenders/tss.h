@@ -1,16 +1,14 @@
-#ifndef TSS_H
-#define TSS_H
 #pragma once
-
 #include "tss_def.h"
 
-class ENGINE_API CSimulatorTSS
+class CSimulatorTSS
 {
 public:
 	IC void Set(SimulatorStates &container, u32 S, u32 N, u32 V)
 	{
 		container.set_TSS(S, N, V);
 	}
+
 	IC void SetColor(SimulatorStates &container, u32 S, u32 A1, u32 OP, u32 A2)
 	{
 		Set(container, S, D3DTSS_COLOROP, OP);
@@ -30,11 +28,13 @@ public:
 			break;
 		}
 	}
+
 	IC void SetColor3(SimulatorStates &container, u32 S, u32 A1, u32 OP, u32 A2, u32 A3)
 	{
 		SetColor(container, S, A1, OP, A2);
 		Set(container, S, D3DTSS_COLORARG0, A3);
 	}
+
 	IC void SetAlpha(SimulatorStates &container, u32 S, u32 A1, u32 OP, u32 A2)
 	{
 		Set(container, S, D3DTSS_ALPHAOP, OP);
@@ -54,6 +54,7 @@ public:
 			break;
 		}
 	}
+
 	IC void SetAlpha3(SimulatorStates &container, u32 S, u32 A1, u32 OP, u32 A2, u32 A3)
 	{
 		SetAlpha(container, S, A1, OP, A2);
@@ -61,7 +62,7 @@ public:
 	}
 };
 
-class ENGINE_API CSimulatorRS
+class CSimulatorRS
 {
 public:
 	IC void Set(SimulatorStates &container, u32 N, u32 V)
@@ -71,7 +72,7 @@ public:
 	}
 };
 
-class ENGINE_API CSimulator
+class CSimulator
 {
 public:
 	CSimulatorTSS TSS;
@@ -90,5 +91,3 @@ public:
 	IC void SetRS(u32 N, u32 V) { RS.Set(container, N, V); }
 	IC SimulatorStates &GetContainer() { return container; }
 };
-
-#endif

@@ -1,5 +1,3 @@
-#ifndef r_backendH
-#define r_backendH
 #pragma once
 
 //#define RBackend_PGO
@@ -43,7 +41,7 @@ struct R_statistics
 	R_statistics_element s_dynamic_2B;
 };
 
-class ENGINE_API CBackend
+class CBackend
 {
 public:
 	// Dynamic geometry streams
@@ -338,10 +336,6 @@ public:
 	};
 };
 
-extern ENGINE_API CBackend RCache;
+extern CBackend RCache;
 
-#ifndef ENGINE_BUILD
 #include "..\Layers\xrRender\D3DUtils.h"
-#endif
-
-#endif

@@ -5,17 +5,6 @@
 
 ENGINE_API bool g_dedicated_server;
 
-#pragma TODO("TSMP: remove this, use class members")
-ref_shader& dxRenderDeviceRender::m_WireShader()
-{
-	return Device.m_WireShader;
-}
-
-ref_shader& dxRenderDeviceRender::m_SelectionShader()
-{
-	return Device.m_SelectionShader;
-}
-
 dxRenderDeviceRender::dxRenderDeviceRender() : Resources(0)
 {
 }
@@ -47,8 +36,8 @@ void dxRenderDeviceRender::updateGamma()
 
 void dxRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
 {
-	m_WireShader().destroy();
-	m_SelectionShader().destroy();
+	m_WireShader.destroy();
+	m_SelectionShader.destroy();
 
 	Resources->OnDeviceDestroy(bKeepTextures);
 	RCache.OnDeviceDestroy();
@@ -150,8 +139,8 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 
 	if (!g_dedicated_server)
 	{
-		m_WireShader().create("editor\\wire");
-		m_SelectionShader().create("editor\\selection");
+		m_WireShader.create("editor\\wire");
+		m_SelectionShader.create("editor\\selection");
 
 		DUImpl.OnDeviceCreate();
 	}
@@ -166,7 +155,7 @@ void dxRenderDeviceRender::Create(HWND hWnd, u32 &dwWidth, u32 &dwHeight, float 
 
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
-	Device.Resources = Resources = xr_new<CResourceManager>();
+	Resources = xr_new<CResourceManager>();
 }
 
 void dxRenderDeviceRender::SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF)

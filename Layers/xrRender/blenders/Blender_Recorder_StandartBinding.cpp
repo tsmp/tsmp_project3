@@ -1,17 +1,18 @@
 #include "stdafx.h"
-#pragma hdrstop
 
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <d3dx9.h>
 #pragma warning(pop)
 
-#include "ResourceManager.h"
+#include "..\ResourceManager.h"
 #include "..\Layers\xrRender\blenders\Blender_Recorder.h"
 #include "..\Layers\xrRender\blenders\Blender.h"
 
 #include "igame_persistent.h"
 #include "environment.h"
+
+#include "..\dxRenderDeviceRender.h"
 
 // matrices
 #define BIND_DECLARE(xf)                                                   \
@@ -257,9 +258,9 @@ void CBlender_Compile::SetMapping()
 		r_Constant("dt_params", detail_scaler);
 
 	// other common
-	for (u32 it = 0; it < Device.Resources->v_constant_setup.size(); it++)
+	for (u32 it = 0; it < DEV->v_constant_setup.size(); it++)
 	{
-		std::pair<shared_str, R_constant_setup *> cs = Device.Resources->v_constant_setup[it];
+		std::pair<shared_str, R_constant_setup *> cs = DEV->v_constant_setup[it];
 		r_Constant(*cs.first, cs.second);
 	}
 }

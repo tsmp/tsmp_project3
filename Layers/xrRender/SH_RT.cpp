@@ -1,7 +1,6 @@
 #include "stdafx.h"
-#pragma hdrstop
-
 #include "ResourceManager.h"
+#include "dxRenderDeviceRender.h"
 
 CRT::CRT()
 {
@@ -11,12 +10,13 @@ CRT::CRT()
 	dwHeight = 0;
 	fmt = D3DFMT_UNKNOWN;
 }
+
 CRT::~CRT()
 {
 	destroy();
 
 	// release external reference
-	Device.Resources->_DeleteRT(this);
+	DEV->_DeleteRT(this);
 }
 
 void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f)
@@ -79,7 +79,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f)
 		return;
 
 	// Try to create texture/surface
-	Device.Resources->Evict();
+	DEV->Evict();
 	_hr = HW.pDevice->CreateTexture(w, h, 1, usage, f, D3DPOOL_DEFAULT, &pSurface, NULL);
 	if (FAILED(_hr) || (0 == pSurface))
 		return;
@@ -89,7 +89,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f)
 	Msg("* created RT(%s), %dx%d", Name, w, h);
 #endif // DEBUG
 	R_CHK(pSurface->GetSurfaceLevel(0, &pRT));
-	pTexture = Device.Resources->_CreateTexture(Name);
+	pTexture = DEV->_CreateTexture(Name);
 	pTexture->surface_set(pSurface);
 }
 
@@ -103,20 +103,22 @@ void CRT::destroy()
 	_RELEASE(pRT);
 	_RELEASE(pSurface);
 }
+
 void CRT::reset_begin()
 {
 	destroy();
 }
+
 void CRT::reset_end()
 {
 	create(*cName, dwWidth, dwHeight, fmt);
 }
+
 void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f)
 {
-	_set(Device.Resources->_CreateRT(Name, w, h, f));
+	_set(DEV->_CreateRT(Name, w, h, f));
 }
 
-//////////////////////////////////////////////////////////////////////////
 CRTC::CRTC()
 {
 	if (pSurface)
@@ -132,7 +134,7 @@ CRTC::~CRTC()
 	destroy();
 
 	// release external reference
-	Device.Resources->_DeleteRTC(this);
+	DEV->_DeleteRTC(this);
 }
 
 void CRTC::create(LPCSTR Name, u32 size, D3DFORMAT f)
@@ -167,7 +169,7 @@ void CRTC::create(LPCSTR Name, u32 size, D3DFORMAT f)
 		return;
 
 	// Try to create texture/surface
-	Device.Resources->Evict();
+	DEV->Evict();
 	_hr = HW.pDevice->CreateCubeTexture(size, 1, D3DUSAGE_RENDERTARGET, f, D3DPOOL_DEFAULT, &pSurface, NULL);
 	if (FAILED(_hr) || (0 == pSurface))
 		return;
@@ -176,7 +178,7 @@ void CRTC::create(LPCSTR Name, u32 size, D3DFORMAT f)
 	Msg("* created RTc(%s), 6(%d)", Name, size);
 	for (u32 face = 0; face < 6; face++)
 		R_CHK(pSurface->GetCubeMapSurface((D3DCUBEMAP_FACES)face, 0, pRT + face));
-	pTexture = Device.Resources->_CreateTexture(Name);
+	pTexture = DEV->_CreateTexture(Name);
 	pTexture->surface_set(pSurface);
 }
 
@@ -188,10 +190,12 @@ void CRTC::destroy()
 		_RELEASE(pRT[face]);
 	_RELEASE(pSurface);
 }
+
 void CRTC::reset_begin()
 {
 	destroy();
 }
+
 void CRTC::reset_end()
 {
 	create(*cName, dwSize, fmt);
@@ -199,5 +203,5 @@ void CRTC::reset_end()
 
 void resptrcode_crtc::create(LPCSTR Name, u32 size, D3DFORMAT f)
 {
-	_set(Device.Resources->_CreateRTC(Name, size, f));
+	_set(DEV->_CreateRTC(Name, size, f));
 }

@@ -1,8 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
-
 #include "ResourceManager.h"
-
 #include "Render.h"
 
 void CResourceManager::reset_begin()

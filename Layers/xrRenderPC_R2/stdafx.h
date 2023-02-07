@@ -18,7 +18,12 @@
 #define R_R2 2
 #define RENDER R_R2
 
-#include "resourcemanager.h"
+#include "../xrEngine/HW.h"
+#include "../xrRender/Shader.h"
+#include "../xrRender/R_Backend.h"
+#include "../xrRender/R_Backend_Runtime.h"
+
+#include "../xrRender/ResourceManager.h"
 #include "vis_common.h"
 #include "render.h"
 #include "igame_level.h"

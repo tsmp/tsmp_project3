@@ -10,7 +10,7 @@
 #pragma warning(default : 4995)
 
 #include "ResourceManager.h"
-#include "tss.h"
+#include "blenders\tss.h"
 #include "..\Layers\xrRender\blenders\blender.h"
 #include "..\Layers\xrRender\blenders\blender_recorder.h"
 

@@ -4,16 +4,14 @@
 #include "ResourceManager.h"
 #include "R_DStreams.h"
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
+#include "dxRenderDeviceRender.h"
 
 int rsDVB_Size = 8192;
 int rsDIB_Size = 512;
 
 void _VertexStream::Create()
 {
-	Device.Resources->Evict();
+	DEV->Evict();
 
 	mSize = rsDVB_Size * 1024;
 	R_CHK(HW.pDevice->CreateVertexBuffer(mSize, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, 0, D3DPOOL_DEFAULT, &pVB, NULL));
@@ -89,16 +87,16 @@ void _VertexStream::reset_begin()
 	old_pVB = pVB;
 	Destroy();
 }
+
 void _VertexStream::reset_end()
 {
 	Create();
 	//old_pVB				= NULL;
 }
 
-//////////////////////////////////////////////////////////////////////////
 void _IndexStream::Create()
 {
-	Device.Resources->Evict();
+	DEV->Evict();
 
 	mSize = rsDIB_Size * 1024;
 	R_CHK(HW.pDevice->CreateIndexBuffer(mSize, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &pIB, NULL));
@@ -129,6 +127,7 @@ u16 *_IndexStream::Lock(u32 Count, u32 &vOffset)
 	// or there is not enough space for the index data,
 	// then flush the buffer contents
 	u32 dwFlags = LOCKFLAGS_APPEND;
+
 	if (2 * (Count + mPosition) >= mSize)
 	{
 		mPosition = 0;			   // clear position

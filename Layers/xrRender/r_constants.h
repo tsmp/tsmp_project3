@@ -1,10 +1,8 @@
-#ifndef r_constantsH
-#define r_constantsH
 #pragma once
 
 #include "xr_resource.h"
 
-class ENGINE_API R_constant_setup;
+class R_constant_setup;
 
 enum
 {
@@ -69,13 +67,13 @@ struct R_constant : public xr_resource
 typedef resptr_core<R_constant, resptr_base<R_constant>> ref_constant;
 
 // Automatic constant setup
-class ENGINE_API R_constant_setup
+class R_constant_setup
 {
 public:
 	virtual void setup(R_constant *C) = 0;
 };
 
-class ENGINE_API R_constant_table : public xr_resource_flagged
+class R_constant_table : public xr_resource_flagged
 {
 public:
 	typedef xr_vector<ref_constant> c_table;
@@ -98,5 +96,3 @@ public:
 	BOOL empty() { return 0 == table.size(); }
 };
 typedef resptr_core<R_constant_table, resptr_base<R_constant_table>> ref_ctable;
-
-#endif

@@ -1,13 +1,11 @@
-#ifndef SH_MATRIX_H
-#define SH_MATRIX_H
 #pragma once
 
 #include "WaveForm.h"
 
-class ENGINE_API IReader;
-class ENGINE_API IWriter;
+class IReader;
+class IWriter;
 
-class ENGINE_API CMatrix : public xr_resource_named
+class CMatrix : public xr_resource_named
 {
 public:
 	enum
@@ -78,5 +76,3 @@ public:
 
 typedef resptr_core<CMatrix, resptr_base<CMatrix>>
 	ref_matrix;
-
-#endif

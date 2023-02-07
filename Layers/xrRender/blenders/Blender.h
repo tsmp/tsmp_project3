@@ -1,16 +1,10 @@
-// Blender.h: interface for the IBlender class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_)
-#define AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_
 #pragma once
 
 #include "properties.h"
 #include "Blender_Recorder.h"
 
 #pragma pack(push, 4)
-class ENGINE_API CBlender_DESC
+class CBlender_DESC
 {
 public:
 	CLASS_ID CLS;
@@ -31,7 +25,7 @@ public:
 	void Setup(LPCSTR N);
 };
 
-class ENGINE_API IBlender : public CPropertyBase
+class IBlender : public CPropertyBase
 {
 	friend class CBlender_Compile;
 
@@ -67,5 +61,3 @@ public:
 	virtual ~IBlender();
 };
 #pragma pack(pop)
-
-#endif // !defined(AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_)

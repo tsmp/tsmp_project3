@@ -588,6 +588,8 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\xrEngine\ai_script_lua_debug.cpp" />
+    <ClCompile Include="..\..\xrEngine\ai_script_lua_extension.cpp" />
     <ClCompile Include="..\xrRender\blenders\Blender.cpp" />
     <ClCompile Include="..\xrRender\blenders\Blender_Palette.cpp" />
     <ClCompile Include="..\xrRender\blenders\Blender_Recorder.cpp" />

@@ -7,6 +7,7 @@
 
 #include "tntQAVI.h"
 #include "xrTheora_Surface.h"
+#include "dxRenderDeviceRender.h"
 
 #include "..\TSMP3_Build_Config.h"
 
@@ -16,12 +17,9 @@
 
 void resptrcode_texture::create(LPCSTR _name)
 {
-	_set(Device.Resources->_CreateTexture(_name));
+	_set(DEV->_CreateTexture(_name));
 }
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 CTexture::CTexture()
 {
 	pSurface = NULL;
@@ -42,7 +40,7 @@ CTexture::~CTexture()
 	Unload();
 
 	// release external reference
-	Device.Resources->_DeleteTexture(this);
+	DEV->_DeleteTexture(this);
 }
 
 void CTexture::surface_set(IDirect3DBaseTexture9 *surf)
@@ -80,7 +78,7 @@ void CTexture::apply_load(u32 dwStage)
 	else
 		PostLoad();
 	bind(dwStage);
-};
+}
 
 void CTexture::apply_theora(u32 dwStage)
 {
@@ -105,7 +103,8 @@ void CTexture::apply_theora(u32 dwStage)
 		R_CHK(T2D->UnlockRect(0));
 	}
 	CHK_DX(HW.pDevice->SetTexture(dwStage, pSurface));
-};
+}
+
 void CTexture::apply_avi(u32 dwStage)
 {
 	if (pAVI->NeedUpdate())
@@ -126,7 +125,8 @@ void CTexture::apply_avi(u32 dwStage)
 		R_CHK(T2D->UnlockRect(0));
 	}
 	CHK_DX(HW.pDevice->SetTexture(dwStage, pSurface));
-};
+}
+
 void CTexture::apply_seq(u32 dwStage)
 {
 	// SEQ
@@ -145,7 +145,8 @@ void CTexture::apply_seq(u32 dwStage)
 		pSurface = seqDATA[frame_id];
 	}
 	CHK_DX(HW.pDevice->SetTexture(dwStage, pSurface));
-};
+}
+
 void CTexture::apply_normal(u32 dwStage)
 {
 	CHK_DX(HW.pDevice->SetTexture(dwStage, pSurface));
@@ -153,23 +154,8 @@ void CTexture::apply_normal(u32 dwStage)
 
 void CTexture::Preload()
 {
-	// Material
-	/*
-	if (Device.Resources->m_description->line_exist("specification",*cName))	{
-//		if (strstr(*cName,"ston_stena"))	__asm int 3;
-		LPCSTR		descr			=	Device.Resources->m_description->r_string("specification",*cName);
-		string256	bmode;
-		sscanf		(descr,"bump_mode[%[^]]], material[%f]",bmode,&m_material);
-		if ((bmode[0]=='u')&&(bmode[1]=='s')&&(bmode[2]=='e')&&(bmode[3]==':'))
-		{
-			// bump-map specified
-			m_bumpmap		=	bmode+4;
-		}
-//		Msg	("mid[%f] : %s",m_material,*cName);
-	}
-*/
-	m_bumpmap = Device.Resources->m_textures_description.GetBumpName(cName);
-	m_material = Device.Resources->m_textures_description.GetMaterial(cName);
+	m_bumpmap = DEV->m_textures_description.GetBumpName(cName);
+	m_material = DEV->m_textures_description.GetMaterial(cName);
 }
 
 void CTexture::Load()

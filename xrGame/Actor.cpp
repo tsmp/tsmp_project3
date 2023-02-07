@@ -164,7 +164,8 @@ CActor::CActor() : CEntityAlive(), m_DeadInRace(false)
 
 	m_fSprintFactor = 4.f;
 
-	hFriendlyIndicator.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
+#pragma TODO("TSMP: check this")
+	//hFriendlyIndicator.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
 
 	m_pUsableObject = NULL;
 
@@ -207,7 +208,7 @@ CActor::~CActor()
 
 	xr_delete(m_pSleepEffector);
 
-	hFriendlyIndicator.destroy();
+	//hFriendlyIndicator.destroy();
 
 	xr_delete(m_pPhysics_support);
 

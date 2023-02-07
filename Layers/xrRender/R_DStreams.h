@@ -1,5 +1,3 @@
-#ifndef r_DStreamsH
-#define r_DStreamsH
 #pragma once
 
 enum
@@ -8,7 +6,7 @@ enum
 	LOCKFLAGS_APPEND = D3DLOCK_NOOVERWRITE
 };
 
-class ENGINE_API _VertexStream
+class _VertexStream
 {
 private:
 	IDirect3DVertexBuffer9 *pVB;
@@ -49,7 +47,7 @@ public:
 	~_VertexStream() { Destroy(); };
 };
 
-class ENGINE_API _IndexStream
+class _IndexStream
 {
 private:
 	IDirect3DIndexBuffer9 *pIB;
@@ -85,4 +83,3 @@ public:
 	_IndexStream() { _clear(); };
 	~_IndexStream() { Destroy(); };
 };
-#endif
