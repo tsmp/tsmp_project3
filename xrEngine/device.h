@@ -10,8 +10,6 @@ class ENGINE_API CResourceManager;
 #include "hw.h"
 #include "ftimer.h"
 #include "stats.h"
-#include "shader.h"
-#include "R_Backend.h"
 
 #define VIEWPORT_NEAR 0.2f
 
@@ -50,15 +48,9 @@ public:
 	void OnWM_Activate(WPARAM wParam, LPARAM lParam);
 
 public:
-
-	// #pragma TODO("TSMP: remove them!")
-	ref_shader m_WireShader;
-	ref_shader m_SelectionShader;
-	CResourceManager* Resources;
-
 	IRenderDeviceRender *m_pRender;
-
 	BOOL m_bNearer;
+
 	void SetNearer(BOOL enabled)
 	{
 		if (enabled && !m_bNearer)
@@ -169,5 +161,3 @@ extern ENGINE_API CRenderDevice Device;
 
 typedef fastdelegate::FastDelegate0<bool> LOADING_EVENT;
 extern ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
-
-#include "R_Backend_Runtime.h"

@@ -1104,9 +1104,6 @@
     <ClInclude Include="ai_script_lua_extension.h" />
     <ClInclude Include="ai_script_lua_space.h" />
     <ClInclude Include="ai_script_space.h" />
-    <ClInclude Include="..\Layers\xrRender\Blenders\Blender.h" />
-    <ClInclude Include="..\Layers\xrRender\Blenders\Blender_CLSID.h" />
-    <ClInclude Include="..\Layers\xrRender\Blenders\Blender_Recorder.h" />
     <ClInclude Include="bone.h" />
     <ClInclude Include="CameraBase.h" />
     <ClInclude Include="CameraDebug.h" />
@@ -1123,7 +1120,6 @@
     <ClInclude Include="EngineAPI.h" />
     <ClInclude Include="envelope.h" />
     <ClInclude Include="Environment.h" />
-    <ClInclude Include="ETextureParams.h" />
     <ClInclude Include="EventAPI.h" />
     <ClInclude Include="FDemoPlay.h" />
     <ClInclude Include="FDemoRecord.h" />
@@ -1132,7 +1128,6 @@
     <ClInclude Include="Feel_Vision.h" />
     <ClInclude Include="Fmesh.h" />
     <ClInclude Include="Frustum.h" />
-    <ClInclude Include="FVF.h" />
     <ClInclude Include="GameFont.h" />
     <ClInclude Include="HW.h" />
     <ClInclude Include="HWCaps.h" />
@@ -1142,7 +1137,6 @@
     <ClInclude Include="IGame_Persistent.h" />
     <ClInclude Include="IInputReceiver.h" />
     <ClInclude Include="IRenderable.h" />
-    <ClInclude Include="IRenderDetailModel.h" />
     <ClInclude Include="ISheduled.h" />
     <ClInclude Include="ISpatial.h" />
     <ClInclude Include="LightAnimLibrary.h" />
@@ -1161,32 +1155,16 @@
     <ClInclude Include="Rain.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="R_Backend.h" />
-    <ClInclude Include="R_Backend_Runtime.h" />
-    <ClInclude Include="R_Backend_xform.h" />
-    <ClInclude Include="r_constants.h" />
-    <ClInclude Include="r_constants_cache.h" />
-    <ClInclude Include="R_DStreams.h" />
-    <ClInclude Include="Shader.h" />
     <ClInclude Include="Shader_xrLC.h" />
-    <ClInclude Include="SH_Atomic.h" />
-    <ClInclude Include="SH_Constant.h" />
-    <ClInclude Include="SH_Matrix.h" />
-    <ClInclude Include="SH_RT.h" />
-    <ClInclude Include="SH_Texture.h" />
     <ClInclude Include="SkeletonMotionDefs.h" />
     <ClInclude Include="SkeletonMotions.h" />
     <ClInclude Include="StatGraph.h" />
     <ClInclude Include="Stats.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="std_classes.h" />
-    <ClInclude Include="TextureDescrManager.h" />
     <ClInclude Include="DedicatedSrvConsole.h" />
     <ClInclude Include="thunderbolt.h" />
     <ClInclude Include="tntQAVI.h" />
-    <ClInclude Include="tss.h" />
-    <ClInclude Include="tss_def.h" />
     <ClInclude Include="vis_common.h" />
     <ClInclude Include="WaveForm.h" />
     <ClInclude Include="xrCPU_Pipe.h" />
@@ -1213,11 +1191,6 @@
   <ItemGroup>
     <ClCompile Include="ai_script_lua_debug.cpp" />
     <ClCompile Include="ai_script_lua_extension.cpp" />
-    <ClCompile Include="..\Layers\xrRender\Blenders\Blender.cpp" />
-    <ClCompile Include="..\Layers\xrRender\Blenders\Blender_Palette.cpp" />
-    <ClCompile Include="..\Layers\xrRender\Blenders\Blender_Recorder.cpp" />
-    <ClCompile Include="Blender_Recorder_R2.cpp" />
-    <ClCompile Include="Blender_Recorder_StandartBinding.cpp" />
     <ClCompile Include="bone.cpp" />
     <ClCompile Include="CameraBase.cpp" />
     <ClCompile Include="CameraManager.cpp" />
@@ -1285,7 +1258,6 @@
     <ClCompile Include="Environment.cpp" />
     <ClCompile Include="Environment_misc.cpp" />
     <ClCompile Include="Environment_render.cpp" />
-    <ClCompile Include="ETextureParams.cpp" />
     <ClCompile Include="EventAPI.cpp" />
     <ClCompile Include="FDemoPlay.cpp" />
     <ClCompile Include="FDemoRecord.cpp" />
@@ -1339,42 +1311,6 @@
     <ClCompile Include="pure_relcase.cpp" />
     <ClCompile Include="Rain.cpp" />
     <ClCompile Include="Render.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="ResourceManager_Loader.cpp" />
-    <ClCompile Include="ResourceManager_Reset.cpp" />
-    <ClCompile Include="ResourceManager_Resources.cpp" />
-    <ClCompile Include="ResourceManager_Scripting.cpp" />
-    <ClCompile Include="R_Backend.cpp" />
-    <ClCompile Include="R_Backend_DBG.cpp" />
-    <ClCompile Include="R_Backend_Runtime.cpp" />
-    <ClCompile Include="R_Backend_xform.cpp">
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedciated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedciated|x64'">AssemblyAndSourceCode</AssemblerOutput>
-    </ClCompile>
-    <ClCompile Include="r_constants.cpp" />
-    <ClCompile Include="r_constants_cache.cpp" />
-    <ClCompile Include="R_DStreams.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="SH_Atomic.cpp" />
-    <ClCompile Include="SH_Constant.cpp">
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedciated|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedciated|x64'">AssemblyAndSourceCode</AssemblerOutput>
-    </ClCompile>
-    <ClCompile Include="SH_Matrix.cpp" />
-    <ClCompile Include="SH_RT.cpp" />
-    <ClCompile Include="SH_Texture.cpp" />
     <ClCompile Include="SkeletonMotions.cpp" />
     <ClCompile Include="StatGraph.cpp" />
     <ClCompile Include="Stats.cpp" />
@@ -1394,11 +1330,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TextureDescrManager.cpp" />
     <ClCompile Include="DedicatedSrvConsole.cpp" />
     <ClCompile Include="thunderbolt.cpp" />
     <ClCompile Include="tntQAVI.cpp" />
-    <ClCompile Include="tss_def.cpp" />
     <ClCompile Include="xrApplication.cpp" />
     <ClCompile Include="xrCustomResImport.cpp" />
     <ClCompile Include="xrHemisphere.cpp" />
