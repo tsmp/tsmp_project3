@@ -9,7 +9,7 @@
 #include "..\Layers\xrRender\blenders\blender.h"
 #include "..\Layers\xrRender\blenders\blender_recorder.h"
 
-#include "..\TSMP3_Build_Config.h"
+ENGINE_API bool g_dedicated_server;
 
 void fix_texture_name(LPSTR fn);
 
@@ -230,34 +230,29 @@ Shader *CResourceManager::_cpp_Create(IBlender *B, LPCSTR s_shader, LPCSTR s_tex
 
 Shader *CResourceManager::_cpp_Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
 {
-#ifndef DEDICATED_SERVER
+	if (g_dedicated_server)
+		return nullptr;
+
 	return _cpp_Create(_GetBlender(s_shader ? s_shader : "null"), s_shader, s_textures, s_constants, s_matrices);
-#else
-	return NULL;
-#endif
 }
 
 Shader *CResourceManager::Create(IBlender *B, LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
 {
-#ifndef DEDICATED_SERVER
+	if (g_dedicated_server)
+		return nullptr;
+
 	return _cpp_Create(B, s_shader, s_textures, s_constants, s_matrices);
-#else
-	return NULL;
-#endif
 }
 
 Shader *CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
 {
-#ifndef DEDICATED_SERVER
+	if(g_dedicated_server)
+		return nullptr;
 
 	if (_lua_HasShader(s_shader))
 		return _lua_Create(s_shader, s_textures);
 	else
-
 		return _cpp_Create(s_shader, s_textures, s_constants, s_matrices);
-#else
-	return NULL;
-#endif
 }
 
 void CResourceManager::Delete(const Shader *S)

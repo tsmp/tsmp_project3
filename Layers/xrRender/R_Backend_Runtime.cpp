@@ -6,32 +6,36 @@
 #include <d3dx9.h>
 #pragma warning(pop)
 
-#include "..\TSMP3_Build_Config.h"
-
 #include "frustum.h"
+
+ENGINE_API bool g_dedicated_server;
 
 void CBackend::OnFrameEnd()
 {
-#ifndef DEDICATED_SERVER
-	for (u32 stage = 0; stage < HW.Caps.raster.dwStages; stage++)
-		CHK_DX(HW.pDevice->SetTexture(0, 0));
-	CHK_DX(HW.pDevice->SetStreamSource(0, 0, 0, 0));
-	CHK_DX(HW.pDevice->SetIndices(0));
-	CHK_DX(HW.pDevice->SetVertexShader(0));
-	CHK_DX(HW.pDevice->SetPixelShader(0));
-	Invalidate();
-#endif
+	if (!g_dedicated_server)
+	{
+		for (u32 stage = 0; stage < HW.Caps.raster.dwStages; stage++)
+			CHK_DX(HW.pDevice->SetTexture(0, 0));
+
+		CHK_DX(HW.pDevice->SetStreamSource(0, 0, 0, 0));
+		CHK_DX(HW.pDevice->SetIndices(0));
+		CHK_DX(HW.pDevice->SetVertexShader(0));
+		CHK_DX(HW.pDevice->SetPixelShader(0));
+		Invalidate();
+	}
 }
 
 void CBackend::OnFrameBegin()
 {
-#ifndef DEDICATED_SERVER
-	PGO(Msg("PGO:*****frame[%d]*****", Device.CurrentFrameNumber));
-	Memory.mem_fill(&stat, 0, sizeof(stat));
-	Vertex.Flush();
-	Index.Flush();
-	set_Stencil(FALSE);
-#endif
+	if (!g_dedicated_server)
+	{
+
+		PGO(Msg("PGO:*****frame[%d]*****", Device.CurrentFrameNumber));
+		Memory.mem_fill(&stat, 0, sizeof(stat));
+		Vertex.Flush();
+		Index.Flush();
+		set_Stencil(FALSE);
+	}
 }
 
 void CBackend::Invalidate()
