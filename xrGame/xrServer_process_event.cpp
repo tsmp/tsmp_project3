@@ -387,7 +387,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 #endif // PUBLIC_BUILD
 				
 		if (game_sv_mp* svGame = smart_cast<game_sv_mp*>(Level().Server->game))
-			svGame->SpawnObject(name_sect.c_str(), pos);
+			svGame->SpawnObject(name_sect.c_str(), pos, shared_str(nullptr));
 	}
 	break;
 

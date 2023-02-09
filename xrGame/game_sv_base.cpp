@@ -527,7 +527,7 @@ CSE_Abstract *game_sv_GameState::spawn_end(CSE_Abstract *E, ClientID const &id)
 	return N;
 }
 
-CSE_Abstract *game_sv_GameState::SpawnObject(const char* section, Fvector &pos)
+CSE_Abstract* game_sv_GameState::SpawnObject(const char* section, Fvector& pos, shared_str& pCustomData)
 {
 	if (!pSettings->section_exist(section))
 	{
@@ -543,7 +543,25 @@ CSE_Abstract *game_sv_GameState::SpawnObject(const char* section, Fvector &pos)
 			return nullptr;
 		}
 
-		return alife().spawn_item(section, pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		CSE_Abstract* SpawnObject = alife().spawn_item(section, pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+
+		if (!pCustomData.size())
+			return SpawnObject;
+
+		if (CSE_ALifeCreatureAbstract* AlifeObject = dynamic_cast<CSE_ALifeCreatureAbstract*>(SpawnObject))
+		{
+			AlifeObject->m_ini_string = pCustomData;
+
+			if (CSE_ALifeTraderAbstract* pTrader = dynamic_cast<CSE_ALifeTraderAbstract*>(AlifeObject))
+			{
+				if (CInventoryOwner* io = smart_cast<CInventoryOwner*>(this))
+				{
+					pTrader->set_character_profile(io->m_SpecificCharacterStr);
+					pTrader->spawn_supplies();
+				}
+			}
+		}
+		return SpawnObject;
 	}
 	else
 	{
@@ -555,6 +573,7 @@ CSE_Abstract *game_sv_GameState::SpawnObject(const char* section, Fvector &pos)
 		E->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
 		E->o_Position.set(pos);
 		E->o_Angle.set(0.f, 0.f, 0.f);
+		E->m_ini_string = pCustomData;
 
 		E = spawn_end(E, m_server->GetServerClient()->ID);
 		signal_Syncronize();

@@ -126,7 +126,7 @@ public:
 	virtual void OnSwitchPhase(u32 old_phase, u32 new_phase);
 	CSE_Abstract *spawn_begin(LPCSTR N);
 	CSE_Abstract *spawn_end(CSE_Abstract *E, ClientID const &id);
-	CSE_Abstract *SpawnObject(const char* section, Fvector &pos);
+	CSE_Abstract *SpawnObject(const char* section, Fvector &pos, shared_str &pCustomData);
 
 	// Utilities
 	float get_option_f(LPCSTR lst, LPCSTR name, float def = 0.0f);

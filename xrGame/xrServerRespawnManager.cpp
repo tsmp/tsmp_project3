@@ -46,7 +46,7 @@ void ObjectRespawnClass::CheckRespawnObjects()
             {
                 respawn->time_tick = 0;
 
-                if (CSE_Abstract* resp = Level().Server->game->SpawnObject(respawn->section.c_str(), respawn->spawn_position))
+                if (CSE_Abstract* resp = Level().Server->game->SpawnObject(respawn->section.c_str(), respawn->spawn_position, respawn->custom_data))
                 {
                     respawn->id_object = resp->ID;
                     Msg("- Object spawned: [%s], id: [%d], X: [%3.2f], Y: [%3.2f], Z: [%3.2f], Time respawn: [%u]",
