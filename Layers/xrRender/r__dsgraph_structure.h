@@ -11,7 +11,7 @@
 class R_feedback
 {
 public:
-	virtual void rfeedback_static(IRender_Visual *V) = 0;
+	virtual void rfeedback_static(dxRender_Visual *V) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -66,9 +66,9 @@ public:
 	xr_vector<int, render_alloc<int>> lstLODgroups;
 	xr_vector<ISpatial * /**,render_alloc<ISpatial*>/**/> lstRenderables;
 	xr_vector<ISpatial * /**,render_alloc<ISpatial*>/**/> lstSpatial;
-	xr_vector<IRender_Visual *, render_alloc<IRender_Visual *>> lstVisuals;
+	xr_vector<dxRender_Visual *, render_alloc<dxRender_Visual *>> lstVisuals;
 
-	xr_vector<IRender_Visual *, render_alloc<IRender_Visual *>> lstRecorded;
+	xr_vector<dxRender_Visual *, render_alloc<dxRender_Visual *>> lstRecorded;
 
 	u32 counter_S;
 	u32 counter_D;
@@ -163,8 +163,8 @@ public:
 		pmask_wmark = _wm;
 	}
 
-	void r_dsgraph_insert_dynamic(IRender_Visual *pVisual, Fvector &Center);
-	void r_dsgraph_insert_static(IRender_Visual *pVisual);
+	void r_dsgraph_insert_dynamic(dxRender_Visual *pVisual, Fvector &Center);
+	void r_dsgraph_insert_static(dxRender_Visual *pVisual);
 
 	void r_dsgraph_render_graph(u32 _priority, bool _clear = true);
 	void r_dsgraph_render_hud();

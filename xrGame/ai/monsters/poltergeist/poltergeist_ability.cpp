@@ -4,6 +4,7 @@
 #include "../../../level.h"
 #include "../../../material_manager.h"
 #include "../../../level_debug.h"
+#include "..\include\xrRender\Kinematics.h"
 
 CPolterSpecialAbility::CPolterSpecialAbility(CPoltergeist *polter)
 {
@@ -86,7 +87,7 @@ void CPolterSpecialAbility::on_hit(SHit *pHDS)
 		{
 
 			//вычислить координаты попадания
-			CKinematics *V = smart_cast<CKinematics *>(m_object->Visual());
+			IKinematics *V = smart_cast<IKinematics *>(m_object->Visual());
 
 			Fvector start_pos = pHDS->bone_space_position();
 			Fmatrix &m_bone = V->LL_GetBoneInstance(pHDS->bone()).mTransform;

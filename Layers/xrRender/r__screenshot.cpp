@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "xr_effgamma.h"
+#include "dxRenderDeviceRender.h"
 #include "..\xrRender\tga.h"
 #include "xrImage_Resampler.h"
 
@@ -61,7 +62,10 @@ void CRender::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
 	u32 *pPixel = (u32 *)D.pBits;
 	u32 *pEnd = pPixel + (Device.dwWidth * Device.dwHeight);
 	D3DGAMMARAMP G;
-	Device.Gamma.GenLUT(G);
+
+	#pragma TODO("TSMP: check why this is disabled in cs")
+	dxRenderDeviceRender::Instance().gammaGenLUT(G);
+
 	for (int i = 0; i < 256; i++)
 	{
 		G.red[i] /= 256;

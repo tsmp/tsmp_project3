@@ -6,7 +6,7 @@
 
 //XRAPI_API IRender_interface* Render = nullptr;
 XRAPI_API IRenderFactory* RenderFactory = nullptr;
-//XRAPI_API CDUInterface* DU = nullptr;
+XRAPI_API CDUInterface* DU = nullptr;
 XRAPI_API xr_token* vid_mode_token = nullptr;
 XRAPI_API IUIRender* UIRender = nullptr;
 

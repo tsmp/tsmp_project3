@@ -18,7 +18,7 @@
 #include "game_cl_base.h"
 #include "Actor.h"
 #include "string_table.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "ai_object_location.h"
 #include "object_broker.h"
 #include "igame_persistent.h"
@@ -949,7 +949,7 @@ void CInventoryItem::UpdateXForm()
 		return;
 
 	R_ASSERT(E);
-	CKinematics *V = smart_cast<CKinematics *>(E->Visual());
+	IKinematics *V = smart_cast<IKinematics *>(E->Visual());
 	VERIFY(V);
 
 	// Get matrices
@@ -988,7 +988,6 @@ void CInventoryItem::UpdateXForm()
 }
 
 #ifdef DEBUG
-
 void CInventoryItem::OnRender()
 {
 	if (bDebug && object().Visual())
@@ -997,75 +996,11 @@ void CInventoryItem::OnRender()
 			return;
 
 		Fvector bc, bd;
-		object().Visual()->vis.box.get_CD(bc, bd);
+		object().Visual()->getVisData().box.get_CD(bc, bd);
 		Fmatrix M = object().XFORM();
 		M.c.add(bc);
 		Level().debug_renderer().draw_obb(M, bd, color_rgba(0, 0, 255, 255));
-		/*
-		u32 Color;
-		if (processing_enabled())
-		{
-			if (m_bInInterpolation)
-				Color = color_rgba(0,255,255, 255);
-			else
-				Color = color_rgba(0,255,0, 255);
-		}
-		else
-		{
-			if (m_bInInterpolation)
-				Color = color_rgba(255,0,255, 255);
-			else
-				Color = color_rgba(255, 0, 0, 255);
-		};
-
-//		Level().debug_renderer().draw_obb			(M,bd,Color);
-		float size = 0.01f;
-		if (!H_Parent())
-		{
-			Level().debug_renderer().draw_aabb			(Position(), size, size, size, color_rgba(0, 255, 0, 255));
-
-			Fvector Pos1, Pos2;
-			VIS_POSITION_it It = LastVisPos.begin();
-			Pos1 = *It;
-			for (; It != LastVisPos.end(); It++)
-			{
-				Pos2 = *It;
-				Level().debug_renderer().draw_line(Fidentity, Pos1, Pos2, color_rgba(255, 255, 0, 255));
-				Pos1 = Pos2;
-			};
-
-		}
-		//---------------------------------------------------------
-		if (OnClient() && !H_Parent() && m_bInInterpolation)
-		{
-
-			Fmatrix xformI;
-
-			xformI.rotation(IRecRot);
-			xformI.c.set(IRecPos);
-			Level().debug_renderer().draw_aabb			(IRecPos, size, size, size, color_rgba(255, 0, 255, 255));
-
-			xformI.rotation(IEndRot);
-			xformI.c.set(IEndPos);
-			Level().debug_renderer().draw_obb			(xformI,bd,color_rgba(0, 255, 0, 255));
-
-			///////////////////////////////////////////////////////////////////////////
-			Fvector point0 = IStartPos, point1;			
-			
-			float c = 0;
-			for (float i=0.1f; i<1.1f; i+= 0.1f)
-			{
-				c = i;// * 0.1f;
-				for (u32 k=0; k<3; k++)
-				{
-					point1[k] = c*(c*(c*SCoeff[k][0]+SCoeff[k][1])+SCoeff[k][2])+SCoeff[k][3];
-				};
-				Level().debug_renderer().draw_line(Fidentity, point0, point1, color_rgba(0, 0, 255, 255));
-				point0.set(point1);
-			};
-		};
-		*/
-	};
+	}
 }
 #endif
 

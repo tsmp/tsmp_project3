@@ -1,15 +1,16 @@
 #include "stdafx.h"
 #include "r2.h"
-#include "fbasicvisual.h"
+#include "..\xrRender\FBasicVisual.h"
 #include "xr_object.h"
 #include "CustomHUD.h"
 #include "igame_persistent.h"
 #include "environment.h"
-#include "SkeletonCustom.h"
+#include "..\xrRender\SkeletonCustom.h"
 #include "..\xrRender\LightTrack.h"
 #include "GameFont.h"
 #include "../xrRender/dxWallMarkArray.h"
 #include "../xrRender/dxUIShader.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 
 CRender RImplementation;
 
@@ -33,7 +34,7 @@ public:
 
 float r_dtex_range = 50.f;
 //////////////////////////////////////////////////////////////////////////
-ShaderElement *CRender::rimp_select_sh_dynamic(IRender_Visual *pVisual, float cdist_sq)
+ShaderElement *CRender::rimp_select_sh_dynamic(dxRender_Visual *pVisual, float cdist_sq)
 {
 	int id = SE_R2_SHADOW;
 	if (CRender::PHASE_NORMAL == RImplementation.phase)
@@ -43,7 +44,7 @@ ShaderElement *CRender::rimp_select_sh_dynamic(IRender_Visual *pVisual, float cd
 	return pVisual->shader->E[id]._get();
 }
 //////////////////////////////////////////////////////////////////////////
-ShaderElement *CRender::rimp_select_sh_static(IRender_Visual *pVisual, float cdist_sq)
+ShaderElement *CRender::rimp_select_sh_static(dxRender_Visual *pVisual, float cdist_sq)
 {
 	int id = SE_R2_SHADOW;
 	if (CRender::PHASE_NORMAL == RImplementation.phase)
@@ -245,7 +246,7 @@ void CRender::create()
 	}
 
 	// constants
-	::Device.Resources->RegisterConstantSetup("parallax", &binder_parallax);
+	DEV->RegisterConstantSetup("parallax", &binder_parallax);
 
 	c_lmaterial = "L_material";
 	c_sbase = "s_base";
@@ -344,10 +345,15 @@ void CRender::OnFrame()
 // Implementation
 IRender_ObjectSpecific *CRender::ros_create(IRenderable *parent) { return xr_new<CROS_impl>(); }
 void CRender::ros_destroy(IRender_ObjectSpecific *&p) { xr_delete(p); }
-IRender_Visual *CRender::model_Create(LPCSTR name, IReader *data) { return Models->Create(name, data); }
-IRender_Visual *CRender::model_CreateChild(LPCSTR name, IReader *data) { return Models->CreateChild(name, data); }
-IRender_Visual *CRender::model_Duplicate(IRender_Visual *V) { return Models->Instance_Duplicate(V); }
-void CRender::model_Delete(IRender_Visual *&V, BOOL bDiscard) { Models->Delete(V, bDiscard); }
+IRenderVisual *CRender::model_Create(LPCSTR name, IReader *data) { return Models->Create(name, data); }
+IRenderVisual *CRender::model_CreateChild(LPCSTR name, IReader *data) { return Models->CreateChild(name, data); }
+IRenderVisual *CRender::model_Duplicate(IRenderVisual *V) { return Models->Instance_Duplicate((dxRender_Visual*)V); }
+void CRender::model_Delete(IRenderVisual *&V, BOOL bDiscard) 
+{
+	dxRender_Visual* pVisual = (dxRender_Visual*)V;
+	Models->Delete(pVisual, bDiscard);
+	V = nullptr;
+}
 IRender_DetailModel *CRender::model_CreateDM(IReader *F)
 {
 	CDetail *D = xr_new<CDetail>();
@@ -364,13 +370,13 @@ void CRender::model_Delete(IRender_DetailModel *&F)
 		F = NULL;
 	}
 }
-IRender_Visual *CRender::model_CreatePE(LPCSTR name)
+IRenderVisual *CRender::model_CreatePE(LPCSTR name)
 {
 	PS::CPEDef *SE = PSLibrary.FindPED(name);
 	R_ASSERT3(SE, "Particle effect doesn't exist", name);
 	return Models->CreatePE(SE);
 }
-IRender_Visual *CRender::model_CreateParticles(LPCSTR name)
+IRenderVisual *CRender::model_CreateParticles(LPCSTR name)
 {
 	PS::CPEDef *SE = PSLibrary.FindPED(name);
 	if (SE)
@@ -401,7 +407,7 @@ IRender_Sector *CRender::getSector(int id)
 	return Sectors[id];
 }
 IRender_Sector *CRender::getSectorActive() { return pLastSector; }
-IRender_Visual *CRender::getVisual(int id)
+IRenderVisual *CRender::getVisual(int id)
 {
 	VERIFY(id < int(Visuals.size()));
 	return Visuals[id];
@@ -461,8 +467,8 @@ BOOL CRender::occ_visible(vis_data &P) { return HOM.visible(P); }
 BOOL CRender::occ_visible(sPoly &P) { return HOM.visible(P); }
 BOOL CRender::occ_visible(Fbox &P) { return HOM.visible(P); }
 
-void CRender::add_Visual(IRender_Visual *V) { add_leafs_Dynamic(V); }
-void CRender::add_Geometry(IRender_Visual *V) { add_Static(V, View->getMask()); }
+void CRender::add_Visual(IRenderVisual *V) { add_leafs_Dynamic((dxRender_Visual*)V); }
+void CRender::add_Geometry(IRenderVisual *V) { add_Static((dxRender_Visual*)V, View->getMask()); }
 void CRender::add_StaticWallmark(ref_shader &S, const Fvector &P, float s, CDB::TRI *T, Fvector *verts)
 {
 	if (T->suppress_wm)
@@ -500,7 +506,7 @@ void CRender::add_SkeletonWallmark(const Fmatrix *xf, CKinematics *obj, ref_shad
 	Wallmarks->AddSkeletonWallmark(xf, obj, sh, start, dir, size);
 }
 
-void CRender::add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size)
+void CRender::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size)
 {
 	dxWallMarkArray* pWMA = (dxWallMarkArray*)pArray;
 	

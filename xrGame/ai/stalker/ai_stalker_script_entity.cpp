@@ -14,7 +14,7 @@
 #include "../../inventory.h"
 #include "../../weapon.h"
 #include "../../weaponmagazined.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "../../script_engine.h"
 #include "../../sight_manager.h"
 #include "../../stalker_movement_manager.h"
@@ -90,7 +90,7 @@ bool CAI_Stalker::bfAssignWatch(CScriptEntityAction *tpEntityAction)
 			l_tWatchAction.m_tpObjectToWatch->Center(l_tWatchAction.m_tWatchVector);
 		else
 		{
-			CBoneInstance &l_tBoneInstance = smart_cast<CKinematics *>(l_tWatchAction.m_tpObjectToWatch->Visual())->LL_GetBoneInstance(smart_cast<CKinematics *>(l_tWatchAction.m_tpObjectToWatch->Visual())->LL_BoneID(l_tWatchAction.m_bone_to_watch));
+			CBoneInstance &l_tBoneInstance = smart_cast<IKinematics *>(l_tWatchAction.m_tpObjectToWatch->Visual())->LL_GetBoneInstance(smart_cast<IKinematics *>(l_tWatchAction.m_tpObjectToWatch->Visual())->LL_BoneID(l_tWatchAction.m_bone_to_watch));
 			Fmatrix l_tMatrix;
 
 			l_tMatrix = l_tBoneInstance.mTransform;

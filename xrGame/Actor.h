@@ -3,7 +3,7 @@
 #include "feel_touch.h"
 #include "feel_sound.h"
 #include "iinputreceiver.h"
-#include "SkeletonAnimated.h"
+#include "..\include\xrRender\animation_motion.h"
 #include "actor_flags.h"
 #include "actor_defs.h"
 #include "entity_alive.h"
@@ -613,7 +613,7 @@ protected:
 	//---------------------------------------------
 #endif
 
-	ref_geom hFriendlyIndicator;
+	//ref_geom hFriendlyIndicator;
 	//////////////////////////////////////////////////////////////////////////
 	// Actor physics
 	//////////////////////////////////////////////////////////////////////////

@@ -6,11 +6,11 @@
 #pragma once
 
 #include "../../entity_alive.h"
-#include "SkeletonAnimated.h"
+#include "..\include\xrRender\animation_motion.h"
 
 class CMotionDef;
 class CBlend;
-class CKinematicsAnimated;
+class IKinematicsAnimated;
 
 class CAI_Crow : public CEntity
 {
@@ -40,7 +40,7 @@ class CAI_Crow : public CEntity
 		typedef svector<MotionID, MAX_ANIM_COUNT> MotionSVec;
 		MotionSVec m_Animations;
 		const MotionID &GetRandom() { return m_Animations[Random.randI(0, m_Animations.size())]; }
-		void Load(CKinematicsAnimated *visual, LPCSTR prefix);
+		void Load(IKinematicsAnimated *visual, LPCSTR prefix);
 	};
 
 	struct SSound

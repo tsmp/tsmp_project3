@@ -1,13 +1,11 @@
-//---------------------------------------------------------------------------
-#ifndef ParticleEffectH
-#define ParticleEffectH
-//---------------------------------------------------------------------------
+#pragma once
 
 #include "ParticleEffectDef.h"
+#include "../xrRender/dxParticleCustom.h"
 
 namespace PS
 {
-	class ECORE_API CParticleEffect : public IParticleCustom
+	class ECORE_API CParticleEffect : public dxParticleCustom
 	{
 		friend class CPEDef;
 
@@ -53,7 +51,7 @@ namespace PS
 
 		u32 RenderTO();
 		virtual void Render(float LOD);
-		virtual void Copy(IRender_Visual *pFrom);
+		virtual void Copy(dxRender_Visual *pFrom);
 
 		virtual void OnDeviceCreate();
 		virtual void OnDeviceDestroy();
@@ -95,5 +93,3 @@ namespace PS
 	extern const u32 uDT_STEP;
 	extern const float fDT_STEP;
 } // namespace PS
-//---------------------------------------------------------------------------
-#endif

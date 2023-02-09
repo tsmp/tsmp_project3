@@ -13,6 +13,7 @@
 #include "stalker_movement_manager.h"
 #include "game_object_space.h"
 #include "effectorshot.h"
+#include "..\include\xrRender\Kinematics.h"
 
 #define TEMPLATE_SPECIALIZATION    \
 	template <                     \
@@ -88,7 +89,7 @@ void _detail::callback(CBoneInstance *B)
 
 void CStalkerAnimationManager::assign_bone_callbacks()
 {
-	CKinematics *kinematics = smart_cast<CKinematicsAnimated *>(m_visual);
+	IKinematics *kinematics = smart_cast<IKinematicsAnimated*>(m_visual)->dcast_PKinematics();
 	VERIFY(kinematics);
 
 	LPCSTR section = *object().cNameSect();

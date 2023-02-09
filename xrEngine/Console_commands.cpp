@@ -1,15 +1,12 @@
 #include "stdafx.h"
 #include "igame_level.h"
-#include "xr_effgamma.h"
 #include "console.h"
 #include "console_commands.h"
-#include "fbasicvisual.h"
 #include "cameramanager.h"
 #include "environment.h"
 #include "xr_input.h"
 #include "CustomHUD.h"
-#include "SkeletonAnimated.h"
-#include "ResourceManager.h"
+#include "..\Include\xrRender\Kinematics.h"
 #include "xr_object.h"
 #include "..\TSMP3_Build_Config.h"
 
@@ -338,10 +335,10 @@ public:
 	virtual void Execute(LPCSTR args)
 	{
 		CCC_Float::Execute(args);
-		Device.Gamma.Gamma(ps_gamma);
-		Device.Gamma.Brightness(ps_brightness);
-		Device.Gamma.Contrast(ps_contrast);
-		Device.Gamma.Update();
+		Device.m_pRender->setGamma(ps_gamma);
+		Device.m_pRender->setBrightness(ps_brightness);
+		Device.m_pRender->setContrast(ps_contrast);
+		Device.m_pRender->updateGamma();
 	}
 };
 
@@ -428,16 +425,6 @@ public:
 	}
 };
 
-class CCC_DumpResources : public IConsole_Command
-{
-public:
-	CCC_DumpResources(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args)
-	{
-		Device.Resources->Dump(args != NULL);
-	}
-};
-
 XRCORE_API void _dump_open_files(int mode);
 class CCC_DumpOpenFiles : public IConsole_Command
 {
@@ -454,9 +441,6 @@ ENGINE_API float psHUD_FOV = 0.45f;
 ENGINE_API int ps_r__Supersample = 1;
 
 extern int g_ErrorLineCount;
-extern int psSkeletonUpdate;
-extern int rsDVB_Size;
-extern int rsDIB_Size;
 extern int psNET_ClientUpdate;
 extern int psNET_ClientPending;
 extern int psNET_ServerUpdate;
@@ -466,7 +450,6 @@ extern int g_svDedicateServerUpdateReate;
 extern int g_Dump_Export_Obj;
 extern int g_Dump_Import_Obj;
 extern Flags32 psEnvFlags;
-extern float r__dtex_range;
 
 void RegisterDebugCommands();
 
@@ -542,7 +525,6 @@ void CCC_Register()
 		CMD4(CCC_DR_UsePoints, "demo_record_step", &g_iDR_LM_Step, 0, 3);
 	}
 
-	CMD1(CCC_DumpResources, "dump_resources");
 	CMD1(CCC_DumpOpenFiles, "dump_open_files");
 
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
@@ -566,20 +548,6 @@ class CCC_DbgStrDump : public IConsole_Command
 public:
 	CCC_DbgStrDump(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) { g_pStringContainer->dump(); }
-};
-
-class CCC_MotionsStat : public IConsole_Command
-{
-public:
-	CCC_MotionsStat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) { g_pMotionsContainer->dump(); }
-};
-
-class CCC_TexturesStat : public IConsole_Command
-{
-public:
-	CCC_TexturesStat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) { Device.Resources->_DumpMemoryUsage(); }
 };
 
 class CCC_E_Dump : public IConsole_Command
@@ -659,9 +627,6 @@ void RegisterDebugCommands()
 {
 #ifdef DEBUG
 	CMD1(CCC_Crash, "crash");
-	CMD1(CCC_MotionsStat, "stat_motions");
-	CMD1(CCC_TexturesStat, "stat_textures");
-
 	CMD3(CCC_Mask, "mt_particles", &psDeviceFlags, mtParticles);
 
 	CMD1(CCC_DbgStrCheck, "dbg_str_check");
@@ -680,7 +645,6 @@ void RegisterDebugCommands()
 	CMD3(CCC_Mask, "rs_occlusion", &psDeviceFlags, rsOcclusion);
 
 	CMD3(CCC_Mask, "rs_detail", &psDeviceFlags, rsDetails);
-	CMD4(CCC_Float, "r__dtex_range", &r__dtex_range, 5, 175);
 
 	CMD3(CCC_Mask, "rs_constant_fps", &psDeviceFlags, rsConstantFPS);
 	CMD3(CCC_Mask, "rs_render_statics", &psDeviceFlags, rsDrawStatic);
@@ -690,10 +654,6 @@ void RegisterDebugCommands()
 		
 	CMD3(CCC_Mask, "rs_occ_draw", &psDeviceFlags, rsOcclusionDraw);
 	CMD3(CCC_Mask, "rs_occ_stats", &psDeviceFlags, rsOcclusionStats);
-	CMD4(CCC_Integer, "rs_skeleton_update", &psSkeletonUpdate, 2, 128);
-
-	CMD4(CCC_Integer, "rs_vb_size", &rsDVB_Size, 32, 4096);
-	CMD4(CCC_Integer, "rs_ib_size", &rsDIB_Size, 32, 4096);
 
 	CMD3(CCC_Token, "vid_bpp", &psCurrentBPP, vid_bpp_token);
 

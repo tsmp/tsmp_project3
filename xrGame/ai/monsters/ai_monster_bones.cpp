@@ -1,10 +1,8 @@
 #include "stdafx.h"
 #include "ai_monster_bones.h"
-#include "skeletoncustom.h"
+#include "..\xrEngine\bone.h"
 
-//****************************************************************************************************
 // class bonesBone
-//****************************************************************************************************
 void bonesBone::Set(CBoneInstance *b, u8 a, float ty, float cy, float r_s)
 {
 	bone = b;
@@ -56,10 +54,7 @@ void bonesBone::Apply()
 	bone->mTransform.mulB_43(M);
 }
 
-//****************************************************************************************************
 // class bonesManipulation
-//****************************************************************************************************
-
 void bonesManipulation::Reset()
 {
 	time_started = 0;

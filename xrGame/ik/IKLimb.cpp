@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "IKLimb.h"
-#include "SkeletonCustom.h"
+#include "..\include\xrRender\Kinematics.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 #include "../ode_include.h"
 #include "../MathUtils.h"
 #include "../GameObject.h"
@@ -95,16 +96,17 @@ void CIKLimb::Calculate(SCalculateData &cd)
 float CIKLimb::SwivelAngle(const Fmatrix &ihip, const SCalculateData &cd)
 {
 	Fvector foot;
-	foot.set(cd.m_K->LL_GetTransform(m_bones[2]).c); // use "0" channal only?
+	IKinematics *pKin = cd.m_K->dcast_PKinematics();
+	foot.set(pKin->LL_GetTransform(m_bones[2]).c); // use "0" channal only?
 	ihip.transform_tiny(foot);
 	xm2im.transform_tiny(foot);
 
 	Fvector knee;
-	knee.set(cd.m_K->LL_GetTransform(m_bones[1]).c);
+	knee.set(pKin->LL_GetTransform(m_bones[1]).c);
 
 	Fmatrix ih;
-	CBoneData &BD = cd.m_K->LL_GetData(m_bones[0]);
-	ih.mul_43(cd.m_K->LL_GetTransform(BD.GetParentID()), BD.bind_transform);
+	CBoneData &BD = pKin->LL_GetData(m_bones[0]);
+	ih.mul_43(pKin->LL_GetTransform(BD.GetParentID()), BD.bind_transform);
 	ih.invert();
 
 	ih.transform_tiny(knee);
@@ -124,9 +126,10 @@ IC Fmatrix &get_base(Fmatrix &base, const Fvector &p0, const Fvector &p1)
 
 void CIKLimb::GetKnee(Fvector &knee, const SCalculateData &cd) const
 {
-	const Fvector hip = cd.m_K->LL_GetTransform(m_bones[0]).c;
-	knee = cd.m_K->LL_GetTransform(m_bones[1]).c;
-	const Fvector foot = cd.m_K->LL_GetTransform(m_bones[2]).c;
+	IKinematics* K = cd.m_K->dcast_PKinematics();
+	const Fvector hip = K->LL_GetTransform(m_bones[0]).c;
+	knee = K->LL_GetTransform(m_bones[1]).c;
+	const Fvector foot = K->LL_GetTransform(m_bones[2]).c;
 	Fvector p0;
 	p0.sub(foot, hip);
 	Fvector p1;
@@ -204,13 +207,14 @@ void CIKLimb::Solve(SCalculateData &cd)
 		}
 	}
 
-	if (ph_dbg_draw_mask.test(phDbgDrawIKGoal))
-	{
-		Fvector dbg_pos;
-		cd.m_K->LL_GetBoneInstance(m_bones[2]).mTransform.transform_tiny(dbg_pos, m_toe_position);
-		cd.m_obj.transform_tiny(dbg_pos);
-		DBG_DrawPoint(dbg_pos, 0.02f, D3DCOLOR_XRGB(255, 255, 0));
-	}
+	// commented by TSMP
+	//if (ph_dbg_draw_mask.test(phDbgDrawIKGoal))
+	//{
+	//	Fvector dbg_pos;
+	//	cd.m_K->LL_GetBoneInstance(m_bones[2]).mTransform.transform_tiny(dbg_pos, m_toe_position);
+	//	cd.m_obj.transform_tiny(dbg_pos);
+	//	DBG_DrawPoint(dbg_pos, 0.02f, D3DCOLOR_XRGB(255, 255, 0));
+	//}
 #endif
 }
 
@@ -232,7 +236,7 @@ IC void free_limits(float &min, float &max)
 	max = 2 * M_PI;
 }
 
-void CIKLimb::Create(u16 id, CKinematics *K, const u16 bones[4], const Fvector &toe_pos, bool collide_)
+void CIKLimb::Create(u16 id, IKinematics *K, const u16 bones[4], const Fvector &toe_pos, bool collide_)
 {
 	m_id = id;
 	m_collide = collide_;
@@ -625,7 +629,7 @@ void CIKLimb::ApplyContext(SCalculateData &cd)
 	SetNewGoal(cld, cd);
 }
 
-void CIKLimb::AnimGoal(Fmatrix &gl, CKinematicsAnimated &K)
+void CIKLimb::AnimGoal(Fmatrix &gl, IKinematicsAnimated &K)
 {
 	K.Bone_GetAnimPos(gl, m_bones[2], 1 << 0, false);
 }
@@ -641,7 +645,7 @@ void CIKLimb::Update(CGameObject *O, const CBlend *b, u16 interval)
 	if (!m_collide)
 		return;
 	Fmatrix foot;
-	CKinematicsAnimated *K = O->Visual()->dcast_PKinematicsAnimated();
+	IKinematicsAnimated *K = O->Visual()->dcast_PKinematicsAnimated();
 	AnimGoal(foot, *K);
 	anim_state.update(K, b, interval);
 	Collide(collide_data, O, foot, anim_state.step());
@@ -678,15 +682,13 @@ void CIKLimb::Collide(SIKCollideData &cld, CGameObject *O, const Fmatrix &foot, 
 			cld.clamp_down = R.range > pick_dist + EPS_L;
 		}
 		else
-		{
-
-			IRender_Visual *V = R.O->Visual();
-			if (V)
-			{
-				CKinematics *K = V->dcast_PKinematics();
-				if (K)
+		{			
+			if (IRenderVisual* V = R.O->Visual())
+			{				
+				if (IKinematics* K = V->dcast_PKinematics())
 				{
 					float dist = l_pick_dist;
+
 					if (K->PickBone(R.O->XFORM(), cld.m_plane.n, dist, pos, pick_v, (u16)R.element))
 					{
 						cld.collided = true;
@@ -719,7 +721,7 @@ void CIKLimb::Collide(SIKCollideData &cld, CGameObject *O, const Fmatrix &foot, 
 
 Fmatrix &CIKLimb::GetHipInvert(Fmatrix &ihip, const SCalculateData &cd)
 {
-	CKinematics *K = cd.m_K;
+	IKinematics *K = cd.m_K->dcast_PKinematics();
 	Fmatrix H;
 	CBoneData &bd = K->LL_GetData(m_bones[0]);
 	H.set(bd.bind_transform);
@@ -769,7 +771,7 @@ Matrix &CIKLimb::Goal(Matrix &gl, const Fmatrix &xm, SCalculateData &cd)
 void CIKLimb::CalculateBones(SCalculateData &cd)
 {
 	VERIFY(cd.m_angles);
-	CKinematics *K = cd.m_K;
+	IKinematics *K = cd.m_K->dcast_PKinematics();
 	K->LL_GetBoneInstance(m_bones[0]).set_callback(bctCustom, BonesCallback0, &cd);
 	K->LL_GetBoneInstance(m_bones[1]).set_callback(bctCustom, BonesCallback1, &cd);
 	K->LL_GetBoneInstance(m_bones[2]).set_callback(bctCustom, BonesCallback2, &cd);
@@ -833,7 +835,7 @@ IC void ang_evaluate(Fmatrix &M, const float ang[3])
 
 IC void CIKLimb::get_start(Fmatrix &start, SCalculateData &D, u16 bone)
 {
-	CKinematics *K = D.m_K;
+	IKinematics *K = D.m_K->dcast_PKinematics();
 	VERIFY(K);
 	CIKLimb &L = D.m_limb;
 	CBoneData &BD = K->LL_GetData(L.m_bones[bone]);

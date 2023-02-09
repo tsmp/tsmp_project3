@@ -61,7 +61,7 @@ typedef struct
 	//	RECT   rcFrame;		- лажа в MSDN
 } AVIStreamHeaderCustom;
 
-class CAviPlayerCustom
+class ENGINE_API CAviPlayerCustom
 {
 protected:
 	CAviPlayerCustom *alpha;

@@ -12,6 +12,9 @@
 
 #include "..\TSMP3_Build_Config.h"
 
+#pragma TODO("TSMP: remove me!")
+#pragma comment(lib, "d3dx9.lib")
+
 void fill_vid_mode_list(CHW *_hw);
 void free_vid_mode_list();
 

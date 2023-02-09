@@ -21,6 +21,8 @@ public:
 	virtual void setContrast(float fGamma);
 	virtual void updateGamma();
 
+	void gammaGenLUT(D3DGAMMARAMP &G) {m_Gamma.GenLUT(G);}
+
 	// Destroy
 	virtual void OnDeviceDestroy(BOOL bKeepTextures);
 	virtual void ValidateHW();
@@ -61,12 +63,9 @@ public:
 
 public:
 	CResourceManager *Resources;
-	//ref_shader m_WireShader;
-	ref_shader& m_WireShader();
-	//ref_shader m_SelectionShader;
-	ref_shader& m_SelectionShader();
+	ref_shader m_WireShader;
+	ref_shader m_SelectionShader;
 
 private:
-	//CGammaControl m_Gamma;
-	CGammaControl& m_Gamma();
+	CGammaControl m_Gamma;
 };

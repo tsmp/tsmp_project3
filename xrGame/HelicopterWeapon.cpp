@@ -3,7 +3,7 @@
 #include "ExplosiveRocket.h"
 #include "xrMessages.h"
 #include "../xrNetwork/net_utils.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "Level.h"
 
 void CHelicopter::BoneMGunCallbackX(CBoneInstance *B)
@@ -261,7 +261,7 @@ void CHelicopter::UpdateWeapons()
 
 void CHelicopter::UpdateMGunDir()
 {
-	CKinematics *K = smart_cast<CKinematics *>(Visual());
+	IKinematics *K = smart_cast<IKinematics *>(Visual());
 	m_fire_bone_xform = K->LL_GetTransform(m_fire_bone);
 
 	m_fire_bone_xform.mulA_43(XFORM());

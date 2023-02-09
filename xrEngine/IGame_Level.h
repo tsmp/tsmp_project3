@@ -118,11 +118,9 @@ public:
 	void SoundEvent_Dispatch();
 
 	// Loader interface
-	ref_shader LL_CreateShader(int S, int T, int M, int C);
 	void LL_CheckTextures();
 };
 
-//-----------------------------------------------------------------------------------------------------------
 extern ENGINE_API IGame_Level *g_pGameLevel;
 
 template <typename _class_type>

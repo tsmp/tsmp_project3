@@ -3,7 +3,7 @@
 #include "PhysicsShell.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 
 void CPHShellSimpleCreator::CreatePhysicsShell()
 {
@@ -12,7 +12,7 @@ void CPHShellSimpleCreator::CreatePhysicsShell()
 	if (!owner->Visual())
 		return;
 
-	CKinematics *pKinematics = smart_cast<CKinematics *>(owner->Visual());
+	IKinematics *pKinematics = smart_cast<IKinematics *>(owner->Visual());
 	VERIFY(pKinematics);
 
 	if (owner->PPhysicsShell())

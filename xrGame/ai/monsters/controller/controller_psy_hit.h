@@ -1,9 +1,10 @@
 #pragma once
 #include "../control_combase.h"
-#include "SkeletonAnimated.h"
+#include "..\include\xrRender\animation_motion.h"
 
 class CPsyHitEffectorCam;
 class CPsyHitEffectorPP;
+class CEntityAlive;
 
 enum class PsyHitMpSyncStages : u8
 {

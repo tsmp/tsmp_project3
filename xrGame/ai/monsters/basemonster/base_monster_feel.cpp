@@ -13,7 +13,7 @@
 #include "../ai_monster_effector.h"
 #include "../../../hudmanager.h"
 #include "../../../clsid_game.h"
-#include "skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "../../../sound_player.h"
 #include "../../../level.h"
 #include "../../../script_callback_ex.h"
@@ -111,7 +111,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 	HS.weaponID = (ID());
 	HS.dir = (hit_dir);
 	HS.power = (fDamage);
-	HS.boneID = (smart_cast<CKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot());
+	HS.boneID = (smart_cast<IKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot());
 	HS.p_in_bone_space = (position_in_bone_space);
 	HS.impulse = (impulse);
 	HS.hit_type = (ALife::eHitTypeWound);
@@ -235,7 +235,7 @@ void CBaseMonster::Hit_Wound(const CObject *object, float value, const Fvector &
 	HS.weaponID = (ID());
 	HS.dir = (dir);
 	HS.power = (value);
-	HS.boneID = (smart_cast<const CKinematics*>(object->cVisual())->LL_GetBoneRoot());
+	HS.boneID = (smart_cast<const IKinematics*>(object->cVisual())->LL_GetBoneRoot());
 	HS.p_in_bone_space = (Fvector().set(0.f, 0.f, 0.f));
 	HS.impulse = (impulse);
 	HS.hit_type = (ALife::eHitTypeWound);

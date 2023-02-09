@@ -7,8 +7,10 @@
 #include "MathUtils.h"
 #include "PhysicsShellHolder.h"
 #include "game_object_space.h"
-#include "skeletonanimated.h"
+////#include "SkeletonAnimated.h"
 #include "../../xrODE/ode/src/util.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 
 #ifdef DEBUG
 #include "PHDebug.h"
@@ -209,7 +211,7 @@ void CPHElement::Deactivate()
 	m_flags.set(flActivating, FALSE);
 	//bActive=false;
 	//bActivating=false;
-	CKinematics *K = m_shell->PKinematics();
+	IKinematics *K = m_shell->PKinematics();
 	if (K)
 	{
 		K->LL_GetBoneInstance(m_SelfID).reset_callback();
@@ -323,7 +325,7 @@ void CPHElement::Activate(const Fmatrix &transform, const Fvector &lin_vel, cons
 		dBodyDisable(m_body);
 	m_flags.set(flActive, TRUE);
 	m_flags.set(flActivating, TRUE);
-	CKinematics *K = m_shell->PKinematics();
+	IKinematics *K = m_shell->PKinematics();
 	if (K)
 	{
 		K->LL_GetBoneInstance(m_SelfID).set_callback(bctPhysics, m_shell->GetBonesCallback(), static_cast<CPhysicsElement *>(this));
@@ -622,7 +624,7 @@ void CPHElement::applyImpulseTrace(const Fvector &pos, const Fvector &dir, float
 		}
 		else
 		{
-			CKinematics *K = m_shell->PKinematics();
+			IKinematics *K = m_shell->PKinematics();
 			if (K)
 			{
 				Fmatrix m;
@@ -819,10 +821,10 @@ void CPHElement::BoneGlPos(Fmatrix &m, CBoneInstance *B)
 void CPHElement::GetAnimBonePos(Fmatrix &bp)
 {
 	VERIFY(m_shell->PKinematics());
-	CKinematicsAnimated *ak = m_shell->PKinematics()->dcast_PKinematicsAnimated();
-	VERIFY(ak);
-	CBoneInstance *BI = &ak->LL_GetBoneInstance(m_SelfID);
-	if (!BI->Callback) //.
+	IKinematicsAnimated *ak = m_shell->PKinematics()->dcast_PKinematicsAnimated();
+	VERIFY(ak);	
+	CBoneInstance *BI = &ak->dcast_PKinematics()->LL_GetBoneInstance(m_SelfID);
+	if (!BI->Callback)
 	{
 		bp.set(BI->mTransform);
 		return;

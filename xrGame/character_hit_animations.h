@@ -1,17 +1,18 @@
 #pragma once
-#include "SkeletonAnimated.h"
+#include "..\include\xrRender\animation_motion.h"
 
 class CEntityAlive;
+class IKinematicsAnimated;
 
 class character_hit_animation_controller
 {
 public:
-	void SetupHitMotions(CKinematicsAnimated &ca);
+	void SetupHitMotions(IKinematicsAnimated &ca);
 	void PlayHitMotion(const Fvector &dir, const Fvector &bone_pos, u16 bi, CEntityAlive &ea) const;
 	void GetBaseMatrix(Fmatrix &m, CEntityAlive &ea) const;
 
 private:
-	bool IsEffected(u16 bi, CKinematics &ca) const;
+	bool IsEffected(u16 bi, IKinematics &ca) const;
 
 private:
 	u16 base_bone;

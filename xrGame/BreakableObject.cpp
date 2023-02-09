@@ -9,7 +9,7 @@
 #include "xr_collide_form.h"
 #include "../xrNetwork/net_utils.h"
 #include "clsid_game.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -48,8 +48,8 @@ BOOL CBreakableObject::net_Spawn(CSE_Abstract *DC)
 	VERIFY(!collidable.model);
 	collidable.model = xr_new<CCF_Skeleton>(this);
 	// set bone id
-	R_ASSERT(Visual() && smart_cast<CKinematics *>(Visual()));
-	//	CKinematics* K			= smart_cast<CKinematics*>(Visual());
+	R_ASSERT(Visual() && smart_cast<IKinematics *>(Visual()));
+	//	IKinematics* K			= smart_cast<IKinematics*>(Visual());
 	fHealth = obj->m_health;
 	processing_deactivate();
 	setVisible(TRUE);
@@ -120,47 +120,23 @@ void CBreakableObject::CreateUnbroken()
 {
 	m_pUnbrokenObject = P_BuildStaticGeomShell(smart_cast<CGameObject *>(this), ObjectContactCallback);
 }
+
 void CBreakableObject::DestroyUnbroken()
 {
 	if (!m_pUnbrokenObject)
 		return;
+
 	m_pUnbrokenObject->Deactivate();
 	xr_delete(m_pUnbrokenObject);
 }
 
-//void CBreakableObject::CreateBroken()
-//{
-//CPhysicsShell* shell=P_create_splited_Shell();
-//shell->preBuild_FromKinematics(smart_cast<CKinematics*>(Visual()));
-//shell->mXFORM.set(XFORM());
-//shell->set_PhysicsRefObject(this);
-////m_Shell->Build();
-//shell->setDensity(1000.f);
-//dMass m;
-//dMassSetBox(&m,m_Shell->getMass()/100.f,1.f,1.f,1.f);
-//shell->addEquelInertiaToEls(m);
-//shell->SmoothElementsInertia(0.3f);
-////shell->SetAirResistance(0.002f*skel_airr_lin_factor,
-////	0.3f*skel_airr_ang_factor);
-//ELEMENT_STORAGE& elements = pshell->Elements();
-//ELEMENT_I i=elements.begin(),e=elements.end();
-//for(;e!=i;i++)
-//{
-//	m_Shells.push_back(P_create_splited_Shell());
-//	m_Shells.back()->mXFORM.set(XFORM());
-//	m_Shells.back()->add_Element	(*i);
-//	m_Shells.back()->Build();
-//}
-
-//}
 void CBreakableObject::CreateBroken()
 {
 	processing_activate();
 	m_Shell = P_create_splited_Shell();
-	m_Shell->preBuild_FromKinematics(smart_cast<CKinematics *>(Visual()));
+	m_Shell->preBuild_FromKinematics(smart_cast<IKinematics *>(Visual()));
 	m_Shell->mXFORM.set(XFORM());
-	//m_Shell->SetAirResistance(0.002f*skel_airr_lin_factor,
-	//	0.3f*skel_airr_ang_factor);
+
 	m_Shell->set_PhysicsRefObject(this);
 	m_Shell->Build();
 	m_Shell->setMass(m_Shell->getMass() * 0.1f * 100.f);
@@ -169,14 +145,14 @@ void CBreakableObject::CreateBroken()
 	m_Shell->addEquelInertiaToEls(m);
 	m_Shell->SmoothElementsInertia(0.3f);
 	Fobb b;
-	Visual()->vis.box.getradius(b.m_halfsize);
+	Visual()->getVisData().box.getradius(b.m_halfsize);
 	m_Shell->SetMaxAABBRadius(_max(_max(b.m_halfsize.x, b.m_halfsize.y), b.m_halfsize.z) * 2.f); //+2.f
 }
 
 void CBreakableObject::ActivateBroken()
 {
 	m_pPhysicsShell = m_Shell;
-	CKinematics *K = smart_cast<CKinematics *>(Visual());
+	IKinematics *K = smart_cast<IKinematics *>(Visual());
 	m_pPhysicsShell->set_Kinematics(K);
 	m_pPhysicsShell->RunSimulation();
 	m_pPhysicsShell->SetCallbacks(m_pPhysicsShell->GetBonesCallback());

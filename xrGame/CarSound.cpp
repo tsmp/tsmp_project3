@@ -10,7 +10,7 @@
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "PHWorld.h"
 
 extern CPHWorld *ph_world;
@@ -28,7 +28,7 @@ CCar::SCarSound::~SCarSound()
 
 void CCar::SCarSound::Init()
 {
-	CInifile *ini = smart_cast<CKinematics *>(pcar->Visual())->LL_UserData();
+	CInifile *ini = smart_cast<IKinematics *>(pcar->Visual())->LL_UserData();
 
 	if (ini->section_exist("car_sound") && ini->line_exist("car_sound", "snd_volume"))
 	{

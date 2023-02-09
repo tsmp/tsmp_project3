@@ -1,7 +1,10 @@
 #include "stdafx.h"
-#pragma hdrstop
-
 #include "xrRender_console.h"
+
+#ifdef DEBUG
+#include "SkeletonMotions.h"
+#include "dxRenderDeviceRender.h"
+#endif
 
 u32 ps_Preset = 2;
 ENGINE_API bool g_dedicated_server;
@@ -172,6 +175,11 @@ float ps_r2_slight_fade = 1.f; // 1.f
 //- Mad Max
 float ps_r2_gloss_factor = 1.0f;
 //- Mad Max
+
+extern int psSkeletonUpdate;
+extern int rsDVB_Size;
+extern int rsDIB_Size;
+extern float r__dtex_range;
 
 // detail draw radius
 u32 dm_size = 24;
@@ -392,6 +400,22 @@ public:
 	}
 };
 
+#ifdef DEBUG
+class CCC_MotionsStat : public IConsole_Command
+{
+public:
+	CCC_MotionsStat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual void Execute(LPCSTR args) { g_pMotionsContainer->dump(); }
+};
+
+class CCC_TexturesStat : public IConsole_Command
+{
+public:
+	CCC_TexturesStat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual void Execute(LPCSTR args) { DEV->_DumpMemoryUsage(); }
+};
+#endif
+
 #if RENDER == R_R2
 #include "r__pixel_calculator.h"
 class CCC_BuildSSA : public IConsole_Command
@@ -432,9 +456,22 @@ public:
 	}
 };
 
+class CCC_DumpResources : public IConsole_Command
+{
+public:
+	CCC_DumpResources(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual void Execute(LPCSTR args) {
+		RImplementation.Models->dump();
+	}
+};
+
 void xrRender_initconsole()
 {
 	CMD3(CCC_Preset, "_preset", &ps_Preset, qpreset_token);
+
+#ifdef	DEBUG
+	CMD1(CCC_DumpResources, "dump_resources");
+#endif	// DEBUG
 
 	// Common
 	CMD1(CCC_Screenshot, "screenshot");
@@ -449,6 +486,8 @@ void xrRender_initconsole()
 	CMD4(CCC_Float, "r__wallmark_shift_v", &ps_r__WallmarkSHIFT_V, 0.0f, 1.f);
 	CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 5.f * 60.f);
 	CMD1(CCC_ModelPoolStat, "stat_models");
+	CMD1(CCC_MotionsStat, "stat_motions");
+	CMD1(CCC_TexturesStat, "stat_textures");
 #endif // DEBUG
 
 	//	CMD4(CCC_Integer,	"r__supersample",		&ps_r__Supersample,			1,		4		);
@@ -611,6 +650,12 @@ void xrRender_initconsole()
 	CMD3(CCC_Mask, "r2_new_contrast", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::CONSTRAST));
 	CMD3(CCC_Mask, "r2_new_hypersonic", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::HYPERSONIC));
 	CMD3(CCC_Mask, "r2_new_supergloss", &ps_r2_new_flags, static_cast<u32>(NewFlagsR2::SURERGLOSS));
+
+	CMD4(CCC_Integer, "rs_skeleton_update", &psSkeletonUpdate, 2, 128);
+	CMD4(CCC_Float, "r__dtex_range", &r__dtex_range, 5, 175);
+
+	CMD4(CCC_Integer, "rs_vb_size", &rsDVB_Size, 32, 4096);
+	CMD4(CCC_Integer, "rs_ib_size", &rsDIB_Size, 32, 4096);
 }
 
 void xrRender_apply_tf()

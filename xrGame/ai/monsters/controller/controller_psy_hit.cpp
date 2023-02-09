@@ -12,6 +12,7 @@
 #include "../../../CharacterPhysicsSupport.h"
 #include "../../../level_debug.h"
 #include "../../../clsid_game.h"
+#include "..\include\xrRender\animation_motion.h"
 
 bool IsActor(const CEntityAlive* entity)
 {
@@ -43,7 +44,7 @@ void CControllerPsyHit::reinit()
 {
 	inherited::reinit();
 
-	CKinematicsAnimated *skel = smart_cast<CKinematicsAnimated *>(m_object->Visual());
+	IKinematicsAnimated *skel = smart_cast<IKinematicsAnimated *>(m_object->Visual());
 	m_stage[0] = skel->ID_Cycle_Safe("psy_attack_0");
 	VERIFY(m_stage[0]);
 	m_stage[1] = skel->ID_Cycle_Safe("psy_attack_1");

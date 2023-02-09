@@ -1,9 +1,7 @@
-#ifndef _RENDER_H_
-#define _RENDER_H_
+#pragma once
 
 #include "frustum.h"
 #include "vis_common.h"
-#include "IRenderDetailModel.h"
 
 #include "../Include/xrAPI/xrAPI.h"
 #include "../Include/xrRender/FactoryPtr.h"
@@ -14,11 +12,12 @@ using wm_shader = FactoryPtr<IUIShader>;
 
 // refs
 class ENGINE_API IRenderable;
-class ENGINE_API IRender_Visual;
-class ENGINE_API IBlender;
-class ENGINE_API CSkeletonWallmark;
-class ENGINE_API CKinematics;
+class CSkeletonWallmark;
 struct ENGINE_API FSlideWindowItem;
+
+//	Igor
+class IRenderVisual;
+class IKinematics;
 
 const float fLightSmoothFactor = 4.f;
 
@@ -199,9 +198,8 @@ public:
 	virtual void Statistics(CGameFont *F){};
 
 	virtual LPCSTR getShaderPath() = 0;
-	virtual ref_shader getShader(int id) = 0;
 	virtual IRender_Sector *getSector(int id) = 0;
-	virtual IRender_Visual *getVisual(int id) = 0;
+	virtual IRenderVisual *getVisual(int id) = 0;
 	virtual IRender_Sector *detectSector(const Fvector &P) = 0;
 	virtual IRender_Target *getTarget() = 0;
 
@@ -221,8 +219,8 @@ public:
 	virtual void flush() = 0;
 	virtual void set_Object(IRenderable *O) = 0;
 	virtual void add_Occluder(Fbox2 &bb_screenspace) = 0; // mask screen region as oclluded (-1..1, -1..1)
-	virtual void add_Visual(IRender_Visual *V) = 0;		  // add visual leaf	(no culling performed at all)
-	virtual void add_Geometry(IRender_Visual *V) = 0;	  // add visual(s)	(all culling performed)
+	virtual void add_Visual(IRenderVisual *V) = 0;		  // add visual leaf	(no culling performed at all)
+	virtual void add_Geometry(IRenderVisual *V) = 0;	  // add visual(s)	(all culling performed)
 	virtual void add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) = 0;
 	//	Prefer this function when possible
 	virtual void add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V) = 0;
@@ -231,10 +229,7 @@ public:
 
 	// TSMP: remove this
 	virtual void add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) = 0;
-	virtual void add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) = 0;
-
-	virtual IBlender *blender_create(CLASS_ID cls) = 0;
-	virtual void blender_destroy(IBlender *&) = 0;
+	virtual void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) = 0;
 
 	virtual IRender_ObjectSpecific *ros_create(IRenderable *parent) = 0;
 	virtual void ros_destroy(IRender_ObjectSpecific *&) = 0;
@@ -246,13 +241,11 @@ public:
 	virtual void glow_destroy(IRender_Glow *p_){};
 
 	// Models
-	virtual IRender_Visual *model_CreateParticles(LPCSTR name) = 0;
-	virtual IRender_DetailModel *model_CreateDM(IReader *F) = 0;
-	virtual IRender_Visual *model_Create(LPCSTR name, IReader *data = 0) = 0;
-	virtual IRender_Visual *model_CreateChild(LPCSTR name, IReader *data) = 0;
-	virtual IRender_Visual *model_Duplicate(IRender_Visual *V) = 0;
-	virtual void model_Delete(IRender_Visual *&V, BOOL bDiscard = FALSE) = 0;
-	virtual void model_Delete(IRender_DetailModel *&F) = 0;
+	virtual IRenderVisual *model_CreateParticles(LPCSTR name) = 0;
+	virtual IRenderVisual *model_Create(LPCSTR name, IReader *data = 0) = 0;
+	virtual IRenderVisual *model_CreateChild(LPCSTR name, IReader *data) = 0;
+	virtual IRenderVisual *model_Duplicate(IRenderVisual *V) = 0;
+	virtual void model_Delete(IRenderVisual *&V, BOOL bDiscard = FALSE) = 0;
 	virtual void model_Logging(BOOL bEnable) = 0;
 	virtual void models_Prefetch() = 0;
 	virtual void models_Clear(BOOL b_complete) = 0;
@@ -278,5 +271,3 @@ public:
 };
 
 extern ENGINE_API IRender_interface *Render;
-
-#endif

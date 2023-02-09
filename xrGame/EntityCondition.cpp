@@ -7,7 +7,7 @@
 #include "level.h"
 #include "game_cl_base.h"
 #include "entity_alive.h"
-#include "SkeletonCustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "object_broker.h"
 
 #define MAX_HEALTH 1.0f
@@ -422,7 +422,7 @@ CWound *CEntityCondition::ConditionHit(SHit *pHDS)
 	}
 
 	if (bDebug)
-		Msg("%s hitted in %s with %f[%f]", m_object->Name(), smart_cast<CKinematics *>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost * 100.0f, hit_power_org);
+		Msg("%s hitted in %s with %f[%f]", m_object->Name(), smart_cast<IKinematics *>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost * 100.0f, hit_power_org);
 	//раны добавляются только живому
 	if (bAddWound && GetHealth() > 0)
 		return AddWound(hit_power * m_fWoundBoneScale, pHDS->hit_type, pHDS->boneID);

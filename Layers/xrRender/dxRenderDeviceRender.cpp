@@ -1,26 +1,9 @@
 #include "stdafx.h"
 #include "dxRenderDeviceRender.h"
-
 #include "ResourceManager.h"
 #include "Render.h"
 
 ENGINE_API bool g_dedicated_server;
-
-#pragma TODO("TSMP: remove this, use class members")
-ref_shader& dxRenderDeviceRender::m_WireShader()
-{
-	return Device.m_WireShader;
-}
-
-ref_shader& dxRenderDeviceRender::m_SelectionShader()
-{
-	return Device.m_SelectionShader;
-}
-
-CGammaControl& dxRenderDeviceRender::m_Gamma()
-{
-	return Device.Gamma;
-}
 
 dxRenderDeviceRender::dxRenderDeviceRender() : Resources(0)
 {
@@ -33,28 +16,28 @@ void dxRenderDeviceRender::Copy(IRenderDeviceRender &_in)
 
 void dxRenderDeviceRender::setGamma(float fGamma)
 {
-	m_Gamma().Gamma(fGamma);
+	m_Gamma.Gamma(fGamma);
 }
 
 void dxRenderDeviceRender::setBrightness(float fGamma)
 {
-	m_Gamma().Brightness(fGamma);
+	m_Gamma.Brightness(fGamma);
 }
 
 void dxRenderDeviceRender::setContrast(float fGamma)
 {
-	m_Gamma().Contrast(fGamma);
+	m_Gamma.Contrast(fGamma);
 }
 
 void dxRenderDeviceRender::updateGamma()
 {
-	m_Gamma().Update();
+	m_Gamma.Update();
 }
 
 void dxRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
 {
-	m_WireShader().destroy();
-	m_SelectionShader().destroy();
+	m_WireShader.destroy();
+	m_SelectionShader.destroy();
 
 	Resources->OnDeviceDestroy(bKeepTextures);
 	RCache.OnDeviceDestroy();
@@ -149,17 +132,17 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 {
 	// Signal everyone - device created
 	RCache.OnDeviceCreate();
-	m_Gamma().Update();
+	m_Gamma.Update();
 	Resources->OnDeviceCreate(shName);
 	::Render->create();
 	Device.Statistic->OnDeviceCreate();
 
 	if (!g_dedicated_server)
 	{
-		m_WireShader().create("editor\\wire");
-		m_SelectionShader().create("editor\\selection");
+		m_WireShader.create("editor\\wire");
+		m_SelectionShader.create("editor\\selection");
 
-		DU.OnDeviceCreate();
+		DUImpl.OnDeviceCreate();
 	}
 }
 
@@ -172,7 +155,7 @@ void dxRenderDeviceRender::Create(HWND hWnd, u32 &dwWidth, u32 &dwHeight, float 
 
 	fWidth_2 = float(dwWidth / 2);
 	fHeight_2 = float(dwHeight / 2);
-	Device.Resources = Resources = xr_new<CResourceManager>();
+	Resources = xr_new<CResourceManager>();
 }
 
 void dxRenderDeviceRender::SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF)

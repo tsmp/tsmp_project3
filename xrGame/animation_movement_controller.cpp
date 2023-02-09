@@ -1,9 +1,12 @@
 #include "StdAfx.h"
 #include "animation_movement_controller.h"
-#include "SkeletonAnimated.h"
+#include "..\xrEngine\bone.h"
+#include "..\include\xrRender\Kinematics.h"
+#include "..\xrEngine\SkeletonMotions.h"
+#include "..\include\xrRender\animation_blend.h"
 #include "game_object_space.h"
 
-animation_movement_controller::animation_movement_controller(Fmatrix *_pObjXForm, CKinematics *_pKinematicsC, CBlend *b) : m_startObjXForm(*_pObjXForm),
+animation_movement_controller::animation_movement_controller(Fmatrix *_pObjXForm, IKinematics *_pKinematicsC, CBlend *b) : m_startObjXForm(*_pObjXForm),
 																														   m_pObjXForm(*_pObjXForm),
 																														   m_pKinematicsC(_pKinematicsC),
 																														   m_control_blend(b)
@@ -30,6 +33,7 @@ void animation_movement_controller::deinitialize()
 	B.reset_callback();
 	m_control_blend = 0;
 }
+
 void animation_movement_controller::OnFrame()
 {
 	m_pKinematicsC->CalculateBones();
@@ -39,6 +43,7 @@ void animation_movement_controller::OnFrame()
 		deinitialize();
 		return;
 	}
+
 	if (m_control_blend->blend == CBlend::eAccrue && m_control_blend->blendPower - EPS_L > m_control_blend->blendAmount)
 		m_control_blend->timeCurrent = 0;
 }

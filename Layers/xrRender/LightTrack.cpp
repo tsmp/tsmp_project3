@@ -109,9 +109,9 @@ void CROS_impl::update(IRenderable *O)
 
 	// select sample, randomize position inside object
 	Fvector position;
-	O->renderable.xform.transform_tiny(position, O->renderable.visual->vis.sphere.P);
+	O->renderable.xform.transform_tiny(position, O->renderable.visual->getVisData().sphere.P);
 	float radius;
-	radius = O->renderable.visual->vis.sphere.R;
+	radius = O->renderable.visual->getVisData().sphere.R;
 	position.y += .3f * radius;
 	Fvector direction;
 	direction.random_dir();

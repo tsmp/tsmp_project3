@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "boar.h"
 #include "boar_state_manager.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "../monster_velocity_space.h"
 #include "../../../game_object_space.h"
 #include "../control_animation_base.h"
@@ -126,7 +126,7 @@ BOOL CAI_Boar::net_Spawn(CSE_Abstract *DC)
 
 	if (!PPhysicsShell()) //нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
 	{
-		CBoneInstance &BI = smart_cast<CKinematics *>(Visual())->LL_GetBoneInstance(smart_cast<CKinematics *>(Visual())->LL_BoneID("bip01_head"));
+		CBoneInstance &BI = smart_cast<IKinematics *>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics *>(Visual())->LL_BoneID("bip01_head"));
 		BI.set_callback(bctCustom, BoneCallback, this);
 	}
 

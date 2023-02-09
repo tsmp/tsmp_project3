@@ -1,5 +1,8 @@
 #pragma once
-#include "SkeletonAnimated.h"
+
+class IKinematicsAnimated;
+
+const u32 _total_anim_slots_ = 13;
 
 struct SAnimState
 {
@@ -7,7 +10,7 @@ struct SAnimState
 	MotionID legs_back;
 	MotionID legs_ls;
 	MotionID legs_rs;
-	void Create(CKinematicsAnimated *K, LPCSTR base0, LPCSTR base1);
+	void Create(IKinematicsAnimated *K, LPCSTR base0, LPCSTR base1);
 };
 
 struct STorsoWpn
@@ -38,10 +41,8 @@ struct STorsoWpn
 	MotionID all_attack_0;
 	MotionID all_attack_1;
 	MotionID all_attack_2;
-	void Create(CKinematicsAnimated *K, LPCSTR base0, LPCSTR base1);
+	void Create(IKinematicsAnimated *K, LPCSTR base0, LPCSTR base1);
 };
-
-#define _total_anim_slots_ 13
 
 struct SActorState
 {
@@ -59,8 +60,8 @@ struct SActorState
 	MotionID m_head_idle;
 
 	MotionID m_damage[DAMAGE_FX_COUNT];
-	void Create(CKinematicsAnimated *K, LPCSTR base);
-	void CreateClimb(CKinematicsAnimated *K);
+	void Create(IKinematicsAnimated *K, LPCSTR base);
+	void CreateClimb(IKinematicsAnimated *K);
 };
 
 struct SActorSprintState
@@ -69,7 +70,7 @@ struct SActorSprintState
 	MotionID legs_fwd;
 	MotionID legs_ls;
 	MotionID legs_rs;
-	void Create(CKinematicsAnimated *K);
+	void Create(IKinematicsAnimated *K);
 };
 
 struct SActorMotions
@@ -79,7 +80,7 @@ struct SActorMotions
 	SActorState m_crouch;
 	SActorState m_climb;
 	SActorSprintState m_sprint;
-	void Create(CKinematicsAnimated *K);
+	void Create(IKinematicsAnimated *K);
 };
 
 //vehicle anims
@@ -91,12 +92,12 @@ struct SVehicleAnimCollection
 	MotionID steer_left;
 	MotionID steer_right;
 	SVehicleAnimCollection();
-	void Create(CKinematicsAnimated *K, u16 num);
+	void Create(IKinematicsAnimated *K, u16 num);
 };
 struct SActorVehicleAnims
 {
 	static const int TYPES_NUMBER = 2;
 	SVehicleAnimCollection m_vehicles_type_collections[TYPES_NUMBER];
 	SActorVehicleAnims();
-	void Create(CKinematicsAnimated *K);
+	void Create(IKinematicsAnimated *K);
 };

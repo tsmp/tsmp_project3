@@ -4,6 +4,8 @@
 #include "../../level.h"
 #include "../../xrServer_Objects_ALife_Monsters.h"
 #include "motion.h"
+#include "..\include\xrRender\RenderVisual.h"
+#include "..\include\xrRender\KinematicsAnimated.h"
 
 CPhantom::CPhantom()
 {
@@ -96,7 +98,7 @@ BOOL CPhantom::net_Spawn(CSE_Abstract *DC)
 	XFORM().k.getHP(vHP.x, vHP.y);
 
 	// set animation
-	CKinematicsAnimated *K = smart_cast<CKinematicsAnimated *>(Visual());
+	IKinematicsAnimated *K = smart_cast<IKinematicsAnimated *>(Visual());
 	m_state_data[stBirth].motion = K->ID_Cycle("birth_0");
 	m_state_data[stFly].motion = K->ID_Cycle("fly_0");
 	m_state_data[stContact].motion = K->ID_Cycle("contact_0");
@@ -147,7 +149,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
 {
 	if (new_state != m_CurState)
 	{
-		CKinematicsAnimated *K = smart_cast<CKinematicsAnimated *>(Visual());
+		IKinematicsAnimated *K = smart_cast<IKinematicsAnimated *>(Visual());
 		Fmatrix xform = XFORM_center();
 		UpdateEvent = 0;
 		// after event
@@ -279,7 +281,7 @@ void CPhantom::shedule_Update(u32 DT)
 
 	inherited::shedule_Update(DT);
 
-	CKinematicsAnimated *K = smart_cast<CKinematicsAnimated *>(Visual());
+	IKinematicsAnimated *K = smart_cast<IKinematicsAnimated *>(Visual());
 	K->UpdateTracks();
 }
 

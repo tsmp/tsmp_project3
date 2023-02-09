@@ -6,7 +6,7 @@
 #include "PHCapture.h"
 #include "entity_alive.h"
 #include "phmovementcontrol.h"
-#include "skeletoncustom.h"
+//#include "SkeletonAnimated.h"
 #include "characterphysicssupport.h"
 
 void CPHCapture::CreateBody()

@@ -3,7 +3,7 @@
 #include "level.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
-#include "skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "LightAnimLibrary.h"
 #include "PhysicsShell.h"
 #include "clsid_game.h"
@@ -59,7 +59,7 @@ void CHelicopter::StartFlame()
 
 void CHelicopter::UpdateHeliParticles()
 {
-	CKinematics *K = smart_cast<CKinematics *>(Visual());
+	IKinematics *K = smart_cast<IKinematics *>(Visual());
 	m_particleXFORM = K->LL_GetTransform(m_smoke_bone);
 	m_particleXFORM.mulA_43(XFORM());
 
@@ -276,7 +276,7 @@ void CHelicopter::DieHelicopter()
 	m_brokenSound.create(pSettings->r_string(*cNameSect(), "broken_snd"), st_Effect, sg_SourceType);
 	m_brokenSound.play_at_pos(0, XFORM().c, sm_Looped);
 
-	CKinematics *K = smart_cast<CKinematics *>(Visual());
+	IKinematics *K = smart_cast<IKinematics *>(Visual());
 	if (true /*!PPhysicsShell()*/)
 	{
 		string256 I;

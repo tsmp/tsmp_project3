@@ -9,7 +9,7 @@
 
 #include "HUDManager.h"
 #include "level.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "camerabase.h"
 #include "inventory.h"
 #include "game_base_space.h"
@@ -76,17 +76,13 @@ void CTorch::Load(LPCSTR section)
 	light_trace_bone = pSettings->r_string(section, "light_trace_bone");
 
 	m_bNightVisionEnabled = !!pSettings->r_bool(section, "night_vision");
+
 	if (m_bNightVisionEnabled)
 	{
 		HUD_SOUND::LoadSound(section, "snd_night_vision_on", m_NightVisionOnSnd, SOUND_TYPE_ITEM_USING);
 		HUD_SOUND::LoadSound(section, "snd_night_vision_off", m_NightVisionOffSnd, SOUND_TYPE_ITEM_USING);
 		HUD_SOUND::LoadSound(section, "snd_night_vision_idle", m_NightVisionIdleSnd, SOUND_TYPE_ITEM_USING);
 		HUD_SOUND::LoadSound(section, "snd_night_vision_broken", m_NightVisionBrokenSnd, SOUND_TYPE_ITEM_USING);
-
-		/*m_NightVisionRechargeTime		= pSettings->r_float(section,"night_vision_recharge_time");
-		m_NightVisionRechargeTimeMin	= pSettings->r_float(section,"night_vision_recharge_time_min");
-		m_NightVisionDischargeTime		= pSettings->r_float(section,"night_vision_discharge_time");
-		m_NightVisionChargeTime			= m_NightVisionRechargeTime;*/
 	}
 }
 
@@ -102,16 +98,7 @@ void CTorch::SwitchNightVision(bool vision_on)
 	if (!m_bNightVisionEnabled)
 		return;
 
-	if (vision_on /*&& (m_NightVisionChargeTime > m_NightVisionRechargeTimeMin || OnClient())*/)
-	{
-		//m_NightVisionChargeTime = m_NightVisionDischargeTime*m_NightVisionChargeTime/m_NightVisionRechargeTime;
-		m_bNightVisionOn = true;
-	}
-	else
-	{
-		m_bNightVisionOn = false;
-	}
-
+	m_bNightVisionOn = vision_on;
 	CActor *pA = smart_cast<CActor *>(H_Parent());
 
 	if (!pA)
@@ -123,9 +110,11 @@ void CTorch::SwitchNightVision(bool vision_on)
 	u32 cnt = _GetItemCount(disabled_names);
 	bool b_allow = true;
 	string512 tmp;
+
 	for (u32 i = 0; i < cnt; ++i)
 	{
 		_GetItem(disabled_names, i, tmp);
+
 		if (0 == stricmp(tmp, curr_map))
 		{
 			b_allow = false;
@@ -134,6 +123,7 @@ void CTorch::SwitchNightVision(bool vision_on)
 	}
 
 	CCustomOutfit *pCO = pA->GetOutfit();
+
 	if (pCO && pCO->m_NightVisionSect.size() && !b_allow)
 	{
 		HUD_SOUND::PlaySound(m_NightVisionBrokenSnd, pA->Position(), pA, bPlaySoundFirstPerson);
@@ -154,9 +144,8 @@ void CTorch::SwitchNightVision(bool vision_on)
 		}
 	}
 	else
-	{
-		CEffectorPP *pp = pA->Cameras().GetPPEffector((EEffectorPPType)effNightvision);
-		if (pp)
+	{		
+		if (CEffectorPP* pp = pA->Cameras().GetPPEffector((EEffectorPPType)effNightvision))
 		{
 			pp->Stop(1.0f);
 			HUD_SOUND::PlaySound(m_NightVisionOffSnd, pA->Position(), pA, bPlaySoundFirstPerson);
@@ -167,29 +156,13 @@ void CTorch::SwitchNightVision(bool vision_on)
 
 void CTorch::UpdateSwitchNightVision()
 {
-	if (!m_bNightVisionEnabled)
-		return;
-	if (OnClient())
-		return;
-
-	/*if(m_bNightVisionOn)
-	{
-		m_NightVisionChargeTime			-= Device.fTimeDelta;
-
-		if(m_NightVisionChargeTime<0.f)
-			SwitchNightVision(false);
-	}
-	else
-	{
-		m_NightVisionChargeTime			+= Device.fTimeDelta;
-		clamp(m_NightVisionChargeTime, 0.f, m_NightVisionRechargeTime);
-	}*/
 }
 
 void CTorch::Switch()
 {
 	if (OnClient())
 		return;
+
 	bool bActive = !m_switched_on;
 	Switch(bActive);
 }
@@ -197,6 +170,7 @@ void CTorch::Switch()
 void CTorch::Switch(bool light_on)
 {
 	m_switched_on = light_on;
+
 	if (can_use_dynamic_lights())
 	{
 		light_render->set_active(light_on);
@@ -205,11 +179,12 @@ void CTorch::Switch(bool light_on)
 		if (!pA)
 			light_omni->set_active(light_on);
 	}
+
 	glow_render->set_active(light_on);
 
 	if (*light_trace_bone)
 	{
-		CKinematics *pVisual = smart_cast<CKinematics *>(Visual());
+		IKinematics *pVisual = smart_cast<IKinematics *>(Visual());
 		VERIFY(pVisual);
 		u16 bi = pVisual->LL_BoneID(light_trace_bone);
 
@@ -228,7 +203,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract *DC)
 	cNameVisual_set(torch->get_visual());
 
 	R_ASSERT(!CFORM());
-	R_ASSERT(smart_cast<CKinematics *>(Visual()));
+	R_ASSERT(smart_cast<IKinematics *>(Visual()));
 	collidable.model = xr_new<CCF_Skeleton>(this);
 
 	if (!inherited::net_Spawn(DC))
@@ -236,7 +211,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract *DC)
 
 	bool b_r2 = !!psDeviceFlags.test(rsR2);
 
-	CKinematics *K = smart_cast<CKinematics *>(Visual());
+	IKinematics *K = smart_cast<IKinematics *>(Visual());
 	CInifile *pUserData = K->LL_UserData();
 	R_ASSERT3(pUserData, "Empty Torch user data!", torch->get_visual());
 	lanim = LALib.FindItem(pUserData->r_string("torch_definition", "color_animator"));
@@ -310,19 +285,19 @@ void CTorch::UpdateCL()
 	if (!m_switched_on)
 		return;
 
-	CBoneInstance &BI = smart_cast<CKinematics *>(Visual())->LL_GetBoneInstance(guid_bone);
+	CBoneInstance &BI = smart_cast<IKinematics *>(Visual())->LL_GetBoneInstance(guid_bone);
 	Fmatrix M;
 
 	if (H_Parent())
 	{
 		CActor *actor = smart_cast<CActor *>(H_Parent());
 		if (actor)
-			smart_cast<CKinematics *>(H_Parent()->Visual())->CalculateBones_Invalidate();
+			smart_cast<IKinematics *>(H_Parent()->Visual())->CalculateBones_Invalidate();
 
 		if (H_Parent()->XFORM().c.distance_to_sqr(Device.vCameraPosition) < _sqr(OPTIMIZATION_DISTANCE) || GameID() != GAME_SINGLE)
 		{
 			// near camera
-			smart_cast<CKinematics *>(H_Parent()->Visual())->CalculateBones();
+			smart_cast<IKinematics *>(H_Parent()->Visual())->CalculateBones();
 			M.mul_43(XFORM(), BI.mTransform);
 		}
 		else

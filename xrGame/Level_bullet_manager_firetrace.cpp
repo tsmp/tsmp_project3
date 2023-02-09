@@ -12,7 +12,7 @@
 #include "game_cl_base.h"
 #include "xrmessages.h"
 #include "clsid_game.h"
-#include "skeletoncustom.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "Actor.h"
 #include "AI/Stalker/ai_stalker.h"
 #include "character_info.h"
@@ -179,12 +179,12 @@ BOOL CBulletManager::firetrace_callback(collide::rq_result &result, LPVOID param
 	if (result.O)
 	{
 		//получить косточку и ее материал
-		CKinematics *V = 0;
+		IKinematics *V = 0;
 		//если мы попали по родителю на первых же
 		//кадре, то игнорировать это, так как это он
 		//и стрелял
 		VERIFY(!(result.O->ID() == bullet->parent_id && bullet->fly_dist < PARENT_IGNORE_DIST));
-		if (0 != (V = smart_cast<CKinematics *>(result.O->Visual())))
+		if (0 != (V = smart_cast<IKinematics *>(result.O->Visual())))
 		{
 			CBoneData &B = V->LL_GetData((u16)result.element);
 			hit_material_idx = B.game_mtl_idx;
@@ -338,7 +338,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event &E)
 	m_inv.transform_tiny(p_in_object_space, E.point);
 
 	// bone-space
-	CKinematics *V = smart_cast<CKinematics *>(E.R.O->Visual());
+	IKinematics *V = smart_cast<IKinematics *>(E.R.O->Visual());
 
 	if (V)
 	{

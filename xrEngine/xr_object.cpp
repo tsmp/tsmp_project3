@@ -5,7 +5,7 @@
 #include "xr_area.h"
 #include "render.h"
 #include "xrLevel.h"
-#include "fbasicvisual.h"
+#include "../Include/xrRender/Kinematics.h"
 
 #include "GameFont.h"
 
@@ -18,11 +18,12 @@ void CObject::cName_set(shared_str N)
 {
 	NameObject = N;
 }
+
 void CObject::cNameSect_set(shared_str N)
 {
 	NameSection = N;
 }
-#include "SkeletonCustom.h"
+
 void CObject::cNameVisual_set(shared_str N)
 {
 	// check if equal
@@ -33,19 +34,20 @@ void CObject::cNameVisual_set(shared_str N)
 	// replace model
 	if (*N && N[0])
 	{
-		IRender_Visual *old_v = renderable.visual;
+		IRenderVisual *old_v = renderable.visual;
 
 		NameVisual = N;
 		renderable.visual = Render->model_Create(*N);
 
-		CKinematics *old_k = old_v ? old_v->dcast_PKinematics() : NULL;
-		CKinematics *new_k = renderable.visual->dcast_PKinematics();
+		IKinematics *old_k = old_v ? old_v->dcast_PKinematics() : NULL;
+		IKinematics *new_k = renderable.visual->dcast_PKinematics();
 
 		if (old_k && new_k)
 		{
-			new_k->Update_Callback = old_k->Update_Callback;
-			new_k->Update_Callback_Param = old_k->Update_Callback_Param;
+			new_k->SetUpdateCallback(old_k->GetUpdateCallback());
+			new_k->SetUpdateCallbackParam(old_k->GetUpdateCallbackParam());
 		}
+
 		::Render->model_Delete(old_v);
 	}
 	else
@@ -104,23 +106,21 @@ void CObject::setVisible(BOOL _visible)
 void CObject::Center(Fvector &C) const
 {
 	VERIFY2(renderable.visual, *cName());
-	renderable.xform.transform_tiny(C, renderable.visual->vis.sphere.P);
+	renderable.xform.transform_tiny(C, renderable.visual->getVisData().sphere.P);
 }
+
 float CObject::Radius() const
 {
 	VERIFY2(renderable.visual, *cName());
-	return renderable.visual->vis.sphere.R;
+	return renderable.visual->getVisData().sphere.R;
 }
+
 const Fbox &CObject::BoundingBox() const
 {
 	VERIFY2(renderable.visual, *cName());
-	return renderable.visual->vis.box;
+	return renderable.visual->getVisData().box;
 }
 
-//----------------------------------------------------------------------
-// Class	: CXR_Object
-// Purpose	:
-//----------------------------------------------------------------------
 CObject::CObject() : ISpatial(g_SpatialSpace)
 {
 	// Transform

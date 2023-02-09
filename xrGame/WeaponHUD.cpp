@@ -7,7 +7,7 @@
 #include "WeaponHUD.h"
 #include "Weapon.h"
 #include "Motion.h"
-#include "skeletonanimated.h"
+#include "..\include\xrRender\Kinematics.h"
 #include "level.h"
 #include "MathUtils.h"
 
@@ -26,14 +26,15 @@ BOOL weapon_hud_value::load(const shared_str &section, CHudItem *owner)
 
 	// Visual
 	LPCSTR visual_name = pSettings->r_string(section, "visual");
-	m_animations = smart_cast<CKinematicsAnimated *>(::Render->model_Create(visual_name));
+	m_animations = smart_cast<IKinematicsAnimated *>(::Render->model_Create(visual_name));
 
 	// fire bone
 	if (smart_cast<CWeapon *>(owner))
 	{
 		LPCSTR fire_bone = pSettings->r_string(section, "fire_bone");
-		m_fire_bone = m_animations->LL_BoneID(fire_bone);
-		if (m_fire_bone >= m_animations->LL_BoneCount())
+		IKinematics* pKin = m_animations->dcast_PKinematics();
+		m_fire_bone = pKin->LL_BoneID(fire_bone);
+		if (m_fire_bone >= pKin->LL_BoneCount())
 			Debug.fatal(DEBUG_INFO, "There is no '%s' bone for weapon '%s'.", fire_bone, *section);
 		m_fp_offset = pSettings->r_fvector3(section, "fire_point");
 		if (pSettings->line_exist(section, "fire_point2"))
@@ -57,12 +58,14 @@ BOOL weapon_hud_value::load(const shared_str &section, CHudItem *owner)
 
 weapon_hud_value::~weapon_hud_value()
 {
-	::Render->model_Delete((IRender_Visual *&)m_animations);
+	IRenderVisual* temp = smart_cast<IRenderVisual*>(m_animations);
+	::Render->model_Delete(temp);
+	m_animations = nullptr;
 }
 
 u32 shared_weapon_hud::motion_length(MotionID M)
 {
-	CKinematicsAnimated *skeleton_animated = p_->m_animations;
+	IKinematicsAnimated *skeleton_animated = p_->m_animations;
 	VERIFY(skeleton_animated);
 	CMotionDef *motion_def = skeleton_animated->LL_GetMotionDef(M);
 	VERIFY(motion_def);
@@ -127,10 +130,10 @@ void CWeaponHUD::animDisplay(MotionID M, BOOL bMixIn)
 {
 	if (m_bVisible)
 	{
-		CKinematicsAnimated *PKinematicsAnimated = smart_cast<CKinematicsAnimated *>(Visual());
+		IKinematicsAnimated *PKinematicsAnimated = smart_cast<IKinematicsAnimated *>(Visual());
 		VERIFY(PKinematicsAnimated);
 		PKinematicsAnimated->PlayCycle(M, bMixIn);
-		PKinematicsAnimated->CalculateBones_Invalidate();
+		PKinematicsAnimated->dcast_PKinematics()->CalculateBones_Invalidate();
 	}
 }
 void CWeaponHUD::animPlay(MotionID M, BOOL bMixIn, CHudItem *W, u32 state)
@@ -159,7 +162,7 @@ void CWeaponHUD::Update()
 	if (m_bStopAtEndAnimIsRunning && Device.dwTimeGlobal > m_dwAnimEndTime)
 		StopCurrentAnim();
 	if (m_bVisible)
-		smart_cast<CKinematicsAnimated *>(Visual())->UpdateTracks();
+		smart_cast<IKinematicsAnimated *>(Visual())->UpdateTracks();
 }
 
 void CWeaponHUD::StopCurrentAnim()

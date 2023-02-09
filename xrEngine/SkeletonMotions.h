@@ -1,8 +1,4 @@
-//---------------------------------------------------------------------------
-#ifndef SkeletonMotionsH
-#define SkeletonMotionsH
-
-#include "skeletoncustom.h"
+#pragma once
 
 // refs
 class CKinematicsAnimated;
@@ -11,12 +7,8 @@ class CBlend;
 // callback
 typedef void (*PlayCallback)(CBlend *P);
 
-const u32 MAX_PARTS = 4;
-const u32 MAX_CHANNELS = 4;
-const f32 SAMPLE_FPS = 30.f;
-const f32 SAMPLE_SPF = (1.f / SAMPLE_FPS);
-const f32 KEY_Quant = 32767.f;
-const f32 KEY_QuantI = 1.f / KEY_Quant;
+#include "bone.h"
+#include "SkeletonMotionDefs.h"
 
 //*** Key frame definition ************************************************************************
 enum
@@ -24,16 +16,19 @@ enum
 	flTKeyPresent = (1 << 0),
 	flRKeyAbsent = (1 << 1),
 };
+
 #pragma pack(push, 2)
 struct ENGINE_API CKey
 {
 	Fquaternion Q; // rotation
 	Fvector T;	   // translation
 };
+
 struct ENGINE_API CKeyQR
 {
 	s16 x, y, z, w; // rotation
 };
+
 struct ENGINE_API CKeyQT
 {
 	s8 x, y, z;
@@ -106,6 +101,7 @@ public:
 };
 
 const float fQuantizerRangeExt = 1.5f;
+
 class ENGINE_API CMotionDef
 {
 public:
@@ -262,6 +258,7 @@ public:
 		create(rhs);
 		return *this;
 	}
+
 	bool operator==(shared_motions const &rhs) const { return (p_ == rhs.p_); }
 
 	// misc func
@@ -270,31 +267,37 @@ public:
 		VERIFY(p_);
 		return p_->bone_motions(bone_name);
 	}
+
 	accel_map *motion_map()
 	{
 		VERIFY(p_);
 		return &p_->m_motion_map;
 	}
+
 	accel_map *cycle()
 	{
 		VERIFY(p_);
 		return &p_->m_cycle;
 	}
+
 	accel_map *fx()
 	{
 		VERIFY(p_);
 		return &p_->m_fx;
 	}
+
 	CPartition *partition()
 	{
 		VERIFY(p_);
 		return &p_->m_partition;
 	}
+
 	MotionDefVec *motion_defs()
 	{
 		VERIFY(p_);
 		return &p_->m_mdefs;
 	}
+
 	CMotionDef *motion_def(u16 idx)
 	{
 		VERIFY(p_);
@@ -307,5 +310,3 @@ public:
 		return p_->m_id;
 	}
 };
-//---------------------------------------------------------------------------
-#endif

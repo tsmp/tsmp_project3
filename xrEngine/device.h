@@ -1,21 +1,13 @@
-#ifndef xr_device
-#define xr_device
 #pragma once
 
 // Note:
 // ZNear - always 0.0f
 // ZFar  - always 1.0f
 
-class ENGINE_API CResourceManager;
-class ENGINE_API CGammaControl;
-
 #include "pure.h"
 #include "hw.h"
 #include "ftimer.h"
 #include "stats.h"
-#include "xr_effgamma.h"
-#include "shader.h"
-#include "R_Backend.h"
 
 #define VIEWPORT_NEAR 0.2f
 
@@ -54,16 +46,9 @@ public:
 	void OnWM_Activate(WPARAM wParam, LPARAM lParam);
 
 public:
-
-	// #pragma TODO("TSMP: remove them!")
-	ref_shader m_WireShader;
-	ref_shader m_SelectionShader;
-	CResourceManager* Resources;
-	CGammaControl Gamma;
-
 	IRenderDeviceRender *m_pRender;
-
 	BOOL m_bNearer;
+
 	void SetNearer(BOOL enabled)
 	{
 		if (enabled && !m_bNearer)
@@ -146,6 +131,7 @@ public:
 	u32 TimerAsync_MMT() { return TimerMM.GetElapsed_ms() + m_SystemLocalTimersDelta; }
 
 	// Creation & Destroying
+	void ConnectToRender();
 	void Create(void);
 	void Run(void);
 	void Destroy(void);
@@ -173,7 +159,3 @@ extern ENGINE_API CRenderDevice Device;
 
 typedef fastdelegate::FastDelegate0<bool> LOADING_EVENT;
 extern ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
-
-#include "R_Backend_Runtime.h"
-
-#endif
