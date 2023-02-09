@@ -1099,3 +1099,15 @@ void CKinematicsAnimated::OnCalculateBones()
 {
 	UpdateTracks();
 }
+
+u32 CKinematicsAnimated::LL_PartBlendsCount(u32 bone_part_id)
+{
+	return blend_cycle(bone_part_id).size();
+}
+
+CBlend* CKinematicsAnimated::LL_PartBlend(u32 bone_part_id, u32 n)
+{
+	if (LL_PartBlendsCount(bone_part_id) <= n)
+		return nullptr;
+	return blend_cycle(bone_part_id)[n];
+}

@@ -48,7 +48,6 @@ class CKinematicsAnimated : public CKinematics, public IKinematicsAnimated
 	friend class CMotionDef;
 	friend class CSkeletonX;
 
-private:
 	// Motion control
 	void Bone_Motion_Start(CBoneData *bd, CBlend *handle); // with recursion
 	void Bone_Motion_Stop(CBoneData *bd, CBlend *handle);  // with recursion
@@ -56,7 +55,6 @@ private:
 	void Bone_Motion_Start_IM(CBoneData *bd, CBlend *handle);
 	void Bone_Motion_Stop_IM(CBoneData *bd, CBlend *handle);
 
-public:
 	// Calculation
 private:
 	void BoneChain_Calculate(const CBoneData *bd, CBoneInstance &bi, u8 channel_mask, bool ignore_callbacks);
@@ -67,7 +65,9 @@ public:
 	void Bone_GetAnimPos(Fmatrix &pos, u16 id, u8 channel_mask, bool ignore_callbacks);
 	virtual void OnCalculateBones();
 
-public:
+	u32	LL_PartBlendsCount(u32 bone_part_id);
+	CBlend* LL_PartBlend(u32 bone_part_id, u32 n);
+
 	u32 Update_LastTime;
 
 	CBlendInstance *blend_instances;

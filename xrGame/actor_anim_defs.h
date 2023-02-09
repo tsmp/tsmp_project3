@@ -1,5 +1,8 @@
 #pragma once
-////#include "SkeletonAnimated.h"
+
+class IKinematicsAnimated;
+
+const u32 _total_anim_slots_ = 13;
 
 struct SAnimState
 {
@@ -40,8 +43,6 @@ struct STorsoWpn
 	MotionID all_attack_2;
 	void Create(IKinematicsAnimated *K, LPCSTR base0, LPCSTR base1);
 };
-
-#define _total_anim_slots_ 13
 
 struct SActorState
 {

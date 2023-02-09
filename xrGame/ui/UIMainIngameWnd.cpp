@@ -54,6 +54,7 @@
 
 #ifdef DEBUG
 #include "../debug_renderer.h"
+#include "../../include/xrRender/Kinematics.h"
 
 void test_draw();
 void test_key(int dik);
@@ -1327,71 +1328,74 @@ void CUIMainIngameWnd::draw_adjust_mode()
 {
 	if (g_bHudAdjustMode && m_pWeapon) //draw firePoint,ShellPoint etc
 	{
-		CActor *pActor = smart_cast<CActor *>(Level().CurrentEntity());
-		if (!pActor)
-			return;
+		R_ASSERT(false);
 
-		bool bCamFirstEye = !!m_pWeapon->GetHUDmode();
-		string32 hud_view = "HUD view";
-		string32 _3rd_person_view = "3-rd person view";
-		CGameFont *F = UI()->Font()->pFontDI;
-		F->SetAligment(CGameFont::alCenter);
-		//.		F->SetSizeI			(0.02f);
-		F->OutSetI(0.f, -0.8f);
-		F->SetColor(0xffffffff);
-		F->OutNext("Hud_adjust_mode=%d", g_bHudAdjustMode);
-		if (g_bHudAdjustMode == 1)
-			F->OutNext("adjusting zoom offset");
-		else if (g_bHudAdjustMode == 2)
-			F->OutNext("adjusting fire point for %s", bCamFirstEye ? hud_view : _3rd_person_view);
-		else if (g_bHudAdjustMode == 3)
-			F->OutNext("adjusting missile offset");
-		else if (g_bHudAdjustMode == 4)
-			F->OutNext("adjusting shell point for %s", bCamFirstEye ? hud_view : _3rd_person_view);
-		else if (g_bHudAdjustMode == 5)
-			F->OutNext("adjusting fire point 2 for %s", bCamFirstEye ? hud_view : _3rd_person_view);
+		// commented by tsmp
+		//CActor *pActor = smart_cast<CActor *>(Level().CurrentEntity());
+		//if (!pActor)
+		//	return;
 
-		if (bCamFirstEye)
-		{
-			CWeaponHUD *pWpnHud = NULL;
-			pWpnHud = m_pWeapon->GetHUD();
+		//bool bCamFirstEye = !!m_pWeapon->GetHUDmode();
+		//string32 hud_view = "HUD view";
+		//string32 _3rd_person_view = "3-rd person view";
+		//CGameFont *F = UI()->Font()->pFontDI;
+		//F->SetAligment(CGameFont::alCenter);
+		////.		F->SetSizeI			(0.02f);
+		//F->OutSetI(0.f, -0.8f);
+		//F->SetColor(0xffffffff);
+		//F->OutNext("Hud_adjust_mode=%d", g_bHudAdjustMode);
+		//if (g_bHudAdjustMode == 1)
+		//	F->OutNext("adjusting zoom offset");
+		//else if (g_bHudAdjustMode == 2)
+		//	F->OutNext("adjusting fire point for %s", bCamFirstEye ? hud_view : _3rd_person_view);
+		//else if (g_bHudAdjustMode == 3)
+		//	F->OutNext("adjusting missile offset");
+		//else if (g_bHudAdjustMode == 4)
+		//	F->OutNext("adjusting shell point for %s", bCamFirstEye ? hud_view : _3rd_person_view);
+		//else if (g_bHudAdjustMode == 5)
+		//	F->OutNext("adjusting fire point 2 for %s", bCamFirstEye ? hud_view : _3rd_person_view);
 
-			Fvector FP, SP, FP2;
+		//if (bCamFirstEye)
+		//{
+		//	CWeaponHUD *pWpnHud = NULL;
+		//	pWpnHud = m_pWeapon->GetHUD();
 
-			IKinematics *V = smart_cast<IKinematics *>(pWpnHud->Visual());
-			VERIFY(V);
-			V->CalculateBones();
+		//	Fvector FP, SP, FP2;
 
-			// fire point&direction
-			Fmatrix &fire_mat = V->LL_GetTransform(u16(pWpnHud->FireBone()));
-			Fmatrix &parent = pWpnHud->Transform();
+		//	IKinematics *V = smart_cast<IKinematics *>(pWpnHud->Visual());
+		//	VERIFY(V);
+		//	V->CalculateBones();
 
-			const Fvector &fp = pWpnHud->FirePoint();
-			const Fvector &fp2 = pWpnHud->FirePoint2();
-			const Fvector &sp = pWpnHud->ShellPoint();
+		//	// fire point&direction
+		//	Fmatrix &fire_mat = V->LL_GetTransform(u16(pWpnHud->FireBone()));
+		//	Fmatrix &parent = pWpnHud->Transform();
 
-			fire_mat.transform_tiny(FP, fp);
-			parent.transform_tiny(FP);
+		//	const Fvector &fp = pWpnHud->FirePoint();
+		//	const Fvector &fp2 = pWpnHud->FirePoint2();
+		//	const Fvector &sp = pWpnHud->ShellPoint();
 
-			fire_mat.transform_tiny(FP2, fp2);
-			parent.transform_tiny(FP2);
+		//	fire_mat.transform_tiny(FP, fp);
+		//	parent.transform_tiny(FP);
 
-			fire_mat.transform_tiny(SP, sp);
-			parent.transform_tiny(SP);
+		//	fire_mat.transform_tiny(FP2, fp2);
+		//	parent.transform_tiny(FP2);
 
-			RCache.dbg_DrawAABB(FP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(255, 0, 0));
-			RCache.dbg_DrawAABB(FP2, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 0, 255));
-			RCache.dbg_DrawAABB(SP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(0, 255, 0));
-		}
-		else
-		{
-			Fvector FP = m_pWeapon->get_CurrentFirePoint();
-			Fvector FP2 = m_pWeapon->get_CurrentFirePoint2();
-			Fvector SP = m_pWeapon->get_LastSP();
-			RCache.dbg_DrawAABB(FP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(255, 0, 0));
-			RCache.dbg_DrawAABB(FP2, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 0, 255));
-			RCache.dbg_DrawAABB(SP, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 255, 0));
-		}
+		//	fire_mat.transform_tiny(SP, sp);
+		//	parent.transform_tiny(SP);
+
+		//	RCache.dbg_DrawAABB(FP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(255, 0, 0));
+		//	RCache.dbg_DrawAABB(FP2, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 0, 255));
+		//	RCache.dbg_DrawAABB(SP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(0, 255, 0));
+		//}
+		//else
+		//{
+		//	Fvector FP = m_pWeapon->get_CurrentFirePoint();
+		//	Fvector FP2 = m_pWeapon->get_CurrentFirePoint2();
+		//	Fvector SP = m_pWeapon->get_LastSP();
+		//	RCache.dbg_DrawAABB(FP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(255, 0, 0));
+		//	RCache.dbg_DrawAABB(FP2, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 0, 255));
+		//	RCache.dbg_DrawAABB(SP, 0.02f, 0.02f, 0.02f, D3DCOLOR_XRGB(0, 255, 0));
+		//}
 	}
 }
 #endif

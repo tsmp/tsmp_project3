@@ -2,6 +2,7 @@
 #include "..\include\xrRender\animation_motion.h"
 
 class CEntityAlive;
+class IKinematicsAnimated;
 
 class character_hit_animation_controller
 {

@@ -49,6 +49,7 @@
 #include "PHDebug.h"
 #include "ui/UIDebugFonts.h"
 #include "game_graph.h"
+#include "../include/xrRender/Kinematics.h"
 #endif // DEBUG
 
 #include "hudmanager.h"

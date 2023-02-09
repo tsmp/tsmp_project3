@@ -43,8 +43,8 @@ public:
 	//virtual void LL_DumpBlends_dbg() = 0;
 #endif
 
-	//virtual u32 LL_PartBlendsCount(u32 bone_part_id) = 0;
-	//virtual CBlend *LL_PartBlend(u32 bone_part_id, u32 n) = 0;
+	virtual u32 LL_PartBlendsCount(u32 bone_part_id) = 0;
+	virtual CBlend *LL_PartBlend(u32 bone_part_id, u32 n) = 0;
 	//virtual void LL_IterateBlends(IterateBlendsCallback &callback) = 0;
 
 	virtual u16 LL_MotionsSlotCount() = 0;

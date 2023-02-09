@@ -62,7 +62,7 @@ void CKinematics::DebugRender(Fmatrix& XFORM)
 {
 	CalculateBones();
 
-	CBoneData::BoneDebugdbgLines;
+	CBoneData::BoneDebug dbgLines;
 	(*bones)[iRoot]->DebugQuery	(dbgLines);
 
 	Fvector Z;  Z.set(0,0,0);

@@ -10,19 +10,11 @@
 #ifdef DEBUG
 #include "debug_renderer.h"
 
-CDebugRenderer::CDebugRenderer()
-{
-	m_line_indices.resize(line_vertex_limit);
-	xr_vector<u16>::iterator I = m_line_indices.begin();
-	xr_vector<u16>::iterator E = m_line_indices.end();
-	for (u16 i = 0; I != E; ++I, ++i)
-		*I = i;
-}
-
 void CDebugRenderer::add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color)
 {
 	DRender->add_lines(vertices, vertex_count, pairs, pair_count, color);
 }
+
 void CDebugRenderer::draw_obb(const Fmatrix& matrix, const u32& color)
 {
 	Fvector	aabb[8];

@@ -2,6 +2,8 @@
 #include "control_combase.h"
 #include "..\include\xrRender\animation_motion.h"
 
+class IKinematicsAnimated;
+
 struct SControlRotationJumpData : public ControlCom::IComData
 {
 	MotionID anim_stop_ls, anim_run_ls;

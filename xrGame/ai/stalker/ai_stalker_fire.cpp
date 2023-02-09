@@ -52,6 +52,10 @@
 #include "../../script_game_object.h"
 #include "../../inventory.h"
 
+#ifdef DEBUG
+#include "../include/xrRender/Kinematics.h"
+#endif
+
 using namespace StalkerSpace;
 
 const float DANGER_DISTANCE = 3.f;
@@ -251,10 +255,11 @@ void CAI_Stalker::Hit(SHit *pHDS)
 				//#pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
 				float power_factor = m_power_fx_factor * pHDS->damage() / 100.f;
 				clamp(power_factor, 0.f, 1.f);
-
-				IKinematicsAnimated *tpKinematics = smart_cast<IKinematicsAnimated *>(Visual());
+								
 #ifdef DEBUG
+				IKinematics* tpKinematics = smart_cast<IKinematics*>(Visual());
 				tpKinematics->LL_GetBoneInstance(pHDS->bone());
+
 				if (pHDS->bone() >= tpKinematics->LL_BoneCount())
 				{
 					Msg("tpKinematics has no bone_id %d", pHDS->bone());

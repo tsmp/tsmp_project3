@@ -49,6 +49,7 @@
 #include "../../object_handler_space.h"
 #include "../../debug_renderer.h"
 #include "../../CharacterPhysicsSupport.h"
+#include "../include/xrRender/RenderVisual.h"
 
 CActor *g_debug_actor = 0;
 
