@@ -129,7 +129,7 @@ void CActorCondition::UpdateCondition()
 	m_fAlcohol += m_fV_Alcohol * m_fDeltaTime;
 	clamp(m_fAlcohol, 0.0f, 1.0f);
 
-	if (Actor() && g_dedicated_server)
+	if (Actor() && !g_dedicated_server)
 	{
 		CEffectorCam *ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effAlcohol);
 		if ((m_fAlcohol > 0.0001f))
