@@ -35,13 +35,13 @@ typedef enum _pp_params
 
 class CPostProcessParam
 {
-protected:
 public:
     virtual void update(float dt) = 0;
     virtual void load(IReader &pReader) = 0;
     virtual void save(IWriter &pWriter) = 0;
     virtual float get_length() = 0;
     virtual size_t get_keys_count() = 0;
+    virtual ~CPostProcessParam() = default;
 #ifdef _PP_EDITOR_
     virtual void add_value(float time, float value, float t, float c, float b, int index = 0) = 0;
     virtual void update_value(float time, float value, float t, float c, float b, int index = 0) = 0;
@@ -58,6 +58,7 @@ protected:
 
 public:
     CPostProcessValue(float *pfparam) { m_pfParam = pfparam; }
+    ~CPostProcessValue() override = default;
     virtual void update(float dt)
     {
         *m_pfParam = m_Value.Evaluate(dt);
@@ -96,6 +97,7 @@ protected:
 
 public:
     CPostProcessColor(SPPInfo::SColor *pcolor) { m_pColor = pcolor; }
+    ~CPostProcessColor() override = default;
     virtual void update(float dt)
     {
         m_pColor->r = m_Red.Evaluate(dt);
