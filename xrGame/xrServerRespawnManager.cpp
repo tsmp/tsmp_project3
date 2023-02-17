@@ -70,7 +70,7 @@ int ObjectRespawnClass::DestroyRespawnID(u16 id)
     return 0;
 }
 
-void CALLBACK TimerProc(HWND, UINT, UINT, DWORD)
+void CALLBACK TimerProc(HWND, UINT, UINT_PTR, DWORD)
 {
     ObjectRespawnClass::CheckRespawnObjects();
 }
@@ -78,7 +78,7 @@ void CALLBACK TimerProc(HWND, UINT, UINT, DWORD)
 void ObjectRespawnClass::DestroyRespawner()
 {
     xr_add_object.clear();
-    if (RespawnTimer) 
+    if (RespawnTimer)
     {
         KillTimer(NULL, RespawnTimer);
     }
