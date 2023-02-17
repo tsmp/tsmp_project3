@@ -7,7 +7,12 @@ int g_Dump_Update_Read = 0;
 void xrServer::Process_update(NET_Packet &P, ClientID const &sender)
 {
 	xrClientData *CL = ID_to_client(sender);
-	R_ASSERT2(CL, "Process_update client not found");
+
+	if (!CL)
+	{
+		Msg("! ERROR: Process_update client not found!");
+		return;
+	}
 
 	u32 readStartPos = P.r_tell();
 	bool updateIsCorrupted = false;
