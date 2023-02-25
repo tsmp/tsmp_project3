@@ -105,7 +105,15 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
 		trivial_encryptor::FirstInitialize();
 		//g_temporary_stuff = &trivial_encryptor::decode;
 		FS._initialize(flags, 0, fs_fname);
-		Msg("'%s' build %d, %s\n", "xrCore", build_id, build_date);
+
+		Msg("'xrCore' build %d, %s", build_id, build_date);
+
+#ifdef _WIN64
+		Msg("Architecture: x64 \n");
+#else
+		Msg("Architecture: x86 \n");
+#endif
+
 		EFS._initialize();
 #ifdef DEBUG
 
