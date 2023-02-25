@@ -7,6 +7,7 @@
 int fz_downloader_new = 0;
 int fz_downloader_enabled = 1;
 int fz_downloader_skip_full_check = 0;
+int fz_downloader_allow_x64 = 0;
 
 std::string fz_downloader_mod_name = "tsmp";
 std::string fz_downloader_reconnect_ip;
@@ -86,7 +87,7 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 		moddllinfo.fileinfo.filename = "fz_mod_loader_tsmp_v2.mod";
 		moddllinfo.fileinfo.url = "http://stalker-life.com/stalker_files/mods_shoc/tsmp3/loader/tsmp_mod_loader_v2.dll";
 		moddllinfo.fileinfo.crc32 = 0xB2D51956; // crc дллки
-		
+
 		//Цифровая подпись для загруженной DLL - проверяется перед тем, как передать управление в функцию мода
 		moddllinfo.dsign = "302D021450268FA62C6B30BCA1DE8E3586BA1ED6749CD1890215008B30D01EB47529A9E5F9D49CE3CA56E84F3AD09F";
 
@@ -97,6 +98,9 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 
 		if (fz_downloader_skip_full_check)
 			ModLoadArgs += " -skipfullcheck ";
+
+		if (fz_downloader_allow_x64)
+			ModLoadArgs += " -allow64bitengine ";
 
 		ModLoadArgs += " -includename -preservemessage ";
 	}
