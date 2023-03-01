@@ -32,7 +32,6 @@ int g_sv_mp_iDumpStats_last = 0;
 BOOL g_sv_mp_bCountParticipants = FALSE;
 float g_sv_mp_fVoteQuota = VOTE_QUOTA;
 float g_sv_mp_fVoteTime = VOTE_LENGTH_TIME;
-//-----------------------------------------------------------------
 
 extern xr_token round_end_result_str[];
 
@@ -1139,9 +1138,46 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID const &sender)
 	signal_Syncronize();
 }
 
+int g_SpeechMsgsToBlock = 0;
+int g_SpeechBlockMinutes = 10;
+
+bool SpeechBlockedForSpam(xrServer* srv, xrClientData* pClient)
+{
+	const u32 MsToMinute = 60000;
+	const u32 timeMinute = Level().timeServer() / MsToMinute;
+
+	auto &speechMsgStats = pClient->m_SpeechMessages;
+
+	if (speechMsgStats.m_BlockedUntil > timeMinute)
+		return true;
+
+	if (speechMsgStats.m_LastCheckMinute != timeMinute)
+	{
+		speechMsgStats.m_LastCheckMinute = timeMinute;
+		speechMsgStats.m_UsageCount = 0;
+	}
+
+	speechMsgStats.m_UsageCount++;
+
+	if (g_SpeechMsgsToBlock && speechMsgStats.m_UsageCount > g_SpeechMsgsToBlock)
+	{
+		speechMsgStats.m_BlockedUntil = timeMinute + g_SpeechBlockMinutes;
+		Msg("! radio blocked for player [%s]", pClient->ps->getName());
+
+		NET_Packet P;
+		P.w_begin(M_GAMEMESSAGE);
+		P.w_u32(GAME_EVENT_SERVER_STRING_MESSAGE);
+		P.w_stringZ("Radio is disabled for you because of flood");
+		srv->SendTo(pClient->ID, P);
+		return true;
+	}
+
+	return false;
+}
+
 void game_sv_mp::OnPlayerSpeechMessage(NET_Packet &P, ClientID const &sender)
 {
-	xrClientData *pClient = (xrClientData *)m_server->ID_to_client(sender);
+	xrClientData *pClient = m_server->ID_to_client(sender);
 
 	if (!pClient || !pClient->net_Ready)
 		return;
@@ -1150,6 +1186,9 @@ void game_sv_mp::OnPlayerSpeechMessage(NET_Packet &P, ClientID const &sender)
 		return;
 
 	if (!pClient->owner)
+		return;
+
+	if (SpeechBlockedForSpam(m_server, pClient))
 		return;
 
 	NET_Packet NP;
@@ -1162,7 +1201,7 @@ void game_sv_mp::OnPlayerSpeechMessage(NET_Packet &P, ClientID const &sender)
 
 	m_server->ForEachClientDo([this, &NP](IClient* client)
 	{
-		xrClientData* l_pC = dynamic_cast<xrClientData*>(client);
+		const xrClientData* l_pC = dynamic_cast<xrClientData*>(client);
 		game_PlayerState* ps = l_pC->ps;
 		if (!l_pC || !l_pC->net_Ready || !ps)
 			return;

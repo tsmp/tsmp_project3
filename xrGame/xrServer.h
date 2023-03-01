@@ -42,6 +42,13 @@ public:
 		shared_str m_Login;
 	} m_admin_rights;
 
+	struct
+	{
+		u32 m_LastCheckMinute{ 0 };
+		u32 m_UsageCount{ 0 };
+		u32 m_BlockedUntil{ 0 };
+	} m_SpeechMessages;
+
 	xrClientData();
 	virtual ~xrClientData();
 	virtual void Clear();

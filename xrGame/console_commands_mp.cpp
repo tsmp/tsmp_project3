@@ -7,7 +7,6 @@
 #include "actor.h"
 #include "xrServer_Object_base.h"
 #include "RegistryFuncs.h"
-#include "gamepersistent.h"
 #include "MainMenu.h"
 #include "UIGameCustom.h"
 #include "game_sv_deathmatch.h"
@@ -84,6 +83,9 @@ extern int g_sv_Pending_Wait_Time;
 extern int g_sv_Client_Reconnect_Time;
 extern int g_sv_mp_respawn_npc_after_death;
 int g_dwEventDelay = 0;
+
+extern int g_SpeechMsgsToBlock;
+extern int g_SpeechBlockMinutes;
 
 extern BOOL net_sv_control_hit;
 
@@ -2008,6 +2010,9 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer, "sv_crosshair_players_names", (int*)&g_sv_crosshair_players_names, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_crosshair_color_players", (int*)&g_sv_crosshair_color_players, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_race_invulnerability", (int*)&g_sv_race_invulnerability, 0, 1);
+
+	CMD4(CCC_SV_Integer, "sv_speech_msgs_to_block", (int*)&g_SpeechMsgsToBlock, 0, 100);
+	CMD4(CCC_SV_Integer, "sv_speech_spam_block_time", (int*)&g_SpeechBlockMinutes, 1, 1000);
 
 	CMD4(CCC_SV_Integer, "sv_artefact_respawn_delta", (int *)&g_sv_ah_dwArtefactRespawnDelta, 0, 600); //sec
 	CMD4(CCC_SV_Integer, "sv_artefacts_count", (int *)&g_sv_ah_dwArtefactsNum, 1, 1000000);
