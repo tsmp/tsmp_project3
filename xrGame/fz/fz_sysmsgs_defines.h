@@ -15,26 +15,26 @@ using FZSysMsgSender = void *;
 using FZSysMsgsProcessClientModDll = void *;
 using FZSysMsgsProcessClientMap = void *;
 
-typedef bool(__stdcall *FZSysMsgsInit)();
-typedef bool(__stdcall *FZSysMsgsFlags)();
-typedef bool(__stdcall *FZSysMsgsFree)();
+using FZSysMsgsInit = bool(__stdcall *)();
+using FZSysMsgsFlags = bool(__stdcall *)();
+using FZSysMsgsFree = bool(__stdcall *)();
 
-typedef void(__stdcall *FZSysMsgsSendSysMessage_SOC)(void *, void *, FZSysMsgSender, void *);
+using FZSysMsgsSendSysMessage_SOC = void(__stdcall *)(void *, void *, FZSysMsgSender, void *);
 
-typedef int FZSysmsgsCommonFlags;
+using FZSysmsgsCommonFlags = int;
 const FZSysmsgsCommonFlags FZ_SYSMSGS_ENABLE_LOGS = 1;
 const FZSysmsgsCommonFlags FZ_SYSMSGS_PATCH_UI_PROGRESSBAR = 2;
 
-typedef void(__stdcall *SetCommonSysmsgsFlags)(FZSysmsgsCommonFlags);
+using SetCommonSysmsgsFlags = void(__stdcall*)(FZSysmsgsCommonFlags);
 
 //Тип компрессии, использованный в находящемся на сервере файле
-typedef DWORD FZArchiveCompressionType;
+using FZArchiveCompressionType = DWORD;
 const FZArchiveCompressionType FZ_COMPRESSION_NO_COMPRESSION = 0;  //Компрессии нет, файл на сервере не сжат
 const FZArchiveCompressionType FZ_COMPRESSION_LZO_COMPRESSION = 1; //Файл сжат внутриигровым LZO-компрессором
 const FZArchiveCompressionType FZ_COMPRESSION_CAB_COMPRESSION = 2; //Файл сжат стандартной утилитой MAKECAB из состава Windows
 
 //Определяет момент, в который должна вызываться функция мода
-typedef DWORD FZModdingPolicy;
+using FZModdingPolicy = DWORD;
 
 //Функция из DLL мода может вызываться в любое время. Автоматический реконнект не производится.
 const FZModdingPolicy FZ_MODDING_ANYTIME = 0;
@@ -52,9 +52,9 @@ const FZModdingPolicy FZ_MODDING_WHEN_NOT_CONNECTING = 2;
 struct FZFileDownloadInfo
 {
     //Имя файла (вместе с путем) на клиенте, по которому он должен быть сохранен
-    char *filename;
+    const char *filename;
     //URL, с которого будет производиться загрузка файла
-    char *url;
+    const char *url;
     //Контрольная сумма CRC32 для файла (в распакованном виде)
     DWORD crc32;
     //Используемый тип компрессии
@@ -62,19 +62,19 @@ struct FZFileDownloadInfo
     //Сообщение, выводимое пользователю во время закачки
     const char *progress_msg;
     //Сообщение, выводимое пользователю при возникновении ошибки во время закачки
-    char *error_already_has_dl_msg;
+    const char *error_already_has_dl_msg;
 };
 
 //Параметры реконнекта клиента к серверу
 struct FZReconnectInetAddrData
 {
     //IPv4-адрес сервера (например, 127.0.0.1)
-    char *ip;
+    const char *ip;
     //Порт сервера
     DWORD port;
 };
 
-typedef DWORD FZMapLoadingFlags;
+using FZMapLoadingFlags = DWORD;
 const FZMapLoadingFlags FZ_MAPLOAD_MANDATORY_RECONNECT = 1; //Обязательный реконнект после успешной подгрузки скачанной карты
 
 //Параметры загрузки клиентом db-архива с картой
@@ -85,21 +85,21 @@ struct FZMapInfo
     //IP-адрес и порт для реконнекта после завершения закачки. Если IP пустой, то параметры реконнекта автоматически берутся игрой из тех, во время которых произошел дисконнект.
     FZReconnectInetAddrData reconnect_addr;
     //Внутриигровое имя загружаемой карты (например, mp_pool)
-    char *mapname;
+    const char *mapname;
     //Версия загружаемой карты (обычно 1.0)
-    char *mapver;
+    const char *mapver;
     //Название xml-файла с локализованными названием и описанием карты (nil, если такое не требуется)
-    char *xmlname;
+    const char *xmlname;
     //флаги для настройки особенностей применения карты
     FZMapLoadingFlags flags;
 };
 
-typedef DWORD FZDllModFunResult;
+using FZDllModFunResult = DWORD;
 const FZDllModFunResult FZ_DLL_MOD_FUN_SUCCESS_LOCK = 0;   //Мод успешно загрузился, требуется залочить клиента по name_lock
 const FZDllModFunResult FZ_DLL_MOD_FUN_SUCCESS_NOLOCK = 1; //Успех, лочить клиента (с использованием name_lock) пока не надо
 const FZDllModFunResult FZ_DLL_MOD_FUN_FAILURE = 2;        //Ошибка загрузки мода
 
-typedef FZDllModFunResult(__stdcall *FZDllModFun)(char *procarg1, char *procarg2);
+using FZDllModFun = FZDllModFunResult(__stdcall*)(char *procarg1, char *procarg2);
 
 //Параметры загрузки клиентом DLL-мода посредством ProcessClientModDll
 struct FZDllDownloadInfo
@@ -108,14 +108,14 @@ struct FZDllDownloadInfo
     FZFileDownloadInfo fileinfo;
 
     //Имя процедуры в dll мода, которая должна быть вызвана; должна иметь тип FZDllModFun
-    char *procname;
+    const char *procname;
 
     //Аргументы для передачи в процедуру
     const char *procarg1;
     const char *procarg2;
 
     //Цифровая подпись для загруженной DLL - проверяется перед тем, как передать управление в функцию мода
-    char *dsign;
+    const char *dsign;
 
     //IP-адрес и порт для реконнекта. Если IP нулевой, то параметры реконнекта автоматически берутся игрой из тех, во время которых произошел дисконнект.
     FZReconnectInetAddrData reconnect_addr;
@@ -128,7 +128,7 @@ struct FZDllDownloadInfo
     //Если параметр совпадает с таковым в командной строке - мод считается уже установленным, коннект продолжается
     //Если параметр не совпадает с указанным в командной строке - происходит дисконнект игрока
     //Если в командной строке параметра нет - происходит установка мода.
-    char *name_lock;
+    const char *name_lock;
 
     //Строка, выводимая при обнаружении несовместимого мода
     const char *incompatible_mod_message;
@@ -142,11 +142,11 @@ struct FZClientVotingElement
 {
     //Внутриигровое имя карты (например, mp_pool). В случае если nil - производится очистка списка карт!
     //Целесообразно передавать nil первым элементом в пакете
-    char *mapname;
+    const char *mapname;
     //Версия карты
-    char *mapver;
+    const char *mapver;
     //Локализованное название карты; если nil, будет использован результат вызова стандартного внутриигрового транслятора на клиенте
-    char *description;
+    const char *description;
 };
 
 //Параметры добавления карт в список, доступных для голосования, используется с ProcessClientVotingMaplist
