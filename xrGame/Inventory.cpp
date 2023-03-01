@@ -928,29 +928,29 @@ bool CInventory::Eat(PIItem pIItem)
 	}
 
 	//устанаовить съедобна ли вещь
-	CEatableItem *pItemToEat = smart_cast<CEatableItem *>(pIItem);
+	auto pItemToEat = smart_cast<CEatableItem*>(pIItem);
 	if (!pItemToEat)
 	{
-		Msg("! WARNING: Attempt to eat not eatable item [%s][%d] ", pIItem->object().cNameSect(), pIItem->object().ID());
+		Msg("! WARNING: Attempt to eat not eatable item [%s][%d] ", pIItem->object().cNameSect().c_str(), pIItem->object().ID());
 		return false;
 	}
 
-	CEntityAlive *entity_alive = smart_cast<CEntityAlive *>(m_pOwner);
+	auto entity_alive = smart_cast<CEntityAlive*>(m_pOwner);
 	if (!entity_alive)
 	{
 		Msg("! WARNING: cant cast inventory owner[%s] to CEntityAlive and eat item[%s][%d]",
-			m_pOwner->Name(), pIItem->object().cNameSect(), pIItem->object().ID());
+			m_pOwner->Name(), pIItem->object().cNameSect().c_str(), pIItem->object().ID());
 		return false;
 	}
 
-	CInventoryOwner *IO = smart_cast<CInventoryOwner *>(entity_alive);
+	const auto IO = smart_cast<CInventoryOwner*>(entity_alive);
 	if (!IO)
 	{
 		Msg("! ERROR: cant cast entity_alive to InventoryOwner to eat item");
 		return false;
 	}
 
-	CInventory *pInventory = pItemToEat->m_pCurrentInventory;
+	const CInventory *pInventory = pItemToEat->m_pCurrentInventory;
 	if (!pInventory)
 	{
 		Msg("! ERROR: cant get inventory from item to eat");
@@ -985,7 +985,7 @@ bool CInventory::Eat(PIItem pIItem)
 		pItemToEat->object().cNameSect().c_str());
 #endif // MP_LOGGING
 
-	if (pItemToEat->Empty() && entity_alive->Local())
+	if (pItemToEat->Empty() && entity_alive->Local() && OnServer())
 	{
 		Msg("! WARNING: item to eat is empty and local");
 
