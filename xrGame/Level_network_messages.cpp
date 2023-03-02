@@ -242,6 +242,7 @@ void CLevel::ClientReceive()
 			Game().OnGameMessage(*P);
 		}
 		break;
+
 		case M_RELOAD_GAME:
 		case M_LOAD_GAME:
 		case M_CHANGE_LEVEL:
@@ -261,6 +262,22 @@ void CLevel::ClientReceive()
 					}
 				}
 			}
+
+			switch (m_type)
+			{
+			case M_RELOAD_GAME:
+				Msg("received M_RELOAD_GAME");
+				break;
+
+			case M_LOAD_GAME:
+				Msg("received M_LOAD_GAME");
+				break;
+
+			case M_CHANGE_LEVEL:
+				Msg("received M_CHANGE_LEVEL");
+				break;
+			}
+
 			Engine.Event.Defer("KERNEL:disconnect");
 			Engine.Event.Defer("KERNEL:start", size_t(xr_strdup(*m_caServerOptions)), size_t(xr_strdup(*m_caClientOptions)));
 		}

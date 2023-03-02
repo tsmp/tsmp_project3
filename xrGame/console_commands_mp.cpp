@@ -7,7 +7,6 @@
 #include "actor.h"
 #include "xrServer_Object_base.h"
 #include "RegistryFuncs.h"
-#include "gamepersistent.h"
 #include "MainMenu.h"
 #include "UIGameCustom.h"
 #include "game_sv_deathmatch.h"
@@ -84,6 +83,9 @@ extern int g_sv_Pending_Wait_Time;
 extern int g_sv_Client_Reconnect_Time;
 extern int g_sv_mp_respawn_npc_after_death;
 int g_dwEventDelay = 0;
+
+extern int g_SpeechMsgsToBlock;
+extern int g_SpeechBlockMinutes;
 
 extern BOOL net_sv_control_hit;
 
@@ -1543,7 +1545,9 @@ public:
 
 extern int fz_downloader_enabled;
 extern int fz_downloader_skip_full_check;
+extern int fz_downloader_allow_x64;
 extern int fz_downloader_new;
+extern int fz_downloader_previous_version;
 
 extern std::string fz_downloader_mod_name;
 extern std::string fz_downloader_reconnect_ip;
@@ -2007,6 +2011,9 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer, "sv_crosshair_color_players", (int*)&g_sv_crosshair_color_players, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_race_invulnerability", (int*)&g_sv_race_invulnerability, 0, 1);
 
+	CMD4(CCC_SV_Integer, "sv_speech_msgs_to_block", (int*)&g_SpeechMsgsToBlock, 0, 100);
+	CMD4(CCC_SV_Integer, "sv_speech_spam_block_time", (int*)&g_SpeechBlockMinutes, 1, 1000);
+
 	CMD4(CCC_SV_Integer, "sv_artefact_respawn_delta", (int *)&g_sv_ah_dwArtefactRespawnDelta, 0, 600); //sec
 	CMD4(CCC_SV_Integer, "sv_artefacts_count", (int *)&g_sv_ah_dwArtefactsNum, 1, 1000000);
 	CMD4(CCC_SV_Integer, "sv_artefact_stay_time", (int *)&g_sv_ah_dwArtefactStayTime, 0, 180);	 //min
@@ -2033,8 +2040,10 @@ void register_mp_console_commands()
 	CMD4(CCC_Vector3, "sv_spawn_pos", &SvSpawnPos, Fvector().set(-1000000.0f, -1000000.0f, -1000000.0f ), Fvector().set(1000000.0f, 1000000.0f, 1000000.0f));
 
 	CMD4(CCC_Integer, "fz_downloader_enabled", (int*)&fz_downloader_enabled, 0, 1);
+	CMD4(CCC_Integer, "fz_downloader_previous_version", (int*)&fz_downloader_previous_version, 0, 1);
 	CMD4(CCC_Integer, "fz_downloader_new", (int*)&fz_downloader_new, 0, 1);
 	CMD4(CCC_Integer, "fz_downloader_skip_full_check", (int*)&fz_downloader_skip_full_check, 0, 1);
+	CMD4(CCC_Integer, "fz_downloader_allow_x64_engine", (int*)&fz_downloader_allow_x64, 0, 1);
 	CMD1(CCC_fz_reconnect_ip, "fz_downloader_reconnect_ip");
 	CMD1(CCC_fz_mod_name, "fz_downloader_mod_name");
 	CMD1(CCC_fz_mod_message, "fz_downloader_message");

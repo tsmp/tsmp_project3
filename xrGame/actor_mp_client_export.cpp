@@ -105,6 +105,9 @@ BOOL CActorMP::net_Relevant()
 	if (Holder())
 		return false;
 
+	if (!PHGetSyncItem(0))
+		return false;
+
 	actor_mp_state state;
 	fill_state(state);
 	return (m_state_holder.relevant(state));

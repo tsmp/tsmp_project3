@@ -181,30 +181,13 @@ void CSheduler::ProcessStep()
 #endif // DEBUG_SCHEDULER
 
 		u32 Elapsed = dwTime - T.dwTimeOfLastExecute;
-		bool condition;
 
-#ifdef DEBUG
-		condition = (NULL == T.Object || !T.Object->shedule_Needed());
-#else
-		__try
-		{
-			condition = (NULL == T.Object || !T.Object->shedule_Needed());
-		}
-		__except (EXCEPTION_EXECUTE_HANDLER)
-		{
-			Msg("Scheduler tried to update object %s", *T.scheduled_name);
-			FlushLog();
-			T.Object = 0;
-			continue;
-		}
-#endif // DEBUG
-
-		if (condition)
+		if (!T.Object || !T.Object->shedule_Needed())
 		{
 			// Erase element
 #ifdef DEBUG_SCHEDULER
 			Msg("SCHEDULER: process unregister [%s][%x][%s]", *T.scheduled_name, T.Object, "false");
-#endif		// DEBUG_SCHEDULER
+#endif // DEBUG_SCHEDULER
 
 			Pop();
 			continue;
@@ -213,52 +196,38 @@ void CSheduler::ProcessStep()
 		// Insert into priority Queue
 		Pop();
 
-#ifndef DEBUG
-		__try
-		{
+#ifdef DEBUG
+		T.Object->dbg_startframe = Device.CurrentFrameNumber;
+		eTimer.Start();
+		LPCSTR _obj_name = T.Object->shedule_Name().c_str();
 #endif // DEBUG
 
-#ifdef DEBUG
-			T.Object->dbg_startframe = Device.CurrentFrameNumber;
-			eTimer.Start();
-			LPCSTR _obj_name = T.Object->shedule_Name().c_str();
-#endif // DEBUG
+		// Calc next update interval
+		u32 dwMin = _max(u32(30), T.Object->shedule.t_min);
+		u32 dwMax = (1000 + T.Object->shedule.t_max) / 2;
+		float scale = T.Object->shedule_Scale();
+		u32 dwUpdate = dwMin + iFloor(float(dwMax - dwMin) * scale);
+		clamp(dwUpdate, u32(_max(dwMin, u32(20))), dwMax);
 
-			// Calc next update interval
-			u32 dwMin = _max(u32(30), T.Object->shedule.t_min);
-			u32 dwMax = (1000 + T.Object->shedule.t_max) / 2;
-			float scale = T.Object->shedule_Scale();
-			u32 dwUpdate = dwMin + iFloor(float(dwMax - dwMin) * scale);
-			clamp(dwUpdate, u32(_max(dwMin, u32(20))), dwMax);
-						
-			T.Object->shedule_Update(clampr(Elapsed, u32(1), u32(_max(u32(T.Object->shedule.t_max), u32(1000)))));
+		T.Object->shedule_Update(clampr(Elapsed, u32(1), u32(_max(u32(T.Object->shedule.t_max), u32(1000)))));
 
 #ifdef DEBUG
-			u32 execTime = eTimer.GetElapsed_ms();
+		u32 execTime = eTimer.GetElapsed_ms();
 #endif
 
-			// Fill item structure
-			Item TNext;
-			TNext.dwTimeForExecute = dwTime + dwUpdate;
-			TNext.dwTimeOfLastExecute = dwTime;
-			TNext.Object = T.Object;
-			TNext.scheduled_name = T.Object->shedule_Name();
+		// Fill item structure
+		Item TNext;
+		TNext.dwTimeForExecute = dwTime + dwUpdate;
+		TNext.dwTimeOfLastExecute = dwTime;
+		TNext.Object = T.Object;
+		TNext.scheduled_name = T.Object->shedule_Name();
 
-			ItemsProcessed.push_back(TNext);
+		ItemsProcessed.push_back(TNext);
 
 #ifdef DEBUG
-			if (execTime > 15)
-			{
-				Msg("* xrSheduler: too much time consumed by object [%s] (%dms)", _obj_name, execTime);
-			}
-#else
-		}
-		__except (EXCEPTION_EXECUTE_HANDLER)
+		if (execTime > 15)
 		{
-			Msg("Scheduler tried to update object %s", *T.scheduled_name);
-			FlushLog();
-			T.Object = 0;
-			continue;
+			Msg("* xrSheduler: too much time consumed by object [%s] (%dms)", _obj_name, execTime);
 		}
 #endif // DEBUG
 
@@ -274,7 +243,7 @@ void CSheduler::ProcessStep()
 	}
 
 	// Push "processed" back
-	while (ItemsProcessed.size())
+	while (!ItemsProcessed.empty())
 	{
 		Push(ItemsProcessed.back());
 		ItemsProcessed.pop_back();

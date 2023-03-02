@@ -465,10 +465,14 @@ void CArtefact::OnAnimationEnd(u32 state)
 		if (Local())
 		{
 			SwitchState(eHiding);
-			NET_Packet P;
-			u_EventGen(P, GEG_PLAYER_ACTIVATEARTEFACT, H_Parent()->ID());
-			P.w_u16(ID());
-			u_EventSend(P);
+
+			if (const CObject* parent = H_Parent())
+			{
+				NET_Packet P;
+				u_EventGen(P, GEG_PLAYER_ACTIVATEARTEFACT, parent->ID());
+				P.w_u16(ID());
+				u_EventSend(P);
+			}
 		}
 	}
 	break;

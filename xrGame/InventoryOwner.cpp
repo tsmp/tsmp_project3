@@ -33,6 +33,7 @@ CInventoryOwner::CInventoryOwner()
 {
 	m_pTrade = NULL;
 	m_trade_parameters = 0;
+	m_bMoneyUpdatedLocally = false;
 
 	m_inventory = xr_new<CInventory>();
 	m_pCharacterInfo = xr_new<CCharacterInfo>();
@@ -353,27 +354,19 @@ void CInventoryOwner::spawn_supplies()
 //игровое имя
 LPCSTR CInventoryOwner::Name() const
 {
-	//	return CharacterInfo().Name();
 	return m_game_name.c_str();
 }
 
-void CInventoryOwner::NewPdaContact(CInventoryOwner *pInvOwner)
-{
-}
-void CInventoryOwner::LostPdaContact(CInventoryOwner *pInvOwner)
-{
-}
+void CInventoryOwner::NewPdaContact(CInventoryOwner *pInvOwner) {}
+void CInventoryOwner::LostPdaContact(CInventoryOwner *pInvOwner) {}
 
-//////////////////////////////////////////////////////////////////////////
 //для работы с relation system
 u16 CInventoryOwner::object_id() const
 {
 	return smart_cast<const CGameObject *>(this)->ID();
 }
 
-//////////////////////////////////////////////////////////////////////////
 //установка группировки на клиентском и серверном объкте
-
 void CInventoryOwner::SetCommunity(CHARACTER_COMMUNITY_INDEX new_community)
 {
 	CEntityAlive *EA = smart_cast<CEntityAlive *>(this);
@@ -538,12 +531,28 @@ bool CInventoryOwner::AllowItemToTrade(CInventoryItem const *item, EItemPlace pl
 			item->object().cNameSect()));
 }
 
+u32 CInventoryOwner::get_money()
+{
+	if (!IsGameTypeSingle() && !m_bMoneyUpdatedLocally)
+	{
+		if (Actor() && Actor()->cast_inventory_owner() == this)
+		{
+			if (const auto state = Game().local_player)
+				m_money = state->money_for_round;
+		}
+	}
+
+	return m_money;
+}
+
 void CInventoryOwner::set_money(u32 amount, bool bSendEvent)
 {
 	if (InfinitiveMoney())
 		m_money = _max(m_money, amount);
 	else
 		m_money = amount;
+
+	m_bMoneyUpdatedLocally = !bSendEvent;
 
 	if (bSendEvent)
 	{

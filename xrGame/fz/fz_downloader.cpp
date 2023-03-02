@@ -7,6 +7,8 @@
 int fz_downloader_new = 0;
 int fz_downloader_enabled = 1;
 int fz_downloader_skip_full_check = 0;
+int fz_downloader_allow_x64 = 0;
+int fz_downloader_previous_version = 0;
 
 std::string fz_downloader_mod_name = "tsmp";
 std::string fz_downloader_reconnect_ip;
@@ -20,9 +22,9 @@ FZSysMsgsProcessClientModDll ProcProcessClientMod;
 
 static void __stdcall SendCallback(void *msg, unsigned int len, void *userdata)
 {
-	SMyUserData *data = (SMyUserData *)userdata;
+	const SMyUserData *data = static_cast<SMyUserData*>(userdata);
 	xrServer *srv = data->server;
-	ClientID ID = data->idOfPlayer;
+	const ClientID &ID = data->idOfPlayer;
 
 	srv->IPureServer::SendTo_LL(ID, msg, len, net_flags(TRUE, TRUE, TRUE, TRUE));
 }
@@ -40,13 +42,13 @@ void LoadDLL()
 		return;
 	}
 
-	FZSysMsgsInit SysInit = reinterpret_cast<FZSysMsgsInit>(GetProcAddress(dll, "FZSysMsgsInit"));
-	(*SysInit)();
+	const auto SysInit = reinterpret_cast<FZSysMsgsInit>(GetProcAddress(dll, "FZSysMsgsInit"));
+	SysInit();
 
 	ProcSendSysMessage = reinterpret_cast<FZSysMsgsSendSysMessage_SOC>(GetProcAddress(dll, "FZSysMsgsSendSysMessage_SOC"));
 	ProcProcessClientMod = reinterpret_cast<FZSysMsgsProcessClientModDll>(GetProcAddress(dll, "FZSysMsgsProcessClientModDll"));
 
-	auto SetFlags = reinterpret_cast<SetCommonSysmsgsFlags>(GetProcAddress(dll, "FZSysMsgsSetCommonSysmsgsFlags"));
+	const auto SetFlags = reinterpret_cast<SetCommonSysmsgsFlags>(GetProcAddress(dll, "FZSysMsgsSetCommonSysmsgsFlags"));
 	SetFlags(FZ_SYSMSGS_ENABLE_LOGS | FZ_SYSMSGS_PATCH_UI_PROGRESSBAR);
 
 	LoadedDLL = true;
@@ -83,20 +85,35 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 
 	if (fz_downloader_new)
 	{
-		moddllinfo.fileinfo.filename = "fz_mod_loader_tsmp_v2.mod";
-		moddllinfo.fileinfo.url = "http://stalker-life.com/stalker_files/mods_shoc/tsmp3/loader/tsmp_mod_loader_v2.dll";
-		moddllinfo.fileinfo.crc32 = 0xB2D51956; // crc дллки
-		
-		//Цифровая подпись для загруженной DLL - проверяется перед тем, как передать управление в функцию мода
-		moddllinfo.dsign = "302D021450268FA62C6B30BCA1DE8E3586BA1ED6749CD1890215008B30D01EB47529A9E5F9D49CE3CA56E84F3AD09F";
+		if (fz_downloader_previous_version)
+		{
+			moddllinfo.fileinfo.filename = "fz_mod_loader_tsmp_v2.mod";
+			moddllinfo.fileinfo.url = "http://stalker-life.com/stalker_files/mods_shoc/tsmp3/loader/tsmp_mod_loader_v2.dll";
+			moddllinfo.fileinfo.crc32 = 0xB2D51956; // crc дллки
 
-		shared_str srvPasword = static_cast<xrGameSpyServer*>(server)->Password;
+			//Цифровая подпись для загруженной DLL - проверяется перед тем, как передать управление в функцию мода
+			moddllinfo.dsign = "302D021450268FA62C6B30BCA1DE8E3586BA1ED6749CD1890215008B30D01EB47529A9E5F9D49CE3CA56E84F3AD09F";
+		}
+		else
+		{
+			moddllinfo.fileinfo.filename = "fz_mod_loader_tsmp_v3.mod";
+			moddllinfo.fileinfo.url = "http://stalker-life.com/stalker_files/mods_shoc/tsmp3/loader/tsmp_mod_loader_v3.dll";
+			moddllinfo.fileinfo.crc32 = 0xACB62B2F; // crc дллки
+
+			//Цифровая подпись для загруженной DLL - проверяется перед тем, как передать управление в функцию мода
+			moddllinfo.dsign = "302D0215008868F530DFBB61F92B1AA4FBED0C84019E04706302142E09A800FB3E225A5BAE7431788A5700CAC2F94D";
+		}
+
+		const shared_str srvPasword = static_cast<xrGameSpyServer*>(server)->Password;
 
 		if (srvPasword.size())
 			ModLoadArgs += " -psw " + std::string(srvPasword.c_str());
 
 		if (fz_downloader_skip_full_check)
 			ModLoadArgs += " -skipfullcheck ";
+
+		if (fz_downloader_allow_x64)
+			ModLoadArgs += " -allow64bitengine ";
 
 		ModLoadArgs += " -includename -preservemessage ";
 	}
@@ -115,7 +132,7 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 	moddllinfo.procarg1 = fz_downloader_mod_name.c_str();
 
 	if (fz_downloader_reconnect_ip.empty())
-		fz_downloader_reconnect_ip = Address.to_string().c_str();
+		fz_downloader_reconnect_ip = Address.to_string();
 
 	moddllinfo.procarg2 = ModLoadArgs.c_str(); //Аргументы для передачи в процедуру
 	

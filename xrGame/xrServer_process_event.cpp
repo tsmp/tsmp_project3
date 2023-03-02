@@ -308,6 +308,10 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 	case GEG_PLAYER_ITEM_EAT:
 	{
 		SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
+
+		if (!IsGameTypeSingle() && type == GEG_PLAYER_ITEM_EAT)
+			SendTo(sender, P, net_flags(TRUE, TRUE));
+
 #ifdef SLOW_VERIFY_ENTITIES
 		VERIFY(verify_entities());
 #endif

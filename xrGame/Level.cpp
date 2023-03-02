@@ -407,18 +407,14 @@ void CLevel::OnFrame()
 		if (OnClient() && GameID() != GAME_SINGLE)
 			ClearAllObjects();
 
+		Msg("net is disconnected");
 		Engine.Event.Defer("kernel:disconnect");
 		return;
 	}
-	else
-	{
 
-		Device.Statistic->netClient1.Begin();
-
-		ClientReceive();
-
-		Device.Statistic->netClient1.End();
-	}
+	Device.Statistic->netClient1.Begin();
+	ClientReceive();
+	Device.Statistic->netClient1.End();
 
 	ProcessGameEvents();
 

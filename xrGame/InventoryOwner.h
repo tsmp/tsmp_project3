@@ -34,14 +34,12 @@ public:
 	CInventoryOwner();
 	virtual ~CInventoryOwner();
 
-public:
 	virtual CInventoryOwner *cast_inventory_owner() { return this; }
 
-public:
 	virtual DLL_Pure *_construct();
 	virtual BOOL net_Spawn(CSE_Abstract *DC);
 	virtual void net_Destroy();
-	void Init();
+
 	virtual void Load(LPCSTR section);
 	virtual void reinit();
 	virtual void reload(LPCSTR section);
@@ -89,18 +87,20 @@ public:
 	//игровое имя
 	virtual LPCSTR Name() const;
 	void SetName(LPCSTR newName) { m_game_name = newName; }
-	u32 get_money() const { return m_money; }
+	u32 get_money();
 	void set_money(u32 amount, bool bSendEvent);
 
 protected:
 	u32 m_money;
+
 	// торговля
 	CTrade *m_pTrade;
-	bool m_bTalking;
 	CInventoryOwner *m_pTalkPartner;
 
+	bool m_bMoneyUpdatedLocally;
 	bool m_bAllowTalk;
 	bool m_bAllowTrade;
+	bool m_bTalking;
 
 	u32 m_tmp_active_slot_num;
 	//////////////////////////////////////////////////////////////////////////

@@ -507,6 +507,7 @@ BOOL CActor::net_Spawn(CSE_Abstract *DC)
 
 	CSE_ALifeTraderAbstract *pTA = smart_cast<CSE_ALifeTraderAbstract *>(e);
 	set_money(pTA->m_dwMoney, false);
+	m_bMoneyUpdatedLocally = false;
 
 	//убрать все артефакты с пояса
 	m_ArtefactsOnBelt.clear();

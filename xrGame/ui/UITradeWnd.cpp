@@ -463,12 +463,6 @@ void CUITradeWnd::EnableAll()
 
 void CUITradeWnd::UpdateMoneys()
 {
-	if (!IsGameTypeSingle())
-	{
-		if (auto state = Game().local_player)
-			m_pInvOwner->set_money(state->money_for_round, false);
-	}
-
 	string256 buf;
 	sprintf_s(buf, "%d RU", m_pInvOwner->get_money());
 	m_uidata->UIOurMoneyStatic.SetText(buf);
