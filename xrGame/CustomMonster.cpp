@@ -662,7 +662,7 @@ void CCustomMonster::Die(CObject* who)
 	Actor()->SetActorVisibility(ID(), 0.f);
 
 	// Спавним точно такого же нового взамен умершего. Если убиваемый объект есть в списке респавнера, то не спавним отсюда.
-	if (OnServer() && !IsGameTypeSingle() && g_sv_mp_respawn_npc_after_death && ObjectRespawnClass::GetRespawnObjectID(ID()) == 0)
+	if (OnServer() && !IsGameTypeSingle() && g_sv_mp_respawn_npc_after_death && !ObjectRespawnClass::GetRespawnObjectID(ID()))
 		RespawnAfterDeath();
 }
 
