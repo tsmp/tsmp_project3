@@ -9,6 +9,9 @@ public:
 	// В xrServer::Process_event_destroy
 	static int DestroyRespawnID(u16 id);
 
+	// В xrServer::Process_event_destroy
+	static int GetRespawnObjectID(u16 id);
+
 	// добавить объект в респавн xrServer::SLS_Default()
 	static void AddObject(shared_str& pSection, shared_str &pCustomData, u16 pID, int pTimeRespawn, Fvector& XYZ);
 

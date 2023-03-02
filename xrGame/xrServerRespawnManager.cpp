@@ -37,20 +37,23 @@ void ObjectRespawnClass::AddObject(shared_str &pSection, shared_str& pCustomData
 
 void ObjectRespawnClass::CheckRespawnObjects()
 {
-    for (vector<ObjectRespawnClass>::iterator respawn = xr_add_object.begin(); respawn != xr_add_object.end(); respawn++)
+    if (OnServer() && !IsGameTypeSingle())
     {
-        if (respawn->id_object == 0)
+        for (vector<ObjectRespawnClass>::iterator respawn = xr_add_object.begin(); respawn != xr_add_object.end(); respawn++)
         {
-            respawn->time_tick++;
-            if (respawn->time_respawn <= respawn->time_tick)
+            if (respawn->id_object == 0)
             {
-                respawn->time_tick = 0;
-
-                if (CSE_Abstract* resp = Level().Server->game->SpawnObject(respawn->section.c_str(), respawn->spawn_position, respawn->custom_data))
+                respawn->time_tick++;
+                if (respawn->time_respawn <= respawn->time_tick)
                 {
-                    respawn->id_object = resp->ID;
-                    Msg("- Object spawned: [%s], id: [%d], X: [%3.2f], Y: [%3.2f], Z: [%3.2f], Time respawn: [%u]",
-                        respawn->section.c_str(), respawn->id_object, respawn->spawn_position.x, respawn->spawn_position.y, respawn->spawn_position.z, respawn->time_respawn);
+                    respawn->time_tick = 0;
+
+                    if (CSE_Abstract* resp = Level().Server->game->SpawnObject(respawn->section.c_str(), respawn->spawn_position, respawn->custom_data))
+                    {
+                        respawn->id_object = resp->ID;
+                        Msg("- Object spawned: [%s], id: [%d], X: [%3.2f], Y: [%3.2f], Z: [%3.2f], Time respawn: [%u]",
+                            respawn->section.c_str(), respawn->id_object, respawn->spawn_position.x, respawn->spawn_position.y, respawn->spawn_position.z, respawn->time_respawn);
+                    }
                 }
             }
         }
@@ -66,6 +69,16 @@ int ObjectRespawnClass::DestroyRespawnID(u16 id)
             respawn->id_object = 0;
             return id;
         }
+    }
+    return 0;
+}
+
+int ObjectRespawnClass::GetRespawnObjectID(u16 id)
+{
+    for (vector<ObjectRespawnClass>::iterator respawn = xr_add_object.begin(); respawn != xr_add_object.end(); respawn++)
+    {
+        if (respawn->id_object == id)
+            return id;
     }
     return 0;
 }

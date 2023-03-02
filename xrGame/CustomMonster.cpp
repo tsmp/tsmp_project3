@@ -48,6 +48,7 @@
 #include "client_spawn_manager.h"
 #include "InventoryOwner.h"
 #include "game_sv_deathmatch.h"
+#include "xrServerRespawnManager.h"
 
 #ifdef DEBUG
 #include "debug_renderer.h"
@@ -654,14 +655,14 @@ void CCustomMonster::RespawnAfterDeath()
 	}
 }
 
-void CCustomMonster::Die(CObject *who)
+void CCustomMonster::Die(CObject* who)
 {
 	inherited::Die(who);
 	//Level().RemoveMapLocationByID(this->ID());
 	Actor()->SetActorVisibility(ID(), 0.f);
 
-	// Спавним точно такого же нового взамен умершего
-	if (OnServer() && !IsGameTypeSingle() && g_sv_mp_respawn_npc_after_death)	
+	// Спавним точно такого же нового взамен умершего. Если убиваемый объект есть в списке респавнера, то не спавним отсюда.
+	if (OnServer() && !IsGameTypeSingle() && g_sv_mp_respawn_npc_after_death && ObjectRespawnClass::GetRespawnObjectID(ID()) == 0)
 		RespawnAfterDeath();
 }
 
