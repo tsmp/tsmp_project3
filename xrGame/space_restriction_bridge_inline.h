@@ -41,7 +41,13 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(const T &restriction, const F
 			selected = *I;
 		}
 	}
-	VERIFY2(ai().level_graph().valid_vertex_id(selected), *name());
+
+	if(!ai().level_graph().valid_vertex_id(selected))
+	{
+		Msg("! can not get accessible nearest vertex");
+		Msg("vertex_id[%d], object[%s], position[%f][%f][%f]", selected, *name(), VPUSH(position));
+		return -1;
+	}
 
 	{
 		min_dist_sqr = flt_max;
@@ -69,7 +75,11 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(const T &restriction, const F
 		}
 		selected = new_selected;
 	}
-	VERIFY(ai().level_graph().valid_vertex_id(selected));
+
+	bool selectedVertexIdValid = ai().level_graph().valid_vertex_id(selected);
+	VERIFY(selectedVertexIdValid);
+	if (!selectedVertexIdValid)
+		return -1;
 
 	{
 		Fvector center = ai().level_graph().vertex_position(selected);
@@ -119,9 +129,13 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(const T &restriction, const F
 		}
 		VERIFY(found);
 	}
-	VERIFY(ai().level_graph().valid_vertex_id(selected));
 
-	return (selected);
+	selectedVertexIdValid = ai().level_graph().valid_vertex_id(selected);
+	VERIFY(selectedVertexIdValid);
+	if (!selectedVertexIdValid)
+		return -1;
+
+	return selected;
 }
 
 template <typename T>
