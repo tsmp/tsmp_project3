@@ -977,8 +977,8 @@ bool CInventory::Eat(PIItem pIItem)
 
 	pItemToEat->UseBy(entity_alive);
 
-	if (Actor()->m_inventory == this)
-		Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject *>(pIItem))->lua_game_object());
+	if (Actor() && Actor()->m_inventory == this)
+		Actor()->callback(GameObject::eUseObject)(smart_cast<CGameObject*>(pIItem)->lua_game_object());
 
 #ifdef MP_LOGGING
 	Msg("--- Actor [%d] use or eat [%d][%s]", entity_alive->ID(), pItemToEat->object().ID(),
@@ -987,8 +987,6 @@ bool CInventory::Eat(PIItem pIItem)
 
 	if (pItemToEat->Empty() && entity_alive->Local() && OnServer())
 	{
-		Msg("! WARNING: item to eat is empty and local");
-
 		NET_Packet P;
 		CGameObject::u_EventGen(P, GE_OWNERSHIP_REJECT, entity_alive->ID());
 		P.w_u16(pIItem->object().ID());
