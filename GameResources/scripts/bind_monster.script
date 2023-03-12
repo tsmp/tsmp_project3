@@ -93,6 +93,10 @@ function generic_object_binder:death_callback(victim, who)
 		return
 	end
 
+	if not who then
+		return
+	end
+
 	if who:id() == db.actor:id() then
 		xr_statistic.addKillCount(self.object)
 	end
