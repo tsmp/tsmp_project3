@@ -389,6 +389,9 @@
     <ClInclude Include="buffer_vector_inline.h">
       <Filter>Math\Extensions\buffer vector</Filter>
     </ClInclude>
+    <ClInclude Include="NarrowCast.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="FileSystem.h">

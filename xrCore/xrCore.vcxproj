@@ -577,6 +577,7 @@
     <ClInclude Include="LocatorAPI_defs.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="memory_monitor.h" />
+    <ClInclude Include="NarrowCast.h" />
     <ClInclude Include="PPMD\Coder.hpp" />
     <ClInclude Include="PPMD\compression_ppmd_stream.h" />
     <ClInclude Include="PPMD\compression_ppmd_stream_inline.h" />

@@ -134,6 +134,7 @@
 #endif
 
 #include "xrDebug.h"
+#include "NarrowCast.h"
 #include "vector.h"
 #include "clsid.h"
 #include "Threading\xrCriticalSection.h"
