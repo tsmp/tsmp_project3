@@ -145,69 +145,59 @@ struct translation_pair
 
 void CLevel::Load_GameSpecific_CFORM(CDB::TRI *tris, u32 count)
 {
-	typedef xr_vector<translation_pair> ID_INDEX_PAIRS;
-	ID_INDEX_PAIRS translator;
+	xr_vector<translation_pair> translator;
 	translator.reserve(GMLib.CountMaterial());
-	u16 default_id = (u16)GMLib.GetMaterialIdx("default");
-	translator.push_back(translation_pair(u32(-1), default_id));
+	translator.emplace_back(translation_pair(static_cast<u32>(-1), GMLib.GetMaterialIdx("default")));
 
-	u16 index = 0, static_mtl_count = 1;
-	int max_ID = 0;
-	int max_static_ID = 0;
-	for (GameMtlIt I = GMLib.FirstMaterial(); GMLib.LastMaterial() != I; ++I, ++index)
+	u16 index = 0, staticMtlCount = 1;
+	int maxStaticID = 0;
+
+	for (const SGameMtl& material : GMLib.Materials())
 	{
-		if (!(*I)->Flags.test(SGameMtl::flDynamic))
+		if (!material.Flags.test(SGameMtl::flDynamic))
 		{
-			++static_mtl_count;
-			translator.push_back(translation_pair((*I)->GetID(), index));
-			if ((*I)->GetID() > max_static_ID)
-				max_static_ID = (*I)->GetID();
+			++staticMtlCount;
+			const int id = material.GetID();
+			translator.emplace_back(translation_pair(id, index));
+
+			if (id > maxStaticID)
+				maxStaticID = id;
 		}
-		if ((*I)->GetID() > max_ID)
-			max_ID = (*I)->GetID();
+
+		++index;
 	}
-	// Msg("* Material remapping ID: [Max:%d, StaticMax:%d]",max_ID,max_static_ID);
-	VERIFY(max_static_ID < 0xFFFF);
 
-	if (static_mtl_count < 128)
+	VERIFY(maxStaticID < 0xFFFF);
+
+	if (staticMtlCount < 128)
 	{
-		CDB::TRI *I = tris;
-		CDB::TRI *E = tris + count;
-		for (; I != E; ++I)
+		for (auto I = tris, E = tris + count; I != E; ++I)
 		{
-			ID_INDEX_PAIRS::iterator i = std::find(translator.begin(), translator.end(), (u16)(*I).material);
-			if (i != translator.end())
-			{
-				(*I).material = (*i).m_index;
-				SGameMtl *mtl = GMLib.GetMaterialByIdx((*i).m_index);
-				(*I).suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
-				(*I).suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
-				continue;
-			}
+			CDB::TRI& it = *I;
+			auto i = std::find(translator.begin(), translator.end(), static_cast<u16>(it.material));
+			R_ASSERT2(i != translator.end(), make_string("Game material %d not found", it.material).c_str());
 
-			Debug.fatal(DEBUG_INFO, "Game material '%d' not found", (*I).material);
+			it.material = (*i).m_index;
+			const SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);
+			it.suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
+			it.suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
 		}
+
 		return;
 	}
 
 	std::sort(translator.begin(), translator.end());
-	{
-		CDB::TRI *I = tris;
-		CDB::TRI *E = tris + count;
-		for (; I != E; ++I)
-		{
-			ID_INDEX_PAIRS::iterator i = std::lower_bound(translator.begin(), translator.end(), (u16)(*I).material);
-			if ((i != translator.end()) && ((*i).m_id == (*I).material))
-			{
-				(*I).material = (*i).m_index;
-				SGameMtl *mtl = GMLib.GetMaterialByIdx((*i).m_index);
-				(*I).suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
-				(*I).suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
-				continue;
-			}
 
-			Debug.fatal(DEBUG_INFO, "Game material '%d' not found", (*I).material);
-		}
+	for (auto I = tris, E = tris + count; I != E; ++I)
+	{
+		CDB::TRI& it = *I;
+		auto i = std::lower_bound(translator.begin(), translator.end(), static_cast<u16>(it.material));
+		R_ASSERT(i != translator.end() && (*i).m_id == it.material, make_string("Game material '%d' not found", it.material).c_str());
+
+		it.material = (*i).m_index;
+		SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);
+		it.suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
+		it.suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
 	}
 }
 

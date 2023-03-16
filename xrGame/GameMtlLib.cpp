@@ -1,8 +1,19 @@
-//---------------------------------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
-
 #include "GameMtlLib.h"
+
+static const u16 GAMEMTL_CURRENT_VERSION = 0x0001;
+static const char* GAMEMTL_FILENAME = "gamemtl.xr";
+
+static const u32 GAMEMTLS_CHUNK_VERSION = 0x1000;
+static const u32 GAMEMTLS_CHUNK_MTLS = 0x1002;
+static const u32 GAMEMTLS_CHUNK_MTLS_PAIR = 0x1003;
+
+static const u32 GAMEMTL_CHUNK_MAIN = 0x1000;
+static const u32 GAMEMTL_CHUNK_FLAGS = 0x1001;
+static const u32 GAMEMTL_CHUNK_PHYSICS = 0x1002;
+static const u32 GAMEMTL_CHUNK_FACTORS = 0x1003;
+static const u32 GAMEMTL_CHUNK_FLOTATION = 0x1004;
+static const u32 GAMEMTL_CHUNK_INJURIOUS = 0x1006;
 
 CGameMtlLibrary GMLib;
 
@@ -11,11 +22,6 @@ void SGameMtl::Load(IReader &fs)
     R_ASSERT(fs.find_chunk(GAMEMTL_CHUNK_MAIN));
     ID = fs.r_u32();
     fs.r_stringZ(m_Name);
-
-    if (fs.find_chunk(GAMEMTL_CHUNK_DESC))
-    {
-        fs.r_stringZ(m_Desc);
-    }
 
     R_ASSERT(fs.find_chunk(GAMEMTL_CHUNK_FLAGS));
     Flags.assign(fs.r_u32());
@@ -31,7 +37,6 @@ void SGameMtl::Load(IReader &fs)
     fShootFactor = fs.r_float();
     fBounceDamageFactor = fs.r_float();
     fVisTransparencyFactor = fs.r_float();
-    fSndOcclusionFactor = fs.r_float();
 
     if (fs.find_chunk(GAMEMTL_CHUNK_FLOTATION))
         fFlotationFactor = fs.r_float();
@@ -43,20 +48,21 @@ void SGameMtl::Load(IReader &fs)
 void CGameMtlLibrary::Load()
 {
     string_path name;
+
     if (!FS.exist(name, _game_data_, GAMEMTL_FILENAME))
     {
         Log("! Can't find game material file: ", name);
         return;
     }
 
-    R_ASSERT(material_pairs.empty());
-    R_ASSERT(materials.empty());
+    R_ASSERT(m_Materials.empty());
 
     IReader *F = FS.r_open(name);
     IReader &fs = *F;
 
     R_ASSERT(fs.find_chunk(GAMEMTLS_CHUNK_VERSION));
     u16 version = fs.r_u16();
+
     if (GAMEMTL_CURRENT_VERSION != version)
     {
         Log("CGameMtlLibrary: invalid version. Library can't load.");
@@ -64,89 +70,49 @@ void CGameMtlLibrary::Load()
         return;
     }
 
-    R_ASSERT(fs.find_chunk(GAMEMTLS_CHUNK_AUTOINC));
-    material_index = fs.r_u32();
-    material_pair_index = fs.r_u32();
+    m_Materials.clear();
 
-    materials.clear();
-    material_pairs.clear();
-
-    IReader *OBJ = fs.open_chunk(GAMEMTLS_CHUNK_MTLS);
-    if (OBJ)
+    if (IReader* OBJ = fs.open_chunk(GAMEMTLS_CHUNK_MTLS))
     {
         u32 count;
         for (IReader *O = OBJ->open_chunk_iterator(count); O; O = OBJ->open_chunk_iterator(count, O))
         {
-            SGameMtl *M = xr_new<SGameMtl>();
-            M->Load(*O);
-            materials.push_back(M);
+            SGameMtl &M = m_Materials.emplace_back();
+            M.Load(*O);
         }
         OBJ->close();
     }
 
-    OBJ = fs.open_chunk(GAMEMTLS_CHUNK_MTLS_PAIR);
-    if (OBJ)
+    GameMtlPairVec material_pairs;
+
+    if (IReader* OBJ = fs.open_chunk(GAMEMTLS_CHUNK_MTLS_PAIR))
     {
         u32 count;
         for (IReader *O = OBJ->open_chunk_iterator(count); O; O = OBJ->open_chunk_iterator(count, O))
         {
-            SGameMtlPair *M = xr_new<SGameMtlPair>(this);
-            M->Load(*O);
-            material_pairs.push_back(M);
+            SGameMtlPair &M = material_pairs.emplace_back();
+            M.Load(*O);           
         }
         OBJ->close();
     }
 
-    material_count = (u32)materials.size();
-    material_pairs_rt.resize(material_count * material_count, 0);
-    for (GameMtlPairIt p_it = material_pairs.begin(); material_pairs.end() != p_it; ++p_it)
+    m_MaterialCount = static_cast<u32>(m_Materials.size());
+    m_MaterialPairs.resize(m_MaterialCount * m_MaterialCount);
+
+    for (SGameMtlPair& S : material_pairs)
     {
-        SGameMtlPair *S = *p_it;
-        int idx0 = GetMaterialIdx(S->mtl0) * material_count + GetMaterialIdx(S->mtl1);
-        int idx1 = GetMaterialIdx(S->mtl1) * material_count + GetMaterialIdx(S->mtl0);
-        material_pairs_rt[idx0] = S;
-        material_pairs_rt[idx1] = S;
+        const u16 idxMtl0 = GetMaterialIdx(S.m_Mtl0);
+        const u16 idxMtl1 = GetMaterialIdx(S.m_Mtl1);
+
+        const int idx0 = idxMtl0 * m_MaterialCount + idxMtl1;
+        const int idx1 = idxMtl1 * m_MaterialCount + idxMtl0;
+
+        m_MaterialPairs[idx0] = S;
+        m_MaterialPairs[idx1] = S;
     }
 
     FS.r_close(F);
 }
-
-#ifdef GM_NON_GAME
-SGameMtlPair::~SGameMtlPair()
-{
-}
-void SGameMtlPair::Load(IReader &fs)
-{
-    shared_str buf;
-
-    R_ASSERT(fs.find_chunk(GAMEMTLPAIR_CHUNK_PAIR));
-    mtl0 = fs.r_u32();
-    mtl1 = fs.r_u32();
-    ID = fs.r_u32();
-    ID_parent = fs.r_u32();
-    u32 own_mask = fs.r_u32();
-    if (GAMEMTL_NONE_ID == ID_parent)
-        OwnProps.one();
-    else
-        OwnProps.assign(own_mask);
-
-    R_ASSERT(fs.find_chunk(GAMEMTLPAIR_CHUNK_BREAKING));
-    fs.r_stringZ(buf);
-    BreakingSounds = buf.size() ? *buf : "";
-
-    R_ASSERT(fs.find_chunk(GAMEMTLPAIR_CHUNK_STEP));
-    fs.r_stringZ(buf);
-    StepSounds = buf.size() ? *buf : "";
-
-    R_ASSERT(fs.find_chunk(GAMEMTLPAIR_CHUNK_COLLIDE));
-    fs.r_stringZ(buf);
-    CollideSounds = buf.size() ? *buf : "";
-    fs.r_stringZ(buf);
-    CollideParticles = buf.size() ? *buf : "";
-    fs.r_stringZ(buf);
-    CollideMarks = buf.size() ? *buf : "";
-}
-#endif
 
 #ifdef DEBUG
 LPCSTR SGameMtlPair::dbg_Name()

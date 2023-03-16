@@ -1,61 +1,19 @@
-//---------------------------------------------------------------------------
-#ifndef GameMtlLibH
-#define GameMtlLibH
-//---------------------------------------------------------------------------
 #pragma once
-
-#define GAMEMTL_CURRENT_VERSION 0x0001
-//----------------------------------------------------
-
-#define GAMEMTLS_CHUNK_VERSION 0x1000
-#define GAMEMTLS_CHUNK_AUTOINC 0x1001
-#define GAMEMTLS_CHUNK_MTLS 0x1002
-#define GAMEMTLS_CHUNK_MTLS_PAIR 0x1003
-//----------------------------------------------------
-#define GAMEMTL_CHUNK_MAIN 0x1000
-#define GAMEMTL_CHUNK_FLAGS 0x1001
-#define GAMEMTL_CHUNK_PHYSICS 0x1002
-#define GAMEMTL_CHUNK_FACTORS 0x1003
-#define GAMEMTL_CHUNK_FLOTATION 0x1004
-#define GAMEMTL_CHUNK_DESC 0x1005
-#define GAMEMTL_CHUNK_INJURIOUS 0x1006
-//----------------------------------------------------
-#define GAMEMTLPAIR_CHUNK_PAIR 0x1000
-//#define GAMEMTLPAIR_CHUNK_FLOTATION   0x1001 - obsolete
-#define GAMEMTLPAIR_CHUNK_BREAKING 0x1002
-#define GAMEMTLPAIR_CHUNK_STEP 0x1003
-//#define GAMEMTLPAIR_CHUNK_COLLIDE   	0x1004 - obsolete / rename HIT
-#define GAMEMTLPAIR_CHUNK_COLLIDE 0x1005
-//----------------------------------------------------
-
-#define GAMEMTL_SUBITEM_COUNT 4
-
-#define GAMEMTL_NONE_ID u32(-1)
-#define GAMEMTL_NONE_IDX u16(-1)
-#define GAMEMTL_FILENAME "gamemtl.xr"
-
-#ifdef _MAX_PLUGIN
-#define GM_NON_GAME
-#endif
-#ifdef _LW_SHADER
-#define GM_NON_GAME
-#endif
-#ifdef _MAYA_PLUGIN
-#define GM_NON_GAME
-#endif
-
-#ifdef GM_NON_GAME
-#define SoundVec shared_str
-#define PSVec shared_str
-#define ShaderVec shared_str
-#else
-DEFINE_VECTOR(ref_sound, SoundVec, SoundIt);
-DEFINE_VECTOR(shared_str, PSVec, PSIt);
 #include "../Include/xrRender/WallMarkArray.h"
 #include "../Include/xrRender/RenderFactory.h"
-#endif
 
-struct ECORE_API SGameMtl
+inline const u32 GAMEMTLPAIR_CHUNK_PAIR = 0x1000;
+inline const u32 GAMEMTLPAIR_CHUNK_BREAKING = 0x1002;
+inline const u32 GAMEMTLPAIR_CHUNK_STEP = 0x1003;
+inline const u32 GAMEMTLPAIR_CHUNK_COLLIDE = 0x1005;
+
+inline const u32 GAMEMTL_NONE_ID = static_cast<u32>(-1);
+inline const u16 GAMEMTL_NONE_IDX = static_cast<u16>(-1);
+
+using SoundVec = xr_vector<ref_sound>;
+using PSVec = xr_vector<shared_str>;
+
+struct SGameMtl
 {
     friend class CGameMtlLibrary;
 
@@ -65,12 +23,10 @@ public:
     enum
     {
         flBreakable = (1ul << 0ul),
-        //		flShootable 	= (1ul<<1ul),
         flBounceable = (1ul << 2ul),
         flSkidmark = (1ul << 3ul),
         flBloodmark = (1ul << 4ul),
         flClimable = (1ul << 5ul),
-        //		flWalkOn		= (1ul<<6ul), // obsolette
         flPassable = (1ul << 7ul),
         flDynamic = (1ul << 8ul),
         flLiquid = (1ul << 9ul),
@@ -86,35 +42,35 @@ public:
 
 public:
     shared_str m_Name;
-    shared_str m_Desc;
-
     Flags32 Flags;
+
     // physics part
-    float fPHFriction;            // ?
-    float fPHDamping;             // ?
-    float fPHSpring;              // ?
-    float fPHBounceStartVelocity; // ?
-    float fPHBouncing;            // ?
-                                  // shoot&bounce&visibility&flotation
-    float fFlotationFactor;       // 0.f - 1.f   	(1.f-полностью проходимый)
-    float fShootFactor;           // 0.f - 1.f	(1.f-полностью простреливаемый)
+    float fPHFriction;
+    float fPHDamping;
+    float fPHSpring;
+    float fPHBounceStartVelocity;
+    float fPHBouncing;
+
+    float fFlotationFactor;       // 0.f - 1.f (1.f-полностью проходимый)
+    float fShootFactor;           // 0.f - 1.f (1.f-полностью простреливаемый)
     float fBounceDamageFactor;    // 0.f - 100.f
-    float fInjuriousSpeed;        // 0.f - ...	(0.f-не отбирает здоровье (скорость уменьшения здоровья))
-    float fVisTransparencyFactor; // 0.f - 1.f	(1.f-полностью прозрачный)
-    float fSndOcclusionFactor;    // 0.f - 1.f    (1.f-полностью слышен)
+    float fInjuriousSpeed;        // 0.f - ... (0.f-не отбирает здоровье (скорость уменьшения здоровья))
+    float fVisTransparencyFactor; // 0.f - 1.f (1.f-полностью прозрачный)
 public:
+
     SGameMtl()
     {
         ID = -1;
         m_Name = "unknown";
         Flags.zero();
+
         // factors
         fFlotationFactor = 1.f;
         fShootFactor = 0.f;
         fBounceDamageFactor = 1.f;
         fInjuriousSpeed = 0.f;
         fVisTransparencyFactor = 0.f;
-        fSndOcclusionFactor = 0.f;
+
         // physics
         fPHFriction = 1.f;
         fPHDamping = 1.f;
@@ -122,38 +78,24 @@ public:
         fPHBounceStartVelocity = 0.f;
         fPHBouncing = 0.1f;
     }
-    void Load(IReader &fs);
-    void Save(IWriter &fs);
-    IC int GetID() { return ID; }
-};
-DEFINE_VECTOR(SGameMtl *, GameMtlVec, GameMtlIt);
 
-struct ECORE_API SGameMtlPair
+    void Load(IReader &fs);
+    IC int GetID() const { return ID; }
+};
+
+using GameMtlVec = xr_vector<SGameMtl>;
+using GameMtlIt = GameMtlVec::iterator;
+
+struct SGameMtlPair
 {
     friend class CGameMtlLibrary;
-    CGameMtlLibrary *m_Owner;
 
 private:
-    int mtl0;
-    int mtl1;
-
-protected:
-    int ID; // auto number
-    int ID_parent;
+    int m_Mtl0;
+    int m_Mtl1;
 
 public:
-    enum
-    {
-        //		flFlotation		= (1<<0),
-        flBreakingSounds = (1 << 1),
-        flStepSounds = (1 << 2),
-        //		flCollideSounds	= (1<<3),
-        flCollideSounds = (1 << 4),
-        flCollideParticles = (1 << 5),
-        flCollideMarks = (1 << 6)
-    };
-    Flags32 OwnProps;
-    //	properties
+    // properties
     SoundVec BreakingSounds;
     SoundVec StepSounds;
     SoundVec CollideSounds;
@@ -161,150 +103,121 @@ public:
     FactoryPtr<IWallMarkArray> m_pCollideMarks;
 
 public:
-    SGameMtlPair(CGameMtlLibrary *owner)
+    SGameMtlPair()
     {
-        mtl0 = -1;
-        mtl1 = -1;
-        ID = -1;
-        ID_parent = -1;
-        m_Owner = owner;
-        OwnProps.one();
+        m_Mtl0 = -1;
+        m_Mtl1 = -1;
     }
+
     ~SGameMtlPair();
-    IC int GetMtl0() { return mtl0; }
-    IC int GetMtl1() { return mtl1; }
-    IC int GetID() { return ID; }
+
+    IC int GetMtl0() const { return m_Mtl0; }
+    IC int GetMtl1() const { return m_Mtl1; }
+
     IC void SetPair(int m0, int m1)
     {
-        mtl0 = m0;
-        mtl1 = m1;
+        m_Mtl0 = m0;
+        m_Mtl1 = m1;
     }
-    IC bool IsPair(int m0, int m1) { return !!(((mtl0 == m0) && (mtl1 == m1)) || ((mtl0 == m1) && (mtl1 == m0))); }
-    void Save(IWriter &fs);
+
+    IC bool IsPair(int m0, int m1) const { return !!((m_Mtl0 == m0 && m_Mtl1 == m1) || (m_Mtl0 == m1 && m_Mtl1 == m0)); }
+
     void Load(IReader &fs);
-    IC int GetParent() { return ID_parent; }
-    BOOL SetParent(int parent);
 
 #ifdef DEBUG
     LPCSTR dbg_Name();
 #endif
 };
 
-DEFINE_VECTOR(SGameMtlPair *, GameMtlPairVec, GameMtlPairIt);
+using GameMtlPairVec = xr_vector<SGameMtlPair>;
 
-class ECORE_API CGameMtlLibrary
+class CGameMtlLibrary
 {
-    int material_index;
-    int material_pair_index;
-
-    GameMtlVec materials;
-    GameMtlPairVec material_pairs;
+    GameMtlVec m_Materials;
 
     // game part
-    u32 material_count;
-    GameMtlPairVec material_pairs_rt;
+    u32 m_MaterialCount;
+    GameMtlPairVec m_MaterialPairs;
 
 public:
     CGameMtlLibrary()
     {
-        material_index = 0;
-        material_pair_index = 0;
+        m_MaterialCount = 0;
+    }
 
-        material_count = 0;
-    }
-    ~CGameMtlLibrary()
-    {
-    }
+    ~CGameMtlLibrary() = default;
 
     IC void Unload()
     {
-
-        material_count = 0;
-        material_pairs_rt.clear();
-
-        for (GameMtlIt m_it = materials.begin(); materials.end() != m_it; ++m_it)
-            xr_delete(*m_it);
-        materials.clear();
-        for (GameMtlPairIt p_it = material_pairs.begin(); material_pairs.end() != p_it; ++p_it)
-            xr_delete(*p_it);
-        material_pairs.clear();
+        m_MaterialCount = 0;
+        m_MaterialPairs.clear();
+        m_Materials.clear();
     }
+
     // material routine
     IC GameMtlIt GetMaterialIt(LPCSTR name)
     {
-        for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
-            if (0 == strcmpi(*(*it)->m_Name, name))
-                return it;
-        return materials.end();
+        return std::find_if(m_Materials.begin(), m_Materials.end(), [&name](const SGameMtl& mtl)
+        {
+            return !strcmpi(*mtl.m_Name, name);
+        });
     }
-    IC GameMtlIt GetMaterialIt(shared_str &name)
-    {
-        for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
-            if (name.equal((*it)->m_Name))
-                return it;
-        return materials.end();
-    }
+
     IC GameMtlIt GetMaterialItByID(int id)
     {
-        for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
-            if ((*it)->ID == id)
-                return it;
-        return materials.end();
-    }
-    IC u32 GetMaterialID(LPCSTR name)
-    {
-        GameMtlIt it = GetMaterialIt(name);
-        return (it == materials.end()) ? GAMEMTL_NONE_ID : (*it)->ID;
+        return std::find_if(m_Materials.begin(), m_Materials.end(), [&id](const SGameMtl& mtl)
+        {
+            return mtl.ID == id;
+        });
     }
 
     // game
     IC u16 GetMaterialIdx(int ID)
     {
         GameMtlIt it = GetMaterialItByID(ID);
-        VERIFY(materials.end() != it);
-        return (u16)(it - materials.begin());
+        VERIFY(m_Materials.end() != it);
+        return static_cast<u16>(it - m_Materials.begin());
     }
+
     IC u16 GetMaterialIdx(LPCSTR name)
     {
         GameMtlIt it = GetMaterialIt(name);
-        VERIFY(materials.end() != it);
-        return (u16)(it - materials.begin());
+        VERIFY(m_Materials.end() != it);
+        return static_cast<u16>(it - m_Materials.begin());
     }
+
     IC SGameMtl *GetMaterialByIdx(u16 idx)
     {
-        VERIFY(idx < materials.size());
-        return materials[idx];
+        VERIFY(idx < m_Materials.size());
+        return &m_Materials[idx];
     }
-    IC SGameMtl *GetMaterialByID(s32 id) { return GetMaterialByIdx(GetMaterialIdx(id)); }
 
-    IC GameMtlIt FirstMaterial() { return materials.begin(); }
-    IC GameMtlIt LastMaterial() { return materials.end(); }
-    IC u32 CountMaterial() { return materials.size(); }
-
-    // material pair routine
+    IC const GameMtlVec& Materials() { return m_Materials; }
+    IC u32 CountMaterial() const { return m_Materials.size(); }
 
     // game
     IC SGameMtlPair *GetMaterialPair(u16 idx0, u16 idx1)
     {
-        R_ASSERT((idx0 < material_count) && (idx1 < material_count));
-        return material_pairs_rt[idx1 * material_count + idx0];
+        R_ASSERT((idx0 < m_MaterialCount) && (idx1 < m_MaterialCount));
+        return &m_MaterialPairs[idx1 * m_MaterialCount + idx0];
     }
 
-    IC GameMtlPairIt FirstMaterialPair() { return material_pairs.begin(); }
-    IC GameMtlPairIt LastMaterialPair() { return material_pairs.end(); }
-
-    // IO routines
     void Load();
-    bool Save();
+
+#ifdef DEBUG
+    IC SGameMtl* GetMaterialByID(s32 id) { return GetMaterialByIdx(GetMaterialIdx(id)); }
+#endif
 };
 
-#define GET_RANDOM(a_vector) (a_vector[Random.randI(a_vector.size())])
+inline ref_sound GET_RANDOM(const SoundVec &sndVec)
+{
+    return sndVec[Random.randI(sndVec.size())];
+}
 
-#define CLONE_MTL_SOUND(_res_, _mtl_pair_, _a_vector_)                               \
-    {                                                                                \
-        VERIFY2(!_mtl_pair_##->_a_vector_.empty(), _mtl_pair_->dbg_Name());          \
-        _res_.clone(GET_RANDOM(_mtl_pair_##->_a_vector_), st_Effect, sg_SourceType); \
-    }
+inline void CLONE_MTL_SOUND(ref_sound &resSnd, const SGameMtlPair* mtlPair)
+{
+    VERIFY2(!mtlPair->CollideSounds.empty(), mtlPair->dbg_Name());
+    resSnd.clone(GET_RANDOM(mtlPair->CollideSounds), st_Effect, sg_SourceType);
+}
 
-extern ECORE_API CGameMtlLibrary GMLib;
-#endif
+extern CGameMtlLibrary GMLib;
