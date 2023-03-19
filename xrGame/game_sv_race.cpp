@@ -251,12 +251,12 @@ void game_sv_Race::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &se
 
 void game_sv_Race::OnRoundStart()
 {
+	SelectRoad();
 	Msg("- RACE: round start");
 	inherited::OnRoundStart();
 	m_WinnerId = u16(-1);
 	m_CurrentRpoint = 0;
 	m_CurrentRoundCar = m_CarRandom.randI(static_cast<int>(m_AvailableCars.size()));
-	SelectRoad();
 	switch_Phase(GAME_PHASE_RACE_START);
 
 	// Respawn all players
@@ -455,4 +455,15 @@ void game_sv_Race::SelectRoad()
 	}
 
 	Msg("- selected road %u", static_cast<u32>(m_CurrentRoad));
+}
+
+BOOL game_sv_Race::OnPreCreate(CSE_Abstract* E)
+{
+	if (!inherited::OnPreCreate(E))
+		return FALSE;
+
+	if (auto base  = smart_cast<CSE_ALifeTeamBaseZone*>(E))
+		return base->m_team == m_CurrentRoad;
+
+	return true;
 }

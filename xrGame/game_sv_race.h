@@ -39,6 +39,8 @@ public:
 	virtual bool SwitchPhaseOnRoundStart() override { return false; }
 	virtual void net_Export_State(NET_Packet &P, ClientID const &id_to) override;
 
+	virtual BOOL OnPreCreate(CSE_Abstract* E) override;
+
 private:
 	void SpawnPlayerInCar(ClientID const &playerId);
 	CSE_Abstract* SpawnCar(u32 rpoint);
