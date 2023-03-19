@@ -11,7 +11,8 @@
 //#define NO_SINGLE // Запретить запускать сингл
 //#define NO_MULTI_INSTANCES // Запретить запускать несколько экземпляров игры
 //#define EVERYBODY_IS_ENEMY // Все нпс считают всех врагами
-#define TSMP_VERSION "R14_test"
+//#define HUGE_OGF_FIX // Не корёжить большие модельки, требует правку шейдера skin.h
+#define TSMP_VERSION "R17_test"
 
 #ifdef PUBLIC_BUILD
 #define SEND_ERROR_REPORTS // Отправлять отчеты о вылетах
