@@ -15,6 +15,7 @@ class game_sv_Race : public game_sv_mp
 	u8 m_CurrentRpoint;
 	u8 m_CurrentRoundCar;
 	u8 m_MaxPlayers;
+	u8 m_CurrentRoad;
 
 public:
 
@@ -53,4 +54,5 @@ private:
 
 	u32 GetRpointIdx(game_PlayerState* ps);
 	void LoadRaceSettings();
+	void SelectRoad();
 };

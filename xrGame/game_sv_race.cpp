@@ -24,6 +24,7 @@ game_sv_Race::game_sv_Race()
 	m_WinnerFinishTime = 0;
 	m_CurrentRoundCar = u8(-1);
 	m_MaxPlayers = 4;
+	m_CurrentRoad = -1;
 
 	LoadRaceSettings();
 }
@@ -255,6 +256,7 @@ void game_sv_Race::OnRoundStart()
 	m_WinnerId = u16(-1);
 	m_CurrentRpoint = 0;
 	m_CurrentRoundCar = m_CarRandom.randI(static_cast<int>(m_AvailableCars.size()));
+	SelectRoad();
 	switch_Phase(GAME_PHASE_RACE_START);
 
 	// Respawn all players
@@ -300,7 +302,7 @@ void game_sv_Race::OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 Ga
 void game_sv_Race::AssignRPoint(CSE_Abstract* E, u32 rpoint)
 {
 	R_ASSERT(E);
-	const xr_vector<RPoint> &rp = rpoints[0];
+	const xr_vector<RPoint> &rp = rpoints[m_CurrentRoad];
 
 	RPoint r = rp[rpoint];
 
@@ -436,4 +438,21 @@ void game_sv_Race::OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerSt
 	ps_killed->DeathTime = Level().timeServer();
 
 	signal_Syncronize();
+}
+
+void game_sv_Race::SelectRoad()
+{
+	R_ASSERT2(!rpoints[1].empty(), "No rpoints for players found. Use rpoints and base with team 1");
+
+	if (rpoints[2].empty() || m_CurrentRoad == static_cast<u8>(-1))
+		m_CurrentRoad = 1;
+	else
+	{
+		if (m_CurrentRoad == 1)
+			m_CurrentRoad = 2;
+		else
+			m_CurrentRoad = 1;
+	}
+
+	Msg("- selected road %u", static_cast<u32>(m_CurrentRoad));
 }
