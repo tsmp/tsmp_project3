@@ -1,5 +1,4 @@
-#ifndef PH_ISLAND_H
-#define PH_ISLAND_H
+#pragma once
 
 #pragma warning(disable : 4995)
 #pragma warning(disable : 4267)
@@ -51,7 +50,6 @@ public:
 
 class CPHIsland : public dxWorld
 {
-	//bool						b_active				;
 	CPHIslandFlags m_flags;
 	dxBody *m_first_body;
 	dxJoint *m_first_joint;
@@ -68,18 +66,22 @@ public:
 	{
 		return nb > m_nb;
 	}
+
 	IC bool IsJointGroun()
 	{
 		return nj > m_nj;
 	}
+
 	IC bool CheckSize()
 	{
 		return nj < JOINTS_LIMIT && nb < BODIES_LIMIT;
 	}
+
 	IC int MaxJoints()
 	{
 		return JOINTS_LIMIT - nj;
 	}
+
 	IC int MaxJoints(CPHIsland *island)
 	{
 		return MaxJoints() - island->nj;
@@ -102,20 +104,24 @@ public:
 	{
 		return (dWorldID)this;
 	}
+
 	IC dWorldID DActiveWorld()
 	{
 		return (dWorldID)DActiveIsland();
 	}
+
 	IC CPHIsland *DActiveIsland()
 	{
 		GoActive();
 		return m_self_active;
 	}
+
 	IC void GoActive()
 	{
-		while (!m_self_active->m_flags.is_active())
+		while (m_self_active && !m_self_active->m_flags.is_active())
 			m_self_active = m_self_active->m_self_active;
 	}
+
 	IC void Merge(CPHIsland *island)
 	{
 		//VERIFY2(b_active&&island->b_active,"no active island");
@@ -143,6 +149,7 @@ public:
 		//second_island->b_active=false;
 		m_flags.merge(second_island->m_flags);
 	}
+
 	IC void Unmerge()
 	{
 		firstjoint = m_first_joint;
@@ -164,6 +171,7 @@ public:
 		nj = m_nj;
 		nb = m_nb;
 	}
+
 	IC void Init()
 	{
 		//b_active=true;
@@ -176,6 +184,7 @@ public:
 		m_bodies_tail = &firstbody;
 		m_self_active = this;
 	}
+
 	IC void AddBody(dxBody *body)
 	{
 		VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
@@ -187,6 +196,7 @@ public:
 		}
 		m_nb++;
 	}
+
 	IC void RemoveBody(dxBody *body)
 	{
 		VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
@@ -199,6 +209,7 @@ public:
 		dWorldRemoveBody((dxWorld *)this, body);
 		m_nb--;
 	}
+
 	IC void AddJoint(dxJoint *joint)
 	{
 		VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
@@ -232,10 +243,12 @@ public:
 	{
 		dWorldAddBody(DWorld(), body);
 	}
+
 	IC void DisconnectBody(dxBody *body)
 	{
 		dWorldRemoveBody(DWorld(), body);
 	}
+
 	IC void RemoveJoint(dxJoint *joint)
 	{
 		VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
@@ -249,6 +262,7 @@ public:
 		VERIFY(!*(m_joints_tail));
 		m_nj--;
 	}
+
 	void SetPrefereExactIntegration() { m_flags.set_prefere_exact_integration(); }
 	void Step(dReal step);
 	void Enable();
@@ -257,4 +271,3 @@ public:
 protected:
 private:
 };
-#endif

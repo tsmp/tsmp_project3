@@ -274,11 +274,11 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
 }
 void NearCallback(CPHObject *obj1, CPHObject *obj2, dGeomID o1, dGeomID o2)
 {
-	if (!o1->body || !o2->body)
-		return;
-
 	CPHIsland *island1 = obj1->DActiveIsland();
 	CPHIsland *island2 = obj2->DActiveIsland();
+
+	if (!island1 || !island2)
+		return;
 	obj2->near_callback(obj1);
 	int MAX_CONTACTS = -1;
 	if (!island1->CanMerge(island2, MAX_CONTACTS))
