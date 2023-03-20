@@ -232,9 +232,9 @@ struct SFindPredicate
 		return *b1 || c->geom.g2 == o->m_restrictor_transform;
 	}
 };
+
 void CPHActorCharacter::InitContact(dContact *c, bool &do_collide, u16 material_idx_1, u16 material_idx_2)
 {
-
 	bool b1;
 	SFindPredicate fp(c, &b1);
 	RESTRICTOR_I r = std::find_if(begin(m_restrictors), end(m_restrictors), fp);
@@ -243,9 +243,9 @@ void CPHActorCharacter::InitContact(dContact *c, bool &do_collide, u16 material_
 	SGameMtl *material_2 = GMLib.GetMaterialByIdx(material_idx_2);
 	if ((material_1 && material_1->Flags.test(SGameMtl::flActorObstacle)) || (material_2 && material_2->Flags.test(SGameMtl::flActorObstacle)))
 		do_collide = true;
-	if (IsGameTypeSingle())
-	{
 
+	//if (IsGameTypeSingle())
+	{
 		if (b_restrictor)
 		{
 			b_side_contact = true;
@@ -254,6 +254,7 @@ void CPHActorCharacter::InitContact(dContact *c, bool &do_collide, u16 material_
 		}
 		else
 			inherited::InitContact(c, do_collide, material_idx_1, material_idx_2);
+
 		if (b_restrictor &&
 			do_collide &&
 			!(b1 ? static_cast<CPHCharacter *>(retrieveGeomUserData(c->geom.g2)->ph_object)->ActorMovable() : static_cast<CPHCharacter *>(retrieveGeomUserData(c->geom.g1)->ph_object)->ActorMovable()))
@@ -269,6 +270,8 @@ void CPHActorCharacter::InitContact(dContact *c, bool &do_collide, u16 material_
 			m_friction_factor *= 0.1f;
 		}
 	}
+
+#if 0
 	else
 	{
 
@@ -287,14 +290,12 @@ void CPHActorCharacter::InitContact(dContact *c, bool &do_collide, u16 material_
 		if (do_collide)
 			inherited::InitContact(c, do_collide, material_idx_1, material_idx_2);
 	}
+#endif
 }
 
 void CPHActorCharacter::ChooseRestrictionType(CPHCharacter::ERestrictionType my_type, float my_depth, CPHCharacter *ch)
 {
 	if (my_type != rtStalker || (ch->RestrictionType() != rtStalker && ch->RestrictionType() != rtStalkerSmall))
-		return;
-
-	if (OnClient())
 		return;
 
 	float checkR = m_restrictors[rtStalkerSmall]->m_restrictor_radius * 1.5f; //+m_restrictors[rtStalker]->m_restrictor_radius)/2.f;
