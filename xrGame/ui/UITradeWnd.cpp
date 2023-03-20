@@ -429,9 +429,10 @@ void CUITradeWnd::PerformTrade()
 	if (our_money >= 0 && others_money >= 0 && (m_iOurTradePrice >= 0 || m_iOthersTradePrice > 0))
 	{
 		m_pOthersTrade->OnPerformTrade(m_iOthersTradePrice, m_iOurTradePrice);
-
 		TransferItems(&m_uidata->UIOurTradeList, &m_uidata->UIOthersBagList, m_pOthersTrade, true);
 		TransferItems(&m_uidata->UIOthersTradeList, &m_uidata->UIOurBagList, m_pOthersTrade, false);
+		m_pOthersTrade->pThis.inv_owner->set_money(m_pOthersTrade->pThis.inv_owner->get_money(), true);
+		m_pOthersTrade->pPartner.inv_owner->set_money(m_pOthersTrade->pPartner.inv_owner->get_money(), true);
 	}
 	else
 	{
@@ -500,9 +501,6 @@ void CUITradeWnd::TransferItems(CUIDragDropListEx *pSellList,
 		pTrade->TransferItem((PIItem)itm->m_pData, bBuying);
 		pBuyList->SetItem(itm);
 	}
-
-	pTrade->pThis.inv_owner->set_money(pTrade->pThis.inv_owner->get_money(), true);
-	pTrade->pPartner.inv_owner->set_money(pTrade->pPartner.inv_owner->get_money(), true);
 }
 
 void CUITradeWnd::UpdateLists(EListType mode)
