@@ -299,8 +299,10 @@ void dxRenderDeviceRender::Clear()
 							 D3DCOLOR_XRGB(0, 0, 0), 1, 0));
 }
 
-#pragma TODO("TSMP: fix screenshot")
-//void DoAsyncScreenshot();
+void DoAsyncScreenshot()
+{
+	Render->getTarget()->DoAsyncScreenshot();
+}
 
 void dxRenderDeviceRender::End()
 {
@@ -312,7 +314,7 @@ void dxRenderDeviceRender::End()
 	RCache.OnFrameEnd();
 	Memory.dbg_check();
 
-	//DoAsyncScreenshot();
+	DoAsyncScreenshot();
 
 	CHK_DX(HW.pDevice->EndScene());
 	HW.pDevice->Present(NULL, NULL, NULL, NULL);
