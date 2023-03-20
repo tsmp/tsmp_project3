@@ -1089,11 +1089,6 @@ public:
 	CCC_StartTimeEnvironment(LPCSTR N) : IConsole_Command(N){};
 	virtual void Execute(LPCSTR args)
 	{
-		u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
-
-		sscanf(args, "%d:%d:%d.%d", &hours, &mins, &secs, &milisecs);
-		u64 NewTime = generate_time(year, month, day, hours, mins, secs, milisecs);
-
 		if (!g_pGameLevel)
 			return;
 
@@ -1102,6 +1097,12 @@ public:
 
 		if (!Level().Server->game)
 			return;
+
+		u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
+		split_time(Level().Server->game->GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+		sscanf(args, "%d:%d:%d.%d", &hours, &mins, &secs, &milisecs);
+
+		u64 NewTime = generate_time(year, month, day, hours, mins, secs, milisecs);
 
 		Level().Server->game->SetEnvironmentGameTimeFactor(NewTime, g_fTimeFactor);
 		Level().Server->game->SetGameTimeFactor(NewTime, g_fTimeFactor);

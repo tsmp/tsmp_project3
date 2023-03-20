@@ -10,6 +10,15 @@
 #include "alife_time_manager.h"
 #include "date_time.h"
 
+u64 GetStartGameTime()
+{
+	const char* section = "alife";
+	u32 years, months, days, hours, minutes, seconds;
+	sscanf(pSettings->r_string(section, "start_time"), "%d:%d:%d", &hours, &minutes, &seconds);
+	sscanf(pSettings->r_string(section, "start_date"), "%d.%d.%d", &days, &months, &years);
+	return generate_time(years, months, days, hours, minutes, seconds);
+}
+
 CALifeTimeManager::CALifeTimeManager(LPCSTR section)
 {
 	init(section);
@@ -21,10 +30,7 @@ CALifeTimeManager::~CALifeTimeManager()
 
 void CALifeTimeManager::init(LPCSTR section)
 {
-	u32 years, months, days, hours, minutes, seconds;
-	sscanf(pSettings->r_string(section, "start_time"), "%d:%d:%d", &hours, &minutes, &seconds);
-	sscanf(pSettings->r_string(section, "start_date"), "%d.%d.%d", &days, &months, &years);
-	m_start_game_time = generate_time(years, months, days, hours, minutes, seconds);
+	m_start_game_time = GetStartGameTime();
 	m_time_factor = pSettings->r_float(section, "time_factor");
 	m_normal_time_factor = pSettings->r_float(section, "normal_time_factor");
 	m_game_time = m_start_game_time;

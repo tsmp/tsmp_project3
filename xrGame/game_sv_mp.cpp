@@ -1469,6 +1469,8 @@ void game_sv_mp::ReadOptions(shared_str &options)
 	strcpy(TimeFactor, get_option_s(*options, "etimef", "1"));
 
 	u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
+	split_time(GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+
 	sscanf(StartTime, "%d:%d:%d.%d", &hours, &mins, &secs, &milisecs);
 	u64 StartEnvGameTime = generate_time(year, month, day, hours, mins, secs, milisecs);
 	float EnvTimeFactor = float(atof(TimeFactor)) * GetEnvironmentGameTimeFactor();
