@@ -287,12 +287,21 @@ void CActor::Load(LPCSTR section)
 	character_physics_support()->movement()->SetCrashSpeeds(cs_min, cs_max);
 	character_physics_support()->movement()->SetMass(mass);
 
-	if (pSettings->line_exist(section, "stalker_restrictor_radius"))
-		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalker, pSettings->r_float(section, "stalker_restrictor_radius"));
-	if (pSettings->line_exist(section, "stalker_small_restrictor_radius"))
-		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalkerSmall, pSettings->r_float(section, "stalker_small_restrictor_radius"));
-	if (pSettings->line_exist(section, "medium_monster_restrictor_radius"))
-		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtMonsterMedium, pSettings->r_float(section, "medium_monster_restrictor_radius"));
+	if (IsGameTypeSingle())
+	{
+		if (pSettings->line_exist(section, "stalker_restrictor_radius"))
+			character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalker, pSettings->r_float(section, "stalker_restrictor_radius"));
+		if (pSettings->line_exist(section, "stalker_small_restrictor_radius"))
+			character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalkerSmall, pSettings->r_float(section, "stalker_small_restrictor_radius"));
+		if (pSettings->line_exist(section, "medium_monster_restrictor_radius"))
+			character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtMonsterMedium, pSettings->r_float(section, "medium_monster_restrictor_radius"));
+	}
+	else
+	{
+		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalker, 0.55f);
+		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalkerSmall, 0.55f);
+		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtMonsterMedium, 0.1f);
+	}
 	
 	character_physics_support()->movement()->Load(section);
 
