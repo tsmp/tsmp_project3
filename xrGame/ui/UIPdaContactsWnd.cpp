@@ -163,6 +163,7 @@ extern CSE_ALifeTraderAbstract *ch_info_get_from_id(u16 id);
 void CUIPdaContactItem::SetSelected(bool b)
 {
 	CUISelectable::SetSelected(b);
+#if 0
 	if (b)
 	{
 		m_cw->UIDetailsWnd->Clear();
@@ -172,6 +173,7 @@ void CUIPdaContactItem::SetSelected(bool b)
 
 		//.		ADD_TEXT_TO_VIEW2( *(chInfo.Bio()), m_cw->UIDetailsWnd);
 	}
+#endif
 }
 
 bool CUIPdaContactItem::OnMouseDown(int mouse_btn)
