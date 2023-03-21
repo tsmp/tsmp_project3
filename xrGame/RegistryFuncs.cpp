@@ -15,7 +15,7 @@ bool ReadRegistryValue(LPCSTR rKeyName, DWORD rKeyType, void *value)
 {
 	HKEY hKey = 0;
 	long res = RegOpenKeyEx(REGISTRY_BASE,
-							REGISTRY_PATH, 0, KEY_READ, &hKey);
+							REGISTRY_PATH, 0, KEY_READ | KEY_WOW64_32KEY, &hKey);
 
 	if (res != ERROR_SUCCESS)
 	{
@@ -70,7 +70,7 @@ bool WriteRegistryValue(LPCSTR rKeyName, DWORD rKeyType, const void *value)
 	HKEY hKey;
 
 	long res = RegOpenKeyEx(REGISTRY_BASE,
-							REGISTRY_PATH, 0, KEY_WRITE, &hKey);
+							REGISTRY_PATH, 0, KEY_WRITE | KEY_WOW64_32KEY, &hKey);
 
 	if (res != ERROR_SUCCESS)
 	{
