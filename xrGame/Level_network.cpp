@@ -326,7 +326,7 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 		Sleep(5);
 		if (Server)
 			Server->Update();
-		//-----------------------------------------
+
 		u32 CurTime = GetTickCount();
 		if (CurTime > EndTime)
 		{
@@ -346,7 +346,6 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 			Disconnect();
 			return FALSE;
 		}
-		//-----------------------------------------
 	}
 	Msg("%c client : connection %s - <%s>", m_bConnectResult ? '*' : '!', m_bConnectResult ? "accepted" : "rejected", m_sConnectResult.c_str());
 	if (!m_bConnectResult)
@@ -365,22 +364,9 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 	{
 	};
 
-	//---------------------------------------------------------------------------
 	P.w_begin(M_CLIENT_REQUEST_CONNECTION_DATA);
 	Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
-	//---------------------------------------------------------------------------
 	return TRUE;
-};
-
-void CLevel::OnHardwareVerification()
-{
-	NET_Packet P;
-	P.w_begin(M_HW_RESPOND);
-	
-	HWID hwid;
-	HWID::BuildFromCore(Core.hardwareId, hwid);
-	hwid.NetSerialize(P);
-	Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
 }
 
 void CLevel::OnBuildVersionChallenge()

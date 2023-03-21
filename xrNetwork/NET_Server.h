@@ -3,7 +3,6 @@
 #include "net_shared.h"
 #include "NET_Common.h"
 #include "NET_PlayersMonitor.h"
-#include "HWID.h"
 
 struct SClientConnectData
 {
@@ -59,7 +58,7 @@ public:
 	};
 
 	IClient(CTimer *timer);
-	virtual ~IClient();
+	virtual ~IClient() = default;
 
 	IClientStatistic stats;
 	int verificationStepsCompleted;
@@ -76,7 +75,6 @@ public:
 	DWORD m_dwPort;
 	u32 process_id;
 
-	HWID m_HWID;
 	IPureServer *server;
 
 private:
@@ -110,7 +108,6 @@ class XRNETWORK_API IBannedClient
 {
 public:
 	ip_address HAddr;
-	HWID m_HWID;
 	time_t BanTime;
 
 	IBannedClient()
@@ -168,7 +165,6 @@ protected:
 	bool GetClientAddress(IDirectPlay8Address *pClientAddress, ip_address &Address, DWORD *pPort = NULL);
 
 	IBannedClient *GetBannedClient(const ip_address &Address);
-	IBannedClient *GetBannedHW(HWID& hwid);
 	void BannedList_Save();
 	void BannedList_Load();
 	LPCSTR GetBannedListName();
@@ -219,10 +215,8 @@ public:
 	virtual bool DisconnectClient(IClient *C, string512 &Reason);
 	virtual bool DisconnectAddress(const ip_address &Address);
 	virtual void BanClient(IClient *C, u32 BanTime);
-	virtual void BanClientHW(HWID& hwid);
 	virtual void BanAddress(const ip_address &Address, u32 BanTime);
 	virtual void UnBanAddress(const ip_address &Address);
-	virtual void UnBanHW(HWID& hwid);
 	void Print_Banned_Addreses();
 
 	virtual bool Check_ServerAccess(IClient *CL, string512 &reason) { return true; }

@@ -161,7 +161,6 @@ private:
 public:
 	void OnGameSpyChallenge(NET_Packet *P);
 	void OnBuildVersionChallenge();
-	void OnHardwareVerification();
 	void OnConnectResult(NET_Packet *P);
 
 public:

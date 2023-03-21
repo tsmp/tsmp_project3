@@ -85,13 +85,11 @@ bool IsBanned(IClient* CL)
     if (SessionId.empty())
         return false;
 
-    std::string hwid = CL->m_HWID.ToString();
     std::string ip = CL->m_cAddress.to_string().c_str();
     std::string name = CL->name.c_str();
 
-    std::string request = "IsBanned2?ip=" + UrlEncode(ip) + 
-        "&name=" + UrlEncode(name) + 
-        "&HWID=" + UrlEncode(hwid) + 
+    std::string request = "IsBanned?ip=" + UrlEncode(ip) +
+        "&name=" + UrlEncode(name) +
         "&key=" + UrlEncode(SessionId);
 
     char response[MaxResponseLength];

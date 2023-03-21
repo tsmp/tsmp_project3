@@ -664,10 +664,6 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 	}
 	break;
 
-	case M_HW_RESPOND:
-		game->AddDelayedEvent(P, GAME_EVENT_PLAYER_AUTH_HW, 0, sender);
-		break;
-
 	case M_STATISTIC_UPDATE:
 	{
 		if (SV_Client)

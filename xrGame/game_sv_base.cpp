@@ -785,13 +785,6 @@ void game_sv_GameState::OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, Clie
 	}
 	break;	
 
-	case GAME_EVENT_PLAYER_AUTH_HW:
-	{
-		IClient* CL = m_server->ID_to_client(sender);
-		m_server->OnHardwareVerifyRespond(CL, tNetPacket);
-	}
-	break;
-
 	default:
 	{
 		string16 tmp;

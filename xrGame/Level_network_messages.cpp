@@ -299,10 +299,6 @@ void CLevel::ClientReceive()
 		}
 		break;
 
-		case M_HW_CHALLENGE:
-			OnHardwareVerification();
-			break;
-
 		case M_CLIENT_CONNECT_RESULT:
 		{
 			OnConnectResult(P);

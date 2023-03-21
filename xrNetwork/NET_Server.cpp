@@ -91,8 +91,6 @@ void IBannedClient::Load(CInifile& ini, const shared_str& sect)
 {
 	if (IsIpAdress(sect.c_str()))	
 		HAddr.set(sect.c_str());
-	else
-		HWID::ParseFromString(sect.c_str(), m_HWID);
 
 	tm _tm_banned;
 	const shared_str& time_to = ini.r_string(sect, "time_to");
@@ -112,19 +110,12 @@ void IBannedClient::Load(CInifile& ini, const shared_str& sect)
 	_tm_banned.tm_year -= 1900;
 
 	BanTime = mktime(&_tm_banned);
-
-	if (!m_HWID)
-		Msg("- loaded banned client %s to %s", HAddr.to_string().c_str(), BannedTimeTo().c_str());
-	else
-		Msg("- loaded banned client hwid %s to %s", m_HWID.ToString().c_str() , BannedTimeTo().c_str());	
+	Msg("- loaded banned client %s to %s", HAddr.to_string().c_str(), BannedTimeTo().c_str());
 }
 
 void IBannedClient::Save(CInifile& ini)
 {
-	if (!m_HWID)
-		ini.w_string(HAddr.to_string().c_str(), "time_to", BannedTimeTo().c_str());
-	else
-		ini.w_string(m_HWID.ToString().c_str(), "time_to", BannedTimeTo().c_str());	
+	ini.w_string(HAddr.to_string().c_str(), "time_to", BannedTimeTo().c_str());
 }
 
 xr_string IBannedClient::BannedTimeTo() const
@@ -158,7 +149,6 @@ void gen_auth_code()
 	ignore.push_back(xr_string("gamedata\\config\\ui"));
 
 	test.push_back(xr_string("gamedata\\config"));
-	//.		test.push_back			(xr_string("gamedata\\scripts"));
 	test.push_back(xr_string("gamedata\\shaders"));
 	test.push_back(xr_string("gamedata\\textures\\act"));
 	test.push_back(xr_string("gamedata\\textures\\wpn"));
@@ -177,7 +167,6 @@ void gen_auth_code()
 	test.push_back(xr_string("xrrender_r2.dll"));
 	test.push_back(xr_string("xrsound.dll"));
 	test.push_back(xr_string("xrxmlparser.dll"));
-	//		test.push_back			(xr_string("xr_3da.exe"));
 
 	FS.auth_generate(ignore, test);
 }
@@ -191,10 +180,6 @@ IClient::IClient(CTimer* timer)
 	flags.bConnected = FALSE;
 	flags.bReconnect = FALSE;
 	flags.bVerified = TRUE;
-}
-
-IClient::~IClient()
-{
 }
 
 void IClientStatistic::Update(DPN_CONNECTION_INFO& CI)
@@ -923,16 +908,7 @@ bool IPureServer::GetClientAddress(ClientID const &ID, ip_address& Address, DWOR
 IBannedClient *IPureServer::GetBannedClient(const ip_address& Address)
 {
 	for(IBannedClient *pBClient: BannedAddresses)
-		if (pBClient && pBClient->HAddr == Address && !pBClient->m_HWID)
-			return pBClient;	
-
-	return nullptr;
-}
-
-IBannedClient *IPureServer::GetBannedHW(HWID &hwid)
-{
-	for(IBannedClient *pBClient:BannedAddresses)
-		if(pBClient && pBClient->m_HWID == hwid)
+		if (pBClient && pBClient->HAddr == Address)
 			return pBClient;	
 
 	return nullptr;
@@ -943,41 +919,6 @@ void IPureServer::BanClient(IClient* C, u32 BanTime)
 	ip_address ClAddress;
 	GetClientAddress(C->ID, ClAddress);
 	BanAddress(ClAddress, BanTime);
-}
-
-void IPureServer::BanClientHW(HWID &hwid)
-{
-	IBannedClient* cl = new IBannedClient();
-	cl->m_HWID = hwid;
-	u32 BanTime = 999999999;
-
-	time(&cl->BanTime);
-	cl->BanTime += BanTime;
-
-	BannedAddresses.push_back(cl);
-	BannedList_Save();
-}
-
-void IPureServer::UnBanHW(HWID &hwid)
-{
-	for (u32 it = 0; it < BannedAddresses.size(); it++)
-	{
-		IBannedClient* pBClient = BannedAddresses[it];
-
-		if (!pBClient)
-			continue;
-
-		if (pBClient->m_HWID == hwid)
-		{
-			xr_delete(BannedAddresses[it]);
-			BannedAddresses.erase(BannedAddresses.begin() + it);
-			Msg("Unbanned");
-			BannedList_Save();
-			return;
-		}
-	}
-
-	Msg("! cant unban, this wasnt banned");
 }
 
 void IPureServer::BanAddress(const ip_address &Address, u32 BanTimeSec)
@@ -1061,17 +1002,18 @@ void IPureServer::BannedList_Load()
 	}
 }
 
-bool banned_client_comparer(IBannedClient* C1, IBannedClient* C2)
-{
-	return C1->BanTime > C2->BanTime;
-}
+
 
 void IPureServer::UpdateBannedList()
 {
 	if (BannedAddresses.empty())
 		return;
 
-	std::sort(BannedAddresses.begin(), BannedAddresses.end(), banned_client_comparer);
+	std::sort(BannedAddresses.begin(), BannedAddresses.end(), [](IBannedClient * C1, IBannedClient * C2)
+	{
+		return C1->BanTime > C2->BanTime;
+	});
+
 	time_t T;
 	time(&T);
 
@@ -1079,13 +1021,8 @@ void IPureServer::UpdateBannedList()
 
 	if (Cl->BanTime < T)
 	{
-		if (!Cl->m_HWID)
-		{
-			ip_address Address = Cl->HAddr;
-			UnBanAddress(Address);
-		}
-		else
-			UnBanHW(Cl->m_HWID);
+		ip_address Address = Cl->HAddr;
+		UnBanAddress(Address);
 	}
 }
 

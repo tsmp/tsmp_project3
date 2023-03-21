@@ -286,7 +286,7 @@ void game_cl_GameState::TranslateGameMessage(u32 msg, NET_Packet &P)
 		Msg("%s connected", PlayerName);
 
 		if (g_dedicated_server)
-			Console->Execute("sv_listplayers_hw");
+			Console->Execute("sv_listplayers");
 	}
 	break;
 	case GAME_EVENT_PLAYER_DISCONNECTED:
@@ -296,7 +296,6 @@ void game_cl_GameState::TranslateGameMessage(u32 msg, NET_Packet &P)
 
 		sprintf_s(Text, "%s%s %s%s", Color_Teams[0], PlayerName, Color_Main, *st.translate("mp_disconnected"));
 		CommonMessageOut(Text);
-		//---------------------------------------
 		Msg("%s disconnected", PlayerName);
 	}
 	break;

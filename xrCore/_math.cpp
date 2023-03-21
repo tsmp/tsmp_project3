@@ -133,34 +133,6 @@ namespace FPU
 }; // namespace FPU
 #endif
 
-#include <IPTypes.h>
-#include <iphlpapi.h>
-#pragma comment(lib, "iphlpapi.lib")
-
-void DetectHardwareId()
-{
-	char path[32];
-	GetWindowsDirectoryA(path, 100);
-	path[3] = '\0'; // получаем букву системного диска, например C:
-
-	DWORD volumeSerialNumber = 0;
-	GetVolumeInformation(path, NULL, NULL, &volumeSerialNumber, NULL, NULL, NULL, NULL);
-
-	IP_ADAPTER_INFO adapterInfo;
-	DWORD dwBufLen = sizeof(IP_ADAPTER_INFO);
-	auto result = GetAdaptersInfo(&adapterInfo, &dwBufLen);
-	(void)result;
-	//R_ASSERT(result != ERROR_BUFFER_OVERFLOW);
-
-	memcpy(&Core.hardwareId[0], &volumeSerialNumber, sizeof(DWORD));
-	Core.hardwareId[4] = adapterInfo.Address[0];
-	Core.hardwareId[5] = adapterInfo.Address[1];
-	Core.hardwareId[6] = adapterInfo.Address[2];
-	Core.hardwareId[7] = adapterInfo.Address[3];
-	Core.hardwareId[8] = adapterInfo.Address[4];
-	Core.hardwareId[9] = adapterInfo.Address[5];
-}
-
 namespace CPU
 {
 	XRCORE_API u64 clk_per_second;
@@ -192,8 +164,6 @@ namespace CPU
 			// Core.Fatal		("Fatal error: can't detect CPU/FPU.");
 			abort();
 		}
-
-		DetectHardwareId();
 
 		// Timers & frequency
 		u64 start, end;

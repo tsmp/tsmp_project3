@@ -571,7 +571,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="client_id.h" />
-    <ClInclude Include="HWID.h" />
     <ClInclude Include="NET_Client.h" />
     <ClInclude Include="NET_Common.h" />
     <ClInclude Include="NET_Compressor.h" />
@@ -585,7 +584,6 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HWID.cpp" />
     <ClCompile Include="NET_Client.cpp" />
     <ClCompile Include="NET_Common.cpp" />
     <ClCompile Include="NET_Compressor.cpp" />

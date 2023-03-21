@@ -526,67 +526,6 @@ public:
 	virtual void Info(TInfo &I) { strcpy(I, "Ban Player by IP"); }
 };
 
-class CCC_BanPlayerByHW : public IConsole_Command
-{
-public:
-	CCC_BanPlayerByHW(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
-
-	virtual void Execute(LPCSTR args_)
-	{
-		if (!g_pGameLevel || !Level().Server)
-			return;
-
-		HWID hwid;
-
-		if (!HWID::ParseFromString(args_, hwid))
-		{
-			Msg("! invalid hwid");
-			return;
-		}
-
-		Level().Server->BanClientHW(hwid);
-
-		IClient* client = Level().Server->FindClient([&hwid](IClient* cl)
-		{
-			return cl->m_HWID == hwid;
-		});
-
-		if (client)
-		{
-			if (Level().Server->GetServerClient() != client)
-				Level().Server->DisconnectClient(client);
-			else
-				Msg("! Can't disconnect server's client");
-		}
-	}
-
-	virtual void Info(TInfo& I) { strcpy(I, "Ban Player by IP"); }
-};
-
-class CCC_UnBanPlayerByHW : public IConsole_Command
-{
-public:
-	CCC_UnBanPlayerByHW(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
-
-	virtual void Execute(LPCSTR args_)
-	{
-		if (!g_pGameLevel || !Level().Server)
-			return;
-
-		HWID hwid;
-
-		if (!HWID::ParseFromString(args_, hwid))
-		{
-			Msg("! invalid hwid");
-			return;
-		}
-
-		Level().Server->UnBanHW(hwid);	
-	}
-
-	virtual void Info(TInfo& I) { strcpy(I, "Ban Player by IP"); }
-};
-
 class CCC_UnBanPlayerByIP : public IConsole_Command
 {
 public:
@@ -640,45 +579,6 @@ public:
 
 		Msg("------------------------");
 	};
-
-	virtual void Info(TInfo& I) { strcpy(I, "List Players"); }
-};
-
-class CCC_ListPlayersHW : public IConsole_Command
-{
-public:
-	CCC_ListPlayersHW(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-
-	virtual void Execute(LPCSTR args)
-	{
-		if (!OnServer())
-			return;
-
-		Msg("------------------------");
-		u32	cnt = Level().Server->game->get_players_count();
-		Msg("- Total Players : %d", cnt);
-		int it = 0;
-
-		Level().Server->ForEachClientDo([&it](IClient* client)
-		{
-			xrClientData* l_pC = static_cast<xrClientData*>(client);
-			ip_address Address;
-			it++;
-
-			Level().Server->GetClientAddress(l_pC->ID, Address, nullptr);
-
-			Msg("%d (name: %s), (session_id: %u), (hash: @), (ip: %s), (ping: %u);"
-				, it
-				, l_pC->ps->getName()
-				, l_pC->ID.value()
-				, Address.to_string().c_str()
-				, l_pC->ps->ping);
-								
-			Msg("His hwid: %s", l_pC->m_HWID.ToString().c_str());
-		});
-
-		Msg("------------------------");
-	}
 
 	virtual void Info(TInfo& I) { strcpy(I, "List Players"); }
 };
@@ -1909,15 +1809,12 @@ void register_mp_console_commands()
 	CMD1(CCC_MakeScreenshot, "make_screenshot");
 	CMD1(CCC_ScreenshotAllPlayers, "screenshot_all");
 
-	CMD1(CCC_BanPlayerByHW, "sv_banplayer_hw");
-	CMD1(CCC_UnBanPlayerByHW, "sv_unbanplayer_hw");
 	CMD1(CCC_BanPlayerByName, "sv_banplayer");
 	CMD1(CCC_BanPlayerByIP, "sv_banplayer_ip");
 
 	CMD1(CCC_UnBanPlayerByIP, "sv_unbanplayer_ip");
 
 	CMD1(CCC_ListPlayers, "sv_listplayers");
-	CMD1(CCC_ListPlayersHW, "sv_listplayers_hw");
 	CMD1(CCC_ListPlayers_Banned, "sv_listplayers_banned");
 
 	CMD1(CCC_ChangeGameType, "sv_changegametype");

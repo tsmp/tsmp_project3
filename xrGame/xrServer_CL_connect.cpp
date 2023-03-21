@@ -117,48 +117,18 @@ BOOL g_SV_Disable_Auth_Check = TRUE;
 
 void xrServer::CheckClientBuildVersion(IClient *CL)
 {
+	CheckPlayerBannedInBase(CL, this);
+
 	if (g_SV_Disable_Auth_Check)
 	{
 		OnConnectionVerificationStepComplete(CL);
+		OnConnectionVerificationStepComplete(CL); // PlayersBase
 		return;
 	}
 	
 	NET_Packet P;
 	P.w_begin(M_AUTH_CHALLENGE);
 	SendTo(CL->ID, P);
-}
-
-void xrServer::CheckClientHWID(IClient* CL)
-{
-	if (SV_Client && SV_Client == CL)
-	{
-		OnConnectionVerificationStepComplete(CL); // HWID
-		OnConnectionVerificationStepComplete(CL); // PlayersBase
-		return;
-	}
-
-	NET_Packet P;
-	P.w_begin(M_HW_CHALLENGE);
-	SendTo(CL->ID, P);
-}
-
-void xrServer::OnHardwareVerifyRespond(IClient* CL, NET_Packet& P)
-{
-	if (!CL)
-		return;
-
-	CL->m_HWID.NetDeserialize(P);	
-	Msg("get respond with hwid: %s", CL->m_HWID.ToString().c_str());
-
-	if (GetBannedHW(CL->m_HWID))
-	{
-		Msg("! Player banned by hwid tried to connect");
-		SendConnectResult(CL, 0, 0, "You are banned.");
-		return;
-	}
-	
-	CheckPlayerBannedInBase(CL, this);
-	OnConnectionVerificationStepComplete(CL);
 }
 
 void xrServer::OnPlayersBaseVerifyRespond(IClient* CL, bool banned)
@@ -221,8 +191,8 @@ void xrServer::OnConnectionVerificationStepComplete(IClient *CL)
 {
 	CL->verificationStepsCompleted++;
 
-	// проверяем ключ, билд, hwid, бан в базе всего 4
-	if (CL->verificationStepsCompleted == 4)
+	// проверяем ключ, билд, бан в базе всего 3
+	if (CL->verificationStepsCompleted == 3)
 	{
 		CL->flags.bVerified = TRUE;
 		SendConnectResult(CL, 1, 0, "All Ok");
