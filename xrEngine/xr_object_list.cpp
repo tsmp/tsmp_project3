@@ -11,19 +11,10 @@
 
 #include "CustomHUD.h"
 
-class fClassEQ
-{
-	CLASS_ID cls;
-
-public:
-	fClassEQ(CLASS_ID C) : cls(C){};
-	IC bool operator()(CObject *O) { return cls == O->CLS_ID; }
-};
-
 CObjectList::CObjectList()
 {
 	objects_dup_memsz = 512;
-	objects_dup = xr_alloc<CObject *>(objects_dup_memsz);
+	objects_dup = xr_alloc<CObject*>(objects_dup_memsz);
 	crows = &crows_0;
 }
 
@@ -38,13 +29,15 @@ CObjectList::~CObjectList()
 
 CObject *CObjectList::FindObjectByName(shared_str name)
 {
-	for (xr_vector<CObject *>::iterator I = objects_active.begin(); I != objects_active.end(); I++)
-		if ((*I)->cName().equal(name))
-			return (*I);
-	for (xr_vector<CObject *>::iterator I = objects_sleeping.begin(); I != objects_sleeping.end(); I++)
-		if ((*I)->cName().equal(name))
-			return (*I);
-	return NULL;
+	for (CObject* activeObj : objects_active)
+		if (activeObj->cName().equal(name))
+			return activeObj;
+
+	for (CObject* sleepingObj : objects_sleeping)
+		if (sleepingObj->cName().equal(name))
+			return sleepingObj;
+
+	return nullptr;
 }
 
 CObject *CObjectList::FindObjectByName(LPCSTR name)
@@ -66,6 +59,7 @@ void CObjectList::o_activate(CObject *O)
 	objects_active.push_back(O);
 	O->MakeMeCrow();
 }
+
 void CObjectList::o_sleep(CObject *O)
 {
 	VERIFY(O && !O->processing_enabled());
@@ -166,9 +160,8 @@ void CObjectList::Update(bool bForce)
 		// Info
 		for (xr_vector<CObject *>::iterator oit = objects_active.begin(); oit != objects_active.end(); oit++)
 			for (int it = destroy_queue.size() - 1; it >= 0; it--)
-			{
 				(*oit)->net_Relcase(destroy_queue[it]);
-			}
+
 		for (xr_vector<CObject *>::iterator oit = objects_sleeping.begin(); oit != objects_sleeping.end(); oit++)
 			for (int it = destroy_queue.size() - 1; it >= 0; it--)
 				(*oit)->net_Relcase(destroy_queue[it]);
