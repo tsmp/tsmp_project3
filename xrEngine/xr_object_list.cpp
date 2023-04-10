@@ -46,37 +46,17 @@ CObject *CObjectList::FindObjectByName(shared_str name)
 			return (*I);
 	return NULL;
 }
+
 CObject *CObjectList::FindObjectByName(LPCSTR name)
 {
 	return FindObjectByName(shared_str(name));
 }
 
-CObject *CObjectList::FindObjectByCLS_ID(CLASS_ID cls)
+void CObjectList::o_remove(xr_vector<CObject*> &v, CObject *O)
 {
-	{
-		xr_vector<CObject *>::iterator O = std::find_if(objects_active.begin(), objects_active.end(), fClassEQ(cls));
-		if (O != objects_active.end())
-			return *O;
-	}
-	{
-		xr_vector<CObject *>::iterator O = std::find_if(objects_sleeping.begin(), objects_sleeping.end(), fClassEQ(cls));
-		if (O != objects_sleeping.end())
-			return *O;
-	}
-
-	return NULL;
-}
-
-void CObjectList::o_remove(xr_vector<CObject *> &v, CObject *O)
-{
-	//.	if(O->ID()==1026)
-	//.	{
-	//.		Log("ahtung");
-	//.	}
-	xr_vector<CObject *>::iterator _i = std::find(v.begin(), v.end(), O);
-	VERIFY(_i != v.end());
-	v.erase(_i);
-	//.	Msg("---o_remove[%s][%d]", O->cName().c_str(), O->ID() );
+	auto it = std::find(v.begin(), v.end(), O);
+	VERIFY(it != v.end());
+	v.erase(it);
 }
 
 void CObjectList::o_activate(CObject *O)
