@@ -948,7 +948,7 @@ void TiXmlElement::StreamIn (std::istream * in, TIXML_STRING * tag)
 				continue;
 			}
 
-			// We now have either a closing tag...or another node.
+			// We now have either a closing tag...or_ another node.
 			// We should be at a "<", regardless.
 			if ( !in->good() ) return;
 			assert( in->peek() == '<' );

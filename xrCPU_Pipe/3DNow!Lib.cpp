@@ -41,8 +41,11 @@ static const __m64f mo2s		=	{ -0.5f			,-0.5f			};
 static const __m64f mo12_6		=	{ -0.0833333333f,-0.166666667f	};	
 static const __m64f mo30_20		=	{ -0.0333333333f,-0.05f			};
 static const __m64f mo56_42		=	{ -0.0178571f	,-0.0238095f	};
-//static const __m64i pio4ht      =   { 0xbf490000,   0xb97daa22      };  // approximately -0.000241913 | -0.785156
-//static const __m64i pio4s       =   { 0x3f490fdb,   0x3f490fdb      };  // approximately 0.785398 | 0.785398
+
+#ifndef _CLANG_
+static const __m64i pio4ht      =   { (int)0xbf490000,   (int)0xb97daa22      };  // approximately -0.000241913 | -0.785156
+static const __m64i pio4s       =   { (int)0x3f490fdb,   (int)0x3f490fdb      };  // approximately 0.785398 | 0.785398
+#endif
 #pragma warning(pop)
 //;******************************************************************************
 //; Scalar (single float) data

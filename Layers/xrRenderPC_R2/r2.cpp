@@ -136,7 +136,7 @@ void CRender::create()
 				o.nullrt = false;
 		};
 		if (o.nullrt)
-			Msg("* ...and used");
+			Msg("* ...and_ used");
 	};
 
 	// SMAP / DST

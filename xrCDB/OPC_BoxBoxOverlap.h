@@ -5,7 +5,7 @@
  *	- optimized for AABB trees by computing the rotation matrix once (SOLID-fashion)
  *	- the fabs matrix is precomputed as well and epsilon-tweaked (RAPID-style, we found this almost mandatory)
  *	- Class III axes can be disabled... (SOLID & Intel fashion)
- *	- ...or enabled to perform some profiling
+ *	- ...or_ enabled to perform some profiling
  *	- CPU comparisons used when appropriate
  *	- lazy evaluation sometimes saves some work in case of early exits (unlike SOLID)
  *

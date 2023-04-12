@@ -159,7 +159,7 @@ void CDetailManager::hw_Render()
 
 	// Still
 	RCache.set_c(&*hwc_s_consts, scale, scale, scale, 1.f);
-	RCache.set_c(&*hwc_s_xform, Device.mFullTransform);
+	RCache.set_c(hwc_s_xform, Device.mFullTransform);
 	hw_Render_dump(&*hwc_s_array, 0, 1, c_hdr);
 }
 void CDetailManager::hw_Render_dump(ref_constant x_array, u32 var_id, u32 lod_id, u32 c_offset)

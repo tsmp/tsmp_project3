@@ -125,7 +125,7 @@ void CBackend::set_Textures(STextureList *_T)
 	{
 		std::pair<u32, ref_texture> &loader = *_it;
 		u32 load_id = loader.first;
-		CTexture *load_surf = &*loader.second;
+		ref_texture load_surf = &*loader.second;
 		if (load_id < 256)
 		{
 			// ordinary pixel surface
@@ -133,7 +133,7 @@ void CBackend::set_Textures(STextureList *_T)
 				_last_ps = load_id;
 			if (textures_ps[load_id] != load_surf)
 			{
-				textures_ps[load_id] = load_surf;
+				textures_ps[load_id] = &*load_surf;
 #ifdef DEBUG
 				stat.textures++;
 #endif
@@ -153,7 +153,7 @@ void CBackend::set_Textures(STextureList *_T)
 				_last_vs = load_id_remapped;
 			if (textures_vs[load_id_remapped] != load_surf)
 			{
-				textures_vs[load_id_remapped] = load_surf;
+				textures_vs[load_id_remapped] = &*load_surf;
 #ifdef DEBUG
 				stat.textures++;
 #endif

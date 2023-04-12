@@ -198,7 +198,12 @@ public:
 	}
 
 	// constants - direct (fast)
-	ICF void set_c(R_constant *_C, const Fmatrix &A)
+	ICF void set_c(ref_constant _C, const Fmatrix &A)
+	{
+		if (_C)
+			constants.set(&*_C, A);
+	}
+	ICF void set_c(R_constant* _C, const Fmatrix& A)
 	{
 		if (_C)
 			constants.set(_C, A);
@@ -208,10 +213,20 @@ public:
 		if (_C)
 			constants.set(_C, A);
 	}
+	ICF void set_c(ref_constant _C, const Fvector4& A)
+	{
+		if (_C)
+			constants.set(&*_C, A);
+	}
 	ICF void set_c(R_constant *_C, float x, float y, float z, float w)
 	{
 		if (_C)
 			constants.set(_C, x, y, z, w);
+	}
+	ICF void set_c(ref_constant _C, float x, float y, float z, float w)
+	{
+		if (_C)
+			constants.set(&*_C, x, y, z, w);
 	}
 	ICF void set_ca(R_constant *_C, u32 e, const Fmatrix &A)
 	{
@@ -227,6 +242,11 @@ public:
 	{
 		if (_C)
 			constants.seta(_C, e, x, y, z, w);
+	}
+	ICF void set_ca(ref_constant _C, u32 e, float x, float y, float z, float w)
+	{
+		if (_C)
+			constants.seta(&*_C, e, x, y, z, w);
 	}
 
 	// constants - LPCSTR (slow)
@@ -265,17 +285,17 @@ public:
 	ICF void set_c(shared_str &n, const Fmatrix &A)
 	{
 		if (ctable)
-			set_c(&*ctable->get(n), A);
+			set_c(ctable->get(n), A);
 	}
-	ICF void set_c(shared_str &n, const Fvector4 &A)
+	void set_c(shared_str& n, const Fvector4& A)
 	{
 		if (ctable)
-			set_c(&*ctable->get(n), A);
+			set_c(ctable->get(n), A);
 	}
 	ICF void set_c(shared_str &n, float x, float y, float z, float w)
 	{
 		if (ctable)
-			set_c(&*ctable->get(n), x, y, z, w);
+			set_c(ctable->get(n), x, y, z, w);
 	}
 	ICF void set_ca(shared_str &n, u32 e, const Fmatrix &A)
 	{
@@ -290,7 +310,7 @@ public:
 	ICF void set_ca(shared_str &n, u32 e, float x, float y, float z, float w)
 	{
 		if (ctable)
-			set_ca(&*ctable->get(n), e, x, y, z, w);
+			set_ca(ctable->get(n), e, x, y, z, w);
 	}
 
 	ICF void Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);

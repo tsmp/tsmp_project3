@@ -324,7 +324,7 @@ inline_ BOOL OBBCollider::TriBoxOverlap()
 	return TRUE;
 }
 
-//! ...and another one, jeez
+//! ...and_ another one, jeez
 inline_ BOOL AABBCollider::TriBoxOverlap()
 {
 	// Stats

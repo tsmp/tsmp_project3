@@ -62,7 +62,7 @@ void CRender::level_Load(IReader *fs)
 			FS.r_close(geom);
 		}
 
-		//...and alternate/fast geometry
+		//...and_ alternate/fast geometry
 		{
 			CStreamReader *geom = FS.rs_open("$level$", "level.geomx");
 			R_ASSERT2(geom, "level.geomX");
