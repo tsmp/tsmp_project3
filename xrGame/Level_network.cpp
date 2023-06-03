@@ -25,6 +25,11 @@ const int max_objects_size_in_save = 6 * 1024;
 
 extern bool g_b_ClearGameCaptions;
 
+#pragma comment(lib, "UidUtils.lib")
+
+extern u32 GetUID();
+extern void SetUID(u32 uid);
+
 void CLevel::remove_objects()
 {
 	if (!IsGameTypeSingle())
@@ -314,12 +319,15 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 	NET_Packet P;
 	m_bConnectResultReceived = false;
 	m_bConnectResult = true;
+
 	if (!Connect(options))
 		return FALSE;
-	//---------------------------------------------------------------------------
+
 	if (psNET_direct_connect)
 		m_bConnectResultReceived = true;
+
 	u32 EndTime = GetTickCount() + ConnectionTimeOut;
+
 	while (!m_bConnectResultReceived)
 	{
 		ClientReceive();
@@ -328,6 +336,7 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 			Server->Update();
 
 		u32 CurTime = GetTickCount();
+
 		if (CurTime > EndTime)
 		{
 			NET_Packet P;
@@ -340,6 +349,7 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 
 			OnConnectResult(&P);
 		}
+
 		if (net_isFails_Connect())
 		{
 			OnConnectRejected();
@@ -347,13 +357,15 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 			return FALSE;
 		}
 	}
+
 	Msg("%c client : connection %s - <%s>", m_bConnectResult ? '*' : '!', m_bConnectResult ? "accepted" : "rejected", m_sConnectResult.c_str());
+	
 	if (!m_bConnectResult)
 	{
 		OnConnectRejected();
 		Disconnect();
 		return FALSE;
-	};
+	}
 
 	if (psNET_direct_connect)
 		net_Syncronised = true;
@@ -376,7 +388,20 @@ void CLevel::OnBuildVersionChallenge()
 	u64 auth = FS.auth_get();
 	P.w_u64(auth);
 	Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
-};
+}
+
+void CLevel::OnChallengeUID()
+{
+	NET_Packet P;
+	P.w_begin(M_UID_RESPOND);
+	P.w_u32(GetUID());
+	Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
+}
+
+void CLevel::OnAssignUID(NET_Packet* P)
+{
+	SetUID(P->r_u32());
+}
 
 void CLevel::OnConnectResult(NET_Packet *P)
 {

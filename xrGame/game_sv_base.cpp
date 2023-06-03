@@ -783,7 +783,14 @@ void game_sv_GameState::OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, Clie
 		IClient* CL = m_server->ID_to_client(sender);
 		m_server->OnBuildVersionRespond(CL, tNetPacket);
 	}
-	break;	
+	break;
+
+	case GAME_EVENT_PLAYER_AUTH_UID:
+	{
+		IClient* CL = m_server->ID_to_client(sender);
+		m_server->OnRespondUID(CL, tNetPacket);
+	}
+	break;
 
 	default:
 	{

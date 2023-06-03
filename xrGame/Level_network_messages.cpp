@@ -16,9 +16,7 @@
 
 void CLevel::ClientReceive()
 {
-
 	Demo_StartFrame();
-
 	Demo_Update();
 
 	m_dwRPC = 0;
@@ -26,10 +24,9 @@ void CLevel::ClientReceive()
 
 	for (NET_Packet *P = net_msg_Retreive(); P; P = net_msg_Retreive())
 	{
-		//-----------------------------------------------------
 		m_dwRPC++;
 		m_dwRPS += P->B.count;
-		//-----------------------------------------------------
+
 		u16 m_type;
 		u16 ID;
 		P->r_begin(m_type);
@@ -284,26 +281,29 @@ void CLevel::ClientReceive()
 		break;
 
 		case M_SAVE_GAME:
-		{
 			ClientSave();
-		}
-		break;
+			break;
+
 		case M_GAMESPY_CDKEY_VALIDATION_CHALLENGE:
-		{
 			OnGameSpyChallenge(P);
-		}
-		break;
+			break;
+
 		case M_AUTH_CHALLENGE:
-		{
 			OnBuildVersionChallenge();
-		}
-		break;
+			break;
+
+		case M_UID_CHALLENGE:
+			OnChallengeUID();
+			break;
+
+		case M_UID_ASSIGN:
+			OnAssignUID(P);
+			break;
 
 		case M_CLIENT_CONNECT_RESULT:
-		{
 			OnConnectResult(P);
-		}
-		break;
+			break;
+
 		case M_CHAT_MESSAGE:
 		{
 			if (!game)

@@ -162,6 +162,8 @@ public:
 	void OnGameSpyChallenge(NET_Packet *P);
 	void OnBuildVersionChallenge();
 	void OnConnectResult(NET_Packet *P);
+	void OnChallengeUID();
+	void OnAssignUID(NET_Packet* P);
 
 public:
 	//////////////////////////////////////////////

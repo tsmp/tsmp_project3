@@ -12,7 +12,7 @@
   <ItemDefinitionGroup>
     <Link>
       <ImportLibrary>$(SolutionDir)output\libraries_$(platform)_$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\libraries_$(platform)_$(Configuration);$(SolutionDir)Components\DX9SDK\Lib_$(platform);$(SolutionDir)Components\opus\lib_$(platform);$(SolutionDir)Components\libspeexdsp\Lib_$(platform); %(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\libraries_$(platform)_$(Configuration);$(SolutionDir)Components\DX9SDK\Lib_$(platform);$(SolutionDir)Components\opus\lib_$(platform);$(SolutionDir)Components\libspeexdsp\Lib_$(platform);$(SolutionDir)Components\UidUtils\Lib_$(platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <ClCompile>

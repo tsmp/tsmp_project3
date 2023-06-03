@@ -672,6 +672,11 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 			SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
 	}
 	break;
+
+	case M_UID_RESPOND:
+		game->AddDelayedEvent(P, GAME_EVENT_PLAYER_AUTH_UID, 0, sender);
+		break;
+
 	case M_STATISTIC_UPDATE_RESPOND:
 	{
 		if (SV_Client)

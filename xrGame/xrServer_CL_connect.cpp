@@ -4,7 +4,6 @@
 #include "hudmanager.h"
 #include "xrserver_objects.h"
 #include "Level.h"
-#include "../xrNetwork/PlayersBase.h"
 
 xr_vector<u16> g_perform_spawn_ids;
 
@@ -117,17 +116,22 @@ BOOL g_SV_Disable_Auth_Check = TRUE;
 
 void xrServer::CheckClientBuildVersion(IClient *CL)
 {
-	CheckPlayerBannedInBase(CL, this);
-
 	if (g_SV_Disable_Auth_Check)
 	{
 		OnConnectionVerificationStepComplete(CL);
-		OnConnectionVerificationStepComplete(CL); // PlayersBase
 		return;
 	}
 	
 	NET_Packet P;
 	P.w_begin(M_AUTH_CHALLENGE);
+	SendTo(CL->ID, P);
+}
+
+
+void xrServer::CheckClientUID(IClient* CL)
+{
+	NET_Packet P;
+	P.w_begin(M_UID_CHALLENGE);
 	SendTo(CL->ID, P);
 }
 
@@ -144,6 +148,18 @@ void xrServer::OnPlayersBaseVerifyRespond(IClient* CL, bool banned)
 	
 	Msg("! Player banned by base tried to connect");
 	SendConnectResult(CL, 0, 0, "You are banned!!!");	
+}
+
+void xrServer::OnRespondUID(IClient* CL, NET_Packet& P)
+{
+	if (!CL)
+		return;
+
+	u32 Uid;
+	P.r_u32(Uid);
+
+	Msg("received uid: %u", Uid);
+	OnConnectionVerificationStepComplete(CL);
 }
 
 void xrServer::OnBuildVersionRespond(IClient *CL, NET_Packet &P)
@@ -191,8 +207,8 @@ void xrServer::OnConnectionVerificationStepComplete(IClient *CL)
 {
 	CL->verificationStepsCompleted++;
 
-	// проверяем ключ, билд, бан в базе всего 3
-	if (CL->verificationStepsCompleted == 3)
+	// проверяем ключ, билд, uid, бан в базе всего 4
+	if (CL->verificationStepsCompleted == 4 || CL == SV_Client)
 	{
 		CL->flags.bVerified = TRUE;
 		SendConnectResult(CL, 1, 0, "All Ok");

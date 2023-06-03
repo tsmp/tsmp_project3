@@ -156,6 +156,7 @@ public:
 
 	void AttachNewClient(IClient *CL);
 	virtual void OnBuildVersionRespond(IClient *CL, NET_Packet &P);
+	void OnRespondUID(IClient* CL, NET_Packet& P);
 	void OnPlayersBaseVerifyRespond(IClient* CL, bool banned) override;
 
 	void MakeScreenshot(ClientID const &admin_id, ClientID const &cheater_id);
@@ -169,9 +170,10 @@ protected:
 	virtual bool Check_ServerAccess(IClient *CL, string512 &reason) { return true; }
 
 	virtual void CheckClientGameSpyCDKey(IClient* CL) {};
-	virtual void CheckClientBuildVersion(IClient *CL);	
 
-	virtual void OnConnectionVerificationStepComplete(IClient *CL);
+	void CheckClientBuildVersion(IClient *CL);
+	void CheckClientUID(IClient *CL);
+	void OnConnectionVerificationStepComplete(IClient *CL);
 
 	void SendConnectionData(IClient *CL);
 	void OnChatMessage(NET_Packet *P, xrClientData *CL);

@@ -8,6 +8,7 @@
 #include "game_cl_artefacthunt.h"
 #include "game_cl_single.h"
 #include "MainMenu.h"
+#include "../xrNetwork/PlayersBase.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4995)
@@ -136,7 +137,16 @@ void xrServer::AttachNewClient(IClient *CL)
 	}
 
 	CL->flags.bVerified = FALSE;
-	CheckClientGameSpyCDKey(CL);
-	CheckClientBuildVersion(CL);
+
+	if (CL != SV_Client)
+	{
+		CheckClientGameSpyCDKey(CL);
+		CheckClientBuildVersion(CL);
+		CheckPlayerBannedInBase(CL, this);
+		CheckClientUID(CL);
+	}
+	else
+		OnConnectionVerificationStepComplete(CL);
+
 	CL->m_guid[0] = 0;
 }

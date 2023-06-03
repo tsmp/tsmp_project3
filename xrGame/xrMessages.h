@@ -22,10 +22,8 @@ enum
 
 	M_EVENT,	// Game Event
 	M_CL_INPUT, // Client Input Data
-	//----------- for E3 -----------------------------
 	M_CL_UPDATE,
 	M_UPDATE_OBJECTS,
-	//-------------------------------------------------
 	M_CLIENTREADY, // Client has finished to load level and are ready to play
 
 	M_CHANGE_LEVEL, // changing level
@@ -38,7 +36,6 @@ enum
 	M_GAMEMESSAGE, // Game Message
 	M_EVENT_PACK,  // Pack of M_EVENT
 
-	//-----------------------------------------------------
 	M_GAMESPY_CDKEY_VALIDATION_CHALLENGE,
 	M_GAMESPY_CDKEY_VALIDATION_CHALLENGE_RESPOND,
 	M_CLIENT_CONNECT_RESULT,
@@ -47,22 +44,22 @@ enum
 	M_CHAT_MESSAGE,
 	M_CLIENT_WARN,
 	M_CHANGE_LEVEL_GAME,
-	//-----------------------------------------------------
+
 	M_CL_PING_CHALLENGE,
 	M_CL_PING_CHALLENGE_RESPOND,
-	//-----------------------------------------------------
+
 	M_AUTH_CHALLENGE,
 	M_CL_AUTH,
 	M_BULLET_CHECK_RESPOND,
-	//-----------------------------------------------------
+
 	M_STATISTIC_UPDATE,
 	M_STATISTIC_UPDATE_RESPOND,
-	//-----------------------------------------------------
+
 	M_PLAYER_FIRE,
-	//-----------------------------------------------------
+
 	M_MOVE_PLAYERS,
 	M_MOVE_PLAYERS_RESPOND,
-	//-----------------------------------------------------
+
 	M_CHANGE_SELF_NAME,
 	M_REMOTE_CONTROL_AUTH,
 	M_REMOTE_CONTROL_CMD,
@@ -71,6 +68,9 @@ enum
 	M_FILE_TRANSFER,
 	M_TRANSFER_PATROL_PATHS,
 	M_VOICE_MESSAGE,
+	M_UID_CHALLENGE,
+	M_UID_RESPOND,
+	M_UID_ASSIGN,
 	MSG_FORCEDWORD = u32(-1)
 };
 
@@ -136,9 +136,7 @@ enum
 	GEG_PLAYER_DETACH_HOLDER,
 
 	GEG_PLAYER_PLAY_HEADSHOT_PARTICLE,
-	//-------------------------------------
 	GE_HIT_STATISTIC,
-	//-------------------------------------
 	GE_KILL_SOMEONE,
 
 	GE_FREEZE_OBJECT,
@@ -203,8 +201,8 @@ enum EGameMessages
 	GAME_EVENT_SERVER_STRING_MESSAGE,
 	GAME_EVENT_SERVER_DIALOG_MESSAGE,
 	GAME_EVENT_MAKE_DATA,
+	GAME_EVENT_PLAYER_AUTH_UID,
 
-	//-----------------------------------------
 	GAME_EVENT_SCRIPT_BEGINS_FROM, // don't add messages after this
 	GAME_EVENT_FORCEDWORD = u32(-1)
 };
