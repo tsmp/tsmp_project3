@@ -21,8 +21,13 @@ using namespace luabind;
 CUISequencer *g_tutorial = NULL;
 CUISequencer *g_tutorial2 = NULL;
 
+extern ENGINE_API bool g_dedicated_server;
+
 void start_tutorial(LPCSTR name)
 {
+	if (g_dedicated_server)
+		return;
+
 	if (g_tutorial)
 	{
 		VERIFY(!g_tutorial2);
