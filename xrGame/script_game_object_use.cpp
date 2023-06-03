@@ -114,7 +114,7 @@ bool CScriptGameObject::Alive() const
 	CEntity *entity = smart_cast<CEntity *>(&object());
 	if (!entity)
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CSciptEntity : cannot access class member Alive!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptEntity : cannot access class member Alive!");
 		return (false);
 	}
 	return (!!entity->g_Alive());
