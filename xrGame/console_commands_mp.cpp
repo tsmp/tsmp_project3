@@ -569,10 +569,11 @@ public:
 			
 			Level().Server->GetClientAddress(l_pC->ID, Address, nullptr);
 
-			Msg("%d (name: %s), (session_id: %u), (hash: @), (ip: %s), (ping: %u);"
+			Msg("%d (name: %s), (session_id: %u), (id: %u), (ip: %s), (ping: %u);"
 				, it
 				, l_pC->ps->getName()
 				, l_pC->ID.value()
+				, l_pC->UID
 				, Address.to_string().c_str()
 				, l_pC->ps->ping);
 		});

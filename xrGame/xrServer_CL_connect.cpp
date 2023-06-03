@@ -4,6 +4,7 @@
 #include "hudmanager.h"
 #include "xrserver_objects.h"
 #include "Level.h"
+#include "../xrNetwork/PlayersBase.h"
 
 xr_vector<u16> g_perform_spawn_ids;
 
@@ -135,6 +136,25 @@ void xrServer::CheckClientUID(IClient* CL)
 	SendTo(CL->ID, P);
 }
 
+void xrServer::OnPlayersBaseGenUID(IClient* CL, u32 uid)
+{
+	if (!CL)
+		return;
+
+	if (uid)
+	{
+		NET_Packet P;
+		P.w_begin(M_UID_ASSIGN);
+		P.w_u32(uid);
+		SendTo(CL->ID, P);
+	}
+	else
+		Msg("! ERROR: unable to receive unique id for player!");
+
+	CL->UID = uid;
+	OnConnectionVerificationStepComplete(CL);
+}
+
 void xrServer::OnPlayersBaseVerifyRespond(IClient* CL, bool banned)
 {
 	if (!CL)
@@ -158,8 +178,14 @@ void xrServer::OnRespondUID(IClient* CL, NET_Packet& P)
 	u32 Uid;
 	P.r_u32(Uid);
 
-	Msg("received uid: %u", Uid);
-	OnConnectionVerificationStepComplete(CL);
+	if (Uid)
+	{
+		CL->UID = Uid;
+		OnConnectionVerificationStepComplete(CL);
+		return;
+	}
+
+	GenPlayerUID(CL, this);
 }
 
 void xrServer::OnBuildVersionRespond(IClient *CL, NET_Packet &P)

@@ -64,6 +64,7 @@ public:
 	int verificationStepsCompleted;
 
 	ClientID ID;
+	u32 UID;
 	string128 m_guid;
 	shared_str name;
 	shared_str pass;
@@ -185,6 +186,7 @@ public:
 	virtual void Flush_Clients_Buffers();
 
 	virtual void OnPlayersBaseVerifyRespond(IClient* CL, bool banned) {}
+	virtual void OnPlayersBaseGenUID(IClient* CL, u32 uid) = 0;
 	virtual const char* GetServerName() { return ""; }
 
 	void SendTo(ClientID const &ID, NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);

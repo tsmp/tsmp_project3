@@ -171,11 +171,8 @@ void gen_auth_code()
 	FS.auth_generate(ignore, test);
 }
 
-IClient::IClient(CTimer* timer)
-	: stats(timer),
-	server(NULL)
+IClient::IClient(CTimer* timer) : stats(timer), server(nullptr), dwTime_LastUpdate(0), UID(0)
 {
-	dwTime_LastUpdate = 0;
 	flags.bLocal = FALSE;
 	flags.bConnected = FALSE;
 	flags.bReconnect = FALSE;

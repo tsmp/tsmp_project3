@@ -8,7 +8,7 @@
 #pragma comment(lib, "Wininet.lib")
 
 const int MaxResponseLength = 256;
-const char *BaseUrl = "http://185.189.255.144:8080/PlayersBase/v1/";
+const char *BaseUrl = "http://194.147.90.72:8080/";
 static std::string SessionId;
 
 extern std::string UrlEncode(const std::string &str);
@@ -44,7 +44,7 @@ int CalculateKey(std::string srvName, std::string srvVer)
         for (u32 i = 0; i < str.size(); i++)
         {
             int val = static_cast<unsigned char>(str[i]);
-            Msg("%d", val);
+            //Msg("%d", val);
             hash = hash * 31 + val;
         }
 
@@ -63,7 +63,7 @@ void InitSession(IPureServer* serv)
     std::string srvName = serv->GetServerName();
     std::string srvVer = TSMP_VERSION;
     std::string key = std::to_string(CalculateKey(srvName, srvVer));
-    std::string request = "StartSession?srv=" + UrlEncode(srvName) + "&key=" + UrlEncode(key) + "&ver=" + UrlEncode(srvVer);
+    std::string request = "PlayersBase/v1/StartSession?srv=" + UrlEncode(srvName) + "&key=" + UrlEncode(key) + "&ver=" + UrlEncode(srvVer);
 
     char response[MaxResponseLength];
 
@@ -88,7 +88,7 @@ bool IsBanned(IClient* CL)
     std::string ip = CL->m_cAddress.to_string().c_str();
     std::string name = CL->name.c_str();
 
-    std::string request = "IsBanned?ip=" + UrlEncode(ip) +
+    std::string request = "PlayersBase/v1/IsBanned?ip=" + UrlEncode(ip) +
         "&name=" + UrlEncode(name) +
         "&key=" + UrlEncode(SessionId);
 
@@ -103,6 +103,22 @@ bool IsBanned(IClient* CL)
     return false;
 }
 
+u32 GenUid()
+{
+	if (SessionId.empty())
+		return 0;
+
+	std::string request = "PlayersStats/v1/GenPlayerID?key=" + UrlEncode(SessionId);
+	char response[MaxResponseLength];
+
+	if (!SendRequest(request.c_str(), response))
+		return 0;
+
+	return std::stoul(response);
+}
+
+#pragma TODO("TSMP: remake without creating new thread always")
+
 void CheckPlayerBannedInBase(IClient* cl, IPureServer* serv)
 {
     std::thread thread([](IClient*client, IPureServer* srv)
@@ -112,4 +128,15 @@ void CheckPlayerBannedInBase(IClient* cl, IPureServer* serv)
     }, cl, serv);
 
    thread.detach();
+}
+
+void GenPlayerUID(IClient* cl, IPureServer* serv)
+{
+	std::thread thread([](IClient* client, IPureServer* srv)
+	{
+		InitSession(srv);
+		srv->OnPlayersBaseGenUID(client, GenUid());
+	}, cl, serv);
+
+	thread.detach();
 }
