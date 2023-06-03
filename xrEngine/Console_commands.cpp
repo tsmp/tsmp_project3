@@ -450,6 +450,8 @@ extern int psNET_DedicatedSleep;
 extern int g_svDedicateServerUpdateReate;
 extern int g_Dump_Export_Obj;
 extern int g_Dump_Import_Obj;
+
+extern float gDedicatedScheduleScale;
 extern Flags32 psEnvFlags;
 
 void RegisterDebugCommands();
@@ -529,6 +531,7 @@ void CCC_Register()
 	CMD1(CCC_DumpOpenFiles, "dump_open_files");
 
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
+	CMD4(CCC_Float, "sv_dedicated_server_schedule_scale", &gDedicatedScheduleScale, 0.01f, 5.f);
 	CMD3(CCC_Mask, "rs_cam_pos", &psDeviceFlags, rsCameraPos);
 
 	RegisterDebugCommands();

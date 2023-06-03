@@ -11,6 +11,9 @@ class ENGINE_API CCustomHUD;
 class NET_Packet;
 class CSE_Abstract;
 
+extern float gDedicatedScheduleScale;
+extern ENGINE_API bool g_dedicated_server;
+
 //-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS (30.f)
 //-----------------------------------------------------------------------------------------------------------
@@ -86,7 +89,15 @@ public:
 	virtual BOOL Ready() { return Props.net_Ready; }
 	BOOL GetTmpPreDestroy() const { return Props.bPreDestroy; }
 	void SetTmpPreDestroy(BOOL b) { Props.bPreDestroy = b; }
-	virtual float shedule_Scale() { return Device.vCameraPosition.distance_to(Position()) / 200.f; }
+
+	virtual float shedule_Scale()
+	{
+		if (g_dedicated_server)
+			return gDedicatedScheduleScale;
+		else
+			return Device.vCameraPosition.distance_to(Position()) / 200.f;
+	}
+
 	virtual bool shedule_Needed() { return processing_enabled(); };
 
 	// Parentness

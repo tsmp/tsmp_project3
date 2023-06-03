@@ -7,6 +7,7 @@
 float psShedulerCurrent = 10.f;
 float psShedulerTarget = 10.f;
 const float psShedulerReaction = 0.1f;
+float gDedicatedScheduleScale = 1.f;
 BOOL g_bSheduleInProgress = FALSE;
 
 void CSheduler::Initialize()
