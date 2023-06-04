@@ -33,7 +33,7 @@ add_to_type_list(RPoint)
 #undef script_type_list
 #define script_type_list save_type_list(RPoint)
 
-	struct Bonus_Money_Struct
+struct Bonus_Money_Struct
 {
 	s32 Money;
 	u8 Reason;
@@ -63,6 +63,7 @@ struct game_PlayerState
 	s16 m_iKillsInRowCurr;
 	s16 m_iKillsInRowMax;
 	s16 m_iDeaths;
+	s16 m_iHeadshots;
 	s32 money_for_round;
 	s32 money_for_round_team2;
 
@@ -91,6 +92,10 @@ struct game_PlayerState
 	bool m_bPayForSpawn;
 	u32 m_online_time;
 
+	s16 m_iAiKills;
+	xr_vector<u32> m_WpnIdx;
+	xr_vector<u32> m_WpnHits;
+
 public:
 	game_PlayerState();
 	~game_PlayerState();
@@ -108,6 +113,21 @@ public:
 
 	virtual void net_Export(NET_Packet &P, BOOL Full = FALSE);
 	virtual void net_Import(NET_Packet &P);
+
+	void AddHit(u32 wpn)
+	{
+		for (u32 i = 0, cnt = m_WpnHits.size(); i < cnt; i++)
+		{
+			if (m_WpnIdx[i] == wpn)
+			{
+				m_WpnHits[i]++;
+				return;
+			}
+		}
+
+		m_WpnIdx.push_back(wpn);
+		m_WpnHits.push_back(1);
+	}
 
 	DEF_VECTOR(PLAYER_ITEMS_LIST, PresetItem);
 

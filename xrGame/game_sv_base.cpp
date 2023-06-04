@@ -17,6 +17,7 @@
 
 #include "Actor.h"
 #include "ai_object_location.h"
+#include "clsid_game.h"
 
 ENGINE_API bool g_dedicated_server;
 
@@ -699,14 +700,25 @@ void game_sv_GameState::OnHit(u16 id_hitter, u16 id_hitted, NET_Packet &P)
 	if (!e_hitter || !e_hitted)
 		return;
 
-	//	CSE_ALifeCreatureActor*		a_hitter		= smart_cast <CSE_ALifeCreatureActor*> (e_hitter);
-	CSE_ALifeCreatureActor *a_hitted = smart_cast<CSE_ALifeCreatureActor *>(e_hitted);
-
-	if (a_hitted /* && a_hitter*/)
+	if (auto hittedCreature = smart_cast<CSE_ALifeCreatureAbstract*>(e_hitted))
 	{
-		OnPlayerHitPlayer(id_hitter, id_hitted, P);
-		return;
-	};
+		if (!hittedCreature->g_Alive())
+			return;
+
+		if (game_PlayerState* psHitter = get_eid(id_hitter))
+		{
+			const u32 readPos = P.r_pos;
+			SHit HitS;
+			HitS.Read_Packet(P);
+			P.r_pos = readPos;
+
+			if (CSE_Abstract* pWeaponA = get_entity_from_eid(HitS.weaponID))
+				OnPlayerHitCreature(psHitter, pWeaponA);
+		}
+
+		if(e_hitted->m_tClassID == CLSID_OBJECT_ACTOR)
+			OnPlayerHitPlayer(id_hitter, id_hitted, P);
+	}
 }
 
 void game_sv_GameState::OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender)

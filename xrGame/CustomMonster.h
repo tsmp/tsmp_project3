@@ -59,6 +59,7 @@ protected:
 
 private:
 	xr_vector<CLASS_ID> m_killer_clsids;
+	u16 m_iLastHitterID;
 
 public:
 	// Eyes
@@ -146,6 +147,8 @@ public:
 	virtual void g_WeaponBones(int & /**L/**/, int & /**R1/**/, int & /**R2/**/){};
 	virtual void shedule_Update(u32 DT);
 	virtual void UpdateCL();
+	virtual void OnCriticalHitHealthLoss() override;
+	virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir) override;
 
 	// Network
 	virtual void net_Export(NET_Packet &P); // export to server

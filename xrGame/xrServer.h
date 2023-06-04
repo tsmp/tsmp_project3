@@ -114,6 +114,7 @@ private:
 protected:
 	void Server_Client_Check(IClient *CL);
 	void PerformCheckClientsForMaxPing();
+	void ReportClientStats(IClient* CL);
 
 public:
 	game_sv_GameState *game;

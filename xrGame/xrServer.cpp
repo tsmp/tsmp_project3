@@ -19,6 +19,8 @@
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <malloc.h>
+#include "../xrNetwork/PlayersBase.h"
+#include "game_sv_mp.h"
 #pragma warning(pop)
 
 ENGINE_API const char* RadminIdPrefix;
@@ -155,6 +157,25 @@ IClient *xrServer::client_Find_Get(ClientID const &ID)
 	return newCL;
 };
 
+void xrServer::ReportClientStats(IClient *CL)
+{
+	PlayerGameStats stats{ 0 };
+	const game_PlayerState* state = static_cast<xrClientData*>(CL)->ps;
+
+	stats.fragsCnt = state->m_iRivalKills;
+	stats.fragsNpc = state->m_iAiKills;
+	stats.headShots = state->m_iHeadshots;
+	stats.deathsCnt = state->m_iDeaths;
+	stats.artsCnt = state->af_count;
+	stats.maxFragsOneLife = state->m_iKillsInRowMax;
+	stats.timeInGame = (Level().timeServer() - state->m_online_time) / 60000; // minutes
+
+	if (auto gameMp = smart_cast<game_sv_mp*>(game))
+		gameMp->GetPlayerWpnStats(state, stats.weaponNames, stats.hitsCount);
+
+	ReportPlayerStats(CL, stats);
+}
+
 INT g_sv_Client_Reconnect_Time = 0;
 
 void xrServer::client_Destroy(IClient* C)
@@ -207,14 +228,18 @@ void xrServer::client_Destroy(IClient* C)
 	//	game->CleanDelayedEventFor(pOwner->ID);
 	//}
 
-	if (!g_sv_Client_Reconnect_Time)	
+	ReportClientStats(C);
+
+#pragma TODO("Придумать вариант получше")
+
+	//if (!g_sv_Client_Reconnect_Time)
 		xr_delete(aliveClient);	
-	else
-	{
-		aliveClient->dwTime_LastUpdate = Device.dwTimeGlobal;
-		net_players.AddNewDisconnectedClient(aliveClient);
-		static_cast<xrClientData*>(aliveClient)->Clear();
-	}
+	//else
+	//{
+	//	aliveClient->dwTime_LastUpdate = Device.dwTimeGlobal;
+	//	net_players.AddNewDisconnectedClient(aliveClient);
+	//	static_cast<xrClientData*>(aliveClient)->Clear();
+	//}
 }
 
 int g_Dump_Update_Write = 0;

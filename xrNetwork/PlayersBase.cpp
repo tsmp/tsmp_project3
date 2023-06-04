@@ -8,6 +8,7 @@
 #pragma comment(lib, "Wininet.lib")
 
 const int MaxResponseLength = 256;
+const int MaxRequestLength = 1024;
 const char *BaseUrl = "http://194.147.90.72:8080/";
 static std::string SessionId;
 
@@ -15,7 +16,7 @@ extern std::string UrlEncode(const std::string &str);
 
 bool SendRequest(const char* request, char* responseBuffer)
 {
-    char url[256];    
+    char url[MaxRequestLength];
     strcpy_s(url, BaseUrl);
     strcat_s(url, request);
 
@@ -117,6 +118,41 @@ u32 GenUid()
 	return std::stoul(response);
 }
 
+std::string SerializeStats(const PlayerGameStats& stats)
+{
+	std::string statsStr;
+	statsStr += "frags:" + std::to_string(stats.fragsCnt);
+	statsStr += "fragsNpc:" + std::to_string(stats.fragsNpc);
+	statsStr += "headshot:" + std::to_string(stats.headShots);
+	statsStr += "deaths:" + std::to_string(stats.deathsCnt);
+	statsStr += "arts:" + std::to_string(stats.artsCnt);
+	statsStr += "maxFrags:" + std::to_string(stats.maxFragsOneLife);
+	statsStr += "time:" + std::to_string(stats.timeInGame);
+	statsStr += "weaponCnt:" + std::to_string(stats.hitsCount.size());
+
+	for (u32 i = 0, cnt = stats.hitsCount.size(); i < cnt; i++)
+	{
+		statsStr += "wpn:" + std::string(stats.weaponNames[i].c_str());
+		statsStr += "hits:" + std::to_string(stats.hitsCount[i]);
+	}
+
+	Msg(statsStr.c_str());
+	return statsStr;
+}
+
+void ReportPlayerStatsThread(IClient* cl, const PlayerGameStats& stats)
+{
+	if (SessionId.empty())
+		return;
+
+	std::string request = "PlayersStats/v1/ReportPlayerStats?key=" + UrlEncode(SessionId) +
+		"&id=" + std::to_string(cl->UID) +
+		"&stats=" + UrlEncode(SerializeStats(stats));
+
+	char response[MaxResponseLength];
+	SendRequest(request.c_str(), response);
+}
+
 #pragma TODO("TSMP: remake without creating new thread always")
 
 void CheckPlayerBannedInBase(IClient* cl, IPureServer* serv)
@@ -138,5 +174,11 @@ void GenPlayerUID(IClient* cl, IPureServer* serv)
 		srv->OnPlayersBaseGenUID(client, GenUid());
 	}, cl, serv);
 
+	thread.detach();
+}
+
+void ReportPlayerStats(IClient* cl, const PlayerGameStats &stats)
+{
+	std::thread thread(ReportPlayerStatsThread, cl, stats);
 	thread.detach();
 }

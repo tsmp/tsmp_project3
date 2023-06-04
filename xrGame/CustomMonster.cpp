@@ -82,6 +82,7 @@ CCustomMonster::CCustomMonster()
 	m_sound_player = 0;
 	m_already_dead = false;
 	m_invulnerable = false;
+	m_iLastHitterID = u16(-1);
 }
 
 CCustomMonster::~CCustomMonster()
@@ -760,7 +761,29 @@ void CCustomMonster::Exec_Action(float /**dt/**/)
 {
 }
 
-//void CCustomMonster::Hit(float P, Fvector &dir,CObject* who, s16 element,Fvector position_in_object_space, float impulse, ALife::EHitType hit_type)
+void CCustomMonster::SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir)
+{
+	m_iLastHitterID = (who != NULL) ? who->ID() : u16(-1);
+}
+
+void CCustomMonster::OnCriticalHitHealthLoss()
+{
+	if (GameID() == GAME_SINGLE || !OnServer())
+		return;
+
+	if (CObject* pLastHitter = Level().Objects.net_Find(m_iLastHitterID))
+	{
+		if (pLastHitter->CLS_ID != CLSID_OBJECT_ACTOR)
+			return;
+
+		NET_Packet P;
+		u_EventGen(P, GE_GAME_EVENT, ID());
+		P.w_u16(GAME_EVENT_PLAYER_KILLED_NPC);
+		P.w_u16(m_iLastHitterID);
+		u_EventSend(P);
+	}
+}
+
 void CCustomMonster::Hit(SHit *pHDS)
 {
 	if (!invulnerable())

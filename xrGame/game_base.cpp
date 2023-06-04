@@ -26,6 +26,8 @@ game_PlayerState::game_PlayerState()
 	RespawnTime = 0;
 	m_bPayForSpawn = false;
 	CarID = u16(-1);
+	m_iAiKills = 0;
+	m_iHeadshots = 0;
 
 	clear();
 }
@@ -52,6 +54,8 @@ void game_PlayerState::clear()
 	mOldIDs.clear();
 	money_added = 0;
 	CarID = u16(-1);
+	m_iAiKills = 0;
+	m_iHeadshots = 0;
 	m_aBonusMoney.clear();
 }
 

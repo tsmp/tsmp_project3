@@ -626,6 +626,8 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 
 	switch (msg)
 	{
+	case GAME_EVENT_PLAYER_KILLED_NPC:
+		break;
 
 	case GAME_EVENT_PLAYER_KILLED: //dm
 	{

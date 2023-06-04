@@ -19,6 +19,7 @@
 
 #include "game_sv_mp_vote_flags.h"
 #include "PresetItem.h"
+#include "string_table.h"
 
 u32 g_dwMaxCorpses = 10;
 
@@ -214,6 +215,10 @@ void game_sv_mp::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &send
 {
 	switch (type)
 	{
+	case GAME_EVENT_PLAYER_KILLED_NPC:
+		OnPlayerKilledNpc(P);
+		break;
+
 	case GAME_EVENT_PLAYER_KILLED: //playerKillPlayer	
 		OnPlayerKilled(P);
 		break;
@@ -991,6 +996,15 @@ void game_sv_mp::ClearPlayerState(game_PlayerState *ps)
 	ClearPlayerItems(ps);
 }
 
+void game_sv_mp::OnPlayerKilledNpc(NET_Packet& P)
+{
+	Msg("- ON NPC KILLED!");
+	u16 killerID = P.r_u16();
+
+	if (game_PlayerState* psKiller = get_eid(killerID))
+		psKiller->m_iAiKills++;
+}
+
 void game_sv_mp::OnPlayerKilled(NET_Packet &P)
 {
 	u16 KilledID = P.r_u16();
@@ -1012,10 +1026,29 @@ void game_sv_mp::OnPlayerKilled(NET_Packet &P)
 		return;
 	}
 
+	if (ps_killer && SpecialKill == SKT_HEADSHOT)
+		ps_killer->m_iHeadshots++;
+
 	CSE_Abstract *pWeaponA = get_entity_from_eid(WeaponID);
 
 	OnPlayerKillPlayer(ps_killer, ps_killed, KillType, SpecialKill, pWeaponA);
 	SendPlayerKilledMessage((ps_killed) ? ps_killed->GameID : KilledID, KillType, (ps_killer) ? ps_killer->GameID : KillerID, WeaponID, SpecialKill);
+}
+
+void game_sv_mp::OnPlayerHitCreature(game_PlayerState* psHitter, CSE_Abstract* pWeapon)
+{
+	u32 wpnIdx = m_strWeaponsData->GetItemIdx(pWeapon->s_name);
+	psHitter->AddHit(wpnIdx);
+}
+
+void game_sv_mp::GetPlayerWpnStats(const game_PlayerState* player, xr_vector<shared_str>& wpnName, xr_vector<u32>& hits)
+{
+	for (u32 i = 0, cnt = player->m_WpnHits.size(); i < cnt; i++)
+	{
+		shared_str wpnSection = m_strWeaponsData->GetItemName(player->m_WpnIdx[i]);
+		wpnName.emplace_back(CStringTable().translate(pSettings->r_string(wpnSection, "inv_name_short")));
+		hits.push_back(player->m_WpnHits[i]);
+	}
 }
 
 void game_sv_mp::OnPlayerHitted(NET_Packet &P)
@@ -1483,7 +1516,7 @@ static bool g_bConsoleCommandsCreated_MP = false;
 void game_sv_mp::ConsoleCommands_Create(){};
 
 void game_sv_mp::ConsoleCommands_Clear(){};
-#include "string_table.h"
+
 void game_sv_mp::DumpOnlineStatistic()
 {
 	xrGameSpyServer *srv = smart_cast<xrGameSpyServer *>(m_server);
