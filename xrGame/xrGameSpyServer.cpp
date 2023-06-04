@@ -4,6 +4,7 @@
 #include "igame_persistent.h"
 #include "GameSpy/GameSpy_Base_Defs.h"
 #include "GameSpy/GameSpy_Available.h"
+#include "string_table.h"
 
 //#define DEMO_BUILD
 
@@ -354,4 +355,12 @@ void xrGameSpyServer::GetServerInfo(CServerInfo *si)
 
 	si->AddItem("GameSpy port", itoa(iGameSpyBasePort, tmp, 10), RGB(200, 5, 155));
 	inherited::GetServerInfo(si);
+}
+
+const char* xrGameSpyServer::GetMapName()
+{
+	if (m_bHasRusMapName)
+		return MapNameRus.c_str();
+
+	return CStringTable().translate(MapName).c_str();
 }

@@ -62,9 +62,13 @@ void InitSession(IPureServer* serv)
         return;
 
     std::string srvName = serv->GetServerName();
+    std::string mapName = serv->GetMapName();
     std::string srvVer = TSMP_VERSION;
     std::string key = std::to_string(CalculateKey(srvName, srvVer));
-    std::string request = "PlayersBase/v1/StartSession?srv=" + UrlEncode(srvName) + "&key=" + UrlEncode(key) + "&ver=" + UrlEncode(srvVer);
+	std::string request = "PlayersBase/v1/StartSession2?srv=" + UrlEncode(srvName) +
+		"&key=" + UrlEncode(key) +
+		"&ver=" + UrlEncode(srvVer) +
+		"&map=" + UrlEncode(mapName);
 
     char response[MaxResponseLength];
 
@@ -136,7 +140,10 @@ std::string SerializeStats(const PlayerGameStats& stats)
 		statsStr += "hits:" + std::to_string(stats.hitsCount[i]);
 	}
 
+#ifndef PUBLIC_BUILD
+	Msg("- Serialized stats:");
 	Msg(statsStr.c_str());
+#endif
 	return statsStr;
 }
 

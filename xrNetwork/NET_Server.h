@@ -188,6 +188,7 @@ public:
 	virtual void OnPlayersBaseVerifyRespond(IClient* CL, bool banned) {}
 	virtual void OnPlayersBaseGenUID(IClient* CL, u32 uid) = 0;
 	virtual const char* GetServerName() { return ""; }
+	virtual const char* GetMapName() { return ""; }
 
 	void SendTo(ClientID const &ID, NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
 	void SendBroadcast_LL(ClientID const &exclude, void *data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED);
