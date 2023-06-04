@@ -228,7 +228,8 @@ void xrServer::client_Destroy(IClient* C)
 	//	game->CleanDelayedEventFor(pOwner->ID);
 	//}
 
-	ReportClientStats(C);
+	if(C != GetServerClient())
+		ReportClientStats(C);
 
 #pragma TODO("Придумать вариант получше")
 
