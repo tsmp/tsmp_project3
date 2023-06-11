@@ -1038,6 +1038,13 @@ void game_sv_mp::OnPlayerKilled(NET_Packet &P)
 void game_sv_mp::OnPlayerHitCreature(game_PlayerState* psHitter, CSE_Abstract* pWeapon)
 {
 	u32 wpnIdx = m_strWeaponsData->GetItemIdx(pWeapon->s_name);
+
+	if (wpnIdx == static_cast<u32>(-1))
+	{
+		Msg("! can not get idx for weapon [%s]", pWeapon->s_name.c_str());
+		return;
+	}
+
 	psHitter->AddHit(wpnIdx);
 }
 
