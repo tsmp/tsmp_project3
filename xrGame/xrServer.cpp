@@ -228,10 +228,7 @@ void xrServer::client_Destroy(IClient* C)
 	//	game->CleanDelayedEventFor(pOwner->ID);
 	//}
 
-	if(C != GetServerClient())
-		ReportClientStats(C);
-
-#pragma TODO("Придумать вариант получше")
+#pragma TODO("Придумать вариант получше (этот убран из-за статистики")
 
 	//if (!g_sv_Client_Reconnect_Time)
 		xr_delete(aliveClient);	

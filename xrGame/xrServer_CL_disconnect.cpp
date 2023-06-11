@@ -45,5 +45,8 @@ void xrServer::OnCL_Disconnected(IClient *CL)
 		}
 	}
 
+	if (CL != GetServerClient())
+		ReportClientStats(CL);
+
 	Server_Client_Check(CL);
 }
