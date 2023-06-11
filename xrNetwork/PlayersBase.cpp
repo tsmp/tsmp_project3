@@ -93,9 +93,10 @@ bool IsBanned(IClient* CL)
     std::string ip = CL->m_cAddress.to_string().c_str();
     std::string name = CL->name.c_str();
 
-    std::string request = "PlayersBase/v1/IsBanned?ip=" + UrlEncode(ip) +
-        "&name=" + UrlEncode(name) +
-        "&key=" + UrlEncode(SessionId);
+	std::string request = "PlayersBase/v1/IsBanned2?ip=" + UrlEncode(ip) +
+		"&name=" + UrlEncode(name) +
+		"&key=" + UrlEncode(SessionId) +
+		"&uid=" + UrlEncode(std::to_string(CL->UID));
 
     char response[MaxResponseLength];
 

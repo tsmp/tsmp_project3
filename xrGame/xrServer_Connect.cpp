@@ -142,7 +142,6 @@ void xrServer::AttachNewClient(IClient *CL)
 	{
 		CheckClientGameSpyCDKey(CL);
 		CheckClientBuildVersion(CL);
-		CheckPlayerBannedInBase(CL, this);
 		CheckClientUID(CL);
 	}
 	else

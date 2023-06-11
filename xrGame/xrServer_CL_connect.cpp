@@ -152,6 +152,7 @@ void xrServer::OnPlayersBaseGenUID(IClient* CL, u32 uid)
 		Msg("! ERROR: unable to receive unique id for player!");
 
 	CL->UID = uid;
+	CheckPlayerBannedInBase(CL, this);
 	OnConnectionVerificationStepComplete(CL);
 }
 
@@ -181,6 +182,7 @@ void xrServer::OnRespondUID(IClient* CL, NET_Packet& P)
 	if (Uid)
 	{
 		CL->UID = Uid;
+		CheckPlayerBannedInBase(CL, this);
 		OnConnectionVerificationStepComplete(CL);
 		return;
 	}
