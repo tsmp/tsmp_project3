@@ -7,8 +7,8 @@
 
 #pragma comment(lib, "Wininet.lib")
 
-const int MaxResponseLength = 256;
-const int MaxRequestLength = 1024;
+const int MaxResponseLength = 1024;
+const int MaxRequestLength = 4096;
 const char *BaseUrl = "http://194.147.90.72:8080/";
 static std::string SessionId;
 
@@ -17,6 +17,7 @@ extern std::string UrlEncode(const std::string &str);
 bool SendRequest(const char* request, char* responseBuffer)
 {
     char url[MaxRequestLength];
+	R_ASSERT((strlen(BaseUrl) + strlen(request)) < MaxRequestLength);
     strcpy_s(url, BaseUrl);
     strcat_s(url, request);
 
