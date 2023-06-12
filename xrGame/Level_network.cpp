@@ -142,13 +142,6 @@ void CLevel::ClientSend()
 	{
 		CObject *pObj = CurrentControlEntity();
 
-		// Когда в машине, нужно слать апдейт не для актора, а для машины. Актор приклеен к машине.
-		if (auto* act = smart_cast<CActor*>(pObj))
-		{
-			if (CObject* holder = dynamic_cast<CObject*>(act->Holder()))
-				pObj = holder;
-		}
-
 		if (!pObj->getDestroy() && pObj->net_Relevant())
 		{
 			P.w_begin(M_CL_UPDATE);

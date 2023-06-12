@@ -86,8 +86,6 @@ CCar::CCar()
 	m_car_weapon = nullptr;
 	m_power_neutral_factor = 0.25f;
 	m_steer_angle = 0.f;
-	m_InterpolationStartTime = 0;
-	m_FirstInterpolation = true;
 
 #ifdef DEBUG
 	InitDebug();
@@ -444,10 +442,7 @@ void CCar::UpdateCL()
 
 void CCar::VisualUpdate(float fov)
 {
-	if (IsMyCar() || IsGameTypeSingle())
-		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
-	else
-		Interpolate();
+	m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
 
 	Fvector lin_vel;
 	m_pPhysicsShell->get_LinearVel(lin_vel);
@@ -484,99 +479,6 @@ void CCar::VisualUpdate(float fov)
 	m_lights.Update();
 }
 
-void CCar::InterpolateStates(const float &factor)
-{
-	const auto &vec1 = m_Update1->StateVec;
-	const auto &vec2 = m_Update2->StateVec;
-
-	u32 elementsCnt = vec1.size();
-
-	for (u32 i = 0; i < elementsCnt; i++)
-	{
-		SPHNetState newState = vec2[i];
-
-		const Fvector &pos1 = vec1[i].position;
-		const Fvector &pos2 = vec2[i].position;
-
-		// simple linear interpolation...
-		newState.position.x = pos1.x + (factor * (pos2.x - pos1.x));
-		newState.position.y = pos1.y + (factor * (pos2.y - pos1.y));
-		newState.position.z = pos1.z + (factor * (pos2.z - pos1.z));
-		newState.quaternion.slerp(vec1[i].quaternion, vec2[i].quaternion, factor);
-
-		CPHSynchronize* pSyncObj = this->PHGetSyncItem(i);
-		SPHNetState oldState;
-		pSyncObj->get_State(oldState);
-
-		newState.previous_position = oldState.position;
-		newState.previous_quaternion = oldState.quaternion;
-		pSyncObj->set_State(newState);
-	}
-}
-
-void CCar::NextUpdate()
-{
-	if (m_CarNetUpdates.size() < 2)
-		return;	
-
-	if (m_FirstInterpolation)
-	{
-		m_Update2 = &m_CarNetUpdates[0];
-		m_FirstInterpolation = false;
-	}
-
-	m_Update1 = m_Update2;
-	int deletedCount = 0;
-
-	while (m_CarNetUpdates[0].TimeStamp < m_Update1->TimeStamp)
-	{
-		deletedCount++;
-		m_CarNetUpdates.pop_front();
-	}
-
-	// Если пропускаем много апдейтов, то выставим больше 1, чтобы интерполяция быстрее подхватывала апдейты. Если мало, то меньше 1.
-	m_LerpMul = 1.f;
-
-	if (deletedCount > 3)
-		m_LerpMul = 1.2;
-	
-	if (deletedCount == 1)
-		m_LerpMul = 0.8;
-
-	m_InterpolationStartTime = Device.dwTimeGlobal;
-	m_Update2 = &m_CarNetUpdates.back();
-}
-
-void CCar::Interpolate()
-{
-	if (!getVisible() || !m_pPhysicsShell || m_CarNetUpdates.empty())
-		return;	
-
-	if (m_FirstInterpolation)
-	{
-		NextUpdate();
-		return;
-	}
-
-	float factor = float(Device.dwTimeGlobal - m_InterpolationStartTime) / float(m_Update2->TimeStamp - m_Update1->TimeStamp);
-	factor *= m_LerpMul;
-	bool nextUpd = factor >= 1.f;
-
-	clamp(factor, 0.f, 1.f);
-	InterpolateStates(factor);
-
-	if (Device.dwTimeGlobal - m_InterpolationStartTime > 20000) // На всякий случай. Не должно интерполировать на одних и тех же данных больше 20 сек.
-	{
-		Msg("! Car lerp: force next update!");
-		nextUpd = true;
-	}
-
-	if (nextUpd)
-		NextUpdate();
-
-	m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
-}
-
 void CCar::renderable_Render()
 {
 	inherited::renderable_Render();
@@ -592,123 +494,14 @@ bool CCar::IsMyCar()
 	return Actor()->Holder() == this;
 }
 
-BOOL CCar::net_Relevant()
-{
-	return IsMyCar() || OnServer();
-}
-
 void CCar::net_Export(NET_Packet &P)
 {
-	P.w_u8(u8(b_engine_on));
-	P.w_u8(u8(m_lights.IsLightTurnedOn()));
-	P.w_float(Health());
-
-	if (OwnerActor())
-		P.w_u16(OwnerActor()->ID());
-	else
-		P.w_u16(u16(-1));
-		
-	if (OnClient() || m_CarNetUpdates.empty())
-	{
-		P.w_u16(PHGetSyncItemsNumber());
-
-		for (int i = 0; i < PHGetSyncItemsNumber(); i++)
-		{
-			auto item = PHGetSyncItem(i);
-
-			SPHNetState State;
-			item->get_State(State);
-
-			P.w_vec3(State.position);
-			P.w_float_q8(State.quaternion.x, -1.0, 1.0);
-			P.w_float_q8(State.quaternion.y, -1.0, 1.0);
-			P.w_float_q8(State.quaternion.z, -1.0, 1.0);
-			P.w_float_q8(State.quaternion.w, -1.0, 1.0);
-		}
-	}
-	else
-	{
-		auto& vec = m_CarNetUpdates.back().StateVec;
-		P.w_u16(vec.size());
-
-		for (int i = 0; i < vec.size(); i++)
-		{
-			SPHNetState State = vec[i];
-
-			P.w_vec3(State.position);
-			P.w_float_q8(State.quaternion.x, -1.0, 1.0);
-			P.w_float_q8(State.quaternion.y, -1.0, 1.0);
-			P.w_float_q8(State.quaternion.z, -1.0, 1.0);
-			P.w_float_q8(State.quaternion.w, -1.0, 1.0);
-		}
-	}
-
-	inherited::net_Export(P);
+	
 }
 
 void CCar::net_Import(NET_Packet &P)
 {
-	u8 engine;
-	P.r_u8(engine);
-
-	u8 light;
-	P.r_u8(light);
-
-	float health;
-	P.r_float(health);
-	SetfHealth(health);
 	
-	u16 owner;
-	P.r_u16(owner);
-
-	if (owner != u16(-1))
-	{
-		if (!OwnerActor())
-		{
-			if (auto* act = smart_cast<CActor*>(Level().Objects.net_Find(owner)))
-				act->attach_Vehicle(this);
-		}
-	}
-	else
-	{
-		if(OwnerActor())
-			detach_Actor();
-	}
-
-	if (!IsMyCar())
-	{
-		bool e = !!engine;
-
-		if (e != b_engine_on)
-			SwitchEngine();
-
-		bool l = !!light;
-
-		if (l != m_lights.IsLightTurnedOn())
-			m_lights.SwitchHeadLights();
-	}
-
-	u16 cnt;
-	P.r_u16(cnt);
-
-	SCarNetUpdate update;
-	update.TimeStamp = Device.dwTimeGlobal;
-
-	for (int i = 0; i < cnt; i++)
-	{
-		SPHNetState state {0};
-
-		P.r_vec3(state.position);
-		P.r_float_q8(state.quaternion.x, -1.0, 1.0);
-		P.r_float_q8(state.quaternion.y, -1.0, 1.0);
-		P.r_float_q8(state.quaternion.z, -1.0, 1.0);
-		P.r_float_q8(state.quaternion.w, -1.0, 1.0);
-
-		update.StateVec.push_back(state);
-	}
-
-	if (!IsMyCar())	
-		m_CarNetUpdates.push_back(update);
 }
 
 void CCar::OnHUDDraw(CCustomHUD * /**hud/**/)
@@ -724,44 +517,36 @@ void CCar::OnHUDDraw(CCustomHUD * /**hud/**/)
 #endif
 }
 
-//void CCar::Hit(float P,Fvector &dir,CObject * who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
 void CCar::Hit(SHit *pHDS)
 {
-
 	SHit HDS = *pHDS;
-	//if(CDelayedActionFuse::isActive()||Initiator()==u16(-1)&&HDS.hit_type==ALife::eHitTypeStrike)
-	//{
-	//	HDS.power=0.f;
-	//}
-
-	//if(HDS.who->ID()!=ID())
-	//{
-	//	CExplosive::SetInitiator(HDS.who->ID());
-	//}
 	WheelHit(HDS.damage(), HDS.bone(), HDS.hit_type);
 	DoorHit(HDS.damage(), HDS.bone(), HDS.hit_type);
 	float hitScale = 1.f, woundScale = 1.f;
+
 	if (HDS.hit_type != ALife::eHitTypeStrike)
 		CDamageManager::HitScale(HDS.bone(), hitScale, woundScale);
-	HDS.power *= m_HitTypeK[HDS.hit_type] * hitScale;
 
+	HDS.power *= m_HitTypeK[HDS.hit_type] * hitScale;
 	inherited::Hit(&HDS);
-	if (!CDelayedActionFuse::isActive())
-	{
+
+	if (!CDelayedActionFuse::isActive())	
 		CDelayedActionFuse::CheckCondition(GetfHealth());
-	}
+
 	CDamagableItem::HitEffect();
+
 	if (Owner() && Owner()->ID() == Level().CurrentEntity()->ID())
 		HUD().GetUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth() /* /100.f */);
 }
 
 void CCar::ChangeCondition(float fDeltaCondition)
 {
-
 	CEntity::CalcCondition(-fDeltaCondition);
 	CDamagableItem::HitEffect();
+
 	if (Local() && !g_Alive() && !AlreadyDie())
 		KillEntity(Initiator());
+
 	if (Owner() && Owner()->ID() == Level().CurrentEntity()->ID())
 		HUD().GetUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth() /* /100.f */);
 }

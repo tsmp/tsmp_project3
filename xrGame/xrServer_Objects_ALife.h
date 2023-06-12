@@ -520,12 +520,6 @@ virtual void load(NET_Packet &tNetPacket);
 virtual bool can_save() const;
 virtual CSE_Abstract *cast_abstract() { return this; }
 
-u8 engine;
-u8 light;
-u16 owner;
-float m_health;
-std::vector<SPHNetState> StateVec;
-
 protected:
 virtual void data_load(NET_Packet &tNetPacket);
 virtual void data_save(NET_Packet &tNetPacket);

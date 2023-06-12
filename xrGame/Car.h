@@ -36,12 +36,6 @@ struct dSurfaceParameters;
 class CScriptEntityAction;
 class car_memory;
 
-struct SCarNetUpdate
-{
-	u32	TimeStamp;
-	std::vector<SPHNetState> StateVec;
-};
-
 class CCar : public CEntity,
 			 public CScriptEntity,
 			 public CPHUpdateObject,
@@ -56,13 +50,6 @@ class CCar : public CEntity,
 {
 private:
 	collide::rq_results RQR;
-	xr_deque<SCarNetUpdate> m_CarNetUpdates;
-	u32 m_InterpolationStartTime;
-	bool m_FirstInterpolation;
-
-	SCarNetUpdate *m_Update1;
-	SCarNetUpdate *m_Update2;
-	float m_LerpMul;
 
 #ifdef DEBUG
 	CFunctionGraph m_dbg_power_rpm;
@@ -92,9 +79,6 @@ private:
 	void ASCUpdate(EAsyncCalls c);
 	void AscCall(EAsyncCalls c);
 
-	void NextUpdate();
-	void Interpolate();
-	void InterpolateStates(const float &factor);
 	virtual bool CanRemoveObject();
 
 	static BONE_P_MAP bone_map; //interface for PhysicsShell
@@ -565,7 +549,7 @@ public:
 	// Network
 	virtual void net_Export(NET_Packet &P);				// export to server
 	virtual void net_Import(NET_Packet &P);				// import from server
-	virtual BOOL net_Relevant(); // relevant for export to server
+	virtual BOOL net_Relevant() { return getLocal(); }; // relevant for export to server
 	virtual BOOL UsedAI_Locations();
 	virtual void net_Relcase(CObject *O);
 	// Input
