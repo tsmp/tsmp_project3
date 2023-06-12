@@ -593,16 +593,14 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 		CL->net_PassUpdates = TRUE;
 	}
 	break;
-	case M_CL_INPUT:
+
+	case M_CL_CAR_INPUT:
 	{
-		xrClientData *CL = ID_to_client(sender);
-		if (CL)
-			CL->net_Ready = TRUE;
 		if (SV_Client)
 			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
-		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+
 	case M_GAMEMESSAGE:
 	{
 		SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));

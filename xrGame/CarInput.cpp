@@ -137,8 +137,29 @@ void CCar::vfProcessInputKey(int iCommand, bool bPressed)
 
 void CCar::OnKeyboardPress(int cmd)
 {
-	if (!IsMyCar() && !GetScriptControl())
-		return;
+	if (Remote())
+	{
+		switch (cmd)
+		{
+		case kCAM_1:
+		case kCAM_2:
+		case kCAM_3:
+		case kCarBeep:
+		case kUSE:
+			break;
+
+		case kR_STRAFE:
+		case kL_STRAFE:
+			if (OwnerActor())
+				OwnerActor()->steer_Vehicle(cmd == kR_STRAFE ? 1 : -1);
+			[[fallthrough]];
+
+		default:
+			net_SendCommand(cmd, true);
+			return;
+			break;
+		}
+	}
 
 	switch (cmd)
 	{
@@ -196,8 +217,23 @@ void CCar::OnKeyboardPress(int cmd)
 
 void CCar::OnKeyboardRelease(int cmd)
 {
-	if (!IsMyCar() && !GetScriptControl())
-		return;
+	if (Remote())
+	{
+		switch (cmd)
+		{
+		case kCAM_1:
+		case kCAM_2:
+		case kCAM_3:
+		case kCarBeep:
+		case kUSE:
+			break;
+
+		default:
+			net_SendCommand(cmd, false);
+			return;
+			break;
+		}
+	}
 
 	switch (cmd)
 	{

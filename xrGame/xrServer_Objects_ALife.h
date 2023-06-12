@@ -519,6 +519,17 @@ virtual bool used_ai_locations() const;
 virtual void load(NET_Packet &tNetPacket);
 virtual bool can_save() const;
 virtual CSE_Abstract *cast_abstract() { return this; }
+virtual BOOL Net_Relevant();
+
+u32 m_CarUpdTimestamp;
+xr_vector<SPHNetState> m_CarStateVec;
+
+u32	m_freeze_time;
+static const u32 m_freeze_delta_time;
+static const u32 random_limit;
+CRandom	m_relevent_random;
+bool freezed;
+bool prev_freezed;
 
 protected:
 virtual void data_load(NET_Packet &tNetPacket);

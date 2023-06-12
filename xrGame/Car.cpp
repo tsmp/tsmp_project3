@@ -41,6 +41,7 @@ CCar::CCar()
 	m_driver_anim_type = 0;
 	m_bone_steer = BI_NONE;
 	active_camera = 0;
+	m_ActivatedShell = true;
 	camera[ectFirst] = xr_new<CCameraFirstEye>(this, CCameraBase::flRelativeLink | CCameraBase::flPositionRigid);
 	camera[ectFirst]->tag = ectFirst;
 	camera[ectFirst]->Load("car_firsteye_cam");
@@ -154,6 +155,7 @@ BOOL CCar::net_Spawn(CSE_Abstract *DC)
 	InitDebug();
 #endif
 
+	m_activated = false;
 	CSE_Abstract *e = (CSE_Abstract *)(DC);
 	CSE_ALifeCar *co = smart_cast<CSE_ALifeCar *>(e);
 	BOOL R = inherited::net_Spawn(DC);
@@ -442,6 +444,9 @@ void CCar::UpdateCL()
 
 void CCar::VisualUpdate(float fov)
 {
+	if (!IsGameTypeSingle())
+		Interpolate();
+
 	m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
 
 	Fvector lin_vel;
@@ -494,14 +499,212 @@ bool CCar::IsMyCar()
 	return Actor()->Holder() == this;
 }
 
+void CCar::net_ImportInput(NET_Packet& P)
+{
+	u32 command = P.r_u32();
+
+	if (P.r_u8())
+		OnKeyboardPress(command);
+	else
+		OnKeyboardRelease(command);
+}
+
+void CCar::net_SendCommand(u32 command, bool state)
+{
+	NET_Packet P;
+	P.w_begin(M_CL_CAR_INPUT);
+	P.w_u16(ID());
+	P.w_u32(command);
+	P.w_u8(state ? 1 : 0);
+	Level().Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
+}
+
+void CCar::Interpolate()
+{
+	if (OnServer() || !getVisible() || !m_pPhysicsShell || m_CarNetUpdates.size() < 2)
+		return;
+
+	const u32 firstUpdTimestamp = m_CarNetUpdates.front().TimeStamp;
+	const u32 secondUpdTimestamp = m_CarNetUpdates[m_InterpolationSecondUpdate].TimeStamp;
+
+	float factor = float(Device.dwTimeGlobal - m_InterpolationStartTime) / float(secondUpdTimestamp - firstUpdTimestamp);
+	const bool needNextUpdate = factor > 1;
+	clamp(factor, 0.f, 1.f);
+
+	SPHNetState dbgState1, dbgState2;
+	PHGetSyncItem(0)->get_State(dbgState1);
+
+	InterpolateStates(factor);
+
+	PHGetSyncItem(0)->get_State(dbgState2);
+	Msg("- before lerp: %f %f %f, after: %f %f %f", VPUSH(dbgState1.position), VPUSH(dbgState2.position));
+
+	if (needNextUpdate)
+	{
+		for (u32 i = m_InterpolationSecondUpdate; i != 0; i--)
+			m_CarNetUpdates.pop_front();
+
+		if (m_CarNetUpdates.size() < 2)
+		{
+			if (m_activated)
+			{
+				//Msg("- Deactivating object [%d][%s] after interpolation finish", ID(), Name());
+				processing_deactivate();
+				m_activated = false;
+			}
+
+			return;
+		}
+
+		m_InterpolationSecondUpdate = m_CarNetUpdates.size() - 1;
+	}
+
+	//PPhysicsShell()->DisableCollision();
+	//spatial_move();
+	//PPhysicsShell()->SetIgnoreStatic();
+	//PPhysicsShell()->SetIgnoreDynamic();
+}
+
+
+void CCar::InterpolateStates(const float& factor)
+{
+	const auto& vec1 = m_CarNetUpdates.front().PartsState;
+	const auto& vec2 = m_CarNetUpdates[m_InterpolationSecondUpdate].PartsState;
+	u16 elementsCnt = vec1.size();
+
+	if (vec1.size() != vec2.size())
+	{
+		Msg("! ERROR: different car parts count");
+		return;
+	}
+
+	for (u16 i = 0; i < elementsCnt; i++)
+	{
+		SPHNetState newState = vec2[i];
+
+		const Fvector& pos1 = vec1[i].position;
+		const Fvector& pos2 = vec2[i].position;
+
+		// simple linear interpolation...
+		newState.position.x = pos1.x + (factor * (pos2.x - pos1.x));
+		newState.position.y = pos1.y + (factor * (pos2.y - pos1.y));
+		newState.position.z = pos1.z + (factor * (pos2.z - pos1.z));
+		newState.quaternion.slerp(vec1[i].quaternion, vec2[i].quaternion, factor);
+
+		CPHSynchronize* pSyncObj = this->PHGetSyncItem(i);
+		SPHNetState oldState;
+		pSyncObj->get_State(oldState);
+
+		newState.angular_vel.set(0, 0, 0);
+		newState.linear_vel.set(0, 0, 0);
+		newState.force.set(0, 0, 0);
+		newState.previous_position = oldState.position;
+		newState.previous_quaternion = oldState.quaternion;
+		pSyncObj->set_State(newState);
+	}
+}
+
+void CCar::PH_A_CrPr()
+{
+	VERIFY(Visual());
+	IKinematics* K = Visual()->dcast_PKinematics();
+	VERIFY(K);
+
+	if (!K)
+		return;
+
+	if (!PPhysicsShell())
+		return;
+
+	if (!PPhysicsShell()->isFullActive())
+	{
+		K->CalculateBones_Invalidate();
+		K->CalculateBones(TRUE);
+	}
+
+	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
+	K->CalculateBones_Invalidate();
+	K->CalculateBones(TRUE);
+
+	spatial_move();
+	VERIFY(!OnServer());
+
+	PPhysicsShell()->get_ElementByStoreOrder(0)->Fix();
+	PPhysicsShell()->SetIgnoreStatic();
+
+	if (this->m_pPhysicsShell)
+		this->m_pPhysicsShell->NetInterpolationModeON();
+}
+
 void CCar::net_Export(NET_Packet &P)
 {
+	R_ASSERT(OnServer());
+
+	if (PPhysicsShell()->isEnabled())
+		P.w_u8(1);	//not freezed	
+	else
+		P.w_u8(0);  //freezed	
+
+	P.w_u32(Level().timeServer());
+	const u16 phItemsCnt = PHGetSyncItemsNumber();
+	P.w_u16(phItemsCnt);
 	
+	for (u16 i = 0; i < phItemsCnt; i++)
+	{
+		SPHNetState phState;
+		PHGetSyncItem(i)->get_State(phState);
+
+		P.w_vec3(phState.position);	
+		P.w_quaternion_quantized(phState.quaternion);
+	}
 }
 
 void CCar::net_Import(NET_Packet &P)
 {
+	SCarNetUpdate update;
+	P.r_u8();	// freezed or not..
+	update.TimeStamp = P.r_u32();
 	
+	const u16 phItemsCnt = P.r_u16();
+	update.PartsState.reserve(phItemsCnt);
+
+	for (u16 i = 0; i < phItemsCnt; i++)
+	{
+		SPHNetState phState;
+		PHGetSyncItem(i)->get_State(phState);
+
+		P.r_vec3(phState.position);
+		P.r_quaternion_quantized(phState.quaternion);
+		update.PartsState.push_back(phState);
+	}
+
+	if (Local() || !phItemsCnt || (!m_CarNetUpdates.empty() && m_CarNetUpdates.back().TimeStamp > update.TimeStamp))
+		return;
+
+	if (m_pPhysicsShell && IsMyCar() == m_pPhysicsShell->isEnabled())
+	{
+		if (PPhysicsShell()->isActive())
+		{
+			PPhysicsShell()->Disable();
+			Msg("- shell deactivated");
+		}
+		else
+		{
+			
+			PPhysicsShell()->Enable();
+			Msg("- shell activated");
+		}
+	}
+	
+	Level().AddObject_To_Objects4CrPr(this);
+	m_CarNetUpdates.emplace_back(std::move(update));
+
+	if (!m_activated)
+	{
+		//Msg("- Activating object [%d][%s] before interpolation starts", ID(), Name());
+		processing_activate();
+		m_activated = true;
+	}
 }
 
 void CCar::OnHUDDraw(CCustomHUD * /**hud/**/)
@@ -2007,7 +2210,7 @@ void CCar::Teleport(Fvector outPos)
 	CPhysicsShell* P = PPhysicsShell();
 	if (!P || !P->isActive())
 	{
-		Msg("! cant get physics shell to teleport car!no shell");
+		Msg("! cant get physics shell to teleport car!");
 		return;
 	}
 

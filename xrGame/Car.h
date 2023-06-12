@@ -36,6 +36,12 @@ struct dSurfaceParameters;
 class CScriptEntityAction;
 class car_memory;
 
+struct SCarNetUpdate
+{
+	u32	TimeStamp;
+	std::vector<SPHNetState> PartsState;
+};
+
 class CCar : public CEntity,
 			 public CScriptEntity,
 			 public CPHUpdateObject,
@@ -50,6 +56,9 @@ class CCar : public CEntity,
 {
 private:
 	collide::rq_results RQR;
+	xr_deque<SCarNetUpdate> m_CarNetUpdates;
+	u32 m_InterpolationStartTime = 0;
+	u32 m_InterpolationSecondUpdate = 1;
 
 #ifdef DEBUG
 	CFunctionGraph m_dbg_power_rpm;
@@ -63,6 +72,9 @@ private:
 	void DbgCreatePlots();
 	void DBgClearPlots();
 #endif
+
+	void Interpolate();
+	void CCar::InterpolateStates(const float& factor);
 
 	Flags16 async_calls;
 	static const u16 cAsCallsnum = 3;
@@ -552,6 +564,13 @@ public:
 	virtual BOOL net_Relevant() { return getLocal(); }; // relevant for export to server
 	virtual BOOL UsedAI_Locations();
 	virtual void net_Relcase(CObject *O);
+
+	virtual void net_ImportInput(NET_Packet& P) override;
+	virtual void net_SendCommand(u32 command, bool state);
+
+	virtual void PH_B_CrPr() {} 	// actions & operations before physic correction-prediction steps
+	virtual void PH_I_CrPr() {} 	// actions & operations after correction before prediction steps
+	virtual void PH_A_CrPr();		// actions & operations after phisic correction-prediction steps
 	// Input
 	virtual void OnMouseMove(int x, int y);
 	virtual void OnKeyboardPress(int dik);
@@ -638,6 +657,8 @@ private:
 
 	//Inventory for the car
 	CInventory *inventory;
+	bool m_activated;
+	bool m_ActivatedShell;
 
 	virtual void reinit();
 	virtual void reload(LPCSTR section);

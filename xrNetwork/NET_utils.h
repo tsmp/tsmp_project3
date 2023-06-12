@@ -160,6 +160,14 @@ public:
 		w_seek(position, &_size, sizeof(_size));
 	}
 
+	IC void w_quaternion_quantized(const Fquaternion& quaternion)
+	{
+		w_float_q8(quaternion.x, -1.0, 1.0);
+		w_float_q8(quaternion.y, -1.0, 1.0);
+		w_float_q8(quaternion.z, -1.0, 1.0);
+		w_float_q8(quaternion.w, -1.0, 1.0);
+	}
+
 	// reading
 	IC void read_start()
 	{
@@ -366,6 +374,14 @@ public:
 		M._34_ = 0;
 		r_vec3(M.c);
 		M._44_ = 1;
+	}
+
+	IC void r_quaternion_quantized(Fquaternion& quaternion)
+	{
+		r_float_q8(quaternion.x, -1.0, 1.0);
+		r_float_q8(quaternion.y, -1.0, 1.0);
+		r_float_q8(quaternion.z, -1.0, 1.0);
+		r_float_q8(quaternion.w, -1.0, 1.0);
 	}
 
 	IC void r_clientID(ClientID &C)

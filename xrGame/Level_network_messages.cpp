@@ -177,22 +177,25 @@ void CLevel::ClientReceive()
 			Send(PRespond, net_flags(TRUE, TRUE));
 		}
 		break;
+
 		case M_FILE_TRANSFER:
 		{
 			game_events->insert(*P);
-			if (g_bDebugEvents)		ProcessGameEvents();
-		}break;
-		//------------------------------------------------
-		case M_CL_INPUT:
-		{
-			P->r_u16(ID);
-			CObject *O = Objects.net_Find(ID);
-			if (0 == O)
-				break;
-			O->net_ImportInput(*P);
+
+			if (g_bDebugEvents)
+				ProcessGameEvents();
 		}
 		break;
-		//---------------------------------------------------
+
+		case M_CL_CAR_INPUT:
+		{
+			P->r_u16(ID);
+
+			if(CObject *O = Objects.net_Find(ID))
+				O->net_ImportInput(*P);
+		}
+		break;
+
 		case M_SV_CONFIG_NEW_CLIENT:
 			InitializeClientGame(*P);
 			break;

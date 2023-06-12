@@ -21,7 +21,7 @@ enum
 	M_CHAT, // DUAL:
 
 	M_EVENT,	// Game Event
-	M_CL_INPUT, // Client Input Data
+	M_CL_CAR_INPUT, // Client Input Data
 	M_CL_UPDATE,
 	M_UPDATE_OBJECTS,
 	M_CLIENTREADY, // Client has finished to load level and are ready to play

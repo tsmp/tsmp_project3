@@ -1421,10 +1421,37 @@ CSE_ALifeCar::CSE_ALifeCar(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSe
 	m_flags.set(flUseSwitches, FALSE);
 	m_flags.set(flSwitchOffline, FALSE);
 	health = 1.0f;
+
+	m_relevent_random.seed(u32(CPU::GetCLK() & u32(-1)));
+	m_freeze_time = Device.dwTimeGlobal;
 }
 
 CSE_ALifeCar::~CSE_ALifeCar()
 {
+}
+
+BOOL CSE_ALifeCar::Net_Relevant()
+{
+	if (!freezed)
+	{
+		return TRUE;
+	}
+
+#ifdef XRGAME_EXPORTS
+	if (Device.dwTimeGlobal >= (m_freeze_time + m_freeze_delta_time))
+		return FALSE;
+#endif
+
+	if (!prev_freezed)
+	{
+		prev_freezed = true;	//i.e. freezed
+		return TRUE;
+	}
+
+	if (m_relevent_random.randI(random_limit))
+		return FALSE;
+
+	return TRUE;
 }
 
 void CSE_ALifeCar::STATE_Read(NET_Packet &tNetPacket, u16 size)
@@ -1455,15 +1482,54 @@ void CSE_ALifeCar::UPDATE_Read(NET_Packet &P)
 		firstUpdate = false;
 		return;
 	}
+
+	if (P.r_u8())
+		freezed = false;
+	else
+	{
+		if (!freezed)
+			m_freeze_time = Device.dwTimeGlobal;
+
+		freezed = true;
+	}
+
+	m_CarUpdTimestamp = P.r_u32();
+	const u16 phItemsCnt = P.r_u16();
+	
+	if (phItemsCnt != m_CarStateVec.size())
+		m_CarStateVec.resize(phItemsCnt);
+
+	for (u16 i = 0; i < phItemsCnt; i++)
+	{
+		SPHNetState &phState = m_CarStateVec[i];
+
+		P.r_vec3(phState.position);
+		P.r_quaternion_quantized(phState.quaternion);
+	}
 }
+
+const u32 CSE_ALifeCar::m_freeze_delta_time = 5000;
+const u32 CSE_ALifeCar::random_limit = 40;
 
 void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
 {
+	P.w_u8(1);	//not freezed - doesn't mean anything..
+	P.w_u32(m_CarUpdTimestamp);
+
+	const u16 carPhItemsCnt = m_CarStateVec.size();
+	P.w_u16(carPhItemsCnt);
+
+	for (u16 i = 0; i < carPhItemsCnt; i++)
+	{
+		const SPHNetState &phState = m_CarStateVec[i];
+		P.w_vec3(phState.position);
+		P.w_quaternion_quantized(phState.quaternion);
+	}
 }
 
 bool CSE_ALifeCar::used_ai_locations() const
 {
-	return (false);
+	return false;
 }
 
 bool CSE_ALifeCar::can_save() const
