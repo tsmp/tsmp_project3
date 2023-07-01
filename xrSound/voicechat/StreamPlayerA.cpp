@@ -56,7 +56,7 @@ CStreamPlayerA::~CStreamPlayerA()
 
 void CStreamPlayerA::SetDistance(float value)
 {
-	m_isRelative = (value == 0);
+	m_isRelative = fis_zero(value);
 	alSourcei(m_source, AL_SOURCE_RELATIVE, m_isRelative);
 	m_distance = value;
 	clamp(m_distance, 0.f, 1000.f);
@@ -71,14 +71,11 @@ void CStreamPlayerA::SetPosition(const Fvector& pos)
 void CStreamPlayerA::PushToPlay(const void* data, int count)
 {
 	R_ASSERT2(m_source != 0 && alIsSource(m_source), "Not initialized sound source");
-
 	opus_int16 decoded_buf[1024];
 
-	int decoded_len = opus_decode(m_pOpusDecoder, (BYTE*)data, count, decoded_buf, VOICE_SAMPLES_PER_BUFFER, 0);
+	const int decoded_len = opus_decode(m_pOpusDecoder, static_cast<const BYTE*>(data), count, decoded_buf, VOICE_SAMPLES_PER_BUFFER, 0);
 	if (decoded_len <= 0)
-	{
 		return;
-	}
 
 	m_ringBuffer.Write(decoded_buf, decoded_len);
 }
@@ -95,7 +92,7 @@ void CStreamPlayerA::UpdateVolume()
 
 	if (!m_isRelative)
 	{
-		float distance = SoundRender->listener_position().distance_to(m_position);
+		const float distance = SoundRender->listener_position().distance_to(m_position);
 
 		const float max_distance = m_distance;
 		const float min_distance = (m_distance / 3);

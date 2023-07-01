@@ -61,27 +61,14 @@ bool CVoiceChat::IsStarted()
 	return false;
 }
 
+void CVoiceChat::SetDistance(u8 newDistance)
+{
+	m_pSender->SetDistance(newDistance);
+}
+
 u8 CVoiceChat::GetDistance() const
 {
 	return m_pSender->GetDistance();
-}
-
-u8 CVoiceChat::SwitchDistance()
-{
-	R_ASSERT(m_pSender);
-
-	switch (m_pSender->GetDistance())
-	{
-	case 5:
-		m_pSender->SetDistance(10);
-		return 10;
-	case 10:
-		m_pSender->SetDistance(30);
-		return 30;
-	default:
-		m_pSender->SetDistance(5);
-		return 5;
-	}
 }
 
 void CVoiceChat::Update()
@@ -128,30 +115,32 @@ void CVoiceChat::Update()
 
 void CVoiceChat::ReceiveMessage(NET_Packet* P)
 {
-	game_PlayerState* local_player = Game().local_player;
+	const game_PlayerState* local_player = Game().local_player;
 
 	if (!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || !Actor() || !m_pSoundVoiceChat)
 		return;
 
-	u8 voiceDistance = P->r_u8();
-
-	u16 clientId = P->r_u16();
+	const u8 voiceDistance = P->r_u8();
+	const u16 clientId = P->r_u16();
 	CObject* obj = Level().Objects.net_Find(clientId);
 
 	if (!obj)
 		return;
 
-	if (Actor()->Position().distance_to(obj->Position()) > voiceDistance)
+	if (voiceDistance && static_cast<u8>(Actor()->Position().distance_to(obj->Position())) > voiceDistance)
 		return;
 
 	IStreamPlayer* player = GetStreamPlayer(clientId);
-	player->SetPosition(obj->Position());
+
+	if(voiceDistance)
+		player->SetPosition(obj->Position());
+
 	player->SetDistance(voiceDistance);
-	u8 packetsCount = P->r_u8();
+	const u8 packetsCount = P->r_u8();
 
 	for (u32 i = 0; i < packetsCount; ++i)
 	{
-		u32 length = P->r_u32();
+		const u32 length = P->r_u32();
 		P->r(m_buffer, length);
 		player->PushToPlay(m_buffer, length);
 	}

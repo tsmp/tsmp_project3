@@ -260,7 +260,7 @@ public:
 	fr_callback_binder* get_receiver_cb_binder();
 	void __stdcall sending_screenshot_callback(file_transfer::sending_status_t status, u32 bytes_sent, u32 data_size);
 
-private:
+protected:
 	CVoiceChat* m_pVoiceChat = nullptr;
 
 #include "game_cl_mp_messages_menu.h"

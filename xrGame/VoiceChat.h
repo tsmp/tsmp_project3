@@ -2,12 +2,9 @@
 #include "ui_defs.h"
 #include "../xrSound/voicechat/SoundVoiceChat.h"
 #include "VoiceSender.h"
-#include "associative_vector.h"
 
 class CVoiceChat
 {
-private:
-
 	struct SVoiceIconInfo
 	{
 		u64 time;
@@ -32,8 +29,8 @@ public:
 	void Stop();
 	bool IsStarted();
 
+	void SetDistance(u8 newDistance);
 	u8 GetDistance() const;
-	u8 SwitchDistance();
 
 	void Update();
 	//void OnRender();
@@ -41,13 +38,11 @@ public:
 	void ReceiveMessage(NET_Packet* P);
 
 private:
-	const ui_shader& GetVoiceIndicatorShader();
+	//const ui_shader& GetVoiceIndicatorShader();
 
 	IStreamPlayer* GetStreamPlayer(u16 clientId);
-
 	void CheckAndClearPlayers(SOUND_PLAYERS& players);
 
-private:
 	byte m_buffer[1024];
 
 	ISoundVoiceChat* m_pSoundVoiceChat = nullptr;
@@ -57,6 +52,5 @@ private:
 	SOUND_PLAYERS m_soundPlayersMap;
 
 	PLAYERS_VOICE_TIME m_voiceTimeMap;
-
 	ui_shader m_voiceIndicatorShader;
 };

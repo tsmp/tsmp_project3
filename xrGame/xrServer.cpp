@@ -961,60 +961,39 @@ void xrServer::OnChatMessage(NET_Packet *P, xrClientData *CL)
 
 void xrServer::OnVoiceMessage(NET_Packet& P, ClientID sender)
 {
-	xrClientData* pClient = (xrClientData*)ID_to_client(sender);
+	const xrClientData* pClientSender = ID_to_client(sender);
 
-	if (!pClient || !pClient->net_Ready) 
+	if (!pClientSender || !pClientSender->net_Ready)
 		return;
 	
-	game_PlayerState* ps = pClient->ps;
+	const game_PlayerState* psSender = pClientSender->ps;
 	
-	if (!ps || !pClient->owner) 
+	if (!psSender || !pClientSender->owner)
 		return;
 
 	//Msg("VoiceMessage size: %u", P.B.count);
 
-	struct send_voice_message
+	const float distance = P.r_u8();
+	const float voiceDistanceSqr = distance * distance;
+	const Fvector senderPos = pClientSender->owner->Position();
+
+	ForEachClientDo([&](IClient* client)
 	{
-		xrServer* m_server;
-		NET_Packet* m_packet;
-		xrClientData* m_from;
-		float m_voiceDistanceSqr;
+		if (g_dedicated_server && client == GetServerClient())
+			return;
 
-		void operator()(IClient* client)
-		{
-			if (g_dedicated_server && client == m_server->GetServerClient())
-				return;
+		const auto CL = static_cast<xrClientData*>(client);
+		if (!CL || !CL->net_Ready || !CL->owner || CL->ID == pClientSender->ID)
+			return;
 
-			xrClientData* CL = static_cast<xrClientData*>(client);
-			if (!CL || !CL->net_Ready || !CL->owner || !m_from->owner || !m_from->ps)
-				return;
+		const game_PlayerState* ps = CL->ps;
+		if (!ps || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+			return;
 
-			if (CL->ID == m_from->ID)
-				return;
-
-			game_PlayerState* ps = CL->ps;
-			if (!ps || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
-				return;
-
-			float distanceSqr = CL->owner->Position().distance_to_sqr(m_from->owner->Position());
-
-			if (distanceSqr <= m_voiceDistanceSqr)
-			{
-				m_server->SendTo(CL->ID, *m_packet, net_flags(FALSE, TRUE, TRUE, TRUE));
-			}
-		}
-	};
-
-	u8 distance = P.r_u8(); // distance byte
-	float voiceDistanceSqr = (float)distance * (float)distance;
-
-	send_voice_message tmp_functor;
-	tmp_functor.m_server = this;
-	tmp_functor.m_packet = &P;
-	tmp_functor.m_from = pClient;
-	tmp_functor.m_voiceDistanceSqr = voiceDistanceSqr;
-
-	ForEachClientDo(tmp_functor);
+		const float distanceSqr = CL->owner->Position().distance_to_sqr(senderPos);
+		if (fis_zero(voiceDistanceSqr) || distanceSqr <= voiceDistanceSqr)
+			SendTo(CL->ID, P, net_flags(FALSE, TRUE, TRUE, TRUE));
+	});
 };
 
 #ifdef DEBUG
