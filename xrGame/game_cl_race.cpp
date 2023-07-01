@@ -10,6 +10,7 @@
 #include "GameObject.h"
 #include "map_manager.h"
 #include "map_location.h"
+#include "VoiceChat.h"
 
 CStringTable g_St;
 
@@ -21,17 +22,16 @@ constexpr u32 COLOR_PLAYER_NAME = 0xff40ff40;
 const Fvector NameIndicatorPosition = { 0.f, 0.3f,0.f };
 const char* LocationOtherPlayer = "mp_friend_location";
 
-game_cl_Race::game_cl_Race() : m_game_ui(nullptr), m_WinnerId(static_cast<u16>(-1)), m_WinnerMessageSet(false), m_ReinforcementTime(10), m_DeathTime(0)
+game_cl_Race::game_cl_Race() : m_game_ui(nullptr), m_DeathTime(0), m_WinnerId(static_cast<u16>(-1)), m_ReinforcementTime(10), m_WinnerMessageSet(false)
 {
 	LoadSounds();
+	m_pVoiceChat->SetDistance(0);
 }
-
-game_cl_Race::~game_cl_Race() {}
 
 CUIGameCustom* game_cl_Race::createGameUI()
 {
 	inherited::createGameUI();
-	CLASS_ID clsid = CLSID_GAME_UI_RACE;
+	const CLASS_ID clsid = CLSID_GAME_UI_RACE;
 	m_game_ui = smart_cast<CUIGameRace*>(NEW_INSTANCE(clsid));
 	R_ASSERT(m_game_ui);
 	m_game_ui->SetClGame(this);
