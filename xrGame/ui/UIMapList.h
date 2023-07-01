@@ -36,13 +36,13 @@ public:
 	void LoadMapList();
 	void SaveMapList();
 	const char *GetCommandLine(LPCSTR player_name);
-	EGameTypes GetCurGameType();
+	EGameTypes GetCurGameType() const;
 	void StartDedicatedServer();
 	bool IsEmpty();
 	const shared_str &GetMapNameInt(EGameTypes _type, u32 idx);
 
 private:
-	const char *GetCLGameModeName(); // CL - command line
+	const char *GetCLGameModeName() const; // CL - command line
 	void UpdateMapList(EGameTypes GameType);
 	void SaveRightList();
 

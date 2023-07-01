@@ -136,27 +136,17 @@ void CUIMapList::OnModeChange()
 	UpdateMapList(GetCurGameType());
 }
 
-const char *CUIMapList::GetCLGameModeName()
+const char *CUIMapList::GetCLGameModeName() const
 {
 	return get_token_name(game_types, GetCurGameType());
 }
 
-EGameTypes CUIMapList::GetCurGameType()
+EGameTypes CUIMapList::GetCurGameType() const
 {
-	LPCSTR text = m_pModeSelector->GetTokenText();
-
-	if (0 == xr_strcmp(text, get_token_name(g_GameModes, GAME_DEATHMATCH)))
-		return GAME_DEATHMATCH;
-	else if (0 == xr_strcmp(text, get_token_name(g_GameModes, GAME_TEAMDEATHMATCH)))
-		return GAME_TEAMDEATHMATCH;
-	else if (0 == xr_strcmp(text, get_token_name(g_GameModes, GAME_ARTEFACTHUNT)))
-		return GAME_ARTEFACTHUNT;
-	else
-		NODEFAULT;
-
-#ifdef DEBUG
-	return GAME_ANY;
-#endif
+	const char* gameTypeText = m_pModeSelector->GetTokenText();
+	const int gameTypeId = get_token_id(g_GameModes, gameTypeText);
+	R_ASSERT2(gameTypeId != -1, make_string("selected unknown game type [%s]", gameTypeText).c_str());
+	return static_cast<EGameTypes>(gameTypeId);
 }
 
 const char *CUIMapList::GetCommandLine(LPCSTR player_name)
