@@ -157,8 +157,14 @@ void CObjectList::Update(bool bForce)
 	// Destroy
 	if (!destroy_queue.empty())
 	{
+		// TSMP: relcase машины может удалять объекты из objects_active во время итерации по ним (в detach_Actor() processing_deactivate)
+		const u32 activeCnt = objects_active.size();
+		const u32 activeSize = activeCnt * sizeof(CObject*);
+		CObject** activeCopy = reinterpret_cast<CObject**>(alloca(activeSize));
+		memcpy(activeCopy, objects_active.data(), activeSize);
+
 		// Info
-		for (xr_vector<CObject *>::iterator oit = objects_active.begin(); oit != objects_active.end(); oit++)
+		for (CObject **oit = activeCopy, **end = activeCopy + activeCnt; oit != end; oit++)
 			for (int it = destroy_queue.size() - 1; it >= 0; it--)
 				(*oit)->net_Relcase(destroy_queue[it]);
 
