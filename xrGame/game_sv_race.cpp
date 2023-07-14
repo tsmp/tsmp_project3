@@ -11,6 +11,7 @@
 
 ENGINE_API bool g_dedicated_server;
 extern int G_DELAYED_ROUND_TIME;
+extern INT g_sv_Pending_Wait_Time;
 u32 TimeBeforeRaceStart = 10000; // 10 sec
 BOOL g_sv_race_invulnerability = FALSE;
 u32 g_sv_race_reinforcementTime = 10; // 10 sec
@@ -96,7 +97,7 @@ void game_sv_Race::Create(shared_str& options)
 
 void game_sv_Race::UpdatePending()
 {
-	if (AllPlayersReady())
+	if (AllPlayersReady() || (m_WinnerFinishTime && (Level().timeServer() - m_WinnerFinishTime) > u32(g_sv_Pending_Wait_Time)))
 		OnRoundStart();
 }
 
