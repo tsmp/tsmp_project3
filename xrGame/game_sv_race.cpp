@@ -55,8 +55,10 @@ void game_sv_Race::LoadRaceSettings()
 
 		if (settings->section_exist("available_cars"))
 		{
-			m_AvailableCars.clear();
 			CInifile::Sect& sect = settings->r_section("available_cars");
+
+			if(!sect.Data.empty())
+				m_AvailableCars.clear();
 
 			for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
 			{
