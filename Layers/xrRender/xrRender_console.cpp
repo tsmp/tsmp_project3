@@ -654,7 +654,7 @@ void xrRender_initconsole()
 	CMD4(CCC_Integer, "rs_skeleton_update", &psSkeletonUpdate, 2, 128);
 	CMD4(CCC_Float, "r__dtex_range", &r__dtex_range, 5, 175);
 
-	CMD4(CCC_Integer, "rs_vb_size", &rsDVB_Size, 32, 4096);
+	CMD4(CCC_Integer, "rs_vb_size", &rsDVB_Size, 32, 16384);
 	CMD4(CCC_Integer, "rs_ib_size", &rsDIB_Size, 32, 4096);
 }
 
