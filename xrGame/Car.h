@@ -502,8 +502,11 @@ private:
 	void StopBreaking();
 	void UpdateBack();
 
+public:
 	void HandBreak();
 	void ReleaseHandBreak();
+
+private:
 	void DriveForward();
 	void DriveBack();
 	void ParseDefinitions();

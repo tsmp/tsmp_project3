@@ -76,11 +76,18 @@ void game_cl_Race::UpdateRaceStart()
 
 		m_game_ui->SetCountdownCaption(caption);
 
-		if (secRemains == 6)
+		if (CActor* act = Actor())
 		{
-			if (CActor* act = Actor())
-				if (CCar* car = smart_cast<CCar*>(act->Holder()))
+			if (CCar* car = smart_cast<CCar*>(act->Holder()))
+			{
+				if (secRemains == 6)
 					car->StartEngine();
+
+				if(secRemains < 30 && secRemains > 2)
+					car->HandBreak();
+				else
+					car->ReleaseHandBreak();
+			}
 		}
 
 		if (secRemains > 0 && secRemains <= 5)
