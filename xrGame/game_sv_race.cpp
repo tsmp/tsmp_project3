@@ -34,7 +34,7 @@ game_sv_Race::~game_sv_Race() {}
 void game_sv_Race::LoadRaceSettings()
 {
 	string_path temp;
-	m_PlayerSkin = "stalker_killer_antigas";
+	m_AvailableSkins.push_back("stalker_killer_antigas");
 	m_AvailableCars.push_back("physics\\vehicles\\kamaz\\veh_kamaz_u_01.ogf");
 
 	if (!FS.exist(temp, "$level$", "race.ltx"))
@@ -44,14 +44,22 @@ void game_sv_Race::LoadRaceSettings()
 		Msg("- race ltx found, using it");
 		CInifile* settings = xr_new<CInifile>(temp);
 
-		if (settings->section_exist("settings"))
-		{
-			if (settings->line_exist("settings", "player_visual"))
-				m_PlayerSkin = settings->r_string("settings", "player_visual");
-		}
-
 		if (settings->line_exist("settings", "max_players"))
 			m_MaxPlayers = settings->r_s32("settings", "max_players");
+
+		if (settings->section_exist("player_visuals"))
+		{
+			CInifile::Sect& sect = settings->r_section("player_visuals");
+
+			if (!sect.Data.empty())
+				m_AvailableSkins.clear();
+
+			for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
+			{
+				const CInifile::Item& item = *I;
+				m_AvailableSkins.push_back(item.first.c_str());
+			}
+		}
 
 		if (settings->section_exist("available_cars"))
 		{
@@ -79,7 +87,8 @@ void game_sv_Race::Create(shared_str& options)
 	inherited::Create(options);
 
 	TeamStruct NewTeam;
-	NewTeam.aSkins.push_back(m_PlayerSkin.c_str());
+	for(const auto &skin: m_AvailableSkins)
+		NewTeam.aSkins.push_back(skin.c_str());
 	TeamList.push_back(NewTeam);
 
 	switch_Phase(GAME_PHASE_PENDING);
@@ -401,6 +410,7 @@ void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
 	Level().Send(P, net_flags(TRUE, TRUE));
 	xrCData->ps->CarID = car->ID;
 
+	xrCData->ps->skin = u8(::Random.randI((int)TeamList[xrCData->ps->team].aSkins.size()));
 	SpawnPlayer(playerId, "mp_actor", car->ID);
 }
 
