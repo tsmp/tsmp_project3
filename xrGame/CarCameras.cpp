@@ -18,8 +18,13 @@
 #include "level.h"
 #include "cameramanager.h"
 
+BOOL show_arms_on_steering_wheel = FALSE;
+
 bool CCar::HUDView() const
 {
+	if (show_arms_on_steering_wheel)
+		return false;
+
 	return active_camera->tag == ectFirst;
 }
 
@@ -55,13 +60,14 @@ void CCar::OnCameraChange(int type)
 {
 	if (Owner())
 	{
-		if (type == ectFirst)
-		{
-			Owner()->setVisible(FALSE);
-		}
-		else if (active_camera->tag == ectFirst)
-		{
+		if(show_arms_on_steering_wheel)
 			Owner()->setVisible(TRUE);
+		else
+		{
+			if (type == ectFirst)
+				Owner()->setVisible(FALSE);
+			else if (active_camera->tag == ectFirst)
+				Owner()->setVisible(TRUE);
 		}
 	}
 

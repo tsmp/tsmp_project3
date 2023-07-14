@@ -81,7 +81,7 @@ extern BOOL g_bDebugDumpPhysicsStep;
 extern ESingleGameDifficulty g_SingleGameDifficulty;
 extern BOOL g_show_wnd_rect;
 extern BOOL g_show_wnd_rect2;
-//-----------------------------------------------------------
+extern BOOL show_arms_on_steering_wheel;
 extern float g_fTimeFactor;
 
 void register_mp_console_commands();
@@ -1686,6 +1686,7 @@ void CCC_RegisterCommands()
 
 #endif
 
+	CMD4(CCC_Integer, "car_arms_on_steering_wheel", &show_arms_on_steering_wheel, 0, 1);
 	CMD3(CCC_Mask, "cl_dynamiccrosshair", &psHUD_Flags, HUD_CROSSHAIR_DYNAMIC);
 	CMD1(CCC_MainMenu, "main_menu");
 
