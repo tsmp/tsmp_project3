@@ -319,6 +319,11 @@ void game_cl_Race::OnSwitchPhase(u32 oldPhase, u32 newPhase)
 		PlaySndMessage(ID_RACE_GO);
 }
 
+void game_cl_Race::SetUI(CUIGameRace* gameUi)
+{
+	m_game_ui = gameUi;
+}
+
 void game_cl_Race::net_import_state(NET_Packet &P)
 {
 	inherited::net_import_state(P);

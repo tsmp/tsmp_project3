@@ -38,6 +38,7 @@ void CUIGameRace::SetClGame(game_cl_GameState* g)
 {
 	m_game = smart_cast<game_cl_Race*>(g);
 	R_ASSERT(m_game);
+	m_game->SetUI(this);
 }
 
 void CUIGameRace::Init()

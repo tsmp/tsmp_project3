@@ -33,6 +33,7 @@ public:
 	bool OnKeyboardRelease(int key) override;
 	void OnSwitchPhase(u32 oldPhase, u32 newPhase) override;
 
+	void SetUI(CUIGameRace* gameUi);
 	void net_import_state(NET_Packet &P) override;
 	CUIGameBaseMP* GetMpGameUI() override { return reinterpret_cast<CUIGameBaseMP*>(m_game_ui); }
 };
