@@ -267,7 +267,7 @@ void game_sv_Race::OnRoundStart()
 	inherited::OnRoundStart();
 	m_WinnerId = u16(-1);
 	m_CurrentRpoint = 0;
-	m_CurrentRoundCar = m_CarRandom.randI(static_cast<int>(m_AvailableCars.size()));
+	m_CurrentRoundCar = rand() % m_AvailableCars.size();
 	switch_Phase(GAME_PHASE_RACE_START);
 
 	// Respawn all players
