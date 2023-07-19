@@ -27,6 +27,7 @@ game_sv_Race::game_sv_Race()
 	m_MaxPlayers = 4;
 	m_CurrentRoad = -1;
 
+	m_CarRandom.seed(static_cast<s32>(time(nullptr)));
 	LoadRaceSettings();
 }
 
@@ -268,7 +269,7 @@ void game_sv_Race::OnRoundStart()
 	inherited::OnRoundStart();
 	m_WinnerId = u16(-1);
 	m_CurrentRpoint = 0;
-	m_CurrentRoundCar = rand() % m_AvailableCars.size();
+	m_CurrentRoundCar = m_CarRandom.randI(static_cast<int>(m_AvailableCars.size()));
 	switch_Phase(GAME_PHASE_RACE_START);
 
 	// Respawn all players
