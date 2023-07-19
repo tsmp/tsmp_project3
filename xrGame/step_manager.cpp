@@ -40,6 +40,7 @@ void CStepManager::reload(LPCSTR section)
 	string16 cur_elem;
 
 	IKinematicsAnimated *skeleton_animated = smart_cast<IKinematicsAnimated *>(m_object->Visual());
+	R_ASSERT2(skeleton_animated, "CStepManager can not get visual");
 
 	for (u32 i = 0; pSettings->r_line(anim_section, i, &anim_name, &val); ++i)
 	{
