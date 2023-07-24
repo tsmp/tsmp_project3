@@ -3,6 +3,10 @@
 // startup
 void CRenderTarget::phase_scene_prepare()
 {
+	// KD: we need to clean up G-buffer every frame to avoid "ghosting" on sky
+	u_setrt	( rt_Position, rt_Normal, rt_Color, 0 );
+	CHK_DX	( HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET, 0x0, 1.0f, 0L) );
+
 #pragma todo("Make scene prepare like in COP")
 
 	// Clear depth & stencil
