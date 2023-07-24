@@ -356,7 +356,7 @@ public:
 	virtual void Execute(LPCSTR args)
 	{
 #ifndef DEBUG
-		if (GameID() != GAME_SINGLE)
+		if (GameID() != GAME_SINGLE && args[0] != '9')
 		{
 			Msg("For this game type Demo Record is disabled.");
 			return;
