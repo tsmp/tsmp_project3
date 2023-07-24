@@ -341,7 +341,7 @@ CSE_Abstract* game_sv_Race::SpawnCar(u32 rpoint)
 
 u32 game_sv_Race::GetRpointIdx(game_PlayerState* ps)
 {
-	const u32 rpointsTeam = 0;
+	const u32 rpointsTeam = m_CurrentRoad;
 	u16 rpoint = ps->m_s16LastSRoint;
 
 	// player has associated rpoint
