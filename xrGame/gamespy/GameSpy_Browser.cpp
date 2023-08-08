@@ -358,6 +358,8 @@ void CGameSpy_Browser::GetServerInfoByIndex(ServerInfo *pServerInfo, int idx)
 		}                                                                                                \
 	}
 
+extern EGameTypes StrToGameType(const char* gameTypeName);
+
 void CGameSpy_Browser::ReadServerInfo(ServerInfo *pServerInfo, void *pServer)
 {
 	CStringTable st;
@@ -385,18 +387,10 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo *pServerInfo, void *pServer)
 	pServerInfo->m_GameType = (u8)xrGS_SBServerGetIntValue(pServer, m_pQR2->xrGS_RegisteredKey(GAMETYPE_NAME_KEY), 0);
 	if (pServerInfo->m_GameType == 0)
 	{
-		if (!xr_strcmp(pServerInfo->m_ServerGameType, "deathmatch"))
-			pServerInfo->m_GameType = GAME_DEATHMATCH;
-		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "teamdeathmatch"))
-			pServerInfo->m_GameType = GAME_TEAMDEATHMATCH;
-		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "artefacthunt"))
-			pServerInfo->m_GameType = GAME_ARTEFACTHUNT;
-		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "hardmatch"))
-			pServerInfo->m_GameType = GAME_HARDMATCH;
-		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "freeplay"))
-			pServerInfo->m_GameType = GAME_FREEPLAY;
-		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "race"))
-			pServerInfo->m_GameType = GAME_RACE;
+		int gameType = StrToGameType(pServerInfo->m_ServerGameType);
+
+		if(gameType != GAME_ANY)
+			pServerInfo->m_GameType = gameType;
 	}
 	sprintf_s(pServerInfo->m_ServerVersion, "%s", xrGS_SBServerGetStringValue(pServer, m_pQR2->xrGS_RegisteredKey(GAMEVER_KEY), "--"));
 

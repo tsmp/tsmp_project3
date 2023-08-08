@@ -209,6 +209,7 @@
 #define CLSID_SV_GAME_HARDMATCH MK_CLSID('S', 'V', '_', 'H', 'M', ' ', ' ', ' ')
 #define CLSID_SV_GAME_FREEPLAY MK_CLSID('S', 'V', '_', 'F', 'P', ' ', ' ', ' ')
 #define CLSID_SV_GAME_RACE MK_CLSID('S', 'V', '_', 'R', 'A', 'C', 'E', ' ')
+#define CLSID_SV_GAME_COOP MK_CLSID('S', 'V', '_', 'C', 'O', 'O', 'P', ' ')
 //#define CLSID_GAME_CS				MK_CLSID('S','V','_','C','S',' ',' ',' ')
 #define CLSID_CL_GAME_SINGLE MK_CLSID('C', 'L', '_', 'S', 'I', 'N', 'G', 'L')
 #define CLSID_CL_GAME_DEATHMATCH MK_CLSID('C', 'L', '_', 'D', 'M', ' ', ' ', ' ')
@@ -217,6 +218,7 @@
 #define CLSID_CL_GAME_HARDMATCH MK_CLSID('C', 'L', '_', 'H', 'M', ' ', ' ', ' ')
 #define CLSID_CL_GAME_FREEPLAY MK_CLSID('C', 'L', '_', 'F', 'P', ' ', ' ', ' ')
 #define CLSID_CL_GAME_RACE MK_CLSID('C', 'L', '_', 'R', 'A', 'C', 'E', ' ')
+#define CLSID_CL_GAME_COOP MK_CLSID('C', 'L', '_', 'C', 'O', 'O', 'P', ' ')
 
 // Game UI types
 #define CLSID_GAME_UI_SINGLE MK_CLSID('U', 'I', '_', 'S', 'I', 'N', 'G', 'L')

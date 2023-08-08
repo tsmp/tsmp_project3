@@ -2326,6 +2326,12 @@
     <Filter Include="Core\Client\VoiceChat">
       <UniqueIdentifier>{3ad365e9-e43a-4cc1-91b7-d470545b2c6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Server\Games\server\coop">
+      <UniqueIdentifier>{bd02a03c-2b99-4da7-886a-1771df50744e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Server\Games\client\coop">
+      <UniqueIdentifier>{43a4eaba-f182-4072-bd02-18debb637484}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6631,6 +6637,12 @@
       <Filter>Core\Client\VoiceChat</Filter>
     </ClInclude>
     <ClInclude Include="xrServerRespawnManager.h" />
+    <ClInclude Include="game_sv_coop.h">
+      <Filter>Core\Server\Games\server\coop</Filter>
+    </ClInclude>
+    <ClInclude Include="game_cl_coop.h">
+      <Filter>Core\Server\Games\client\coop</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9822,5 +9834,11 @@
       <Filter>Core\Client\VoiceChat</Filter>
     </ClCompile>
     <ClCompile Include="xrServerRespawnManager.cpp" />
+    <ClCompile Include="game_sv_coop.cpp">
+      <Filter>Core\Server\Games\server\coop</Filter>
+    </ClCompile>
+    <ClCompile Include="game_cl_coop.cpp">
+      <Filter>Core\Server\Games\client\coop</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

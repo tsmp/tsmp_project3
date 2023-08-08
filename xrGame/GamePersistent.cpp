@@ -180,10 +180,40 @@ void CGamePersistent::OnGameStart()
 	UpdateGameType();
 }
 
+EGameTypes StrToGameType(const char* gameTypeName)
+{
+	EGameTypes res = GAME_ANY;
+
+	if (!xr_strcmp(gameTypeName, "single"))
+		res = GAME_SINGLE;
+
+	if (!xr_strcmp(gameTypeName, "deathmatch"))
+		res = GAME_DEATHMATCH;
+
+	if (!xr_strcmp(gameTypeName, "teamdeathmatch"))
+		res = GAME_TEAMDEATHMATCH;
+
+	if (!xr_strcmp(gameTypeName, "artefacthunt"))
+		res = GAME_ARTEFACTHUNT;
+
+	if (!xr_strcmp(gameTypeName, "hardmatch"))
+		res = GAME_HARDMATCH;
+
+	if (!xr_strcmp(gameTypeName, "freeplay"))
+		res = GAME_FREEPLAY;
+
+	if (!xr_strcmp(gameTypeName, "race"))
+		res = GAME_RACE;
+
+	if (!xr_strcmp(gameTypeName, "coop"))
+		res = GAME_COOP;
+
+	return res;
+}
+
 void CGamePersistent::UpdateGameType()
 {
 	__super::UpdateGameType();
-	m_game_params.m_e_game_type = GAME_ANY;
 
 	if (!xr_strcmp(m_game_params.m_game_type, "dm"))
 		strcpy_s(m_game_params.m_game_type, "deathmatch");
@@ -199,30 +229,11 @@ void CGamePersistent::UpdateGameType()
 
 	if (!xr_strcmp(m_game_params.m_game_type, "hm"))
 		strcpy_s(m_game_params.m_game_type, "hardmatch");
-	
+
 	if (!xr_strcmp(m_game_params.m_game_type, "fp"))
 		strcpy_s(m_game_params.m_game_type, "freeplay");
 
-	if (!xr_strcmp(m_game_params.m_game_type, "single"))
-		m_game_params.m_e_game_type = GAME_SINGLE;
-	
-	if (!xr_strcmp(m_game_params.m_game_type, "deathmatch"))
-		m_game_params.m_e_game_type = GAME_DEATHMATCH;
-	
-	if (!xr_strcmp(m_game_params.m_game_type, "teamdeathmatch"))
-		m_game_params.m_e_game_type = GAME_TEAMDEATHMATCH;
-	
-	if (!xr_strcmp(m_game_params.m_game_type, "artefacthunt"))
-		m_game_params.m_e_game_type = GAME_ARTEFACTHUNT;
-
-	if (!xr_strcmp(m_game_params.m_game_type, "hardmatch"))
-		m_game_params.m_e_game_type = GAME_HARDMATCH;
-
-	if (!xr_strcmp(m_game_params.m_game_type, "freeplay"))
-		m_game_params.m_e_game_type = GAME_FREEPLAY;
-
-	if (!xr_strcmp(m_game_params.m_game_type, "race"))
-		m_game_params.m_e_game_type = GAME_RACE;
+	m_game_params.m_e_game_type = StrToGameType(m_game_params.m_game_type);
 
 	// На клиенте может остаться GAME_ANY если мы не знаем тип игры еще
 	

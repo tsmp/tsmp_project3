@@ -600,6 +600,8 @@ public:
 	virtual void Info(TInfo& I) { strcpy(I, "List of Banned Players"); }
 };
 
+extern EGameTypes StrToGameType(const char* gameTypeName);
+
 class CCC_ChangeLevelGameType : public IConsole_Command
 {
 public:
@@ -629,31 +631,13 @@ public:
 		else if (!xr_strcmp(GameType, "fp"))
 			sprintf_s(GameType, "freeplay");
 
-		if (xr_strcmp(GameType, "deathmatch"))
-			if (xr_strcmp(GameType, "teamdeathmatch"))
-				if (xr_strcmp(GameType, "artefacthunt"))
-					if (xr_strcmp(GameType, "hardmatch"))
-						if (xr_strcmp(GameType, "freeplay"))
-							if (xr_strcmp(GameType, "race"))
-							{
-								Msg("! Unknown gametype - %s", GameType);
-								return;
-							}
+		s32 GameTypeID = StrToGameType(GameType);
 
-		s32 GameTypeID = 0;
-
-		if (!xr_strcmp(GameType, "deathmatch"))
-			GameTypeID = GAME_DEATHMATCH;
-		else if (!xr_strcmp(GameType, "teamdeathmatch"))
-			GameTypeID = GAME_TEAMDEATHMATCH;
-		else if (!xr_strcmp(GameType, "artefacthunt"))
-			GameTypeID = GAME_ARTEFACTHUNT;
-		else if (!xr_strcmp(GameType, "hardmatch"))
-			GameTypeID = GAME_HARDMATCH;
-		else if (!xr_strcmp(GameType, "freeplay"))
-			GameTypeID = GAME_FREEPLAY;
-		else if (!xr_strcmp(GameType, "race"))
-			GameTypeID = GAME_RACE;
+		if (GameTypeID == GAME_ANY)
+		{
+			Msg("! Unknown gametype - %s", GameType);
+			return;
+		}
 
 		const SGameTypeMaps &M = gMapListHelper.GetMapListFor((EGameTypes)GameTypeID);
 		u32 cnt = M.m_map_names.size();
