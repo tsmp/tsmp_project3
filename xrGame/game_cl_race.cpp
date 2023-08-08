@@ -25,7 +25,9 @@ const char* LocationOtherPlayer = "mp_friend_location";
 game_cl_Race::game_cl_Race() : m_game_ui(nullptr), m_DeathTime(0), m_WinnerId(static_cast<u16>(-1)), m_ReinforcementTime(10), m_WinnerMessageSet(false)
 {
 	LoadSounds();
-	m_pVoiceChat->SetDistance(0);
+
+	if(!g_dedicated_server)
+		m_pVoiceChat->SetDistance(0);
 }
 
 CUIGameCustom* game_cl_Race::createGameUI()
