@@ -129,15 +129,16 @@ void CPatrolPathStorage::NetworkExport(NET_Packet &packet)
 	packet.w_u16(0);
 	u16 count = 0;
 
-	for (const auto &path : m_registry)
-	{
-		if (path.second->vertex_count() != 1)
-			continue;
+#pragma TODO("FIX!!!")
+	//for (const auto &path : m_registry)
+	//{
+	//	if (path.second->vertex_count() != 1)
+	//		continue;
 
-		count++;
-		packet.w_stringZ(*path.first);
-		packet.w_vec3(path.second->vertex(0)->data().position());
-	}
+	//	count++;
+	//	packet.w_stringZ(*path.first);
+	//	packet.w_vec3(path.second->vertex(0)->data().position());
+	//}
 
 	packet.w_seek(countPos, &count, sizeof(u16));
 }

@@ -8,6 +8,7 @@
 #include "ai_space.h"
 #include "alife_object_registry.h"
 #include "xrServerRespawnManager.h"
+#include "Level.h"
 
 xr_string xrServer::ent_name_safe(u16 eid)
 {
@@ -34,7 +35,8 @@ void xrServer::Process_event_destroy(NET_Packet &P, ClientID const &sender, u32 
 		return;
 	};
 
-	ObjectRespawnClass::DestroyRespawnID(id_dest); // объект удален, обнуляем id в нашем респавнере
+	if (!IsGameTypeSingle() && !IsGameTypeCoop())
+		ObjectRespawnClass::DestroyRespawnID(id_dest); // объект удален, обнуляем id в нашем респавнере
 
 	R_ASSERT(e_dest);
 	xrClientData *c_dest = e_dest->owner; // клиент, чей юнит

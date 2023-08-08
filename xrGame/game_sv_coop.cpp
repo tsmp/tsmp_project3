@@ -2,6 +2,7 @@
 #include "game_sv_Coop.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "xrServer.h"
+#include "ai_space.h"
 
 ENGINE_API bool g_dedicated_server;
 
@@ -114,4 +115,11 @@ void game_sv_Coop::OnPlayerReady(const ClientID& id)
 		RespawnPlayer(id, false);
 		pOwner = xrCData->owner;
 	}
+}
+
+shared_str game_sv_Coop::level_name(const shared_str& server_options) const
+{
+	if (!ai().get_alife())
+		return (inherited::level_name(server_options));
+	return (alife().level_name());
 }

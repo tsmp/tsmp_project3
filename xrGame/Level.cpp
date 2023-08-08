@@ -87,11 +87,7 @@ CLevel::CLevel() : IPureClient(Device.GetTimerGlobal())
 	eEntitySpawn = Engine.Event.Handler_Attach("LEVEL:spawn", this);
 
 	m_pBulletManager = xr_new<CBulletManager>();
-
-	if (!g_dedicated_server)
-		m_map_manager = xr_new<CMapManager>();
-	else
-		m_map_manager = NULL;
+	m_map_manager = xr_new<CMapManager>();
 
 	m_bNeed_CrPr = false;
 	m_bIn_CrPr = false;
@@ -997,6 +993,11 @@ u32 GameID()
 bool IsGameTypeSingle()
 {
 	return g_pGamePersistent->SinglePlayerGame;
+}
+
+bool IsGameTypeCoop()
+{
+	return g_pGamePersistent->GameType() == GAME_COOP;
 }
 
 GlobalFeelTouch::GlobalFeelTouch() {}

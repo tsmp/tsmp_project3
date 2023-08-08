@@ -246,14 +246,21 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
 
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator I = objects().objects().begin();
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator E = objects().objects().end();
-	ObjectRespawnClass::DestroyRespawner();
+
+	if(!IsGameTypeCoop() && !IsGameTypeSingle())
+		ObjectRespawnClass::DestroyRespawner();
+
 	for (; I != E; ++I)
 	{
 		(*I).second->on_register();
-		if (CSE_Abstract* entity = (*I).second)
+
+		if (!IsGameTypeCoop() && !IsGameTypeSingle())
 		{
-			ObjectRespawnClass::AddObject(entity->s_name, entity->m_ini_string, entity->ID, entity->RespawnTime, entity->o_Position);
-			entity->RespawnTime = 0; // если время не 0, сервер ругается на dummy16
+			if (CSE_Abstract* entity = (*I).second)
+			{
+				ObjectRespawnClass::AddObject(entity->s_name, entity->m_ini_string, entity->ID, entity->RespawnTime, entity->o_Position);
+				entity->RespawnTime = 0; // если время не 0, сервер ругается на dummy16
+			}
 		}
 	}
 	save(save_name);

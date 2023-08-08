@@ -2,6 +2,7 @@
 #include "xrserver.h"
 #include "xrmessages.h"
 #include "xrServerRespawnManager.h"
+#include "Level.h"
 
 #if 1 //def DEBUG
 #define USE_DESIGNER_KEY
@@ -24,7 +25,8 @@ void xrServer::SLS_Default()
 	CSE_ALifeCreatureActor *_actor = 0;
 #endif
 
-	ObjectRespawnClass::DestroyRespawner(); // очищаем список респавнера
+	if(!IsGameTypeSingle() && !IsGameTypeCoop())
+		ObjectRespawnClass::DestroyRespawner(); // очищаем список респавнера
 
 	string_path fn_spawn;
 	if (FS.exist(fn_spawn, "$level$", "level.spawn"))
@@ -44,7 +46,7 @@ void xrServer::SLS_Default()
 			clientID.set(0);
 
 			CSE_Abstract* entity = Process_spawn(P, clientID);
-			if (entity)
+			if (entity && !IsGameTypeSingle() && !IsGameTypeCoop())
 			{
 				ObjectRespawnClass::AddObject(
 					entity->s_name,

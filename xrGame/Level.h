@@ -418,6 +418,7 @@ IC bool OnServer() { return Level().IsServer(); }
 IC bool OnClient() { return Level().IsClient(); }
 
 bool IsGameTypeSingle();
+bool IsGameTypeCoop();
 
 class CPHWorld;
 extern CPHWorld *ph_world;

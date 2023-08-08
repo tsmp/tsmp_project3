@@ -33,6 +33,9 @@ void IGame_ObjectPool::prefetch()
 	if (!strcmp(gameTypeName, "race"))
 		strcpy(gameTypeName, "deathmatch");
 
+	if (!strcmp(gameTypeName, "coop"))
+		strcpy(gameTypeName, "single");
+
 	// prefetch objects
 	strconcat(sizeof(section), section, "prefetch_objects_", gameTypeName);
 	CInifile::Sect &sect = pSettings->r_section(section);

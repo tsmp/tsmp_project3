@@ -72,10 +72,7 @@ xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str &session_name)
 	if (0 != *(game->get_option_s(*session_name, "psw", NULL)))
 		Password._set(game->get_option_s(*session_name, "psw", NULL));
 
-	string4096 tMapName = "";
-	const char *SName = *session_name;
-	strncpy(tMapName, *session_name, strchr(SName, '/') - SName);
-	MapName._set(tMapName);
+	MapName._set(level_name(session_name));
 	m_bHasRusMapName = false;
 
 	string_path rusNamePath;

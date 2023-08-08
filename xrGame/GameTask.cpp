@@ -540,7 +540,7 @@ void SendTask(CActor* actor, const char* type, CGameTask* task, SGameTaskObjecti
 	news_text += translate_string(GetActionDescr(type).c_str());
 	news_text += "\\n";
 	news_text += "%c[default]";
-	news_text += translate_string(task->m_Title.c_str()); 
+	news_text += translate_string(task->m_Title.c_str());
 
 	if (actor->IsTalking())
 	{
@@ -562,10 +562,13 @@ void SendTask(CActor* actor, const char* type, CGameTask* task, SGameTaskObjecti
 		news_text = translate_string((task->Objective(objective->GetIDX_script() + 1).description).c_str());
 	}
 
-	auto hud = HUD().GetUI()->UIGame();
-	hud->AddCustomStatic("main_task", true);
-	hud->GetCustomStatic("main_task")->wnd()->SetTextST(news_text.c_str());
-	hud->GetCustomStatic("main_task")->m_endTime = Device.dwTimeGlobal / 1000 + 5;
+	if (!g_dedicated_server)
+	{
+		auto hud = HUD().GetUI()->UIGame();
+		hud->AddCustomStatic("main_task", true);
+		hud->GetCustomStatic("main_task")->wnd()->SetTextST(news_text.c_str());
+		hud->GetCustomStatic("main_task")->m_endTime = Device.dwTimeGlobal / 1000 + 5;
+	}
 }
 
 void SGameTaskObjective::ChangeStateCallback()
