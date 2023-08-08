@@ -1004,7 +1004,7 @@ public:
 	}
 };
 
-#ifdef DEBUG
+#ifndef PUBLIC_BUILD
 class CCC_PHGravity : public IConsole_Command
 {
 public:
@@ -1013,13 +1013,7 @@ public:
 	{
 		if (!ph_world)
 			return;
-#ifndef DEBUG
-		if (g_pGameLevel && Level().game && GameID() != GAME_SINGLE)
-		{
-			Msg("Command is not available in Multiplayer");
-			return;
-		}
-#endif
+
 		ph_world->SetGravity(float(atof(args)));
 	}
 	virtual void Status(TStatus &S)
@@ -1032,7 +1026,7 @@ public:
 			S[xr_strlen(S) - 1] = 0;
 	}
 };
-#endif // DEBUG
+#endif // PUBLIC_BUILD
 
 class CCC_PHFps : public IConsole_Command
 {
@@ -1601,8 +1595,11 @@ void CCC_RegisterCommands()
 	CMD1(CCC_PHFps, "ph_frequency");
 	CMD1(CCC_PHIterations, "ph_iterations");
 
-#ifdef DEBUG
+#ifndef PUBLIC_BUILD
 	CMD1(CCC_PHGravity, "ph_gravity");
+#endif
+
+#ifdef DEBUG
 	CMD4(CCC_FloatBlock, "ph_timefactor", &phTimefactor, 0.0001f, 1000.f);
 	CMD4(CCC_FloatBlock, "ph_break_common_factor", &phBreakCommonFactor, 0.f, 1000000000.f);
 	CMD4(CCC_FloatBlock, "ph_rigid_break_weapon_factor", &phRigidBreakWeaponFactor, 0.f, 1000000000.f);
