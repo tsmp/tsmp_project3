@@ -460,6 +460,10 @@ void game_sv_GameState::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 			R_ASSERT2(tpTeamed, "Non-teamed object is assigning to respawn point!");
 	}
 	xr_vector<RPoint> &rp = rpoints[l_uc_team];
+
+	if (rp.empty())
+		return;
+
 	//-----------------------------------------------------------
 	xr_vector<u32> xrp; //	= rpoints[l_uc_team];
 	for (u32 i = 0; i < rp.size(); i++)
