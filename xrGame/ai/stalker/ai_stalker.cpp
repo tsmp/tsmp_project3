@@ -903,9 +903,9 @@ void CAI_Stalker::UpdateCL()
 	if (g_Alive() && Remote() && !IsGameTypeSingle()) 
 		make_Interpolation();	
 
-	if (g_Alive() && OnServer())
+	if (g_Alive() /*&& OnServer()*/)
 	{
-		if (IsGameTypeSingle() && g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
+		if (/*IsGameTypeSingle() && */g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
 		{
 			fastdelegate::FastDelegate0<> f = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
 #ifdef DEBUG
