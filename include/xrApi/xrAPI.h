@@ -15,8 +15,9 @@ extern XRAPI_API IRenderFactory* RenderFactory;
 class CDUInterface;
 extern XRAPI_API CDUInterface* DU;
 
-struct xr_token;
-extern XRAPI_API xr_token* vid_mode_token;
+//Return this definition when HW moves to rendering
+//struct xr_token;
+//extern XRAPI_API xr_token* vid_mode_token;
 
 class IUIRender;
 extern XRAPI_API IUIRender* UIRender;
