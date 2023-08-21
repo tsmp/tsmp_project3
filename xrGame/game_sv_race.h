@@ -7,9 +7,10 @@ class game_sv_Race : public game_sv_mp
 {
 	using inherited = game_sv_mp;
 
-	std::vector<std::string> m_AvailableCars;
+	std::vector<std::vector<std::string>> m_AvailableCars;
 	std::vector<std::string> m_AvailableSkins;
 	CRandom m_CarRandom;
+	CRandom m_CarVisualRandom;
 	u32 m_WinnerFinishTime;
 	u16 m_WinnerId;
 	u8 m_CurrentRpoint;
@@ -20,7 +21,7 @@ class game_sv_Race : public game_sv_mp
 public:
 
 	game_sv_Race();
-	virtual ~game_sv_Race();
+	virtual ~game_sv_Race() = default;
 
 	virtual LPCSTR type_name() const override { return "race"; };
 	virtual void Create(shared_str &options) override;
@@ -56,5 +57,6 @@ private:
 
 	u32 GetRpointIdx(game_PlayerState* ps);
 	void LoadRaceSettings();
+	void LoadCarVisuals(CInifile* settings);
 	void SelectRoad();
 };

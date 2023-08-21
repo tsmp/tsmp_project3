@@ -28,59 +28,94 @@ game_sv_Race::game_sv_Race()
 	m_CurrentRoad = -1;
 
 	m_CarRandom.seed(static_cast<s32>(time(nullptr)));
+	m_CarVisualRandom.seed(static_cast<s32>(time(nullptr)));
 	LoadRaceSettings();
 }
-
-game_sv_Race::~game_sv_Race() {}
 
 void game_sv_Race::LoadRaceSettings()
 {
 	string_path temp;
 	m_AvailableSkins.push_back("stalker_killer_antigas");
-	m_AvailableCars.push_back("physics\\vehicles\\kamaz\\veh_kamaz_u_01.ogf");
+	m_AvailableCars.push_back({ "physics\\vehicles\\kamaz\\veh_kamaz_u_01.ogf" });
 
 	if (!FS.exist(temp, "$level$", "race.ltx"))
-		Msg("- race ltx not found, using default settings");
-	else
 	{
-		Msg("- race ltx found, using it");
-		CInifile* settings = xr_new<CInifile>(temp);
+		Msg("- race ltx not found, using default settings");
+		return;
+	}
 
-		if (settings->line_exist("settings", "max_players"))
-			m_MaxPlayers = settings->r_s32("settings", "max_players");
+	Msg("- race ltx found, using it");
+	CInifile* settings = xr_new<CInifile>(temp);
 
-		if (settings->section_exist("player_visuals"))
+	if (settings->line_exist("settings", "max_players"))
+		m_MaxPlayers = settings->r_s32("settings", "max_players");
+
+	if (settings->section_exist("player_visuals"))
+	{
+		const auto & visualsSect = settings->r_section("player_visuals").Data;
+
+		if (!visualsSect.empty())
+			m_AvailableSkins.clear();
+
+		for (const auto &item: visualsSect)
+			m_AvailableSkins.push_back(item.first.c_str());
+	}
+
+	LoadCarVisuals(settings);
+	xr_delete(settings);
+}
+
+void game_sv_Race::LoadCarVisuals(CInifile* settings)
+{
+	if (!settings->section_exist("available_cars"))
+		return;
+
+	const auto& sect = settings->r_section("available_cars").Data;
+
+	if (sect.empty())
+		return;
+	
+	m_AvailableCars.clear();
+
+	for (const auto& item : sect)
+	{
+		std::string carPath = item.first.c_str();
+
+		auto ModelExists = [&](const std::string& path) -> bool
 		{
-			CInifile::Sect& sect = settings->r_section("player_visuals");
+			string_path temp;
+			return FS.exist(temp, "$game_meshes$", path.c_str());
+		};
 
-			if (!sect.Data.empty())
-				m_AvailableSkins.clear();
-
-			for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
-			{
-				const CInifile::Item& item = *I;
-				m_AvailableSkins.push_back(item.first.c_str());
-			}
+		if (carPath.find(".ogf") != std::string::npos && ModelExists(carPath))
+		{
+			m_AvailableCars.push_back({ carPath });
+			continue;
 		}
 
-		if (settings->section_exist("available_cars"))
+		if (ModelExists(carPath + ".ogf"))
 		{
-			CInifile::Sect& sect = settings->r_section("available_cars");
-
-			if(!sect.Data.empty())
-				m_AvailableCars.clear();
-
-			for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
-			{
-				const CInifile::Item& item = *I;
-				m_AvailableCars.push_back(item.first.c_str());
-
-				if (m_AvailableCars.back().find(".ogf") == std::string::npos)
-					m_AvailableCars.back() += ".ogf";
-			}
+			m_AvailableCars.push_back({ carPath + ".ogf" });
+			continue;
 		}
 
-		xr_delete(settings);
+		static const std::string ColorPrefix = "_color_";
+		u32 colorCounter = 0;
+		std::vector<std::string> coloredCars;
+
+		while (ModelExists(carPath + ColorPrefix + std::to_string(colorCounter) + ".ogf"))
+		{
+			coloredCars.push_back(carPath + ColorPrefix + std::to_string(colorCounter) + ".ogf");
+			colorCounter++;
+		}
+
+		if (!coloredCars.empty())
+		{
+			m_AvailableCars.push_back(std::move(coloredCars));
+			continue;
+		}
+
+		Msg("! WARNING: can not find model [%s]", carPath.c_str());
 	}
 }
 
@@ -327,12 +362,14 @@ CSE_Abstract* game_sv_Race::SpawnCar(u32 rpoint)
 {
 	CSE_Abstract* E = nullptr;
 	E = spawn_begin("m_car");
-	E->s_flags.assign(M_SPAWN_OBJECT_LOCAL); // flags
+	E->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
 		
 	AssignRPoint(E, rpoint);
 
 	CSE_Visual* pV = smart_cast<CSE_Visual*>(E);
-	pV->set_visual(m_AvailableCars[m_CurrentRoundCar].c_str());
+	const auto& carVisuals = m_AvailableCars[m_CurrentRoundCar];
+	R_ASSERT2(!carVisuals.empty(), "There are no visuals for cars");
+	pV->set_visual(carVisuals[m_CarVisualRandom.randI(carVisuals.size())].c_str());
 
 	CSE_Abstract* spawned = spawn_end(E, m_server->GetServerClient()->ID);
 	signal_Syncronize();
