@@ -173,14 +173,7 @@ void game_sv_Race::UpdateInProgress()
 
 		if (ps->DeathTime + g_sv_race_reinforcementTime * 1000 < Level().timeServer())
 		{
-			if (ps->CarID != u16(-1))
-			{
-				NET_Packet P;
-				u_EventGen(P, GE_DESTROY, ps->CarID);
-				Level().Server->SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
-				ps->CarID = u16(-1);
-			}
-
+			DestroyCarOfPlayer(ps);
 			SpawnPlayer(l_pC->ID, "spectator");
 			SpawnPlayerInCar(l_pC->ID);
 		}
@@ -342,6 +335,12 @@ void game_sv_Race::OnRoundEnd()
 	inherited::OnRoundEnd();
 }
 
+void game_sv_Race::CleanClientData(xrClientData* xrCData)
+{
+	xrCData->ps->m_s16LastSRoint = -1;
+	DestroyCarOfPlayer(xrCData->ps);
+}
+
 void game_sv_Race::OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 GameID)
 {
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
@@ -374,6 +373,17 @@ CSE_Abstract* game_sv_Race::SpawnCar(u32 rpoint)
 	CSE_Abstract* spawned = spawn_end(E, m_server->GetServerClient()->ID);
 	signal_Syncronize();
 	return spawned;
+}
+
+void game_sv_Race::DestroyCarOfPlayer(game_PlayerState* ps)
+{
+	if (ps->CarID == u16(-1))
+		return;
+
+	NET_Packet P;
+	u_EventGen(P, GE_DESTROY, ps->CarID);
+	m_server->OnMessage(P, m_server->GetServerClient()->ID);
+	ps->CarID = u16(-1);
 }
 
 u32 game_sv_Race::GetRpointIdx(game_PlayerState* ps)

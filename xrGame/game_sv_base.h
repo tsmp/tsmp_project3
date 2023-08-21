@@ -74,7 +74,13 @@ public:
 
 public:
 	virtual void OnPlayerConnect(ClientID const &id_who);
+
+	// TSMP: WARNING, this could be called after player state and client data destroy.
+	// To get player state just after disconnect and before destroy, was created CleanClientData.
 	virtual void OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 GameID);
+
+	virtual void CleanClientData(xrClientData* C) {};
+
 	virtual void OnPlayerReady(ClientID const &id_who){};
 	virtual void OnPlayerEnteredGame(ClientID const &id_who){};
 	virtual void OnPlayerConnectFinished(ClientID const &id_who){};

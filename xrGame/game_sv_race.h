@@ -41,11 +41,13 @@ public:
 	virtual void net_Export_State(NET_Packet &P, ClientID const &id_to) override;
 
 	virtual BOOL OnPreCreate(CSE_Abstract* E) override;
+	virtual void CleanClientData(xrClientData* C) override;
 
 private:
 	void SpawnPlayerInCar(ClientID const &playerId);
 	CSE_Abstract* SpawnCar(u32 rpoint);
 	void AssignRPoint(CSE_Abstract* E, u32 rpoint);
+	void DestroyCarOfPlayer(game_PlayerState* ps);
 
 	void OnGKill(NET_Packet &P);
 	void OnBaseEnter(NET_Packet &P);

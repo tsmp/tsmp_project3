@@ -222,13 +222,15 @@ void xrServer::client_Destroy(IClient* C)
 	} 
 	while (true);
 
-#pragma TODO("Сделать как в чн/зп если это еще нужно")
+	game->CleanClientData(static_cast<xrClientData*>(aliveClient));
+
+#pragma TODO("Сделать как в чн/зп")
 	//if (pOwner)
 	//{
 	//	game->CleanDelayedEventFor(pOwner->ID);
 	//}
 
-#pragma TODO("Придумать вариант получше (этот убран из-за статистики")
+#pragma TODO("Придумать вариант получше (этот убран из-за статистики)")
 
 	//if (!g_sv_Client_Reconnect_Time)
 		xr_delete(aliveClient);	
