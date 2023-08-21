@@ -19,6 +19,7 @@
 #include "cameramanager.h"
 
 BOOL show_arms_on_steering_wheel = FALSE;
+int g_car_camera_view = 0;
 
 bool CCar::HUDView() const
 {
@@ -59,26 +60,19 @@ void CCar::cam_Update(float dt, float fov)
 void CCar::OnCameraChange(int type)
 {
 	if (Owner())
+		Owner()->setVisible(type != ectFirst || show_arms_on_steering_wheel);
+
+	if (active_camera && active_camera->tag == type)
+		return;
+
+	active_camera = camera[type];
+
+	if (ectFree == type)
 	{
-		if(show_arms_on_steering_wheel)
-			Owner()->setVisible(TRUE);
-		else
-		{
-			if (type == ectFirst)
-				Owner()->setVisible(FALSE);
-			else if (active_camera->tag == ectFirst)
-				Owner()->setVisible(TRUE);
-		}
+		Fvector xyz;
+		XFORM().getXYZi(xyz);
+		active_camera->yaw = xyz.y;
 	}
 
-	if (!active_camera || active_camera->tag != type)
-	{
-		active_camera = camera[type];
-		if (ectFree == type)
-		{
-			Fvector xyz;
-			XFORM().getXYZi(xyz);
-			active_camera->yaw = xyz.y;
-		}
-	}
+	g_car_camera_view = type;
 }

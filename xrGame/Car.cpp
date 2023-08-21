@@ -32,6 +32,7 @@
 
 BONE_P_MAP CCar::bone_map = BONE_P_MAP();
 extern CPHWorld *ph_world;
+extern int g_car_camera_view;
 
 ENGINE_API bool g_dedicated_server;
 
@@ -52,7 +53,7 @@ CCar::CCar()
 	camera[ectFree] = xr_new<CCameraLook>(this);
 	camera[ectFree]->tag = ectFree;
 	camera[ectFree]->Load("car_free_cam");
-	OnCameraChange(ectFirst);
+	OnCameraChange(g_car_camera_view);
 
 	m_repairing = false;
 	b_wheels_limited = false;
@@ -832,11 +833,12 @@ bool CCar::attach_Actor(CGameObject *actor)
 {
 	if (Owner() || CPHDestroyable::Destroyed())
 		return false;
-	CHolderCustom::attach_Actor(actor);
 
-	IKinematics *K = smart_cast<IKinematics *>(Visual());
+	CHolderCustom::attach_Actor(actor);
+	auto K = smart_cast<IKinematics*>(Visual());
 	CInifile *ini = K->LL_UserData();
 	int id;
+
 	if (ini->line_exist("car_definition", "driver_place"))
 		id = K->LL_BoneID(ini->r_string("car_definition", "driver_place"));
 	else
@@ -844,24 +846,15 @@ bool CCar::attach_Actor(CGameObject *actor)
 		Owner()->setVisible(0);
 		id = K->LL_GetBoneRoot();
 	}
+
 	CBoneInstance &instance = K->LL_GetBoneInstance(u16(id));
 	m_sits_transforms.push_back(instance.mTransform);
-	OnCameraChange(ectFirst);
+	OnCameraChange(g_car_camera_view);
 	PPhysicsShell()->Enable();
 	PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
-	//	VisualUpdate();
+
 	processing_activate();
 	ReleaseHandBreak();
-	//	HUD().GetUI()->UIMainIngameWnd->CarPanel().Show(true);
-	//	HUD().GetUI()->UIMainIngameWnd->CarPanel().SetCarHealth(fEntityHealth/100.f);
-	//HUD().GetUI()->UIMainIngameWnd.ShowBattery(true);
-	//CBoneData&	bone_data=K->LL_GetData(id);
-	//Fmatrix driver_pos_tranform;
-	//driver_pos_tranform.setHPB(bone_data.bind_hpb.x,bone_data.bind_hpb.y,bone_data.bind_hpb.z);
-	//driver_pos_tranform.c.set(bone_data.bind_translate);
-	//m_sits_transforms.push_back(driver_pos_tranform);
-	//H_SetParent(actor);
-
 	return true;
 }
 
