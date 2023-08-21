@@ -1708,8 +1708,9 @@ void CCC_RegisterCommands()
 #endif // MASTER_GOLD
 
 	CMD1(CCC_GSCheckForUpdates, "check_for_updates");
-#ifdef DEBUG
 	CMD1(CCC_DumpObjects, "dump_all_objects");
+
+#ifdef DEBUG
 	CMD3(CCC_String, "stalker_death_anim", dbg_stalker_death_anim, 32);
 	CMD4(CCC_Integer, "death_anim_velocity", &b_death_anim_velocity, FALSE, TRUE);
 	CMD4(CCC_Integer, "show_wnd_rect", &g_show_wnd_rect, 0, 1);

@@ -213,14 +213,12 @@ public:
 	virtual void Info(TInfo &I) { strcpy(I, "clear server net statistic"); }
 };
 
-#ifdef DEBUG
-class CCC_Dbg_NumObjects : public IConsole_Command
+class CCC_DbgObjects : public IConsole_Command
 {
 public:
-	CCC_Dbg_NumObjects(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	CCC_DbgObjects(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(LPCSTR args)
 	{
-
 		u32 SVObjNum = (OnServer()) ? Level().Server->GetEntitiesNum() : 0;
 		xr_vector<u16> SObjID;
 
@@ -275,9 +273,8 @@ public:
 		Msg("Client Objects : %d", CLObjNum);
 		Msg("Server Objects : %d", SVObjNum);
 	}
-	virtual void Info(TInfo &I) { strcpy(I, "dbg Num Objects"); }
+	virtual void Info(TInfo &I) { strcpy(I, "to find desync of server and client objects"); }
 };
-#endif // DEBUG
 
 class CCC_GSCDKey : public CCC_String
 {
@@ -1800,8 +1797,9 @@ void register_mp_console_commands()
 	CMD3(CCC_Mask, "net_cl_log_data", &psNET_Flags, NETFLAG_LOG_CL_PACKETS);
 #ifdef DEBUG
 	CMD3(CCC_Mask, "net_dump_size", &psNET_Flags, NETFLAG_DBG_DUMPSIZE);
-	CMD1(CCC_Dbg_NumObjects, "net_dbg_objects");
 #endif // DEBUG
+	CMD1(CCC_DbgObjects, "net_dbg_objects");
+
 	CMD3(CCC_GSCDKey, "cdkey", gsCDKey, sizeof(gsCDKey));
 	CMD4(CCC_Integer, "g_eventdelay", &g_dwEventDelay, 0, 1000);
 	CMD4(CCC_Integer, "g_corpsenum", (int *)&g_dwMaxCorpses, 0, 100);
