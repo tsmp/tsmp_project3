@@ -202,7 +202,7 @@ void xrServer::client_Destroy(IClient* C)
 		P.w_u32(Level().timeServer());
 		P.w_u16(GE_DESTROY);
 		P.w_u16(pS->ID);
-		SendBroadcast(C->ID, P, net_flags(TRUE, TRUE));
+		Level().Send(P, net_flags(TRUE, TRUE));
 	}
 
 	DelayedPacket pp;
