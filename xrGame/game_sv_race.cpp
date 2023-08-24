@@ -382,7 +382,7 @@ void game_sv_Race::DestroyCarOfPlayer(game_PlayerState* ps)
 
 	NET_Packet P;
 	u_EventGen(P, GE_DESTROY, ps->CarID);
-	m_server->OnMessage(P, m_server->GetServerClient()->ID);
+	Level().Send(P);
 	ps->CarID = u16(-1);
 }
 
