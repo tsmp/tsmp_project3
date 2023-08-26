@@ -1,9 +1,12 @@
 #include "stdafx.h"
+#include "..\TSMP3_Build_Config.h"
 #include "PlayersBase.h"
 #include "NET_Server.h"
+
+#ifdef USE_PLAYERS_STATS_SERVICE
+
 #include <WinInet.h>
 #include <thread>
-#include "..\TSMP3_Build_Config.h"
 
 #pragma comment(lib, "Wininet.lib")
 
@@ -162,10 +165,13 @@ void ReportPlayerStatsThread(IClient* cl, const PlayerGameStats& stats)
 	SendRequest(request.c_str(), response);
 }
 
+#endif // USE_PLAYERS_STATS_SERVICE
+
 #pragma TODO("TSMP: remake without creating new thread always")
 
 void CheckPlayerBannedInBase(IClient* cl, IPureServer* serv)
 {
+#ifdef USE_PLAYERS_STATS_SERVICE
     std::thread thread([](IClient*client, IPureServer* srv)
     {
         InitSession(srv); 
@@ -173,10 +179,14 @@ void CheckPlayerBannedInBase(IClient* cl, IPureServer* serv)
     }, cl, serv);
 
    thread.detach();
+#else
+	serv->OnPlayersBaseVerifyRespond(cl, false);
+#endif
 }
 
 void GenPlayerUID(IClient* cl, IPureServer* serv)
 {
+#ifdef USE_PLAYERS_STATS_SERVICE
 	std::thread thread([](IClient* client, IPureServer* srv)
 	{
 		InitSession(srv);
@@ -184,10 +194,15 @@ void GenPlayerUID(IClient* cl, IPureServer* serv)
 	}, cl, serv);
 
 	thread.detach();
+#else
+	serv->OnPlayersBaseGenUID(cl, 0);
+#endif
 }
 
 void ReportPlayerStats(IClient* cl, const PlayerGameStats &stats)
 {
+#ifdef USE_PLAYERS_STATS_SERVICE
 	std::thread thread(ReportPlayerStatsThread, cl, stats);
 	thread.detach();
+#endif
 }

@@ -16,4 +16,5 @@
 
 #ifdef PUBLIC_BUILD
 #define SEND_ERROR_REPORTS // Отправлять отчеты о вылетах
+#define USE_PLAYERS_STATS_SERVICE // Синхронизироваться с базой игроков, собирать статистику
 #endif
