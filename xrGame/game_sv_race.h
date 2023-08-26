@@ -44,7 +44,7 @@ public:
 	virtual void CleanClientData(xrClientData* C) override;
 
 private:
-	void SpawnPlayerInCar(ClientID const &playerId);
+	bool SpawnPlayerInCar(ClientID const &playerId);
 	CSE_Abstract* SpawnCar(u16 rpoint);
 	void AssignRPoint(CSE_Abstract* E, u16 rpoint);
 	void DestroyCarOfPlayer(game_PlayerState* ps);
@@ -57,6 +57,7 @@ private:
 	void UpdateScores();
 	void UpdateInProgress();
 
+	u32 GetPlayerRespawnTime(const game_PlayerState* ps);
 	u16 GetRpointIdx(game_PlayerState* ps);
 	void LoadRaceSettings();
 	void LoadCarVisuals(CInifile* settings);

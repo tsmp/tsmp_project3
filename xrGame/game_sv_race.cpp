@@ -152,6 +152,11 @@ void game_sv_Race::UpdateScores()
 	}
 }
 
+u32 game_sv_Race::GetPlayerRespawnTime(const game_PlayerState* ps)
+{
+	return ps->DeathTime + g_sv_race_reinforcementTime * 1000;
+}
+
 void game_sv_Race::UpdateInProgress()
 {
 	if (g_dedicated_server && m_server->GetClientsCount() == 1)
@@ -171,11 +176,16 @@ void game_sv_Race::UpdateInProgress()
 		if (!ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 			return;			
 
-		if (ps->DeathTime + g_sv_race_reinforcementTime * 1000 < Level().timeServer())
+		if (GetPlayerRespawnTime(l_pC->ps) < Level().timeServer())
 		{
 			DestroyCarOfPlayer(ps);
 			SpawnPlayer(l_pC->ID, "spectator");
-			SpawnPlayerInCar(l_pC->ID);
+
+			if (!SpawnPlayerInCar(l_pC->ID))
+			{
+				l_pC->ps->DeathTime = Level().timeServer(); // reset respawn time
+				signal_Syncronize(); // update timer on client
+			}
 		}
 	});
 }
@@ -434,11 +444,11 @@ u16 game_sv_Race::GetRpointIdx(game_PlayerState* ps)
 	return rpoint;
 }
 
-void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
+bool game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
 {
 	xrClientData* xrCData = m_server->ID_to_client(playerId);
 	if (!xrCData || !xrCData->owner || !xrCData->ps)
-		return;
+		return false;
 
 	CSE_Abstract* pOwner = xrCData->owner;
 	CSE_Spectator* pS = smart_cast<CSE_Spectator*>(pOwner);
@@ -449,8 +459,7 @@ void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
 	if (rpointIdx == static_cast<u16>(-1))
 	{
 		Msg("! ERROR: There are no free rpoints for player [%s]!", xrCData->ps->getName());
-		xrCData->ps->DeathTime = Level().timeServer(); // to reset respawn time
-		return;
+		return false;
 	}
 
 	CSE_Abstract* car = SpawnCar(rpointIdx);
@@ -469,6 +478,7 @@ void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
 
 	xrCData->ps->skin = u8(::Random.randI((int)TeamList[xrCData->ps->team].aSkins.size()));
 	SpawnPlayer(playerId, "mp_actor", car->ID);
+	return true;
 }
 
 void game_sv_Race::OnPlayerReady(ClientID const& id)
@@ -490,7 +500,22 @@ void game_sv_Race::OnPlayerReady(ClientID const& id)
 void game_sv_Race::net_Export_State(NET_Packet &P, ClientID const &id_to)
 {
 	inherited::net_Export_State(P, id_to);
-	P.w_u16(static_cast<u16>(g_sv_race_reinforcementTime));
+
+	auto secondsToRespawn = [&]() -> u32
+	{
+		if (const game_PlayerState* ps = get_id(id_to))
+		{
+			const u32 respTime = GetPlayerRespawnTime(ps);
+			const u32 curTime = Level().timeServer();
+
+			if (curTime < respTime)
+				return respTime - curTime;
+		}
+
+		return 0;
+	};
+
+	P.w_u32(secondsToRespawn());
 
 	if (m_phase == GAME_PHASE_PLAYER_SCORES)
 		P.w_u16(m_WinnerId);

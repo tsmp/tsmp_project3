@@ -22,7 +22,7 @@ constexpr u32 COLOR_PLAYER_NAME = 0xff40ff40;
 const Fvector NameIndicatorPosition = { 0.f, 0.3f,0.f };
 const char* LocationOtherPlayer = "mp_friend_location";
 
-game_cl_Race::game_cl_Race() : m_game_ui(nullptr), m_DeathTime(0), m_WinnerId(static_cast<u16>(-1)), m_ReinforcementTime(10), m_WinnerMessageSet(false)
+game_cl_Race::game_cl_Race() : m_game_ui(nullptr), m_WinnerId(static_cast<u16>(-1)), m_ReinforcementTime(-1), m_WinnerMessageSet(false)
 {
 	LoadSounds();
 
@@ -54,7 +54,11 @@ void game_cl_Race::LoadSounds()
 
 void game_cl_Race::UpdateRaceStart()
 {
-	if (!m_game_ui)
+	if (!m_game_ui || !Actor())
+		return;
+
+	CCar* car = smart_cast<CCar*>(Actor()->Holder());
+	if (!car)
 		return;
 
 	m_game_ui->ShowPlayersList(false);
@@ -64,8 +68,13 @@ void game_cl_Race::UpdateRaceStart()
 
 	static u32 LastTimeRemains = 0;
 
-	u32 timeBeforeStart = m_start_time + TimeBeforeRaceStart - Level().timeServer();
-	u32 secRemains = timeBeforeStart / 1000;
+	const u32 timeBeforeStart = m_start_time + TimeBeforeRaceStart - Level().timeServer();
+	const u32 secRemains = timeBeforeStart / 1000;
+
+	if (secRemains < 30 && secRemains > 2)
+		car->HandBreak();
+	else
+		car->ReleaseHandBreak();
 
 	if (LastTimeRemains != secRemains)
 	{
@@ -78,19 +87,8 @@ void game_cl_Race::UpdateRaceStart()
 
 		m_game_ui->SetCountdownCaption(caption);
 
-		if (CActor* act = Actor())
-		{
-			if (CCar* car = smart_cast<CCar*>(act->Holder()))
-			{
-				if (secRemains == 6)
-					car->StartEngine();
-
-				if(secRemains < 30 && secRemains > 2)
-					car->HandBreak();
-				else
-					car->ReleaseHandBreak();
-			}
-		}
+		if (secRemains == 6)
+			car->StartEngine();
 
 		if (secRemains > 0 && secRemains <= 5)
 			PlaySndMessage(ID_COUNTDOWN_1 + secRemains - 1);
@@ -99,36 +97,36 @@ void game_cl_Race::UpdateRaceStart()
 	LastTimeRemains = secRemains;
 }
 
+void game_cl_Race::UpdateCountdownCaption()
+{
+	if (!Actor() || !Actor()->g_Alive())
+	{
+		const u32 curTime = Level().timeServer();
+		const u32 respTime = m_ReinforcementTime;
+
+		if (curTime < respTime)
+		{
+			const u32 timeSecToResp = (respTime - curTime) / 1000;
+			string128 tempStr;
+			sprintf_s(tempStr, "%s: %u", *g_St.translate("mp_time2respawn"), timeSecToResp + 1);
+			m_game_ui->SetCountdownCaption(tempStr);
+			return;
+		}
+	}
+
+	if (m_start_time + GoMessageShowTime > Level().timeServer())
+		m_game_ui->SetCountdownCaption("mp_go");
+	else
+		m_game_ui->SetCountdownCaption("");
+}
+
 void game_cl_Race::UpdateRaceInProgress()
 {
 	if (!m_game_ui)
 		return;
-	
+
 	m_game_ui->ShowPlayersList(false);
-
-	if (!Actor() || !Actor()->g_Alive())
-	{
-		if (!m_DeathTime)
-			m_DeathTime = Level().timeServer();
-
-		u32 timeSecToResp = (m_DeathTime + m_ReinforcementTime * 1000 - Level().timeServer()) / 1000;
-
-		if (timeSecToResp > 0)
-		{
-			string128 str;
-			sprintf_s(str, "%s: %u", *g_St.translate("mp_time2respawn"), timeSecToResp);
-			m_game_ui->SetCountdownCaption(str);
-		}
-	}
-	else
-	{
-		m_DeathTime = 0;
-
-		if (m_start_time + GoMessageShowTime > Level().timeServer())
-			m_game_ui->SetCountdownCaption(*g_St.translate("mp_go"));
-		else
-			m_game_ui->SetCountdownCaption("");
-	}
+	UpdateCountdownCaption();
 }
 
 void game_cl_Race::UpdateRaceScores()
@@ -320,7 +318,6 @@ bool game_cl_Race::OnKeyboardRelease(int key)
 
 void game_cl_Race::OnSwitchPhase(u32 oldPhase, u32 newPhase)
 {
-	m_DeathTime = 0;
 	m_WinnerMessageSet = false;
 	inherited::OnSwitchPhase(oldPhase, newPhase);
 
@@ -336,7 +333,7 @@ void game_cl_Race::SetUI(CUIGameRace* gameUi)
 void game_cl_Race::net_import_state(NET_Packet &P)
 {
 	inherited::net_import_state(P);
-	P.r_u16(m_ReinforcementTime);
+	m_ReinforcementTime = Level().timeServer() + P.r_u32();
 
 	if (m_phase == GAME_PHASE_PLAYER_SCORES)
 		P.r_u16(m_WinnerId);

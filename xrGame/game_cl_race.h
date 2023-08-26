@@ -8,15 +8,15 @@ class game_cl_Race : public game_cl_mp
 {
 	typedef game_cl_mp inherited;
 	CUIGameRace* m_game_ui;
-	u32 m_DeathTime;
+	u32 m_ReinforcementTime;
 	u16 m_WinnerId;
-	u16 m_ReinforcementTime;
 	bool m_WinnerMessageSet;
 
 	void LoadTeamBaseParticles();
 	void UpdateRaceStart();
 	void UpdateRaceInProgress();
 	void UpdateRaceScores();
+	void UpdateCountdownCaption();
 	void LoadSounds();
 
 public:
