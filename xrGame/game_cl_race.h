@@ -36,4 +36,6 @@ public:
 	void SetUI(CUIGameRace* gameUi);
 	void net_import_state(NET_Packet &P) override;
 	CUIGameBaseMP* GetMpGameUI() override { return reinterpret_cast<CUIGameBaseMP*>(m_game_ui); }
+
+	bool NeedToSendReady_Spectator(int key, game_PlayerState* ps) override;
 };

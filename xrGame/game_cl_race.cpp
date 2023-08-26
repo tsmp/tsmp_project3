@@ -338,3 +338,11 @@ void game_cl_Race::net_import_state(NET_Packet &P)
 	if (m_phase == GAME_PHASE_PLAYER_SCORES)
 		P.r_u16(m_WinnerId);
 }
+
+bool game_cl_Race::NeedToSendReady_Spectator(int key, game_PlayerState* ps)
+{
+	if (Phase() != GAME_PHASE_PENDING || !CanBeReady())
+		return false;
+
+	return key == kWPN_FIRE || key == kJUMP;
+}
