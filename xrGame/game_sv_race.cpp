@@ -346,7 +346,7 @@ void game_sv_Race::OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 Ga
 	inherited::OnPlayerDisconnect(id_who, Name, GameID);
 }
 
-void game_sv_Race::AssignRPoint(CSE_Abstract* E, u32 rpoint)
+void game_sv_Race::AssignRPoint(CSE_Abstract* E, u16 rpoint)
 {
 	R_ASSERT(E);
 	const xr_vector<RPoint> &rp = rpoints[m_CurrentRoad];
@@ -357,7 +357,7 @@ void game_sv_Race::AssignRPoint(CSE_Abstract* E, u32 rpoint)
 	E->o_Angle.set(r.A);
 }
 
-CSE_Abstract* game_sv_Race::SpawnCar(u32 rpoint)
+CSE_Abstract* game_sv_Race::SpawnCar(u16 rpoint)
 {
 	CSE_Abstract* E = nullptr;
 	E = spawn_begin("m_car");
@@ -386,9 +386,9 @@ void game_sv_Race::DestroyCarOfPlayer(game_PlayerState* ps)
 	ps->CarID = u16(-1);
 }
 
-u32 game_sv_Race::GetRpointIdx(game_PlayerState* ps)
+u16 game_sv_Race::GetRpointIdx(game_PlayerState* ps)
 {
-	const u32 rpointsTeam = m_CurrentRoad;
+	const u8 rpointsTeam = m_CurrentRoad;
 	u16 rpoint = ps->m_s16LastSRoint;
 
 	// player has associated rpoint
@@ -431,7 +431,6 @@ u32 game_sv_Race::GetRpointIdx(game_PlayerState* ps)
 		}
 	}
 
-	R_ASSERT2(rpoint != static_cast<u16>(-1), "There are no free rpoints for players!");
 	return rpoint;
 }
 
@@ -445,7 +444,16 @@ void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
 	CSE_Spectator* pS = smart_cast<CSE_Spectator*>(pOwner);
 	R_ASSERT(pS);
 
-	CSE_Abstract* car = SpawnCar(GetRpointIdx(xrCData->ps));
+	const u16 rpointIdx = GetRpointIdx(xrCData->ps);
+
+	if (rpointIdx == static_cast<u16>(-1))
+	{
+		Msg("! ERROR: There are no free rpoints for player [%s]!", xrCData->ps->getName());
+		xrCData->ps->DeathTime = Level().timeServer(); // to reset respawn time
+		return;
+	}
+
+	CSE_Abstract* car = SpawnCar(rpointIdx);
 	R_ASSERT(smart_cast<CSE_ALifeCar*>(car));
 
 	xrCData->ps->resetFlag(GAME_PLAYER_FLAG_SPECTATOR);	
@@ -463,19 +471,19 @@ void game_sv_Race::SpawnPlayerInCar(ClientID const &playerId)
 	SpawnPlayer(playerId, "mp_actor", car->ID);
 }
 
-void game_sv_Race::OnPlayerReady(ClientID const &id)
+void game_sv_Race::OnPlayerReady(ClientID const& id)
 {
-	if(m_phase == GAME_PHASE_PENDING)
-	{
-		if (game_PlayerState* ps = get_id(id))
-		{
-			if (ps->testFlag(GAME_PLAYER_FLAG_READY))
-				ps->resetFlag(GAME_PLAYER_FLAG_READY);
-			else
-				ps->setFlag(GAME_PLAYER_FLAG_READY);
+	if (m_phase != GAME_PHASE_PENDING)
+		return;
 
-			signal_Syncronize();
-		}
+	if (game_PlayerState* ps = get_id(id))
+	{
+		if (ps->testFlag(GAME_PLAYER_FLAG_READY))
+			ps->resetFlag(GAME_PLAYER_FLAG_READY);
+		else
+			ps->setFlag(GAME_PLAYER_FLAG_READY);
+
+		signal_Syncronize();
 	}
 }
 

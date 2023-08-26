@@ -45,8 +45,8 @@ public:
 
 private:
 	void SpawnPlayerInCar(ClientID const &playerId);
-	CSE_Abstract* SpawnCar(u32 rpoint);
-	void AssignRPoint(CSE_Abstract* E, u32 rpoint);
+	CSE_Abstract* SpawnCar(u16 rpoint);
+	void AssignRPoint(CSE_Abstract* E, u16 rpoint);
 	void DestroyCarOfPlayer(game_PlayerState* ps);
 
 	void OnGKill(NET_Packet &P);
@@ -57,7 +57,7 @@ private:
 	void UpdateScores();
 	void UpdateInProgress();
 
-	u32 GetRpointIdx(game_PlayerState* ps);
+	u16 GetRpointIdx(game_PlayerState* ps);
 	void LoadRaceSettings();
 	void LoadCarVisuals(CInifile* settings);
 	void SelectRoad();
