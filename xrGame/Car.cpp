@@ -836,7 +836,7 @@ bool CCar::attach_Actor(CGameObject *actor)
 
 	CHolderCustom::attach_Actor(actor);
 	auto K = smart_cast<IKinematics*>(Visual());
-	CInifile *ini = K->LL_UserData();
+	CInifile* ini = K->LL_UserData();
 	int id;
 
 	if (ini->line_exist("car_definition", "driver_place"))
@@ -847,7 +847,7 @@ bool CCar::attach_Actor(CGameObject *actor)
 		id = K->LL_GetBoneRoot();
 	}
 
-	CBoneInstance &instance = K->LL_GetBoneInstance(u16(id));
+	CBoneInstance& instance = K->LL_GetBoneInstance(u16(id));
 	m_sits_transforms.push_back(instance.mTransform);
 	OnCameraChange(g_car_camera_view);
 	PPhysicsShell()->Enable();
@@ -1156,6 +1156,11 @@ void CCar::Init()
 void CCar::Beep()
 {
 	m_car_sound->Beep();
+}
+
+void CCar::Brakes()
+{
+	m_car_sound->Brakes();
 }
 
 void CCar::Revert()
@@ -1871,42 +1876,51 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 	u16 id;
 	switch (type)
 	{
-	case GE_OWNERSHIP_TAKE:
-	{
-		P.r_u16(id);
-		CObject *O = Level().Objects.net_Find(id);
-		if (GetInventory()->CanTakeItem(smart_cast<CInventoryItem *>(O)))
+		case GE_OWNERSHIP_TAKE:
 		{
-			O->H_SetParent(this);
-			GetInventory()->Take(smart_cast<CGameObject *>(O), false, false);
+			P.r_u16(id);
+			CObject *O = Level().Objects.net_Find(id);
+			if (GetInventory()->CanTakeItem(smart_cast<CInventoryItem *>(O)))
+			{
+				O->H_SetParent(this);
+				GetInventory()->Take(smart_cast<CGameObject *>(O), false, false);
+			}
+			else
+			{
+				if (!O || !O->H_Parent() || (this != O->H_Parent()))
+					return;
+				NET_Packet P;
+				u_EventGen(P, GE_OWNERSHIP_REJECT, ID());
+				P.w_u16(u16(O->ID()));
+				u_EventSend(P);
+			}
 		}
-		else
-		{
-			if (!O || !O->H_Parent() || (this != O->H_Parent()))
-				return;
-			NET_Packet P;
-			u_EventGen(P, GE_OWNERSHIP_REJECT, ID());
-			P.w_u16(u16(O->ID()));
-			u_EventSend(P);
-		}
-	}
-	break;
-	case GE_OWNERSHIP_REJECT:
-	{
-		P.r_u16(id);
-		CObject *O = Level().Objects.net_Find(id);
+		break;
 
-		bool just_before_destroy = !P.r_eof() && P.r_u8();
-		O->SetTmpPreDestroy(just_before_destroy);
-		if (GetInventory()->DropItem(smart_cast<CGameObject *>(O)))
+		case GE_OWNERSHIP_REJECT:
 		{
-			O->H_SetParent(0, just_before_destroy);
-		}
-	}
-	break;
+			P.r_u16(id);
+			CObject *O = Level().Objects.net_Find(id);
 
-	case GE_CAR_BEEP:
-		Beep();
+			bool just_before_destroy = !P.r_eof() && P.r_u8();
+			O->SetTmpPreDestroy(just_before_destroy);
+			if (GetInventory()->DropItem(smart_cast<CGameObject *>(O)))
+			{
+				O->H_SetParent(0, just_before_destroy);
+			}
+		}
+		break;
+
+		case GE_CAR_BEEP:
+		{
+			Beep();
+		}
+		break;
+
+		case GE_CAR_BRAKES:
+		{
+			Brakes();
+		}
 		break;
 	}
 }
