@@ -1005,7 +1005,6 @@ public:
 	}
 };
 
-#ifndef PUBLIC_BUILD
 class CCC_PHGravity : public IConsole_Command
 {
 public:
@@ -1015,7 +1014,17 @@ public:
 		if (!ph_world)
 			return;
 
-		ph_world->SetGravity(float(atof(args)));
+		const float gravityF = static_cast<float>(atof(args));
+
+#ifdef PUBLIC_BUILD
+		if (gravityF < 18.f || gravityF > 30.f)
+		{
+			Msg("! invalid gravity value!");
+			return;
+		}
+#endif
+
+		ph_world->SetGravity(gravityF);
 	}
 	virtual void Status(TStatus &S)
 	{
@@ -1027,7 +1036,6 @@ public:
 			S[xr_strlen(S) - 1] = 0;
 	}
 };
-#endif // PUBLIC_BUILD
 
 class CCC_PHFps : public IConsole_Command
 {
@@ -1596,9 +1604,7 @@ void CCC_RegisterCommands()
 	CMD1(CCC_PHFps, "ph_frequency");
 	CMD1(CCC_PHIterations, "ph_iterations");
 
-#ifndef PUBLIC_BUILD
 	CMD1(CCC_PHGravity, "ph_gravity");
-#endif
 
 #ifdef DEBUG
 	CMD4(CCC_FloatBlock, "ph_timefactor", &phTimefactor, 0.0001f, 1000.f);
