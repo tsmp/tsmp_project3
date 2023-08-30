@@ -210,8 +210,12 @@ void CCar::OnKeyboardPress(int cmd)
 		break;
 	case kJUMP: 
 		PressBreaks();
-		if (m_lights.IsLightTurnedOn())
+		if (m_lights.IsLightTurnedOn()) {
 			t_lights.TurnOnTailLights();
+			NET_Packet P;
+			CGameObject::u_EventGen(P, GE_CAR_TAIL_ON, ID());
+			CGameObject::u_EventSend(P);
+		}
 		NET_Packet P;
 		CGameObject::u_EventGen(P, GE_CAR_BRAKES, ID());
 		CGameObject::u_EventSend(P);
@@ -255,6 +259,9 @@ void CCar::OnKeyboardRelease(int cmd)
 	case kJUMP:
 		ReleaseBreaks();
 		t_lights.TurnOffTailLights();
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GE_CAR_TAIL_OFF, ID());
+		CGameObject::u_EventSend(P);
 		break;
 	};
 }

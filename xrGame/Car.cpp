@@ -603,7 +603,6 @@ void CCar::net_Export(NET_Packet &P)
 {
 	P.w_u8(u8(b_engine_on));
 	P.w_u8(u8(m_lights.IsLightTurnedOn()));
-	//P.w_u8(u8(t_lights.IsTailLightTurnedOn()));
 	P.w_float(Health());
 
 	if (OwnerActor())
@@ -689,11 +688,6 @@ void CCar::net_Import(NET_Packet &P)
 
 		if (l != m_lights.IsLightTurnedOn())
 			m_lights.SwitchHeadLights();
-
-		//l = !!light;
-		//
-		//if (l != t_lights.IsTailLightTurnedOn())
-		//	t_lights.SwitchTailLights();
 	}
 
 	u16 cnt;
@@ -1888,7 +1882,7 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 		case GE_OWNERSHIP_TAKE:
 		{
 			P.r_u16(id);
-			CObject* O = Level().Objects.net_Find(id);
+			CObject *O = Level().Objects.net_Find(id);
 			if (GetInventory()->CanTakeItem(smart_cast<CInventoryItem*>(O)))
 			{
 				O->H_SetParent(this);
@@ -1909,7 +1903,7 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 		case GE_OWNERSHIP_REJECT:
 		{
 			P.r_u16(id);
-			CObject* O = Level().Objects.net_Find(id);
+			CObject *O = Level().Objects.net_Find(id);
 
 			bool just_before_destroy = !P.r_eof() && P.r_u8();
 			O->SetTmpPreDestroy(just_before_destroy);
@@ -1929,6 +1923,16 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 		case GE_CAR_BRAKES:
 		{
 			Brakes();
+		}
+		break;
+
+		case GE_CAR_TAIL_ON:{
+
+		}
+		break;
+
+		case GE_CAR_TAIL_OFF:{
+
 		}
 		break;
 	}
