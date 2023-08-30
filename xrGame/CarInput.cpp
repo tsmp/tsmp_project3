@@ -99,6 +99,7 @@ bool CCar::bfAssignObject(CScriptEntityAction *tpEntityAction)
 		}
 		return (false);
 	}
+
 	SCarLight *light = NULL;
 	if (m_lights.findLight(l_sBoneID, light))
 	{
@@ -123,6 +124,31 @@ bool CCar::bfAssignObject(CScriptEntityAction *tpEntityAction)
 			return ((l_tObjectAction.m_bCompleted = true) == false);
 		}
 	}
+
+	if (t_lights.findTailLight(l_sBoneID, light))
+	{
+		switch (l_tObjectAction.m_tGoalType)
+		{
+		case MonsterSpace::eObjectActionActivate:
+		{
+			light->TurnOn();
+			return ((l_tObjectAction.m_bCompleted = true) == false);
+		}
+		case MonsterSpace::eObjectActionDeactivate:
+		{
+			light->TurnOff();
+			return ((l_tObjectAction.m_bCompleted = true) == false);
+		}
+		case MonsterSpace::eObjectActionUse:
+		{
+			light->Switch();
+			return ((l_tObjectAction.m_bCompleted = true) == false);
+		}
+		default:
+			return ((l_tObjectAction.m_bCompleted = true) == false);
+		}
+	}
+
 
 	return (false);
 }
@@ -159,9 +185,11 @@ void CCar::OnKeyboardPress(int cmd)
 		break;
 	case kFWD:
 		PressForward();
+		t_lights.TurnOffTailLights();
 		break;
 	case kBACK:
 		PressBack();
+		t_lights.TurnOffTailLights();
 		break;
 	case kCarBeep:
 	{
@@ -182,6 +210,8 @@ void CCar::OnKeyboardPress(int cmd)
 		break;
 	case kJUMP: 
 		PressBreaks();
+		if (m_lights.IsLightTurnedOn())
+			t_lights.TurnOnTailLights();
 		NET_Packet P;
 		CGameObject::u_EventGen(P, GE_CAR_BRAKES, ID());
 		CGameObject::u_EventSend(P);
@@ -224,6 +254,7 @@ void CCar::OnKeyboardRelease(int cmd)
 		break;
 	case kJUMP:
 		ReleaseBreaks();
+		t_lights.TurnOffTailLights();
 		break;
 	};
 }

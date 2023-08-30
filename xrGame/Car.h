@@ -453,6 +453,7 @@ private:
 	size_t m_current_transmission_num;
 
 	CCarLights m_lights;
+	CCarLights t_lights;
 
 	void InitParabola();
 	float _stdcall Parabola(float rpm);

@@ -483,6 +483,7 @@ void CCar::VisualUpdate(float fov)
 
 	UpdateExhausts();
 	m_lights.Update();
+	t_lights.Update();
 }
 
 void CCar::InterpolateStates(const float &factor)
@@ -602,6 +603,7 @@ void CCar::net_Export(NET_Packet &P)
 {
 	P.w_u8(u8(b_engine_on));
 	P.w_u8(u8(m_lights.IsLightTurnedOn()));
+	//P.w_u8(u8(t_lights.IsTailLightTurnedOn()));
 	P.w_float(Health());
 
 	if (OwnerActor())
@@ -687,6 +689,11 @@ void CCar::net_Import(NET_Packet &P)
 
 		if (l != m_lights.IsLightTurnedOn())
 			m_lights.SwitchHeadLights();
+
+		//l = !!light;
+		//
+		//if (l != t_lights.IsTailLightTurnedOn())
+		//	t_lights.SwitchTailLights();
 	}
 
 	u16 cnt;
@@ -836,7 +843,7 @@ bool CCar::attach_Actor(CGameObject *actor)
 
 	CHolderCustom::attach_Actor(actor);
 	auto K = smart_cast<IKinematics*>(Visual());
-	CInifile* ini = K->LL_UserData();
+	CInifile *ini = K->LL_UserData();
 	int id;
 
 	if (ini->line_exist("car_definition", "driver_place"))
@@ -847,7 +854,7 @@ bool CCar::attach_Actor(CGameObject *actor)
 		id = K->LL_GetBoneRoot();
 	}
 
-	CBoneInstance& instance = K->LL_GetBoneInstance(u16(id));
+	CBoneInstance &instance = K->LL_GetBoneInstance(u16(id));
 	m_sits_transforms.push_back(instance.mTransform);
 	OnCameraChange(g_car_camera_view);
 	PPhysicsShell()->Enable();
@@ -1006,7 +1013,9 @@ void CCar::ParseDefinitions()
 		m_exhaust_particles = ini->r_string("car_definition", "exhaust_particles");
 	///////////////////////////////lights///////////////////////////////////////////////////
 	m_lights.Init(this);
+	t_lights.Init(this);
 	m_lights.ParseDefinitions();
+	t_lights.ParseDefinitionsTail();
 
 	if (ini->section_exist("animations"))
 	{
@@ -1879,11 +1888,11 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 		case GE_OWNERSHIP_TAKE:
 		{
 			P.r_u16(id);
-			CObject *O = Level().Objects.net_Find(id);
-			if (GetInventory()->CanTakeItem(smart_cast<CInventoryItem *>(O)))
+			CObject* O = Level().Objects.net_Find(id);
+			if (GetInventory()->CanTakeItem(smart_cast<CInventoryItem*>(O)))
 			{
 				O->H_SetParent(this);
-				GetInventory()->Take(smart_cast<CGameObject *>(O), false, false);
+				GetInventory()->Take(smart_cast<CGameObject*>(O), false, false);
 			}
 			else
 			{
@@ -1900,11 +1909,11 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 		case GE_OWNERSHIP_REJECT:
 		{
 			P.r_u16(id);
-			CObject *O = Level().Objects.net_Find(id);
+			CObject* O = Level().Objects.net_Find(id);
 
 			bool just_before_destroy = !P.r_eof() && P.r_u8();
 			O->SetTmpPreDestroy(just_before_destroy);
-			if (GetInventory()->DropItem(smart_cast<CGameObject *>(O)))
+			if (GetInventory()->DropItem(smart_cast<CGameObject*>(O)))
 			{
 				O->H_SetParent(0, just_before_destroy);
 			}
@@ -1998,6 +2007,7 @@ void CCar::CarExplode()
 	if (m_car_weapon)
 		m_car_weapon->Action(CCarWeapon::eWpnActivate, 0);
 	m_lights.TurnOffHeadLights();
+	t_lights.TurnOffTailLights();
 	b_exploded = true;
 	CExplosive::GenExplodeEvent(Position(), Fvector().set(0.f, 1.f, 0.f));
 
