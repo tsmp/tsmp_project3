@@ -27,6 +27,7 @@ class CCarLights
 public:
 	void ParseDefinitions();
 	void ParseDefinitionsTail();
+	void ParseDefinitionsExhaust();
 	void Init(CCar *pcar);
 	void Update();
 	CCar *PCar() { return m_pcar; }
@@ -36,11 +37,16 @@ public:
 	void SwitchTailLights();
 	void TurnOnTailLights();
 	void TurnOffTailLights();
+	void SwitchExhaustLights();
+	void TurnOnExhaustLights();
+	void TurnOffExhaustLights();
 	bool IsLightTurnedOn();
 	bool IsTailLightTurnedOn();
+	bool IsExhaustLightTurnedOn();
 	bool IsLight(u16 bone_id);
 	bool findLight(u16 bone_id, SCarLight *&light);
 	bool findTailLight(u16 bone_id, SCarLight *&light);
+	bool findExhaustLight(u16 bone_id, SCarLight *&light);
 	CCarLights();
 	~CCarLights();
 
@@ -73,7 +79,22 @@ protected:
 		}
 	};
 
+	struct SFindExhaustLightPredicate
+	{
+		const SCarLight *e_light;
+
+		SFindExhaustLightPredicate(const SCarLight* light) : e_light(light)
+		{
+		}
+
+		bool operator()(const SCarLight *light) const
+		{
+			return light->bone_id == e_light->bone_id;
+		}
+	};
+
 	LIGHTS_STORAGE m_lights;
 	LIGHTS_STORAGE t_lights;
+	LIGHTS_STORAGE e_lights;
 	CCar *m_pcar;
 };

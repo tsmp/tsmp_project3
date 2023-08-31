@@ -132,6 +132,7 @@ void CCarLights::Init(CCar *pcar)
 	m_pcar = pcar;
 	m_lights.clear();
 	t_lights.clear();
+	e_lights.clear();
 }
 
 void CCarLights::ParseDefinitions()
@@ -168,6 +169,23 @@ void CCarLights::ParseDefinitionsTail()
 	}
 }
 
+void CCarLights::ParseDefinitionsExhaust()
+{
+	CInifile* ini = smart_cast<IKinematics*>(m_pcar->Visual())->LL_UserData();
+	if (!ini->section_exist("lights"))
+		return;
+	LPCSTR S = ini->r_string("lights", "exhaustlights");
+	string64 S1;
+	int count = _GetItemCount(S);
+	for (int i = 0; i < count; ++i)
+	{
+		_GetItem(S, i, S1);
+		e_lights.push_back(xr_new<SCarLight>());
+		e_lights.back()->Init(this);
+		e_lights.back()->ParseDefinitions(S1);
+	}
+}
+
 void CCarLights::Update()
 {
 	VERIFY(!ph_world->Processing());
@@ -178,6 +196,10 @@ void CCarLights::Update()
 	LIGHTS_I it = t_lights.begin(), et = t_lights.end();
 	for (; it != et; ++it)
 		(*it)->Update();
+
+	LIGHTS_I ie = e_lights.begin(), ee = e_lights.end();
+	for (; ie != ee; ++ie)
+		(*ie)->Update();
 }
 
 bool CCarLights::IsLightTurnedOn()
@@ -194,6 +216,15 @@ bool CCarLights::IsTailLightTurnedOn()
 		return false;
 
 	return t_lights[0]->isOn();
+}
+
+
+bool CCarLights::IsExhaustLightTurnedOn()
+{
+	if (e_lights.empty())
+		return false;
+
+	return e_lights[0]->isOn();
 }
 
 void CCarLights::SwitchHeadLights()
@@ -246,6 +277,31 @@ void CCarLights::TurnOffTailLights()
 		(*i)->TurnOff();
 }
 
+void CCarLights::SwitchExhaustLights()
+{
+
+	VERIFY(!ph_world->Processing());
+	LIGHTS_I i = e_lights.begin(), e = e_lights.end();
+	for (; i != e; ++i)
+		(*i)->Switch();
+}
+
+void CCarLights::TurnOnExhaustLights()
+{
+
+	VERIFY(!ph_world->Processing());
+	LIGHTS_I i = e_lights.begin(), e = e_lights.end();
+	for (; i != e; ++i)
+		(*i)->TurnOn();
+}
+void CCarLights::TurnOffExhaustLights()
+{
+	VERIFY(!ph_world->Processing());
+	LIGHTS_I i = e_lights.begin(), e = e_lights.end();
+	for (; i != e; ++i)
+		(*i)->TurnOff();
+}
+
 bool CCarLights::IsLight(u16 bone_id)
 {
 	SCarLight *light = NULL;
@@ -271,6 +327,16 @@ bool CCarLights::findTailLight(u16 bone_id, SCarLight *&light)
 	return i != e;
 }
 
+bool CCarLights::findExhaustLight(u16 bone_id, SCarLight *&light)
+{
+	LIGHTS_I i, e = e_lights.end();
+	SCarLight find_light;
+	find_light.bone_id = bone_id;
+	i = std::find_if(e_lights.begin(), e, SFindExhaustLightPredicate(&find_light));
+	light = *i;
+	return i != e;
+}
+
 CCarLights::~CCarLights()
 {
 	LIGHTS_I i = m_lights.begin(), e = m_lights.end();
@@ -282,4 +348,9 @@ CCarLights::~CCarLights()
 	for (; it != et; ++it)
 		xr_delete(*it);
 	t_lights.clear();
+
+	LIGHTS_I ie = e_lights.begin(), ee = e_lights.end();
+	for (; ie != ee; ++ie)
+		xr_delete(*ie);
+	e_lights.clear();
 }

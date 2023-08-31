@@ -160,6 +160,7 @@ public:
 	float m_breaks_to_back_rate;
 	float m_power_neutral_factor; //multiplier for power when accelerator is not pressed (0-1,0.25)
 	bool b_exploded;
+	float e_start_time;
 
 	struct SWheel : public CDamagableHealthItem
 	{
@@ -454,6 +455,7 @@ private:
 
 	CCarLights m_lights;
 	CCarLights t_lights;
+	CCarLights e_lights;
 
 	void InitParabola();
 	float _stdcall Parabola(float rpm);

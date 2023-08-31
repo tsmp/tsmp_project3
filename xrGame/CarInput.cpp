@@ -149,6 +149,30 @@ bool CCar::bfAssignObject(CScriptEntityAction *tpEntityAction)
 		}
 	}
 
+	if (e_lights.findExhaustLight(l_sBoneID, light))
+	{
+		switch (l_tObjectAction.m_tGoalType)
+		{
+		case MonsterSpace::eObjectActionActivate:
+		{
+			light->TurnOn();
+			return ((l_tObjectAction.m_bCompleted = true) == false);
+		}
+		case MonsterSpace::eObjectActionDeactivate:
+		{
+			light->TurnOff();
+			return ((l_tObjectAction.m_bCompleted = true) == false);
+		}
+		case MonsterSpace::eObjectActionUse:
+		{
+			light->Switch();
+			return ((l_tObjectAction.m_bCompleted = true) == false);
+		}
+		default:
+			return ((l_tObjectAction.m_bCompleted = true) == false);
+		}
+	}
+
 
 	return (false);
 }
@@ -186,16 +210,10 @@ void CCar::OnKeyboardPress(int cmd)
 	case kFWD:
 		PressForward();
 		t_lights.TurnOffTailLights();
-		NET_Packet PFWDOFFF;
-		CGameObject::u_EventGen(PFWDOFFF, GE_CAR_TAIL_OFF, ID());
-		CGameObject::u_EventSend(PFWDOFFF);
 		break;
 	case kBACK:
 		PressBack();
 		t_lights.TurnOffTailLights();
-		NET_Packet PBACKOFF;
-		CGameObject::u_EventGen(PBACKOFF, GE_CAR_TAIL_OFF, ID());
-		CGameObject::u_EventSend(PBACKOFF);
 		break;
 	case kCarBeep:
 	{

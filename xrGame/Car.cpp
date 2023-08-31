@@ -484,6 +484,10 @@ void CCar::VisualUpdate(float fov)
 	UpdateExhausts();
 	m_lights.Update();
 	t_lights.Update();
+	e_lights.Update();
+	NET_Packet PEXHAUSTCHECK;
+	CGameObject::u_EventGen(PEXHAUSTCHECK, GE_CAR_EXHAUST_OFF, ID());
+	CGameObject::u_EventSend(PEXHAUSTCHECK);
 }
 
 void CCar::InterpolateStates(const float &factor)
@@ -1008,8 +1012,10 @@ void CCar::ParseDefinitions()
 	///////////////////////////////lights///////////////////////////////////////////////////
 	m_lights.Init(this);
 	t_lights.Init(this);
+	e_lights.Init(this);
 	m_lights.ParseDefinitions();
 	t_lights.ParseDefinitionsTail();
+	e_lights.ParseDefinitionsExhaust();
 
 	if (ini->section_exist("animations"))
 	{
@@ -1077,6 +1083,7 @@ void CCar::Init()
 	b_starting = false;
 	b_stalling = false;
 	b_transmission_switching = false;
+	e_start_time = 0.f;
 	m_root_transform.set(bone_map.find(pKinematics->LL_GetBoneRoot())->second.element->mXFORM);
 	m_current_transmission_num = 0;
 	m_pPhysicsShell->set_DynamicScales(1.f, 1.f);
@@ -1922,7 +1929,8 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 
 		case GE_CAR_BRAKES:
 		{
-			Brakes();
+			if (e_state_drive == drive && (m_current_rpm > m_min_rpm * 1.2))
+				Brakes();
 		}
 		break;
 
@@ -1935,6 +1943,22 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 		case GE_CAR_TAIL_OFF:
 		{
 			t_lights.TurnOffTailLights();
+		}
+		break;
+
+		case GE_CAR_EXHAUST_ON:
+		{
+			if (b_engine_on) {
+				e_lights.TurnOnExhaustLights();
+				e_start_time = Device.fTimeGlobal;
+			}
+		}
+		break;
+
+		case GE_CAR_EXHAUST_OFF:
+		{
+			if (e_start_time > 0.0001 && (Device.fTimeGlobal - e_start_time > 0.08))
+				e_lights.TurnOffExhaustLights();
 		}
 		break;
 	}
@@ -2014,6 +2038,7 @@ void CCar::CarExplode()
 		m_car_weapon->Action(CCarWeapon::eWpnActivate, 0);
 	m_lights.TurnOffHeadLights();
 	t_lights.TurnOffTailLights();
+	e_lights.TurnOffExhaustLights();
 	b_exploded = true;
 	CExplosive::GenExplodeEvent(Position(), Fvector().set(0.f, 1.f, 0.f));
 
@@ -2219,6 +2244,9 @@ void CCar::ASCUpdate(EAsyncCalls c)
 	{
 	case ascSndTransmission:
 		m_car_sound->TransmissionSwitch();
+		NET_Packet PTRANSWITCH;
+		CGameObject::u_EventGen(PTRANSWITCH, GE_CAR_EXHAUST_ON, ID());
+		CGameObject::u_EventSend(PTRANSWITCH);
 		break;
 	case ascSndStall:
 		m_car_sound->Stop();
