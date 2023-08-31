@@ -186,16 +186,22 @@ void CCar::OnKeyboardPress(int cmd)
 	case kFWD:
 		PressForward();
 		t_lights.TurnOffTailLights();
+		NET_Packet PFWDOFFF;
+		CGameObject::u_EventGen(PFWDOFFF, GE_CAR_TAIL_OFF, ID());
+		CGameObject::u_EventSend(PFWDOFFF);
 		break;
 	case kBACK:
 		PressBack();
 		t_lights.TurnOffTailLights();
+		NET_Packet PBACKOFF;
+		CGameObject::u_EventGen(PBACKOFF, GE_CAR_TAIL_OFF, ID());
+		CGameObject::u_EventSend(PBACKOFF);
 		break;
 	case kCarBeep:
 	{
-		NET_Packet P;
-		CGameObject::u_EventGen(P, GE_CAR_BEEP, ID());
-		CGameObject::u_EventSend(P);
+		NET_Packet PBEEP;
+		CGameObject::u_EventGen(PBEEP, GE_CAR_BEEP, ID());
+		CGameObject::u_EventSend(PBEEP);
 		break;
 	}
 	case kR_STRAFE:
@@ -210,15 +216,15 @@ void CCar::OnKeyboardPress(int cmd)
 		break;
 	case kJUMP: 
 		PressBreaks();
+		NET_Packet PJUMPBRAKES;
+		CGameObject::u_EventGen(PJUMPBRAKES, GE_CAR_BRAKES, ID());
+		CGameObject::u_EventSend(PJUMPBRAKES);
 		if (m_lights.IsLightTurnedOn()) {
 			t_lights.TurnOnTailLights();
-			NET_Packet P;
-			CGameObject::u_EventGen(P, GE_CAR_TAIL_ON, ID());
-			CGameObject::u_EventSend(P);
+			NET_Packet PJUMPON;
+			CGameObject::u_EventGen(PJUMPON, GE_CAR_TAIL_ON, ID());
+			CGameObject::u_EventSend(PJUMPON);
 		}
-		NET_Packet P;
-		CGameObject::u_EventGen(P, GE_CAR_BRAKES, ID());
-		CGameObject::u_EventSend(P);
 		break;
 	case kENGINE:
 		SwitchEngine();
@@ -259,9 +265,9 @@ void CCar::OnKeyboardRelease(int cmd)
 	case kJUMP:
 		ReleaseBreaks();
 		t_lights.TurnOffTailLights();
-		NET_Packet P;
-		CGameObject::u_EventGen(P, GE_CAR_TAIL_OFF, ID());
-		CGameObject::u_EventSend(P);
+		NET_Packet PJUMPOFF;
+		CGameObject::u_EventGen(PJUMPOFF, GE_CAR_TAIL_OFF, ID());
+		CGameObject::u_EventSend(PJUMPOFF);
 		break;
 	};
 }

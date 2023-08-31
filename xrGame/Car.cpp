@@ -1926,13 +1926,15 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 		}
 		break;
 
-		case GE_CAR_TAIL_ON:{
-
+		case GE_CAR_TAIL_ON:
+		{
+			t_lights.TurnOnTailLights();
 		}
 		break;
 
-		case GE_CAR_TAIL_OFF:{
-
+		case GE_CAR_TAIL_OFF:
+		{
+			t_lights.TurnOffTailLights();
 		}
 		break;
 	}
