@@ -1929,7 +1929,7 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 
 		case GE_CAR_BRAKES:
 		{
-			if (e_state_drive == drive && (m_current_rpm > m_min_rpm * 1.2))
+			if (m_current_rpm > m_min_rpm * 1.1)
 				Brakes();
 		}
 		break;
