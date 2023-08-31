@@ -182,9 +182,6 @@ void CCar::OnKeyboardPress(int cmd)
 		break;
 	case kJUMP: 
 		PressBreaks();
-		NET_Packet P;
-		CGameObject::u_EventGen(P, GE_CAR_BRAKES, ID());
-		CGameObject::u_EventSend(P);
 		break;
 	case kENGINE:
 		SwitchEngine();
