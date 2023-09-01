@@ -213,7 +213,12 @@ void CCar::OnKeyboardPress(int cmd)
 		break;
 	case kBACK:
 		PressBack();
-		t_lights.TurnOffTailLights();
+		if (m_lights.IsLightTurnedOn()) {
+			t_lights.TurnOnTailLights();
+			NET_Packet PBACKON;
+			CGameObject::u_EventGen(PBACKON, GE_CAR_TAIL_ON, ID());
+			CGameObject::u_EventSend(PBACKON);
+		}
 		break;
 	case kCarBeep:
 	{
@@ -269,6 +274,10 @@ void CCar::OnKeyboardRelease(int cmd)
 		break;
 	case kBACK:
 		ReleaseBack();
+		t_lights.TurnOffTailLights();
+		NET_Packet PBACKOFF;
+		CGameObject::u_EventGen(PBACKOFF, GE_CAR_TAIL_OFF, ID());
+		CGameObject::u_EventSend(PBACKOFF);
 		break;
 	case kL_STRAFE:
 		ReleaseLeft();

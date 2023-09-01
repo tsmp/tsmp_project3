@@ -14,6 +14,18 @@
 #include "PHWorld.h"
 
 extern CPHWorld *ph_world;
+float state_N_start;
+float state_N_end;
+float state_1_start;
+float state_1_end;
+float state_2_start;
+float state_2_end;
+float state_3_start;
+float state_3_end;
+float state_4_start;
+float state_4_end;
+float state_5_start;
+float state_5_end;
 
 CCar::SCarSound::SCarSound(CCar *car)
 {
@@ -35,6 +47,12 @@ void CCar::SCarSound::Init()
 		volume = ini->r_float("car_sound", "snd_volume");
 
 		snd_engine.create(ini->r_string("car_sound", "snd_name"), st_Effect, sg_SourceType);
+		snd_engine_1.create(READ_IF_EXISTS(ini, r_string, "car_sound", "engine_1", "car\\skyline\\skyline_run"), st_Effect, sg_SourceType);
+		snd_engine_2.create(READ_IF_EXISTS(ini, r_string, "car_sound", "engine_2", "car\\skyline\\skyline_run"), st_Effect, sg_SourceType);
+		snd_engine_3.create(READ_IF_EXISTS(ini, r_string, "car_sound", "engine_3", "car\\skyline\\skyline_run"), st_Effect, sg_SourceType);
+		snd_engine_4.create(READ_IF_EXISTS(ini, r_string, "car_sound", "engine_4", "car\\skyline\\skyline_run"), st_Effect, sg_SourceType);
+		snd_engine_5.create(READ_IF_EXISTS(ini, r_string, "car_sound", "engine_5", "car\\skyline\\skyline_run"), st_Effect, sg_SourceType);
+		snd_engine_idle.create(READ_IF_EXISTS(ini, r_string, "car_sound", "engine_idle", "car\\car_idle"), st_Effect, sg_SourceType);
 		snd_engine_start.create(READ_IF_EXISTS(ini, r_string, "car_sound", "engine_start", "car\\test_car_start"), st_Effect, sg_SourceType);
 		snd_engine_stop.create(READ_IF_EXISTS(ini, r_string, "car_sound", "engine_stop", "car\\test_car_stop"), st_Effect, sg_SourceType);
 		snd_beep.create(READ_IF_EXISTS(ini, r_string, "car_sound", "beep", "car\\klakson"), st_Effect, sg_SourceType);
@@ -53,6 +71,19 @@ void CCar::SCarSound::Init()
 		Msg("! Car doesn't contain sound params");
 	
 	eCarSound = sndOff;
+
+	state_N_start = pcar->m_min_rpm;
+	state_N_end = (pcar->m_max_rpm - pcar->m_min_rpm) * 0.1 + pcar->m_min_rpm;
+	state_1_start = (pcar->m_max_rpm - pcar->m_min_rpm) * 0.1 + pcar->m_min_rpm;
+	state_1_end = (pcar->m_max_rpm - pcar->m_min_rpm) * 0.28 + pcar->m_min_rpm;
+	state_2_start = (pcar->m_max_rpm - pcar->m_min_rpm) * 0.28 + pcar->m_min_rpm;
+	state_2_end = (pcar->m_max_rpm - pcar->m_min_rpm) * 0.46 + pcar->m_min_rpm;
+	state_3_start = (pcar->m_max_rpm - pcar->m_min_rpm) * 0.46 + pcar->m_min_rpm;
+	state_3_end = (pcar->m_max_rpm - pcar->m_min_rpm) * 0.64 + pcar->m_min_rpm;
+	state_4_start = (pcar->m_max_rpm - pcar->m_min_rpm) * 0.64 + pcar->m_min_rpm;
+	state_4_end = (pcar->m_max_rpm - pcar->m_min_rpm) * 0.82 + pcar->m_min_rpm;
+	state_5_start = (pcar->m_max_rpm - pcar->m_min_rpm) * 0.82 + pcar->m_min_rpm;
+	state_5_end = pcar->m_max_rpm;
 }
 
 void CCar::SCarSound::SetSoundPosition(ref_sound &snd)
@@ -77,7 +108,17 @@ void CCar::SCarSound::UpdateStarting()
 	{
 		if (time_state_start + engine_start_delay < Device.dwTimeGlobal)
 		{
-			snd_engine.play(pcar, sm_Looped);
+			snd_engine_idle.play(pcar, sm_Looped);
+			snd_engine_1.play(pcar, sm_Looped);
+			snd_engine_1.set_volume(0);
+			snd_engine_2.play(pcar, sm_Looped);
+			snd_engine_2.set_volume(0);
+			snd_engine_3.play(pcar, sm_Looped);
+			snd_engine_3.set_volume(0);
+			snd_engine_4.play(pcar, sm_Looped);
+			snd_engine_4.set_volume(0);
+			snd_engine_5.play(pcar, sm_Looped);
+			snd_engine_5.set_volume(0);
 			UpdateDrive();
 		}
 	}
@@ -108,8 +149,78 @@ void CCar::SCarSound::UpdateDrive()
 	VERIFY(!ph_world->Processing());
 	float scale = 0.5f + 0.5f * pcar->m_current_rpm / pcar->m_torque_rpm;
 	clamp(scale, 0.5f, 1.25f);
-	snd_engine.set_frequency(scale);
-	SetSoundPosition(snd_engine);
+
+	snd_engine_idle.set_frequency(scale);
+	snd_engine_1.set_frequency(scale);
+	snd_engine_2.set_frequency(scale);
+	snd_engine_3.set_frequency(scale);
+	snd_engine_4.set_frequency(scale);
+	snd_engine_5.set_frequency(scale);
+
+	if (pcar->m_current_rpm < state_N_end) {
+		snd_engine_idle.set_volume(1.f);
+		snd_engine_1.set_volume(0.25);
+		snd_engine_2.set_volume(0);
+		snd_engine_3.set_volume(0);
+		snd_engine_4.set_volume(0);
+		snd_engine_5.set_volume(0);
+	}
+	else if (pcar->m_current_rpm >= state_1_start && pcar->m_current_rpm < state_1_end) {
+		snd_engine_idle.set_volume(0.25);
+		snd_engine_1.set_volume(1.f);
+		snd_engine_2.set_volume(0.25);
+		snd_engine_3.set_volume(0);
+		snd_engine_4.set_volume(0);
+		snd_engine_5.set_volume(0);
+	}
+	else if (pcar->m_current_rpm >= state_2_start && pcar->m_current_rpm < state_2_end) {
+		snd_engine_idle.set_volume(0);
+		snd_engine_1.set_volume(0.25);
+		snd_engine_2.set_volume(1.f);
+		snd_engine_3.set_volume(0.25);
+		snd_engine_4.set_volume(0);
+		snd_engine_5.set_volume(0);
+	}
+	else if (pcar->m_current_rpm >= state_3_start && pcar->m_current_rpm < state_3_end) {
+		snd_engine_idle.set_volume(0);
+		snd_engine_1.set_volume(0);
+		snd_engine_2.set_volume(0.25);
+		snd_engine_3.set_volume(1.f);
+		snd_engine_4.set_volume(0.25);
+		snd_engine_5.set_volume(0);
+	}
+	else if (pcar->m_current_rpm >= state_4_start && pcar->m_current_rpm < state_4_end) {
+		snd_engine_idle.set_volume(0);
+		snd_engine_1.set_volume(0);
+		snd_engine_2.set_volume(0);
+		snd_engine_3.set_volume(0.25);
+		snd_engine_4.set_volume(1.f);
+		snd_engine_5.set_volume(0.25);
+	}
+	else if (pcar->m_current_rpm >= state_5_start && pcar->m_current_rpm < state_5_end) {
+		snd_engine_idle.set_volume(0);
+		snd_engine_1.set_volume(0);
+		snd_engine_2.set_volume(0);
+		snd_engine_3.set_volume(0);
+		snd_engine_4.set_volume(0.25);
+		snd_engine_5.set_volume(1.f);
+	}
+
+	if (pcar->b_engine_on == false) {
+		snd_engine_idle.set_volume(0);
+		snd_engine_1.set_volume(0);
+		snd_engine_2.set_volume(0);
+		snd_engine_3.set_volume(0);
+		snd_engine_4.set_volume(0);
+		snd_engine_5.set_volume(0);
+	}
+
+	SetSoundPosition(snd_engine_idle);
+	SetSoundPosition(snd_engine_1);
+	SetSoundPosition(snd_engine_2);
+	SetSoundPosition(snd_engine_3);
+	SetSoundPosition(snd_engine_4);
+	SetSoundPosition(snd_engine_5);
 }
 
 void CCar::SCarSound::SwitchState(ESoundState new_state)
@@ -126,6 +237,9 @@ void CCar::SCarSound::Update()
 
 	if (snd_beep._feedback())
 		SetSoundPosition(snd_beep);
+
+	if (snd_brakes._feedback())
+		SetSoundPosition(snd_brakes);
 
 	switch (eCarSound)
 	{
@@ -152,11 +266,16 @@ void CCar::SCarSound::SwitchOn()
 void CCar::SCarSound::Destroy()
 {
 	SwitchOff();
-	snd_engine.destroy();
+	snd_engine_1.destroy();
+	snd_engine_2.destroy();
+	snd_engine_3.destroy();
+	snd_engine_4.destroy();
+	snd_engine_5.destroy();
 	snd_transmission.destroy();
 	snd_engine_stop.destroy();
 	snd_engine_start.destroy();
 	snd_beep.destroy();
+	snd_brakes.destroy();
 }
 
 void CCar::SCarSound::SwitchOff()
@@ -192,7 +311,11 @@ void CCar::SCarSound::Stop()
 	if (eCarSound == sndOff)
 		return;
 	SwitchState(sndStoping);
-	snd_engine.stop_deffered();
+	snd_engine_1.stop_deffered();
+	snd_engine_2.stop_deffered();
+	snd_engine_3.stop_deffered();
+	snd_engine_4.stop_deffered();
+	snd_engine_5.stop_deffered();
 	snd_engine_stop.play(pcar);
 	SetSoundPosition(snd_engine_stop);
 }
@@ -204,7 +327,11 @@ void CCar::SCarSound::Drive()
 		SwitchOn();
 	SwitchState(sndDrive);
 	if (!snd_engine._feedback())
-		snd_engine.play(pcar, sm_Looped);
+		snd_engine_1.play(pcar, sm_Looped);
+		snd_engine_2.play(pcar, sm_Looped);
+		snd_engine_3.play(pcar, sm_Looped);
+		snd_engine_4.play(pcar, sm_Looped);
+		snd_engine_5.play(pcar, sm_Looped);
 	SetSoundPosition(snd_engine);
 }
 

@@ -161,6 +161,7 @@ public:
 	float m_power_neutral_factor; //multiplier for power when accelerator is not pressed (0-1,0.25)
 	bool b_exploded;
 	float e_start_time;
+	float b_start_time;
 
 	struct SWheel : public CDamagableHealthItem
 	{
@@ -355,6 +356,12 @@ public:
 	struct SCarSound
 	{
 		ref_sound snd_engine;
+		ref_sound snd_engine_1;
+		ref_sound snd_engine_2;
+		ref_sound snd_engine_3;
+		ref_sound snd_engine_4;
+		ref_sound snd_engine_5;
+		ref_sound snd_engine_idle;
 		ref_sound snd_engine_start;
 		ref_sound snd_engine_stop;
 		ref_sound snd_transmission;

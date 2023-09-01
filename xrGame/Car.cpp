@@ -1084,6 +1084,7 @@ void CCar::Init()
 	b_stalling = false;
 	b_transmission_switching = false;
 	e_start_time = 0.f;
+	b_start_time = 0.f;
 	m_root_transform.set(bone_map.find(pKinematics->LL_GetBoneRoot())->second.element->mXFORM);
 	m_current_transmission_num = 0;
 	m_pPhysicsShell->set_DynamicScales(1.f, 1.f);
@@ -1929,8 +1930,10 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 
 		case GE_CAR_BRAKES:
 		{
-			if (m_current_rpm > m_min_rpm * 1.1)
+			if ((m_current_rpm > m_min_rpm * 1.1) && (Device.fTimeGlobal - b_start_time > 1)) {
 				Brakes();
+				b_start_time = Device.fTimeGlobal;
+			}
 		}
 		break;
 
