@@ -133,6 +133,7 @@ void CCarLights::Init(CCar *pcar)
 	m_lights.clear();
 	t_lights.clear();
 	e_lights.clear();
+	n_lights.clear();
 }
 
 void CCarLights::ParseDefinitions()
@@ -186,6 +187,23 @@ void CCarLights::ParseDefinitionsExhaust()
 	}
 }
 
+void CCarLights::ParseDefinitionsNitro()
+{
+	CInifile* ini = smart_cast<IKinematics*>(m_pcar->Visual())->LL_UserData();
+	if (!ini->section_exist("lights"))
+		return;
+	LPCSTR S = ini->r_string("lights", "nitrolights");
+	string64 S1;
+	int count = _GetItemCount(S);
+	for (int i = 0; i < count; ++i)
+	{
+		_GetItem(S, i, S1);
+		n_lights.push_back(xr_new<SCarLight>());
+		n_lights.back()->Init(this);
+		n_lights.back()->ParseDefinitions(S1);
+	}
+}
+
 void CCarLights::Update()
 {
 	VERIFY(!ph_world->Processing());
@@ -200,6 +218,10 @@ void CCarLights::Update()
 	LIGHTS_I ie = e_lights.begin(), ee = e_lights.end();
 	for (; ie != ee; ++ie)
 		(*ie)->Update();
+
+	LIGHTS_I in = n_lights.begin(), en = n_lights.end();
+	for (; in != en; ++in)
+		(*in)->Update();
 }
 
 bool CCarLights::IsLightTurnedOn()
@@ -225,6 +247,14 @@ bool CCarLights::IsExhaustLightTurnedOn()
 		return false;
 
 	return e_lights[0]->isOn();
+}
+
+bool CCarLights::IsNitroLightTurnedOn()
+{
+	if (n_lights.empty())
+		return false;
+
+	return n_lights[0]->isOn();
 }
 
 void CCarLights::SwitchHeadLights()
@@ -288,7 +318,6 @@ void CCarLights::SwitchExhaustLights()
 
 void CCarLights::TurnOnExhaustLights()
 {
-
 	VERIFY(!ph_world->Processing());
 	LIGHTS_I i = e_lights.begin(), e = e_lights.end();
 	for (; i != e; ++i)
@@ -298,6 +327,29 @@ void CCarLights::TurnOffExhaustLights()
 {
 	VERIFY(!ph_world->Processing());
 	LIGHTS_I i = e_lights.begin(), e = e_lights.end();
+	for (; i != e; ++i)
+		(*i)->TurnOff();
+}
+
+void CCarLights::SwitchNitroLights()
+{
+	VERIFY(!ph_world->Processing());
+	LIGHTS_I i = n_lights.begin(), e = n_lights.end();
+	for (; i != e; ++i)
+		(*i)->Switch();
+}
+
+void CCarLights::TurnOnNitroLights()
+{
+	VERIFY(!ph_world->Processing());
+	LIGHTS_I i = n_lights.begin(), e = n_lights.end();
+	for (; i != e; ++i)
+		(*i)->TurnOn();
+}
+void CCarLights::TurnOffNitroLights()
+{
+	VERIFY(!ph_world->Processing());
+	LIGHTS_I i = n_lights.begin(), e = n_lights.end();
 	for (; i != e; ++i)
 		(*i)->TurnOff();
 }
@@ -337,6 +389,16 @@ bool CCarLights::findExhaustLight(u16 bone_id, SCarLight *&light)
 	return i != e;
 }
 
+bool CCarLights::findNitroLight(u16 bone_id, SCarLight *&light)
+{
+	LIGHTS_I i, e = n_lights.end();
+	SCarLight find_light;
+	find_light.bone_id = bone_id;
+	i = std::find_if(n_lights.begin(), e, SFindNitroLightPredicate(&find_light));
+	light = *i;
+	return i != e;
+}
+
 CCarLights::~CCarLights()
 {
 	LIGHTS_I i = m_lights.begin(), e = m_lights.end();
@@ -353,4 +415,9 @@ CCarLights::~CCarLights()
 	for (; ie != ee; ++ie)
 		xr_delete(*ie);
 	e_lights.clear();
+
+	LIGHTS_I in = n_lights.begin(), en = n_lights.end();
+	for (; in != en; ++in)
+		xr_delete(*in);
+	n_lights.clear();
 }

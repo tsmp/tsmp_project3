@@ -29,6 +29,7 @@ _action actions[] = {
 	{"rlookout", kR_LOOKOUT, _both},
 
 	{"turn_engine", kENGINE, _both},	
+	{"car_nitro", kNITRO, _both},	
 
 	{"cam_1", kCAM_1, _both},
 	{"cam_2", kCAM_2, _both},

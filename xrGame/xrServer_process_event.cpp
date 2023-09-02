@@ -67,6 +67,8 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 	case GE_CAR_TAIL_OFF:
 	case GE_CAR_EXHAUST_ON:
 	case GE_CAR_EXHAUST_OFF:
+	case GE_CAR_NITRO_ON:
+	case GE_CAR_NITRO_OFF:
 	case GE_BLOODSUCKER_PREDATOR_CHANGE:
 	case GE_CONTROLLER_PSY_FIRE:
 		SendBroadcast(BroadcastCID, P, MODE);

@@ -28,6 +28,7 @@ public:
 	void ParseDefinitions();
 	void ParseDefinitionsTail();
 	void ParseDefinitionsExhaust();
+	void ParseDefinitionsNitro();
 	void Init(CCar *pcar);
 	void Update();
 	CCar *PCar() { return m_pcar; }
@@ -40,13 +41,18 @@ public:
 	void SwitchExhaustLights();
 	void TurnOnExhaustLights();
 	void TurnOffExhaustLights();
+	void SwitchNitroLights();
+	void TurnOnNitroLights();
+	void TurnOffNitroLights();
 	bool IsLightTurnedOn();
 	bool IsTailLightTurnedOn();
 	bool IsExhaustLightTurnedOn();
+	bool IsNitroLightTurnedOn();
 	bool IsLight(u16 bone_id);
 	bool findLight(u16 bone_id, SCarLight *&light);
 	bool findTailLight(u16 bone_id, SCarLight *&light);
 	bool findExhaustLight(u16 bone_id, SCarLight *&light);
+	bool findNitroLight(u16 bone_id, SCarLight *&light);
 	CCarLights();
 	~CCarLights();
 
@@ -93,8 +99,23 @@ protected:
 		}
 	};
 
+	struct SFindNitroLightPredicate
+	{
+		const SCarLight *n_light;
+
+		SFindNitroLightPredicate(const SCarLight* light) : n_light(light)
+		{
+		}
+
+		bool operator()(const SCarLight *light) const
+		{
+			return light->bone_id == n_light->bone_id;
+		}
+	};
+
 	LIGHTS_STORAGE m_lights;
 	LIGHTS_STORAGE t_lights;
 	LIGHTS_STORAGE e_lights;
+	LIGHTS_STORAGE n_lights;
 	CCar *m_pcar;
 };

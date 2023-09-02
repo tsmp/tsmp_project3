@@ -57,6 +57,9 @@ void CCar::SCarSound::Init()
 		snd_engine_stop.create(READ_IF_EXISTS(ini, r_string, "car_sound", "engine_stop", "car\\test_car_stop"), st_Effect, sg_SourceType);
 		snd_beep.create(READ_IF_EXISTS(ini, r_string, "car_sound", "beep", "car\\klakson"), st_Effect, sg_SourceType);
 		snd_brakes.create(READ_IF_EXISTS(ini, r_string, "car_sound", "car_brakes", "ambient\\silence"), st_Effect, sg_SourceType);
+		snd_nitro_start.create(READ_IF_EXISTS(ini, r_string, "car_sound", "nitro_start", "car\\nitro_start"), st_Effect, sg_SourceType);
+		snd_nitro_loop.create(READ_IF_EXISTS(ini, r_string, "car_sound", "nitro_loop", "car\\nitro_loop"), st_Effect, sg_SourceType);
+		snd_nitro_end.create(READ_IF_EXISTS(ini, r_string, "car_sound", "nitro_end", "car\\nitro_end"), st_Effect, sg_SourceType);
 
 		float fengine_start_delay = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_sound_start_dellay", 0.25f);
 		engine_start_delay = iFloor((snd_engine_start._handle() ? snd_engine_start._handle()->length_ms() : 1.f) * fengine_start_delay);
@@ -119,6 +122,8 @@ void CCar::SCarSound::UpdateStarting()
 			snd_engine_4.set_volume(0);
 			snd_engine_5.play(pcar, sm_Looped);
 			snd_engine_5.set_volume(0);
+			snd_nitro_loop.play(pcar, sm_Looped);
+			snd_nitro_loop.set_volume(0);
 			UpdateDrive();
 		}
 	}
@@ -156,6 +161,7 @@ void CCar::SCarSound::UpdateDrive()
 	snd_engine_3.set_frequency(scale);
 	snd_engine_4.set_frequency(scale);
 	snd_engine_5.set_frequency(scale);
+	snd_nitro_loop.set_frequency(1.f);
 
 	if (pcar->m_current_rpm < state_N_end) {
 		snd_engine_idle.set_volume(1.f);
@@ -221,6 +227,7 @@ void CCar::SCarSound::UpdateDrive()
 	SetSoundPosition(snd_engine_3);
 	SetSoundPosition(snd_engine_4);
 	SetSoundPosition(snd_engine_5);
+	SetSoundPosition(snd_nitro_loop);
 }
 
 void CCar::SCarSound::SwitchState(ESoundState new_state)
@@ -316,6 +323,7 @@ void CCar::SCarSound::Stop()
 	snd_engine_3.stop_deffered();
 	snd_engine_4.stop_deffered();
 	snd_engine_5.stop_deffered();
+	snd_nitro_loop.stop_deffered();
 	snd_engine_stop.play(pcar);
 	SetSoundPosition(snd_engine_stop);
 }
@@ -332,6 +340,7 @@ void CCar::SCarSound::Drive()
 		snd_engine_3.play(pcar, sm_Looped);
 		snd_engine_4.play(pcar, sm_Looped);
 		snd_engine_5.play(pcar, sm_Looped);
+		snd_nitro_loop.play(pcar, sm_Looped);
 	SetSoundPosition(snd_engine);
 }
 
@@ -360,5 +369,23 @@ void CCar::SCarSound::Brakes()
 	{
 		snd_brakes.play(pcar);
 		SetSoundPosition(snd_brakes);
+	}
+}
+
+void CCar::SCarSound::NitroStart()
+{
+	if (snd_nitro_start._handle())
+	{
+		snd_nitro_start.play(pcar);
+		SetSoundPosition(snd_nitro_start);
+	}
+}
+
+void CCar::SCarSound::NitroEnd()
+{
+	if (snd_nitro_end._handle())
+	{
+		snd_nitro_end.play(pcar);
+		SetSoundPosition(snd_nitro_end);
 	}
 }

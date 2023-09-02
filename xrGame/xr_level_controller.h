@@ -21,6 +21,7 @@ enum EGameActions
 	kR_LOOKOUT,
 
 	kENGINE,
+	kNITRO,
 	kCAM_1,
 	kCAM_2,
 	kCAM_3,

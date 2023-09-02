@@ -19,6 +19,7 @@
 #include "..\include\xrRender\Kinematics.h"
 #include "level.h"
 #include "CarWeapon.h"
+#include "Console.h"
 
 void CCar::OnMouseMove(int dx, int dy)
 {
@@ -173,6 +174,30 @@ bool CCar::bfAssignObject(CScriptEntityAction *tpEntityAction)
 		}
 	}
 
+	if (n_lights.findNitroLight(l_sBoneID, light))
+	{
+		switch (l_tObjectAction.m_tGoalType)
+		{
+		case MonsterSpace::eObjectActionActivate:
+		{
+			light->TurnOn();
+			return ((l_tObjectAction.m_bCompleted = true) == false);
+		}
+		case MonsterSpace::eObjectActionDeactivate:
+		{
+			light->TurnOff();
+			return ((l_tObjectAction.m_bCompleted = true) == false);
+		}
+		case MonsterSpace::eObjectActionUse:
+		{
+			light->Switch();
+			return ((l_tObjectAction.m_bCompleted = true) == false);
+		}
+		default:
+			return ((l_tObjectAction.m_bCompleted = true) == false);
+		}
+	}
+
 
 	return (false);
 }
@@ -213,6 +238,12 @@ void CCar::OnKeyboardPress(int cmd)
 		break;
 	case kBACK:
 		PressBack();
+		if (m_current_transmission_num > 1) {
+			NET_Packet PBACKBRAKES;
+			CGameObject::u_EventGen(PBACKBRAKES, GE_CAR_BRAKES, ID());
+			CGameObject::u_EventSend(PBACKBRAKES);
+		}
+
 		if (m_lights.IsLightTurnedOn()) {
 			t_lights.TurnOnTailLights();
 			NET_Packet PBACKON;
@@ -257,6 +288,15 @@ void CCar::OnKeyboardPress(int cmd)
 		break;
 	case kUSE:
 		break;
+	case kNITRO:
+		if (b_engine_on && m_nitro_capacity > 0) {
+			Console->Execute("fov 85");
+			n_lights.TurnOnNitroLights();
+		}
+		NET_Packet PNITROON;
+		CGameObject::u_EventGen(PNITROON, GE_CAR_NITRO_ON, ID());
+		CGameObject::u_EventSend(PNITROON);
+		break;
 	};
 }
 
@@ -295,6 +335,13 @@ void CCar::OnKeyboardRelease(int cmd)
 		NET_Packet PJUMPOFF;
 		CGameObject::u_EventGen(PJUMPOFF, GE_CAR_TAIL_OFF, ID());
 		CGameObject::u_EventSend(PJUMPOFF);
+		break;
+	case kNITRO:
+		Console->Execute("fov 70");
+		n_lights.TurnOffNitroLights();
+		NET_Packet PNITROOFF;
+		CGameObject::u_EventGen(PNITROOFF, GE_CAR_NITRO_OFF, ID());
+		CGameObject::u_EventSend(PNITROOFF);
 		break;
 	};
 }

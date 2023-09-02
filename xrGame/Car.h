@@ -17,7 +17,6 @@
 #include "PHDestroyable.h"
 #include "DelayedActionFuse.h"
 #include "..\TSMP3_Build_Config.h"
-
 // refs
 class ENGINE_API CBoneInstance;
 class CActor;
@@ -162,6 +161,8 @@ public:
 	bool b_exploded;
 	float e_start_time;
 	float b_start_time;
+
+	bool m_nitro_active;
 
 	struct SWheel : public CDamagableHealthItem
 	{
@@ -367,6 +368,9 @@ public:
 		ref_sound snd_transmission;
 		ref_sound snd_beep;
 		ref_sound snd_brakes;
+		ref_sound snd_nitro_start;
+		ref_sound snd_nitro_loop;
+		ref_sound snd_nitro_end;
 
 		enum ESoundState
 		{
@@ -395,6 +399,8 @@ public:
 		void Beep();
 		void TransmissionSwitch();
 		void Brakes();
+		void NitroStart();
+		void NitroEnd();
 
 		SCarSound(CCar *car);
 		~SCarSound();
@@ -442,6 +448,9 @@ private:
 	float m_rpm_increment_factor;
 	float m_rpm_decrement_factor;
 
+	float m_nitro_power;
+	float m_nitro_capacity;
+
 	/////////////////////porabola
 	float m_a, m_b, m_c;
 
@@ -463,6 +472,7 @@ private:
 	CCarLights m_lights;
 	CCarLights t_lights;
 	CCarLights e_lights;
+	CCarLights n_lights;
 
 	void InitParabola();
 	float _stdcall Parabola(float rpm);
@@ -526,6 +536,8 @@ private:
 	void Init();
 	void Beep();
 	void Brakes();
+	void NitroStart();
+	void NitroEnd();
 
 	void PlayExhausts();
 	void StopExhausts();

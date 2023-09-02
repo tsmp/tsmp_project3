@@ -485,9 +485,16 @@ void CCar::VisualUpdate(float fov)
 	m_lights.Update();
 	t_lights.Update();
 	e_lights.Update();
+	n_lights.Update();
 	NET_Packet PEXHAUSTCHECK;
 	CGameObject::u_EventGen(PEXHAUSTCHECK, GE_CAR_EXHAUST_OFF, ID());
 	CGameObject::u_EventSend(PEXHAUSTCHECK);
+	
+	if (m_nitro_active) {
+		n_lights.TurnOnNitroLights();
+		m_car_sound->snd_nitro_loop.set_volume(1.f);
+		m_nitro_capacity -= m_nitro_power;
+	}
 }
 
 void CCar::InterpolateStates(const float &factor)
@@ -965,6 +972,11 @@ void CCar::ParseDefinitions()
 	m_rpm_decrement_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "rpm_decrement_factor", m_rpm_increment_factor);
 	m_power_neutral_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "power_neutral_factor", m_power_neutral_factor);
 	R_ASSERT2(m_power_neutral_factor > 0.1f && m_power_neutral_factor < 1.f, "power_neutral_factor must be 0 - 1 !!");
+
+	m_nitro_power = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_power", m_nitro_power);
+	m_nitro_capacity = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_capacity", m_nitro_capacity);
+	m_nitro_active = false;
+
 	if (ini->line_exist("car_definition", "exhaust_particles"))
 	{
 		m_exhaust_particles = ini->r_string("car_definition", "exhaust_particles");
@@ -1013,9 +1025,11 @@ void CCar::ParseDefinitions()
 	m_lights.Init(this);
 	t_lights.Init(this);
 	e_lights.Init(this);
+	n_lights.Init(this);
 	m_lights.ParseDefinitions();
 	t_lights.ParseDefinitionsTail();
 	e_lights.ParseDefinitionsExhaust();
+	n_lights.ParseDefinitionsNitro();
 
 	if (ini->section_exist("animations"))
 	{
@@ -1174,6 +1188,16 @@ void CCar::Brakes()
 	m_car_sound->Brakes();
 }
 
+void CCar::NitroStart()
+{
+	m_car_sound->NitroStart();
+}
+
+void CCar::NitroEnd()
+{
+	m_car_sound->NitroEnd();
+}
+
 void CCar::Revert()
 {
 	m_pPhysicsShell->applyForce(0, 1.5f * EffectiveGravity() * m_pPhysicsShell->getMass(), 0);
@@ -1205,8 +1229,14 @@ void CCar::Drive()
 	if (!b_clutch || !b_engine_on)
 		return;
 	m_pPhysicsShell->Enable();
-	m_current_rpm = EngineDriveSpeed();
-	m_current_engine_power = EnginePower();
+	if (m_nitro_active) {
+		m_current_rpm = EngineDriveSpeed() + m_nitro_power;
+		m_current_engine_power = EnginePower() + m_nitro_power;
+	}
+	else {
+		m_current_rpm = EngineDriveSpeed();
+		m_current_engine_power = EnginePower();
+	}
 	xr_vector<SWheelDrive>::iterator i, e;
 	i = m_driving_wheels.begin();
 	e = m_driving_wheels.end();
@@ -1798,10 +1828,18 @@ float CCar::EnginePower()
 			b_starting = false;
 	}
 
-	if (value > m_current_engine_power)
-		return value * m_power_increment_factor + m_current_engine_power * (1.f - m_power_increment_factor);
-	else
-		return value * m_power_decrement_factor + m_current_engine_power * (1.f - m_power_decrement_factor);
+	/*if (m_nitro_active) {
+		if (value > m_current_engine_power)
+			return value * m_power_increment_factor + m_current_engine_power * (1.f - m_power_increment_factor) + m_nitro_power;
+		else
+			return value * m_power_decrement_factor + m_current_engine_power * (1.f - m_power_decrement_factor) + m_nitro_power;
+	}
+	else {*/
+		if (value > m_current_engine_power)
+			return value * m_power_increment_factor + m_current_engine_power * (1.f - m_power_increment_factor);
+		else
+			return value * m_power_decrement_factor + m_current_engine_power * (1.f - m_power_decrement_factor);
+	//}
 }
 
 float CCar::DriveWheelsMeanAngleRate()
@@ -1835,10 +1873,18 @@ float CCar::EngineDriveSpeed()
 		limit_above(calc_rpm, m_max_rpm);
 	}
 
-	if (calc_rpm > m_current_rpm)
-		return (1.f - m_rpm_increment_factor) * m_current_rpm + m_rpm_increment_factor * calc_rpm;
-	else
-		return (1.f - m_rpm_decrement_factor) * m_current_rpm + m_rpm_decrement_factor * calc_rpm;
+	/*if (m_nitro_active) {
+		if (calc_rpm > m_current_rpm)
+			return (1.f - m_rpm_increment_factor) * m_current_rpm + m_rpm_increment_factor * calc_rpm + m_nitro_power;
+		else
+			return (1.f - m_rpm_decrement_factor) * m_current_rpm + m_rpm_decrement_factor * calc_rpm + m_nitro_power;
+	}
+	else {*/
+		if (calc_rpm > m_current_rpm)
+			return (1.f - m_rpm_increment_factor) * m_current_rpm + m_rpm_increment_factor * calc_rpm;
+		else
+			return (1.f - m_rpm_decrement_factor) * m_current_rpm + m_rpm_decrement_factor * calc_rpm;
+	//}
 }
 
 void CCar::UpdateFuel(float time_delta)
@@ -1964,6 +2010,28 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 				e_lights.TurnOffExhaustLights();
 		}
 		break;
+
+		case GE_CAR_NITRO_ON:
+		{
+			if (m_nitro_capacity > 0 && b_engine_on) {
+				if (!m_nitro_active) {
+					NitroStart();
+					m_nitro_active = true;
+				}
+				n_lights.TurnOnNitroLights();
+			}
+		}
+		break;
+
+		case GE_CAR_NITRO_OFF:
+		{
+			if (m_nitro_capacity > 0 && b_engine_on)
+				NitroEnd();
+			m_nitro_active = false;
+			m_car_sound->snd_nitro_loop.set_volume(0.f);
+			n_lights.TurnOffNitroLights();
+		}
+		break;
 	}
 }
 
@@ -2042,6 +2110,7 @@ void CCar::CarExplode()
 	m_lights.TurnOffHeadLights();
 	t_lights.TurnOffTailLights();
 	e_lights.TurnOffExhaustLights();
+	n_lights.TurnOffNitroLights();
 	b_exploded = true;
 	CExplosive::GenExplodeEvent(Position(), Fvector().set(0.f, 1.f, 0.f));
 
@@ -2210,7 +2279,12 @@ float CCar::RefWheelMaxSpeed()
 
 float CCar::EngineCurTorque()
 {
-	return m_current_engine_power / m_current_rpm;
+	if (m_nitro_active) {
+		return m_current_engine_power / m_current_rpm + m_nitro_power;
+	}
+	else {
+		return m_current_engine_power / m_current_rpm;
+	}
 }
 float CCar::RefWheelCurTorque()
 {
