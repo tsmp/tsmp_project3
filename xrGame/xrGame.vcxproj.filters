@@ -9822,5 +9822,8 @@
       <Filter>Core\Client\VoiceChat</Filter>
     </ClCompile>
     <ClCompile Include="xrServerRespawnManager.cpp" />
+    <ClCompile Include="CarTireSmoke.cpp">
+      <Filter>Core\Client\Objects\vehicles\Car</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

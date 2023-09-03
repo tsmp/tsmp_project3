@@ -68,6 +68,7 @@ CCar::CCar()
 	brp = false;
 
 	m_exhaust_particles = "vehiclefx\\exhaust_1";
+	m_tire_smoke_particles = "vehiclefx\\tire_smoke";
 	m_car_sound = xr_new<SCarSound>(this);
 
 	//у машины слотов в инвентаре нет
@@ -102,6 +103,7 @@ CCar::~CCar(void)
 	xr_delete(camera[2]);
 	xr_delete(m_car_sound);
 	ClearExhausts();
+	ClearTireSmoke();
 	xr_delete(inventory);
 	xr_delete(m_car_weapon);
 	xr_delete(m_memory);
@@ -243,10 +245,12 @@ void CCar::net_Destroy()
 	
 	CHolderCustom::detach_Actor();
 	ClearExhausts();
+	ClearTireSmoke();
 	m_wheels_map.clear();
 	m_steering_wheels.clear();
 	m_driving_wheels.clear();
 	m_exhausts.clear();
+	m_tiresmoke.clear();
 	m_breaking_wheels.clear();
 	m_doors.clear();
 	m_gear_ratious.clear();
@@ -482,6 +486,15 @@ void CCar::VisualUpdate(float fov)
 	}
 
 	UpdateExhausts();
+
+	if (m_current_rpm < m_min_rpm * 1.01)
+		b_tire_smoke_active = false;
+
+	if (b_tire_smoke_active)
+		UpdateTireSmoke();
+	else
+		StopTireSmoke();
+
 	m_lights.Update();
 	t_lights.Update();
 	e_lights.Update();
@@ -947,6 +960,7 @@ void CCar::ParseDefinitions()
 	fill_wheel_vector(ini->r_string("car_definition", "steering_wheels"), m_steering_wheels);
 	fill_wheel_vector(ini->r_string("car_definition", "breaking_wheels"), m_breaking_wheels);
 	fill_exhaust_vector(ini->r_string("car_definition", "exhausts"), m_exhausts);
+	fill_tire_smoke_vector(ini->r_string("car_definition", "tire_smoke"), m_tiresmoke);
 	fill_doors_map(ini->r_string("car_definition", "doors"), m_doors);
 
 	///////////////////////////car properties///////////////////////////////
@@ -980,6 +994,11 @@ void CCar::ParseDefinitions()
 	if (ini->line_exist("car_definition", "exhaust_particles"))
 	{
 		m_exhaust_particles = ini->r_string("car_definition", "exhaust_particles");
+	}
+
+	if (ini->line_exist("car_definition", "tire_smoke_particles"))
+	{
+		m_tire_smoke_particles = ini->r_string("car_definition", "tire_smoke_particles");
 	}
 
 	b_auto_switch_transmission = !!ini->r_bool("car_definition", "auto_transmission");
@@ -1019,8 +1038,6 @@ void CCar::ParseDefinitions()
 	m_fuel = m_fuel_tank;
 	m_fuel_consumption = ini->r_float("car_definition", "fuel_consumption");
 	m_fuel_consumption /= 100000.f;
-	if (ini->line_exist("car_definition", "exhaust_particles"))
-		m_exhaust_particles = ini->r_string("car_definition", "exhaust_particles");
 	///////////////////////////////lights///////////////////////////////////////////////////
 	m_lights.Init(this);
 	t_lights.Init(this);
@@ -1097,6 +1114,8 @@ void CCar::Init()
 	b_starting = false;
 	b_stalling = false;
 	b_transmission_switching = false;
+	b_tire_smoke_active = false;
+	b_brakes_activated = false;
 	e_start_time = 0.f;
 	b_start_time = 0.f;
 	m_root_transform.set(bone_map.find(pKinematics->LL_GetBoneRoot())->second.element->mXFORM);
@@ -1133,6 +1152,14 @@ void CCar::Init()
 		e = m_exhausts.end();
 		for (; i != e; ++i)
 			i->Init();
+	}
+
+	{
+		xr_vector<STireSmoke>::iterator its, ets;
+		its = m_tiresmoke.begin();
+		ets = m_tiresmoke.end();
+		for (; its != ets; ++its)
+			its->Init();
 	}
 
 	{
@@ -1700,6 +1727,44 @@ void CCar::ClearExhausts()
 		i->Clear();
 }
 
+void CCar::PlayTireSmoke()
+{
+	xr_vector<STireSmoke>::iterator i, e;
+	i = m_tiresmoke.begin();
+	e = m_tiresmoke.end();
+	for (; i != e; ++i)
+		i->Play();
+}
+
+void CCar::StopTireSmoke()
+{
+	xr_vector<STireSmoke>::iterator i, e;
+	i = m_tiresmoke.begin();
+	e = m_tiresmoke.end();
+	for (; i != e; ++i)
+		i->Stop();
+}
+
+void CCar::UpdateTireSmoke()
+{
+	if (!b_engine_on || m_current_rpm < m_min_rpm * 1.05)
+		return;
+	xr_vector<STireSmoke>::iterator i, e;
+	i = m_tiresmoke.begin();
+	e = m_tiresmoke.end();
+	for (; i != e; ++i)
+		i->Update();
+}
+
+void CCar::ClearTireSmoke()
+{
+	xr_vector<STireSmoke>::iterator i, e;
+	i = m_tiresmoke.begin();
+	e = m_tiresmoke.end();
+	for (; i != e; ++i)
+		i->Clear();
+}
+
 bool CCar::Use(const Fvector &pos, const Fvector &dir, const Fvector &foot_pos)
 {
 	xr_map<u16, SDoor>::iterator i;
@@ -2032,6 +2097,20 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 			n_lights.TurnOffNitroLights();
 		}
 		break;
+
+		case GE_CAR_TIRESMOKE_ON:
+		{
+			if (b_engine_on && m_current_rpm > m_min_rpm * 1.01 && b_tire_smoke_active && b_brakes_activated) {
+				PlayTireSmoke();
+			}
+		}
+		break;
+
+		case GE_CAR_TIRESMOKE_OFF:
+		{
+			StopTireSmoke();
+		}
+		break;
 	}
 }
 
@@ -2224,6 +2303,28 @@ IC void CCar::fill_exhaust_vector(LPCSTR S, xr_vector<SExhaust> &exhausts)
 		exhausts.push_back(SExhaust(this));
 		SExhaust &exhaust = exhausts.back();
 		exhaust.bone_id = bone_id;
+
+		BONE_P_PAIR_IT J = bone_map.find(bone_id);
+		if (J == bone_map.end())
+		{
+			bone_map.insert(mk_pair(bone_id, physicsBone()));
+		}
+	}
+}
+IC void CCar::fill_tire_smoke_vector(LPCSTR S, xr_vector<STireSmoke> &tire_smokes)
+{
+	IKinematics *pKinematics = smart_cast<IKinematics *>(Visual());
+	string64 S1;
+	int count = _GetItemCount(S);
+	for (int i = 0; i < count; ++i)
+	{
+		_GetItem(S, i, S1);
+
+		u16 bone_id = pKinematics->LL_BoneID(S1);
+
+		tire_smokes.push_back(STireSmoke(this));
+		STireSmoke &tire_smoke = tire_smokes.back();
+		tire_smoke.bone_id = bone_id;
 
 		BONE_P_PAIR_IT J = bone_map.find(bone_id);
 		if (J == bone_map.end())

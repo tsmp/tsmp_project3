@@ -147,6 +147,8 @@ public:
 	bool b_stalling;
 	bool b_breaks;
 	bool b_transmission_switching;
+	bool b_tire_smoke_active;
+	bool b_brakes_activated;
 
 	u32 m_dwStartTime;
 	float m_fuel;
@@ -274,6 +276,30 @@ public:
 			pelement = NULL;
 		}
 		~SExhaust();
+	};
+
+	struct STireSmoke
+	{
+		u16 bone_id;
+		Fmatrix transform;
+		//Fvector				velocity;
+		CParticlesObject *p_pgobject;
+		CPhysicsElement *pelement;
+		CCar *pcar;
+		void Init();
+		void Play();
+		void Stop();
+		void Update();
+		void Clear();
+
+		STireSmoke(CCar *acar)
+		{
+			bone_id = BI_NONE;
+			pcar = acar;
+			p_pgobject = NULL;
+			pelement = NULL;
+		}
+		~STireSmoke();
 	};
 
 	struct SDoor : public CDamagableHealthItem
@@ -432,7 +458,9 @@ private:
 	xr_vector<SWheelSteer> m_steering_wheels;
 	xr_vector<SWheelBreak> m_breaking_wheels;
 	xr_vector<SExhaust> m_exhausts;
+	xr_vector<STireSmoke> m_tiresmoke;
 	shared_str m_exhaust_particles;
+	shared_str m_tire_smoke_particles;
 	xr_map<u16, SDoor> m_doors;
 	xr_vector<SDoor *> m_doors_update;
 	xr_vector<Fvector> m_gear_ratious;
@@ -543,6 +571,10 @@ private:
 	void StopExhausts();
 	void UpdateExhausts();
 	void ClearExhausts();
+	void PlayTireSmoke();
+	void StopTireSmoke();
+	void UpdateTireSmoke();
+	void ClearTireSmoke();
 	void UpdateFuel(float time_delta);
 	float AddFuel(float ammount); //ammount - fuel to load, ret - fuel loaded
 	void CarExplode();
@@ -678,6 +710,7 @@ private:
 	template <class T>
 	IC void fill_wheel_vector(LPCSTR S, xr_vector<T> &type_wheels);
 	IC void fill_exhaust_vector(LPCSTR S, xr_vector<SExhaust> &exhausts);
+	IC void fill_tire_smoke_vector(LPCSTR S, xr_vector<STireSmoke> &tire_smokes);
 	IC void fill_doors_map(LPCSTR S, xr_map<u16, SDoor> &doors);
 
 	//Inventory for the car

@@ -242,6 +242,12 @@ void CCar::OnKeyboardPress(int cmd)
 			NET_Packet PBACKBRAKES;
 			CGameObject::u_EventGen(PBACKBRAKES, GE_CAR_BRAKES, ID());
 			CGameObject::u_EventSend(PBACKBRAKES);
+			PlayTireSmoke();
+			NET_Packet PBACKTSON;
+			CGameObject::u_EventGen(PBACKTSON, GE_CAR_TIRESMOKE_ON, ID());
+			CGameObject::u_EventSend(PBACKTSON);
+			b_tire_smoke_active = true;
+			b_brakes_activated = true;
 		}
 
 		if (m_lights.IsLightTurnedOn()) {
@@ -273,6 +279,16 @@ void CCar::OnKeyboardPress(int cmd)
 		NET_Packet PJUMPBRAKES;
 		CGameObject::u_EventGen(PJUMPBRAKES, GE_CAR_BRAKES, ID());
 		CGameObject::u_EventSend(PJUMPBRAKES);
+
+		if (!b_tire_smoke_active && !b_brakes_activated && b_engine_on && m_current_rpm > m_min_rpm * 1.03) {
+			PlayTireSmoke();
+			NET_Packet PJUMPTSON;
+			CGameObject::u_EventGen(PJUMPTSON, GE_CAR_TIRESMOKE_ON, ID());
+			CGameObject::u_EventSend(PJUMPTSON);
+			b_tire_smoke_active = true;
+			b_brakes_activated = true;
+		}
+
 		if (m_lights.IsLightTurnedOn()) {
 			t_lights.TurnOnTailLights();
 			NET_Packet PJUMPON;
@@ -318,6 +334,14 @@ void CCar::OnKeyboardRelease(int cmd)
 		NET_Packet PBACKOFF;
 		CGameObject::u_EventGen(PBACKOFF, GE_CAR_TAIL_OFF, ID());
 		CGameObject::u_EventSend(PBACKOFF);
+
+		b_tire_smoke_active = false;
+		b_brakes_activated = false;
+
+		StopTireSmoke();
+		NET_Packet PBACKTSOFF;
+		CGameObject::u_EventGen(PBACKTSOFF, GE_CAR_TIRESMOKE_OFF, ID());
+		CGameObject::u_EventSend(PBACKTSOFF);
 		break;
 	case kL_STRAFE:
 		ReleaseLeft();
@@ -335,6 +359,14 @@ void CCar::OnKeyboardRelease(int cmd)
 		NET_Packet PJUMPOFF;
 		CGameObject::u_EventGen(PJUMPOFF, GE_CAR_TAIL_OFF, ID());
 		CGameObject::u_EventSend(PJUMPOFF);
+
+		b_tire_smoke_active = false;
+		b_brakes_activated = false;
+
+		StopTireSmoke();
+		NET_Packet PJUMPTSOFF;
+		CGameObject::u_EventGen(PJUMPTSOFF, GE_CAR_TIRESMOKE_OFF, ID());
+		CGameObject::u_EventSend(PJUMPTSOFF);
 		break;
 	case kNITRO:
 		Console->Execute("fov 70");

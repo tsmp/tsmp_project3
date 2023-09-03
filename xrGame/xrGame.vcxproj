@@ -2058,6 +2058,7 @@
     <ClInclude Include="ui\UIGameTutorial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CarTireSmoke.cpp" />
     <ClCompile Include="console_commands_car_dbg.cpp" />
     <ClCompile Include="UIGameBaseMP.cpp" />
     <ClCompile Include="damage_manager.cpp" />
