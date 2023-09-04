@@ -160,7 +160,10 @@ u32 game_sv_Race::GetPlayerRespawnTime(const game_PlayerState* ps)
 void game_sv_Race::UpdateInProgress()
 {
 	if (g_dedicated_server && m_server->GetClientsCount() == 1)
+	{
+		m_WinnerFinishTime = 0;
 		OnRoundEnd();
+	}
 
 	m_server->ForEachClientDoSender([&](IClient* client)
 	{
