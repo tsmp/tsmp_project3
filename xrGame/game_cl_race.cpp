@@ -145,7 +145,7 @@ void game_cl_Race::UpdateRaceScores()
 			m_game_ui->SetRoundResultCaption(tmp);
 			m_WinnerMessageSet = true;
 
-			if(local_player->GameID == m_WinnerId)
+			if(local_player && local_player->GameID == m_WinnerId)
 				PlaySndMessage(ID_YOU_WON);
 		}
 	}
