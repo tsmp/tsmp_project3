@@ -568,7 +568,7 @@ void CCar::Interpolate()
 
 	if (Device.dwTimeGlobal - m_InterpolationStartTime > 20000) // На всякий случай. Не должно интерполировать на одних и тех же данных больше 20 сек.
 	{
-		Msg("! Car lerp: force next update!");
+		// Msg("! Car lerp: force next update!");
 		nextUpd = true;
 	}
 
