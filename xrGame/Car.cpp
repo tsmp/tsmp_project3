@@ -29,6 +29,7 @@
 #include "PHActivationShape.h"
 #include "CharacterPhysicsSupport.h"
 #include "car_memory.h"
+#include "Console.h"
 
 BONE_P_MAP CCar::bone_map = BONE_P_MAP();
 extern CPHWorld *ph_world;
@@ -487,7 +488,10 @@ void CCar::VisualUpdate(float fov)
 
 	UpdateExhausts();
 
-	if (m_current_rpm < m_min_rpm * 1.01)
+	Fvector speed;
+	m_pPhysicsShell->get_LinearVel(speed);
+
+	if (speed.magnitude() < m_current_speed_max * 0.04)
 		b_tire_smoke_active = false;
 
 	if (b_tire_smoke_active)
@@ -505,9 +509,17 @@ void CCar::VisualUpdate(float fov)
 	
 	if (m_nitro_active) {
 		n_lights.TurnOnNitroLights();
+		NET_Packet PNITROCHECK;
+		CGameObject::u_EventGen(PNITROCHECK, GE_CAR_NITRO_ON, ID());
+		CGameObject::u_EventSend(PNITROCHECK);
 		m_car_sound->snd_nitro_loop.set_volume(1.f);
 		m_nitro_capacity -= m_nitro_power;
 	}
+
+	m_fov_scaled_value = (speed.magnitude() - m_current_speed_min) * (m_current_fov_max - m_current_fov_min) / m_current_speed_range + m_current_fov_min;
+	sprintf(m_fov_buffer, "fov %d", m_fov_scaled_value);
+	m_current_fov = m_fov_buffer;
+	Console->Execute(m_current_fov);
 }
 
 void CCar::InterpolateStates(const float &factor)
@@ -1118,6 +1130,11 @@ void CCar::Init()
 	b_brakes_activated = false;
 	e_start_time = 0.f;
 	b_start_time = 0.f;
+	m_current_fov_min = 55;
+	m_current_fov_max = 90;
+	m_current_speed_max = 58;
+	m_current_speed_min = 0;
+	m_current_speed_range = m_current_speed_max - m_current_speed_min;
 	m_root_transform.set(bone_map.find(pKinematics->LL_GetBoneRoot())->second.element->mXFORM);
 	m_current_transmission_num = 0;
 	m_pPhysicsShell->set_DynamicScales(1.f, 1.f);
@@ -1349,10 +1366,12 @@ void CCar::UpdatePower()
 	if (b_auto_switch_transmission && !b_transmission_switching)
 	{
 		VERIFY2(CurrentTransmission() < m_gear_ratious.size(), "wrong transmission");
-		if (m_current_rpm < m_gear_ratious[CurrentTransmission()][1])
+		if (m_current_rpm < m_gear_ratious[CurrentTransmission()][1]) {
 			TransmissionDown();
-		if (m_current_rpm > m_gear_ratious[CurrentTransmission()][2])
+		}
+		if (m_current_rpm > m_gear_ratious[CurrentTransmission()][2]) {
 			TransmissionUp();
+		}
 	}
 
 	xr_vector<SWheelDrive>::iterator i, e;

@@ -478,6 +478,14 @@ private:
 
 	float m_nitro_power;
 	float m_nitro_capacity;
+	LPCSTR m_current_fov;
+	int m_current_fov_min;
+	int m_current_fov_max;
+	int m_current_speed_min;
+	int m_current_speed_max;
+	int m_current_speed_range;
+	int m_fov_scaled_value;
+	char m_fov_buffer[20];
 
 	/////////////////////porabola
 	float m_a, m_b, m_c;
