@@ -125,7 +125,7 @@ public:
     void Load(IReader &fs);
 
 #ifdef DEBUG
-    LPCSTR dbg_Name();
+    LPCSTR dbg_Name() const;
 #endif
 };
 

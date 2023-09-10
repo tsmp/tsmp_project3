@@ -60,7 +60,6 @@ extern void show_smart_cast_stats();
 extern void clear_smart_cast_stats();
 extern void release_smart_cast_stats();
 
-extern u64 g_qwStartGameTime;
 extern u64 g_qwEStartGameTime;
 
 ENGINE_API
@@ -1143,7 +1142,9 @@ public:
 
 struct CCC_StartTimeSingle : public IConsole_Command
 {
+	u64 g_qwStartGameTime = { 0 };
 	CCC_StartTimeSingle(LPCSTR N) : IConsole_Command(N){};
+
 	virtual void Execute(LPCSTR args)
 	{
 		u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
