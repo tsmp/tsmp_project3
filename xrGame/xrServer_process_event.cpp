@@ -62,7 +62,6 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 	case GEG_PLAYER_ITEM2RUCK:
 	case GE_GRENADE_EXPLODE:
 	case GE_CAR_BEEP:
-	case GE_CAR_BRAKES:
 	case GE_CAR_TAIL_ON:
 	case GE_CAR_TAIL_OFF:
 	case GE_CAR_EXHAUST_ON:

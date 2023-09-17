@@ -239,15 +239,16 @@ void CCar::OnKeyboardPress(int cmd)
 	case kBACK:
 		PressBack();
 		if (m_current_transmission_num > 1) {
-			NET_Packet PBACKBRAKES;
-			CGameObject::u_EventGen(PBACKBRAKES, GE_CAR_BRAKES, ID());
-			CGameObject::u_EventSend(PBACKBRAKES);
 			PlayTireSmoke();
 			NET_Packet PBACKTSON;
 			CGameObject::u_EventGen(PBACKTSON, GE_CAR_TIRESMOKE_ON, ID());
 			CGameObject::u_EventSend(PBACKTSON);
 			b_tire_smoke_active = true;
 			b_brakes_activated = true;
+		}
+		else {
+			b_tire_smoke_active = false;
+			b_brakes_activated = false;
 		}
 
 		if (m_lights.IsLightTurnedOn()) {
@@ -276,9 +277,6 @@ void CCar::OnKeyboardPress(int cmd)
 		break;
 	case kJUMP: 
 		PressBreaks();
-		NET_Packet PJUMPBRAKES;
-		CGameObject::u_EventGen(PJUMPBRAKES, GE_CAR_BRAKES, ID());
-		CGameObject::u_EventSend(PJUMPBRAKES);
 
 		if (!b_tire_smoke_active && !b_brakes_activated && b_engine_on && m_current_rpm > m_min_rpm * 1.03) {
 			PlayTireSmoke();
@@ -287,6 +285,9 @@ void CCar::OnKeyboardPress(int cmd)
 			CGameObject::u_EventSend(PJUMPTSON);
 			b_tire_smoke_active = true;
 			b_brakes_activated = true;
+
+			Fvector speed;
+			m_pPhysicsShell->get_LinearVel(speed);
 		}
 
 		if (m_lights.IsLightTurnedOn()) {

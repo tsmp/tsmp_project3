@@ -30,6 +30,7 @@
 #include "CharacterPhysicsSupport.h"
 #include "car_memory.h"
 #include "Console.h"
+#include <iostream>
 
 BONE_P_MAP CCar::bone_map = BONE_P_MAP();
 extern CPHWorld *ph_world;
@@ -82,7 +83,7 @@ CCar::CCar()
 	m_rpm_decrement_factor = 0.5f;
 	b_breaks = false;
 	m_break_start = 0.f;
-	m_break_time = 1.;
+	m_break_time = 1.f;
 	m_breaks_to_back_rate = 1.f;
 
 	b_exploded = false;
@@ -494,10 +495,60 @@ void CCar::VisualUpdate(float fov)
 	if (speed.magnitude() < m_current_speed_max * 0.04)
 		b_tire_smoke_active = false;
 
-	if (b_tire_smoke_active)
+	if (b_tire_smoke_active) {
 		UpdateTireSmoke();
+		if (speed.magnitude() > m_current_speed_max * 0.6) {
+			m_car_sound->snd_skid_1.set_volume(1.f);
+			m_car_sound->snd_skid_2.set_volume(0.25);
+			m_car_sound->snd_skid_3.set_volume(0.f);
+		}
+		else if (speed.magnitude() > m_current_speed_max * 0.3 && speed.magnitude() <= m_current_speed_max * 0.6) {
+			m_car_sound->snd_skid_1.set_volume(0.25);
+			m_car_sound->snd_skid_2.set_volume(1.f);
+			m_car_sound->snd_skid_3.set_volume(0.25);
+		}
+		else {
+			m_car_sound->snd_skid_1.set_volume(0.f);
+			m_car_sound->snd_skid_2.set_volume(0.25);
+			m_car_sound->snd_skid_3.set_volume(1.f);
+		}
+	}
 	else
 		StopTireSmoke();
+
+	if (!b_engine_on) {
+		StopTireSmoke();
+		b_tire_smoke_active = false;
+	}
+
+	if (b_brakes_activated) {
+		if (speed.magnitude() > m_current_speed_max * 0.6) {
+			m_car_sound->snd_skid_1.set_volume(1.f);
+			m_car_sound->snd_skid_2.set_volume(0.25);
+			m_car_sound->snd_skid_3.set_volume(0.f);
+		}
+		else if (speed.magnitude() > m_current_speed_max * 0.3 && speed.magnitude() <= m_current_speed_max * 0.6) {
+			m_car_sound->snd_skid_1.set_volume(0.25);
+			m_car_sound->snd_skid_2.set_volume(1.f);
+			m_car_sound->snd_skid_3.set_volume(0.25);
+		}
+		else {
+			m_car_sound->snd_skid_1.set_volume(0.f);
+			m_car_sound->snd_skid_2.set_volume(0.25);
+			m_car_sound->snd_skid_3.set_volume(1.f);
+		}
+	}
+	else {
+		m_car_sound->snd_skid_1.set_volume(0.f);
+		m_car_sound->snd_skid_2.set_volume(0.f);
+		m_car_sound->snd_skid_3.set_volume(0.f);
+	}
+
+	if (speed.magnitude() < m_current_speed_max * 0.04) {
+		m_car_sound->snd_skid_1.set_volume(0.f);
+		m_car_sound->snd_skid_2.set_volume(0.f);
+		m_car_sound->snd_skid_3.set_volume(0.f);
+	}
 
 	m_lights.Update();
 	t_lights.Update();
@@ -520,6 +571,28 @@ void CCar::VisualUpdate(float fov)
 	sprintf(m_fov_buffer, "fov %d", m_fov_scaled_value);
 	m_current_fov = m_fov_buffer;
 	Console->Execute(m_current_fov);
+
+	//Msg("c.x = %f, c.y = %f, c.z = %f", XFORM().c.x, XFORM().c.y, XFORM().c.z); координаты
+	//Msg("i.x = %f, i.y = %f, i.z = %f", XFORM().i.x, XFORM().i.y, XFORM().i.z); непонятные дубликаты k. Похоже на разные формы xyz - xzy, zxy и т.д.
+	//Msg("j.x = %f, j.y = %f, j.z = %f", XFORM().j.x, XFORM().j.y, XFORM().j.z);
+	
+	speed.z < -1 ? -1 : speed.z;
+	speed.z > 1 ? 1 : speed.z;
+	speed.x < -1 ? -1 : speed.x;
+	speed.x > 1 ? 1 : speed.x;
+	//Msg("k.z = %f, k.x = %f, speed.z = %f, speed.x = %f, vec_mul = %f", XFORM().k.z, XFORM().k.x, speed.z, speed.x, (XFORM().k.z * speed.z + XFORM().k.x * speed.x));
+
+	if ((speed.z >= 0 && speed.z <= 1 && speed.x >= -1 && speed.x <= 1) && 
+		((XFORM().k.z >= 0 && XFORM().k.z <= 0.75 && XFORM().k.x >= -1 && XFORM().k.x <= -0.75) || 
+			(XFORM().k.z >= 0 && XFORM().k.z <= 0.75 && XFORM().k.x >= 0.65 && XFORM().k.x <= 1))) {
+		Msg("DRIFT Z+ X0");
+		PlayTireSmoke();
+		UpdateTireSmoke();
+		b_tire_smoke_active = true;
+		m_car_sound->snd_skid_1.set_volume(0.f);
+		m_car_sound->snd_skid_2.set_volume(1.f);
+		m_car_sound->snd_skid_3.set_volume(0.f);
+	}
 }
 
 void CCar::InterpolateStates(const float &factor)
@@ -1129,8 +1202,7 @@ void CCar::Init()
 	b_tire_smoke_active = false;
 	b_brakes_activated = false;
 	e_start_time = 0.f;
-	b_start_time = 0.f;
-	m_current_fov_min = 55;
+	m_current_fov_min = 60;
 	m_current_fov_max = 90;
 	m_current_speed_max = 58;
 	m_current_speed_min = 0;
@@ -1225,11 +1297,6 @@ void CCar::Init()
 void CCar::Beep()
 {
 	m_car_sound->Beep();
-}
-
-void CCar::Brakes()
-{
-	m_car_sound->Brakes();
 }
 
 void CCar::NitroStart()
@@ -1457,6 +1524,7 @@ void CCar::StopBreaking()
 	if (e_state_drive == drive)
 		Drive();
 	b_breaks = false;
+	b_brakes_activated = false;
 }
 
 void CCar::PressRight()
@@ -1685,6 +1753,7 @@ void CCar::UpdateBack()
 		{
 			k *= (time / m_break_time);
 		}
+
 		xr_vector<SWheelBreak>::iterator i, e;
 		i = m_breaking_wheels.begin();
 		e = m_breaking_wheels.end();
@@ -2058,15 +2127,6 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 		}
 		break;
 
-		case GE_CAR_BRAKES:
-		{
-			if ((m_current_rpm > m_min_rpm * 1.1) && (Device.fTimeGlobal - b_start_time > 1)) {
-				Brakes();
-				b_start_time = Device.fTimeGlobal;
-			}
-		}
-		break;
-
 		case GE_CAR_TAIL_ON:
 		{
 			t_lights.TurnOnTailLights();
@@ -2121,6 +2181,7 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 		{
 			if (b_engine_on && m_current_rpm > m_min_rpm * 1.01 && b_tire_smoke_active && b_brakes_activated) {
 				PlayTireSmoke();
+
 			}
 		}
 		break;

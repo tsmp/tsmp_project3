@@ -162,7 +162,6 @@ public:
 	float m_power_neutral_factor; //multiplier for power when accelerator is not pressed (0-1,0.25)
 	bool b_exploded;
 	float e_start_time;
-	float b_start_time;
 
 	bool m_nitro_active;
 
@@ -397,6 +396,9 @@ public:
 		ref_sound snd_nitro_start;
 		ref_sound snd_nitro_loop;
 		ref_sound snd_nitro_end;
+		ref_sound snd_skid_1;
+		ref_sound snd_skid_2;
+		ref_sound snd_skid_3;
 
 		enum ESoundState
 		{
@@ -571,7 +573,6 @@ private:
 	void CreateSkeleton(CSE_Abstract *po); //creates m_pPhysicsShell
 	void Init();
 	void Beep();
-	void Brakes();
 	void NitroStart();
 	void NitroEnd();
 

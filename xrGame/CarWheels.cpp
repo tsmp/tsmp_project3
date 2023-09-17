@@ -223,12 +223,86 @@ void CCar::SWheelDrive::Init()
 
 void CCar::SWheelDrive::Drive()
 {
+	Fvector speed;
+	pwheel->car->m_pPhysicsShell->get_LinearVel(speed);
+
+	if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.1) {
+		pwheel->collision_params.mu_factor = 1;
+	} 
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.2) {
+		pwheel->collision_params.mu_factor = 1.3;
+	} 
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.3) {
+		pwheel->collision_params.mu_factor = 1.6;
+	} 
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.4) {
+		pwheel->collision_params.mu_factor = 1.9;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.5) {
+		pwheel->collision_params.mu_factor = 2.2;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.6) {
+		pwheel->collision_params.mu_factor = 2.5;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.7) {
+		pwheel->collision_params.mu_factor = 2.8;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.8) {
+		pwheel->collision_params.mu_factor = 3.3;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.9) {
+		pwheel->collision_params.mu_factor = 3.6;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.99) {
+		pwheel->collision_params.mu_factor = 4;
+	}
+	else {
+		pwheel->collision_params.mu_factor = 1;
+	}
+
 	float cur_speed = pwheel->car->RefWheelMaxSpeed() / gear_factor;
 	pwheel->ApplyDriveAxisVel(pos_fvd * cur_speed);
 }
 
 void CCar::SWheelDrive::UpdatePower()
 {
+	Fvector speed;
+	pwheel->car->m_pPhysicsShell->get_LinearVel(speed);
+
+	if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.1) {
+		pwheel->collision_params.mu_factor = 1;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.2) {
+		pwheel->collision_params.mu_factor = 1.3;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.3) {
+		pwheel->collision_params.mu_factor = 1.6;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.4) {
+		pwheel->collision_params.mu_factor = 1.9;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.5) {
+		pwheel->collision_params.mu_factor = 2.2;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.6) {
+		pwheel->collision_params.mu_factor = 2.5;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.7) {
+		pwheel->collision_params.mu_factor = 2.8;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.8) {
+		pwheel->collision_params.mu_factor = 3.3;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.9) {
+		pwheel->collision_params.mu_factor = 3.6;
+	}
+	else if (speed.magnitude() > pwheel->car->m_current_speed_max * 0.99) {
+		pwheel->collision_params.mu_factor = 4;
+	}
+	else {
+		pwheel->collision_params.mu_factor = 1;
+	}
+
 	pwheel->ApplyDriveAxisTorque(pwheel->car->RefWheelCurTorque() / gear_factor);
 }
 
