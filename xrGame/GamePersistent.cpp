@@ -38,6 +38,8 @@ static void *ode_realloc(void *ptr, size_t oldsize, size_t newsize) { return xr_
 static void ode_free(void *ptr, size_t size) { return xr_free(ptr); }
 #endif // DEBUG_MEMORY_MANAGER
 
+extern xr_token game_types[];
+
 CGamePersistent::CGamePersistent(void)
 {
 	m_game_params.m_e_game_type = GAME_ANY;
@@ -180,49 +182,39 @@ void CGamePersistent::OnGameStart()
 	UpdateGameType();
 }
 
+static const xr_map<const char*, const char*> GametypeShortNames
+{
+	{ "dm", "deathmatch" },
+	{ "tdm", "teamdeathmatch" },
+	{ "ah",  "artefacthunt" },
+	{ "sp", "single" },
+	{ "hm", "hardmatch" },
+	{ "fp", "freeplay" }
+};
+
+EGameTypes GetGameTypeByName(const char* name)
+{
+	EGameTypes res = GAME_ANY;
+	char gameTypeName[64];
+
+	const auto shortNameIt = GametypeShortNames.find(name);
+
+	if (shortNameIt != GametypeShortNames.end())
+		strcpy_s(gameTypeName, shortNameIt->second);
+	else
+		strcpy_s(gameTypeName, name);
+
+	const int gameType = get_token_id(game_types, gameTypeName);
+	if (gameType != -1)
+		res = static_cast<EGameTypes>(gameType);
+
+	return res;
+}
+
 void CGamePersistent::UpdateGameType()
 {
 	__super::UpdateGameType();
-	m_game_params.m_e_game_type = GAME_ANY;
-
-	if (!xr_strcmp(m_game_params.m_game_type, "dm"))
-		strcpy_s(m_game_params.m_game_type, "deathmatch");
-
-	if (!xr_strcmp(m_game_params.m_game_type, "tdm"))
-		strcpy_s(m_game_params.m_game_type, "teamdeathmatch");
-
-	if (!xr_strcmp(m_game_params.m_game_type, "ah"))
-		strcpy_s(m_game_params.m_game_type, "artefacthunt");
-
-	if (!xr_strcmp(m_game_params.m_game_type, "sp"))
-		strcpy_s(m_game_params.m_game_type, "single");
-
-	if (!xr_strcmp(m_game_params.m_game_type, "hm"))
-		strcpy_s(m_game_params.m_game_type, "hardmatch");
-	
-	if (!xr_strcmp(m_game_params.m_game_type, "fp"))
-		strcpy_s(m_game_params.m_game_type, "freeplay");
-
-	if (!xr_strcmp(m_game_params.m_game_type, "single"))
-		m_game_params.m_e_game_type = GAME_SINGLE;
-	
-	if (!xr_strcmp(m_game_params.m_game_type, "deathmatch"))
-		m_game_params.m_e_game_type = GAME_DEATHMATCH;
-	
-	if (!xr_strcmp(m_game_params.m_game_type, "teamdeathmatch"))
-		m_game_params.m_e_game_type = GAME_TEAMDEATHMATCH;
-	
-	if (!xr_strcmp(m_game_params.m_game_type, "artefacthunt"))
-		m_game_params.m_e_game_type = GAME_ARTEFACTHUNT;
-
-	if (!xr_strcmp(m_game_params.m_game_type, "hardmatch"))
-		m_game_params.m_e_game_type = GAME_HARDMATCH;
-
-	if (!xr_strcmp(m_game_params.m_game_type, "freeplay"))
-		m_game_params.m_e_game_type = GAME_FREEPLAY;
-
-	if (!xr_strcmp(m_game_params.m_game_type, "race"))
-		m_game_params.m_e_game_type = GAME_RACE;
+	m_game_params.m_e_game_type = GetGameTypeByName(m_game_params.m_game_type);
 
 	// На клиенте может остаться GAME_ANY если мы не знаем тип игры еще
 	

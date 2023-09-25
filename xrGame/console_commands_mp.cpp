@@ -95,6 +95,7 @@ BOOL XRNETWORK_API g_net_compressor_enabled;
 BOOL XRNETWORK_API g_net_compressor_gather_stats;
 
 Fvector SvSpawnPos{ 0.f, 0.f, 0.f };
+extern EGameTypes GetGameTypeByName(const char* name);
 
 static xrClientData* GetCommandInitiator(LPCSTR commandLine)
 {
@@ -602,59 +603,28 @@ class CCC_ChangeLevelGameType : public IConsole_Command
 {
 public:
 	CCC_ChangeLevelGameType(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
 	virtual void Execute(LPCSTR args)
 	{
 		if (!OnServer())
 			return;
 
 		string256 LevelName;
-		LevelName[0] = 0;
+		LevelName[0] = '\0';
 		string256 GameType;
-		GameType[0] = 0;
+		GameType[0] = '\0';
 
 		sscanf(args, "%s %s", LevelName, GameType);
+		const EGameTypes gameTypeID = GetGameTypeByName(GameType);
 
-		if (!xr_strcmp(GameType, "dm"))
-			sprintf_s(GameType, "deathmatch");
-		else if (!xr_strcmp(GameType, "tdm"))
-			sprintf_s(GameType, "teamdeathmatch");
-		else if (!xr_strcmp(GameType, "artifacthunt"))
-			sprintf_s(GameType, "artefacthunt");
-		else if (!xr_strcmp(GameType, "ah"))
-			sprintf_s(GameType, "artefacthunt");
-		else if (!xr_strcmp(GameType, "hm"))
-			sprintf_s(GameType, "hardmatch");
-		else if (!xr_strcmp(GameType, "fp"))
-			sprintf_s(GameType, "freeplay");
+		if (gameTypeID == GAME_ANY)
+		{
+			Msg("! Unknown gametype - %s", GameType);
+			return;
+		}
 
-		if (xr_strcmp(GameType, "deathmatch"))
-			if (xr_strcmp(GameType, "teamdeathmatch"))
-				if (xr_strcmp(GameType, "artefacthunt"))
-					if (xr_strcmp(GameType, "hardmatch"))
-						if (xr_strcmp(GameType, "freeplay"))
-							if (xr_strcmp(GameType, "race"))
-							{
-								Msg("! Unknown gametype - %s", GameType);
-								return;
-							}
-
-		s32 GameTypeID = 0;
-
-		if (!xr_strcmp(GameType, "deathmatch"))
-			GameTypeID = GAME_DEATHMATCH;
-		else if (!xr_strcmp(GameType, "teamdeathmatch"))
-			GameTypeID = GAME_TEAMDEATHMATCH;
-		else if (!xr_strcmp(GameType, "artefacthunt"))
-			GameTypeID = GAME_ARTEFACTHUNT;
-		else if (!xr_strcmp(GameType, "hardmatch"))
-			GameTypeID = GAME_HARDMATCH;
-		else if (!xr_strcmp(GameType, "freeplay"))
-			GameTypeID = GAME_FREEPLAY;
-		else if (!xr_strcmp(GameType, "race"))
-			GameTypeID = GAME_RACE;
-
-		const SGameTypeMaps &M = gMapListHelper.GetMapListFor((EGameTypes)GameTypeID);
-		u32 cnt = M.m_map_names.size();
+		const SGameTypeMaps &M = gMapListHelper.GetMapListFor(gameTypeID);
+		const u32 cnt = M.m_map_names.size();
 		bool bMapFound = false;
 
 		for (u32 i = 0; i < cnt; ++i)
@@ -680,7 +650,7 @@ public:
 		P.w_stringZ(LevelName);
 		P.w_stringZ(GameType);
 		Level().Send(P);
-	};
+	}
 
 	virtual void Info(TInfo &I) { strcpy(I, "Changing level and game type"); }
 };
@@ -689,9 +659,9 @@ class CCC_ChangeGameType : public CCC_ChangeLevelGameType
 {
 public:
 	CCC_ChangeGameType(LPCSTR N) : CCC_ChangeLevelGameType(N) { bEmptyArgsHandled = false; };
+
 	virtual void Execute(LPCSTR args)
 	{
-
 		if (!OnServer())
 			return;
 
