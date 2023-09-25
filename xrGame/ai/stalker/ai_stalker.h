@@ -417,7 +417,6 @@ protected:
 	void choose_equipment();
 
 	void select_items();
-	void transfer_item(CInventoryItem *item, CGameObject *old_owner, CGameObject *new_owner);
 
 	void update_sell_info();
 	bool tradable_item(CInventoryItem *inventory_item, const u16 &current_owner_id);

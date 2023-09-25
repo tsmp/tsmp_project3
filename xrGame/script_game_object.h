@@ -301,6 +301,7 @@ public:
 	void TransferMoney(int money, CScriptGameObject *pForWho);
 	void GiveMoney(int money);
 	u32 Money();
+	void GiveItem(LPCSTR section, CScriptGameObject* pForWho);
 
 	void SetRelation(ALife::ERelationType relation, CScriptGameObject *pWhoToSet);
 

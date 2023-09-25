@@ -318,7 +318,7 @@ void CScriptGameObject::DropItemAndTeleport(CScriptGameObject *pItem, Fvector po
 	CGameObject::u_EventSend(PP);
 }
 
-//передаче вещи из своего инвентаря в инвентарь партнера
+// Передать вещи из своего инвентаря в инвентарь партнера
 void CScriptGameObject::TransferItem(CScriptGameObject *pItem, CScriptGameObject *pForWho)
 {
 	if (!pItem || !pForWho)
@@ -344,6 +344,26 @@ void CScriptGameObject::TransferItem(CScriptGameObject *pItem, CScriptGameObject
 	// отдать партнеру
 	CGameObject::u_EventGen(P, GE_OWNERSHIP_TAKE, pForWho->object().ID());
 	P.w_u16(pIItem->object().ID());
+	CGameObject::u_EventSend(P);
+}
+
+void CScriptGameObject::GiveItem(LPCSTR section, CScriptGameObject* pForWho)
+{
+	if (!pForWho)
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "cannot give item to NULL");
+		return;
+	}
+
+	if (!pSettings->section_exist(section))
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "cannot give item with not existing section [%s]", section);
+		return;
+	}
+
+	NET_Packet P;
+	CGameObject::u_EventGen(P, GE_CLIENT_INV_SPAWN, pForWho->object().ID());
+	P.w_stringZ(section);
 	CGameObject::u_EventSend(P);
 }
 

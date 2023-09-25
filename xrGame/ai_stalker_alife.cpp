@@ -74,20 +74,6 @@ u32 CAI_Stalker::fill_items(CInventory &inventory, CGameObject *old_owner, ALife
 	return (result);
 }
 
-void CAI_Stalker::transfer_item(CInventoryItem *item, CGameObject *old_owner, CGameObject *new_owner)
-{
-	NET_Packet P;
-	CGameObject *O = old_owner;
-	O->u_EventGen(P, GE_TRADE_SELL, O->ID());
-	P.w_u16(u16(item->object().ID()));
-	O->u_EventSend(P);
-
-	O = new_owner;
-	O->u_EventGen(P, GE_TRADE_BUY, O->ID());
-	P.w_u16(u16(item->object().ID()));
-	O->u_EventSend(P);
-}
-
 IC void CAI_Stalker::buy_item_virtual(CTradeItem &item)
 {
 	item.m_new_owner_id = ID();

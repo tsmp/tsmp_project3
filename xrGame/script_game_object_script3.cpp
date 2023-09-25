@@ -147,6 +147,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("transfer_money", &CScriptGameObject::TransferMoney)
 		.def("give_money", &CScriptGameObject::GiveMoney)
 		.def("money", &CScriptGameObject::Money)
+		.def("give_item", &CScriptGameObject::GiveItem)
 
 		.def("switch_to_trade", &CScriptGameObject::SwitchToTrade)
 		.def("switch_to_talk", &CScriptGameObject::SwitchToTalk)

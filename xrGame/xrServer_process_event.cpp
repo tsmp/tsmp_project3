@@ -395,8 +395,22 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 
 		Msg("! Player [%s] is spawning [%s]", receiver->name_replace(), name_sect.c_str());
 				
-		if (game_sv_mp* svGame = smart_cast<game_sv_mp*>(Level().Server->game))
+		if (auto svGame = Level().Server->game)
 			svGame->SpawnObject(name_sect.c_str(), pos, shared_str(nullptr));
+	}
+	break;
+
+	case GE_CLIENT_INV_SPAWN:
+	{
+		if (!receiver)
+			break;
+
+		shared_str nameSect;
+		P.r_stringZ(nameSect);
+		const Fvector3 pos = { 0,0,0 };
+
+		if (auto svGame = Level().Server->game)
+			svGame->SpawnObject(nameSect.c_str(), pos, shared_str(nullptr), destination);
 	}
 	break;
 
