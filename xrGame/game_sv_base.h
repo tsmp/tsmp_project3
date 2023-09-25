@@ -40,8 +40,8 @@ protected:
 	virtual void OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender);
 
 	virtual void ReadOptions(shared_str &options);
-	virtual void ConsoleCommands_Create();
-	virtual void ConsoleCommands_Clear();
+	virtual void ConsoleCommands_Create() {}
+	virtual void ConsoleCommands_Clear() {}
 
 	DEF_DEQUE(MAP_ROTATION_LIST, xr_string);
 	bool m_bMapRotation;
@@ -144,10 +144,10 @@ public:
 
 	// Events
 	virtual BOOL OnPreCreate(CSE_Abstract *E) { return TRUE; };
-	virtual void OnCreate(u16 id_who){};
+	virtual void OnCreate(u16 id_who);
 	virtual void OnPostCreate(u16 id_who){};
-	virtual BOOL OnTouch(u16 eid_who, u16 eid_target, BOOL bForced = FALSE) = 0; // TRUE=allow ownership, FALSE=denied
-	virtual void OnDetach(u16 eid_who, u16 eid_target) = 0;
+	virtual BOOL OnTouch(u16 eid_who, u16 eid_target, BOOL bForced = FALSE); // TRUE=allow ownership, FALSE=denied
+	virtual void OnDetach(u16 eid_who, u16 eid_target);
 	virtual void OnDestroyObject(u16 eid_who){};
 
 	virtual void OnHit(u16 id_hitter, u16 id_hitted, NET_Packet &P);			   //кто-то получил Hit
@@ -162,9 +162,9 @@ public:
 	virtual void net_Export_GameTime(NET_Packet &P);							// update GameTime only for remote clients
 
 	virtual bool change_level(NET_Packet &net_packet, ClientID const &sender);
-	virtual void save_game(NET_Packet &net_packet, ClientID const &sender);
+	virtual void save_game(NET_Packet& net_packet, ClientID const& sender) {}
 	virtual bool load_game(NET_Packet &net_packet, ClientID const &sender);
-	virtual void switch_distance(NET_Packet &net_packet, ClientID const &sender);
+	virtual void switch_distance(NET_Packet& net_packet, ClientID const& sender) {}
 
 	void SendPatrolPaths(const ClientID& idTo);
 	void AddDelayedEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender);

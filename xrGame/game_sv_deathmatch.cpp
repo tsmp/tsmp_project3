@@ -1369,6 +1369,8 @@ void game_sv_Deathmatch::StartAnomalies(int AnomalySet)
 
 BOOL game_sv_Deathmatch::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 {
+#pragma TODO("TSMP: подружить как-то с алайфом и ihnerited::OnTouch")
+
 	CSE_Abstract *e_who = m_server->ID_to_entity(eid_who);
 	VERIFY(e_who);
 	CSE_Abstract *e_what = m_server->ID_to_entity(eid_what);
@@ -1495,6 +1497,8 @@ BOOL game_sv_Deathmatch::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 
 void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
 {
+#pragma TODO("TSMP: подружить как-то с алайфом и ihnerited::DeTouch")
+
 	CSE_Abstract *e_parent = get_entity_from_eid(eid_who);
 	CSE_Abstract *e_entity = get_entity_from_eid(eid_what);
 
@@ -1847,15 +1851,9 @@ void game_sv_Deathmatch::OnCreate(u16 eid_who)
 {
 	inherited::OnCreate(eid_who);
 
-	CSE_Abstract *pEntity = get_entity_from_eid(eid_who);
-	if (!pEntity)
-		return;
-	CSE_ALifeCustomZone *pCustomZone = smart_cast<CSE_ALifeCustomZone *>(pEntity);
-	if (pCustomZone)
-	{
+	if (auto pCustomZone = smart_cast<CSE_ALifeCustomZone*>(get_entity_from_eid(eid_who)))
 		pCustomZone->m_maxPower = pSettings->r_float(*pCustomZone->s_name, "max_start_power");
-	}
-};
+}
 
 void game_sv_Deathmatch::OnPostCreate(u16 eid_who)
 {
@@ -2050,10 +2048,10 @@ void game_sv_Deathmatch::check_for_WarmUp()
 
 void game_sv_Deathmatch::on_death(CSE_Abstract *e_dest, CSE_Abstract *e_src)
 {
-	CSE_ALifeCreatureAbstract* pVictim = smart_cast<CSE_ALifeCreatureAbstract*>(e_dest);
-	if (!pVictim)
-		return;
-	pVictim->on_death(e_src);
+	if (auto pVictim = smart_cast<CSE_ALifeCreatureAbstract*>(e_dest))
+		pVictim->on_death(e_src);
+
+	inherited::on_death(e_dest, e_src);
 }
 
 void game_sv_Deathmatch::WriteGameState(CInifile &ini, LPCSTR sect, bool bRoundResult)

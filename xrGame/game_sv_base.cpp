@@ -19,6 +19,7 @@
 #include "ai_object_location.h"
 #include "clsid_game.h"
 #include "alife_object_registry.h"
+#include "alife_graph_registry.h"
 
 ENGINE_API bool g_dedicated_server;
 
@@ -46,9 +47,7 @@ xr_token round_end_result_str[] =
 
 game_PlayerState *game_sv_GameState::get_id(ClientID const &id)
 {
-	xrClientData *C = (xrClientData *)m_server->ID_to_client(id);
-
-	if (C)
+	if (xrClientData* C = m_server->ID_to_client(id))
 		return C->ps;
 
 	return nullptr;
@@ -56,9 +55,7 @@ game_PlayerState *game_sv_GameState::get_id(ClientID const &id)
 
 LPCSTR game_sv_GameState::get_name_id(ClientID const &id)
 {
-	xrClientData *C = (xrClientData *)m_server->ID_to_client(id);
-
-	if (C)
+	if (xrClientData* C = m_server->ID_to_client(id))
 		return *C->name;
 
 	return nullptr;
@@ -66,9 +63,7 @@ LPCSTR game_sv_GameState::get_name_id(ClientID const &id)
 
 LPCSTR game_sv_GameState::get_player_name_id(ClientID const &id)
 {
-	xrClientData *xrCData = m_server->ID_to_client(id);
-
-	if (xrCData)
+	if (xrClientData* xrCData = m_server->ID_to_client(id))
 		return xrCData->name.c_str();
 
 	return "unknown";
@@ -397,8 +392,6 @@ void game_sv_GameState::Create(shared_str &options)
 	}
 
 	xr_delete(l_tpIniFile);
-
-
 	ConsoleCommands_Create();
 	LPCSTR svcfg_ltx_name = "-svcfg ";
 
@@ -419,27 +412,22 @@ void game_sv_GameState::Create(shared_str &options)
 void game_sv_GameState::ReadOptions(shared_str &options)
 {
 	g_sv_base_dwRPointFreezeTime = get_option_i(*options, "rpfrz", g_sv_base_dwRPointFreezeTime / 1000) * 1000;
-
-	//.	strcpy(MAPROT_LIST, MAPROT_LIST_NAME);
-	//.	if (!FS.exist(MAPROT_LIST))
 	FS.update_path(MAPROT_LIST, "$app_data_root$", MAPROT_LIST_NAME);
+
 	if (FS.exist(MAPROT_LIST))
 		Console->ExecuteScript(MAPROT_LIST);
 
 	g_sv_base_iVotingEnabled = get_option_i(*options, "vote", (g_sv_base_iVotingEnabled));
-	//---------------------------
-	//Convert old vote param
+
+	// Convert old vote param
 	if (g_sv_base_iVotingEnabled != 0)
 	{
 		if (g_sv_base_iVotingEnabled == 1)
 			g_sv_base_iVotingEnabled = 0x00ff;
 	}
-};
-//-----------------------------------------------------------
-static bool g_bConsoleCommandsCreated_SV_Base = false;
-void game_sv_GameState::ConsoleCommands_Create(){};
+}
 
-void game_sv_GameState::ConsoleCommands_Clear(){};
+static bool g_bConsoleCommandsCreated_SV_Base = false;
 
 void game_sv_GameState::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 {
@@ -447,6 +435,7 @@ void game_sv_GameState::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 
 	u8 l_uc_team = u8(-1);
 	CSE_Spectator *tpSpectator = smart_cast<CSE_Spectator *>(E);
+
 	if (tpSpectator)
 		l_uc_team = tpSpectator->g_team();
 	else
@@ -457,36 +446,35 @@ void game_sv_GameState::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 		else
 			R_ASSERT2(tpTeamed, "Non-teamed object is assigning to respawn point!");
 	}
+
 	xr_vector<RPoint> &rp = rpoints[l_uc_team];
-	//-----------------------------------------------------------
-	xr_vector<u32> xrp; //	= rpoints[l_uc_team];
+	xr_vector<u32> xrp;
+
 	for (u32 i = 0; i < rp.size(); i++)
 	{
 		if (rp[i].TimeToUnfreeze < Level().timeServer())
 			xrp.push_back(i);
 	}
 	u32 rpoint = 0;
-	if (xrp.size() && !tpSpectator)
-	{
-		rpoint = xrp[::Random.randI((int)xrp.size())];
-	}
+
+	if (xrp.size() && !tpSpectator)	
+		rpoint = xrp[::Random.randI((int)xrp.size())];	
 	else
 	{
 		if (!tpSpectator)
 		{
 			for (u32 i = 0; i < rp.size(); i++)
-			{
 				rp[i].TimeToUnfreeze = 0;
-			};
-		};
+		}
+
 		rpoint = ::Random.randI((int)rp.size());
 	}
-	//-----------------------------------------------------------
+
 	RPoint &r = rp[rpoint];
-	if (!tpSpectator)
-	{
+
+	if (!tpSpectator)	
 		r.TimeToUnfreeze = Level().timeServer() + g_sv_base_dwRPointFreezeTime;
-	};
+
 	E->o_Position.set(r.P);
 	E->o_Angle.set(r.A);
 }
@@ -494,7 +482,7 @@ void game_sv_GameState::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 bool game_sv_GameState::IsPointFreezed(RPoint *rp)
 {
 	return rp->TimeToUnfreeze > Level().timeServer();
-};
+}
 
 void game_sv_GameState::SetPointFreezed(RPoint *rp)
 {
@@ -684,17 +672,120 @@ bool game_sv_GameState::change_level(NET_Packet &net_packet, ClientID const &sen
 	return true;
 }
 
-void game_sv_GameState::save_game(NET_Packet &net_packet, ClientID const &sender)
-{
-}
-
 bool game_sv_GameState::load_game(NET_Packet &net_packet, ClientID const &sender)
 {
 	return true;
 }
 
-void game_sv_GameState::switch_distance(NET_Packet &net_packet, ClientID const &sender)
+void game_sv_GameState::OnCreate(u16 idWho)
 {
+	if (!ai().get_alife())
+		return;
+
+	CSE_Abstract* entity = get_entity_from_eid(idWho);
+	VERIFY(entity);
+
+	if (!entity->m_bALifeControl)
+		return;
+
+	auto alifeObject = smart_cast<CSE_ALifeObject*>(entity);
+	if (!alifeObject)
+		return;
+
+	alifeObject->m_bOnline = true;
+
+	if (alifeObject->ID_Parent != 0xffff)
+	{ 
+		if (auto parent = ai().alife().objects().object(alifeObject->ID_Parent, true))
+		{			
+			if (auto trader = smart_cast<CSE_ALifeTraderAbstract*>(parent))
+				alife().create(alifeObject);
+			else
+				alifeObject->m_bALifeControl = false;
+		}
+		else
+			alifeObject->m_bALifeControl = false;
+	}
+	else
+		alife().create(alifeObject);
+}
+
+BOOL game_sv_GameState::OnTouch(u16 eidWho, u16 eidWhat, BOOL bForced)
+{
+	CSE_Abstract* eWho = get_entity_from_eid(eidWho);
+	VERIFY(eWho);
+	CSE_Abstract* eWhat = get_entity_from_eid(eidWhat);
+	VERIFY(eWhat);
+
+	if (ai().get_alife())
+	{
+		auto alifeInvItem = smart_cast<CSE_ALifeInventoryItem*>(eWhat);
+		auto dynObject = smart_cast<CSE_ALifeDynamicObject*>(eWho);
+
+		if (
+			alifeInvItem &&
+			dynObject &&
+			ai().alife().graph().level().object(alifeInvItem->base()->ID, true) &&
+			ai().alife().objects().object(eWho->ID, true) &&
+			ai().alife().objects().object(eWhat->ID, true))
+			alife().graph().attach(*eWho, alifeInvItem, dynObject->m_tGraphID, false, false);
+#ifdef DEBUG
+		else if (psAI_Flags.test(aiALife))
+		{
+			Msg("Cannot attach object [%s][%s][%d] to object [%s][%s][%d]", eWhat->name_replace(), *eWhat->s_name, eWhat->ID, eWho->name_replace(), *eWho->s_name, eWho->ID);
+		}
+#endif
+	}
+
+	return TRUE;
+}
+
+void game_sv_GameState::OnDetach(u16 eidWho, u16 eidWhat)
+{
+	if (!ai().get_alife())
+		return;
+
+	CSE_Abstract* eWho = get_entity_from_eid(eidWho);
+	VERIFY(eWho);
+	CSE_Abstract* eWhat = get_entity_from_eid(eidWhat);
+	VERIFY(eWhat);
+
+	auto alifeInvItem = smart_cast<CSE_ALifeInventoryItem*>(eWhat);
+	if (!alifeInvItem)
+		return;
+
+	auto dynObject = smart_cast<CSE_ALifeDynamicObject*>(eWho);
+	if (!dynObject)
+		return;
+
+	if (
+		ai().alife().objects().object(eWho->ID, true) &&
+		!ai().alife().graph().level().object(alifeInvItem->base()->ID, true) &&
+		ai().alife().objects().object(eWhat->ID, true))
+		alife().graph().detach(*eWho, alifeInvItem, dynObject->m_tGraphID, false, false);
+	else
+	{
+		if (!ai().alife().objects().object(eWhat->ID, true))
+		{
+			u16 id = alifeInvItem->base()->ID_Parent;
+			alifeInvItem->base()->ID_Parent = 0xffff;
+
+			CSE_ALifeDynamicObject* dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(eWhat);
+			VERIFY(dynamic_object);
+			dynamic_object->m_tNodeID = dynObject->m_tNodeID;
+			dynamic_object->m_tGraphID = dynObject->m_tGraphID;
+			dynamic_object->m_bALifeControl = true;
+			dynamic_object->m_bOnline = true;
+			alife().create(dynamic_object);
+			alifeInvItem->base()->ID_Parent = id;
+		}
+#ifdef DEBUG
+		else if (psAI_Flags.test(aiALife))
+		{
+			Msg("Cannot detach object [%s][%s][%d] from object [%s][%s][%d]", alifeInvItem->base()->name_replace(), *alifeInvItem->base()->s_name, alifeInvItem->base()->ID, dynObject->base()->name_replace(), dynObject->base()->s_name, dynObject->ID);
+		}
+#endif
+	}
 }
 
 void game_sv_GameState::OnHit(u16 id_hitter, u16 id_hitted, NET_Packet &P)
@@ -914,22 +1005,61 @@ RPoint game_sv_GameState::getRP(u16 team_idx, u32 rp_idx)
 		return rpoints[team_idx][rp_idx];
 	else
 		return RPoint();
-};
-
-void game_sv_GameState::teleport_object(NET_Packet &packet, u16 id)
-{
 }
 
-void game_sv_GameState::add_restriction(NET_Packet &packet, u16 id)
+void game_sv_GameState::teleport_object(NET_Packet& netPacket, u16 id)
 {
+	if (!ai().get_alife())
+		return;
+
+	GameGraph::_GRAPH_ID gameVertexId;
+	u32 levelVertexId;
+	Fvector position;
+
+	netPacket.r(&gameVertexId, sizeof(gameVertexId));
+	netPacket.r(&levelVertexId, sizeof(levelVertexId));
+	netPacket.r_vec3(position);
+
+	alife().teleport_object(id, gameVertexId, levelVertexId, position);
 }
 
-void game_sv_GameState::remove_restriction(NET_Packet &packet, u16 id)
+void game_sv_GameState::add_restriction(NET_Packet& packet, u16 id)
 {
+	if (!ai().get_alife())
+		return;
+
+	ALife::_OBJECT_ID restrictionId;
+	packet.r(&restrictionId, sizeof(restrictionId));
+
+	RestrictionSpace::ERestrictorTypes restrictionType;
+	packet.r(&restrictionType, sizeof(restrictionType));
+
+	alife().add_restriction(id, restrictionId, restrictionType);
 }
 
-void game_sv_GameState::remove_all_restrictions(NET_Packet &packet, u16 id)
+void game_sv_GameState::remove_restriction(NET_Packet& packet, u16 id)
 {
+	if (!ai().get_alife())
+		return;
+
+	ALife::_OBJECT_ID restrictionId;
+	packet.r(&restrictionId, sizeof(restrictionId));
+
+	RestrictionSpace::ERestrictorTypes restrictionType;
+	packet.r(&restrictionType, sizeof(restrictionType));
+
+	alife().remove_restriction(id, restrictionId, restrictionType);
+}
+
+void game_sv_GameState::remove_all_restrictions(NET_Packet& packet, u16 id)
+{
+	if (!ai().get_alife())
+		return;
+
+	RestrictionSpace::ERestrictorTypes restrictionType;
+	packet.r(&restrictionType, sizeof(restrictionType));
+
+	alife().remove_all_restrictions(id, restrictionType);
 }
 
 void game_sv_GameState::MapRotation_AddMap(LPCSTR MapName)
@@ -939,7 +1069,7 @@ void game_sv_GameState::MapRotation_AddMap(LPCSTR MapName)
 		m_bMapRotation = true;
 	else
 		m_bMapRotation = false;
-};
+}
 
 void game_sv_GameState::MapRotation_ListMaps()
 {
@@ -1019,14 +1149,17 @@ shared_str game_sv_GameState::level_name(const shared_str &server_options) const
 	return (_GetItem(*server_options, 0, l_name, '/'));
 }
 
-void game_sv_GameState::on_death(CSE_Abstract *e_dest, CSE_Abstract *e_src)
+void game_sv_GameState::on_death(CSE_Abstract *eDest, CSE_Abstract *eSrc)
 {
-	CSE_ALifeCreatureAbstract *creature = smart_cast<CSE_ALifeCreatureAbstract *>(e_dest);
+	auto creature = smart_cast<CSE_ALifeCreatureAbstract*>(eDest);
 	if (!creature)
 		return;
 
 	VERIFY(creature->m_killer_id == ALife::_OBJECT_ID(-1));
-	creature->m_killer_id = e_src->ID;
+	creature->m_killer_id = eSrc->ID;
+
+	if (ai().get_alife())
+		alife().on_death(eDest, eSrc);
 }
 
 //  [7/5/2005]
