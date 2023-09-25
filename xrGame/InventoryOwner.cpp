@@ -116,6 +116,7 @@ BOOL CInventoryOwner::net_Spawn(CSE_Abstract *DC)
 	if (!pThis)
 		return FALSE;
 	CSE_Abstract *E = (CSE_Abstract *)(DC);
+	m_known_info_registry->registry().init(E->ID);
 
 	if (!smart_cast<CSE_ALifeCreatureActor*>(E) || IsGameTypeSingle())
 	{
@@ -130,10 +131,6 @@ BOOL CInventoryOwner::net_Spawn(CSE_Abstract *DC)
 
 		//синхронизируем параметры персонажа с серверным объектом
 		CharacterInfo().Init(pTrader);
-
-		//-------------------------------------
-		m_known_info_registry->registry().init(E->ID);
-		//-------------------------------------
 
 		CAI_PhraseDialogManager *dialog_manager = smart_cast<CAI_PhraseDialogManager *>(this);
 		if (dialog_manager && !dialog_manager->GetStartDialog().size())
