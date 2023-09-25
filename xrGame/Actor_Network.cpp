@@ -604,14 +604,17 @@ BOOL CActor::net_Spawn(CSE_Abstract *DC)
 	m_bWasHitted = false;
 	m_dwILastUpdateTime = 0;
 
-	m_game_task_manager = xr_new<CGameTaskManager>();
-	GameTaskManager().initialize(ID());
+	if (Local())
+	{
+		m_game_task_manager = xr_new<CGameTaskManager>();
+		GameTaskManager().initialize(ID());
+		m_statistic_manager = xr_new<CActorStatisticMgr>();
+	}
 
 	if (IsGameTypeSingle())
 	{
 		Level().MapManager().AddMapLocation("actor_location", ID());
 		Level().MapManager().AddMapLocation("actor_location_p", ID());
-		m_statistic_manager = xr_new<CActorStatisticMgr>();
 	}
 
 	spatial.type |= STYPE_REACTTOSOUND;

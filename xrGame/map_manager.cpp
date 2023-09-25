@@ -252,15 +252,7 @@ Locations &CMapManager::Locations()
 {
 	return m_locations->registry().objects();
 }
-/*
-void CheckUserLocation		(CMapLocation* ml)
-{
-	if(false == ml->IsUserDefined()) return;
-	Level().Server->FreeID(ml->ObjectID(),Device.TimerAsync());
 
-	Actor()->GameTaskManager().RemoveUserTask(ml);
-}
-*/
 #ifdef DEBUG
 void CMapManager::Dump()
 {

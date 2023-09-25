@@ -995,7 +995,9 @@ void CActor::shedule_Update(u32 DT)
 
 	//обновление инвентаря
 	UpdateInventoryOwner(DT);
-	GameTaskManager().UpdateTasks();
+
+	if(m_game_task_manager)
+		GameTaskManager().UpdateTasks();
 
 	if (m_holder || !getEnabled() || !Ready())
 	{
