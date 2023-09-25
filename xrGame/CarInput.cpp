@@ -185,11 +185,17 @@ void CCar::OnKeyboardPress(int cmd)
 		break;
 	case kENGINE:
 		SwitchEngine();
+		if (HasWeapon())
+			m_car_weapon->Action(CCarWeapon::eWpnActivate, b_engine_on);
 		break;
 	case kTORCH:
 		m_lights.SwitchHeadLights();
 		break;
 	case kUSE:
+		break;
+	case kWPN_FIRE: 
+		if (HasWeapon())
+			m_car_weapon->Action(CCarWeapon::eWpnFire, 1); 
 		break;
 	};
 }
@@ -221,6 +227,10 @@ void CCar::OnKeyboardRelease(int cmd)
 		break;
 	case kJUMP:
 		ReleaseBreaks();
+		break;
+	case kWPN_FIRE: 
+		if (HasWeapon())
+			m_car_weapon->Action(CCarWeapon::eWpnFire, 0);
 		break;
 	};
 }

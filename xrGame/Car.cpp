@@ -89,6 +89,8 @@ CCar::CCar()
 	m_steer_angle = 0.f;
 	m_InterpolationStartTime = 0;
 	m_FirstInterpolation = true;
+	m_current_rpm = 0.f;
+	m_current_engine_power = 0.f;
 
 #ifdef DEBUG
 	InitDebug();
@@ -431,6 +433,15 @@ void CCar::UpdateCL()
 		m_car_weapon->UpdateCL();
 		if (m_memory)
 			m_memory->set_camera(m_car_weapon->ViewCameraPos(), m_car_weapon->ViewCameraDir(), m_car_weapon->ViewCameraNorm());
+
+		if (OwnerActor() && HasWeapon() && m_car_weapon->IsActive())
+		{
+			collide::rq_result RQ;
+			Level().ObjectSpace.RayPick(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, collide::rqtBoth, RQ, this);
+
+			CCameraBase* C = active_camera;
+			m_car_weapon->SetParam(CCarWeapon::eWpnDesiredPos, C->vPosition.add(C->vDirection.mul(RQ.range)));
+		}
 	}
 
 	ASCUpdate();
@@ -823,6 +834,10 @@ void CCar::detach_Actor()
 	///Break();
 	//H_SetParent(NULL);
 	HandBreak();
+
+	if (HasWeapon())
+		m_car_weapon->Action(CCarWeapon::eWpnFire, 0);
+
 	processing_deactivate();
 #ifdef DEBUG
 	DBgClearPlots();
