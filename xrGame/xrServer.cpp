@@ -222,7 +222,8 @@ void xrServer::client_Destroy(IClient* C)
 	} 
 	while (true);
 
-	game->CleanClientData(static_cast<xrClientData*>(aliveClient));
+	if(game)
+		game->CleanClientData(static_cast<xrClientData*>(aliveClient));
 
 #pragma TODO("Сделать как в чн/зп")
 	//if (pOwner)
