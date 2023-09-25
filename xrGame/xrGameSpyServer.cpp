@@ -8,6 +8,8 @@
 
 //#define DEMO_BUILD
 
+int xrGameSpyServer::m_iMaxPlayers = 32;
+
 xrGameSpyServer::xrGameSpyServer()
 {
 	m_iReportToMasterServer = 0;

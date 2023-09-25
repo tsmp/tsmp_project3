@@ -13,6 +13,7 @@
 #include "game_sv_artefacthunt.h"
 #include "date_time.h"
 #include "game_cl_base_weapon_usage_statistic.h"
+#include "xrGameSpyServer.h"
 
 extern float g_cl_lvInterp;
 extern int g_cl_InterpolationType; //0 - Linear, 1 - BSpline, 2 - HSpline
@@ -1919,7 +1920,9 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer, "sv_bearercantsprint", (int *)&g_sv_ah_bBearerCantSprint, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_shieldedbases", (int *)&g_sv_ah_bShildedBases, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_returnplayers", (int *)&g_sv_ah_bAfReturnPlayersToBases, 0, 1);
+	CMD4(CCC_SV_Integer, "sv_max_players", (int *)&xrGameSpyServer::m_iMaxPlayers, 2, 32);
 	CMD1(CCC_SwapTeams, "g_swapteams");
+
 #ifdef DEBUG
 	CMD4(CCC_SV_Integer, "sv_demo_delta_frame", (int *)&g_dwDemoDeltaFrame, 0, 100);
 	CMD4(CCC_SV_Integer, "sv_ignore_money_on_buy", (int *)&g_sv_dm_bDMIgnore_Money_OnBuy, 0, 1);

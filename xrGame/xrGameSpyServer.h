@@ -64,7 +64,7 @@ public:
 	shared_str Password;
 	Flags8 ServerFlags;
 
-	int m_iMaxPlayers;
+	static int m_iMaxPlayers;
 	bool m_bCheckCDKey;
 	bool m_bHasRusMapName;
 
