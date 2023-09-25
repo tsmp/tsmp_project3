@@ -18,6 +18,7 @@
 #include "Actor.h"
 #include "ai_object_location.h"
 #include "clsid_game.h"
+#include "alife_object_registry.h"
 
 ENGINE_API bool g_dedicated_server;
 
@@ -528,7 +529,7 @@ CSE_Abstract *game_sv_GameState::spawn_end(CSE_Abstract *E, ClientID const &id)
 	return N;
 }
 
-CSE_Abstract* game_sv_GameState::SpawnObject(const char* section, Fvector& pos, shared_str& pCustomData)
+CSE_Abstract* game_sv_GameState::SpawnObject(const char* section, const Fvector& pos, shared_str& pCustomData, ALife::_OBJECT_ID parent)
 {
 	if (!pSettings->section_exist(section))
 	{
@@ -544,28 +545,31 @@ CSE_Abstract* game_sv_GameState::SpawnObject(const char* section, Fvector& pos, 
 			return nullptr;
 		}
 
-		CSE_Abstract* SpawnObject = alife().spawn_item(section, pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		CSE_Abstract* spawnedObject = alife().spawn_item(section, pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), parent);
 
-		if (!pCustomData.size())
-			return SpawnObject;
-
-		if (CSE_ALifeCreatureAbstract* AlifeObject = dynamic_cast<CSE_ALifeCreatureAbstract*>(SpawnObject))
+		if (parent != ALife::_OBJECT_ID(-1))
 		{
-			AlifeObject->m_ini_string = pCustomData;
+			const auto parentObj = ai().alife().objects().object(parent, true);
 
-			if (CSE_ALifeTraderAbstract* pTrader = dynamic_cast<CSE_ALifeTraderAbstract*>(AlifeObject))
+			if (parentObj && parentObj->m_bOnline)
 			{
-				if (CInventoryOwner* io = smart_cast<CInventoryOwner*>(this))
-				{
-					pTrader->set_character_profile(io->m_SpecificCharacterStr);
-					pTrader->spawn_supplies();
-				}
+				NET_Packet tNetPacket;
+				server().FreeID(spawnedObject->ID, 0);
+				alife().server().Process_spawn(tNetPacket, m_server->GetServerClient()->ID, FALSE, spawnedObject);
 			}
 		}
-		return SpawnObject;
+
+		if (!pCustomData.size())
+			return spawnedObject;
+
+		if (auto alifeObject = smart_cast<CSE_ALifeCreatureAbstract*>(spawnedObject))		
+			alifeObject->m_ini_string = pCustomData;
+		
+		return spawnedObject;
 	}
 	else
 	{
+		R_ASSERT(parent == ALife::_OBJECT_ID(-1)); // not implemented
 		CSE_Abstract* E = spawn_begin(section);
 
 		if (!E)
