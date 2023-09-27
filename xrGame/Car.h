@@ -406,7 +406,7 @@ private:
 	CCameraBase *camera[3];
 	CCameraBase *active_camera;
 
-	Fvector m_camera_position;
+	Fvector m_camera_position, m_camera_position_lookat, m_camera_position_free;
 
 	friend struct SWheel;
 	friend struct SDoor;
