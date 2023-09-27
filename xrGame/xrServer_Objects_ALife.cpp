@@ -1477,6 +1477,10 @@ void CSE_ALifeCar::UPDATE_Read(NET_Packet &P)
 
 		StateVec.push_back(State);
 	}
+
+	P.r_u8(wpnActive);
+	P.r_u8(wpnShooting);
+	P.r_vec3(enemyPos);
 }
 
 void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
@@ -1499,6 +1503,10 @@ void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
 		P.w_float_q8(State.quaternion.z, -1.0, 1.0);
 		P.w_float_q8(State.quaternion.w, -1.0, 1.0);
 	}
+
+	P.w_u8(wpnActive);
+	P.w_u8(wpnShooting);
+	P.w_vec3(enemyPos);
 }
 
 bool CSE_ALifeCar::used_ai_locations() const

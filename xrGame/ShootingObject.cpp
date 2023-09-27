@@ -16,6 +16,7 @@
 #include "level_bullet_manager.h"
 #include "clsid_game.h"
 #include "game_cl_single.h"
+#include "holder_custom.h"
 
 #define HIT_POWER_EPSILON 0.05f
 #define WALLMARK_SIZE 0.04f
@@ -393,6 +394,16 @@ bool CShootingObject::SendHitAllowed(CObject *pUser)
 				return true;
 			}
 		}
+
+		if (pUser->CLS_ID == CLSID_SCRIPT_CAR)
+		{
+			if (auto act = smart_cast<CActor*>(Level().CurrentControlEntity()))
+			{
+				if (smart_cast<CGameObject*>(act->Holder()) == pUser)
+					return true;
+			}
+		}
+
 		return false;
 	}
 };

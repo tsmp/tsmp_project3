@@ -440,7 +440,8 @@ void CCar::UpdateCL()
 			Level().ObjectSpace.RayPick(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, collide::rqtBoth, RQ, this);
 
 			CCameraBase* C = active_camera;
-			m_car_weapon->SetParam(CCarWeapon::eWpnDesiredPos, C->vPosition.add(C->vDirection.mul(RQ.range)));
+			m_WeaponDesiredPos = C->vPosition.add(C->vDirection.mul(RQ.range));
+			m_car_weapon->SetParam(CCarWeapon::eWpnDesiredPos, m_WeaponDesiredPos);
 		}
 	}
 
@@ -540,6 +541,15 @@ void CCar::NextUpdate()
 	m_Update1 = m_Update2;
 	int deletedCount = 0;
 
+	if (HasWeapon())
+	{
+		if(m_car_weapon->IsActive() != m_Update1->wpnActive)
+			m_car_weapon->Action(CCarWeapon::eWpnActivate, static_cast<u32>(m_Update1->wpnActive));
+
+		if(m_car_weapon->IsWorking() != m_Update1->wpnShooting)
+			m_car_weapon->Action(CCarWeapon::eWpnFire, static_cast<u32>(m_Update1->wpnShooting));
+	}
+
 	while (m_CarNetUpdates[0].TimeStamp < m_Update1->TimeStamp)
 	{
 		deletedCount++;
@@ -576,6 +586,9 @@ void CCar::Interpolate()
 
 	clamp(factor, 0.f, 1.f);
 	InterpolateStates(factor);
+
+	if (m_Update1->wpnActive)
+		m_car_weapon->SetParam(CCarWeapon::eWpnDesiredPos, m_Update1->enemyPos);
 
 	if (Device.dwTimeGlobal - m_InterpolationStartTime > 20000) // На всякий случай. Не должно интерполировать на одних и тех же данных больше 20 сек.
 	{
@@ -637,6 +650,19 @@ void CCar::net_Export(NET_Packet &P)
 			P.w_float_q8(State.quaternion.z, -1.0, 1.0);
 			P.w_float_q8(State.quaternion.w, -1.0, 1.0);
 		}
+
+		if (HasWeapon() && m_car_weapon->IsActive())
+		{
+			P.w_u8(1);
+			P.w_u8(static_cast<u8>(m_car_weapon->IsWorking()));
+			P.w_vec3(m_WeaponDesiredPos);
+		}
+		else
+		{
+			P.w_u8(0);
+			P.w_u8(0);
+			P.w_vec3({ 0,0,0 });
+		}
 	}
 	else
 	{
@@ -653,6 +679,11 @@ void CCar::net_Export(NET_Packet &P)
 			P.w_float_q8(State.quaternion.z, -1.0, 1.0);
 			P.w_float_q8(State.quaternion.w, -1.0, 1.0);
 		}
+
+		const auto& lastUpdate = m_CarNetUpdates.back();
+		P.w_u8(static_cast<u8>(lastUpdate.wpnActive));
+		P.w_u8(static_cast<u8>(lastUpdate.wpnShooting));
+		P.w_vec3(lastUpdate.enemyPos);
 	}
 
 	inherited::net_Export(P);
@@ -718,6 +749,10 @@ void CCar::net_Import(NET_Packet &P)
 
 		update.StateVec.push_back(state);
 	}
+
+	update.wpnActive = static_cast<bool>(P.r_u8());
+	update.wpnShooting = static_cast<bool>(P.r_u8());
+	update.enemyPos = P.r_vec3();
 
 	if (!IsMyCar())	
 		m_CarNetUpdates.push_back(update);

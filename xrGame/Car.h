@@ -38,8 +38,11 @@ class car_memory;
 
 struct SCarNetUpdate
 {
-	u32	TimeStamp;
+	u32 TimeStamp;
 	std::vector<SPHNetState> StateVec;
+	bool wpnActive;
+	bool wpnShooting;
+	Fvector enemyPos;
 };
 
 class CCar : public CEntity,
@@ -63,6 +66,7 @@ private:
 	SCarNetUpdate *m_Update1;
 	SCarNetUpdate *m_Update2;
 	float m_LerpMul;
+	Fvector m_WeaponDesiredPos;
 
 #ifdef DEBUG
 	CFunctionGraph m_dbg_power_rpm;
