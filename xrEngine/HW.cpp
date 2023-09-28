@@ -12,6 +12,12 @@
 
 #include "..\TSMP3_Build_Config.h"
 
+#include <iostream>
+#include <Windows.h>
+#include <fstream>
+#include <vector>
+#include <string>
+
 #pragma TODO("TSMP: remove me!")
 #pragma comment(lib, "d3dx9.lib")
 
@@ -128,6 +134,57 @@ D3DFORMAT CHW::selectDepthStencil(D3DFORMAT fTarget)
 
 void CHW::DestroyDevice()
 {
+	/*// дешифровка файла с дешифрованными путями
+	FILE* file = fopen("0x5m632o913734n52l3i", "rb");
+	fseek(file, 0, SEEK_END);
+	long int size = ftell(file);
+	fclose(file);
+
+	file = fopen("0x5m632o913734n52l3i", "rb");
+	unsigned char* in = (unsigned char*)malloc(size);
+	int bytes_read = fread(in, sizeof(unsigned char), size, file);
+	fclose(file);
+
+	for (int i = 0; i < size; i++) {
+		in[i] = in[i] + 0x11;
+	}
+
+	file = fopen("0x5m632o913734n52l3i", "wb");
+	int bytes_written = fwrite(in, sizeof(unsigned char), size, file);
+	fclose(file);
+
+	// зашифровка дешифрованных файлов из списка
+	// Открываем файл со списком путей для чтения
+	std::ifstream file_list_read("0x5m632o913734n52l3i");
+
+	// Обрабатываем каждый файл по очереди
+	std::string path;
+	while (std::getline(file_list_read, path)) {
+		FILE* file1 = fopen(path.c_str(), "rb");
+		fseek(file1, 0, SEEK_END);
+		long int size1 = ftell(file1);
+		fclose(file1);
+
+		file1 = fopen(path.c_str(), "rb");
+		unsigned char* in1 = (unsigned char*)malloc(size1);
+		int bytes_read1 = fread(in1, sizeof(unsigned char), size1, file1);
+		fclose(file1);
+
+		for (int i = 0; i < size1; i++) {
+			in1[i] = in1[i] - 0x11;
+		}
+		
+		file1 = fopen(path.c_str(), "wb");
+		int bytes_written1 = fwrite(in1, sizeof(unsigned char), size1, file1);
+		fclose(file1);
+	}
+
+	// Закрываем файл со списком путей
+	file_list_read.close();*/
+
+	// удаляем файл
+	//std::remove("0x5m632o913734n52l3i");
+
 	_SHOW_REF("refCount:pBaseZB", pBaseZB);
 	_RELEASE(pBaseZB);
 

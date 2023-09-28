@@ -575,24 +575,6 @@ void CCar::VisualUpdate(float fov)
 	//Msg("c.x = %f, c.y = %f, c.z = %f", XFORM().c.x, XFORM().c.y, XFORM().c.z); координаты
 	//Msg("i.x = %f, i.y = %f, i.z = %f", XFORM().i.x, XFORM().i.y, XFORM().i.z); непонятные дубликаты k. Похоже на разные формы xyz - xzy, zxy и т.д.
 	//Msg("j.x = %f, j.y = %f, j.z = %f", XFORM().j.x, XFORM().j.y, XFORM().j.z);
-	
-	speed.z < -1 ? -1 : speed.z;
-	speed.z > 1 ? 1 : speed.z;
-	speed.x < -1 ? -1 : speed.x;
-	speed.x > 1 ? 1 : speed.x;
-	//Msg("k.z = %f, k.x = %f, speed.z = %f, speed.x = %f, vec_mul = %f", XFORM().k.z, XFORM().k.x, speed.z, speed.x, (XFORM().k.z * speed.z + XFORM().k.x * speed.x));
-
-	if ((speed.z >= 0 && speed.z <= 1 && speed.x >= -1 && speed.x <= 1) && 
-		((XFORM().k.z >= 0 && XFORM().k.z <= 0.75 && XFORM().k.x >= -1 && XFORM().k.x <= -0.75) || 
-			(XFORM().k.z >= 0 && XFORM().k.z <= 0.75 && XFORM().k.x >= 0.65 && XFORM().k.x <= 1))) {
-		Msg("DRIFT Z+ X0");
-		PlayTireSmoke();
-		UpdateTireSmoke();
-		b_tire_smoke_active = true;
-		m_car_sound->snd_skid_1.set_volume(0.f);
-		m_car_sound->snd_skid_2.set_volume(1.f);
-		m_car_sound->snd_skid_3.set_volume(0.f);
-	}
 }
 
 void CCar::InterpolateStates(const float &factor)

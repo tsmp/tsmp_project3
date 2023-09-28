@@ -53,13 +53,13 @@ private:
 	unsigned putbuf;
 	unsigned putlen;
 
-	u8 *in_start;
-	u8 *in_end;
-	u8 *in_iterator;
+	u8* in_start;
+	u8* in_end;
+	u8* in_iterator;
 
-	u8 *out_start;
-	u8 *out_end;
-	u8 *out_iterator;
+	u8* out_start;
+	u8* out_end;
+	u8* out_iterator;
 
 public:
 	IC int _getb()
@@ -73,7 +73,7 @@ public:
 		if (out_iterator == out_end)
 		{
 			u32 out_size = u32(out_end - out_start);
-			out_start = (u8 *)xr_realloc(out_start, out_size + 1024);
+			out_start = (u8*)xr_realloc(out_start, out_size + 1024);
 			out_iterator = out_start + out_size;
 			out_end = out_iterator + 1024;
 		}
@@ -86,7 +86,7 @@ public:
 		out_start = out_end = out_iterator = 0;
 	}
 
-	IC void Init_Input(u8 *_start, u8 *_end)
+	IC void Init_Input(u8* _start, u8* _end)
 	{
 		// input
 		in_start = _start;
@@ -99,7 +99,7 @@ public:
 	IC void Init_Output(int _rsize)
 	{
 		// output
-		out_start = (u8 *)xr_malloc(_rsize);
+		out_start = (u8*)xr_malloc(_rsize);
 		out_end = out_start + _rsize;
 		out_iterator = out_start;
 	}
@@ -111,7 +111,7 @@ public:
 	{
 		return u32(out_iterator - out_start);
 	}
-	IC u8 *OutPointer()
+	IC u8* OutPointer()
 	{
 		return out_start;
 	}
@@ -200,7 +200,7 @@ IC void InitTree(void) /* initialize trees */
 void InsertNode(int r) /* insert to tree */
 {
 	int i, p, cmp;
-	u8 *key;
+	u8* key;
 	unsigned c;
 
 	cmp = 1;
@@ -317,7 +317,7 @@ u8 p_len[64] = {
 	0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
 	0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
 	0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
-	0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08};
+	0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08 };
 
 u8 p_code[64] = {
 	0x00, 0x20, 0x30, 0x40, 0x50, 0x58, 0x60, 0x68,
@@ -327,7 +327,7 @@ u8 p_code[64] = {
 	0xD0, 0xD2, 0xD4, 0xD6, 0xD8, 0xDA, 0xDC, 0xDE,
 	0xE0, 0xE2, 0xE4, 0xE6, 0xE8, 0xEA, 0xEC, 0xEE,
 	0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7,
-	0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF};
+	0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF };
 
 /* for decoding */
 u8 d_code[256] = {
@@ -1080,8 +1080,8 @@ void Encode(void) /* compression */
 		}
 		last_match_length = match_length;
 		for (i = 0; i < last_match_length &&
-					(c = lzfs._getb()) != EOF;
-			 i++)
+			(c = lzfs._getb()) != EOF;
+			i++)
 		{
 			DeleteNode(s);
 			text_buf[s] = (unsigned char)c;
@@ -1123,10 +1123,10 @@ bool Decode(size_t totalSize) /* recover */
 
 	lzfs.Init_Output(textsize);
 	StartHuff();
-	
+
 	for (i = 0; i < N - F; i++)
 		text_buf[i] = 0x20;
-	
+
 	r = N - F;
 
 	for (count = 0; count < textsize;)
@@ -1160,9 +1160,9 @@ bool Decode(size_t totalSize) /* recover */
 	return true;
 }
 
-void _compressLZ(u8 **dest, unsigned *dest_sz, void *src, unsigned src_sz)
+void _compressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz)
 {
-	u8 *start = (u8 *)src;
+	u8* start = (u8*)src;
 	lzfs.Init_Input(start, start + src_sz);
 	Encode();
 	*dest = lzfs.OutPointer();
@@ -1171,12 +1171,12 @@ void _compressLZ(u8 **dest, unsigned *dest_sz, void *src, unsigned src_sz)
 
 bool _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz, size_t totalSize = -1)
 {
-	u8 *start = (u8 *)src;
+	u8* start = (u8*)src;
 	lzfs.Init_Input(start, start + src_sz);
-	
+
 	if (!Decode(totalSize))
 		return false;
-	
+
 	*dest = lzfs.OutPointer();
 	*dest_sz = lzfs.OutSize();
 	return true;

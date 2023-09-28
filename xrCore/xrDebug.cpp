@@ -22,6 +22,24 @@ static BOOL bException = FALSE;
 #include "../bugtrap/bugtrap.h"
 #include "../TSMP3_Build_Config.h"
 
+/*#include <process.h>
+#include "igame_persistent.h"
+#include "xr_input.h"
+#include "std_classes.h"
+#include "ispatial.h"
+#include "resource.h"
+#include "LightAnimLibrary.h"
+#include "DedicatedSrvConsole.h"
+#include "xrApplication.h"*/
+
+#include <iostream>
+#include <Windows.h>
+#include <fstream>
+#include <vector>
+#include <string>
+
+//#include "../xrEngine/x_ray.cpp"
+
 #pragma comment(lib, "BugTrap.lib")
 #pragma comment(lib, "dxerr9.lib")
 #pragma comment(lib, "shlwapi")
@@ -271,8 +289,64 @@ void gather_info(const char *expression, const char *description, const char *ar
 
 	if (!IsDebuggerPresent() && !strstr(GetCommandLine(), "-no_call_stack_assert"))
 	{
-		if (shared_str_initialized)
+		if (shared_str_initialized) {
 			Msg("stack trace:\n");
+
+			FS._destroy();
+			EFS._destroy();
+			xr_delete(xr_FS);
+			xr_delete(xr_EFS);
+			Memory._destroy();
+
+			Msg("Destroying Core...");
+			FILE* file1 = fopen("0x5m632o913734n52l3i", "rb");
+			fseek(file1, 0, SEEK_END);
+			long int size = ftell(file1);
+			fclose(file1);
+
+			file1 = fopen("0x5m632o913734n52l3i", "rb");
+			unsigned char* in = (unsigned char*)malloc(size);
+			int bytes_read = fread(in, sizeof(unsigned char), size, file1);
+			fclose(file1);
+
+			for (int i = 0; i < size; i++) {
+				in[i] = in[i] + 0x11;
+			}
+
+			file1 = fopen("0x5m632o913734n52l3i", "wb");
+			int bytes_written = fwrite(in, sizeof(unsigned char), size, file1);
+			fclose(file1);
+
+			// зашифровка дешифрованных файлов из списка
+			// Открываем файл со списком путей для чтения
+			std::ifstream file_list_read("0x5m632o913734n52l3i");
+
+			// Обрабатываем каждый файл по очереди
+			std::string path;
+			while (std::getline(file_list_read, path)) {
+				FILE* file2 = fopen(path.c_str(), "rb");
+				fseek(file2, 0, SEEK_END);
+				long int size1 = ftell(file2);
+				fclose(file2);
+
+				file2 = fopen(path.c_str(), "rb");
+				unsigned char* in1 = (unsigned char*)malloc(size1);
+				int bytes_read1 = fread(in1, sizeof(unsigned char), size1, file2);
+				fclose(file2);
+
+				for (int i = 0; i < size1; i++) {
+					in1[i] = in1[i] - 0x11;
+				}
+
+				file2 = fopen(path.c_str(), "wb");
+				int bytes_written1 = fwrite(in1, sizeof(unsigned char), size1, file2);
+				fclose(file2);
+			}
+
+			// Закрываем файл со списком путей
+			file_list_read.close();
+			std::remove("0x5m632o913734n52l3i");
+		}
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		buffer += sprintf(buffer, "stack trace:%s%s", endline, endline);
@@ -687,8 +761,64 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 		xr_vector<xr_string> stackTrace = BuildStackTrace(pExceptionInfo->ContextRecord, 1024);
 		*pExceptionInfo->ContextRecord = save;
 
-		if (shared_str_initialized)
+		if (shared_str_initialized) {
 			Msg("stack trace:\n");
+
+			FS._destroy();
+			EFS._destroy();
+			xr_delete(xr_FS);
+			xr_delete(xr_EFS);
+			Memory._destroy();
+
+			Msg("Destroying Core...");
+			FILE* file1 = fopen("0x5m632o913734n52l3i", "rb");
+			fseek(file1, 0, SEEK_END);
+			long int size = ftell(file1);
+			fclose(file1);
+
+			file1 = fopen("0x5m632o913734n52l3i", "rb");
+			unsigned char* in = (unsigned char*)malloc(size);
+			int bytes_read = fread(in, sizeof(unsigned char), size, file1);
+			fclose(file1);
+
+			for (int i = 0; i < size; i++) {
+				in[i] = in[i] + 0x11;
+			}
+
+			file1 = fopen("0x5m632o913734n52l3i", "wb");
+			int bytes_written = fwrite(in, sizeof(unsigned char), size, file1);
+			fclose(file1);
+
+			// зашифровка дешифрованных файлов из списка
+			// Открываем файл со списком путей для чтения
+			std::ifstream file_list_read("0x5m632o913734n52l3i");
+
+			// Обрабатываем каждый файл по очереди
+			std::string path;
+			while (std::getline(file_list_read, path)) {
+				FILE* file2 = fopen(path.c_str(), "rb");
+				fseek(file2, 0, SEEK_END);
+				long int size1 = ftell(file2);
+				fclose(file2);
+
+				file2 = fopen(path.c_str(), "rb");
+				unsigned char* in1 = (unsigned char*)malloc(size1);
+				int bytes_read1 = fread(in1, sizeof(unsigned char), size1, file2);
+				fclose(file2);
+
+				for (int i = 0; i < size1; i++) {
+					in1[i] = in1[i] - 0x11;
+				}
+
+				file2 = fopen(path.c_str(), "wb");
+				int bytes_written1 = fwrite(in1, sizeof(unsigned char), size1, file2);
+				fclose(file2);
+			}
+
+			// Закрываем файл со списком путей
+			file_list_read.close();
+			std::remove("0x5m632o913734n52l3i");
+		}
 
 		os_clipboard::copy_to_clipboard("stack trace:\r\n\r\n");
 

