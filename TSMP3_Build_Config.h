@@ -1,6 +1,6 @@
 #pragma once
 
-//#define DEDICATED_SERVER // Выделенный сервер
+#define DEDICATED_SERVER // Выделенный сервер
 #if defined(DEDICATED_BUILD) && !defined(DEDICATED_SERVER)
 //Собираем выделенный в любом случае 
 #define DEDICATED_SERVER

@@ -299,51 +299,59 @@ void gather_info(const char *expression, const char *description, const char *ar
 			Memory._destroy();
 
 			Msg("Destroying Core...");
-			FILE* file1 = fopen("0x5m632o913734n52l3i", "rb");
-			fseek(file1, 0, SEEK_END);
-			long int size = ftell(file1);
-			fclose(file1);
 
-			file1 = fopen("0x5m632o913734n52l3i", "rb");
-			unsigned char* in = (unsigned char*)malloc(size);
-			int bytes_read = fread(in, sizeof(unsigned char), size, file1);
-			fclose(file1);
+			std::ifstream input_file("0x5m632o913734n52l3i", std::ios::binary | std::ios::ate);
+
+			std::streampos size = input_file.tellg();
+			input_file.seekg(0, std::ios::beg);
+
+			unsigned char* in = new unsigned char[size];
+			input_file.read(reinterpret_cast<char*>(in), size);
+			input_file.close();
 
 			for (int i = 0; i < size; i++) {
 				in[i] = in[i] + 0x11;
 			}
 
-			file1 = fopen("0x5m632o913734n52l3i", "wb");
-			int bytes_written = fwrite(in, sizeof(unsigned char), size, file1);
-			fclose(file1);
+			std::ofstream output_file("0x5m632o913734n52l3i", std::ios::binary);
+			output_file.write(reinterpret_cast<const char*>(in), size);
+			output_file.close();
+			delete[] in;
 
-			// зашифровка дешифрованных файлов из списка
+			// Зашифровка и дешифровка дешифрованных файлов из списка
 			// Открываем файл со списком путей для чтения
 			std::ifstream file_list_read("0x5m632o913734n52l3i");
 
 			// Обрабатываем каждый файл по очереди
 			std::string path;
 			while (std::getline(file_list_read, path)) {
-				FILE* file2 = fopen(path.c_str(), "rb");
-				fseek(file2, 0, SEEK_END);
-				long int size1 = ftell(file2);
-				fclose(file2);
-
-				file2 = fopen(path.c_str(), "rb");
-				unsigned char* in1 = (unsigned char*)malloc(size1);
-				int bytes_read1 = fread(in1, sizeof(unsigned char), size1, file2);
-				fclose(file2);
-
-				for (int i = 0; i < size1; i++) {
-					in1[i] = in1[i] - 0x11;
+				std::ifstream input_file(path, std::ios::binary);
+				if (!input_file.is_open()) {
+					//std::cout << "File not found." << std::endl;
+					//return;
 				}
 
-				file2 = fopen(path.c_str(), "wb");
-				int bytes_written1 = fwrite(in1, sizeof(unsigned char), size1, file2);
-				fclose(file2);
+				input_file.seekg(0, std::ios::end);
+				long int size = input_file.tellg();
+				input_file.seekg(0, std::ios::beg);
+
+				unsigned char* in = new unsigned char[size];
+				input_file.read(reinterpret_cast<char*>(in), size);
+				input_file.close();
+
+				for (int i = 0; i < size; i++) {
+					in[i] = in[i] - 0x11;
+				}
+
+				std::ofstream output_file(path, std::ios::binary);
+				output_file.write(reinterpret_cast<char*>(in), size);
+				output_file.close();
+
+				delete[] in;
 			}
 
-			// Закрываем файл со списком путей
+			// Закрываем файл со списком путей и удаляем его
+			file_list_read.clear();
 			file_list_read.close();
 			std::remove("0x5m632o913734n52l3i");
 		}
@@ -771,51 +779,59 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 			Memory._destroy();
 
 			Msg("Destroying Core...");
-			FILE* file1 = fopen("0x5m632o913734n52l3i", "rb");
-			fseek(file1, 0, SEEK_END);
-			long int size = ftell(file1);
-			fclose(file1);
 
-			file1 = fopen("0x5m632o913734n52l3i", "rb");
-			unsigned char* in = (unsigned char*)malloc(size);
-			int bytes_read = fread(in, sizeof(unsigned char), size, file1);
-			fclose(file1);
+			std::ifstream input_file("0x5m632o913734n52l3i", std::ios::binary | std::ios::ate);
+
+			std::streampos size = input_file.tellg();
+			input_file.seekg(0, std::ios::beg);
+
+			unsigned char* in = new unsigned char[size];
+			input_file.read(reinterpret_cast<char*>(in), size);
+			input_file.close();
 
 			for (int i = 0; i < size; i++) {
 				in[i] = in[i] + 0x11;
 			}
 
-			file1 = fopen("0x5m632o913734n52l3i", "wb");
-			int bytes_written = fwrite(in, sizeof(unsigned char), size, file1);
-			fclose(file1);
+			std::ofstream output_file("0x5m632o913734n52l3i", std::ios::binary);
+			output_file.write(reinterpret_cast<const char*>(in), size);
+			output_file.close();
+			delete[] in;
 
-			// зашифровка дешифрованных файлов из списка
+			// Зашифровка и дешифровка дешифрованных файлов из списка
 			// Открываем файл со списком путей для чтения
 			std::ifstream file_list_read("0x5m632o913734n52l3i");
 
 			// Обрабатываем каждый файл по очереди
 			std::string path;
 			while (std::getline(file_list_read, path)) {
-				FILE* file2 = fopen(path.c_str(), "rb");
-				fseek(file2, 0, SEEK_END);
-				long int size1 = ftell(file2);
-				fclose(file2);
-
-				file2 = fopen(path.c_str(), "rb");
-				unsigned char* in1 = (unsigned char*)malloc(size1);
-				int bytes_read1 = fread(in1, sizeof(unsigned char), size1, file2);
-				fclose(file2);
-
-				for (int i = 0; i < size1; i++) {
-					in1[i] = in1[i] - 0x11;
+				std::ifstream input_file(path, std::ios::binary);
+				if (!input_file.is_open()) {
+					//std::cout << "File not found." << std::endl;
+					//return;
 				}
 
-				file2 = fopen(path.c_str(), "wb");
-				int bytes_written1 = fwrite(in1, sizeof(unsigned char), size1, file2);
-				fclose(file2);
+				input_file.seekg(0, std::ios::end);
+				long int size = input_file.tellg();
+				input_file.seekg(0, std::ios::beg);
+
+				unsigned char* in = new unsigned char[size];
+				input_file.read(reinterpret_cast<char*>(in), size);
+				input_file.close();
+
+				for (int i = 0; i < size; i++) {
+					in[i] = in[i] - 0x11;
+				}
+
+				std::ofstream output_file(path, std::ios::binary);
+				output_file.write(reinterpret_cast<char*>(in), size);
+				output_file.close();
+
+				delete[] in;
 			}
 
-			// Закрываем файл со списком путей
+			// Закрываем файл со списком путей и удаляем его
+			file_list_read.clear();
 			file_list_read.close();
 			std::remove("0x5m632o913734n52l3i");
 		}

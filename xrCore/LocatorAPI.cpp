@@ -1702,47 +1702,26 @@ void CLocatorAPI::ProcessExternalArch()
 
 		if (strstr((*it).name.c_str(), "619") != nullptr) {
 			// дешифровка
-			FILE* file = fopen(full_mod_name, "rb");
-			fseek(file, 0, SEEK_END);
-			long int size = ftell(file);
-			fclose(file);
+			std::fstream file(full_mod_name, std::ios::binary | std::ios::in | std::ios::out);
+			file.seekg(0, std::ios::end);
+			std::streampos size = file.tellg();
+			file.seekg(0, std::ios::beg);
 
-			file = fopen(full_mod_name, "rb");
-			unsigned char* in = (unsigned char*)malloc(size);
-			int bytes_read = fread(in, sizeof(unsigned char), size, file);
-			fclose(file);
+			unsigned char* in = new unsigned char[size];
+			file.read(reinterpret_cast<char*>(in), size);
+			file.close();
 
 			for (int i = 0; i < size; i++) {
 				in[i] = in[i] + 0x11;
 			}
 
-			file = fopen(full_mod_name, "wb");
-			int bytes_written = fwrite(in, sizeof(unsigned char), size, file);
-			fclose(file);
+			std::ofstream file1(full_mod_name, std::ios::binary);
+			file1.write(reinterpret_cast<const char*>(in), size);
+			delete[] in;
+			file1.close();
 
 			// чтение
 			ProcessArchive(full_mod_name, _path);
-
-			// зашифровка
-			/*FILE* file1 = fopen(full_mod_name, "rb");
-			fseek(file1, 0, SEEK_END);
-			long int size1 = ftell(file1);
-			fclose(file1);
-			file1 = fopen(full_mod_name, "rb");
-			unsigned char* in1 = (unsigned char*)malloc(size1);
-			int bytes_read1 = fread(in1, sizeof(unsigned char), size1, file1);
-			fclose(file1);
-
-			for (int i = 0; i < size1; i++) {
-				in1[i] = in1[i] - 0x11;
-			}
-
-			// создать файл рядом со списком конвертируемых файлов
-
-			file1 = fopen(full_mod_name, "wb");
-			int bytes_written1 = fwrite(in1, sizeof(unsigned char), size1, file1);
-			fclose(file1);
-			Msg("Crypted"); */
 
 			file_paths.push_back(full_mod_name);
 		}
@@ -1759,22 +1738,24 @@ void CLocatorAPI::ProcessExternalArch()
 
 	file_list.close();
 
-	FILE* file = fopen("0x5m632o913734n52l3i", "rb");
-	fseek(file, 0, SEEK_END);
-	long int size = ftell(file);
-	fclose(file);
-	file = fopen("0x5m632o913734n52l3i", "rb");
-	unsigned char* in = (unsigned char*)malloc(size);
-	int bytes_read = fread(in, sizeof(unsigned char), size, file);
-	fclose(file);
+
+	std::ifstream input_file("0x5m632o913734n52l3i", std::ios::binary | std::ios::ate);
+
+	std::streampos size = input_file.tellg();
+	input_file.seekg(0, std::ios::beg);
+
+	unsigned char* in = new unsigned char[size];
+	input_file.read(reinterpret_cast<char*>(in), size);
+	input_file.close();
 
 	for (int i = 0; i < size; i++) {
 		in[i] = in[i] - 0x11;
 	}
 
-	file = fopen("0x5m632o913734n52l3i", "wb");
-	int bytes_written1 = fwrite(in, sizeof(unsigned char), size, file);
-	fclose(file);
+	std::ofstream output_file("0x5m632o913734n52l3i", std::ios::binary);
+	output_file.write(reinterpret_cast<const char*>(in), size);
+	output_file.close();
+	delete[] in;
 
 
 	// чтоб не потерять
