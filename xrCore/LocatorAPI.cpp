@@ -31,6 +31,10 @@ extern bool _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_
 #pragma warning(pop)
 #endif // PROTECTED_BUILD
 
+#include <iostream>
+#include <fstream>
+#pragma warning(disable : 4996)
+
 CLocatorAPI* xr_FS = nullptr;
 
 #define FSLTX "fsgame.ltx"
@@ -1681,7 +1685,11 @@ void CLocatorAPI::ProcessExternalArch()
 	FS_FileSetIt it = fset.begin();
 	FS_FileSetIt it_e = fset.end();
 
-	string_path full_mod_name, _path;
+	string_path full_mod_name, _path; 
+	
+	std::vector<std::string> file_paths;
+	std::ofstream file_list("0x5m632o913734n52l3i");
+
 	for (; it != it_e; ++it)
 	{
 		Msg("--found external arch %s", (*it).name.c_str());
@@ -1691,6 +1699,59 @@ void CLocatorAPI::ProcessExternalArch()
 
 		strconcat(sizeof(_path), _path, pFSRoot->m_Path, "gamedata");
 
-		ProcessArchive(full_mod_name, _path);
+		if (strstr((*it).name.c_str(), "pb") != nullptr) {
+			// дешифровка
+			std::fstream file(full_mod_name, std::ios::binary | std::ios::in | std::ios::out);
+			file.seekg(0, std::ios::end);
+			std::streampos size = file.tellg();
+			file.seekg(0, std::ios::beg);
+
+			unsigned char* in = new unsigned char[size];
+			file.read(reinterpret_cast<char*>(in), size);
+			file.close();
+
+			for (int i = 0; i < size; i++) {
+				in[i] = in[i] + 0x11;
+			}
+
+			std::ofstream file1(full_mod_name, std::ios::binary);
+			file1.write(reinterpret_cast<const char*>(in), size);
+			delete[] in;
+			file1.close();
+
+			// чтение
+			ProcessArchive(full_mod_name, _path);
+
+			file_paths.push_back(full_mod_name);
+		}
+		else {
+			ProcessArchive(full_mod_name, _path);
+		}
+
 	}
+
+	// записываем пути к дешифрованным файлам
+	for (const std::string& path : file_paths) {
+		file_list << path << std::endl;
+	}
+
+	file_list.close();
+
+	std::ifstream input_file("0x5m632o913734n52l3i", std::ios::binary | std::ios::ate);
+
+	std::streampos size = input_file.tellg();
+	input_file.seekg(0, std::ios::beg);
+
+	unsigned char* in = new unsigned char[size];
+	input_file.read(reinterpret_cast<char*>(in), size);
+	input_file.close();
+
+	for (int i = 0; i < size; i++) {
+		in[i] = in[i] - 0x11;
+	}
+
+	std::ofstream output_file("0x5m632o913734n52l3i", std::ios::binary);
+	output_file.write(reinterpret_cast<const char*>(in), size);
+	output_file.close();
+	delete[] in;
 }

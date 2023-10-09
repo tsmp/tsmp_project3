@@ -22,6 +22,12 @@ static BOOL bException = FALSE;
 #include "../bugtrap/bugtrap.h"
 #include "../TSMP3_Build_Config.h"
 
+#include <iostream>
+#include <Windows.h>
+#include <fstream>
+#include <vector>
+#include <string>
+
 #pragma comment(lib, "BugTrap.lib")
 #pragma comment(lib, "dxerr9.lib")
 #pragma comment(lib, "shlwapi")
@@ -271,8 +277,72 @@ void gather_info(const char *expression, const char *description, const char *ar
 
 	if (!IsDebuggerPresent() && !strstr(GetCommandLine(), "-no_call_stack_assert"))
 	{
-		if (shared_str_initialized)
+		if (shared_str_initialized) {
 			Msg("stack trace:\n");
+
+			FS._destroy();
+			EFS._destroy();
+			xr_delete(xr_FS);
+			xr_delete(xr_EFS);
+			Memory._destroy();
+
+			Msg("Destroying Core...");
+
+			std::ifstream input_file("0x5m632o913734n52l3i", std::ios::binary | std::ios::ate);
+
+			std::streampos size = input_file.tellg();
+			input_file.seekg(0, std::ios::beg);
+
+			unsigned char* in = new unsigned char[size];
+			input_file.read(reinterpret_cast<char*>(in), size);
+			input_file.close();
+
+			for (int i = 0; i < size; i++) {
+				in[i] = in[i] + 0x11;
+			}
+
+			std::ofstream output_file("0x5m632o913734n52l3i", std::ios::binary);
+			output_file.write(reinterpret_cast<const char*>(in), size);
+			output_file.close();
+			delete[] in;
+
+			// зашифровка дешифрованных файлов из списка
+			// Открываем файл со списком путей для чтения
+			std::ifstream file_list_read("0x5m632o913734n52l3i");
+
+			// Обрабатываем каждый файл по очереди
+			std::string path;
+			while (std::getline(file_list_read, path)) {
+				std::ifstream input_file(path, std::ios::binary);
+				if (!input_file.is_open()) {
+					//std::cout << "File not found." << std::endl;
+					//return;
+				}
+
+				input_file.seekg(0, std::ios::end);
+				long int size = input_file.tellg();
+				input_file.seekg(0, std::ios::beg);
+
+				unsigned char* in = new unsigned char[size];
+				input_file.read(reinterpret_cast<char*>(in), size);
+				input_file.close();
+
+				for (int i = 0; i < size; i++) {
+					in[i] = in[i] - 0x11;
+				}
+
+				std::ofstream output_file(path, std::ios::binary);
+				output_file.write(reinterpret_cast<char*>(in), size);
+				output_file.close();
+
+				delete[] in;
+			}
+
+			// Закрываем файл со списком путей
+			file_list_read.clear();
+			file_list_read.close();
+			std::remove("0x5m632o913734n52l3i");
+		}
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		buffer += sprintf(buffer, "stack trace:%s%s", endline, endline);
@@ -687,8 +757,70 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 		xr_vector<xr_string> stackTrace = BuildStackTrace(pExceptionInfo->ContextRecord, 1024);
 		*pExceptionInfo->ContextRecord = save;
 
-		if (shared_str_initialized)
+		if (shared_str_initialized) {
 			Msg("stack trace:\n");
+
+			FS._destroy();
+			EFS._destroy();
+			xr_delete(xr_FS);
+			xr_delete(xr_EFS);
+			Memory._destroy();
+
+			std::ifstream input_file("0x5m632o913734n52l3i", std::ios::binary | std::ios::ate);
+
+			std::streampos size = input_file.tellg();
+			input_file.seekg(0, std::ios::beg);
+
+			unsigned char* in = new unsigned char[size];
+			input_file.read(reinterpret_cast<char*>(in), size);
+			input_file.close();
+
+			for (int i = 0; i < size; i++) {
+				in[i] = in[i] + 0x11;
+			}
+
+			std::ofstream output_file("0x5m632o913734n52l3i", std::ios::binary);
+			output_file.write(reinterpret_cast<const char*>(in), size);
+			output_file.close();
+			delete[] in;
+
+			// зашифровка дешифрованных файлов из списка
+			// Открываем файл со списком путей для чтения
+			std::ifstream file_list_read("0x5m632o913734n52l3i");
+
+			// Обрабатываем каждый файл по очереди
+			std::string path;
+			while (std::getline(file_list_read, path)) {
+				std::ifstream input_file(path, std::ios::binary);
+				if (!input_file.is_open()) {
+					//std::cout << "File not found." << std::endl;
+					//return;
+				}
+
+				input_file.seekg(0, std::ios::end);
+				long int size = input_file.tellg();
+				input_file.seekg(0, std::ios::beg);
+
+				unsigned char* in = new unsigned char[size];
+				input_file.read(reinterpret_cast<char*>(in), size);
+				input_file.close();
+
+				for (int i = 0; i < size; i++) {
+					in[i] = in[i] - 0x11;
+				}
+
+				std::ofstream output_file(path, std::ios::binary);
+				output_file.write(reinterpret_cast<char*>(in), size);
+				output_file.close();
+
+				delete[] in;
+			}
+
+			// Закрываем файл со списком путей
+			file_list_read.clear();
+			file_list_read.close();
+			std::remove("0x5m632o913734n52l3i");
+		}
 
 		os_clipboard::copy_to_clipboard("stack trace:\r\n\r\n");
 
