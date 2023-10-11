@@ -146,8 +146,9 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(
 				DBG_DrawTri(T, V_array, D3DCOLOR_XRGB(0, 0, 255));
 #endif
 			float last_pos_dist = dDOT(last_pos, tri.norm) - tri.pos;
-			if ((!(last_pos_dist < 0.f)) || b_pushing)
-				if (__aabb_tri(Point(p), Point((float *)&AABB), vertices))
+			if ((!(last_pos_dist < 0.f)) || b_pushing || isnan(last_pos_dist))
+			{
+				if (__aabb_tri(Point(p), Point((float*)&AABB), vertices))
 				{
 #ifdef DEBUG
 					if (ph_dbg_draw_mask.test(phDBgDrawTriesChangesSign))
@@ -174,11 +175,11 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(
 								DBG_DrawPoint(cast_fv(tri_point), 0.01f, D3DCOLOR_XRGB(255, 0, 255));
 #endif
 							intersect = intersect || TriContainPoint(
-														 vertices[0],
-														 vertices[1],
-														 vertices[2],
-														 tri.norm, tri.side0,
-														 tri.side1, tri_point);
+								vertices[0],
+								vertices[1],
+								vertices[2],
+								tri.norm, tri.side0,
+								tri.side1, tri_point);
 						}
 						else
 						{
@@ -220,6 +221,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(
 						}
 					}
 				}
+			}
 		}
 		else
 		{
