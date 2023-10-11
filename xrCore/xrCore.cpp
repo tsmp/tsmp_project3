@@ -1,12 +1,7 @@
-// xrCore.cpp : Defines the entry point for the DLL application.
-//
 #include "stdafx.h"
-#pragma hdrstop
-
 #include <mmsystem.h>
 #include <objbase.h>
 #include "xrCore.h"
-#include "trivial_encryptor.h"
 
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "lzo.lib")
@@ -71,16 +66,12 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
 
 		InitLog();
 		_initialize_cpu();
-
-		//		Debug._initialize	();
-
 		rtc_initialize();
 
 		xr_FS = xr_new<CLocatorAPI>();
-
 		xr_EFS = xr_new<EFS_Utils>();
-		//.		R_ASSERT			(co_res==S_OK);
 	}
+
 	if (init_fs)
 	{
 		u32 flags = 0;
@@ -102,10 +93,7 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
 			flags |= CLocatorAPI::flDumpFileActivity;
 #endif
 
-		trivial_encryptor::FirstInitialize();
-		//g_temporary_stuff = &trivial_encryptor::decode;
 		FS._initialize(flags, 0, fs_fname);
-
 		Msg("'xrCore' build %d, %s", build_id, build_date);
 
 #ifdef _WIN64

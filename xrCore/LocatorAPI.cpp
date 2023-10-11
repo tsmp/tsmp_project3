@@ -14,7 +14,7 @@
 #include "FS_internal.h"
 #include "stream_reader.h"
 #include "file_stream_reader.h"
-#include "trivial_encryptor.h"
+#include "TrivialEncryptor.h"
 
 #include "..\TSMP3_Build_Config.h"
 
@@ -284,7 +284,14 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 	}
 }
 
-IReader *open_chunk(void *ptr, u32 ID, u32 archiveSize, bool needToDecrypt)
+enum class ArchiveType
+{
+	db,
+	xdb,
+	xdbc
+};
+
+IReader *OpenHeaderChunk(void *ptr, u32 ID, u32 archiveSize, ArchiveType archiveType)
 {
 	BOOL res;
 	u32 dwType, dwSize;
@@ -307,26 +314,28 @@ IReader *open_chunk(void *ptr, u32 ID, u32 archiveSize, bool needToDecrypt)
 
 			if (dwType & CFS_CompressMark)
 			{
-				BYTE *dest;
-				unsigned dest_sz;
+				if(archiveType == ArchiveType::db)
+					TrivialEncryptor::Decode(src_data, dwSize, src_data, TrivialEncryptor::Format::Russian);
 
-				if(needToDecrypt)
-					trivial_encryptor::decode(src_data, dwSize, src_data, false);
+				if (archiveType == ArchiveType::xdbc)
+					TrivialEncryptor::Decode(src_data, dwSize, src_data, TrivialEncryptor::Format::Custom);
 
-				bool result = _decompressLZ(&dest, &dest_sz, src_data, dwSize,archiveSize);
+				BYTE* dest;
+				unsigned destSz;
+				bool result = _decompressLZ(&dest, &destSz, src_data, dwSize, archiveSize);
 
-				if (!result && needToDecrypt)
+				if (!result && archiveType == ArchiveType::db)
 				{
-					trivial_encryptor::encode(src_data, dwSize, src_data); // rollback
-					trivial_encryptor::decode(src_data, dwSize, src_data, true);
-					result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
+					TrivialEncryptor::Encode(src_data, dwSize, src_data); // rollback
+					TrivialEncryptor::Decode(src_data, dwSize, src_data, TrivialEncryptor::Format::WorldWide);
+					result = _decompressLZ(&dest, &destSz, src_data, dwSize, archiveSize);
 				}
 
 				if (!result)
 					return nullptr;
 
 				xr_free(src_data);
-				return xr_new<CTempReader>(dest, dest_sz, 0);
+				return xr_new<CTempReader>(dest, destSz, 0);
 			}
 			else			
 				return xr_new<CTempReader>(src_data, dwSize, 0);			
@@ -358,10 +367,15 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 		if (it->path == path)
 			return;
 
-	bool needToDecrypt = true;
+	ArchiveType archiveType = ArchiveType::db;
 
 	if (strstr(_path, ".xdb"))
-		needToDecrypt = false;
+	{
+		if (strstr(_path, ".xdbc"))
+			archiveType = ArchiveType::xdbc;
+		else
+			archiveType = ArchiveType::xdb;
+	}
 	
 	// open archive
 	archives.push_back(archive());
@@ -386,12 +400,12 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 			*strext(base) = 0;
 	}
 	else	
-		strcpy_s(base, sizeof(base), base_path);	
+		strcpy_s(base, sizeof(base), base_path);
 
 	strcat(base, "\\");
 
 	// Read headers
-	IReader* hdr = open_chunk(A.hSrcFile, 1, A.size, needToDecrypt);
+	IReader* hdr = OpenHeaderChunk(A.hSrcFile, 1, A.size, archiveType);
 	R_ASSERT(hdr);
 	RStringVec fv;
 
@@ -1254,7 +1268,7 @@ T *CLocatorAPI::r_open_impl(LPCSTR path, LPCSTR _fname)
 
 	// OK, analyse
 	if (0xffffffff == desc->vfs)
-		file_from_cache(R, fname, *desc, source_name);
+		file_from_cache(R, fname, *desc, source_name); // usual file
 	else
 		file_from_archive(R, fname, *desc);
 
