@@ -29,7 +29,7 @@ std::string Encode(const std::string &str)
 	std::string res;
 	res.reserve(str.size() + 1);
 
-	for (int i = 0, sourceStrLen = str.size(); i < sourceStrLen; i++)
+	for (int i = 0, sourceStrLen = xr_narrow_cast<int>(str.size()); i < sourceStrLen; i++)
 	{
 		unsigned char in = str[i];
 			
@@ -49,12 +49,13 @@ std::string Encode(const std::string &str)
 std::string toUtf8(const std::wstring &str)
 {
 	std::string res;
-	int len = WideCharToMultiByte(CP_UTF8, 0, str.c_str(), str.length(), 0, 0, 0, 0);
+	int srcLen = xr_narrow_cast<int>(str.length());
+	int len = WideCharToMultiByte(CP_UTF8, 0, str.c_str(), srcLen, 0, 0, 0, 0);
 	
 	if (len > 0)
 	{
 		res.resize(len);
-		WideCharToMultiByte(CP_UTF8, 0, str.c_str(), str.length(), &res[0], len, 0, 0);
+		WideCharToMultiByte(CP_UTF8, 0, str.c_str(), srcLen, &res[0], len, 0, 0);
 	}
 
 	return res;
@@ -62,7 +63,7 @@ std::string toUtf8(const std::wstring &str)
 
 std::wstring ToUnicode(const std::string &str)
 {
-	int cnt = str.size();
+	int cnt = xr_narrow_cast<int>(str.size());
 	std::wstring res;
 	res.resize(cnt);
 

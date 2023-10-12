@@ -111,7 +111,7 @@ public:
 
 	void create(u32 dwCRC, u32 dwLength, T *ptr)
 	{
-		smem_value *v = g_pSharedMemoryContainer->dock(dwCRC, dwLength * sizeof(T), ptr);
+		smem_value *v = g_pSharedMemoryContainer->dock(dwCRC, dwLength * static_cast<u32>(sizeof(T)), ptr);
 		if (0 != v)
 			v->dwReference++;
 		_dec();
@@ -134,7 +134,7 @@ public:
 		if (0 == p_)
 			return 0;
 		else
-			return p_->dwLength / sizeof(T);
+			return p_->dwLength / static_cast<u32>(sizeof(T));
 	}
 	void swap(ref_smem<T> &rhs)
 	{

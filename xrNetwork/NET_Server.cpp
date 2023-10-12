@@ -544,7 +544,7 @@ HRESULT IPureServer::net_Handler(u32 dwMessageType, PVOID pMessage)
 
 		CHK_DX(_hr);
 
-		u32 NameSize = wcsnlen(Pinfo->pwszName, sizeof(string64));
+		u32 NameSize = static_cast<u32>(wcsnlen(Pinfo->pwszName, sizeof(string64)));
 		if (NameSize >= sizeof(string64))
 		{
 			ip_address IP;

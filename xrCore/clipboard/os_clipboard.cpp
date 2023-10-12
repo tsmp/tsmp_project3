@@ -6,7 +6,7 @@ void os_clipboard::copy_to_clipboard(LPCSTR buf)
 	if (!OpenClipboard(0))
 		return;
 
-	u32 handle_size = (xr_strlen(buf) + 1) * sizeof(char);
+	u32 handle_size = (xr_strlen(buf) + 1) * static_cast<u32>(sizeof(char));
 	HGLOBAL handle = GlobalAlloc(GHND, handle_size);
 
 	if (!handle)
@@ -68,7 +68,7 @@ void os_clipboard::update_clipboard(LPCSTR string)
 	LPSTR memory = (LPSTR)GlobalLock(handle);
 	int memory_length = (int)strlen(memory);
 	int string_length = (int)strlen(string);
-	int buffer_size = (memory_length + string_length + 1) * sizeof(char);
+	int buffer_size = (memory_length + string_length + 1) * static_cast<u32>(sizeof(char));
 	LPSTR buffer = (LPSTR)_alloca(buffer_size);
 
 	strcpy_s(buffer, buffer_size, memory);

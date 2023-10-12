@@ -173,7 +173,7 @@ IC BOOL material_callback(collide::rq_result &result, LPVOID params)
 	else
 	{
 		CDB::TRI *T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
-		vis = g_pGamePersistent->MtlTransparent(T->material);
+		vis = g_pGamePersistent->MtlTransparent(xr_narrow_cast<u32>(T->material));
 		if (fis_zero(vis))
 		{
 			Fvector *V = g_pGameLevel->ObjectSpace.GetStaticVerts();

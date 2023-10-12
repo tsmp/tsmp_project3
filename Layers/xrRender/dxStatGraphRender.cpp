@@ -24,8 +24,8 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 
 	RenderBack(owner);
 
-	u32 TriElem = 0;
-	u32 LineElem = 0;
+	size_t TriElem = 0;
+	size_t LineElem = 0;
 	for (CStatGraph::SubGraphVecIt it = owner.subgraphs.begin(); it != owner.subgraphs.end(); it++)
 	{
 		switch (it->style)
@@ -61,7 +61,7 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 
 	if (TriElem)
 	{
-		pv_Tri_start = (FVF::TL0uv *)RCache.Vertex.Lock(TriElem, hGeomTri->vb_stride, dwOffsetTri);
+		pv_Tri_start = (FVF::TL0uv *)RCache.Vertex.Lock(xr_narrow_cast<u32>(TriElem), hGeomTri->vb_stride, dwOffsetTri);
 		pv_Tri = pv_Tri_start;
 
 		pv_Tri = pv_Tri_start;
@@ -82,7 +82,7 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 
 	if (LineElem)
 	{
-		pv_Line_start = (FVF::TL0uv *)RCache.Vertex.Lock(LineElem, hGeomLine->vb_stride, dwOffsetLine);
+		pv_Line_start = (FVF::TL0uv *)RCache.Vertex.Lock(xr_narrow_cast<u32>(LineElem), hGeomLine->vb_stride, dwOffsetLine);
 		pv_Line = pv_Line_start;
 
 		for (CStatGraph::SubGraphVecIt it = owner.subgraphs.begin(); it != owner.subgraphs.end(); it++)
@@ -109,7 +109,7 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 		dwOffsetLine = 0;
 		LineElem = owner.m_Markers.size() * 2;
 
-		pv_Line_start = (FVF::TL0uv *)RCache.Vertex.Lock(LineElem, hGeomLine->vb_stride, dwOffsetLine);
+		pv_Line_start = (FVF::TL0uv *)RCache.Vertex.Lock(xr_narrow_cast<u32>(LineElem), hGeomLine->vb_stride, dwOffsetLine);
 		pv_Line = pv_Line_start;
 
 		RenderMarkers(owner, &pv_Line, &(owner.m_Markers));

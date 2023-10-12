@@ -21,7 +21,7 @@ public:
 	// -----------------------------------------------------
 	const CEntityAlive *get_enemy();
 	SMonsterEnemy get_enemy_info();
-	u32 get_enemies_count() { return m_objects.size(); }
+	u32 get_enemies_count() { return static_cast<u32>(m_objects.size()); }
 
 	const ENEMIES_MAP &get_memory() { return m_objects; }
 

@@ -927,7 +927,7 @@ void xrServer::OnChatMessage(NET_Packet *P, xrClientData *CL)
 	P->r_stringZ(playerName);
 
 	char* pChatMessage = reinterpret_cast<char*>(&P->B.data[P->r_pos]);	
-	int chatMessageLength = strnlen_s(pChatMessage, maxMessageLength);
+	int chatMessageLength = static_cast<int>(strnlen_s(pChatMessage, maxMessageLength));
 
 	if (chatMessageLength == maxMessageLength)
 	{

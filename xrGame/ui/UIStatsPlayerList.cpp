@@ -279,7 +279,7 @@ void CUIStatsPlayerList::Update()
 	std::sort(items.begin(), items.end(), DM_Compare_Players);
 
 	int n = (int)items.size();
-	n -= m_pad->GetChildWndList().size();
+	n -= static_cast<int>(m_pad->GetChildWndList().size());
 
 	if (n < 0)
 	{

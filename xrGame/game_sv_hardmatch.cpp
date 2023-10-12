@@ -74,7 +74,7 @@ void game_sv_Hardmatch::SpawnWeaponsForActor(CSE_Abstract* pE, game_PlayerState*
 	if (!pA)
 		return;
 
-	SpawnWeapon4Actor(pA->ID, m_RandomWeapons[m_WeaponsRandom.randI(m_RandomWeapons.size())].c_str(), 0);
+	SpawnWeapon4Actor(pA->ID, m_RandomWeapons[m_WeaponsRandom.randI(static_cast<u32>(m_RandomWeapons.size()))].c_str(), 0);
 
 	for(std::string &itemName:m_PersistentItems)
 		SpawnWeapon4Actor(pA->ID, itemName.c_str(), 0);

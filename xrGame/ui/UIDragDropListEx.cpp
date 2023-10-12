@@ -393,7 +393,7 @@ CUICellItem *CUIDragDropListEx::RemoveItem(CUICellItem *itm, bool force_root)
 
 u32 CUIDragDropListEx::ItemsCount()
 {
-	return m_container->GetChildWndList().size();
+	return static_cast<u32>(m_container->GetChildWndList().size());
 }
 
 bool CUIDragDropListEx::IsOwner(CUICellItem *itm)

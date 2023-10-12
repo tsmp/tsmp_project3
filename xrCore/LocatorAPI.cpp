@@ -977,11 +977,10 @@ int CLocatorAPI::file_list(FS_FileSet &dest, LPCSTR path, u32 flags, LPCSTR mask
 			dest.insert(FS_File(entry_begin, entry.size_real, entry.modif, fl));
 		}
 	}
-	return dest.size();
+	return xr_narrow_cast<int>(dest.size());
 }
 
 void CLocatorAPI::check_cached_files(LPSTR fname, const file &desc, LPCSTR &source_name)
-
 {
 	string_path fname_copy;
 	if (pathes.size() <= 1)

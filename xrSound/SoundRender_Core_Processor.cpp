@@ -208,7 +208,7 @@ float CSoundRender_Core::get_occlusion_to(const Fvector &hear_pt, const Fvector 
 
 		geom_DB.ray_options(CDB::OPT_CULL);
 		geom_DB.ray_query(geom_SOM, hear_pt, dir, range);
-		u32 r_cnt = geom_DB.r_count();
+		u32 r_cnt = xr_narrow_cast<u32>(geom_DB.r_count());
 		CDB::RESULT *_B = geom_DB.r_begin();
 
 		if (0 != r_cnt)
@@ -278,7 +278,7 @@ float CSoundRender_Core::get_occlusion(Fvector &P, float R, Fvector *occ)
 	{
 		geom_DB.ray_options(CDB::OPT_CULL);
 		geom_DB.ray_query(geom_SOM, base, dir, range);
-		u32 r_cnt = geom_DB.r_count();
+		u32 r_cnt = xr_narrow_cast<u32>(geom_DB.r_count());
 		CDB::RESULT* _B = geom_DB.r_begin();
 
 		for (u32 k = 0; k < r_cnt; k++)

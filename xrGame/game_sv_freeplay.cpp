@@ -236,7 +236,7 @@ void game_sv_Freeplay::SpawnItemsForActor(CSE_Abstract* pE, game_PlayerState* ps
 	if (!(ps->team < s16(TeamList.size())))
 		return;
 
-	SpawnWeapon4Actor(pA->ID, m_RandomItems[m_ItemsRnd.randI(m_RandomItems.size())].c_str(), 0);
+	SpawnWeapon4Actor(pA->ID, m_RandomItems[m_ItemsRnd.randI(static_cast<u32>(m_RandomItems.size()))].c_str(), 0);
 
 	for (std::string& itemName : m_PersistentItems)
 		SpawnWeapon4Actor(pA->ID, itemName.c_str(), 0);

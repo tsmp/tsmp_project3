@@ -1689,7 +1689,7 @@ void game_sv_mp::SvSendChatMessageCow(LPCSTR str)
 	P.w_stringZ("ServerAdmin");
 
 	std::string strText = str;
-	int textLen = strText.size();
+	int textLen = static_cast<int>(strText.size());
 
 	std::string top,bottom;
 	top = "  ";

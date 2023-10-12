@@ -502,7 +502,7 @@ void CCar::InterpolateStates(const float &factor)
 	const auto &vec1 = m_Update1->StateVec;
 	const auto &vec2 = m_Update2->StateVec;
 
-	u32 elementsCnt = vec1.size();
+	u32 elementsCnt = static_cast<u32>(vec1.size());
 
 	for (u32 i = 0; i < elementsCnt; i++)
 	{

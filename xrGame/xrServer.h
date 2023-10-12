@@ -201,7 +201,7 @@ public:
 	// utilities
 	CSE_Abstract *entity_Create(LPCSTR name);
 	void entity_Destroy(CSE_Abstract *&P);
-	u32 GetEntitiesNum() { return entities.size(); };
+	u32 GetEntitiesNum() { return xr_narrow_cast<u32>(entities.size()); };
 	CSE_Abstract *GetEntity(u32 Num);
 
 	xrClientData *ID_to_client(ClientID const &ID, bool ScanAll = false) { return (xrClientData *)(IPureServer::ID_to_client(ID, ScanAll)); }

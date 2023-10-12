@@ -30,7 +30,7 @@ CPatrolPathParams::~CPatrolPathParams()
 
 u32 CPatrolPathParams::count() const
 {
-	return (m_path->vertices().size());
+	return xr_narrow_cast<u32>(m_path->vertices().size());
 }
 
 const Fvector &CPatrolPathParams::point(u32 index) const

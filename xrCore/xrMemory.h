@@ -118,7 +118,7 @@ IC void *xr_malloc(size_t size) { return Memory.mem_alloc(size, "xr_malloc"); }
 IC void *xr_realloc(void *P, size_t size) { return Memory.mem_realloc(P, size, "xr_realloc"); }
 #else  // DEBUG_MEMORY_NAME
 template <class T>
-IC T *xr_alloc(u32 count)
+IC T *xr_alloc(size_t count)
 {
 	return (T *)Memory.mem_alloc(count * sizeof(T));
 }

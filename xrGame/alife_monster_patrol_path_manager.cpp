@@ -112,7 +112,7 @@ void CALifeMonsterPatrolPathManager::actualize()
 	}
 	case PatrolPathManager::ePatrolStartTypeLast:
 	{
-		m_current_vertex_index = path().vertices().size() - 1;
+		m_current_vertex_index = xr_narrow_cast<u32>(path().vertices().size() - 1);
 		break;
 	}
 	case PatrolPathManager::ePatrolStartTypeNearest:

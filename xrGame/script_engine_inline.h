@@ -37,8 +37,8 @@ IC void CScriptEngine::parse_script_namespace(LPCSTR function_to_call, LPSTR nam
 		strcpy(function, function_to_call);
 	else
 	{
-		CopyMemory(name_space, function_to_call, u32(J - function_to_call) * sizeof(char));
-		name_space[u32(J - function_to_call)] = 0;
+		CopyMemory(name_space, function_to_call, xr_narrow_cast<u32>(J - function_to_call) * sizeof(char));
+		name_space[xr_narrow_cast<u32>(J - function_to_call)] = 0;
 		strcpy(function, J + 1);
 	}
 }
