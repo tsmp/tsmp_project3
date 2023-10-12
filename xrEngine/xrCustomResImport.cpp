@@ -30,3 +30,11 @@ const char *TryToGetNewWindowText()
 	LoadString(hCustomRes, IDS_STRING_APPNAME, textBuf, bufferSize);
 	return textBuf;
 }
+
+HICON TryToGetNewAppIcon()
+{
+	if (!hCustomRes)
+		return nullptr;
+
+	return LoadIcon(hCustomRes, MAKEINTRESOURCE(IDI_APP_ICON));
+}

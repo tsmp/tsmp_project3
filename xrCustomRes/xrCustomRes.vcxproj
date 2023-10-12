@@ -33,6 +33,7 @@
     <ResourceCompile Include="xrCustomRes.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="icon.ico" />
     <Image Include="logo.bmp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -119,6 +119,7 @@ public:
 
 extern void TryLoadXrCustomResDll();
 extern void TryToChangeLogoImageToCustom(HWND logoWindow);
+extern HICON TryToGetNewAppIcon();
 
 namespace Logo
 {
@@ -135,9 +136,15 @@ namespace Logo
 		HWND topMost = isTopMost ? HWND_TOPMOST : HWND_NOTOPMOST;
 		logoWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_STARTUP), 0, 0);
 
+		if (HICON newIcon = TryToGetNewAppIcon())
+		{
+			const int GCL_HICON_CODE = -14;
+			SetClassLongPtr(logoWindow, GCL_HICON_CODE, reinterpret_cast<LONG_PTR>(newIcon));
+		}
+
 		UINT flags = SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW;
-		SetWindowPos(logoWindow, topMost, 0, 0, 0, 0, flags);				
 		TryToChangeLogoImageToCustom(logoWindow);
+		SetWindowPos(logoWindow, topMost, 0, 0, 0, 0, flags);
 	}
 
 	void Destroy()

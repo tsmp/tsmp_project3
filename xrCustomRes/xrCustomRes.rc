@@ -55,6 +55,16 @@ IDB_LOGO_BITMAP         BITMAP                  "logo.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_APP_ICON            ICON                    "icon.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 

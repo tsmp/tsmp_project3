@@ -3,6 +3,7 @@
 
 extern LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 extern const char* TryToGetNewWindowText();
+extern HICON TryToGetNewAppIcon();
 
 void CRenderDevice::Initialize()
 {
@@ -17,6 +18,10 @@ void CRenderDevice::Initialize()
 
         HINSTANCE hInstance = static_cast<HINSTANCE>(GetModuleHandle(0));
         HICON icon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
+
+		if (HICON newIcon = TryToGetNewAppIcon())
+			icon = newIcon;
+
         HCURSOR cursor = LoadCursor(NULL, IDC_ARROW);
         HBRUSH brush = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
              

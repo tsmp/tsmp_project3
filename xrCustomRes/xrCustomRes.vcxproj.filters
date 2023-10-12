@@ -28,5 +28,8 @@
     <Image Include="logo.bmp">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="icon.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>
