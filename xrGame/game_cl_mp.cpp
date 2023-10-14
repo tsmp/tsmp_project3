@@ -31,6 +31,7 @@
 #include "screenshot_server.h"
 #include "screenshot_manager.h"
 #include "VoiceChat.h"
+#include "game_cl_mp_snd_messages.h"
 
 #define EQUIPMENT_ICONS "ui\\ui_mp_icon_kill"
 #define KILLEVENT_ICONS "ui\\ui_hud_mp_icon_death"
@@ -42,9 +43,6 @@
 #define KILLEVENT_GRID_HEIGHT 64
 
 BOOL g_draw_downloads = FALSE;
-
-#include "game_cl_mp_snd_messages.h"
-#include <PPMD/ppmd_compressor.h>
 
 game_cl_mp::game_cl_mp()
 {
@@ -60,24 +58,20 @@ game_cl_mp::game_cl_mp()
 	m_aMessageMenus.clear();
 
 	m_bSpectatorSelected = FALSE;
-	//-------------------------------------
 	m_u8SpectatorModes = 0xff;
 	m_bSpectator_FreeFly = true;
 	m_bSpectator_FirstEye = true;
 	m_bSpectator_LookAt = true;
 	m_bSpectator_FreeLook = true;
 	m_bSpectator_TeamCamera = true;
-	//-------------------------------------
-	LoadBonuses();
 
-	buffer_for_compress = nullptr;
-	buffer_for_compress_size = 0;
+	LoadBonuses();
 
 	if (!g_dedicated_server)
 		m_pVoiceChat = xr_new<CVoiceChat>();
 	else
 		m_pVoiceChat = nullptr;
-};
+}
 
 game_cl_mp::~game_cl_mp()
 {
@@ -85,13 +79,8 @@ game_cl_mp::~game_cl_mp()
 
 	m_pSndMessagesInPlay.clear_and_free();
 	m_pSndMessages.clear_and_free();
-	deinit_compress_buffer();
 
-	//	xr_delete(m_pSpeechMenu);
 	DestroyMessagesMenus();
-
-	//	xr_delete(pBuySpawnMsgBox);
-
 	m_pBonusList.clear();
 
 	xr_delete(m_pVoteRespondWindow);
@@ -103,11 +92,10 @@ game_cl_mp::~game_cl_mp()
 
 CUIGameCustom *game_cl_mp::createGameUI()
 {
-	//	m_pSpeechMenu = xr_new<CUISpeechMenu>("test_speech_section");
+#pragma TODO("TSMP: что это такое?)")
 	HUD().GetUI()->m_pMessagesWnd->SetChatOwner(this);
-
-	return NULL;
-};
+	return nullptr;
+}
 
 bool game_cl_mp::CanBeReady()
 {
@@ -284,54 +272,27 @@ bool game_cl_mp::OnKeyboardPress(int key)
 	return inherited::OnKeyboardPress(key);
 }
 
-void game_cl_mp::reinit_compress_buffer(u32 need_size)
+void game_cl_mp::ReceiveScreenshot(LPCSTR fileName, u8* data, u32 dataSize)
 {
-	if (buffer_for_compress && (need_size <= buffer_for_compress_size))
-		return;
-
-	Msg("* reiniting compression buffer.");
-	buffer_for_compress_size = need_size * 2;
-	void* new_buffer = xr_realloc(buffer_for_compress, buffer_for_compress_size);
-	buffer_for_compress = static_cast<u8*>(new_buffer);
-}
-
-void game_cl_mp::deinit_compress_buffer()
-{
-	xr_free(buffer_for_compress);
-}
-
-void game_cl_mp::decompress_and_save_screenshot(LPCSTR file_name, u8* data, u32 data_size, u32 file_size)
-{
-	if (!file_size)
+	if (!dataSize)
 	{
 		Msg("! ERROR: file size to save is 0...");
 		return;
 	}
 
-	reinit_compress_buffer(file_size);
+	string_path screenshotPath;
+	FS.update_path(screenshotPath, "$screenshots$", fileName);
+	strcat(screenshotPath, ".jpg");
 
-	u32 original_size = ppmd_decompress(
-		buffer_for_compress,
-		buffer_for_compress_size,
-		data,
-		data_size
-	);
+	IWriter* ftosave = FS.w_open(screenshotPath);
 
-	if (original_size != file_size)
-	{
-		Msg("! WARNING: original and downloaded file size are different !");
-	}
-	string_path screen_shot_path;
-	FS.update_path(screen_shot_path, "$screenshots$", file_name);
-	strcat(screen_shot_path, ".jpg");
-
-	IWriter* ftosave = FS.w_open(screen_shot_path);
 	if (!ftosave)
 	{
-		Msg("! ERROR: failed to create file [%s]", file_name);
+		Msg("! ERROR: failed to create file [%s]", fileName);
 		return;
 	}
-	ftosave->w(buffer_for_compress, file_size);
+
+	ftosave->w(data, dataSize);
 	FS.w_close(ftosave);
 }
 
@@ -504,20 +465,17 @@ void __stdcall	game_cl_mp::fr_callback_binder::receiving_file_callback(
 		Msg("* file: receiving timeout...");
 		m_active = false;
 	}break;
+
 	case file_transfer::receiving_complete:
 	{
 		Msg("* file: download complete successfully !");
+
 		switch (m_response_type)
 		{
 		case e_screenshot_response:
-		{
-			m_owner->decompress_and_save_screenshot(
-				m_file_name.c_str(),
-				m_writer.pointer(),
-				m_writer.size(),
-				m_frnode->get_user_param()
-			);
-		}break;
+			m_owner->ReceiveScreenshot(m_file_name.c_str(), m_writer.pointer(), m_writer.size());
+			break;
+
 		case e_configs_response:
 		{
 			/*m_owner->decompress_and_process_config(
@@ -536,36 +494,17 @@ void __stdcall	game_cl_mp::fr_callback_binder::receiving_file_callback(
 	};
 }
 
-void game_cl_mp::SendCollectedData(u8 const* buffer, u32 buffer_size, u32 uncompressed_size)
+void game_cl_mp::SendCollectedData(u8* buffer, u32 bufferSize, u32 uncompressedSize)
 {
-	if (!buffer_size)
+	if (!bufferSize)
 	{
 		Msg("! ERROR: CL: no data to send...");
 		return;
 	}
-	file_transfer::sending_state_callback_t sending_cb =
-		fastdelegate::MakeDelegate(this, &game_cl_mp::sending_screenshot_callback);
 
-	//screenshot is compressing in screenshot manager ...
-	/*reinit_compress_buffer(buffer_size);
-
-	u32 compressed_image_size = ppmd_compress(
-		buffer_for_compress,
-		buffer_for_compress_size,
-		buffer,
-		buffer_size
-	);*/
-
-	upload_memory_writer.clear();
-	upload_memory_writer.w(buffer, buffer_size);
-
-	Level().m_file_transfer->start_transfer_file(
-		upload_memory_writer.pointer(),
-		upload_memory_writer.size(),
-		sending_cb,
-		uncompressed_size
-	);
-};
+	auto sendingCB = fastdelegate::MakeDelegate(this, &game_cl_mp::sending_screenshot_callback);
+	Level().m_file_transfer->start_transfer_file(buffer, bufferSize, sendingCB, uncompressedSize);
+}
 
 void game_cl_mp::VotingBegin()
 {
@@ -710,13 +649,12 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 
 	case GAME_EVENT_MAKE_DATA:
 	{
-		clientdata_event_t etype = static_cast<clientdata_event_t>(P.r_u8());
+		const auto etype = static_cast<clientdata_event_t>(P.r_u8());
 
 		if (etype == e_screenshot_request)
 		{
-			screenshot_manager::complete_callback_t compl_cb =
-				fastdelegate::MakeDelegate(this, &game_cl_mp::SendCollectedData);
-			ss_manager.make_screenshot(compl_cb);
+			auto completeCB = fastdelegate::MakeDelegate(this, &game_cl_mp::SendCollectedData);
+			ss_manager.make_screenshot(completeCB);
 		}
 		else if (etype == e_configs_request)
 		{

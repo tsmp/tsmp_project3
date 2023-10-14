@@ -184,8 +184,7 @@ void clientdata_proxy::save_proxy_screenshot()
 	GetLocalTime(&date_time);
 	generate_file_name(screenshot_fn, dest_file_name, date_time);
 
-	clgame->decompress_and_save_screenshot(screenshot_fn, my_proxy_mem_file.pointer()
-		, my_proxy_mem_file.size(), m_receiver->get_user_param());
+	clgame->ReceiveScreenshot(screenshot_fn, my_proxy_mem_file.pointer(), my_proxy_mem_file.size());
 }
 
 void clientdata_proxy::save_proxy_config()

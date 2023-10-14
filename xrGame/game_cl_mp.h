@@ -166,12 +166,6 @@ protected:
 
 	virtual void LoadBonuses();
 
-	u8* buffer_for_compress;
-	u32	buffer_for_compress_size;
-	CMemoryWriter upload_memory_writer;
-	void reinit_compress_buffer(u32 need_size);
-	void deinit_compress_buffer();
-
 public:
 	game_cl_mp();
 	virtual ~game_cl_mp();
@@ -235,9 +229,9 @@ public:
 	virtual bool Is_Spectator_TeamCamera_Allowed() { return m_bSpectator_TeamCamera; };
 	virtual bool Is_Spectator_Camera_Allowed(CSpectator::EActorCameras Camera);
 
-	void decompress_and_save_screenshot(LPCSTR file_name, u8* data, u32 data_size, u32 file_size);
+	void ReceiveScreenshot(LPCSTR fileName, u8* data, u32 dataSize);
 
-	void __stdcall SendCollectedData(u8 const* buffer, u32 buffer_size, u32 uncompressed_size);
+	void __stdcall SendCollectedData(u8* buffer, u32 buffer_size, u32 uncompressed_size);
 	void PrepareToReceiveFile(ClientID const& from_client, shared_str const& client_session_id, clientdata_event_t response_event);
 	
 	struct fr_callback_binder

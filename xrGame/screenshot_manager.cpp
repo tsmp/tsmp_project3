@@ -2,7 +2,6 @@
 #include "screenshot_manager.h"
 #include "level.h"
 #include "game_cl_mp.h"
-#include "../xrCore/ppmd/ppmd_compressor.h"
 #include "screenshots_writer.h"
 
 #ifdef DEBUG
@@ -38,9 +37,6 @@ screenshot_manager::screenshot_manager()
 	m_jpeg_buffer = nullptr;
 	m_jpeg_buffer_capacity = 0;
 
-	m_buffer_for_compress = nullptr;
-	m_buffer_for_compress_capacity = 0;
-
 	m_make_start_event = nullptr;
 	m_make_done_event = nullptr;
 }
@@ -54,7 +50,6 @@ screenshot_manager::~screenshot_manager()
 	}
 
 	xr_free(m_jpeg_buffer);
-	xr_free(m_buffer_for_compress);
 
 	if (m_make_start_event)
 	{
@@ -169,8 +164,7 @@ void screenshot_manager::shedule_Update(u32 dt)
 			prepare_image();
 			make_jpeg_file();
 			sign_jpeg_file();
-			compress_image();
-			m_complete_callback(m_buffer_for_compress, m_buffer_for_compress_size, m_jpeg_buffer_size);
+			m_complete_callback(m_jpeg_buffer, m_jpeg_buffer_size, m_jpeg_buffer_size);
 			m_state &= ~making_screenshot;
 		}
 		else
@@ -180,7 +174,7 @@ void screenshot_manager::shedule_Update(u32 dt)
 
 			if (thread_result == WAIT_OBJECT_0)
 			{
-				m_complete_callback(m_buffer_for_compress, m_buffer_for_compress_size, m_jpeg_buffer_size);
+				m_complete_callback(m_jpeg_buffer, m_jpeg_buffer_size, m_jpeg_buffer_size);
 				m_state &= ~making_screenshot;
 			}
 		}
@@ -291,60 +285,37 @@ void __stdcall screenshot_manager::jpeg_compress_cb(long progress)
 	}
 }
 
-void screenshot_manager::screenshot_maker_thread(void *arg_ptr)
+void screenshot_manager::screenshot_maker_thread(void *argPtr)
 {
-	screenshot_manager *this_ptr = static_cast<screenshot_manager *>(arg_ptr);
-	DWORD wait_result = WaitForSingleObject(this_ptr->m_make_start_event, INFINITE);
+	auto thisPtr = static_cast<screenshot_manager*>(argPtr);
 
-	while ((wait_result != WAIT_ABANDONED) || (wait_result != WAIT_FAILED))
+	auto CanWork = [&]()
 	{
-		if (!this_ptr->is_active())
+		DWORD waitResult = WaitForSingleObject(thisPtr->m_make_start_event, INFINITE);
+		return waitResult != WAIT_ABANDONED && waitResult != WAIT_FAILED;
+	};
+
+	while (CanWork())
+	{
+		if (!thisPtr->is_active())
 			break;
 		
-		this_ptr->timer_begin("preparing image");
-		this_ptr->prepare_image();
-		this_ptr->timer_end();
-		this_ptr->timer_begin("making jpeg");
-		this_ptr->make_jpeg_file();
-		this_ptr->timer_end();
-		this_ptr->timer_begin("signing jpeg data");
-		this_ptr->sign_jpeg_file();
-		this_ptr->timer_end();
-		this_ptr->timer_begin("compressing_image");
-		this_ptr->compress_image();
-		this_ptr->timer_end();
-		SetEvent(this_ptr->m_make_done_event);
-		wait_result = WaitForSingleObject(this_ptr->m_make_start_event, INFINITE);
-
+		thisPtr->timer_begin("preparing image");
+		thisPtr->prepare_image();
+		thisPtr->timer_end();
+		thisPtr->timer_begin("making jpeg");
+		thisPtr->make_jpeg_file();
+		thisPtr->timer_end();
+		thisPtr->timer_begin("signing jpeg data");
+		thisPtr->sign_jpeg_file();
+		thisPtr->timer_end();
+		SetEvent(thisPtr->m_make_done_event);
 	}
 
-	SetEvent(this_ptr->m_make_done_event);
-}
-
-void screenshot_manager::realloc_compress_buffer(u32 need_size)
-{
-	if (m_buffer_for_compress && (need_size <= m_buffer_for_compress_capacity))
-		return;
-
-#ifdef DEBUG
-	Msg("* reallocing compression buffer.");
-#endif
-
-	m_buffer_for_compress_capacity = need_size * 2;
-	void *new_buffer = xr_realloc(m_buffer_for_compress, m_buffer_for_compress_capacity);
-	m_buffer_for_compress = static_cast<u8 *>(new_buffer);
-}
-
-void screenshot_manager::compress_image()
-{
-	realloc_compress_buffer(m_jpeg_buffer_size);
-
-	m_buffer_for_compress_size = ppmd_compress(m_buffer_for_compress, m_buffer_for_compress_capacity,
-		m_jpeg_buffer, m_jpeg_buffer_size);
+	SetEvent(thisPtr->m_make_done_event);
 }
 
 #ifdef DEBUG
-
 void screenshot_manager::timer_begin(LPCSTR comment)
 {
 	m_timer_comment = comment;
@@ -355,5 +326,4 @@ void screenshot_manager::timer_end()
 {
 	Msg("* %s : %u ms", m_timer_comment.c_str(), m_debug_timer.GetElapsed_ms());
 }
-
 #endif
