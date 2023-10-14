@@ -109,7 +109,7 @@ static xrClientData* GetCommandInitiator(LPCSTR commandLine)
 	if (!clientidstr)
 		return nullptr;
 
-	clientidstr += sizeof(RadminIdPrefix) + 1;
+	clientidstr += strlen(RadminIdPrefix);
 	u32 client_id = static_cast<u32>(strtoul(clientidstr, NULL, 10));
 
 	ClientID tmp_id;
