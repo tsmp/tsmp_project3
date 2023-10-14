@@ -501,8 +501,6 @@
     <ClCompile Include="memory_allocation_stats.cpp" />
     <ClCompile Include="memory_monitor.cpp" />
     <ClCompile Include="memory_usage.cpp" />
-    <ClCompile Include="PPMD\Model.cpp" />
-    <ClCompile Include="PPMD\ppmd_compressor.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -578,13 +576,6 @@
     <ClInclude Include="log.h" />
     <ClInclude Include="memory_monitor.h" />
     <ClInclude Include="NarrowCast.h" />
-    <ClInclude Include="PPMD\Coder.hpp" />
-    <ClInclude Include="PPMD\compression_ppmd_stream.h" />
-    <ClInclude Include="PPMD\compression_ppmd_stream_inline.h" />
-    <ClInclude Include="PPMD\PPMd.h" />
-    <ClInclude Include="PPMD\PPMdType.h" />
-    <ClInclude Include="PPMD\ppmd_compressor.h" />
-    <ClInclude Include="PPMD\SubAlloc.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="stream_reader.h" />
     <ClInclude Include="stream_reader_inline.h" />

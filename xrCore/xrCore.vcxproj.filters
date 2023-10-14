@@ -40,9 +40,6 @@
     <Filter Include="Compression">
       <UniqueIdentifier>{cbb3f801-0ca2-4621-814c-bf0ced03ba67}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Compression\ppmd">
-      <UniqueIdentifier>{5f4a2182-67d1-4548-8832-f974fe4a8e44}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Debug">
       <UniqueIdentifier>{0e19f5ee-5b09-4b8a-8204-828488a27f92}</UniqueIdentifier>
     </Filter>
@@ -161,12 +158,6 @@
     </ClCompile>
     <ClCompile Include="LzHuf.cpp">
       <Filter>Compression</Filter>
-    </ClCompile>
-    <ClCompile Include="PPMD\Model.cpp">
-      <Filter>Compression\ppmd</Filter>
-    </ClCompile>
-    <ClCompile Include="PPMD\ppmd_compressor.cpp">
-      <Filter>Compression\ppmd</Filter>
     </ClCompile>
     <ClCompile Include="threading\xrCriticalSection.cpp">
       <Filter>Threading</Filter>
@@ -355,27 +346,6 @@
     </ClInclude>
     <ClInclude Include="trivial_encryptor.h">
       <Filter>FS</Filter>
-    </ClInclude>
-    <ClInclude Include="PPMD\Coder.hpp">
-      <Filter>Compression\ppmd</Filter>
-    </ClInclude>
-    <ClInclude Include="PPMD\compression_ppmd_stream.h">
-      <Filter>Compression\ppmd</Filter>
-    </ClInclude>
-    <ClInclude Include="PPMD\compression_ppmd_stream_inline.h">
-      <Filter>Compression\ppmd</Filter>
-    </ClInclude>
-    <ClInclude Include="PPMD\PPMd.h">
-      <Filter>Compression\ppmd</Filter>
-    </ClInclude>
-    <ClInclude Include="PPMD\ppmd_compressor.h">
-      <Filter>Compression\ppmd</Filter>
-    </ClInclude>
-    <ClInclude Include="PPMD\PPMdType.h">
-      <Filter>Compression\ppmd</Filter>
-    </ClInclude>
-    <ClInclude Include="PPMD\SubAlloc.hpp">
-      <Filter>Compression\ppmd</Filter>
     </ClInclude>
     <ClInclude Include="threading\xrCriticalSection.h">
       <Filter>Threading</Filter>
