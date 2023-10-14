@@ -144,6 +144,8 @@ public:
 	void ExecuteCommand(LPCSTR cmd_str, bool record_cmd = true);
 	void SelectCommand();
 
+	void RegisterScreenshotCallback(int screenshotDik);
+
 	// get
 	bool GetBool(LPCSTR cmd, bool &val);
 	float GetFloat(LPCSTR cmd, float &val, float &min, float &max);
@@ -209,6 +211,8 @@ protected:
 	void xr_stdcall PageUp_tips();
 	void xr_stdcall PageDown_tips();
 	void xr_stdcall Hide_cmd_esc();
+
+	void xr_stdcall ScreenshotCmd();
 
 protected:
 	void add_cmd_history(shared_str const& str);

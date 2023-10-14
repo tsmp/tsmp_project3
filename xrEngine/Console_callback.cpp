@@ -32,6 +32,11 @@ void CConsole::Register_callbacks()
 	ec().assign_callback(DIK_GRAVE, text_editor::ks_free, Callback(this, &CConsole::Hide_cmd));
 }
 
+void CConsole::RegisterScreenshotCallback(int screenshotDik)
+{
+	ec().assign_callback(screenshotDik, text_editor::ks_free, Callback(this, &CConsole::ScreenshotCmd));
+}
+
 void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP
 {
 	scroll_delta++;

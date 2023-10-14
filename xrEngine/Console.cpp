@@ -943,3 +943,8 @@ u32 CConsole::GetRadminCMDOffset(const char* cmdStr)
 
 	return 0;
 }
+
+void CConsole::ScreenshotCmd()
+{
+	Render->Screenshot();
+}

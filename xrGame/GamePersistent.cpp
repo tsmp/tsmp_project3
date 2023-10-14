@@ -21,6 +21,7 @@
 
 #include "string_table.h"
 #include "xrApplication.h"
+#include "xr_level_controller.h"
 
 #ifndef MASTER_GOLD
 #include "custommonster.h"
@@ -84,6 +85,9 @@ CGamePersistent::CGamePersistent(void)
 	CWeaponHUD::CreateSharedContainer();
 
 	eQuickLoad = Engine.Event.Handler_Attach("Game:QuickLoad", this);
+
+	if(!g_dedicated_server)
+		Console->RegisterScreenshotCallback(get_action_dik(kSCREENSHOT));
 }
 
 CGamePersistent::~CGamePersistent(void)
@@ -173,12 +177,9 @@ void CGamePersistent::Disconnect()
 	m_game_params.m_e_game_type = GAME_ANY;
 }
 
-#include "xr_level_controller.h"
-
 void CGamePersistent::OnGameStart()
 {
 	__super::OnGameStart();
-
 	UpdateGameType();
 }
 
