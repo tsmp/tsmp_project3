@@ -11,6 +11,7 @@
 #include "ai_space.h"
 #include "object_factory.h"
 #include "script_process.h"
+#include "ScriptProfiler.h"
 #include "..\TSMP3_Build_Config.h"
 
 #define SCRIPTS_EXTENSION ".script"
@@ -33,6 +34,7 @@ CScriptEngine::CScriptEngine()
 	m_reload_modules = false;
 	m_last_no_file_length = 0;
 	*m_last_no_file = 0;
+	ScriptProfiler::SetScriptEngine(this);
 
 #ifdef USE_DEBUGGER
 	m_scriptDebugger = NULL;
@@ -52,6 +54,8 @@ CScriptEngine::~CScriptEngine()
 #ifdef USE_DEBUGGER
 	xr_delete(m_scriptDebugger);
 #endif
+
+	ScriptProfiler::SetScriptEngine(nullptr);
 }
 
 void CScriptEngine::unload()
@@ -189,6 +193,7 @@ void CScriptEngine::init()
 	load_common_scripts();
 #endif
 	m_stack_level = lua_gettop(lua());
+	ScriptProfiler::OnScriptsReinit();
 }
 
 void CScriptEngine::remove_script_process(const EScriptProcessors &process_id)

@@ -2326,6 +2326,9 @@
     <Filter Include="Core\Client\VoiceChat">
       <UniqueIdentifier>{3ad365e9-e43a-4cc1-91b7-d470545b2c6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI\AScript\ScriptProfiler">
+      <UniqueIdentifier>{1b3e95d0-5598-4242-92c0-6aad4dd73330}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6631,6 +6634,9 @@
       <Filter>Core\Client\VoiceChat</Filter>
     </ClInclude>
     <ClInclude Include="xrServerRespawnManager.h" />
+    <ClInclude Include="ScriptProfiler.h">
+      <Filter>AI\AScript\ScriptProfiler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9822,5 +9828,8 @@
       <Filter>Core\Client\VoiceChat</Filter>
     </ClCompile>
     <ClCompile Include="xrServerRespawnManager.cpp" />
+    <ClCompile Include="ScriptProfiler.cpp">
+      <Filter>AI\AScript\ScriptProfiler</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
