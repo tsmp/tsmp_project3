@@ -50,31 +50,11 @@ extern "C" {
 
 
 /* Define the dInfinity macro */
-#ifdef INFINITY
 #ifdef dSINGLE
-#define dInfinity ((float)INFINITY)
-#else
-#define dInfinity ((double)INFINITY)
-#endif
-#elif defined(HUGE_VAL)
-#ifdef dSINGLE
-#ifdef HUGE_VALF
 #define dInfinity HUGE_VALF
-#else
-#define dInfinity ((float)HUGE_VAL)
-#endif
 #else
 #define dInfinity HUGE_VAL
 #endif
-#else
-#ifdef dSINGLE
-#define dInfinity ((float)(1.0/0.0))
-#else
-#define dInfinity (1.0/0.0)
-#endif
-#endif
-
-
 
 #define SHAREDLIBIMPORT __declspec (dllimport)
 
