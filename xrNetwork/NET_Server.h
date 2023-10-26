@@ -105,29 +105,44 @@ public:
 	u32 dwBytesPerSec;
 };
 
-class XRNETWORK_API IBannedClient
+class CServerInfo;
+
+class BannedClient
 {
 public:
-	ip_address HAddr;
+	ip_address IpAddr;
 	time_t BanTime;
 
-	IBannedClient()
+	BannedClient()
 	{
-		HAddr.m_data.data = 0;
+		IpAddr.m_data.data = 0;
 		BanTime = 0;
 	}
 
-	void Load(CInifile &ini, const shared_str &sect);
-	void Save(CInifile &ini);
+	void Load(CInifile& ini, const shared_str& sect);
+	void Save(CInifile& ini) const;
 
 	xr_string BannedTimeTo() const;
 };
 
-class CServerInfo;
+class CBanList
+{
+public:
+	void BanAddress(const ip_address& address, u32 banTimeSec);
+	void UnbanAddress(const ip_address& address);
+	void Print();
 
-class XRNETWORK_API
-	IPureServer
-	: private MultipacketReciever
+	void Save();
+	void Load();
+	void Update();
+
+	bool IsAddressBanned(const ip_address& address);
+
+private:
+	xr_vector<BannedClient> m_Banned;
+};
+
+class XRNETWORK_API IPureServer : private MultipacketReciever
 {
 public:
 	enum EConnect
@@ -149,11 +164,8 @@ protected:
 	PlayersMonitor net_players;
 
 	int psNET_Port;
-	xr_vector<IBannedClient*> BannedAddresses;	
+	CBanList m_BanList;
 	xrCriticalSection csMessage;
-
-	void client_link_aborted(ClientID ID);
-	void client_link_aborted(IClient *C);
 
 	// Statistic
 	IServerStatistic stats;
@@ -165,12 +177,9 @@ protected:
 	virtual IClient *new_client(SClientConnectData *cl_data) = 0;
 	bool GetClientAddress(IDirectPlay8Address *pClientAddress, ip_address &Address, DWORD *pPort = NULL);
 
-	IBannedClient *GetBannedClient(const ip_address &Address);
-	void BannedList_Save();
-	void BannedList_Load();
-	LPCSTR GetBannedListName();
-
-	void UpdateBannedList();
+	void BannedListSave();
+	void BannedListLoad();
+	void BannedListUpdate();
 
 public:
 	IPureServer(CTimer *timer, BOOL Dedicated = FALSE);

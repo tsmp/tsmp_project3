@@ -13,6 +13,7 @@
     <ClCompile Include="UrlEncode.cpp">
       <Filter>PlayersBase</Filter>
     </ClCompile>
+    <ClCompile Include="BanList.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client_id.h" />

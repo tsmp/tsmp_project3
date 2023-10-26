@@ -304,8 +304,8 @@ void xrServer::Update()
 	PerformCheckClientsForMaxPing();
 	Flush_Clients_Buffers();
 
-	if (Device.CurrentFrameNumber % 100 == 0) //once per 100 frames	
-		UpdateBannedList();	
+	if (Device.CurrentFrameNumber % 1000 == 0) // once per 1000 frames
+		BannedListUpdate();
 }
 
 void xrServer::SendUpdatesToAll()
