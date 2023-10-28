@@ -8,6 +8,7 @@ int fz_downloader_new = 0;
 int fz_downloader_enabled = 1;
 int fz_downloader_skip_full_check = 0;
 int fz_downloader_allow_x64 = 0;
+int fz_downloader_send_error_reports = 0;
 int fz_downloader_previous_version = 0;
 
 std::string fz_downloader_mod_name = "tsmp";
@@ -114,6 +115,9 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 
 		if (fz_downloader_allow_x64)
 			ModLoadArgs += " -allow64bitengine ";
+
+		if (fz_downloader_send_error_reports)
+			ModLoadArgs += " -sendErrorRepots ";
 
 		ModLoadArgs += " -includename -preservemessage ";
 	}
