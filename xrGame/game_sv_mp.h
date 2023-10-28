@@ -124,7 +124,6 @@ public:
 	void KillPlayer(ClientID const &id_who, u16 GameID);
 	virtual BOOL CanHaveFriendlyFire() { return TRUE; };
 
-	virtual void ClearPlayerState(game_PlayerState *ps);
 	virtual void ClearPlayerItems(game_PlayerState *ps);
 	virtual void SetPlayersDefItems(game_PlayerState *ps);
 

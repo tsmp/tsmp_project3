@@ -530,7 +530,7 @@ void game_sv_Race::OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerSt
 		return;
 
 	ps_killed->setFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
-	ps_killed->m_iDeaths++;
+	ps_killed->m_Stats.m_iDeaths++;
 	ps_killed->m_iKillsInRowCurr = 0;
 	ps_killed->DeathTime = Level().timeServer();
 

@@ -26,25 +26,18 @@ game_PlayerState::game_PlayerState()
 	RespawnTime = 0;
 	m_bPayForSpawn = false;
 	CarID = u16(-1);
-	m_iAiKills = 0;
-	m_iHeadshots = 0;
-
 	clear();
 }
 
 void game_PlayerState::clear()
 {
 	name[0] = 0;
-	m_iRivalKills = 0;
 	m_iSelfKills = 0;
 	m_iTeamKills = 0;
 	m_iKillsInRowCurr = 0;
-	m_iKillsInRowMax = 0;
-	m_iDeaths = 0;
 	experience_D = 0;
 	experience_Real = 0;
 	rank = 0;
-	af_count = 0;
 	experience_New = 0;
 	pItemList.clear();
 	m_s16LastSRoint = -1;
@@ -54,8 +47,8 @@ void game_PlayerState::clear()
 	mOldIDs.clear();
 	money_added = 0;
 	CarID = u16(-1);
-	m_iAiKills = 0;
-	m_iHeadshots = 0;
+	m_Stats.Clear();
+	m_StatsBeforeDisconnect.Clear();
 	m_aBonusMoney.clear();
 }
 
@@ -86,14 +79,14 @@ void game_PlayerState::net_Export(NET_Packet &P, BOOL Full)
 		P.w_stringZ(name);
 
 	P.w_u8(team);
-	P.w_s16(m_iRivalKills);
+	P.w_s16(m_Stats.m_iRivalKills);
 	P.w_s16(m_iSelfKills);
 	P.w_s16(m_iTeamKills);
-	P.w_s16(m_iDeaths);
+	P.w_s16(m_Stats.m_iDeaths);
 	P.w_s32(money_for_round);
 	P.w_float_q8(experience_D, -1.0f, 2.0f);
 	P.w_u8(rank);
-	P.w_u8(af_count);
+	P.w_u8(m_Stats.af_count);
 	P.w_u16(flags__);
 	P.w_u16(ping);
 
@@ -102,7 +95,7 @@ void game_PlayerState::net_Export(NET_Packet &P, BOOL Full)
 	P.w_u8(m_bCurrentVoteAgreed);
 
 	P.w_u32(Device.dwTimeGlobal - DeathTime);
-};
+}
 
 void game_PlayerState::net_Import(NET_Packet &P)
 {
@@ -113,15 +106,15 @@ void game_PlayerState::net_Import(NET_Packet &P)
 
 	P.r_u8(team);
 
-	P.r_s16(m_iRivalKills);
+	P.r_s16(m_Stats.m_iRivalKills);
 	P.r_s16(m_iSelfKills);
 	P.r_s16(m_iTeamKills);
-	P.r_s16(m_iDeaths);
+	P.r_s16(m_Stats.m_iDeaths);
 
 	P.r_s32(money_for_round);
 	P.r_float_q8(experience_D, -1.0f, 2.0f);
 	P.r_u8(rank);
-	P.r_u8(af_count);
+	P.r_u8(m_Stats.af_count);
 	P.r_u16(flags__);
 	P.r_u16(ping);
 
@@ -130,14 +123,13 @@ void game_PlayerState::net_Import(NET_Packet &P)
 	P.r_u8(m_bCurrentVoteAgreed);
 
 	DeathTime = P.r_u32();
-};
+}
 
 void game_PlayerState::SetGameID(u16 NewID)
 {
 	if (mOldIDs.size() >= 10)
-	{
 		mOldIDs.pop_front();
-	};
+
 	mOldIDs.push_back(GameID);
 	GameID = NewID;
 }

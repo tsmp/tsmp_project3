@@ -141,6 +141,10 @@ IClient *xrServer::client_Find_Get(ClientID const &ID)
 			auto data = static_cast<xrClientData*>(disconnectedClient);
 			data->ps->m_online_time = Level().timeServer();
 
+			data->ps->m_StatsBeforeDisconnect = data->ps->m_Stats;
+			data->ps->m_WpnHits.clear();
+			data->ps->m_WpnIdx.clear();
+
 			return disconnectedClient;
 		}
 	}
@@ -165,13 +169,14 @@ void xrServer::ReportClientStats(IClient *CL)
 {
 	PlayerGameStats stats{ 0 };
 	const game_PlayerState* state = static_cast<xrClientData*>(CL)->ps;
+	CollectedStatistic clStat = state->m_Stats - state->m_StatsBeforeDisconnect;
 
-	stats.fragsCnt = state->m_iRivalKills;
-	stats.fragsNpc = state->m_iAiKills;
-	stats.headShots = state->m_iHeadshots;
-	stats.deathsCnt = state->m_iDeaths;
-	stats.artsCnt = state->af_count;
-	stats.maxFragsOneLife = state->m_iKillsInRowMax;
+	stats.fragsCnt = clStat.m_iRivalKills;
+	stats.fragsNpc = clStat.m_iAiKills;
+	stats.headShots = clStat.m_iHeadshots;
+	stats.deathsCnt = clStat.m_iDeaths;
+	stats.artsCnt = clStat.af_count;
+	stats.maxFragsOneLife = clStat.m_iKillsInRowMax;
 	stats.timeInGame = (Level().timeServer() - state->m_online_time) / 60000; // minutes
 
 	if (auto gameMp = smart_cast<game_sv_mp*>(game))
@@ -235,16 +240,14 @@ void xrServer::client_Destroy(IClient* C)
 	//	game->CleanDelayedEventFor(pOwner->ID);
 	//}
 
-#pragma TODO("Придумать вариант получше (этот убран из-за статистики)")
-
-	//if (!g_sv_Client_Reconnect_Time)
-		xr_delete(aliveClient);	
-	//else
-	//{
-	//	aliveClient->dwTime_LastUpdate = Device.dwTimeGlobal;
-	//	net_players.AddNewDisconnectedClient(aliveClient);
-	//	static_cast<xrClientData*>(aliveClient)->Clear();
-	//}
+	if (!g_sv_Client_Reconnect_Time)
+		xr_delete(aliveClient);
+	else
+	{
+		aliveClient->dwTime_LastUpdate = Device.dwTimeGlobal;
+		net_players.AddNewDisconnectedClient(aliveClient);
+		static_cast<xrClientData*>(aliveClient)->Clear();
+	}
 }
 
 int g_Dump_Update_Write = 0;
