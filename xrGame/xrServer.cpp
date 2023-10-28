@@ -137,6 +137,10 @@ IClient *xrServer::client_Find_Get(ClientID const &ID)
 			disconnectedClient->server = this;
 			net_players.AddNewClient(disconnectedClient);
 			Msg("# Player found");
+
+			auto data = static_cast<xrClientData*>(disconnectedClient);
+			data->ps->m_online_time = Level().timeServer();
+
 			return disconnectedClient;
 		}
 	}
