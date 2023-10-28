@@ -621,124 +621,55 @@ IConsole_Command* CConsole::find_next_cmd(LPCSTR in_str, shared_str& out_str)
 	return nullptr;
 }
 
-bool CConsole::add_next_cmds(LPCSTR in_str, vecTipsEx& out_v)
+void CConsole::AddFilteredCommands(LPCSTR inStr, vecTipsEx& outVec)
 {
-	u32 cur_count = out_v.size();
+	const u32 inStrLen = xr_strlen(inStr);
 
-	if (cur_count >= MAX_TIPS_COUNT)	
-		return false;	
-
-	char t2[256];
-	strcpy(t2, in_str);
-	strcat(t2, " ");
-
-	shared_str temp;
-	IConsole_Command* cc = find_next_cmd(t2, temp);
-
-	if (!cc || temp.size() == 0)	
-		return false;	
-
-	bool res = false;
-
-	for (u32 i = cur_count; i < MAX_TIPS_COUNT * 2; ++i) //fake=protect
+	auto IsCommandInTipsVec = [&outVec](const char* command) -> bool
 	{
-		temp._set(cc->Name());
-		bool dup = (std::find(out_v.begin(), out_v.end(), temp) != out_v.end());
+		shared_str temp;
+		temp._set(command);
+		return std::find(outVec.begin(), outVec.end(), temp) != outVec.end();
+	};
 
-		if (!dup)
-		{
-			TipString ts(temp);
-			out_v.push_back(ts);
-			res = true;
-		}
-
-		if (out_v.size() >= MAX_TIPS_COUNT)		
-			break; // for		
-		
-		char t3[256];
-		strcpy(t3, out_v.back().text.c_str());
-		strcat(t3, " ");
-
-		cc = find_next_cmd(t3, temp);
-
-		if (!cc)		
-			break; // for
-		
-	} // for
-	return res;
-}
-
-bool CConsole::add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v)
-{
-	u32 cur_count = out_v.size();
-
-	if (cur_count >= MAX_TIPS_COUNT)	
-		return false;
-	
-	u32 in_sz = xr_strlen(in_str);
-	bool res = false;
 	// word in begin
-	vecCMD_IT itb = Commands.begin();
-	vecCMD_IT ite = Commands.end();
-
-	for (; itb != ite; ++itb)
+	for (const auto &command: Commands)
 	{
-		LPCSTR name = itb->first;
-		u32 name_sz = xr_strlen(name);
-		PSTR name2 = (PSTR)_alloca((name_sz + 1) * sizeof(char));
+		if (command.second->bHidden)
+			continue;
 
-		if (name_sz >= in_sz)
-		{
-			strncpy_s(name2, name_sz + 1, name, in_sz);
-			name2[in_sz] = 0;
+		const char* cmdName = command.first;
+		const u32 cmdNameLen = xr_strlen(cmdName);
 
-			if (!stricmp(name2, in_str))
-			{
-				shared_str temp;
-				temp._set(name);
-				bool dup = (std::find(out_v.begin(), out_v.end(), temp) != out_v.end());
+		if (cmdNameLen < inStrLen)
+			continue;
 
-				if (!dup)
-				{
-					out_v.push_back(TipString(temp, 0, in_sz));
-					res = true;
-				}
-			}
-		}
+		if (!strnicmp(cmdName, inStr, inStrLen) && !IsCommandInTipsVec(cmdName))
+			outVec.emplace_back(TipString(cmdName, 0, inStrLen));
 
-		if (out_v.size() >= MAX_TIPS_COUNT)		
-			return res;		
-	} // for
+		if (outVec.size() >= MAX_TIPS_COUNT)
+			return;
+	}
 
 	// word in internal
-	itb = Commands.begin();
-	ite = Commands.end();
-
-	for (; itb != ite; ++itb)
+	for (const auto& command : Commands)
 	{
-		LPCSTR name = itb->first;
-		LPCSTR fd_str = strstr(name, in_str);
+		if (command.second->bHidden)
+			continue;
 
-		if (fd_str)
+		const char* cmdName = command.first;
+		const char* substring = strstr(cmdName, inStr);
+
+		if (substring && !IsCommandInTipsVec(cmdName))
 		{
-			shared_str temp;
-			temp._set(name);
-			bool dup = (std::find(out_v.begin(), out_v.end(), temp) != out_v.end());
-
-			if (!dup)
-			{
-				u32 name_sz = xr_strlen(name);
-				int   fd_sz = name_sz - xr_strlen(fd_str);
-				out_v.push_back(TipString(temp, fd_sz, fd_sz + in_sz));
-				res = true;
-			}
+			const u32 startPos = xr_strlen(cmdName) - xr_strlen(substring);
+			const u32 endPos = startPos + inStrLen;
+			outVec.emplace_back(TipString(cmdName, startPos, endPos));
 		}
 
-		if (out_v.size() >= MAX_TIPS_COUNT)		
-			return res;		
-	} // for
-
-	return res;
+		if (outVec.size() >= MAX_TIPS_COUNT)
+			return;
+	}
 }
 
 void CConsole::update_tips()
@@ -810,13 +741,10 @@ void CConsole::update_tips()
 	}
 
 	// cmd name
-	{
-		add_internal_cmds(cur, m_tips);
-		//add_next_cmds( cur, m_tips );
-		m_tips_mode = 1;
-	}
+	AddFilteredCommands(cur, m_tips);
+	m_tips_mode = 1;
 
-	if (m_tips.size() == 0)
+	if (m_tips.empty())
 	{
 		m_tips_mode = 0;
 		reset_selected_tip();
