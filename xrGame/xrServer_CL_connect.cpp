@@ -179,15 +179,22 @@ void xrServer::OnRespondUID(IClient* CL, NET_Packet& P)
 	u32 Uid;
 	P.r_u32(Uid);
 
-	if (Uid)
+	if (!Uid)
 	{
-		CL->UID = Uid;
-		CheckPlayerBannedInBase(CL, this);
-		OnConnectionVerificationStepComplete(CL);
+		GenPlayerUID(CL, this);
 		return;
 	}
 
-	GenPlayerUID(CL, this);
+	CL->UID = Uid;
+
+	if (IsUidBanned(Uid))
+	{
+		SendConnectResult(CL, 0, 0, "You are banned!!");
+		return;
+	}
+
+	CheckPlayerBannedInBase(CL, this);
+	OnConnectionVerificationStepComplete(CL);
 }
 
 void xrServer::OnBuildVersionRespond(IClient *CL, NET_Packet &P)

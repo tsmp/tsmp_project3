@@ -823,11 +823,3 @@ void IPureServer::BanClient(IClient* C, u32 BanTime)
 	GetClientAddress(C->ID, ClAddress);
 	BanAddress(ClAddress, BanTime);
 }
-
-// Ban
-void IPureServer::BanAddress(const ip_address &address, u32 banTimeSec) { m_BanList.BanAddress(address, banTimeSec); }
-void IPureServer::UnBanAddress(const ip_address& address) { m_BanList.UnbanAddress(address); }
-void IPureServer::Print_Banned_Addreses() { m_BanList.Print(); }
-void IPureServer::BannedListSave() { m_BanList.Save(); }
-void IPureServer::BannedListLoad() { m_BanList.Load(); }
-void IPureServer::BannedListUpdate() { m_BanList.Update(); }

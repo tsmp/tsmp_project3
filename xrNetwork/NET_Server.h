@@ -112,11 +112,13 @@ class BannedClient
 public:
 	ip_address IpAddr;
 	time_t BanTime;
+	u32 uid;
 
 	BannedClient()
 	{
 		IpAddr.m_data.data = 0;
 		BanTime = 0;
+		uid = 0;
 	}
 
 	void Load(CInifile& ini, const shared_str& sect);
@@ -130,6 +132,8 @@ class CBanList
 public:
 	void BanAddress(const ip_address& address, u32 banTimeSec);
 	void UnbanAddress(const ip_address& address);
+	void BanUid(u32 uid);
+	void UnbanUid(u32 uid);
 	void Print();
 
 	void Save();
@@ -137,6 +141,7 @@ public:
 	void Update();
 
 	bool IsAddressBanned(const ip_address& address);
+	bool IsUidBanned(u32 uid);
 
 private:
 	xr_vector<BannedClient> m_Banned;
@@ -176,10 +181,6 @@ protected:
 
 	virtual IClient *new_client(SClientConnectData *cl_data) = 0;
 	bool GetClientAddress(IDirectPlay8Address *pClientAddress, ip_address &Address, DWORD *pPort = NULL);
-
-	void BannedListSave();
-	void BannedListLoad();
-	void BannedListUpdate();
 
 public:
 	IPureServer(CTimer *timer, BOOL Dedicated = FALSE);
@@ -226,10 +227,6 @@ public:
 	virtual bool DisconnectClient(IClient *C); 
 	virtual bool DisconnectClient(IClient *C, string512 &Reason);
 	virtual bool DisconnectAddress(const ip_address &Address);
-	virtual void BanClient(IClient *C, u32 BanTime);
-	virtual void BanAddress(const ip_address &Address, u32 BanTime);
-	virtual void UnBanAddress(const ip_address &Address);
-	void Print_Banned_Addreses();
 
 	virtual bool Check_ServerAccess(IClient *CL, string512 &reason) { return true; }
 	virtual void Assign_ServerType(string512 &res){};
@@ -259,6 +256,20 @@ public:
 	IClient *GetDisconnectedClientByID(ClientID const &clientId) { return net_players.GetClientById(clientId, true); }
 
 	const shared_str &GetConnectOptions() const { return connect_options; }
+
+	// Ban
+protected:
+	void BannedListSave() { m_BanList.Save(); }
+	void BannedListLoad() { m_BanList.Load(); }
+	void BannedListUpdate() { m_BanList.Update(); }
+	bool IsUidBanned(u32 uid) { return m_BanList.IsUidBanned(uid); }
+public:
+	void BanClient(IClient* C, u32 BanTime);
+	void BanAddress(const ip_address& address, u32 banTimeSec) { m_BanList.BanAddress(address, banTimeSec); }
+	void UnBanAddress(const ip_address& address) { m_BanList.UnbanAddress(address); }
+	void BanUid(u32 uid) { m_BanList.BanUid(uid); };
+	void UnbanUid(u32 uid) { m_BanList.UnbanUid(uid); };
+	void Print_Banned_Addreses() { m_BanList.Print(); }
 
 private:
 	virtual void _Recieve(const void *data, u32 data_size, u32 param);

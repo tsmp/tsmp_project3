@@ -16,8 +16,12 @@ bool IsIpAdress(const char* str)
 
 void BannedClient::Load(CInifile& ini, const shared_str& sect)
 {
-	if (IsIpAdress(sect.c_str()))
-		IpAddr.set(sect.c_str());
+	const char* data = sect.c_str();
+
+	if (IsIpAdress(data))
+		IpAddr.set(data);
+	else
+		uid = static_cast<u32>(atoll(data));
 
 	tm tmBanned;
 	const shared_str& timeToStr = ini.r_string(sect, "time_to");
@@ -41,7 +45,10 @@ void BannedClient::Load(CInifile& ini, const shared_str& sect)
 
 void BannedClient::Save(CInifile& ini) const
 {
-	ini.w_string(IpAddr.to_string().c_str(), "time_to", BannedTimeTo().c_str());
+	if (uid)
+		ini.w_string(std::to_string(uid).c_str(), "time_to", BannedTimeTo().c_str());
+	else
+		ini.w_string(IpAddr.to_string().c_str(), "time_to", BannedTimeTo().c_str());
 }
 
 xr_string BannedClient::BannedTimeTo() const
@@ -90,12 +97,6 @@ void CBanList::BanAddress(const ip_address& address, u32 banTimeSec)
 
 void CBanList::UnbanAddress(const ip_address& address)
 {
-	if (!IsAddressBanned(address))
-	{
-		Msg("! ERROR: Can't find address %s in ban list.", address.to_string().c_str());
-		return;
-	}
-
 	auto it = std::find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
 	{
 		return cl.IpAddr == address;
@@ -103,10 +104,57 @@ void CBanList::UnbanAddress(const ip_address& address)
 
 	if (it != m_Banned.end())
 	{
-		Msg("Unbanning %s", address.to_string().c_str());		
+		Msg("Unbanning %s", address.to_string().c_str());
 		m_Banned.erase(it);
 		Save();
 	}
+	else
+		Msg("! ERROR: Can't find address %s in ban list.", address.to_string().c_str());
+}
+
+void CBanList::BanUid(u32 uid)
+{
+	auto it = std::find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
+	{
+		return cl.uid == uid;
+	});
+
+	if (it != m_Banned.end())
+	{
+		Msg("This uid is already banned");
+		return;
+	}
+
+	if (!uid)
+	{
+		Msg("! WARNING: attempt to ban invalid uid!");
+		return;
+	}
+
+	BannedClient newClient;
+	newClient.uid = uid;
+	time(&newClient.BanTime);
+	newClient.BanTime += 999999999;
+
+	m_Banned.emplace_back(std::move(newClient));
+	Save();
+}
+
+void CBanList::UnbanUid(u32 uid)
+{
+	auto it = std::find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
+	{
+		return cl.uid == uid;
+	});
+
+	if (it != m_Banned.end())
+	{
+		Msg("Unbanning %u", uid);
+		m_Banned.erase(it);
+		Save();
+	}
+	else
+		Msg("! ERROR: Can't find uid %u in ban list.", uid);
 }
 
 void CBanList::Print()
@@ -166,6 +214,16 @@ bool CBanList::IsAddressBanned(const ip_address& address)
 	auto it = std::find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
 	{
 		return cl.IpAddr == address;
+	});
+
+	return it != m_Banned.end();
+}
+
+bool CBanList::IsUidBanned(u32 uid)
+{
+	auto it = std::find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
+	{
+		return cl.uid == uid;
 	});
 
 	return it != m_Banned.end();
