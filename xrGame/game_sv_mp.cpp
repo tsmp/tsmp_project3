@@ -146,6 +146,7 @@ void game_sv_mp::OnRoundStart()
 	u_EventSend(P);
 
 	signal_Syncronize();
+	Console->Execute("sv_status");
 }
 
 void game_sv_mp::OnRoundEnd()
@@ -285,7 +286,6 @@ void game_sv_mp::Create(shared_str &options)
 
 	LoadRanks();
 	Set_RankUp_Allowed(false);
-	Console->Execute("sv_status");
 }
 
 u8 game_sv_mp::SpectatorModes_Pack()
