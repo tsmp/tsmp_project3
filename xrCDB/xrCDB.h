@@ -19,31 +19,6 @@ namespace Opcode
 #pragma pack(push, 8)
 namespace CDB 
 {
-#ifdef _M_X64
-#pragma pack(push, 1)
-	// Triangle for x86
-	class XRCDB_API TRI_DEPRECATED //*** 16 bytes total (was 32 :)
-	{
-	public:
-		u32 verts[3]; // 3*4 = 12b
-		union 
-		{
-			u32 dummy; // 4b
-			struct 
-			{
-				u32 material : 14;
-				u32 suppress_shadows : 1;
-				u32 suppress_wm : 1;
-				u32 sector : 16;
-			};
-		};
-
-	public:
-		IC u32 IDvert(u32 ID) { return verts[ID]; }
-	};
-#pragma pack (pop)
-#endif
-
 	// Triangle
 	class XRCDB_API TRI //*** 24 bytes total
 	{
@@ -52,56 +27,15 @@ namespace CDB
 
 		union
 		{
-			size_t dummy; // 4b
+			u32 dummy; // 4b
 			struct
 			{
-				size_t material : 14;
-				size_t suppress_shadows : 1;
-				size_t suppress_wm : 1;
-				size_t sector : 16;
-#ifdef _M_X64
-				size_t dumb : 32;
-#endif
+				u32 material : 14;
+				u32 suppress_shadows : 1;
+				u32 suppress_wm : 1;
+				u32 sector : 16;
 			};
-
-#ifdef _M_X64
-			struct
-			{
-				u32 dummy_low;
-				u32 dummy_high;
-			};
-#endif
 		};
-
-#ifdef _M_X64
-		TRI(TRI_DEPRECATED& oldTri)
-		{
-			verts[0] = oldTri.verts[0];
-			verts[1] = oldTri.verts[1];
-			verts[2] = oldTri.verts[2];
-			dummy = oldTri.dummy;
-			dumb = 0;
-		}
-
-		TRI()
-		{
-			verts[0] = 0;
-			verts[1] = 0;
-			verts[2] = 0;
-			dummy = 0;
-		}
-
-		TRI& operator= (const TRI_DEPRECATED& oldTri)
-		{
-			verts[0] = oldTri.verts[0];
-			verts[1] = oldTri.verts[1];
-			verts[2] = oldTri.verts[2];
-			dummy = oldTri.dummy;
-			dumb = 0;
-			return *this;
-		}
-#endif
-
 	public:
 		IC u32 IDvert(u32 ID) { return verts[ID]; }
 	};
@@ -152,8 +86,8 @@ namespace CDB
 		}
 
 		static void build_thread(void *);
-		void build_internal(Fvector *V, int Vcnt, TRI *T, int Tcnt, build_callback *bc = nullptr, void *bcp = nullptr, const bool rebuildTrisRequired = true);
-		void build(Fvector *V, int Vcnt, TRI *T, int Tcnt, build_callback *bc = nullptr, void *bcp = nullptr, const bool rebuildTrisRequired = true);
+		void build_internal(Fvector *V, int Vcnt, TRI *T, int Tcnt, build_callback *bc = nullptr, void *bcp = nullptr);
+		void build(Fvector *V, int Vcnt, TRI *T, int Tcnt, build_callback *bc = nullptr, void *bcp = nullptr);
 		u32 memory();
 	};
 
@@ -163,26 +97,15 @@ namespace CDB
 		Fvector verts[3];
 		union 
 		{
-			size_t dummy; // 4b
+			u32 dummy; // 4b
 			struct 
 			{
-				size_t material : 14;
-				size_t suppress_shadows : 1;
-				size_t suppress_wm : 1;
-				size_t sector : 16;
-#ifdef _M_X64
-				u64	stub : 32;
-#endif
+				u32 material : 14;
+				u32 suppress_shadows : 1;
+				u32 suppress_wm : 1;
+				u32 sector : 16;
 			};
-#ifdef _M_X64
-			struct
-			{
-				u32 dummy_h;
-				u32 dummy_l;
-			};
-#endif
 		};
-
 		int id;
 		float range;
 		float u, v;
@@ -240,9 +163,9 @@ namespace CDB
 
 	public:
 		void add_face(const Fvector &v0, const Fvector &v1, const Fvector &v2, u16 material, u16 sector);
-		void add_face_D(const Fvector &v0, const Fvector &v1, const Fvector &v2, size_t dummy);		
+		void add_face_D(const Fvector &v0, const Fvector &v1, const Fvector &v2, u32 dummy);		
 		void add_face_packed(const Fvector &v0, const Fvector &v1, const Fvector &v2, u16 material, u16 sector, float eps = EPS);
-		void add_face_packed_D(const Fvector &v0, const Fvector &v1, const Fvector &v2, size_t dummy, float eps = EPS);
+		void add_face_packed_D(const Fvector &v0, const Fvector &v1, const Fvector &v2, u32 dummy, float eps = EPS);
 		void remove_duplicate_T();
 		void calc_adjacency(xr_vector<u32> &dest);
 
@@ -287,7 +210,7 @@ namespace CDB
 		CollectorPacked(const Fbox &bb, int apx_vertices = 5000, int apx_faces = 5000);
 
 		void add_face(const Fvector &v0, const Fvector &v1, const Fvector &v2, u16 material, u16 sector);
-		void add_face_D(const Fvector &v0, const Fvector &v1, const Fvector &v2, size_t dummy);
+		void add_face_D(const Fvector &v0, const Fvector &v1, const Fvector &v2, u32 dummy);
 
 		xr_vector<Fvector> &getV_Vec() { return verts; }
 		Fvector *getV() { return &*verts.begin(); }

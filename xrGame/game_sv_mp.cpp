@@ -980,29 +980,13 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState *ps)
 	}
 }
 
-void game_sv_mp::ClearPlayerState(game_PlayerState *ps)
-{
-	if (!ps)
-		return;
-
-	ps->m_iRivalKills = 0;
-	ps->m_iSelfKills = 0;
-	ps->m_iTeamKills = 0;
-	ps->m_iDeaths = 0;
-
-	ps->m_iKillsInRowCurr = 0;
-	ps->m_iKillsInRowMax = 0;
-
-	ClearPlayerItems(ps);
-}
-
 void game_sv_mp::OnPlayerKilledNpc(NET_Packet& P)
 {
 	Msg("- ON NPC KILLED!");
 	u16 killerID = P.r_u16();
 
 	if (game_PlayerState* psKiller = get_eid(killerID))
-		psKiller->m_iAiKills++;
+		psKiller->m_Stats.m_iAiKills++;
 }
 
 void game_sv_mp::OnPlayerKilled(NET_Packet &P)
@@ -1027,7 +1011,7 @@ void game_sv_mp::OnPlayerKilled(NET_Packet &P)
 	}
 
 	if (ps_killer && SpecialKill == SKT_HEADSHOT)
-		ps_killer->m_iHeadshots++;
+		ps_killer->m_Stats.m_iHeadshots++;
 
 	CSE_Abstract *pWeaponA = get_entity_from_eid(WeaponID);
 
@@ -1586,16 +1570,16 @@ void game_sv_mp::WritePlayerStats(CInifile &ini, LPCSTR sect, xrClientData *pCl)
 {
 	ini.w_string(sect, "player_name", pCl->ps->getName());
 	ini.w_u32(sect, "player_team", pCl->ps->team);
-	ini.w_u32(sect, "kills_rival", pCl->ps->m_iRivalKills);
+	ini.w_u32(sect, "kills_rival", pCl->ps->m_Stats.m_iRivalKills);
 	ini.w_u32(sect, "kills_self", pCl->ps->m_iSelfKills);
 	ini.w_u32(sect, "kills_self", pCl->ps->m_iSelfKills);
 	ini.w_u32(sect, "team_kills", pCl->ps->m_iTeamKills);
-	ini.w_u32(sect, "deaths", pCl->ps->m_iDeaths);
+	ini.w_u32(sect, "deaths", pCl->ps->m_Stats.m_iDeaths);
 
 	ini.w_string(sect, "player_ip", pCl->m_cAddress.to_string().c_str());
-	ini.w_u32(sect, "kills_in_row", pCl->ps->m_iKillsInRowMax);
+	ini.w_u32(sect, "kills_in_row", pCl->ps->m_Stats.m_iKillsInRowMax);
 	ini.w_u32(sect, "rank", pCl->ps->rank);
-	ini.w_u32(sect, "artefacts", pCl->ps->af_count);
+	ini.w_u32(sect, "artefacts", pCl->ps->m_Stats.af_count);
 	ini.w_u32(sect, "ping", pCl->ps->ping);
 	ini.w_u32(sect, "money", pCl->ps->money_for_round);
 	ini.w_u32(sect, "online_time_sec", (Level().timeServer() - pCl->ps->m_online_time) / 1000);

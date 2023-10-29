@@ -42,6 +42,7 @@
 
 #include "GameSpy/GameSpy_Full.h"
 #include "GameSpy/GameSpy_Patching.h"
+#include "ScriptProfiler.h"
 
 #include "../TSMP3_Build_Config.h"
 
@@ -1404,6 +1405,20 @@ public:
 
 #endif // DEBUG
 
+class CCC_ScriptProfileStart : public IConsole_Command
+{
+public:
+	CCC_ScriptProfileStart(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void Execute(LPCSTR) { ScriptProfiler::StartProfile(); }
+};
+
+class CCC_ScriptProfileStop : public IConsole_Command
+{
+public:
+	CCC_ScriptProfileStop(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void Execute(LPCSTR) { ScriptProfiler::StopProfile(); }
+};
+
 class CCC_DumpObjects : public IConsole_Command
 {
 public:
@@ -1713,6 +1728,10 @@ void CCC_RegisterCommands()
 #ifndef MASTER_GOLD
 	CMD4(CCC_Vector3, "psp_cam_offset", &CCameraLook2::m_cam_offset, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));
 #endif // MASTER_GOLD
+
+	CMD1(CCC_ScriptProfileStart, "script_profile_start");
+	CMD1(CCC_ScriptProfileStop, "script_profile_stop");
+	CMD4(CCC_Integer, "script_profile_interval", &script_profile_interval_ms, 1, 100000);
 
 	CMD1(CCC_GSCheckForUpdates, "check_for_updates");
 	CMD1(CCC_DumpObjects, "dump_all_objects");

@@ -525,6 +525,62 @@ public:
 	virtual void Info(TInfo &I) { strcpy(I, "Ban Player by IP"); }
 };
 
+class CCC_BanPlayerByUid : public IConsole_Command
+{
+public:
+	CCC_BanPlayerByUid(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; bHidden = true; };
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!g_pGameLevel || !Level().Server)
+			return;
+
+		u32 uid = static_cast<u32>(atoll(args_));
+
+		if (!uid)
+		{
+			Msg("invalid uid");
+			return;
+		}
+
+		Msg("Disconnecting and Banning");
+
+		Level().Server->ForEachClientDo([&uid](IClient* client)
+		{
+			xrClientData* cl = static_cast<xrClientData*>(client);
+
+			if(cl->UID == uid)
+				Level().Server->DisconnectClient(client);
+		});
+
+		Level().Server->BanUid(uid);
+	}
+
+	virtual void Info(TInfo& I) { strcpy(I, "Ban Player by uid"); }
+};
+
+class CCC_UnbanPlayerByUid : public IConsole_Command
+{
+public:
+	CCC_UnbanPlayerByUid(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; bHidden = true; };
+	virtual void Execute(LPCSTR args_)
+	{
+		if (!g_pGameLevel || !Level().Server)
+			return;
+
+		u32 uid = static_cast<u32>(atoll(args_));
+
+		if (!uid)
+		{
+			Msg("invalid uid");
+			return;
+		}
+
+		Level().Server->UnbanUid(uid);
+	}
+
+	virtual void Info(TInfo& I) { strcpy(I, "Unban Player by uid"); }
+};
+
 class CCC_UnBanPlayerByIP : public IConsole_Command
 {
 public:
@@ -568,11 +624,10 @@ public:
 			
 			Level().Server->GetClientAddress(l_pC->ID, Address, nullptr);
 
-			Msg("%d (name: %s), (session_id: %u), (id: %u), (ip: %s), (ping: %u);"
+			Msg("%d (name: %s), (session_id: %u), (ip: %s), (ping: %u);"
 				, it
 				, l_pC->ps->getName()
 				, l_pC->ID.value()
-				, l_pC->UID
 				, Address.to_string().c_str()
 				, l_pC->ps->ping);
 		});
@@ -581,6 +636,37 @@ public:
 	};
 
 	virtual void Info(TInfo& I) { strcpy(I, "List Players"); }
+};
+
+class CCC_ListPlayersUid : public IConsole_Command
+{
+public:
+	CCC_ListPlayersUid(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; bHidden = true; };
+	virtual void Execute(LPCSTR args)
+	{
+		if (!OnServer())
+			return;
+
+		Msg("------------------------");
+
+		u32	cnt = Level().Server->game->get_players_count();
+		Msg("- Total Players : %d", cnt);
+		int it = 0;
+
+		Level().Server->ForEachClientDo([&it](IClient* client)
+		{
+			xrClientData* l_pC = static_cast<xrClientData*>(client);
+			ip_address Address;
+			it++;
+
+			Level().Server->GetClientAddress(l_pC->ID, Address, nullptr);
+			Msg("%d (name: %s), (uid: %u);", it, l_pC->ps->getName(), l_pC->UID);
+		});
+
+		Msg("------------------------");
+	};
+
+	virtual void Info(TInfo& I) { strcpy(I, "List Players Uid"); }
 };
 
 class CCC_ListPlayers_Banned : public IConsole_Command
@@ -1416,6 +1502,7 @@ public:
 extern int fz_downloader_enabled;
 extern int fz_downloader_skip_full_check;
 extern int fz_downloader_allow_x64;
+extern int fz_downloader_send_error_reports;
 extern int fz_downloader_new;
 extern int fz_downloader_previous_version;
 
@@ -1788,10 +1875,13 @@ void register_mp_console_commands()
 
 	CMD1(CCC_BanPlayerByName, "sv_banplayer");
 	CMD1(CCC_BanPlayerByIP, "sv_banplayer_ip");
+	CMD1(CCC_BanPlayerByUid, "sv_banplayer_uid");
 
 	CMD1(CCC_UnBanPlayerByIP, "sv_unbanplayer_ip");
+	CMD1(CCC_UnbanPlayerByUid, "sv_unbanplayer_uid");
 
 	CMD1(CCC_ListPlayers, "sv_listplayers");
+	CMD1(CCC_ListPlayersUid, "sv_listplayers_uid");
 	CMD1(CCC_ListPlayers_Banned, "sv_listplayers_banned");
 
 	CMD1(CCC_ChangeGameType, "sv_changegametype");
@@ -1921,6 +2011,7 @@ void register_mp_console_commands()
 	CMD4(CCC_Integer, "fz_downloader_new", (int*)&fz_downloader_new, 0, 1);
 	CMD4(CCC_Integer, "fz_downloader_skip_full_check", (int*)&fz_downloader_skip_full_check, 0, 1);
 	CMD4(CCC_Integer, "fz_downloader_allow_x64_engine", (int*)&fz_downloader_allow_x64, 0, 1);
+	CMD4(CCC_Integer, "fz_downloader_send_error_reports", (int*)&fz_downloader_send_error_reports, 0, 1);
 	CMD1(CCC_fz_reconnect_ip, "fz_downloader_reconnect_ip");
 	CMD1(CCC_fz_mod_name, "fz_downloader_mod_name");
 	CMD1(CCC_fz_mod_message, "fz_downloader_message");

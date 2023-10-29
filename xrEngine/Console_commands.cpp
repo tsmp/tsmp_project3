@@ -194,18 +194,15 @@ void CCC_LoadCFG::Execute(LPCSTR args)
 	if (NULL == FS.exist(cfg_full_name))
 		strcpy_s(cfg_full_name, cfg_name);
 
-	IReader *F = FS.r_open(cfg_full_name);
-
-	string1024 str;
-
-	if (F)
+	if (IReader* F = FS.r_open(cfg_full_name))
 	{
 		while (!F->eof())
 		{
-			F->r_string(str, sizeof(str));
+			xr_string str;
+			F->r_string(str);
 
-			if (allow(str))
-				Console->Execute(str);
+			if (allow(str.c_str()))
+				Console->Execute(str.c_str());
 		}
 
 		FS.r_close(F);
@@ -506,7 +503,7 @@ void CCC_Register()
 	CMD4(CCC_Float, "mouse_sens", &psMouseSens, 0.05f, 0.6f);
 
 	// Camera
-	CMD2(CCC_Float, "cam_inert", &psCamInert);
+	CMD2(CCC_Float, "cam_inert", &psCamInert, 0.0f, 0.9f);
 	CMD2(CCC_Float, "cam_slide_inert", &psCamSlideInert);
 
 	CMD1(CCC_r2, "renderer");

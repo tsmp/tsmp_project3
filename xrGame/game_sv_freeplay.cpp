@@ -245,7 +245,7 @@ void game_sv_Freeplay::SpawnItemsForActor(CSE_Abstract* pE, game_PlayerState* ps
 void game_sv_Freeplay::OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA)
 {
 	ps_killed->setFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
-	ps_killed->m_iDeaths++;
+	ps_killed->m_Stats.m_iDeaths++;
 	ps_killed->m_iKillsInRowCurr = 0;
 	ps_killed->DeathTime = Device.dwTimeGlobal;
 

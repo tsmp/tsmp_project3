@@ -729,7 +729,7 @@ IC bool DM_Compare_Players(game_PlayerState *p1, game_PlayerState *p2)
 		return true;
 
 	if (p1->frags() == p2->frags())	
-		return p1->m_iDeaths < p2->m_iDeaths;
+		return p1->m_Stats.m_iDeaths < p2->m_Stats.m_iDeaths;
 	
 	return p1->frags() > p2->frags();
 }

@@ -52,18 +52,47 @@ struct Bonus_Money_Struct
 	}
 };
 
+struct CollectedStatistic
+{
+	s16 m_iRivalKills = 0;
+	s16 m_iAiKills = 0;
+	s16 m_iHeadshots = 0;
+	s16 m_iDeaths = 0;
+	s16 m_iKillsInRowMax = 0;
+	u8 af_count = 0;
+
+	void Clear()
+	{
+		m_iRivalKills = 0;
+		m_iAiKills = 0;
+		m_iHeadshots = 0;
+		m_iDeaths = 0;
+		m_iKillsInRowMax = 0;
+		af_count = 0;
+	}
+
+	CollectedStatistic operator-(CollectedStatistic const& obj) const
+	{
+		CollectedStatistic res;
+		res.m_iRivalKills = m_iRivalKills - obj.m_iRivalKills;
+		res.m_iAiKills = m_iAiKills - obj.m_iAiKills;
+		res.m_iHeadshots = m_iHeadshots - obj.m_iHeadshots;
+		res.m_iDeaths = m_iDeaths - obj.m_iDeaths;
+		res.m_iKillsInRowMax = m_iKillsInRowMax - obj.m_iKillsInRowMax;
+		res.af_count = af_count - obj.af_count;
+		return res;
+	}
+};
+
 struct game_PlayerState
 {
 	string64 name;
 	u8 team;
 
-	s16 m_iRivalKills;
 	s16 m_iSelfKills;
 	s16 m_iTeamKills;
 	s16 m_iKillsInRowCurr;
-	s16 m_iKillsInRowMax;
-	s16 m_iDeaths;
-	s16 m_iHeadshots;
+
 	s32 money_for_round;
 	s32 money_for_round_team2;
 
@@ -71,7 +100,6 @@ struct game_PlayerState
 	float experience_New;
 	float experience_D;
 	u8 rank;
-	u8 af_count;
 	u16 flags__;
 
 	u16 ping;
@@ -92,7 +120,9 @@ struct game_PlayerState
 	bool m_bPayForSpawn;
 	u32 m_online_time;
 
-	s16 m_iAiKills;
+	CollectedStatistic m_Stats;
+	CollectedStatistic m_StatsBeforeDisconnect;
+
 	xr_vector<u32> m_WpnIdx;
 	xr_vector<u32> m_WpnHits;
 
@@ -109,7 +139,7 @@ public:
 	bool HasOldID(u16 ID);
 	bool IsSkip() const { return testFlag(GAME_PLAYER_FLAG_SKIP); }
 
-	s16 frags() const { return m_iRivalKills - m_iSelfKills - m_iTeamKills; }
+	s16 frags() const { return m_Stats.m_iRivalKills - m_iSelfKills - m_iTeamKills; }
 
 	virtual void net_Export(NET_Packet &P, BOOL Full = FALSE);
 	virtual void net_Import(NET_Packet &P);

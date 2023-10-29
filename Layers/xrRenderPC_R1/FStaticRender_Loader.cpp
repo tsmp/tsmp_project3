@@ -280,12 +280,14 @@ void CRender::LoadLights(IReader *fs)
 	chunk->close();
 }
 
+#pragma pack(push, 4)
 struct b_portal
 {
 	u16 sector_front;
 	u16 sector_back;
 	svector<Fvector, 6> vertices;
 };
+#pragma pack(pop)
 
 void CRender::LoadSectors(IReader *fs)
 {
@@ -341,7 +343,7 @@ void CRender::LoadSectors(IReader *fs)
 
 		// build portal model
 		rmPortals = xr_new<CDB::MODEL>();
-		rmPortals->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, false);
+		rmPortals->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()));
 	}
 	else
 	{
