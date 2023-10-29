@@ -1658,6 +1658,24 @@ void game_cl_mp::LoadBonuses()
 			NewBonus.IconShader->create("hud\\default", IconShader);
 
 			Frect IconRect;
+#ifdef NEW_RANKS
+			for (u32 r = 1; r <= 8; r++)
+			{
+				string256 rankstr;
+
+				sprintf_s(rankstr, "ui_hud_status_green_0%d", r);
+				IconRect = CUITextureMaster::GetTextureRect(rankstr);
+				IconRect.x2 -= IconRect.x1;
+				IconRect.y2 -= IconRect.y1;
+				NewBonus.IconRects.push_back(IconRect);
+
+				sprintf_s(rankstr, "ui_hud_status_blue_0%d", r);
+				IconRect = CUITextureMaster::GetTextureRect(rankstr);
+				IconRect.x2 -= IconRect.x1;
+				IconRect.y2 -= IconRect.y1;
+				NewBonus.IconRects.push_back(IconRect);
+			}
+#else
 			for (u32 r = 1; r <= 5; r++)
 			{
 				string256 rankstr;
@@ -1674,6 +1692,8 @@ void game_cl_mp::LoadBonuses()
 				IconRect.y2 -= IconRect.y1;
 				NewBonus.IconRects.push_back(IconRect);
 			}
+#endif
+
 		};
 		//--------------------------------------
 		m_pBonusList.push_back(NewBonus);

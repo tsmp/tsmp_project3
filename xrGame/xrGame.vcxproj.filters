@@ -1330,9 +1330,6 @@
     <Filter Include="Core\Client\Objects\actor\mp">
       <UniqueIdentifier>{f93b6f46-3bef-4136-8fb9-5b6f13706137}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Objects\actor\mp\client">
-      <UniqueIdentifier>{05e6e371-44c2-4062-b8d9-b046bd899cee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Client\Objects\actor\mp\server">
       <UniqueIdentifier>{95d8b3a2-c943-412d-9a04-39c6c05fd308}</UniqueIdentifier>
     </Filter>
@@ -2325,6 +2322,9 @@
     </Filter>
     <Filter Include="Core\Client\VoiceChat">
       <UniqueIdentifier>{3ad365e9-e43a-4cc1-91b7-d470545b2c6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Client\Objects\actor\mp\server\client">
+      <UniqueIdentifier>{05e6e371-44c2-4062-b8d9-b046bd899cee}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -4831,7 +4831,7 @@
       <Filter>Core\Client\Level Debug</Filter>
     </ClInclude>
     <ClInclude Include="actor_mp_client.h">
-      <Filter>Core\Client\Objects\actor\mp\client</Filter>
+      <Filter>Core\Client\Objects\actor\mp\server\client</Filter>
     </ClInclude>
     <ClInclude Include="actor_mp_server.h">
       <Filter>Core\Client\Objects\actor\mp\server</Filter>
@@ -8008,13 +8008,13 @@
       <Filter>Core\Client\Level Debug</Filter>
     </ClCompile>
     <ClCompile Include="actor_mp_client.cpp">
-      <Filter>Core\Client\Objects\actor\mp\client</Filter>
+      <Filter>Core\Client\Objects\actor\mp\server\client</Filter>
     </ClCompile>
     <ClCompile Include="actor_mp_client_export.cpp">
-      <Filter>Core\Client\Objects\actor\mp\client</Filter>
+      <Filter>Core\Client\Objects\actor\mp\server\client</Filter>
     </ClCompile>
     <ClCompile Include="actor_mp_client_import.cpp">
-      <Filter>Core\Client\Objects\actor\mp\client</Filter>
+      <Filter>Core\Client\Objects\actor\mp\server\client</Filter>
     </ClCompile>
     <ClCompile Include="actor_mp_server.cpp">
       <Filter>Core\Client\Objects\actor\mp\server</Filter>

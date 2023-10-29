@@ -6,10 +6,17 @@ class CUIXml;
 class CUIStatic;
 class CUIRankIndicator : public CUIWindow
 {
+#ifdef NEW_RANKS
+	enum
+	{
+		max_rank = 16,
+	};
+#else
 	enum
 	{
 		max_rank = 10,
 	};
+#endif
 	CUIStatic *m_ranks[max_rank];
 	u8 m_current;
 

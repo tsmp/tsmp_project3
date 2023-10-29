@@ -229,7 +229,43 @@ void CUICharacterInfo::InitCharacterPlayerMP(CInventoryOwner* player)
 
 	if (m_icons[eUIName])	
 		m_icons[eUIName]->SetText(ps->name);	
+#ifdef NEW_RANKS
+	if (m_icons[eUIRank])
+	{
+		switch (ps->rank)
+		{
+		case 0:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_lockpick"));
+			break;
+		case 1:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_novice"));
+			break;
+		case 2:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_experienced"));
+			break;
+		case 3:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_professional"));
+			break;
+		case 4:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_veteran"));
+			break;
+		case 5:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_master"));
+			break;
+		case 6:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_legend"));
+			break;
+		case 7:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_hero"));
+			break;
+		default:
+			R_ASSERT(0, "Unknown rank!!");
+			break;
+		}
 
+		m_icons[eUIRank]->SetText(str);
+	}
+#else
 	if (m_icons[eUIRank])
 	{
 		switch (ps->rank)
@@ -256,6 +292,7 @@ void CUICharacterInfo::InitCharacterPlayerMP(CInventoryOwner* player)
 
 		m_icons[eUIRank]->SetText(str);
 	}
+#endif
 
 	if (m_icons[eUIReputation])
 	{

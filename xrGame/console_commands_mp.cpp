@@ -1609,10 +1609,17 @@ public:
 		{
 			xrClientData* l_pC = static_cast<xrClientData*>(tmpClient);
 
+#ifdef NEW_RANKS
+			if (l_pC->ps->rank < 7)
+				l_pC->ps->rank++;
+			else
+				Msg("! cant increase rank");
+#else
 			if (l_pC->ps->rank < 4)
 				l_pC->ps->rank++;
 			else
 				Msg("! cant increase rank");
+#endif
 		}
 		else
 			Msg("! client with this id not found");

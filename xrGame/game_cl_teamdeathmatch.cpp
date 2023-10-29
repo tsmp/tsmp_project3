@@ -574,6 +574,29 @@ void game_cl_TeamDeathmatch::UpdateMapLocations()
 
 void game_cl_TeamDeathmatch::LoadSndMessages()
 {
+#ifdef NEW_RANKS
+	LoadSndMessage("tdm_snd_messages", "team1_win", ID_TEAM1_WIN);
+	LoadSndMessage("tdm_snd_messages", "team2_win", ID_TEAM2_WIN);
+	LoadSndMessage("tdm_snd_messages", "teams_equal", ID_TEAMS_EQUAL);
+	LoadSndMessage("tdm_snd_messages", "team1_lead", ID_TEAM1_LEAD);
+	LoadSndMessage("tdm_snd_messages", "team2_lead", ID_TEAM2_LEAD);
+
+	LoadSndMessage("tdm_snd_messages", "team1_rank1", ID_TEAM1_RANK_1);
+	LoadSndMessage("tdm_snd_messages", "team1_rank2", ID_TEAM1_RANK_2);
+	LoadSndMessage("tdm_snd_messages", "team1_rank3", ID_TEAM1_RANK_3);
+	LoadSndMessage("tdm_snd_messages", "team1_rank4", ID_TEAM1_RANK_4);
+	LoadSndMessage("tdm_snd_messages", "team1_rank5", ID_TEAM1_RANK_5);
+	LoadSndMessage("tdm_snd_messages", "team1_rank6", ID_TEAM1_RANK_6);
+	LoadSndMessage("tdm_snd_messages", "team1_rank7", ID_TEAM1_RANK_7);
+
+	LoadSndMessage("tdm_snd_messages", "team2_rank1", ID_TEAM2_RANK_1);
+	LoadSndMessage("tdm_snd_messages", "team2_rank2", ID_TEAM2_RANK_2);
+	LoadSndMessage("tdm_snd_messages", "team2_rank3", ID_TEAM2_RANK_3);
+	LoadSndMessage("tdm_snd_messages", "team2_rank4", ID_TEAM2_RANK_4);
+	LoadSndMessage("tdm_snd_messages", "team2_rank5", ID_TEAM2_RANK_5);
+	LoadSndMessage("tdm_snd_messages", "team2_rank6", ID_TEAM2_RANK_6);
+	LoadSndMessage("tdm_snd_messages", "team2_rank7", ID_TEAM2_RANK_7);
+#else
 	LoadSndMessage("tdm_snd_messages", "team1_win", ID_TEAM1_WIN);
 	LoadSndMessage("tdm_snd_messages", "team2_win", ID_TEAM2_WIN);
 	LoadSndMessage("tdm_snd_messages", "teams_equal", ID_TEAMS_EQUAL);
@@ -589,6 +612,7 @@ void game_cl_TeamDeathmatch::LoadSndMessages()
 	LoadSndMessage("tdm_snd_messages", "team2_rank2", ID_TEAM2_RANK_2);
 	LoadSndMessage("tdm_snd_messages", "team2_rank3", ID_TEAM2_RANK_3);
 	LoadSndMessage("tdm_snd_messages", "team2_rank4", ID_TEAM2_RANK_4);
+#endif
 }
 
 void game_cl_TeamDeathmatch::OnSwitchPhase_InProgress()

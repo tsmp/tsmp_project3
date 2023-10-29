@@ -763,10 +763,20 @@ void game_cl_Deathmatch::OnSpawn(CObject *pObj)
 
 void game_cl_Deathmatch::LoadSndMessages()
 {
+#ifdef NEW_RANKS
 	LoadSndMessage("dm_snd_messages", "dm_rank1", ID_RANK_1);
 	LoadSndMessage("dm_snd_messages", "dm_rank2", ID_RANK_2);
 	LoadSndMessage("dm_snd_messages", "dm_rank3", ID_RANK_3);
 	LoadSndMessage("dm_snd_messages", "dm_rank4", ID_RANK_4);
+	LoadSndMessage("dm_snd_messages", "dm_rank5", ID_RANK_5);
+	LoadSndMessage("dm_snd_messages", "dm_rank6", ID_RANK_6);
+	LoadSndMessage("dm_snd_messages", "dm_rank7", ID_RANK_7);
+#else
+	LoadSndMessage("dm_snd_messages", "dm_rank1", ID_RANK_1);
+	LoadSndMessage("dm_snd_messages", "dm_rank2", ID_RANK_2);
+	LoadSndMessage("dm_snd_messages", "dm_rank3", ID_RANK_3);
+	LoadSndMessage("dm_snd_messages", "dm_rank4", ID_RANK_4);
+#endif
 }
 
 void game_cl_Deathmatch::OnSwitchPhase_InProgress()
