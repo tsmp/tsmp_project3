@@ -356,7 +356,7 @@ public:
 		if (sscanf_s(args_, "%u", &tmpId) != 1)
 		{
 			Msg("! ERROR: bad command parameters.");
-			Msg("Make screenshot. Format: \"make_screenshot <player session id | \'%s\'> <ban_time_in_sec>\".");
+			Msg("Make screenshot. Format: \"make_screenshot <player session id>\"");
 			Msg("To receive list of players ids see sv_listplayers");
 			return;
 		}
@@ -375,7 +375,7 @@ public:
 
 	virtual void Info(TInfo& I)
 	{
-		strcpy(I,"Make screenshot. Format: \"make_screenshot <player session id | \'%s\'> <ban_time_in_sec>\". To receive list of players ids see sv_listplayers");
+		strcpy(I,"Make screenshot. Format: \"make_screenshot <player session id>\". To receive list of players ids see sv_listplayers");
 	}
 
 }; //class CCC_MakeScreenshot
