@@ -404,6 +404,9 @@ void CModelPool::Prefetch()
 	if (!strcmp(gameTypeName, "race"))
 		strcpy(gameTypeName, "deathmatch");
 
+	if (!strcmp(gameTypeName, "carfight"))
+		strcpy(gameTypeName, "teamdeathmatch");
+
 	strconcat(sizeof(section), section, "prefetch_visuals_", gameTypeName);
 	CInifile::Sect &sect = pSettings->r_section(section);
 	for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)

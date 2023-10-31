@@ -222,9 +222,8 @@ protected:
 	float m_fOldOnlineRadius;
 	float m_fSleepTimeFactor;
 	bool m_VelocityIsNonZero;
-	bool m_DeadInRace;
+	bool m_DeadInCarGameType;
 
-	/////////////////////////////////////////////////////////////////
 	// misc properties
 protected:
 	// Death

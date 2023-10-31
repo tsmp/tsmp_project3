@@ -2329,6 +2329,12 @@
     <Filter Include="AI\AScript\ScriptProfiler">
       <UniqueIdentifier>{1b3e95d0-5598-4242-92c0-6aad4dd73330}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Server\Games\client\carFight">
+      <UniqueIdentifier>{f0d64508-8972-444c-ae22-c39b3bd829b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Server\Games\server\carFight">
+      <UniqueIdentifier>{68f6706e-0b91-4005-8ccc-8cec67f1c2f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6637,6 +6643,12 @@
     <ClInclude Include="ScriptProfiler.h">
       <Filter>AI\AScript\ScriptProfiler</Filter>
     </ClInclude>
+    <ClInclude Include="game_cl_carfight.h">
+      <Filter>Core\Server\Games\client\carFight</Filter>
+    </ClInclude>
+    <ClInclude Include="game_sv_carfight.h">
+      <Filter>Core\Server\Games\server\carFight</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9830,6 +9842,12 @@
     <ClCompile Include="xrServerRespawnManager.cpp" />
     <ClCompile Include="ScriptProfiler.cpp">
       <Filter>AI\AScript\ScriptProfiler</Filter>
+    </ClCompile>
+    <ClCompile Include="game_cl_carfight.cpp">
+      <Filter>Core\Server\Games\client\carFight</Filter>
+    </ClCompile>
+    <ClCompile Include="game_sv_carfight.cpp">
+      <Filter>Core\Server\Games\server\carFight</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

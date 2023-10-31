@@ -386,6 +386,7 @@ xr_token game_types[] =
 	{"hardmatch", GAME_HARDMATCH},
 	{"freeplay",GAME_FREEPLAY},
 	{"race", GAME_RACE},
+	{"carfight", GAME_CARFIGHT},
 	{0, 0}
 };
 

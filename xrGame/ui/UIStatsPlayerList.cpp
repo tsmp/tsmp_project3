@@ -80,11 +80,14 @@ void CUIStatsPlayerList::Init(CUIXml &xml_doc, LPCSTR path)
 	CUIXmlInit::InitFont(xml_doc, strconcat(sizeof(_path), _path, path, ":text_format"), 0, m_i.c, m_i.f);
 	m_i.h = xml_doc.ReadAttribFlt(strconcat(sizeof(_path), _path, path, ":text_format"), 0, "height", 25);
 
+#pragma TODO("TSMP: break не нужен?")
+
 	// init list header
 	switch (GameID())
 	{
 	case GAME_ARTEFACTHUNT:
 	case GAME_TEAMDEATHMATCH:
+	case GAME_CARFIGHT:
 		if (!m_bSpectator || m_bStatus_mode)
 			InitTeamHeader(xml_doc, path);
 	case GAME_DEATHMATCH:

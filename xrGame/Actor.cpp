@@ -83,7 +83,7 @@ static Fvector vFootExt;
 
 Flags32 psActorFlags = {0};
 
-CActor::CActor() : CEntityAlive(), m_DeadInRace(false)
+CActor::CActor() : CEntityAlive(), m_DeadInCarGameType(false)
 {
 	encyclopedia_registry = xr_new<CEncyclopediaRegistryWrapper>();
 	game_news_registry = xr_new<CGameNewsRegistryWrapper>();
@@ -468,11 +468,11 @@ void CActor::Hit(SHit *pHDS)
 
 				ps->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
 				GamePersistent().ps_needtoplay.push_back(ps);
-			};
-		};
+			}
+		}
 
 		last_hit_frame = Device.CurrentFrameNumber;
-	};
+	}
 
 	if (!g_dedicated_server &&
 		!sndHit[HDS.hit_type].empty() &&
@@ -489,6 +489,8 @@ void CActor::Hit(SHit *pHDS)
 				if (!m_sndShockEffector)
 				{
 					m_sndShockEffector = xr_new<SndShockEffector>();
+
+					if(S._handle())
 					m_sndShockEffector->Start(this, float(S._handle()->length_ms()), HDS.damage());
 				}
 			}
@@ -1012,15 +1014,16 @@ void CActor::shedule_Update(u32 DT)
 	// Check controls, create accel, prelimitary setup "mstate_real"
 	if (Level().CurrentControlEntity() == this && (!Level().IsDemoPlay() || Level().IsServerDemo()))
 	{
-		if (!m_holder && Game().Type() == GAME_RACE && g_Alive() && PHGetSyncItem(0) && !m_DeadInRace)
+		const bool carGameType = Game().Type() == GAME_RACE || Game().Type() == GAME_CARFIGHT;
+		if (!m_holder && carGameType && g_Alive() && PHGetSyncItem(0) && !m_DeadInCarGameType)
 		{
-			Msg("- actor die in race");
+			Msg("- actor die in car gametype");
 			NET_Packet P;
 			u_EventGen(P, GE_GAME_EVENT, ID());
 			P.w_u16(GAME_EVENT_PLAYER_KILL);
 			P.w_u16(ID());
 			u_EventSend(P);
-			m_DeadInRace = true;
+			m_DeadInCarGameType = true;
 		}
 
 		g_cl_CheckControls(mstate_wishful, NET_SavedAccel, NET_Jump, dt);

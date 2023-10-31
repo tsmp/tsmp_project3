@@ -155,6 +155,7 @@
 #include "game_sv_hardmatch.h"
 #include "game_sv_freeplay.h"
 #include "game_sv_race.h"
+#include "game_sv_carfight.h"
 
 #include "game_cl_single.h"
 #include "game_cl_deathmatch.h"
@@ -163,6 +164,7 @@
 #include "game_cl_hardmatch.h"
 #include "game_cl_freeplay.h"
 #include "game_cl_race.h"
+#include "game_cl_carfight.h"
 
 #include "UIGameSP.h"
 #include "UIGameAHunt.h"
@@ -202,6 +204,7 @@ void CObjectFactory::register_classes()
 	add<game_sv_Hardmatch>(CLSID_SV_GAME_HARDMATCH, "game_sv_hardmatch");
 	add<game_sv_Freeplay>(CLSID_SV_GAME_FREEPLAY, "game_sv_freeplay");
 	add<game_sv_Race>(CLSID_SV_GAME_RACE, "game_sv_race");
+	add<game_sv_Carfight>(CLSID_SV_GAME_CARFIGHT, "game_sv_carfight");
 	//Client Game type
 	add<game_cl_Single>(CLSID_CL_GAME_SINGLE, "game_cl_single");
 	add<game_cl_Deathmatch>(CLSID_CL_GAME_DEATHMATCH, "game_cl_deathmatch");
@@ -210,6 +213,7 @@ void CObjectFactory::register_classes()
 	add<game_cl_Hardmatch>(CLSID_CL_GAME_HARDMATCH, "game_cl_hardhmatch");
 	add<game_cl_Freeplay>(CLSID_CL_GAME_FREEPLAY, "game_cl_freeplay");
 	add<game_cl_Race>(CLSID_CL_GAME_RACE, "game_cl_race");
+	add<game_cl_Carfight>(CLSID_CL_GAME_CARFIGHT, "game_cl_carfight");
 
 	//Game UI type
 	add<CUIGameSP>(CLSID_GAME_UI_SINGLE, "game_ui_single");

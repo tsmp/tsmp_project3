@@ -612,6 +612,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="game_cl_carfight.h" />
+    <ClInclude Include="game_sv_carfight.h" />
     <ClInclude Include="ScriptProfiler.h" />
     <ClInclude Include="UIGameBaseMP.h" />
     <ClInclude Include="filetransfer\filereceiver_node.h" />
@@ -2060,6 +2062,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="console_commands_car_dbg.cpp" />
+    <ClCompile Include="game_cl_carfight.cpp" />
+    <ClCompile Include="game_sv_carfight.cpp" />
     <ClCompile Include="ScriptProfiler.cpp" />
     <ClCompile Include="UIGameBaseMP.cpp" />
     <ClCompile Include="damage_manager.cpp" />

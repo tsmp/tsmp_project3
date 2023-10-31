@@ -302,7 +302,7 @@ bool IsCompatibleSpawnGameType(u8 spawnGameType, u32 currentGameType)
 	if (spawnGameType == rpgtGameDeathmatch && currentGameType == GAME_DEATHMATCH)
 		return true;
 
-	if (spawnGameType == rpgtGameTeamDeathmatch && currentGameType == GAME_TEAMDEATHMATCH)
+	if (spawnGameType == rpgtGameTeamDeathmatch && (currentGameType == GAME_TEAMDEATHMATCH || currentGameType == GAME_CARFIGHT))
 		return true;
 
 	if (spawnGameType == rpgtGameArtefactHunt && currentGameType == GAME_ARTEFACTHUNT)

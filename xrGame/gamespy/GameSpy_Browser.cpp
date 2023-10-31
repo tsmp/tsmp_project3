@@ -12,6 +12,8 @@
 #include "../object_broker.h"
 #include "../string_table.h"
 
+extern EGameTypes GetGameTypeByName(const char* name);
+
 void __cdecl SBCallback(void *sb, SBCallbackReason reason, void *server, void *instance);
 
 CGameSpy_Browser::CGameSpy_Browser()
@@ -383,21 +385,10 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo *pServerInfo, void *pServer)
 	pServerInfo->m_HPort = (s16)xrGS_SBServerGetPublicQueryPort(pServer);
 	pServerInfo->m_bDedicated = (xrGS_SBServerGetBoolValue(pServer, m_pQR2->xrGS_RegisteredKey(DEDICATED_KEY), SBFalse)) == SBTrue;
 	pServerInfo->m_GameType = (u8)xrGS_SBServerGetIntValue(pServer, m_pQR2->xrGS_RegisteredKey(GAMETYPE_NAME_KEY), 0);
-	if (pServerInfo->m_GameType == 0)
-	{
-		if (!xr_strcmp(pServerInfo->m_ServerGameType, "deathmatch"))
-			pServerInfo->m_GameType = GAME_DEATHMATCH;
-		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "teamdeathmatch"))
-			pServerInfo->m_GameType = GAME_TEAMDEATHMATCH;
-		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "artefacthunt"))
-			pServerInfo->m_GameType = GAME_ARTEFACTHUNT;
-		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "hardmatch"))
-			pServerInfo->m_GameType = GAME_HARDMATCH;
-		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "freeplay"))
-			pServerInfo->m_GameType = GAME_FREEPLAY;
-		else if (!xr_strcmp(pServerInfo->m_ServerGameType, "race"))
-			pServerInfo->m_GameType = GAME_RACE;
-	}
+
+	if (!pServerInfo->m_GameType)
+		pServerInfo->m_GameType = GetGameTypeByName(pServerInfo->m_ServerGameType);
+
 	sprintf_s(pServerInfo->m_ServerVersion, "%s", xrGS_SBServerGetStringValue(pServer, m_pQR2->xrGS_RegisteredKey(GAMEVER_KEY), "--"));
 
 	//--------- Read Game Infos ---------------------------//

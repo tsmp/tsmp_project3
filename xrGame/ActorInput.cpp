@@ -406,7 +406,7 @@ void CActor::ActorUse()
 
 	if (m_holder)
 	{
-		if (Game().Type() == GAME_RACE)
+		if (Game().Type() == GAME_RACE || Game().Type() == GAME_CARFIGHT)
 			return;
 
 		CGameObject *GO = smart_cast<CGameObject*>(m_holder);
