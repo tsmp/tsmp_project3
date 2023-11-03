@@ -82,7 +82,7 @@ files = info_portions, info_portions_light, info_portions_test, info_lchanger_ic
 files = encyclopedia_infos, storyline_info_to_diary, encyclopedia_weapons, encyclopedia_mutants, encyclopedia_zone, encyclopedia_social, encyclopedia_equipment, encyclopedia_tutorial
 
 [dialogs]
-files = dialogs_test, dialogs, dialogs_escape, dialogs_garbage, dialogs_agroprom, dialogs_deadcity, dialogs_darkvalley, dialogs_pripyat, dialogs_bar, dialogs_yantar, dialogs_military, dialogs_labx18, dialogs_radar, dialogs_aes, dialogs_mp
+files = dialogs_test, dialogs, dialogs_escape, dialogs_garbage, dialogs_agroprom, dialogs_deadcity, dialogs_darkvalley, dialogs_pripyat, dialogs_bar, dialogs_yantar, dialogs_military, dialogs_labx18, dialogs_radar, dialogs_aes
 
 [profiles]
 ;список xml файлов, содержащих профили сталкеров и торговцев
@@ -766,3 +766,33 @@ actors\monolit\stalker_mo_head1
 actors\monolit\stalker_mo_hood_9
 actors\monolit\stalker_mo_mask
 actors\monolit\stalker_mo_nauchniy
+
+[rank_extra_data]
+max_rank_in_team = 5 ; количество рангов в одной команде
+
+; для настройки новых рангов надо отредактировать:
+; 1) config\mp\mp_ranks.ltx
+; Здесь представлены главные настройки рангов: магазин, опыт и прочее.
+; Нумерация начинается с 0.
+; Увеличили число максимального ранга - впишите новые секции вплоть до [rank_%max_rank_in_team - 1%].
+; 2) config\mp\mp_dm_snd_messages.ltx и mp\mp_tdm_snd_messages.ltx
+; Здесь указываются звуки получения нового ранга. Нумерация начинается с 0,
+; но как правило первый ранг без звука, поэтому список начинается с rank1.
+; Звуки можно не указывать, вылета не будет.
+; 3) config\text\rus\ui_st_mm.xml
+; Тут мы указываем название на русском для новых рангов - rank_name из mp_ranks.ltx
+; 4) config\ui\ui_hud.xml
+; Здесь указаны отдельные текстуры из ui\ui_hud.dds
+; Нумерация рангов начинается с 1. Для обоих команд автоматически назначается список 
+; текстур: для наемников - ui_hud_status_blue_0X, для свободы - ui_hud_status_green_0X.
+; Текстуры ОБЯЗАТЕЛЬНО должны быть вписаны с 1 до max_rank_in_team включительно. 
+; "0" перед номером цифры ОБЯЗАТЕЛЕН!
+; 5) config\ui\ui_game_dm.xml и config\ui\ui_game_dm_16.xml (для широкоформатников)
+; Тут прописываем настройки для уже указанных текстур в файле выше.
+; Каждая секция должна называться rank_X.
+; Нумерация начинается с 0.
+; Сначала прописываются ранги для свободы (green), ровно половина, а затем
+; для наемников (blue). То есть, если у нас max_rank_in_team = 7,
+; ранги для свободы - rank_0 ... rank_6, а для наемников - rank_7 ... rank_13
+;
+; На этом настройка рангов закончена.
