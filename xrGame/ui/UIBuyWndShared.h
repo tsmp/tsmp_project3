@@ -12,6 +12,7 @@ typedef CUIBuyWnd BUY_WND_TYPE;
 
 #include "../associative_vector.h"
 #include "restrictions.h"
+#include "../TSMP3_Build_Config.h"
 
 struct string_lex_less
 {
@@ -25,7 +26,12 @@ class CItemMgr
 	struct _i
 	{
 		u8 slot_idx;
+#ifdef NEW_RANKS
+		u32 max_rank_in_team = pSettings->r_u32("rank_extra_data", "max_rank_in_team");
+		u32 *cost = new u32[max_rank_in_team];
+#else
 		u32 cost[_RANK_COUNT];
+#endif
 	};
 	typedef associative_vector<shared_str, _i, string_lex_less> COST_MAP;
 	typedef COST_MAP::iterator COST_MAP_IT;

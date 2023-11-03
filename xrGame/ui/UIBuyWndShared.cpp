@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIBuyWndShared.h"
 #include "UIMPTradeWnd.h"
+#include "../TSMP3_Build_Config.h"
 
 extern LPCSTR _list_names[];
 
@@ -16,11 +17,21 @@ void CItemMgr::Load(const shared_str &sect_cost)
 		int c = sscanf(it->second.c_str(), "%d,%d,%d,%d,%d", &val.cost[0], &val.cost[1], &val.cost[2], &val.cost[3], &val.cost[4]);
 		VERIFY(c > 0);
 
+#ifdef NEW_RANKS
+		u32 max_rank_in_team = pSettings->r_u32("rank_extra_data", "max_rank_in_team");
+
+		while (c < max_rank_in_team)
+		{
+			val.cost[c] = val.cost[c - 1];
+			++c;
+		}
+#else
 		while (c < _RANK_COUNT)
 		{
 			val.cost[c] = val.cost[c - 1];
 			++c;
 		}
+#endif
 	}
 
 	for (u8 i = CUIMpTradeWnd::e_first; i < CUIMpTradeWnd::e_total_lists; ++i)

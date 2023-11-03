@@ -390,8 +390,14 @@ void CUIMpTradeWnd::SetSkin(u8 SkinID)
 
 void CUIMpTradeWnd::SetRank(u32 rank)
 {
+#ifdef NEW_RANKS
+	u32 max_rank_in_team = pSettings->r_u32("rank_extra_data", "max_rank_in_team");
+	if (m_bIgnoreMoneyAndRank)
+		rank = max_rank_in_team - 1;
+#else
 	if (m_bIgnoreMoneyAndRank)
 		rank = _RANK_COUNT - 1;
+#endif
 	g_mp_restrictions.SetRank(rank);
 
 	string64 tex_name;

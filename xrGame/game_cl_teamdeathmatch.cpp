@@ -20,6 +20,7 @@
 #define MESSAGE_MENUS "tdm_messages_menu"
 
 #include "game_cl_teamdeathmatch_snd_messages.h"
+#include "../TSMP3_Build_Config.h"
 
 const shared_str game_cl_TeamDeathmatch::GetTeamMenu(s16 team)
 {
@@ -588,6 +589,30 @@ void game_cl_TeamDeathmatch::LoadSndMessages()
 	LoadSndMessage("tdm_snd_messages", "team1_rank5", ID_TEAM1_RANK_5);
 	LoadSndMessage("tdm_snd_messages", "team1_rank6", ID_TEAM1_RANK_6);
 	LoadSndMessage("tdm_snd_messages", "team1_rank7", ID_TEAM1_RANK_7);
+	LoadSndMessage("tdm_snd_messages", "team1_rank8", ID_TEAM1_RANK_8);
+	LoadSndMessage("tdm_snd_messages", "team1_rank9", ID_TEAM1_RANK_9);
+	LoadSndMessage("tdm_snd_messages", "team1_rank10", ID_TEAM1_RANK_10);
+	LoadSndMessage("tdm_snd_messages", "team1_rank11", ID_TEAM1_RANK_11);
+	LoadSndMessage("tdm_snd_messages", "team1_rank12", ID_TEAM1_RANK_12);
+	LoadSndMessage("tdm_snd_messages", "team1_rank13", ID_TEAM1_RANK_13);
+	LoadSndMessage("tdm_snd_messages", "team1_rank14", ID_TEAM1_RANK_14);
+	LoadSndMessage("tdm_snd_messages", "team1_rank15", ID_TEAM1_RANK_15);
+	LoadSndMessage("tdm_snd_messages", "team1_rank16", ID_TEAM1_RANK_16);
+	LoadSndMessage("tdm_snd_messages", "team1_rank17", ID_TEAM1_RANK_17);
+	LoadSndMessage("tdm_snd_messages", "team1_rank18", ID_TEAM1_RANK_18);
+	LoadSndMessage("tdm_snd_messages", "team1_rank19", ID_TEAM1_RANK_19);
+	LoadSndMessage("tdm_snd_messages", "team1_rank20", ID_TEAM1_RANK_20);
+	LoadSndMessage("tdm_snd_messages", "team1_rank21", ID_TEAM1_RANK_21);
+	LoadSndMessage("tdm_snd_messages", "team1_rank22", ID_TEAM1_RANK_22);
+	LoadSndMessage("tdm_snd_messages", "team1_rank23", ID_TEAM1_RANK_23);
+	LoadSndMessage("tdm_snd_messages", "team1_rank24", ID_TEAM1_RANK_24);
+	LoadSndMessage("tdm_snd_messages", "team1_rank25", ID_TEAM1_RANK_25);
+	LoadSndMessage("tdm_snd_messages", "team1_rank26", ID_TEAM1_RANK_26);
+	LoadSndMessage("tdm_snd_messages", "team1_rank27", ID_TEAM1_RANK_27);
+	LoadSndMessage("tdm_snd_messages", "team1_rank28", ID_TEAM1_RANK_28);
+	LoadSndMessage("tdm_snd_messages", "team1_rank29", ID_TEAM1_RANK_29);
+	LoadSndMessage("tdm_snd_messages", "team1_rank30", ID_TEAM1_RANK_30);
+	LoadSndMessage("tdm_snd_messages", "team1_rank31", ID_TEAM1_RANK_31);
 
 	LoadSndMessage("tdm_snd_messages", "team2_rank1", ID_TEAM2_RANK_1);
 	LoadSndMessage("tdm_snd_messages", "team2_rank2", ID_TEAM2_RANK_2);
@@ -596,6 +621,30 @@ void game_cl_TeamDeathmatch::LoadSndMessages()
 	LoadSndMessage("tdm_snd_messages", "team2_rank5", ID_TEAM2_RANK_5);
 	LoadSndMessage("tdm_snd_messages", "team2_rank6", ID_TEAM2_RANK_6);
 	LoadSndMessage("tdm_snd_messages", "team2_rank7", ID_TEAM2_RANK_7);
+	LoadSndMessage("tdm_snd_messages", "team2_rank8", ID_TEAM2_RANK_8);
+	LoadSndMessage("tdm_snd_messages", "team2_rank9", ID_TEAM2_RANK_9);
+	LoadSndMessage("tdm_snd_messages", "team2_rank10", ID_TEAM2_RANK_10);
+	LoadSndMessage("tdm_snd_messages", "team2_rank11", ID_TEAM2_RANK_11);
+	LoadSndMessage("tdm_snd_messages", "team2_rank12", ID_TEAM2_RANK_12);
+	LoadSndMessage("tdm_snd_messages", "team2_rank13", ID_TEAM2_RANK_13);
+	LoadSndMessage("tdm_snd_messages", "team2_rank14", ID_TEAM2_RANK_14);
+	LoadSndMessage("tdm_snd_messages", "team2_rank15", ID_TEAM2_RANK_15);
+	LoadSndMessage("tdm_snd_messages", "team2_rank16", ID_TEAM2_RANK_16);
+	LoadSndMessage("tdm_snd_messages", "team2_rank17", ID_TEAM2_RANK_17);
+	LoadSndMessage("tdm_snd_messages", "team2_rank18", ID_TEAM2_RANK_18);
+	LoadSndMessage("tdm_snd_messages", "team2_rank19", ID_TEAM2_RANK_19);
+	LoadSndMessage("tdm_snd_messages", "team2_rank20", ID_TEAM2_RANK_20);
+	LoadSndMessage("tdm_snd_messages", "team2_rank21", ID_TEAM2_RANK_21);
+	LoadSndMessage("tdm_snd_messages", "team2_rank22", ID_TEAM2_RANK_22);
+	LoadSndMessage("tdm_snd_messages", "team2_rank23", ID_TEAM2_RANK_23);
+	LoadSndMessage("tdm_snd_messages", "team2_rank24", ID_TEAM2_RANK_24);
+	LoadSndMessage("tdm_snd_messages", "team2_rank25", ID_TEAM2_RANK_25);
+	LoadSndMessage("tdm_snd_messages", "team2_rank26", ID_TEAM2_RANK_26);
+	LoadSndMessage("tdm_snd_messages", "team2_rank27", ID_TEAM2_RANK_27);
+	LoadSndMessage("tdm_snd_messages", "team2_rank28", ID_TEAM2_RANK_28);
+	LoadSndMessage("tdm_snd_messages", "team2_rank29", ID_TEAM2_RANK_29);
+	LoadSndMessage("tdm_snd_messages", "team2_rank30", ID_TEAM2_RANK_30);
+	LoadSndMessage("tdm_snd_messages", "team2_rank31", ID_TEAM2_RANK_31);
 #else
 	LoadSndMessage("tdm_snd_messages", "team1_win", ID_TEAM1_WIN);
 	LoadSndMessage("tdm_snd_messages", "team2_win", ID_TEAM2_WIN);

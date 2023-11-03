@@ -32,6 +32,7 @@
 #include "screenshot_manager.h"
 #include "VoiceChat.h"
 #include "game_cl_mp_snd_messages.h"
+#include "../TSMP3_Build_Config.h"
 
 #define EQUIPMENT_ICONS "ui\\ui_mp_icon_kill"
 #define KILLEVENT_ICONS "ui\\ui_hud_mp_icon_death"
@@ -1659,7 +1660,9 @@ void game_cl_mp::LoadBonuses()
 
 			Frect IconRect;
 #ifdef NEW_RANKS
-			for (u32 r = 1; r <= 8; r++)
+			u32 max_rank_in_team = pSettings->r_u32("rank_extra_data", "max_rank_in_team");
+
+			for (u32 r = 1; r <= max_rank_in_team; r++)
 			{
 				string256 rankstr;
 

@@ -7,13 +7,41 @@
 #endif //#ifdef DEBUG
 
 #include "../string_table.h"
+#include "../TSMP3_Build_Config.h"
 CRestrictions g_mp_restrictions;
 
+#ifdef NEW_RANKS
+u32 max_rank_in_team = pSettings->r_u32("rank_extra_data", "max_rank_in_team");
+shared_str *g_ranks = new shared_str[max_rank_in_team];
+#else
 shared_str g_ranks[_RANK_COUNT];
+#endif
+
 
 u32 get_rank(const shared_str &section)
 {
 	int res = -1;
+
+#ifdef NEW_RANKS
+	u32 max_rank_in_team = pSettings->r_u32("rank_extra_data", "max_rank_in_team");
+	if (g_ranks[0].size() == 0)
+	{ //load
+		string32 buff;
+		for (int i = 0; i < max_rank_in_team; i++)
+		{
+			sprintf_s(buff, "rank_%d", i);
+			g_ranks[i] = pSettings->r_string(buff, "available_items");
+		}
+	}
+	for (u32 i = 0; i < max_rank_in_team; i++)
+	{
+		if (strstr(g_ranks[i].c_str(), section.c_str()))
+		{
+			res = i;
+			break;
+		}
+	}
+#else
 	if (g_ranks[0].size() == 0)
 	{ //load
 		string32 buff;
@@ -31,6 +59,7 @@ u32 get_rank(const shared_str &section)
 			break;
 		}
 	}
+#endif
 
 	R_ASSERT3(res != -1, "cannot find rank for", section.c_str());
 	return res;
@@ -64,6 +93,20 @@ void CRestrictions::InitGroups()
 
 	// try to find restrictions in every rank
 
+#ifdef NEW_RANKS
+	u32 max_rank_in_team = pSettings->r_u32("rank_extra_data", "max_rank_in_team");
+
+	AddRestriction4rank(max_rank_in_team, pSettings->r_string("rank_base", "amount_restriction"));
+
+	string32 rank;
+	for (u32 i = 0; i < max_rank_in_team; ++i)
+	{
+		sprintf_s(rank, "rank_%d", i);
+
+		AddRestriction4rank(i, pSettings->r_string(rank, "amount_restriction"));
+		m_names[i] = CStringTable().translate(pSettings->r_string(rank, "rank_name"));
+	}
+#else
 	AddRestriction4rank(_RANK_COUNT, pSettings->r_string("rank_base", "amount_restriction"));
 
 	string32 rank;
@@ -74,6 +117,7 @@ void CRestrictions::InitGroups()
 		AddRestriction4rank(i, pSettings->r_string(rank, "amount_restriction"));
 		m_names[i] = CStringTable().translate(pSettings->r_string(rank, "rank_name"));
 	}
+#endif
 
 	//Dump();
 
@@ -88,6 +132,30 @@ void CRestrictions::AddRestriction4rank(u32 rank, const shared_str &lst)
 
 	rank_rest_vec &rest = m_restrictions[rank];
 
+
+#ifdef NEW_RANKS
+	u32 max_rank_in_team = pSettings->r_u32("rank_extra_data", "max_rank_in_team");
+
+	if (rank != max_rank_in_team)
+	{
+		u32 src_idx = (rank == 0) ? max_rank_in_team : (rank - 1);
+		rest = m_restrictions[src_idx];
+	}
+
+	string256 singleItem;
+	u32 count = _GetItemCount(lst.c_str());
+	for (u32 j = 0; j < count; ++j)
+	{
+		_GetItem(lst.c_str(), j, singleItem);
+		RESTR r = GetRestr(singleItem);
+		restr_item* ritem = find_restr_item_internal(rank, r.name);
+		VERIFY2((ritem || rank == max_rank_in_team), singleItem);
+		if (!ritem)
+			rest.push_back(mk_pair(r.name, r.n));
+		else
+			ritem->second = r.n;
+	}
+#else
 	if (rank != _RANK_COUNT)
 	{
 		u32 src_idx = (rank == 0) ? _RANK_COUNT : (rank - 1);
@@ -107,6 +175,7 @@ void CRestrictions::AddRestriction4rank(u32 rank, const shared_str &lst)
 		else
 			ritem->second = r.n;
 	}
+#endif
 }
 
 bool CRestrictions::IsAvailable(const shared_str &itm)
@@ -239,6 +308,26 @@ void CRestrictions::Dump() const
 			Msg("	[%s]", (*it2).c_str());
 	}
 	Msg("------------rank restrictions------------");
+
+#ifdef NEW_RANKS
+	u32 max_rank_in_team = pSettings->r_u32("rank_extra_data", "max_rank_in_team");
+
+	for (u32 i = 0; i < max_rank_in_team + 1; ++i)
+	{
+		const rank_rest_vec& v = m_restrictions[i];
+		rank_rest_vec::const_iterator it = v.begin();
+		rank_rest_vec::const_iterator it_e = v.end();
+		if (i < max_rank_in_team)
+			Msg("---	for rank %d  ---count=[%d]", i, v.size());
+		else
+			Msg("---	base restrictions ---count=[%d]", v.size());
+
+		for (; it != it_e; ++it)
+		{
+			Msg("	[%s]:[%d]", (*it).first.c_str(), (*it).second);
+		}
+	}
+#else
 	for (u32 i = 0; i < _RANK_COUNT + 1; ++i)
 	{
 		const rank_rest_vec &v = m_restrictions[i];
@@ -253,6 +342,7 @@ void CRestrictions::Dump() const
 		{
 			Msg("	[%s]:[%d]", (*it).first.c_str(), (*it).second);
 		}
-		Msg("-----------------------------------------");
 	}
+#endif
+	Msg("-----------------------------------------");
 }

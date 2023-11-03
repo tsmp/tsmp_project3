@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEDICATED_SERVER // Выделенный сервер
+//#define DEDICATED_SERVER // Выделенный сервер
 #if defined(DEDICATED_BUILD) && !defined(DEDICATED_SERVER)
 //Собираем выделенный в любом случае 
 #define DEDICATED_SERVER
@@ -13,7 +13,7 @@
 //#define EVERYBODY_IS_ENEMY // Все нпс считают всех врагами
 //#define HUGE_OGF_FIX // Не корёжить большие модельки, требует правку шейдера skin.h
 #define NEW_RANKS // Новые ранги: 8 вместо 5
-#define TSMP_VERSION "TSMP 29.10.2023"
+#define TSMP_VERSION "TSMP 03.11.2023"
 
 #ifdef PUBLIC_BUILD
 #define SEND_ERROR_REPORTS // Отправлять отчеты о вылетах

@@ -14,6 +14,7 @@
 #include "date_time.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "xrGameSpyServer.h"
+#include "../TSMP3_Build_Config.h"
 
 extern float g_cl_lvInterp;
 extern int g_cl_InterpolationType; //0 - Linear, 1 - BSpline, 2 - HSpline
@@ -1610,7 +1611,8 @@ public:
 			xrClientData* l_pC = static_cast<xrClientData*>(tmpClient);
 
 #ifdef NEW_RANKS
-			if (l_pC->ps->rank < 7)
+			u32 max_rank_in_team = pSettings->r_u32("rank_extra_data", "max_rank_in_team");
+			if (l_pC->ps->rank < --max_rank_in_team)
 				l_pC->ps->rank++;
 			else
 				Msg("! cant increase rank");

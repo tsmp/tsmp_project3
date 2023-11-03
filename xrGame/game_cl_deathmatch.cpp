@@ -31,6 +31,8 @@
 #include "ui\UIBuyWnd.h"
 #endif
 
+#include "../TSMP3_Build_Config.h"
+
 #define TEAM0_MENU "deathmatch_team0"
 
 game_cl_Deathmatch::game_cl_Deathmatch()
@@ -771,6 +773,30 @@ void game_cl_Deathmatch::LoadSndMessages()
 	LoadSndMessage("dm_snd_messages", "dm_rank5", ID_RANK_5);
 	LoadSndMessage("dm_snd_messages", "dm_rank6", ID_RANK_6);
 	LoadSndMessage("dm_snd_messages", "dm_rank7", ID_RANK_7);
+	LoadSndMessage("dm_snd_messages", "dm_rank8", ID_RANK_8);
+	LoadSndMessage("dm_snd_messages", "dm_rank9", ID_RANK_9);
+	LoadSndMessage("dm_snd_messages", "dm_rank10", ID_RANK_10);
+	LoadSndMessage("dm_snd_messages", "dm_rank11", ID_RANK_11);
+	LoadSndMessage("dm_snd_messages", "dm_rank12", ID_RANK_12);
+	LoadSndMessage("dm_snd_messages", "dm_rank13", ID_RANK_13);
+	LoadSndMessage("dm_snd_messages", "dm_rank14", ID_RANK_14);
+	LoadSndMessage("dm_snd_messages", "dm_rank15", ID_RANK_15);
+	LoadSndMessage("dm_snd_messages", "dm_rank16", ID_RANK_16);
+	LoadSndMessage("dm_snd_messages", "dm_rank17", ID_RANK_17);
+	LoadSndMessage("dm_snd_messages", "dm_rank18", ID_RANK_18);
+	LoadSndMessage("dm_snd_messages", "dm_rank19", ID_RANK_19);
+	LoadSndMessage("dm_snd_messages", "dm_rank20", ID_RANK_20);
+	LoadSndMessage("dm_snd_messages", "dm_rank21", ID_RANK_21);
+	LoadSndMessage("dm_snd_messages", "dm_rank22", ID_RANK_22);
+	LoadSndMessage("dm_snd_messages", "dm_rank23", ID_RANK_23);
+	LoadSndMessage("dm_snd_messages", "dm_rank24", ID_RANK_24);
+	LoadSndMessage("dm_snd_messages", "dm_rank25", ID_RANK_25);
+	LoadSndMessage("dm_snd_messages", "dm_rank26", ID_RANK_26);
+	LoadSndMessage("dm_snd_messages", "dm_rank27", ID_RANK_27);
+	LoadSndMessage("dm_snd_messages", "dm_rank28", ID_RANK_28);
+	LoadSndMessage("dm_snd_messages", "dm_rank29", ID_RANK_29);
+	LoadSndMessage("dm_snd_messages", "dm_rank30", ID_RANK_30);
+	LoadSndMessage("dm_snd_messages", "dm_rank31", ID_RANK_31);
 #else
 	LoadSndMessage("dm_snd_messages", "dm_rank1", ID_RANK_1);
 	LoadSndMessage("dm_snd_messages", "dm_rank2", ID_RANK_2);

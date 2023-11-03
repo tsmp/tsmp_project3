@@ -20,6 +20,7 @@
 #include "../alife_object_registry.h"
 #include "../xrServer.h"
 #include "../xrServer_Objects_ALife_Monsters.h"
+#include "../TSMP3_Build_Config.h"
 
 using namespace InventoryUtilities;
 
@@ -232,36 +233,112 @@ void CUICharacterInfo::InitCharacterPlayerMP(CInventoryOwner* player)
 #ifdef NEW_RANKS
 	if (m_icons[eUIRank])
 	{
-		switch (ps->rank)
+		string256 current_rank;
+		sprintf_s(current_rank, "st_rank_%d", ps->rank);
+		sprintf_s(str, "%s", *CStringTable().translate(current_rank));
+
+		/*switch (ps->rank)
 		{
 		case 0:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_lockpick"));
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_1"));
 			break;
 		case 1:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_novice"));
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_2"));
 			break;
 		case 2:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_experienced"));
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_3"));
 			break;
 		case 3:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_professional"));
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_4"));
 			break;
 		case 4:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_veteran"));
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_5"));
 			break;
 		case 5:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_master"));
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_6"));
 			break;
 		case 6:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_legend"));
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_7"));
 			break;
 		case 7:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_hero"));
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_8"));
+			break;
+		case 8:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_9"));
+			break;
+		case 9:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_10"));
+			break;
+		case 10:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_11"));
+			break;
+		case 11:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_12"));
+			break;
+		case 12:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_13"));
+			break;
+		case 13:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_14"));
+			break;
+		case 14:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_15"));
+			break;
+		case 15:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_16"));
+			break;
+		case 16:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_17"));
+			break;
+		case 17:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_18"));
+			break;
+		case 18:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_19"));
+			break;
+		case 19:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_20"));
+			break;
+		case 20:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_21"));
+			break;
+		case 21:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_22"));
+			break;
+		case 22:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_23"));
+			break;
+		case 23:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_24"));
+			break;
+		case 24:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_25"));
+			break;
+		case 25:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_26"));
+			break;
+		case 26:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_27"));
+			break;
+		case 27:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_28"));
+			break;
+		case 28:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_29"));
+			break;
+		case 29:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_30"));
+			break;
+		case 30:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_31"));
+			break;
+		case 31:
+			sprintf_s(str, "%s", *CStringTable().translate("st_rank_32"));
 			break;
 		default:
 			R_ASSERT(0, "Unknown rank!!");
 			break;
-		}
+		}*/
 
 		m_icons[eUIRank]->SetText(str);
 	}
