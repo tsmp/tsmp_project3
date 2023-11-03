@@ -211,7 +211,7 @@ void game_sv_Deathmatch::Processing_Victim(game_PlayerState *pVictim, game_Playe
 		return;
 
 	pVictim->setFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
-	pVictim->m_iDeaths++;
+	pVictim->m_Stats.m_iDeaths++;
 	pVictim->m_iKillsInRowCurr = 0;
 	pVictim->DeathTime = Device.dwTimeGlobal;
 
@@ -256,9 +256,9 @@ bool game_sv_Deathmatch::OnKillResult(KILL_RES KillResult, game_PlayerState *pKi
 		res = false;
 	}
 	break;
+
 	case KR_SELF:
 	{
-		//.			pKiller->kills -= 1;
 		pKiller->m_iSelfKills++;
 
 		if (pTeam)
@@ -267,12 +267,13 @@ bool game_sv_Deathmatch::OnKillResult(KILL_RES KillResult, game_PlayerState *pKi
 		res = false;
 	}
 	break;
+
 	case KR_RIVAL:
 	{
-		//.			pKiller->kills += 1;
-		pKiller->m_iRivalKills++;
+		pKiller->m_Stats.m_iRivalKills++;
 		pKiller->m_iKillsInRowCurr++;
-		pKiller->m_iKillsInRowMax = _max(pKiller->m_iKillsInRowCurr, pKiller->m_iKillsInRowMax);
+		pKiller->m_Stats.m_iKillsInRowMax = _max(pKiller->m_iKillsInRowCurr, pKiller->m_Stats.m_iKillsInRowMax);
+
 		if (pTeam)
 		{
 			s32 ResMoney = pTeam->m_iM_KillRival;
@@ -281,12 +282,8 @@ bool game_sv_Deathmatch::OnKillResult(KILL_RES KillResult, game_PlayerState *pKi
 				ResMoney = s32(ResMoney * pTeam->m_fInvinsibleKillModifier);
 
 			Player_AddMoney(pKiller, ResMoney);
-		};
+		}
 		res = true;
-	}
-	break;
-	default:
-	{
 	}
 	break;
 	}

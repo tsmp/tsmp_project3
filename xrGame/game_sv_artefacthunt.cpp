@@ -167,9 +167,9 @@ bool game_sv_ArtefactHunt::OnKillResult(KILL_RES KillResult, game_PlayerState *p
 	break;
 	case KR_RIVAL_CRITICAL:
 	{
-		pKiller->m_iRivalKills++;
+		pKiller->m_Stats.m_iRivalKills++;
 		pKiller->m_iKillsInRowCurr++;
-		pKiller->m_iKillsInRowMax = _max(pKiller->m_iKillsInRowCurr, pKiller->m_iKillsInRowMax);
+		pKiller->m_Stats.m_iKillsInRowMax = _max(pKiller->m_iKillsInRowCurr, pKiller->m_Stats.m_iKillsInRowMax);
 
 		if (pTeam)
 		{
@@ -631,7 +631,7 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID const &id_who)
 	{
 		Player_AddMoney(ps, pTeam->m_iM_TargetSucceed);
 		Player_AddExperience(ps, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "target_succeed", 0));
-		ps->af_count++;
+		ps->m_Stats.af_count++;
 
 		// Add money to players in this team
 		m_server->ForEachClientDo([this,&pTeam,&ps](IClient* client)
@@ -1334,7 +1334,7 @@ bool game_sv_ArtefactHunt::Player_Check_Rank(game_PlayerState *ps)
 	if (!inherited::Player_Check_Rank(ps))
 		return false;
 
-	if (ps->af_count < m_aRanks[ps->rank + 1].m_iTerms[1])
+	if (ps->m_Stats.af_count < m_aRanks[ps->rank + 1].m_iTerms[1])
 		return false;
 
 	return true;

@@ -227,8 +227,7 @@ protected:
 	void reset_selected_tip();
 
 	IConsole_Command* find_next_cmd(LPCSTR in_str, shared_str& out_str);
-	bool add_next_cmds(LPCSTR in_str, vecTipsEx& out_v);
-	bool add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v);
+	void AddFilteredCommands(LPCSTR inStr, vecTipsEx& outVec);
 
 	void update_tips();
 	void select_for_filter(LPCSTR filter_str, vecTips& in_v, vecTipsEx& out_v);

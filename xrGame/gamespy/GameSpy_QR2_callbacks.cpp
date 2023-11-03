@@ -258,7 +258,7 @@ void __cdecl callback_playerkey(int keyid, int index, void *outbuf, void *userda
 		pQR2->BufferAdd_Int(outbuf, pCD->ps->frags());
 		break;
 	case DEATHS__KEY:
-		pQR2->BufferAdd_Int(outbuf, pCD->ps->m_iDeaths);
+		pQR2->BufferAdd_Int(outbuf, pCD->ps->m_Stats.m_iDeaths);
 		break;
 	case SKILL__KEY:
 		pQR2->BufferAdd_Int(outbuf, pCD->ps->rank);
@@ -271,7 +271,7 @@ void __cdecl callback_playerkey(int keyid, int index, void *outbuf, void *userda
 		break;
 	case P_ARTEFACTS__KEY:
 		if (pServer->game->Type() == GAME_ARTEFACTHUNT)
-			pQR2->BufferAdd_Int(outbuf, pCD->ps->af_count);
+			pQR2->BufferAdd_Int(outbuf, pCD->ps->m_Stats.af_count);
 		break;
 		break;
 	default:

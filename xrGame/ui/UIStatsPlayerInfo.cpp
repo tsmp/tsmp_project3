@@ -103,11 +103,11 @@ const char *CUIStatsPlayerInfo::GetInfoByID(const char *id)
 	else if (0 == xr_strcmp(id, "frags"))
 		sprintf_s(ans, "%d", (int)m_pPlayerInfo->frags());
 	else if (0 == xr_strcmp(id, "deaths"))
-		sprintf_s(ans, "%d", (int)m_pPlayerInfo->m_iDeaths);
+		sprintf_s(ans, "%d", (int)m_pPlayerInfo->m_Stats.m_iDeaths);
 	else if (0 == xr_strcmp(id, "ping"))
 		sprintf_s(ans, "%d", (int)m_pPlayerInfo->ping);
 	else if (0 == xr_strcmp(id, "artefacts"))
-		sprintf_s(ans, "%d", (int)m_pPlayerInfo->af_count);
+		sprintf_s(ans, "%d", (int)m_pPlayerInfo->m_Stats.af_count);
 	else if (0 == xr_strcmp(id, "rank"))
 	{
 		int team = m_pPlayerInfo->team;

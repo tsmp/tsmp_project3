@@ -8,6 +8,7 @@ int fz_downloader_new = 0;
 int fz_downloader_enabled = 1;
 int fz_downloader_skip_full_check = 0;
 int fz_downloader_allow_x64 = 0;
+int fz_downloader_send_error_reports = 0;
 int fz_downloader_previous_version = 0;
 
 std::string fz_downloader_mod_name = "tsmp";
@@ -87,21 +88,21 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 	{
 		if (fz_downloader_previous_version)
 		{
-			moddllinfo.fileinfo.filename = "fz_mod_loader_tsmp_v2.mod";
-			moddllinfo.fileinfo.url = "http://stalker-life.com/stalker_files/mods_shoc/tsmp3/loader/tsmp_mod_loader_v2.dll";
-			moddllinfo.fileinfo.crc32 = 0xB2D51956; // crc дллки
-
-			//Цифровая подпись для загруженной DLL - проверяется перед тем, как передать управление в функцию мода
-			moddllinfo.dsign = "302D021450268FA62C6B30BCA1DE8E3586BA1ED6749CD1890215008B30D01EB47529A9E5F9D49CE3CA56E84F3AD09F";
-		}
-		else
-		{
 			moddllinfo.fileinfo.filename = "fz_mod_loader_tsmp_v3.mod";
 			moddllinfo.fileinfo.url = "http://stalker-life.com/stalker_files/mods_shoc/tsmp3/loader/tsmp_mod_loader_v3.dll";
 			moddllinfo.fileinfo.crc32 = 0xACB62B2F; // crc дллки
 
-			//Цифровая подпись для загруженной DLL - проверяется перед тем, как передать управление в функцию мода
+			// Цифровая подпись для загруженной DLL - проверяется перед тем, как передать управление в функцию мода
 			moddllinfo.dsign = "302D0215008868F530DFBB61F92B1AA4FBED0C84019E04706302142E09A800FB3E225A5BAE7431788A5700CAC2F94D";
+		}
+		else
+		{
+			moddllinfo.fileinfo.filename = "fz_mod_loader_tsmp_v4.mod";
+			moddllinfo.fileinfo.url = "http://stalker-life.com/stalker_files/mods_shoc/tsmp3/loader/tsmp_mod_loader_v4.dll";
+			moddllinfo.fileinfo.crc32 = 0xCCD450DC; // crc дллки
+
+			// Цифровая подпись для загруженной DLL - проверяется перед тем, как передать управление в функцию мода
+			moddllinfo.dsign = "302D021500CC995CEFCFD26B00BF67BC81577FCC12F99B93F902144C61D8D71802BD51432A0BBB17AFF15CED2A5D8A";
 		}
 
 		const shared_str srvPasword = static_cast<xrGameSpyServer*>(server)->Password;
@@ -114,6 +115,9 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 
 		if (fz_downloader_allow_x64)
 			ModLoadArgs += " -allow64bitengine ";
+
+		if (fz_downloader_send_error_reports)
+			ModLoadArgs += " -sendErrorRepots ";
 
 		ModLoadArgs += " -includename -preservemessage ";
 	}
