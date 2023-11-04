@@ -96,6 +96,7 @@ BOOL XRNETWORK_API g_net_compressor_gather_stats;
 
 Fvector SvSpawnPos{ 0.f, 0.f, 0.f };
 extern EGameTypes GetGameTypeByName(const char* name);
+extern u8 GetRanksCount();
 
 static xrClientData* GetCommandInitiator(LPCSTR commandLine)
 {
@@ -1696,7 +1697,7 @@ public:
 		{
 			xrClientData* l_pC = static_cast<xrClientData*>(tmpClient);
 
-			if (l_pC->ps->rank < 4)
+			if (l_pC->ps->rank < GetRanksCount() - 1)
 				l_pC->ps->rank++;
 			else
 				Msg("! cant increase rank");

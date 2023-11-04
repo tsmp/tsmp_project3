@@ -25,7 +25,7 @@ class CItemMgr
 	struct _i
 	{
 		u8 slot_idx;
-		u32 cost[_RANK_COUNT];
+		xr_vector<u32> cost;
 	};
 	typedef associative_vector<shared_str, _i, string_lex_less> COST_MAP;
 	typedef COST_MAP::iterator COST_MAP_IT;

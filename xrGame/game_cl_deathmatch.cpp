@@ -33,6 +33,8 @@
 
 #define TEAM0_MENU "deathmatch_team0"
 
+extern u8 GetRanksCount();
+
 game_cl_Deathmatch::game_cl_Deathmatch()
 {
 	pCurBuyMenu = nullptr;
@@ -763,10 +765,12 @@ void game_cl_Deathmatch::OnSpawn(CObject *pObj)
 
 void game_cl_Deathmatch::LoadSndMessages()
 {
-	LoadSndMessage("dm_snd_messages", "dm_rank1", ID_RANK_1);
-	LoadSndMessage("dm_snd_messages", "dm_rank2", ID_RANK_2);
-	LoadSndMessage("dm_snd_messages", "dm_rank3", ID_RANK_3);
-	LoadSndMessage("dm_snd_messages", "dm_rank4", ID_RANK_4);
+	for (u8 i = 1; i < GetRanksCount(); i++)
+	{
+		string16 line;
+		sprintf(line, "dm_rank%u", i);
+		LoadSndMessage("dm_snd_messages", line, ID_RANK_1 + i - 1);
+	}
 }
 
 void game_cl_Deathmatch::OnSwitchPhase_InProgress()

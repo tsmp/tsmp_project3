@@ -9,18 +9,22 @@
 #include "../string_table.h"
 CRestrictions g_mp_restrictions;
 
-shared_str g_ranks[_RANK_COUNT];
+extern u8 GetRanksCount();
+xr_vector<shared_str> g_ranks;
 
 u32 get_rank(const shared_str &section)
 {
 	int res = -1;
-	if (g_ranks[0].size() == 0)
-	{ //load
-		string32 buff;
+	const u32 _RANK_COUNT = GetRanksCount();
+
+	if (g_ranks.empty())
+	{
+		// load
 		for (int i = 0; i < _RANK_COUNT; i++)
 		{
+			string32 buff;
 			sprintf_s(buff, "rank_%d", i);
-			g_ranks[i] = pSettings->r_string(buff, "available_items");
+			g_ranks.emplace_back(pSettings->r_string(buff, "available_items"));
 		}
 	}
 	for (u32 i = 0; i < _RANK_COUNT; i++)
@@ -42,8 +46,10 @@ CRestrictions::CRestrictions()
 	m_bInited = false;
 }
 
-CRestrictions::~CRestrictions()
+void CRestrictions::SetRank(u32 rank)
 {
+	VERIFY(rank >= 0 && rank < GetRanksCount());
+	m_rank = rank;
 }
 
 void CRestrictions::InitGroups()
@@ -63,16 +69,18 @@ void CRestrictions::InitGroups()
 	}
 
 	// try to find restrictions in every rank
-
+	const u32 _RANK_COUNT = GetRanksCount();
+	m_restrictions.resize(_RANK_COUNT + 1);
 	AddRestriction4rank(_RANK_COUNT, pSettings->r_string("rank_base", "amount_restriction"));
 
 	string32 rank;
+	m_names.clear();
 	for (u32 i = 0; i < _RANK_COUNT; ++i)
 	{
 		sprintf_s(rank, "rank_%d", i);
 
 		AddRestriction4rank(i, pSettings->r_string(rank, "amount_restriction"));
-		m_names[i] = CStringTable().translate(pSettings->r_string(rank, "rank_name"));
+		m_names.emplace_back(CStringTable().translate(pSettings->r_string(rank, "rank_name")));
 	}
 
 	//Dump();
@@ -83,10 +91,10 @@ void CRestrictions::InitGroups()
 }
 
 void CRestrictions::AddRestriction4rank(u32 rank, const shared_str &lst)
-{ // private
+{
 	VERIFY(m_bInited);
-
-	rank_rest_vec &rest = m_restrictions[rank];
+	rank_rest_vec& rest = m_restrictions[rank];
+	const u32 _RANK_COUNT = GetRanksCount();
 
 	if (rank != _RANK_COUNT)
 	{
@@ -96,12 +104,14 @@ void CRestrictions::AddRestriction4rank(u32 rank, const shared_str &lst)
 
 	string256 singleItem;
 	u32 count = _GetItemCount(lst.c_str());
+
 	for (u32 j = 0; j < count; ++j)
 	{
 		_GetItem(lst.c_str(), j, singleItem);
 		RESTR r = GetRestr(singleItem);
 		restr_item *ritem = find_restr_item_internal(rank, r.name);
 		VERIFY2((ritem || rank == _RANK_COUNT), singleItem);
+
 		if (!ritem)
 			rest.push_back(mk_pair(r.name, r.n));
 		else
@@ -229,6 +239,7 @@ void CRestrictions::Dump() const
 {
 	Msg("------------item groups ---count=[%d]-------------------", m_goups.size());
 	Groups::const_iterator it = m_goups.begin();
+
 	Groups::const_iterator it_e = m_goups.end();
 	for (; it != it_e; ++it)
 	{
@@ -238,7 +249,10 @@ void CRestrictions::Dump() const
 		for (; it2 != it2_e; ++it2)
 			Msg("	[%s]", (*it2).c_str());
 	}
+
 	Msg("------------rank restrictions------------");
+	const u32 _RANK_COUNT = GetRanksCount();
+
 	for (u32 i = 0; i < _RANK_COUNT + 1; ++i)
 	{
 		const rank_rest_vec &v = m_restrictions[i];
@@ -254,5 +268,5 @@ void CRestrictions::Dump() const
 			Msg("	[%s]:[%d]", (*it).first.c_str(), (*it).second);
 		}
 		Msg("-----------------------------------------");
-	}
+	}	
 }

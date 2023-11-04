@@ -3,23 +3,40 @@
 #include "UIMPTradeWnd.h"
 
 extern LPCSTR _list_names[];
+extern u8 GetRanksCount();
 
 void CItemMgr::Load(const shared_str &sect_cost)
 {
 	CInifile::Sect &sect = pSettings->r_section(sect_cost);
+	const u32 _RANK_COUNT = GetRanksCount();
 
-	u32 idx = 0;
-	for (CInifile::SectCIt it = sect.Data.begin(); it != sect.Data.end(); ++it, ++idx)
+	for (const auto &it: sect.Data)
 	{
-		_i &val = m_items[it->first];
+		_i &val = m_items[it.first];
 		val.slot_idx = u8(-1);
-		int c = sscanf(it->second.c_str(), "%d,%d,%d,%d,%d", &val.cost[0], &val.cost[1], &val.cost[2], &val.cost[3], &val.cost[4]);
-		VERIFY(c > 0);
+		val.cost.resize(_RANK_COUNT);
 
-		while (c < _RANK_COUNT)
+		std::string_view costsView = it.second.c_str();
+		u32 idx = 0;
+
+		while (true)
 		{
-			val.cost[c] = val.cost[c - 1];
-			++c;
+			size_t commaPos = costsView.find(',');
+
+			if (commaPos == std::string_view::npos)
+				break;
+
+			auto costStr = costsView.substr(0, commaPos);
+			val.cost[idx++] = std::stoul(costStr.data());
+			costsView = costsView.substr(commaPos + 1);
+		}
+
+		val.cost[idx++] = std::stoul(costsView.data());
+
+		while (idx < _RANK_COUNT)
+		{
+			val.cost[idx] = val.cost[idx - 1];
+			++idx;
 		}
 	}
 

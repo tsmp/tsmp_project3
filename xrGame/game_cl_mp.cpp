@@ -1586,39 +1586,56 @@ void game_cl_mp::OnGameMenuRespond(NET_Packet &P)
 	}
 	break;
 	}
-};
+}
 
 void game_cl_mp::OnGameRoundStarted()
 {
-	//			sprintf_s(Text, "%sRound started !!!",Color_Main);
 	string512 Text;
 	CStringTable st;
 	sprintf_s(Text, "%s%s", Color_Main, *st.translate("mp_match_started"));
 	CommonMessageOut(Text);
 	OnSwitchPhase_InProgress();
-	//-------------------------------
 	PlaySndMessage(ID_MATCH_STARTED);
 }
 
 void game_cl_mp::OnBuySpawn(CUIWindow *pWnd, void *p)
 {
 	OnBuySpawnMenu_Ok();
-};
+}
+
+u8 GetRanksCount()
+{
+	static bool valueRead = false;
+	static u8 RanksCount = 5;
+
+	if (!valueRead)
+	{
+		valueRead = true;
+
+		if (pSettings->section_exist("ranks_settings"))
+			RanksCount = pSettings->r_u8("ranks_settings", "ranks_count");
+	}
+
+	return RanksCount;
+}
 
 void game_cl_mp::LoadBonuses()
 {
 	if (!pSettings->section_exist("mp_bonus_money"))
 		return;
+
 	m_pBonusList.clear();
 	u32 BonusCount = pSettings->line_count("mp_bonus_money");
+
 	for (u32 i = 0; i < BonusCount; i++)
 	{
 		LPCSTR line, name;
 		pSettings->r_line("mp_bonus_money", i, &name, &line);
-		//-------------------------------------
+
 		string1024 tmp0, tmp1, IconStr;
 		_GetItem(line, 0, tmp0);
 		_GetItem(line, 1, tmp1);
+
 		if (strstr(name, "kill_in_row"))
 		{
 			sprintf_s(tmp1, "%s Kill", tmp1);
@@ -1626,13 +1643,13 @@ void game_cl_mp::LoadBonuses()
 		}
 		else
 			sprintf_s(IconStr, "%s", name);
-		//-------------------------------------
+
 		Bonus_Struct NewBonus;
 		NewBonus.BonusTypeName = name;
 		NewBonus.BonusName = tmp1;
 		NewBonus.MoneyStr = tmp0;
 		NewBonus.Money = atol(tmp0);
-		//-------------------------------------
+
 		if (!strstr(name, "new_rank"))
 		{
 			string1024 IconShader, IconX, IconY, IconW, IconH;
@@ -1641,10 +1658,10 @@ void game_cl_mp::LoadBonuses()
 			sprintf_s(IconY, "%s_y", IconStr);
 			sprintf_s(IconW, "%s_w", IconStr);
 			sprintf_s(IconH, "%s_h", IconStr);
+
 			if (pSettings->line_exist("mp_bonus_icons", IconShader))
-			{
 				NewBonus.IconShader->create("hud\\default", pSettings->r_string("mp_bonus_icons", IconShader));
-			}
+
 			Frect IconRect;
 			IconRect.x1 = READ_IF_EXISTS(pSettings, r_float, "mp_bonus_icons", IconX, 0);
 			IconRect.y1 = READ_IF_EXISTS(pSettings, r_float, "mp_bonus_icons", IconY, 0);
@@ -1658,7 +1675,8 @@ void game_cl_mp::LoadBonuses()
 			NewBonus.IconShader->create("hud\\default", IconShader);
 
 			Frect IconRect;
-			for (u32 r = 1; r <= 5; r++)
+
+			for (u32 r = 1; r <= GetRanksCount(); r++)
 			{
 				string256 rankstr;
 
@@ -1674,11 +1692,11 @@ void game_cl_mp::LoadBonuses()
 				IconRect.y2 -= IconRect.y1;
 				NewBonus.IconRects.push_back(IconRect);
 			}
-		};
-		//--------------------------------------
+		}
+
 		m_pBonusList.push_back(NewBonus);
-	};
-};
+	}
+}
 
 void game_cl_mp::OnRadminMessage(u16 type, NET_Packet *P)
 {

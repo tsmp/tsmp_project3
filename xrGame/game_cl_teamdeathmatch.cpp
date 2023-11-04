@@ -21,6 +21,8 @@
 
 #include "game_cl_teamdeathmatch_snd_messages.h"
 
+extern u8 GetRanksCount();
+
 const shared_str game_cl_TeamDeathmatch::GetTeamMenu(s16 team)
 {
 	switch (team)
@@ -580,15 +582,14 @@ void game_cl_TeamDeathmatch::LoadSndMessages()
 	LoadSndMessage("tdm_snd_messages", "team1_lead", ID_TEAM1_LEAD);
 	LoadSndMessage("tdm_snd_messages", "team2_lead", ID_TEAM2_LEAD);
 
-	LoadSndMessage("tdm_snd_messages", "team1_rank1", ID_TEAM1_RANK_1);
-	LoadSndMessage("tdm_snd_messages", "team1_rank2", ID_TEAM1_RANK_2);
-	LoadSndMessage("tdm_snd_messages", "team1_rank3", ID_TEAM1_RANK_3);
-	LoadSndMessage("tdm_snd_messages", "team1_rank4", ID_TEAM1_RANK_4);
-
-	LoadSndMessage("tdm_snd_messages", "team2_rank1", ID_TEAM2_RANK_1);
-	LoadSndMessage("tdm_snd_messages", "team2_rank2", ID_TEAM2_RANK_2);
-	LoadSndMessage("tdm_snd_messages", "team2_rank3", ID_TEAM2_RANK_3);
-	LoadSndMessage("tdm_snd_messages", "team2_rank4", ID_TEAM2_RANK_4);
+	for (u8 i = 1; i < GetRanksCount(); i++)
+	{
+		string16 lineTeam1, lineTeam2;
+		sprintf(lineTeam1, "team1_rank%u", i);
+		sprintf(lineTeam1, "team2_rank%u", i);
+		LoadSndMessage("tdm_snd_messages", lineTeam1, ID_TEAM1_RANK_1 + i - 1);
+		LoadSndMessage("tdm_snd_messages", lineTeam2, ID_TEAM2_RANK_1 + i - 1);
+	}
 }
 
 void game_cl_TeamDeathmatch::OnSwitchPhase_InProgress()

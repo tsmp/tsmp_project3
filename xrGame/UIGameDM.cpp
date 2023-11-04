@@ -39,6 +39,8 @@
 #define DI2PY(y) float(iFloor((y + 1) * float(UI_BASE_HEIGHT) * 0.5f))
 #define SZ(x) x *UI_BASE_WIDTH
 
+extern u8 GetRanksCount();
+
 CUIGameDM::CUIGameDM()
 {
 	m_game = nullptr;
@@ -71,7 +73,7 @@ CUIGameDM::CUIGameDM()
 	uiXml.Init(CONFIG_PATH, UI_PATH, "ui_game_dm.xml");
 	m_pMoneyIndicator = xr_new<CUIMoneyIndicator>();
 	m_pMoneyIndicator->InitFromXML(uiXml);
-	m_pRankIndicator = xr_new<CUIRankIndicator>();
+	m_pRankIndicator = xr_new<CUIRankIndicator>(GetRanksCount());
 	m_pRankIndicator->InitFromXml(uiXml);
 	m_pFragLimitIndicator = xr_new<CUIStatic>();
 	CUIXmlInit::InitStatic(uiXml, "fraglimit", 0, m_pFragLimitIndicator);
