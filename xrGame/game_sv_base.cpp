@@ -218,17 +218,10 @@ void game_sv_GameState::net_Export_State(NET_Packet &P, ClientID const &to)
 	P.w_u8(u8(g_sv_crosshair_color_players));
 
 	// Players
-	//	u32	p_count			= get_players_count() - ((g_dedicated_server)? 1 : 0);
-	u32 p_count = 0;
-	m_server->ForEachClientDo([&](IClient* client)
-	{
-		xrClientData* C = static_cast<xrClientData*>(client);
-		if (!C->net_Ready || (C->ps->IsSkip() && C->ID != to))
-			return;
-		p_count++;
-	});
+	const u32 playersCountPos = P.B.count;
+	P.w_u16(0); // players count fake
 
-	P.w_u16(u16(p_count));
+	u16 playersCount = 0;
 	game_PlayerState *Base = get_id(to);
 
 	m_server->ForEachClientDo([&](IClient* client)
@@ -255,8 +248,10 @@ void game_sv_GameState::net_Export_State(NET_Packet &P, ClientID const &to)
 		P.w_clientID(clientID);
 		A->net_Export(P, TRUE);
 		A->flags__ = tmp_flags;
+		playersCount++;
 	});
 
+	P.w_seek(playersCountPos, &playersCount, sizeof(playersCount)); // players count real
 	net_Export_GameTime(P);
 }
 
@@ -274,17 +269,20 @@ void game_sv_GameState::net_Export_Update(NET_Packet &P, ClientID const &idTo)
 
 	// Снимем флаг локальности, если устанавливали
 	ps->flags__ = flagsBackup;
+
+	net_Export_GameTime(P);
 }
 
 void game_sv_GameState::net_Export_GameTime(NET_Packet &P)
 {
-	//Syncronize GameTime
+	// Syncronize GameTime
 	P.w_u64(GetGameTime());
 	P.w_float(GetGameTimeFactor());
-	//Syncronize EnvironmentGameTime
+
+	// Syncronize EnvironmentGameTime
 	P.w_u64(GetEnvironmentGameTime());
 	P.w_float(GetEnvironmentGameTimeFactor());
-};
+}
 
 void game_sv_GameState::OnPlayerConnect(ClientID const &id_who)
 {
