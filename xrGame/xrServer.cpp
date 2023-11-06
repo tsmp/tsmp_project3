@@ -334,7 +334,7 @@ void xrServer::SendUpdateTo(IClient* client)
 	u16 PacketType = M_UPDATE;
 	Packet.w_begin(PacketType);
 	// GameUpdate
-	game->net_Export_Update(Packet, xr_client->ID, xr_client->ID);
+	game->net_Export_Update(Packet, xr_client->ID);
 	game->net_Export_GameTime(Packet);
 #pragma TODO("check why in cs there is no bLocal check with return")
 

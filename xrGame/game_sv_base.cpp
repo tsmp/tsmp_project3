@@ -260,22 +260,21 @@ void game_sv_GameState::net_Export_State(NET_Packet &P, ClientID const &to)
 	net_Export_GameTime(P);
 }
 
-void game_sv_GameState::net_Export_Update(NET_Packet &P, ClientID const &id_to, ClientID const &id)
+void game_sv_GameState::net_Export_Update(NET_Packet &P, ClientID const &idTo)
 {
-	game_PlayerState *A = get_id(id);
-	if (A)
-	{
-		u16 bk_flags = A->flags__;
-		if (id == id_to)
-		{
-			A->setFlag(GAME_PLAYER_FLAG_LOCAL);
-		}
+	game_PlayerState* ps = get_id(idTo);
+	R_ASSERT2(ps, "Can not get player state in net_Export_Update");
 
-		P.w_clientID(id);
-		A->net_Export(P);
-		A->flags__ = bk_flags;
-	};
-};
+	// Этот стейт уйдет игроку, которому принадлежит. Установим ему флаг локальности, чтобы он ассоциировал себя с ним.
+	u16 flagsBackup = ps->flags__;
+	ps->setFlag(GAME_PLAYER_FLAG_LOCAL);
+
+	P.w_clientID(idTo);
+	ps->net_Export(P);
+
+	// Снимем флаг локальности, если устанавливали
+	ps->flags__ = flagsBackup;
+}
 
 void game_sv_GameState::net_Export_GameTime(NET_Packet &P)
 {
