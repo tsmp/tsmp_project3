@@ -317,38 +317,37 @@ void xrServer::Update()
 
 void xrServer::SendUpdateTo(IClient* client)
 {
-	xrClientData* xr_client = static_cast<xrClientData*>(client);
+	xrClientData* xrClient = static_cast<xrClientData*>(client);
 
-	if (!xr_client->net_Ready)
+	if (!xrClient->net_Ready)
 		return;
 
-	if (!HasBandwidth(xr_client)
+	if (!HasBandwidth(xrClient)
 #ifdef DEBUG
 		&& !g_sv_SendUpdate
 #endif
 		)
 		return;
 
-	// Send relevant entities to client
-	NET_Packet Packet;
-	u16 PacketType = M_UPDATE;
-	Packet.w_begin(PacketType);
-	// GameUpdate
-	game->net_Export_Update(Packet, xr_client->ID);
+	NET_Packet playersStateUpdatePacket;
+	playersStateUpdatePacket.w_begin(M_UPDATE);
+	game->net_Export_Update(playersStateUpdatePacket, xrClient->ID);
+
 #pragma TODO("check why in cs there is no bLocal check with return")
 
-	if (xr_client->flags.bLocal) //this is server client;
+	if (xrClient->flags.bLocal) // this is server client;
 	{
-		SendTo(xr_client->ID, Packet, net_flags(FALSE, TRUE));
+		SendTo(xrClient->ID, playersStateUpdatePacket, net_flags(FALSE, TRUE));
 		return;
 	}
 
 	if (!IsUpdatePacketsReady())
-		MakeUpdatePackets(Packet, xr_client);
-	else
-		InsertFirstPacketToUpdate(Packet);
+		MakeUpdatePackets(xrClient, playersStateUpdatePacket.B.count);
 
-	SendUpdatePacketsToClient(xr_client);
+	WriteAtUpdateBegining(playersStateUpdatePacket);
+
+	// Send relevant entities to client
+	SendUpdatePacketsToClient(xrClient);
 }
 
 bool xrServer::IsUpdatePacketsReady()
@@ -358,15 +357,15 @@ bool xrServer::IsUpdatePacketsReady()
 
 // В начале первого пакета с обновлением должен идти стейт текушего игрока. Сейчас в m_aUpdatePackets стейт от другого игрока.
 // Перезапишем в начало поверх него стейт от текущего игрока из P. Благо размеры стейтов у всех одинаковые.
-void xrServer::InsertFirstPacketToUpdate(NET_Packet const& P)
+void xrServer::WriteAtUpdateBegining(NET_Packet const& P)
 {
 	m_aUpdatePackets[0].w_seek(0, P.B.data, P.B.count);
 }
 
-void xrServer::MakeUpdatePackets(NET_Packet const& firstExportPacket, xrClientData* xr_client)
+void xrServer::MakeUpdatePackets(xrClientData* xr_client, u32 writeOffset)
 {
 	NET_Packet* pCurUpdatePacket = &(m_aUpdatePackets[0]);
-	m_aUpdatePackets[0].w(firstExportPacket.B.data, firstExportPacket.B.count);
+	pCurUpdatePacket->B.count = writeOffset;
 
 	if (g_Dump_Update_Write)
 	{
@@ -376,51 +375,45 @@ void xrServer::MakeUpdatePackets(NET_Packet const& firstExportPacket, xrClientDa
 			Msg("---- UPDATE_Write to %s --- ", *(xr_client->name));
 	}
 
-	NET_Packet tmpPacket;
+	// all entities
+	for (auto& pair : entities)
+	{
+		CSE_Abstract& entity = *pair.second;
 
-	xrS_entities::iterator I = entities.begin();
-	xrS_entities::iterator E = entities.end();
-	for (; I != E; ++I)
-	{ //all entities
-		CSE_Abstract &Test = *(I->second);
-
-		if (0 == Test.owner)
-			continue;
-		if (!Test.net_Ready)
-			continue;
-		if (Test.s_flags.is(M_SPAWN_OBJECT_PHANTOM))
-			continue; // Surely: phantom
-		if (!Test.Net_Relevant())
+		if (!entity.owner || !entity.net_Ready || entity.s_flags.is(M_SPAWN_OBJECT_PHANTOM) || !entity.Net_Relevant())
 			continue;
 
+		NET_Packet tmpPacket;
 		tmpPacket.B.count = 0;
-		// write specific data
-		{
-			u32 position;
-			tmpPacket.w_u16(Test.ID);
-			tmpPacket.w_chunk_open8(position);
-			Test.UPDATE_Write(tmpPacket);
-			u32 ObjectSize = u32(tmpPacket.w_tell() - position) - sizeof(u8);
-			tmpPacket.w_chunk_close8(position);
 
-			if (ObjectSize == 0)
-				continue;
+		// write specific data
+		u32 position;
+		tmpPacket.w_u16(entity.ID);
+		tmpPacket.w_chunk_open8(position);
+		entity.UPDATE_Write(tmpPacket);
+		u32 ObjectSize = u32(tmpPacket.w_tell() - position) - sizeof(u8);
+		tmpPacket.w_chunk_close8(position);
+
+		if (!ObjectSize)
+			continue;
 #ifdef DEBUG
-			if (g_Dump_Update_Write)
-				Msg("* %s : %d", Test.name(), ObjectSize);
+		if (g_Dump_Update_Write)
+			Msg("* %s : %d", Test.name(), ObjectSize);
 #endif
 
-			if (pCurUpdatePacket->B.count + tmpPacket.B.count >= NET_PacketSizeLimit)
-			{
-				m_iCurUpdatePacket++;
-				if (m_aUpdatePackets.size() == m_iCurUpdatePacket)
-					m_aUpdatePackets.push_back(NET_Packet());
-				pCurUpdatePacket = &(m_aUpdatePackets[m_iCurUpdatePacket]);
-				pCurUpdatePacket->w_begin(M_UPDATE_OBJECTS);
-			}
-			pCurUpdatePacket->w(tmpPacket.B.data, tmpPacket.B.count);
+		if (pCurUpdatePacket->B.count + tmpPacket.B.count >= NET_PacketSizeLimit)
+		{
+			m_iCurUpdatePacket++;
+
+			if (m_aUpdatePackets.size() == m_iCurUpdatePacket)
+				m_aUpdatePackets.push_back(NET_Packet());
+
+			pCurUpdatePacket = &(m_aUpdatePackets[m_iCurUpdatePacket]);
+			pCurUpdatePacket->w_begin(M_UPDATE_OBJECTS);
 		}
-	} //all entities
+
+		pCurUpdatePacket->w(tmpPacket.B.data, tmpPacket.B.count);
+	}
 }
 
 void xrServer::SendUpdatePacketsToClient(xrClientData* xr_client)
