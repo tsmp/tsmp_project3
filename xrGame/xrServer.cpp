@@ -315,139 +315,158 @@ void xrServer::Update()
 		BannedListUpdate();
 }
 
+void xrServer::SendUpdateTo(IClient* client)
+{
+	xrClientData* xr_client = static_cast<xrClientData*>(client);
+
+	if (!xr_client->net_Ready)
+		return;
+
+	if (!HasBandwidth(xr_client)
+#ifdef DEBUG
+		&& !g_sv_SendUpdate
+#endif
+		)
+		return;
+
+	// Send relevant entities to client
+	NET_Packet Packet;
+	u16 PacketType = M_UPDATE;
+	Packet.w_begin(PacketType);
+	// GameUpdate
+	game->net_Export_Update(Packet, xr_client->ID, xr_client->ID);
+	game->net_Export_GameTime(Packet);
+#pragma TODO("check why in cs there is no bLocal check with return")
+
+	if (xr_client->flags.bLocal) //this is server client;
+	{
+		SendTo(xr_client->ID, Packet, net_flags(FALSE, TRUE));
+		return;
+	}
+
+	if (!IsUpdatePacketsReady())
+		MakeUpdatePackets(Packet, xr_client);
+	else
+		InsertFirstPacketToUpdate(Packet);
+
+	SendUpdatePacketsToClient(xr_client);
+}
+
+bool xrServer::IsUpdatePacketsReady()
+{
+	return m_aUpdatePackets[0].B.count != 0;
+}
+
+// В начале первого пакета с обновлением должен идти стейт текушего игрока. Сейчас в m_aUpdatePackets стейт от другого игрока.
+// Перезапишем в начало поверх него стейт от текущего игрока из P. Благо размеры стейтов у всех одинаковые.
+void xrServer::InsertFirstPacketToUpdate(NET_Packet const& P)
+{
+	m_aUpdatePackets[0].w_seek(0, P.B.data, P.B.count);
+}
+
+void xrServer::MakeUpdatePackets(NET_Packet const& firstExportPacket, xrClientData* xr_client)
+{
+	NET_Packet* pCurUpdatePacket = &(m_aUpdatePackets[0]);
+	m_aUpdatePackets[0].w(firstExportPacket.B.data, firstExportPacket.B.count);
+
+	if (g_Dump_Update_Write)
+	{
+		if (xr_client->ps)
+			Msg("---- UPDATE_Write to %s --- ", xr_client->ps->getName());
+		else
+			Msg("---- UPDATE_Write to %s --- ", *(xr_client->name));
+	}
+
+	NET_Packet tmpPacket;
+
+	xrS_entities::iterator I = entities.begin();
+	xrS_entities::iterator E = entities.end();
+	for (; I != E; ++I)
+	{ //all entities
+		CSE_Abstract &Test = *(I->second);
+
+		if (0 == Test.owner)
+			continue;
+		if (!Test.net_Ready)
+			continue;
+		if (Test.s_flags.is(M_SPAWN_OBJECT_PHANTOM))
+			continue; // Surely: phantom
+		if (!Test.Net_Relevant())
+			continue;
+
+		tmpPacket.B.count = 0;
+		// write specific data
+		{
+			u32 position;
+			tmpPacket.w_u16(Test.ID);
+			tmpPacket.w_chunk_open8(position);
+			Test.UPDATE_Write(tmpPacket);
+			u32 ObjectSize = u32(tmpPacket.w_tell() - position) - sizeof(u8);
+			tmpPacket.w_chunk_close8(position);
+
+			if (ObjectSize == 0)
+				continue;
+#ifdef DEBUG
+			if (g_Dump_Update_Write)
+				Msg("* %s : %d", Test.name(), ObjectSize);
+#endif
+
+			if (pCurUpdatePacket->B.count + tmpPacket.B.count >= NET_PacketSizeLimit)
+			{
+				m_iCurUpdatePacket++;
+				if (m_aUpdatePackets.size() == m_iCurUpdatePacket)
+					m_aUpdatePackets.push_back(NET_Packet());
+				pCurUpdatePacket = &(m_aUpdatePackets[m_iCurUpdatePacket]);
+				pCurUpdatePacket->w_begin(M_UPDATE_OBJECTS);
+			}
+			pCurUpdatePacket->w(tmpPacket.B.data, tmpPacket.B.count);
+		}
+	} //all entities
+}
+
+void xrServer::SendUpdatePacketsToClient(xrClientData* xr_client)
+{
+	if (g_Dump_Update_Write)
+		Msg("----------------------- ");
+
+	for (u32 p = 0; p <= m_iCurUpdatePacket; p++)
+	{
+		NET_Packet &ToSend = m_aUpdatePackets[p];
+
+		if (ToSend.B.count > 2)
+		{
+			if (g_Dump_Update_Write && xr_client->ps != NULL)
+			{
+				Msg("- Server Update[%d] to Client[%s]  : %d",
+					*((u16 *)ToSend.B.data),
+					xr_client->ps->getName(),
+					ToSend.B.count);
+			}
+
+			SendTo(xr_client->ID, ToSend, net_flags(FALSE, TRUE));
+		}
+	}
+}
+
 void xrServer::SendUpdatesToAll()
 {
 	m_iCurUpdatePacket = 0;
-	NET_Packet *pCurUpdatePacket = &(m_aUpdatePackets[0]);
-	pCurUpdatePacket->B.count = 0;
-	u32 position;
+	m_aUpdatePackets[0].B.count = 0;
 
-#pragma TODO("Сделать как в чн/зп, вынести в функцию")
-
-	ForEachClientDoSender([this, &position, &pCurUpdatePacket](IClient *client)
+	ForEachClientDoSender([this](IClient* cl)
 	{
-		xrClientData* xr_client = static_cast<xrClientData*>(client);
-
-		if (!xr_client->net_Ready)
-			return;
-
-		if (!HasBandwidth(xr_client)
-#ifdef DEBUG
-			&& !g_sv_SendUpdate
-#endif
-		)
-			return;
-
-		// Send relevant entities to client
-		NET_Packet Packet;
-		u16 PacketType = M_UPDATE;
-		Packet.w_begin(PacketType);
-		// GameUpdate
-		game->net_Export_Update(Packet, xr_client->ID, xr_client->ID);
-		game->net_Export_GameTime(Packet);
-
-		if (xr_client->flags.bLocal) //this is server client;
-		{
-			SendTo(xr_client->ID, Packet, net_flags(FALSE, TRUE));
-			return;
-		}
-
-		if (m_aUpdatePackets[0].B.count != 0) //not a first client in update cycle
-		{
-			m_aUpdatePackets[0].w_seek(0, Packet.B.data, Packet.B.count);
-		}
-		else
-		{
-			m_aUpdatePackets[0].w(Packet.B.data, Packet.B.count);
-
-			if (g_Dump_Update_Write)
-			{
-				if (xr_client->ps)
-					Msg("---- UPDATE_Write to %s --- ", xr_client->ps->getName());
-				else
-					Msg("---- UPDATE_Write to %s --- ", *(xr_client->name));
-			}
-
-			NET_Packet tmpPacket;
-
-			xrS_entities::iterator I = entities.begin();
-			xrS_entities::iterator E = entities.end();
-			for (; I != E; ++I)
-			{ //all entities
-				CSE_Abstract &Test = *(I->second);
-
-				if (0 == Test.owner)
-					continue;
-				if (!Test.net_Ready)
-					continue;
-				if (Test.s_flags.is(M_SPAWN_OBJECT_PHANTOM))
-					continue; // Surely: phantom
-				if (!Test.Net_Relevant())
-					continue;
-
-				tmpPacket.B.count = 0;
-				// write specific data
-				{
-					tmpPacket.w_u16(Test.ID);
-					tmpPacket.w_chunk_open8(position);
-					Test.UPDATE_Write(tmpPacket);
-					u32 ObjectSize = u32(tmpPacket.w_tell() - position) - sizeof(u8);
-					tmpPacket.w_chunk_close8(position);
-
-					if (ObjectSize == 0)
-						continue;
-#ifdef DEBUG
-					if (g_Dump_Update_Write)
-						Msg("* %s : %d", Test.name(), ObjectSize);
-#endif
-
-					if (pCurUpdatePacket->B.count + tmpPacket.B.count >= NET_PacketSizeLimit)
-					{
-						m_iCurUpdatePacket++;
-
-						if (m_aUpdatePackets.size() == m_iCurUpdatePacket)
-							m_aUpdatePackets.push_back(NET_Packet());
-
-						PacketType = M_UPDATE_OBJECTS;
-						pCurUpdatePacket = &(m_aUpdatePackets[m_iCurUpdatePacket]);
-						pCurUpdatePacket->w_begin(PacketType);
-					}
-					pCurUpdatePacket->w(tmpPacket.B.data, tmpPacket.B.count);
-				} //all entities
-			}
-		}
-
-		if (g_Dump_Update_Write)
-			Msg("----------------------- ");
-
-		for (u32 p = 0; p <= m_iCurUpdatePacket; p++)
-		{
-			NET_Packet &ToSend = m_aUpdatePackets[p];
-			if (ToSend.B.count > 2)
-			{
-
-				if (g_Dump_Update_Write && xr_client->ps != NULL)
-				{
-					Msg("- Server Update[%d] to Client[%s]  : %d",
-						*((u16 *)ToSend.B.data),
-						xr_client->ps->getName(),
-						ToSend.B.count);
-				}
-
-				SendTo(xr_client->ID, ToSend, net_flags(FALSE, TRUE));
-			}
-		}
+		SendUpdateTo(cl);
 	});
-
-#ifdef DEBUG
-	g_sv_SendUpdate = 0;
-#endif
 
 	if (m_file_transfers)
 	{
 		m_file_transfers->update_transfer();
 		m_file_transfers->stop_obsolete_receivers();
 	}
+
+#ifdef DEBUG
+	g_sv_SendUpdate = 0;
+#endif
 
 	if (game->sv_force_sync)
 		Perform_game_export();

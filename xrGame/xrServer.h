@@ -75,6 +75,11 @@ private:
 	file_transfer::server_site* m_file_transfers;
 	clientdata_proxy* m_screenshot_proxies[/*MAX_PLAYERS_COUNT*/ 32];
 
+	bool IsUpdatePacketsReady();
+	void MakeUpdatePackets(NET_Packet const& firstExportPacket, xrClientData* xr_client);
+	void InsertFirstPacketToUpdate(NET_Packet const& P);
+	void SendUpdatePacketsToClient(xrClientData* xr_client);
+
 	struct DelayedPacket
 	{
 		ClientID SenderID;
@@ -93,6 +98,7 @@ private:
 
 	void OnRadminCommand(xrClientData *CL, NET_Packet& P, ClientID const &sender);
 	void SendUpdatesToAll();
+	void SendUpdateTo(IClient* client);
 
 private:
 	typedef CID_Generator<
