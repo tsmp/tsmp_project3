@@ -155,6 +155,9 @@ void CHW::selectResolution(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 	{
 		dwWidth = psCurrentVidMode[0];
 		dwHeight = psCurrentVidMode[1];
+
+		if (strstr(Core.Params, "-screen_left") || strstr(Core.Params, "-screen_right"))
+			dwWidth /= 2;
 	}
 	else //check
 	{
@@ -470,26 +473,41 @@ void CHW::updateWindowProps(HWND m_hWnd)
 		bCenter = TRUE;
 #endif
 
-		if (bCenter)
+		RECT DesktopRect;
+		GetClientRect(GetDesktopWindow(), &DesktopRect);
+
+		if (strstr(Core.Params, "-screen_right"))
 		{
-			RECT DesktopRect;
-
-			GetClientRect(GetDesktopWindow(), &DesktopRect);
-
 			SetRect(&rcWindowBounds,
-					(DesktopRect.right - DevPP.BackBufferWidth) / 2,
-					(DesktopRect.bottom - DevPP.BackBufferHeight) / 2,
-					(DesktopRect.right + DevPP.BackBufferWidth) / 2,
-					(DesktopRect.bottom + DevPP.BackBufferHeight) / 2);
+				(DesktopRect.right - DevPP.BackBufferWidth),
+				(DesktopRect.bottom - DevPP.BackBufferHeight) / 2.04f,
+				(DesktopRect.right + DevPP.BackBufferWidth) / 1.5f,
+				(DesktopRect.bottom + DevPP.BackBufferHeight) / 2.04f);
+		}
+		else if (strstr(Core.Params, "-screen_left"))
+		{
+			SetRect(&rcWindowBounds,
+				0,
+				(DesktopRect.bottom - DevPP.BackBufferHeight) / 2.04f,
+				DevPP.BackBufferWidth,
+				(DesktopRect.bottom + DevPP.BackBufferHeight) / 2.04f);
+		}
+		else if (bCenter)
+		{
+			SetRect(&rcWindowBounds,
+				(DesktopRect.right - DevPP.BackBufferWidth) / 2,
+				(DesktopRect.bottom - DevPP.BackBufferHeight) / 2,
+				(DesktopRect.right + DevPP.BackBufferWidth) / 2,
+				(DesktopRect.bottom + DevPP.BackBufferHeight) / 2);
 		}
 		else
 		{
 			SetRect(&rcWindowBounds,
-					0,
-					0,
-					DevPP.BackBufferWidth,
-					DevPP.BackBufferHeight);
-		};
+				0,
+				0,
+				DevPP.BackBufferWidth,
+				DevPP.BackBufferHeight);
+		}
 
 		AdjustWindowRect(&rcWindowBounds, dwWindowStyle, FALSE);
 
