@@ -56,6 +56,10 @@
 #include "physicobject.h"
 #endif
 
+#include "GameMtlLib.h"
+#include "Grenade.h"
+#include "CustomRocket.h"
+#include "Actor.h"
 
 ENGINE_API bool g_dedicated_server;
 extern BOOL g_bDebugDumpPhysicsStep;
@@ -987,6 +991,66 @@ bool CLevel::IsClient()
 void CLevel::OnSessionTerminate(LPCSTR reason)
 {
 	MainMenu()->OnSessionTerminate(reason);
+}
+
+ICF static BOOL GetPickDist_Callback(collide::rq_result& result, LPVOID params)
+{
+	auto RQ = reinterpret_cast<collide::rq_result*>(params);
+
+	if (result.O)
+	{
+		if (auto pRocket = smart_cast<CCustomRocket*>(result.O))
+		{
+			if (!pRocket->Useful())
+				return TRUE;
+		}
+
+		if (auto pGrenade = smart_cast<CGrenade*>(result.O))
+		{
+			if (!pGrenade->Useful())
+				return TRUE;
+		}
+
+		if (auto pMissile = smart_cast<CMissile*>(result.O))
+		{
+			if (!pMissile->Useful())
+				return TRUE;
+		}
+
+		if (auto pActor = smart_cast<CActor*>(Level().CurrentEntity()))
+		{
+			if (result.O == pActor || result.O->H_Parent() == pActor)
+				return TRUE;
+
+			if (pActor->Holder())
+			{
+				auto car = smart_cast<CCar*>(pActor->Holder());
+				if (car && result.O == car)
+					return TRUE;
+			}
+		}
+	}
+	else
+	{
+		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
+		SGameMtl* pMtl = GMLib.GetMaterialByIdx(T->material);
+
+		if (pMtl && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
+			return TRUE;
+	}
+
+	*RQ = result;
+	return FALSE;
+}
+
+collide::rq_result CLevel::GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore)
+{
+	collide::rq_result RQ;
+	RQ.set(nullptr, range, -1);
+	collide::rq_results RQR;
+	collide::ray_defs RD(pos, dir, RQ.range, CDB::OPT_FULL_TEST, collide::rqtBoth);
+	Level().ObjectSpace.RayQuery(RQR, RD, GetPickDist_Callback, &RQ, nullptr, ignore);
+	return RQ;
 }
 
 u32 GameID()

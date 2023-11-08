@@ -104,6 +104,8 @@ public:
 	CLevelDebug *m_level_debug;
 #endif
 
+	collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
+
 public:
 	////////////// network ////////////////////////
 	u32 GetInterpolationSteps();
