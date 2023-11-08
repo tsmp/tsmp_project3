@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "frustum.h"
+#include "xr_input.h"
 
 #pragma TODO("TSMP: port device files from from cs if they are better")
 
@@ -436,6 +437,18 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 	u16 fActive = LOWORD(wParam);
 	BOOL fMinimized = (BOOL)HIWORD(wParam);
 	BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
+
+	if (strstr(Core.Params, "-always_active"))
+	{
+		Device.b_is_Active = TRUE;
+
+		if (fActive)
+			pInput->OnAppActivate();
+		else
+			pInput->OnAppDeactivate();
+
+		return;
+	}
 
 	if (bActive != Device.b_is_Active)
 	{
