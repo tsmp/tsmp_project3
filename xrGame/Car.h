@@ -538,7 +538,7 @@ private:
 	bool DoorHit(float P, s16 element, ALife::EHitType hit_type);
 
 public:
-	virtual bool allowWeapon() const { return true; };
+	virtual bool allowWeapon() const;
 	virtual bool HUDView() const;
 	virtual Fvector ExitPosition() { return m_exit_position; }
 	virtual Fvector ExitVelocity();

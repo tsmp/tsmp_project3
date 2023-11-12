@@ -135,6 +135,11 @@ void CCar::vfProcessInputKey(int iCommand, bool bPressed)
 		OnKeyboardRelease(iCommand);
 }
 
+bool CCar::allowWeapon() const
+{
+	return !m_car_weapon || !m_car_weapon->IsActive();
+}
+
 void CCar::OnKeyboardPress(int cmd)
 {
 	if (!IsMyCar() && !GetScriptControl())
