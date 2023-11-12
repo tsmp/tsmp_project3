@@ -140,6 +140,18 @@ bool CCar::allowWeapon() const
 	return !m_car_weapon || !m_car_weapon->IsActive();
 }
 
+void CCar::OnWeaponChange(int cmd)
+{
+	if (cmd == 1)
+	{
+		m_car_weapon->Action(CCarWeapon::eWpnActivate, true);
+	}
+	else
+	{
+		m_car_weapon->Action(CCarWeapon::eWpnActivate, false);
+	}
+}
+
 void CCar::OnKeyboardPress(int cmd)
 {
 	if (!IsMyCar() && !GetScriptControl())
@@ -147,6 +159,14 @@ void CCar::OnKeyboardPress(int cmd)
 
 	switch (cmd)
 	{
+	case kWPN_1:
+	case kWPN_2:
+	case kWPN_3:
+	case kWPN_4:
+		if (HasWeapon())
+			OnWeaponChange(cmd - kWPN_1 + 1);
+		break;
+
 	case kCAM_1:
 		OnCameraChange(ectFirst);
 		break;

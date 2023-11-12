@@ -527,6 +527,7 @@ private:
 	void CarExplode();
 
 	void OnCameraChange(int type);
+	void OnWeaponChange(int type);
 
 	bool HUDview() { return IsFocused(); }
 
