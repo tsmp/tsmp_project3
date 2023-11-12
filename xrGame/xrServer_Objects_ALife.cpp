@@ -1481,6 +1481,7 @@ void CSE_ALifeCar::UPDATE_Read(NET_Packet &P)
 	P.r_u8(wpnActive);
 	P.r_u8(wpnShooting);
 	P.r_vec3(enemyPos);
+	P.r_u8(); // has camera data
 }
 
 void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
@@ -1507,6 +1508,7 @@ void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
 	P.w_u8(wpnActive);
 	P.w_u8(wpnShooting);
 	P.w_vec3(enemyPos);
+	P.w_u8(0); // has camera data
 }
 
 bool CSE_ALifeCar::used_ai_locations() const

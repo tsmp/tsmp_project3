@@ -16,6 +16,8 @@
 #include "Grenade.h"
 #include "game_base_space.h"
 #include "Artifact.h"
+#include "Car.h"
+#include "CameraBase.h"
 
 static const float VEL_MAX = 10.f;
 static const float VEL_A_MAX = 10.f;
@@ -59,13 +61,18 @@ float CActor::GetWeaponAccuracy() const
 
 void CActor::g_fireParams(const CHudItem *pHudItem, Fvector &fire_pos, Fvector &fire_dir)
 {
-	//	VERIFY			(inventory().ActiveItem());
+	if (auto car = smart_cast<CCar*>(Holder()))
+	{
+		fire_pos = car->Camera()->vPosition;
+		fire_dir = car->Camera()->vDirection;
+	}
+	else
+	{
+		fire_pos = Cameras().Pos();
+		fire_dir = Cameras().Dir();
+	}
 
-	fire_pos = Cameras().Pos();
-	fire_dir = Cameras().Dir();
-
-	const CMissile *pMissile = smart_cast<const CMissile *>(pHudItem);
-	if (pMissile)
+	if (smart_cast<CMissile*>(pHudItem))
 	{
 		Fvector offset;
 		XFORM().transform_dir(offset, m_vMissileOffset);
