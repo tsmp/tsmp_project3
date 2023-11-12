@@ -880,13 +880,14 @@ void CCar::detach_Actor()
 	
 	if(!g_dedicated_server)
 		HUD().GetUI()->UIMainIngameWnd->CarPanel().Show(false);
-	
-	///Break();
-	//H_SetParent(NULL);
+
 	HandBreak();
 
 	if (HasWeapon())
+	{
+		m_car_weapon->Action(CCarWeapon::eWpnActivate, false);
 		m_car_weapon->Action(CCarWeapon::eWpnFire, 0);
+	}
 
 	processing_deactivate();
 #ifdef DEBUG
@@ -917,6 +918,9 @@ bool CCar::attach_Actor(CGameObject *actor)
 	OnCameraChange(g_car_camera_view);
 	PPhysicsShell()->Enable();
 	PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
+
+	if(HasWeapon())
+		m_car_weapon->Action(CCarWeapon::eWpnActivate, true);
 
 	processing_activate();
 	ReleaseHandBreak();
@@ -2044,24 +2048,27 @@ void CCar::OnBeforeExplosion()
 
 void CCar::CarExplode()
 {
-
 	if (b_exploded)
 		return;
+
 	CPHSkeleton::SetNotNeedSave();
+
 	if (m_car_weapon)
 		m_car_weapon->Action(CCarWeapon::eWpnActivate, 0);
+
 	m_lights.TurnOffHeadLights();
 	b_exploded = true;
 	CExplosive::GenExplodeEvent(Position(), Fvector().set(0.f, 1.f, 0.f));
 
-	CActor *A = OwnerActor();
-	if (A)
+	if (CActor* A = OwnerActor())
 	{
 		if (!m_doors.empty())
 			m_doors.begin()->second.GetExitPosition(m_exit_position);
 		else
 			m_exit_position.set(Position());
+
 		A->detach_Vehicle();
+
 		if (A->g_Alive() <= 0.f)
 			A->character_physics_support()->movement()->DestroyCharacter();
 	}
@@ -2069,52 +2076,6 @@ void CCar::CarExplode()
 	if (CPHDestroyable::CanDestroy())
 		CPHDestroyable::Destroy(ID(), "physic_destroyable_object");
 }
-//void CCar::object_contactCallbackFun(bool& do_colide,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
-//{
-//
-//	dxGeomUserData *l_pUD1 = NULL;
-//	dxGeomUserData *l_pUD2 = NULL;
-//	l_pUD1 = retrieveGeomUserData(c.geom.g1);
-//	l_pUD2 = retrieveGeomUserData(c.geom.g2);
-//
-//	if(! l_pUD1) return;
-//	if(!l_pUD2) return;
-//
-//	CEntityAlive* capturer=smart_cast<CEntityAlive*>(l_pUD1->ph_ref_object);
-//	if(capturer)
-//	{
-//		CPHCapture* capture=capturer->m_PhysicMovementControl->PHCapture();
-//		if(capture)
-//		{
-//			if(capture->m_taget_element->PhysicsRefObject()==l_pUD2->ph_ref_object)
-//			{
-//				do_colide = false;
-//				capture->m_taget_element->Enable();
-//				if(capture->e_state==CPHCapture::cstReleased) capture->ReleaseInCallBack();
-//			}
-//
-//		}
-//
-//
-//	}
-//
-//	capturer=smart_cast<CEntityAlive*>(l_pUD2->ph_ref_object);
-//	if(capturer)
-//	{
-//		CPHCapture* capture=capturer->m_PhysicMovementControl->PHCapture();
-//		if(capture)
-//		{
-//			if(capture->m_taget_element->PhysicsRefObject()==l_pUD1->ph_ref_object)
-//			{
-//				do_colide = false;
-//				capture->m_taget_element->Enable();
-//				if(capture->e_state==CPHCapture::cstReleased) capture->ReleaseInCallBack();
-//			}
-//
-//		}
-//
-//	}
-//}
 
 template <class T>
 IC void CCar::fill_wheel_vector(LPCSTR S, xr_vector<T> &type_wheels)

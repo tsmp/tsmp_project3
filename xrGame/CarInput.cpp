@@ -190,8 +190,6 @@ void CCar::OnKeyboardPress(int cmd)
 		break;
 	case kENGINE:
 		SwitchEngine();
-		if (HasWeapon())
-			m_car_weapon->Action(CCarWeapon::eWpnActivate, b_engine_on);
 		break;
 	case kTORCH:
 		m_lights.SwitchHeadLights();
