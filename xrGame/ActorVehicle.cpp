@@ -51,6 +51,7 @@ void CActor::attach_Vehicle(CHolderCustom *vehicle)
 	else
 		V->PlayCycle(anims.idles[0], FALSE);
 
+	car->OnChangeLookout(false);
 	ResetCallbacks();
 	IKinematics* K = V->dcast_PKinematics();
 
@@ -73,6 +74,8 @@ void CActor::detach_Vehicle()
 	CCar *car = smart_cast<CCar *>(m_holder);
 	if (!car)
 		return;
+
+	car->OnChangeLookout(false);
 	CPHShellSplitterHolder *sh = car->PPhysicsShell()->SplitterHolder();
 	if (sh)
 		sh->Deactivate();

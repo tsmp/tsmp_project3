@@ -415,6 +415,9 @@ void CCar::UpdateEx(float fov)
 		cam_Update(Device.fTimeDelta, fov);
 		OwnerActor()->Cameras().Update(Camera());
 		OwnerActor()->Cameras().ApplyDevice(VIEWPORT_NEAR);
+
+		if (m_InLookout)
+			OwnerActor()->UpdateAnimation();
 	}
 }
 
@@ -482,7 +485,12 @@ void CCar::VisualUpdate(float fov)
 			OwnerActor()->Orientation().pitch = -0.0728002042;
 		}
 
-		Owner()->XFORM().mul_43(XFORM(), m_sits_transforms[0]);		
+		Fmatrix sit = m_sits_transforms[0];
+
+		if(m_InLookout)
+			sit.translate(m_DriverLookoutTranslation);
+
+		Owner()->XFORM().mul_43(XFORM(), sit);
 
 		if (HUD().GetUI() && Owner() == Actor())
 		{
@@ -626,6 +634,7 @@ void CCar::net_Export(NET_Packet &P)
 {
 	P.w_u8(u8(b_engine_on));
 	P.w_u8(u8(m_lights.IsLightTurnedOn()));
+	P.w_u8(u8(m_InLookout));
 	P.w_float(Health());
 
 	if (OwnerActor())
@@ -706,6 +715,9 @@ void CCar::net_Import(NET_Packet &P)
 	u8 light;
 	P.r_u8(light);
 
+	u8 lookout;
+	P.r_u8(lookout);
+
 	float health;
 	P.r_float(health);
 	SetfHealth(health);
@@ -729,6 +741,8 @@ void CCar::net_Import(NET_Packet &P)
 
 	if (!IsMyCar())
 	{
+		OnChangeLookout(lookout);
+
 		bool e = !!engine;
 
 		if (e != b_engine_on)
@@ -1000,6 +1014,9 @@ void CCar::ParseDefinitions()
 	m_camera_position = ini->r_fvector3("car_definition", "camera_pos");
 	m_camera_position_lookat = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_lookat", m_camera_position);
 	m_camera_position_free = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_free", m_camera_position);
+
+	m_AllowLookout = READ_IF_EXISTS(ini, r_bool, "car_definition", "allow_lookout", false);
+	m_DriverLookoutTranslation = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "driver_lookout_trans", m_DriverLookoutTranslation);
 
 	///////////////////////////car definition///////////////////////////////////////////////////
 	fill_wheel_vector(ini->r_string("car_definition", "driving_wheels"), m_driving_wheels);

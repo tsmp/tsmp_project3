@@ -62,11 +62,14 @@ private:
 	xr_deque<SCarNetUpdate> m_CarNetUpdates;
 	u32 m_InterpolationStartTime;
 	bool m_FirstInterpolation;
+	bool m_AllowLookout = false;
+	bool m_InLookout = false;
 
 	SCarNetUpdate *m_Update1;
 	SCarNetUpdate *m_Update2;
 	float m_LerpMul;
 	Fvector m_WeaponDesiredPos;
+	Fvector m_DriverLookoutTranslation{ 0.f, 0.f, 0.f };
 
 #ifdef DEBUG
 	CFunctionGraph m_dbg_power_rpm;
@@ -509,6 +512,7 @@ private:
 public:
 	void HandBreak();
 	void ReleaseHandBreak();
+	void OnChangeLookout(bool enabled);
 
 private:
 	void DriveForward();

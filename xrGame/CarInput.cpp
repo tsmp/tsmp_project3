@@ -140,14 +140,44 @@ bool CCar::allowWeapon() const
 	return !m_car_weapon || !m_car_weapon->IsActive();
 }
 
+void CCar::OnChangeLookout(bool enabled)
+{
+	if (enabled && !m_AllowLookout)
+		return;
+
+	if (enabled == m_InLookout)
+		return;
+
+	CActor* ownerAct = OwnerActor();
+
+	if (!ownerAct)
+	{
+		m_InLookout = false;
+		return;
+	}
+
+	m_InLookout = enabled;
+
+	if (enabled)
+	{
+		ownerAct->m_current_torso.invalidate();
+		ownerAct->m_current_legs.invalidate();
+		ownerAct->UpdateAnimation(); // play idle standing anim
+	}
+	else
+		ownerAct->steer_Vehicle(0.f); // play siting drive anim
+}
+
 void CCar::OnWeaponChange(int cmd)
 {
 	if (cmd == 1)
 	{
+		OnChangeLookout(false);
 		m_car_weapon->Action(CCarWeapon::eWpnActivate, true);
 	}
 	else
 	{
+		OnChangeLookout(true);
 		m_car_weapon->Action(CCarWeapon::eWpnActivate, false);
 	}
 }
@@ -197,12 +227,12 @@ void CCar::OnKeyboardPress(int cmd)
 	}
 	case kR_STRAFE:
 		PressRight();
-		if (OwnerActor())
+		if (OwnerActor() && !m_InLookout)
 			OwnerActor()->steer_Vehicle(1);
 		break;
 	case kL_STRAFE:
 		PressLeft();
-		if (OwnerActor())
+		if (OwnerActor() && !m_InLookout)
 			OwnerActor()->steer_Vehicle(-1);
 		break;
 	case kJUMP: 
@@ -240,12 +270,12 @@ void CCar::OnKeyboardRelease(int cmd)
 		break;
 	case kL_STRAFE:
 		ReleaseLeft();
-		if (OwnerActor())
+		if (OwnerActor() && !m_InLookout)
 			OwnerActor()->steer_Vehicle(0);
 		break;
 	case kR_STRAFE:
 		ReleaseRight();
-		if (OwnerActor())
+		if (OwnerActor() && !m_InLookout)
 			OwnerActor()->steer_Vehicle(0);
 		break;
 	case kJUMP:
