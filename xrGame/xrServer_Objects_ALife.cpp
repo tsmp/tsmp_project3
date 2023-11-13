@@ -1481,7 +1481,13 @@ void CSE_ALifeCar::UPDATE_Read(NET_Packet &P)
 	P.r_u8(wpnActive);
 	P.r_u8(wpnShooting);
 	P.r_vec3(enemyPos);
-	P.r_u8(); // has camera data
+
+	if (P.r_u8()) // has camera data
+	{
+		Fvector fake;
+		P.r_vec3(fake);
+		P.r_vec3(fake);
+	}
 }
 
 void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
