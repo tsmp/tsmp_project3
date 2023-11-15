@@ -695,14 +695,8 @@ void CCar::net_Export(NET_Packet &P)
 		P.w_vec3(lastUpdate.enemyPos);
 	}
 
-	if (IsMyCar())
-	{
-		P.w_u8(1); // has camera data
-		P.w_vec3(Camera()->vPosition);
-		P.w_vec3(Camera()->vDirection);
-	}
-	else
-		P.w_u8(0); // has camera data
+	P.w_vec3(Camera()->vPosition);
+	P.w_vec3(Camera()->vDirection);
 
 	inherited::net_Export(P);
 }
@@ -777,14 +771,17 @@ void CCar::net_Import(NET_Packet &P)
 	update.wpnShooting = static_cast<bool>(P.r_u8());
 	update.enemyPos = P.r_vec3();
 
-	if (P.r_u8()) // has camera data
-	{
-		P.r_vec3(Camera()->vPosition);
-		P.r_vec3(Camera()->vDirection);
-	}
+	Fvector camPos, camDir;
+	P.r_vec3(camPos);
+	P.r_vec3(camDir);
 
-	if (!IsMyCar())	
+	if (!IsMyCar())
+	{
+		Camera()->vPosition = camPos;
+		Camera()->vDirection = camDir;
+
 		m_CarNetUpdates.push_back(update);
+	}
 }
 
 void CCar::OnHUDDraw(CCustomHUD * /**hud/**/)

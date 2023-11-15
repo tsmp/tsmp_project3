@@ -1483,12 +1483,8 @@ void CSE_ALifeCar::UPDATE_Read(NET_Packet &P)
 	P.r_u8(wpnShooting);
 	P.r_vec3(enemyPos);
 
-	if (P.r_u8()) // has camera data
-	{
-		Fvector fake;
-		P.r_vec3(fake);
-		P.r_vec3(fake);
-	}
+	P.r_vec3(camPos);
+	P.r_vec3(camDir);
 }
 
 void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
@@ -1516,7 +1512,9 @@ void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
 	P.w_u8(wpnActive);
 	P.w_u8(wpnShooting);
 	P.w_vec3(enemyPos);
-	P.w_u8(0); // has camera data
+
+	P.w_vec3(camPos);
+	P.w_vec3(camDir);
 }
 
 bool CSE_ALifeCar::used_ai_locations() const

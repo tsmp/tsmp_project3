@@ -531,6 +531,9 @@ u8 wpnActive;
 u8 wpnShooting;
 Fvector enemyPos;
 
+Fvector camPos;
+Fvector camDir;
+
 protected:
 virtual void data_load(NET_Packet &tNetPacket);
 virtual void data_save(NET_Packet &tNetPacket);
