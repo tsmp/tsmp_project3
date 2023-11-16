@@ -213,103 +213,97 @@ void CRenderDevice::Run()
 	PrepareToRun();
 
 	// Message cycle
-	BOOL bGotMsg;
 	MSG msg;
 	PeekMessage(&msg, NULL, 0U, 0U, PM_NOREMOVE);
 
 	seqAppStart.Process(rp_AppStart);
-
 	m_pRender->ClearTarget();
 
 	while (WM_QUIT != msg.message)
 	{
-		bGotMsg = PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE);
-		if (bGotMsg)
+		if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE)) // has message
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+			continue;
 		}
-		else
+
+		if (!b_is_Ready)
 		{
-			if (b_is_Ready)
-			{
+			Sleep(100);
+			continue;
+		}
+
 #ifdef DEDICATED_SERVER
-				u32 frameStartTime = m_GlobalTimer.GetElapsed_ms();
+		u32 frameStartTime = m_GlobalTimer.GetElapsed_ms();
+#else
+		g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
 #endif
 
-				if (psDeviceFlags.test(rsStatistic))
-					g_bEnableStatGather = TRUE;
-				else
-					g_bEnableStatGather = FALSE;
+		if (g_loading_events.size())
+		{
+			if (g_loading_events.front()())
+				g_loading_events.pop_front();
 
-				if (g_loading_events.size())
-				{
-					if (g_loading_events.front()())
-						g_loading_events.pop_front();
-
-					pApp->LoadDraw();
-					continue;
-				}
-				else
-					FrameMove();
+			pApp->LoadDraw();
+			continue;
+		}
+		else
+			FrameMove();
 
 #ifndef DEDICATED_SERVER
-				// Precache
-				if (dwPrecacheFrame)
-				{
-					float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
-					float angle = PI_MUL_2 * factor;
-					vCameraDirection.set(_sin(angle), 0, _cos(angle));
-					vCameraDirection.normalize();
-					vCameraTop.set(0, 1, 0);
-					vCameraRight.crossproduct(vCameraTop, vCameraDirection);
+		// Precache
+		if (dwPrecacheFrame)
+		{
+			float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
+			float angle = PI_MUL_2 * factor;
+			vCameraDirection.set(_sin(angle), 0, _cos(angle));
+			vCameraDirection.normalize();
+			vCameraTop.set(0, 1, 0);
+			vCameraRight.crossproduct(vCameraTop, vCameraDirection);
 
-					mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
-				}
+			mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
+		}
 
-				// Matrices
-				mFullTransform.mul(mProject, mView);
-				m_pRender->SetCacheXform(mView, mProject);
-				D3DXMatrixInverse((D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
+		// Matrices
+		mFullTransform.mul(mProject, mView);
+		m_pRender->SetCacheXform(mView, mProject);
+		D3DXMatrixInverse((D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
 
-				// *** Resume threads
-				// Capture end point - thread must run only ONE cycle
-				// Release start point - allow thread to run
-				mt_csLeave.Enter();
-				mt_csEnter.Leave();
-				Sleep(0);
+		// *** Resume threads
+		// Capture end point - thread must run only ONE cycle
+		// Release start point - allow thread to run
+		mt_csLeave.Enter();
+		mt_csEnter.Leave();
+		Sleep(0);
 
-				ProcessRender();
+		ProcessRender();
 
-				// *** Suspend threads
-				// Capture startup point
-				// Release end point - allow thread to wait for startup point
-				mt_csEnter.Enter();
-				mt_csLeave.Leave();
+		// *** Suspend threads
+		// Capture startup point
+		// Release end point - allow thread to wait for startup point
+		mt_csEnter.Enter();
+		mt_csLeave.Leave();
 
-				// Ensure, that second thread gets chance to execute anyway
-				if (CurrentFrameNumber != mt_Thread_marker)
-					ProcessTasksForMT();
+		// Ensure, that second thread gets chance to execute anyway
+		if (CurrentFrameNumber != mt_Thread_marker)
+			ProcessTasksForMT();
+
+		if (!b_is_Active)
+			Sleep(1);
 
 #else // DEDICATED_SERVER
-				Device.seqFrameMT.Process(rp_Frame);
+		Device.seqFrameMT.Process(rp_Frame);
 
-				u32 frameEndTime = m_GlobalTimer.GetElapsed_ms();
-				u32 frameTime = (frameEndTime - frameStartTime);
-				u32 dedicatedSrvUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
+		u32 frameEndTime = m_GlobalTimer.GetElapsed_ms();
+		u32 frameTime = (frameEndTime - frameStartTime);
+		u32 dedicatedSrvUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
 
-				if (frameTime < dedicatedSrvUpdateDelta)
-					Sleep(dedicatedSrvUpdateDelta - frameTime);
+		if (frameTime < dedicatedSrvUpdateDelta)
+			Sleep(dedicatedSrvUpdateDelta - frameTime);
 #endif // DEDICATED_SERVER
+	}
 
-			}
-			else
-				Sleep(100);
-
-			if (!b_is_Active)
-				Sleep(1);
-			}
-		}
 	seqAppEnd.Process(rp_AppEnd);
 
 #ifndef DEDICATED_SERVER
@@ -318,8 +312,8 @@ void CRenderDevice::Run()
 	mt_csEnter.Leave();
 
 	while (mt_bMustExit)
-#endif
 		Sleep(0);
+#endif
 }
 
 void ProcessLoading(RP_FUNC* f)
