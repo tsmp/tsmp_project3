@@ -47,7 +47,6 @@ private:
 	bool SpawnPlayerInCar(ClientID const &playerId);
 	CSE_Abstract* SpawnCar(u16 rpoint);
 	void AssignRPoint(CSE_Abstract* E, u16 rpoint);
-	void DestroyCarOfPlayer(game_PlayerState* ps);
 
 	void OnGKill(NET_Packet &P);
 	void OnBaseEnter(NET_Packet &P);

@@ -9,11 +9,6 @@ game_sv_Carfight::game_sv_Carfight()
 	m_type = GAME_CARFIGHT;
 }
 
-void game_sv_Carfight::CleanClientData(xrClientData* xrCData)
-{
-	DestroyCarOfPlayer(xrCData->ps);
-}
-
 CSE_Abstract* game_sv_Carfight::SpawnCar(Fvector pos, Fvector angle)
 {
 	CSE_Abstract* E = nullptr;
@@ -29,17 +24,6 @@ CSE_Abstract* game_sv_Carfight::SpawnCar(Fvector pos, Fvector angle)
 	CSE_Abstract* spawned = spawn_end(E, m_server->GetServerClient()->ID);
 	signal_Syncronize();
 	return spawned;
-}
-
-void game_sv_Carfight::DestroyCarOfPlayer(game_PlayerState* ps)
-{
-	if (ps->CarID == u16(-1))
-		return;
-
-	NET_Packet P;
-	u_EventGen(P, GE_DESTROY, ps->CarID);
-	Level().Send(P);
-	ps->CarID = u16(-1);
 }
 
 bool game_sv_Carfight::SpawnPlayerInCar(ClientID const& playerId)
@@ -62,6 +46,14 @@ bool game_sv_Carfight::SpawnPlayerInCar(ClientID const& playerId)
 	xrCData->ps->skin = u8(::Random.randI((int)TeamList[xrCData->ps->team].aSkins.size()));
 	SpawnPlayer(playerId, "mp_actor", car->ID);
 	return true;
+}
+
+void game_sv_Carfight::AllowDeadBodyRemove(u16 gameID, bool changeOwner)
+{
+	if(auto playerState = get_eid(gameID))
+		DestroyCarOfPlayer(playerState);
+
+	inherited::AllowDeadBodyRemove(gameID, changeOwner);
 }
 
 #pragma TODO("TSMP: переписать без дублирования этого кода в базовом классе")

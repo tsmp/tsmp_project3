@@ -1042,6 +1042,17 @@ void game_sv_mp::GetPlayerWpnStats(const game_PlayerState* player, xr_vector<sha
 	}
 }
 
+void game_sv_mp::DestroyCarOfPlayer(game_PlayerState* ps)
+{
+	if (ps->CarID == static_cast<u16>(-1))
+		return;
+
+	NET_Packet P;
+	u_EventGen(P, GE_DESTROY, ps->CarID);
+	Level().Send(P);
+	ps->CarID = static_cast<u16>(-1);
+}
+
 void game_sv_mp::OnPlayerHitted(NET_Packet &P)
 {
 	u16 id_hitted = P.r_u16();

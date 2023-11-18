@@ -388,17 +388,6 @@ CSE_Abstract* game_sv_Race::SpawnCar(u16 rpoint)
 	return spawned;
 }
 
-void game_sv_Race::DestroyCarOfPlayer(game_PlayerState* ps)
-{
-	if (ps->CarID == u16(-1))
-		return;
-
-	NET_Packet P;
-	u_EventGen(P, GE_DESTROY, ps->CarID);
-	Level().Send(P);
-	ps->CarID = u16(-1);
-}
-
 u16 game_sv_Race::GetRpointIdx(game_PlayerState* ps)
 {
 	const u8 rpointsTeam = m_CurrentRoad;

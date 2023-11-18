@@ -67,7 +67,7 @@ protected:
 	void SpawnPlayer(ClientID const &id, LPCSTR N, u16 holderId = u16(-1));
 	virtual void SetSkin(CSE_Abstract *E, u16 Team, u16 ID);
 	bool GetPosAngleFromActor(ClientID const &id, Fvector &Pos, Fvector &Angle);
-	void AllowDeadBodyRemove(u16 GameID, bool changeOwner = true);
+
 	void SpawnWeapon4Actor(u16 actorId, LPCSTR N, u8 Addons);
 	void SpawnWeaponForActor(u16 actorId, LPCSTR N, bool isScope, bool isGrenadeLauncher, bool isSilencer);
 
@@ -127,6 +127,8 @@ public:
 	virtual void ClearPlayerItems(game_PlayerState *ps);
 	virtual void SetPlayersDefItems(game_PlayerState *ps);
 
+	virtual void AllowDeadBodyRemove(u16 gameID, bool changeOwner = true);
+
 	virtual void ReadOptions(shared_str &options);
 	virtual void ConsoleCommands_Create();
 	virtual void ConsoleCommands_Clear();
@@ -144,6 +146,7 @@ public:
 	CRandom monsterResp; // для респавна монстров
 
 	void GetPlayerWpnStats(const game_PlayerState* player, xr_vector<shared_str>& wpnName, xr_vector<u32>& hits);
+	void DestroyCarOfPlayer(game_PlayerState* ps);
 
 protected:
 	virtual void WriteGameState(CInifile &ini, LPCSTR sect, bool bRoundResult);

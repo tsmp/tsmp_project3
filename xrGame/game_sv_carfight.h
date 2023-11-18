@@ -13,10 +13,10 @@ public:
 
 	virtual LPCSTR type_name() const override { return "carfight"; };
 	virtual void RespawnPlayer(ClientID const& id_who, bool NoSpectator) override;
-	virtual void CleanClientData(xrClientData* C) override;
+
+	void AllowDeadBodyRemove(u16 gameID, bool changeOwner = true) override;
 
 private:
 	bool SpawnPlayerInCar(ClientID const& playerId);
 	CSE_Abstract* SpawnCar(Fvector pos, Fvector angle);
-	void DestroyCarOfPlayer(game_PlayerState* ps);
 };
