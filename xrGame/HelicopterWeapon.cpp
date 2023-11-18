@@ -43,6 +43,23 @@ void CHelicopter::OnEvent(NET_Packet &P, u16 type)
 		CRocketLauncher::DetachRocket(id, bLaunch);
 	}
 	break;
+
+	case GE_HELI_ROCKET_LAUNCH:
+	{
+		if (OnClient())
+		{
+			Fmatrix xform;
+			P.r_matrix(xform);
+
+			Fvector vel;
+			P.r_vec3(vel);
+
+			VERIFY2(_valid(xform), "heli rocket launch. Invalid xform");
+			LaunchRocket(xform, vel, zero_vel);
+			HUD_SOUND::PlaySound(m_sndShotRocket, xform.c, this, false);
+		}
+	}
+	break;
 	}
 }
 
@@ -220,10 +237,8 @@ void CHelicopter::UpdateWeapons()
 
 	if (isOnAttack())
 	{
-
 		if (m_allow_fire)
 		{
-
 			float d = XFORM().c.distance_to_xz(m_enemy.destEnemyPos);
 
 			if (between(d, m_min_mgun_dist, m_max_mgun_dist))
@@ -339,6 +354,11 @@ void CHelicopter::startRocket(u16 idx)
 		LaunchRocket(xform, vel, zero_vel);
 
 		NET_Packet P;
+		u_EventGen(P, GE_HELI_ROCKET_LAUNCH, ID());
+		P.w_matrix(xform);
+		P.w_vec3(vel);
+		u_EventSend(P);
+
 		u_EventGen(P, GE_LAUNCH_ROCKET, ID());
 		P.w_u16(u16(getCurrentRocket()->ID()));
 		u_EventSend(P);
@@ -351,7 +371,6 @@ void CHelicopter::startRocket(u16 idx)
 }
 
 const Fmatrix &CHelicopter::get_ParticlesXFORM()
-
 {
 	return m_fire_bone_xform;
 }
