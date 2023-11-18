@@ -526,6 +526,13 @@ void CCustomRocket::UpdateLights()
 void CCustomRocket::PhDataUpdate(float step)
 {
 }
+
+void CCustomRocket::net_Relcase(CObject* obj)
+{
+	if (m_pOwner == obj)
+		m_pOwner = nullptr;
+}
+
 void CCustomRocket::PhTune(float step)
 {
 	UpdateEnginePh();
