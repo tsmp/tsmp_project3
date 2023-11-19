@@ -230,3 +230,5 @@
 #define CLSID_GAME_UI_RACE MK_CLSID('U', 'I', '_', 'R', 'A', 'C', 'E', ' ')
 
 #define CLSID_ONLINE_OFFLINE_GROUP MK_CLSID('O', 'N', '_', 'O', 'F', 'F', '_', 'G')
+
+#define CLSID_CAR_UPGRADE MK_CLSID('C', 'A', 'R', '_', 'U', 'P', 'G', 'R')

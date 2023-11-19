@@ -61,6 +61,8 @@ extern void show_smart_cast_stats();
 extern void clear_smart_cast_stats();
 extern void release_smart_cast_stats();
 
+extern void RegisterCarDbgCommands();
+
 extern u64 g_qwEStartGameTime;
 
 ENGINE_API
@@ -1748,4 +1750,5 @@ void CCC_RegisterCommands()
 	*g_last_saved_game = 0;
 
 	register_mp_console_commands();
+	RegisterCarDbgCommands();
 }

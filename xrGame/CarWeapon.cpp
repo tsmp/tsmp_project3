@@ -8,6 +8,7 @@
 #include "weaponAmmo.h"
 #include "xr_level_controller.h"
 #include "game_object_space.h"
+#include "game_cl_single.h"
 
 void CCarWeapon::BoneCallbackX(CBoneInstance *B)
 {
@@ -318,4 +319,17 @@ const Fvector &CCarWeapon::ViewCameraDir()
 const Fvector &CCarWeapon::ViewCameraNorm()
 {
 	return m_fire_norm;
+}
+
+float CCarWeapon::GetHitPower()
+{
+	return fvHitPower[egdMaster];
+}
+
+void CCarWeapon::SetHitPower(float power)
+{
+	fvHitPower[egdNovice] = power;
+	fvHitPower[egdStalker] = power;
+	fvHitPower[egdVeteran] = power;
+	fvHitPower[egdMaster] = power;
 }

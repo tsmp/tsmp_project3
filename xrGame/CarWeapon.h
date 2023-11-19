@@ -53,6 +53,9 @@ public:
 
 	void Render_internal();
 
+	float GetHitPower();
+	void SetHitPower(float power);
+
 private:
 	u16 m_rotate_x_bone, m_rotate_y_bone, m_fire_bone, m_camera_bone;
 	float m_tgt_x_rot, m_tgt_y_rot, m_cur_x_rot, m_cur_y_rot, m_bind_x_rot, m_bind_y_rot;

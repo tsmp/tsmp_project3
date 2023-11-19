@@ -178,6 +178,8 @@
 
 #include "actor_mp_server.h"
 #include "actor_mp_client.h"
+
+#include "CarUpgrade.h"
 #endif // NO_XR_GAME
 
 ENGINE_API bool g_dedicated_server;
@@ -391,4 +393,6 @@ void CObjectFactory::register_classes()
 	ADD(CDestroyablePhysicsObject, CSE_ALifeObjectPhysic, CLSID_PHYSICS_DESTROYABLE, "obj_phys_destroyable");
 
 	ADD(CInventoryBox, CSE_InventoryBox, CLSID_INVENTORY_BOX, "inventory_box");
+
+	ADD(CCarUpgrade, CSE_ALifeItem, CLSID_CAR_UPGRADE, "car_upgrade");
 }

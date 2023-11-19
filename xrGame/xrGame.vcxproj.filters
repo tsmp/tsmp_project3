@@ -2335,6 +2335,9 @@
     <Filter Include="Core\Server\Games\server\carFight">
       <UniqueIdentifier>{68f6706e-0b91-4005-8ccc-8cec67f1c2f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Client\Objects\items &amp; weapons\Devices\CarUpgrade">
+      <UniqueIdentifier>{637bb182-5f7d-4d91-9622-2c1f4ecd6e35}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6649,6 +6652,9 @@
     <ClInclude Include="game_sv_carfight.h">
       <Filter>Core\Server\Games\server\carFight</Filter>
     </ClInclude>
+    <ClInclude Include="CarUpgrade.h">
+      <Filter>Core\Client\Objects\items &amp; weapons\Devices\CarUpgrade</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9848,6 +9854,9 @@
     </ClCompile>
     <ClCompile Include="game_sv_carfight.cpp">
       <Filter>Core\Server\Games\server\carFight</Filter>
+    </ClCompile>
+    <ClCompile Include="CarUpgrade.cpp">
+      <Filter>Core\Client\Objects\items &amp; weapons\Devices\CarUpgrade</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

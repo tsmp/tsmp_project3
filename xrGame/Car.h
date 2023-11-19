@@ -417,6 +417,7 @@ private:
 
 	friend struct SWheel;
 	friend struct SDoor;
+	friend class CCarUpgrade;
 
 	xr_map<u16, SWheel> m_wheels_map;
 	xr_vector<SWheelDrive> m_driving_wheels;
