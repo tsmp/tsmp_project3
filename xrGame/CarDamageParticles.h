@@ -17,4 +17,5 @@ public:
 	void Play2(CCar *car);
 	void PlayWheel1(CCar *car, u16 bone_id);
 	void PlayWheel2(CCar *car, u16 bone_id);
+	void StopAll(CCar* car);
 };

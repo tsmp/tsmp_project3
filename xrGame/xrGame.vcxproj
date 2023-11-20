@@ -612,6 +612,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CarRepairKit.h" />
     <ClInclude Include="CarUpgrade.h" />
     <ClInclude Include="game_cl_carfight.h" />
     <ClInclude Include="game_sv_carfight.h" />
@@ -2062,6 +2063,7 @@
     <ClInclude Include="ui\UIGameTutorial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CarRepairKit.cpp" />
     <ClCompile Include="CarUpgrade.cpp" />
     <ClCompile Include="console_commands_car_dbg.cpp" />
     <ClCompile Include="game_cl_carfight.cpp" />

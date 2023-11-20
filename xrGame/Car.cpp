@@ -2300,3 +2300,10 @@ Fvector CCar::ExitVelocity()
 	dBodyGetPointVel(E->get_body(), v.x, v.y, v.z, cast_fp(v));
 	return v;
 }
+
+void CCar::Repair()
+{
+	SetfHealth(GetMaxHealth());
+	CDamagableItem::ApplyDamage(0);
+	m_damage_particles.StopAll(this);
+}

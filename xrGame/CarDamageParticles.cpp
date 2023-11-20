@@ -69,6 +69,21 @@ void CCarDamageParticles::Play2(CCar *car)
 	}
 }
 
+void CCarDamageParticles::StopAll(CCar* car)
+{
+	if (*m_car_damage_particles1)
+	{
+		for(u16 boneId: bones1)
+			car->StopParticles(car->ID(), boneId, false);
+	}
+
+	if (*m_car_damage_particles2)
+	{
+		for (u16 boneId : bones2)
+			car->StopParticles(car->ID(), boneId, false);
+	}
+}
+
 void CCarDamageParticles::PlayWheel1(CCar *car, u16 bone_id)
 {
 	VERIFY(!ph_world->Processing());

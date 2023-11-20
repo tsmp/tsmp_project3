@@ -514,6 +514,7 @@ public:
 	void HandBreak();
 	void ReleaseHandBreak();
 	void OnChangeLookout(bool enabled);
+	void Repair();
 
 private:
 	void DriveForward();

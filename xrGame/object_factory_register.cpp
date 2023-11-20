@@ -180,6 +180,7 @@
 #include "actor_mp_client.h"
 
 #include "CarUpgrade.h"
+#include "CarRepairKit.h"
 #endif // NO_XR_GAME
 
 ENGINE_API bool g_dedicated_server;
@@ -395,4 +396,5 @@ void CObjectFactory::register_classes()
 	ADD(CInventoryBox, CSE_InventoryBox, CLSID_INVENTORY_BOX, "inventory_box");
 
 	ADD(CCarUpgrade, CSE_ALifeItem, CLSID_CAR_UPGRADE, "car_upgrade");
+	ADD(CCarRepairKit, CSE_ALifeItem, CLSID_CAR_REPAIR_KIT, "car_repair");
 }

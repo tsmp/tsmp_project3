@@ -2338,6 +2338,9 @@
     <Filter Include="Core\Client\Objects\items &amp; weapons\Devices\CarUpgrade">
       <UniqueIdentifier>{637bb182-5f7d-4d91-9622-2c1f4ecd6e35}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Client\Objects\items &amp; weapons\Devices\CarRepairKit">
+      <UniqueIdentifier>{bdb468f9-69ae-4be3-bb83-ee366f4e7d2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6655,6 +6658,9 @@
     <ClInclude Include="CarUpgrade.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\CarUpgrade</Filter>
     </ClInclude>
+    <ClInclude Include="CarRepairKit.h">
+      <Filter>Core\Client\Objects\items &amp; weapons\Devices\CarRepairKit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9857,6 +9863,9 @@
     </ClCompile>
     <ClCompile Include="CarUpgrade.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\CarUpgrade</Filter>
+    </ClCompile>
+    <ClCompile Include="CarRepairKit.cpp">
+      <Filter>Core\Client\Objects\items &amp; weapons\Devices\CarRepairKit</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

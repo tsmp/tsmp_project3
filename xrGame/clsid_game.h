@@ -232,3 +232,4 @@
 #define CLSID_ONLINE_OFFLINE_GROUP MK_CLSID('O', 'N', '_', 'O', 'F', 'F', '_', 'G')
 
 #define CLSID_CAR_UPGRADE MK_CLSID('C', 'A', 'R', '_', 'U', 'P', 'G', 'R')
+#define CLSID_CAR_REPAIR_KIT MK_CLSID('C', 'A', 'R', '_', 'R', 'E', 'P', 'K')
