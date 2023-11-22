@@ -421,9 +421,8 @@ void CLevel::OnMessage(void *data, u32 size)
 
 		if (!m_aDemoData.empty() && net_IsSyncronised())
 		{
-			//			NET_Packet *P = &(m_aDemoData.front());
 			DemoDataStruct *P = &(m_aDemoData.front());
-			u32 CurTime = timeServer_Async();
+			u32 CurTime = timeServer();
 			timeServer_UserDelta(P->m_dwTimeReceive - CurTime);
 			m_bDemoStarted = TRUE;
 			Msg("! ------------- Demo Started ------------");
@@ -431,25 +430,20 @@ void CLevel::OnMessage(void *data, u32 size)
 			DemoCS.Leave();
 			return;
 		}
-	};
-
-	if (IsDemoSave() && net_IsSyncronised())
-	{
-		Demo_StoreData(data, size, DATA_CLIENT_PACKET);
 	}
 
-	IPureClient::OnMessage(data, size);
+	if (IsDemoSave() && net_IsSyncronised())
+		Demo_StoreData(data, size, DATA_CLIENT_PACKET);
 
+	IPureClient::OnMessage(data, size);
 	DemoCS.Leave();
-};
+}
 
 NET_Packet *CLevel::net_msg_Retreive()
 {
-	NET_Packet *P = NULL;
-
 	DemoCS.Enter();
 
-	P = IPureClient::net_msg_Retreive();
+	NET_Packet* P = IPureClient::net_msg_Retreive();
 	if (!P)
 		Demo_EndFrame();
 

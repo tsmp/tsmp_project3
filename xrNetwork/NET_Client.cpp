@@ -194,7 +194,7 @@ void IPureClient::ReceiveSysMessage(const MSYS_PING* cfg, u32 dataSize)
 		case sizeof(MSYS_PING):
 		{
 			// It is reverted(server) ping
-			u32 time = TimerAsync(device_timer);
+			u32 time = TimeGlobal(device_timer);
 			u32 ping = time - (cfg->dwTime_ClientSend);
 			u32 delta = cfg->dwTime_Server + ping / 2 - time;
 
@@ -860,7 +860,7 @@ void IPureClient::OnMessage(void *data, u32 size)
 	NET_Packet *P = net_Queue.CreateGet();
 
 	P->construct(data, size);
-	P->timeReceive = timeServer_Async();
+	P->timeReceive = timeServer();
 
 	u16 tmp_type;
 	P->r_begin(tmp_type);
@@ -1001,7 +1001,7 @@ void IPureClient::Sync_Thread()
 		MSYS_PING clPing;
 		clPing.sign1 = 0x12071980;
 		clPing.sign2 = 0x26111975;
-		clPing.dwTime_ClientSend = TimerAsync(device_timer);
+		clPing.dwTime_ClientSend = TimeGlobal(device_timer);
 
 		// Send it
 		__try
@@ -1031,9 +1031,9 @@ void IPureClient::Sync_Thread()
 
 		// Waiting for reply-packet to arrive
 		u32 old_size = net_DeltaArray.size();
-		u32 timeBegin = TimerAsync(device_timer);
+		u32 timeBegin = TimeGlobal(device_timer);
 
-		while ((net_DeltaArray.size() == old_size) && (TimerAsync(device_timer) - timeBegin < 5000))
+		while ((net_DeltaArray.size() == old_size) && (TimeGlobal(device_timer) - timeBegin < 5000))
 			Sleep(1);
 
 		if (net_DeltaArray.size() >= syncQueue::syncSamples)

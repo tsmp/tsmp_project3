@@ -528,7 +528,7 @@ HRESULT IPureServer::net_Handler(u32 dwMessageType, PVOID pMessage)
 			if (m_size == sizeof(MSYS_PING))
 			{
 				// ping - save server time and reply
-				m_ping->dwTime_Server = TimerAsync(device_timer);
+				m_ping->dwTime_Server = TimeGlobal(device_timer);
 				ClientID ID;
 				ID.set(m_sender);
 				IPureServer::SendTo_Buf(ID, m_data, m_size, net_flags(FALSE, FALSE, TRUE, TRUE));

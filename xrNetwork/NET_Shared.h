@@ -33,7 +33,6 @@ enum
 };
 
 IC u32 TimeGlobal(CTimer *timer) { return timer->GetElapsed_ms(); }
-IC u32 TimerAsync(CTimer *timer) { return TimeGlobal(timer); }
 
 class XRNETWORK_API IClientStatistic
 {
