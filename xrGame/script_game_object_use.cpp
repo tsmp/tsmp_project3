@@ -120,6 +120,11 @@ bool CScriptGameObject::Alive() const
 	return (!!entity->g_Alive());
 }
 
+bool CScriptGameObject::IsLocal() const
+{
+	return (object().Local());
+}
+
 ALife::ERelationType CScriptGameObject::GetRelationType(CScriptGameObject *who)
 {
 	CEntityAlive *l_tpEntityAlive1 = smart_cast<CEntityAlive *>(&object());

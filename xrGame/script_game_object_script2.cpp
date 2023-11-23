@@ -78,6 +78,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("max_health", &CScriptGameObject::MaxHealth)
 		.def("accuracy", &CScriptGameObject::Accuracy)
 		.def("alive", &CScriptGameObject::Alive)
+		.def("islocal", &CScriptGameObject::IsLocal)
 		.def("team", &CScriptGameObject::Team)
 		.def("squad", &CScriptGameObject::Squad)
 		.def("group", &CScriptGameObject::Group)

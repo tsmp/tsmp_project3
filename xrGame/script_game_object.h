@@ -203,6 +203,7 @@ public:
 	void set_fov(float new_fov);
 	void set_range(float new_range);
 	bool Alive() const;
+	bool IsLocal() const;
 	ALife::ERelationType GetRelationType(CScriptGameObject *who);
 
 	// CScriptEntity
