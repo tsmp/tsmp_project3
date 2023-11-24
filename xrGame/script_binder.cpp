@@ -199,6 +199,8 @@ void CScriptBinder::net_Destroy()
 	xr_delete(m_object);
 }
 
+bool const client_all_actors_script_bind = pSettings->section_exist("client_all_actors_script_bind") && pSettings->r_bool("client_all_actors_script_bind", "enabled");
+
 bool CanBind(CGameObject &obj)
 {
 	if (IsGameTypeSingle())
@@ -217,7 +219,7 @@ bool CanBind(CGameObject &obj)
 	if (section == "space_restrictor")
 		return true;
 
-	if (section == "mp_actor" && obj.Local())
+	if (section == "mp_actor" && (!client_all_actors_script_bind && obj.Local()) || client_all_actors_script_bind)
 		return true;
 	
 	return false;
