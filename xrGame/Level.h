@@ -105,6 +105,7 @@ public:
 #endif
 
 	collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
+	IC u32 timeServer() { return Device.dwTimeGlobal + net_TimeDelta + net_TimeDelta_User; }
 
 public:
 	////////////// network ////////////////////////
