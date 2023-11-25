@@ -229,10 +229,10 @@ void IPureClient::_Recieve(const void *data, u32 data_size, u32 /*param*/)
 	if (psNET_Flags.test(NETFLAG_LOG_CL_PACKETS))
 	{
 		if (!pClNetLog)
-			InitClNetLog(timeServer());
+			InitClNetLog(timeServerNet());
 
 		if (pClNetLog)
-			pClNetLog->LogData(timeServer(), const_cast<void*>(data), data_size, TRUE);
+			pClNetLog->LogData(timeServerNet(), const_cast<void*>(data), data_size, TRUE);
 	}
 
 	OnMessage(const_cast<void*>(data), data_size);
@@ -252,7 +252,7 @@ IPureClient::IPureClient(CTimer *timer) : net_Statistic(timer)
 	net_TimeDelta = 0;
 	net_TimeDelta_Calculated = 0;
 
-	pClNetLog = nullptr; //xr_new<INetLog>("logs\\net_cl_log.log", timeServer());
+	pClNetLog = nullptr; //xr_new<INetLog>("logs\\net_cl_log.log", timeServerNet());
 }
 
 IPureClient::~IPureClient()
@@ -860,7 +860,7 @@ void IPureClient::OnMessage(void *data, u32 size)
 	NET_Packet *P = net_Queue.CreateGet();
 
 	P->construct(data, size);
-	P->timeReceive = timeServer();
+	P->timeReceive = timeServerNet();
 
 	u16 tmp_type;
 	P->r_begin(tmp_type);
@@ -883,9 +883,9 @@ void IPureClient::SendTo_LL(void *data, u32 size, u32 dwFlags, u32 dwTimeout)
 	if (psNET_Flags.test(NETFLAG_LOG_CL_PACKETS))
 	{
 		if (!pClNetLog)
-			InitClNetLog(timeServer());
+			InitClNetLog(timeServerNet());
 		if (pClNetLog)
-			pClNetLog->LogData(timeServer(), data, size);
+			pClNetLog->LogData(timeServerNet(), data, size);
 	}
 
 	DPN_BUFFER_DESC desc;
