@@ -540,10 +540,6 @@ public:
 	CScriptGameObject *item_in_slot(u32 slot_id) const;
 	u32 active_slot();
 	void activate_slot(u32 slot_id);
-	game_PlayerState* get_ps()
-	{
-		return Level().game->GetPlayerByGameID(object().ID());
-	}
 
 #ifdef DEBUG
 	void debug_planner(const script_planner *planner);

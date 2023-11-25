@@ -232,6 +232,5 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 #endif // DEBUG
 		.def("invulnerable", (bool (CScriptGameObject::*)() const) & CScriptGameObject::invulnerable)
 		.def("invulnerable", (void (CScriptGameObject::*)(bool)) & CScriptGameObject::invulnerable)
-		.def("get_ps", &CScriptGameObject::get_ps)
 	;
 }
