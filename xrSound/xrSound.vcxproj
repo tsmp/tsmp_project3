@@ -474,7 +474,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="cl_intersect.h" />
+    <ClInclude Include="..\xrEngine\cl_intersect.h" />
     <ClInclude Include="OpenALDeviceList.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundRender.h" />
