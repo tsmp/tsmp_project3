@@ -1,10 +1,6 @@
-
 #include "stdafx.h"
-
 #include "NET_Common.h"
 #include "NET_Compressor.h"
-
-//==============================================================================
 
 #pragma pack(push)
 #pragma pack(1)
@@ -16,20 +12,16 @@ struct
 };
 #pragma pack(pop)
 
-//==============================================================================
-
 static NET_Compressor gCompressor;
 static const unsigned MaxMultipacketSize = 32768;
 
 XRNETWORK_API int psNET_GuaranteedPacketMode = NET_GUARANTEEDPACKET_DEFAULT;
 
-//------------------------------------------------------------------------------
-
-MultipacketSender::MultipacketSender()
+bool DumpTraffic()
 {
+    static const bool dump = strstr(Core.Params, "-dump_traffic");
+    return dump;
 }
-
-//------------------------------------------------------------------------------
 
 void MultipacketSender::SendPacket(const void *packet_data, u32 packet_sz, u32 flags, u32 timeout)
 {
@@ -71,8 +63,6 @@ void MultipacketSender::SendPacket(const void *packet_data, u32 packet_sz, u32 f
     _buf_cs.Leave();
 }
 
-//------------------------------------------------------------------------------
-
 void MultipacketSender::FlushSendBuffer(u32 timeout)
 {
     _buf_cs.Enter();
@@ -83,63 +73,57 @@ void MultipacketSender::FlushSendBuffer(u32 timeout)
     _buf_cs.Leave();
 }
 
-//------------------------------------------------------------------------------
-
-void MultipacketSender::_FlushSendBuffer(u32 timeout, Buffer *buf)
+void MultipacketSender::_FlushSendBuffer(u32 timeout, Buffer* buf)
 {
     // expected to be called between '_buf_cs' enter/leave
 
-    if (buf->buffer.B.count)
-    {
-        // compress data
+    if (!buf->buffer.B.count)
+        return;
 
-        unsigned comp_sz = gCompressor.compressed_size(buf->buffer.B.count);
-        u8 packet_data[MaxMultipacketSize];
-        MultipacketHeader *header = (MultipacketHeader *)packet_data;
+    // compress data
+    unsigned comp_sz = gCompressor.compressed_size(buf->buffer.B.count);
+    u8 packet_data[MaxMultipacketSize];
+    MultipacketHeader* header = (MultipacketHeader*)packet_data;
 
-        R_ASSERT(comp_sz < sizeof(packet_data) - sizeof(MultipacketHeader));
-        R_ASSERT(comp_sz < 65535);
+    R_ASSERT(comp_sz < sizeof(packet_data) - sizeof(MultipacketHeader));
+    R_ASSERT(comp_sz < 65535);
 
-        comp_sz = gCompressor.Compress(packet_data + sizeof(MultipacketHeader), sizeof(packet_data) - sizeof(MultipacketHeader),
-                                       buf->buffer.B.data, buf->buffer.B.count);
+    comp_sz = gCompressor.Compress(packet_data + sizeof(MultipacketHeader), sizeof(packet_data) - sizeof(MultipacketHeader),
+        buf->buffer.B.data, buf->buffer.B.count);
 
-        header->tag = NET_TAG_MERGED;
-        header->unpacked_size = (u16)buf->buffer.B.count;
+    header->tag = NET_TAG_MERGED;
+    header->unpacked_size = (u16)buf->buffer.B.count;
 
-        // dump/log if needed
+    // dump/log if needed
 
 #if NET_LOG_PACKETS
-        Msg("#send %smulti-packet %u    flags= %08X",
-            (buf->last_flags & DPNSEND_IMMEDIATELLY) ? "IMMEDIATE " : "",
-            buf->buffer.B.count, buf->last_flags);
+    Msg("#send %smulti-packet %u    flags= %08X",
+        (buf->last_flags & DPNSEND_IMMEDIATELLY) ? "IMMEDIATE " : "",
+        buf->buffer.B.count, buf->last_flags);
 #endif // NET_LOG_PACKETS
 
-        if (strstr(Core.Params, "-dump_traffic"))
+    if (DumpTraffic())
+    {
+        static bool first_time = true;
+        FILE* dump = fopen("raw-out-traffic.bins", (first_time) ? "wb" : "ab");
+
+        if (first_time)
         {
-            static bool first_time = true;
-            FILE *dump = fopen("raw-out-traffic.bins", (first_time) ? "wb" : "ab");
-
-            if (first_time)
-            {
-                fwrite("BINS", 4, 1, dump);
-                first_time = false;
-            }
-
-            u16 sz = u16(buf->buffer.B.count);
-
-            fwrite(&sz, sizeof(u16), 1, dump);
-            fwrite(buf->buffer.B.data, buf->buffer.B.count, 1, dump);
-            fclose(dump);
+            fwrite("BINS", 4, 1, dump);
+            first_time = false;
         }
 
-        // do send
+        u16 sz = u16(buf->buffer.B.count);
 
-        _SendTo_LL(packet_data, comp_sz + sizeof(MultipacketHeader), buf->last_flags, timeout);
-        buf->buffer.B.count = 0;
-    } // if buffer not empty
+        fwrite(&sz, sizeof(u16), 1, dump);
+        fwrite(buf->buffer.B.data, buf->buffer.B.count, 1, dump);
+        fclose(dump);
+    }
+
+    // do send
+    _SendTo_LL(packet_data, comp_sz + sizeof(MultipacketHeader), buf->last_flags, timeout);
+    buf->buffer.B.count = 0;
 }
-
-//------------------------------------------------------------------------------
 
 void MultipacketReciever::RecievePacket(const void *packet_data, u32 packet_sz, u32 param)
 {
@@ -156,7 +140,7 @@ void MultipacketReciever::RecievePacket(const void *packet_data, u32 packet_sz, 
     Msg("#receive multi-packet %u", packet_sz);
 #endif
 
-    if (strstr(Core.Params, "-dump_traffic"))
+    if (DumpTraffic())
     {
         static bool first_time = true;
         FILE *dump = fopen("raw-in-traffic.bins", (first_time) ? "wb" : "ab");
