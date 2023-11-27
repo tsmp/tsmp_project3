@@ -35,11 +35,12 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 	P.r_u16(destination);
 
 	CSE_Abstract *receiver = game->get_entity_from_eid(destination);
+
 	if (receiver)
 	{
 		R_ASSERT(receiver->owner);
 		receiver->OnEvent(P, type, timestamp, sender);
-	};
+	}
 
 	switch (type)
 	{
@@ -124,10 +125,10 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
 	}
 	break;
+
 	case GE_RESPAWN:
 	{
-		CSE_Abstract *E = receiver;
-		if (E)
+		if (CSE_Abstract* E = receiver)
 		{
 			R_ASSERT(E->s_flags.is(M_SPAWN_OBJECT_PHANTOM));
 
@@ -138,6 +139,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		}
 	}
 	break;
+
 	case GE_TRADE_BUY:
 	case GE_OWNERSHIP_TAKE:
 	{
@@ -145,12 +147,14 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+
 	case GE_OWNERSHIP_TAKE_MP_FORCED:
 	{
 		Process_event_ownership(P, sender, timestamp, destination, TRUE);
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+
 	case GE_TRADE_SELL:
 	case GE_OWNERSHIP_REJECT:
 	case GE_LAUNCH_ROCKET:
@@ -159,12 +163,14 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+
 	case GE_DESTROY:
 	{
 		Process_event_destroy(P, sender, timestamp, destination, NULL);
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+
 	case GE_TRANSFER_AMMO:
 	{
 		u16 id_entity;
@@ -187,36 +193,39 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+
 	case GE_HIT:
 	case GE_HIT_STATISTIC:
 	{
 		P.r_pos -= 2;
+
 		if (type == GE_HIT_STATISTIC)
 		{
 			P.B.count -= 4;
 			P.w_u32(sender.value());
-		};
+		}
+
 		game->AddDelayedEvent(P, GAME_EVENT_ON_HIT, 0, ClientID());
 	}
 	break;
+
 	case GE_ASSIGN_KILLER:
 	{
 		u16 id_src;
 		P.r_u16(id_src);
 
 		CSE_Abstract *e_dest = receiver; // кто умер
+
 		// this is possible when hit event is sent before destroy event
 		if (!e_dest)
 			break;
 
-		CSE_ALifeCreatureAbstract *creature = smart_cast<CSE_ALifeCreatureAbstract *>(e_dest);
-		if (creature)
+		if (CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>(e_dest))
 			creature->m_killer_id = id_src;
-
-		//		Msg							("[%d][%s] killed [%d][%s]",id_src,id_src==u16(-1) ? "UNKNOWN" : game->get_entity_from_eid(id_src)->name_replace(),id_dest,e_dest->name_replace());
 
 		break;
 	}
+
 	case GE_CHANGE_VISUAL:
 	{
 		CSE_Visual *visual = smart_cast<CSE_Visual *>(receiver);
@@ -226,6 +235,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		visual->set_visual(tmp);
 	}
 	break;
+
 	case GE_DIE:
 	{
 		// Parse message
@@ -234,10 +244,9 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 
 		xrClientData *l_pC = ID_to_client(sender);
 		VERIFY(game && l_pC);
+
 		if ((game->Type() != GAME_SINGLE) && l_pC && l_pC->owner)
-		{
 			Msg("* [%2d] killed by [%2d] - sended by [%s:%2d]", id_dest, id_src, l_pC->name.c_str(), l_pC->owner->ID);
-		}
 
 		CSE_Abstract *e_dest = receiver; // кто умер
 		// this is possible when hit event is sent before destroy event
@@ -248,12 +257,13 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 			Msg("* [%2d] is [%s:%s]", id_dest, *e_dest->s_name, e_dest->name_replace());
 
 		CSE_Abstract *e_src = game->get_entity_from_eid(id_src); // кто убил
+
 		if (!e_src)
 		{
-			xrClientData *C = game->get_client(id_src);
-			if (C)
+			if (xrClientData* C = game->get_client(id_src))
 				e_src = C->owner;
-		};
+		}
+
 		VERIFY(e_src);
 		//			R_ASSERT2			(e_dest && e_src, "Killer or/and being killed are offline or not exist at all :(");
 		if (game->Type() != GAME_SINGLE)
@@ -265,10 +275,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		if (c_src->owner->ID == id_src)
 		{
 			// Main unit
-			P.w_begin(M_EVENT);
-			P.w_u32(timestamp);
-			P.w_u16(type);
-			P.w_u16(destination);
+			game_GameState::u_EventGen(P, type, destination, timestamp);
 			P.w_u16(id_src);
 			P.w_clientID(c_src->ID);
 		}
@@ -277,10 +284,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 
 		if (game->Type() == GAME_SINGLE)
 		{
-			P.w_begin(M_EVENT);
-			P.w_u32(timestamp);
-			P.w_u16(GE_KILL_SOMEONE);
-			P.w_u16(id_src);
+			game_GameState::u_EventGen(P, GE_KILL_SOMEONE, id_src, timestamp);
 			P.w_u16(destination);
 			SendTo(c_src->ID, P, net_flags(TRUE, TRUE));
 		}
@@ -288,6 +292,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+
 	case GE_ADDON_ATTACH:
 	case GE_ADDON_DETACH:
 	case GE_CHANGE_POS:
@@ -295,6 +300,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
 	}
 	break;
+
 	case GEG_PLAYER_WEAPON_HIDE_STATE:
 	{
 		SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
@@ -323,25 +329,21 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		break;
 
 	case GE_TELEPORT_OBJECT:
-	{
 		game->teleport_object(P, destination);
-	}
-	break;
+		break;
+
 	case GE_ADD_RESTRICTION:
-	{
 		game->add_restriction(P, destination);
-	}
-	break;
+		break;
+
 	case GE_REMOVE_RESTRICTION:
-	{
 		game->remove_restriction(P, destination);
-	}
-	break;
+		break;
+
 	case GE_REMOVE_ALL_RESTRICTIONS:
-	{
 		game->remove_all_restrictions(P, destination);
-	}
-	break;
+		break;
+
 	case GE_MONEY:
 	{
 		if (IsGameTypeSingle())

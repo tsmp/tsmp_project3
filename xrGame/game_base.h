@@ -205,6 +205,8 @@ public:
 	static CLASS_ID getCLASS_ID(LPCSTR game_type_name, bool bServer);
 	virtual game_PlayerState *createPlayerState() { return xr_new<game_PlayerState>(); };
 
+	static void u_EventGen(NET_Packet& P, u16 type, u16 dest, u32 timestamp = 0);
+
 	//moved from game_sv_base (time routines)
 private:
 	// scripts

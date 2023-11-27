@@ -207,10 +207,7 @@ void xrServer::client_Destroy(IClient* C)
 	if (CSE_Spectator *pS = smart_cast<CSE_Spectator*>(pOwner))
 	{
 		NET_Packet P;
-		P.w_begin(M_EVENT);
-		P.w_u32(Level().timeServer());
-		P.w_u16(GE_DESTROY);
-		P.w_u16(pS->ID);
+		game_GameState::u_EventGen(P, GE_DESTROY, pS->ID);
 		Level().Send(P, net_flags(TRUE, TRUE));
 	}
 

@@ -266,3 +266,11 @@ void game_GameState::SetEnvironmentGameTimeFactor(ALife::_TIME_ID GameTime, cons
 	m_qwEStartProcessorTime = Level().timeServer();
 	m_fETimeFactor = fTimeFactor;
 }
+
+void game_GameState::u_EventGen(NET_Packet& P, u16 type, u16 dest, u32 timestamp)
+{
+	P.w_begin(M_EVENT);
+	P.w_u32(timestamp ? timestamp : Level().timeServer());
+	P.w_u16(type);
+	P.w_u16(dest);
+}

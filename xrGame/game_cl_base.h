@@ -71,7 +71,6 @@ protected:
 	virtual float shedule_Scale();
 	virtual bool shedule_Needed() { return true; };
 
-	void sv_GameEventGen(NET_Packet &P);
 	void sv_EventSend(NET_Packet &P);
 
 public:
@@ -106,7 +105,6 @@ public:
 	void StartStopMenu(CUIDialogWnd *pDialog, bool bDoHideIndicators);
 	virtual void shedule_Update(u32 dt);
 
-	void u_EventGen(NET_Packet &P, u16 type, u16 dest);
 	void u_EventSend(NET_Packet &P);
 
 	virtual void ChatSayTeam(const shared_str &phrase){};

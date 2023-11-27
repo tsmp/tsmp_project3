@@ -134,11 +134,7 @@ void SHit::Write_Packet_Cont(NET_Packet &Packet)
 
 void SHit::Write_Packet(NET_Packet &Packet)
 {
-	Packet.w_begin(M_EVENT);
-	Packet.w_u32(Time);
-	Packet.w_u16(u16(PACKET_TYPE & 0xffff));
-	Packet.w_u16(u16(DestID & 0xffff));
-
+	game_GameState::u_EventGen(Packet, PACKET_TYPE, DestID, Time);
 	Write_Packet_Cont(Packet);
 }
 
