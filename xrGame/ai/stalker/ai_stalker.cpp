@@ -951,6 +951,7 @@ void CAI_Stalker::UpdateCL()
 	{
 		START_PROFILE("stalker/client_update/sight_manager")
 		VERIFY(!m_pPhysicsShell);
+
 		try
 		{
 			sight().update();
@@ -960,8 +961,7 @@ void CAI_Stalker::UpdateCL()
 			sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection));
 			sight().update();
 		}
-		if(!IsGameTypeSingle())
-			Exec_Visibility();
+
 		Exec_Look(Device.fTimeDelta);
 		STOP_PROFILE
 
@@ -1015,8 +1015,6 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	VERIFY(_valid(Position()));
 	// *** general stuff
 	float dt = float(DT) / 1000.f;
-	if (g_Alive() && !IsGameTypeSingle())
-		Exec_Visibility();
 
 	if (g_Alive() && OnServer())
 	{
@@ -1026,20 +1024,17 @@ void CAI_Stalker::shedule_Update(u32 DT)
 		agent_manager().update();
 #endif // USE_SCHEDULER_IN_AGENT_MANAGER
 
-//		bool			check = !!memory().enemy().selected();
 #if 0 //def DEBUG
 		memory().visual().check_visibles();
 #endif
-		if (IsGameTypeSingle())
+
+		if (IsGameTypeSingle() && g_mt_config.test(mtAiVision))
+			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
+		else
 		{
-			if (g_mt_config.test(mtAiVision))
-				Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CCustomMonster::Exec_Visibility));
-			else
-			{
-				START_PROFILE("stalker/schedule_update/vision")
-					Exec_Visibility();
-				STOP_PROFILE
-			}
+			START_PROFILE("stalker/schedule_update/vision")
+			Exec_Visibility();
+			STOP_PROFILE
 		}
 
 		START_PROFILE("stalker/schedule_update/memory")

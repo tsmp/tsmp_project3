@@ -592,25 +592,20 @@ void game_sv_ArtefactHunt::OnObjectEnterTeamBase(u16 id, u16 zone_team)
 void game_sv_ArtefactHunt::OnObjectLeaveTeamBase(u16 id, u16 zone_team)
 {
 	CSE_Abstract *e_who = m_server->ID_to_entity(id);
+
 	if (!e_who)
 		return;
 
-	//	CSE_Abstract*		e_zone	= m_server->ID_to_entity(id_zone);	VERIFY(e_zone	);
-
-	CSE_ALifeCreatureActor *eActor = smart_cast<CSE_ALifeCreatureActor *>(e_who);
-	//	CSE_ALifeTeamBaseZone*	eZoneBase = smart_cast<CSE_ALifeTeamBaseZone*> (e_zone);
-	if (eActor /*&& eZoneBase*/)
+	if (CSE_ALifeCreatureActor* eActor = smart_cast<CSE_ALifeCreatureActor*>(e_who))
 	{
 		if (eActor->g_team() == zone_team)
 		{
-			game_PlayerState *ps = eActor->owner->ps;
-			if (ps)
+			if (game_PlayerState* ps = eActor->owner->ps)
 				ps->resetFlag(GAME_PLAYER_FLAG_ONBASE);
-
 			signal_Syncronize();
 		}
-	};
-};
+	}
+}
 
 void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID const &id_who)
 {
@@ -624,10 +619,10 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID const &id_who)
 	if (!ps)
 		return;
 
-	//add player's points
+	// add player's points
 	Set_RankUp_Allowed(true);
-	TeamStruct *pTeam = GetTeamData(u8(ps->team));
-	if (pTeam)
+
+	if (TeamStruct* pTeam = GetTeamData(u8(ps->team)))
 	{
 		Player_AddMoney(ps, pTeam->m_iM_TargetSucceed);
 		Player_AddExperience(ps, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "target_succeed", 0));
@@ -638,8 +633,10 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID const &id_who)
 		{
 			xrClientData* cldata = static_cast<xrClientData*>(client);
 			game_PlayerState* pstate = cldata->ps;
+
 			if (!cldata->net_Ready || pstate->IsSkip() || pstate == ps)
 				return;
+
 			if (pstate->team == ps->team)
 			{
 				Player_AddMoney(pstate, pTeam->m_iM_TargetSucceedAll);
@@ -648,13 +645,14 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID const &id_who)
 			else
 			{
 				Player_AddMoney(pstate, pTeam->m_iM_TargetFailed);
+
 				if (!m_bArtefactWasDropped)
 					pstate->experience_New *= READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "target_failed_all_mul", 1.0f);
-			};
+			}
 
 			Player_AddExperience(pstate, 0);
 			Player_ExperienceFin(pstate);
-		});		
+		});
 	}
 
 	Set_RankUp_Allowed(false);
@@ -662,13 +660,9 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID const &id_who)
 
 	bNoLostMessage = true;
 
-	//remove artefact from player
+	// remove artefact from player
 	NET_Packet P;
-	P.w_begin(M_EVENT);
-	P.w_u32(Device.dwTimeGlobal);
-	P.w_u16(GE_DESTROY);
-	P.w_u16(m_dwArtefactID);
-
+	game_GameState::u_EventGen(P, GE_DESTROY, m_dwArtefactID, Device.dwTimeGlobal);
 	Level().Send(P, net_flags(TRUE, TRUE));
 	bNoLostMessage = false;
 
@@ -677,22 +671,18 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID const &id_who)
 	P.w_u16(ps->GameID);
 	P.w_u16(ps->team);
 	u_EventSend(P);
-	//-----------------------------------------------
-	CActor *pActor = smart_cast<CActor *>(Level().Objects.net_Find(ps->GameID));
-	if (pActor)
+
+	if (CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(ps->GameID)))
 	{
 		pActor->SetfHealth(pActor->GetMaxHealth());
-		//-------------------------------------------
 		u_EventGen(P, GE_ACTOR_MAX_POWER, ps->GameID);
 		m_server->SendTo(id_who, P, net_flags(TRUE, TRUE));
-	};
-	//-----------------------------------------------
+	}
+
 	signal_Syncronize();
-	//-----------------------------------------------
 	Artefact_PrepareForSpawn();
-	//-----------------------------------------------
 	m_bArtefactWasBringedToBase = true;
-};
+}
 
 void game_sv_ArtefactHunt::SpawnArtefact()
 {

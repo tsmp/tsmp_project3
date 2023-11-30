@@ -411,9 +411,11 @@ void CLevel::OnConnectResult(NET_Packet *P)
 	u8 res1 = P->r_u8();
 	string128 ResultStr;
 	P->r_stringZ(ResultStr);
+
 	if (!result)
 	{
 		m_bConnectResult = false;
+
 		switch (res1)
 		{
 		case 0: //Standart error
@@ -422,34 +424,36 @@ void CLevel::OnConnectResult(NET_Packet *P)
 				MainMenu()->SetErrorDialog(CMainMenu::ErrDifferentVersion);
 		}
 		break;
+
 		case 1: //GameSpy CDKey
 		{
 			if (!xr_strcmp(ResultStr, "Invalid CD Key"))
 				MainMenu()->SetErrorDialog(CMainMenu::ErrCDKeyInvalid); //, ResultStr);
+
 			if (!xr_strcmp(ResultStr, "CD Key in use"))
 				MainMenu()->SetErrorDialog(CMainMenu::ErrCDKeyInUse); //, ResultStr);
+
 			if (!xr_strcmp(ResultStr, "Your CD Key is disabled. Contact customer service."))
 				MainMenu()->SetErrorDialog(CMainMenu::ErrCDKeyDisabled); //, ResultStr);
 		}
 		break;
+
 		case 2: //login+password
 		{
 			MainMenu()->SetErrorDialog(CMainMenu::ErrInvalidPassword);
 		}
 		break;
 		}
-	};
+	}
+
 	m_sConnectResult = ResultStr;
 
 	if (IsDemoSave())
 	{
-		//		P->r_stringZ(m_sDemoHeader.LevelName);
-		//		P->r_stringZ(m_sDemoHeader.GameType);
 		m_sDemoHeader.bServerClient = P->r_u8();
 		P->r_stringZ(m_sDemoHeader.ServerOptions);
-		//-----------------------------------------
-		FILE *fTDemo = fopen(m_sDemoName, "ab");
-		if (fTDemo)
+
+		if (FILE* fTDemo = fopen(m_sDemoName, "ab"))
 		{
 			fwrite(&m_sDemoHeader.bServerClient, 32, 1, fTDemo);
 
@@ -457,21 +461,20 @@ void CLevel::OnConnectResult(NET_Packet *P)
 			fwrite(&OptLen, 4, 1, fTDemo);
 			fwrite(*m_sDemoHeader.ServerOptions, OptLen, 1, fTDemo);
 			fclose(fTDemo);
-		};
-		//-----------------------------------------
-	};
-};
+		}
+	}
+}
 
 void CLevel::ClearAllObjects()
 {
-
 	bool ParentFound = true;
+	NET_Packet P;
 
 	while (ParentFound)
 	{
 		ProcessGameEvents();
 
-		u32 CLObjNum = Level().Objects.o_count();
+		const u32 CLObjNum = Level().Objects.o_count();
 		ParentFound = false;
 
 		for (u32 i = 0; i < CLObjNum; i++)
@@ -479,68 +482,63 @@ void CLevel::ClearAllObjects()
 			CObject *pObj = Level().Objects.o_get_by_iterator(i);
 			if (!pObj->H_Parent())
 				continue;
-			//-----------------------------------------------------------
-			NET_Packet GEN;
-			GEN.w_begin(M_EVENT);
-			//------------------		---------------------------
-			GEN.w_u32(Level().timeServer());
-			GEN.w_u16(GE_OWNERSHIP_REJECT);
-			GEN.w_u16(pObj->H_Parent()->ID());
-			GEN.w_u16(u16(pObj->ID()));
-			game_events->insert(GEN);
+
+			game_GameState::u_EventGen(P, GE_OWNERSHIP_REJECT, pObj->H_Parent()->ID());
+			P.w_u16(u16(pObj->ID()));
+			game_events->insert(P);
+
 			if (g_bDebugEvents)
 				ProcessGameEvents();
-			//-------------------------------------------------------------
+
 			ParentFound = true;
-			//-------------------------------------------------------------
+
 #ifdef DEBUG
 			Msg("Rejection of %s[%d] from %s[%d]", *(pObj->cNameSect()), pObj->ID(), *(pObj->H_Parent()->cNameSect()), pObj->H_Parent()->ID());
 #endif
-		};
-	};
+		}
+	}
 
-	u32 CLObjNum = Level().Objects.o_count();
+	const u32 CLObjNum = Level().Objects.o_count();
 
 	for (u32 i = 0; i < CLObjNum; i++)
 	{
 		CObject *pObj = Level().Objects.o_get_by_iterator(i);
-		R_ASSERT(pObj->H_Parent() == NULL);
-		//-----------------------------------------------------------
-		NET_Packet GEN;
-		GEN.w_begin(M_EVENT);
-		//---------------------------------------------
-		GEN.w_u32(Level().timeServer());
-		GEN.w_u16(GE_DESTROY);
-		GEN.w_u16(u16(pObj->ID()));
-		game_events->insert(GEN);
+		R_ASSERT(!pObj->H_Parent());
+
+		game_GameState::u_EventGen(P, GE_DESTROY, pObj->ID());
+		game_events->insert(P);
+
 		if (g_bDebugEvents)
 			ProcessGameEvents();
-		//-------------------------------------------------------------
+
 		ParentFound = true;
-		//-------------------------------------------------------------
+
 #ifdef DEBUG
 		Msg("Destruction of %s[%d]", *(pObj->cNameSect()), pObj->ID());
 #endif
-	};
+	}
+
 	ProcessGameEvents();
-};
+}
 
 void CLevel::OnInvalidHost()
 {
 	IPureClient::OnInvalidHost();
+
 	if (MainMenu()->GetErrorDialogType() == CMainMenu::ErrNoError)
 		MainMenu()->SetErrorDialog(CMainMenu::ErrInvalidHost);
-};
+}
 
 void CLevel::OnInvalidPassword()
 {
 	IPureClient::OnInvalidPassword();
 	MainMenu()->SetErrorDialog(CMainMenu::ErrInvalidPassword);
-};
+}
 
 void CLevel::OnSessionFull()
 {
 	IPureClient::OnSessionFull();
+
 	if (MainMenu()->GetErrorDialogType() == CMainMenu::ErrNoError)
 		MainMenu()->SetErrorDialog(CMainMenu::ErrSessionFull);
 }
@@ -548,17 +546,16 @@ void CLevel::OnSessionFull()
 void CLevel::OnConnectRejected()
 {
 	IPureClient::OnConnectRejected();
-
-	//	if (MainMenu()->GetErrorDialogType() != CMainMenu::ErrNoError)
-	//		MainMenu()->SetErrorDialog(CMainMenu::ErrServerReject);
-};
+}
 
 void CLevel::net_OnChangeSelfName(NET_Packet *P)
 {
 	if (!P)
 		return;
+
 	string64 NewName;
 	P->r_stringZ(NewName);
+
 	if (!strstr(*m_caClientOptions, "/name="))
 	{
 		string1024 tmpstr;
@@ -571,11 +568,12 @@ void CLevel::net_OnChangeSelfName(NET_Packet *P)
 	{
 		string1024 tmpstr;
 		strcpy_s(tmpstr, *m_caClientOptions);
-		*(strstr(tmpstr, "name=") + 5) = 0;
+		*(strstr(tmpstr, "name=") + 5) = '\0';
 		strcat_s(tmpstr, NewName);
-		const char *ptmp = strstr(strstr(*m_caClientOptions, "name="), "/");
-		if (ptmp)
+
+		if (const char* ptmp = strstr(strstr(*m_caClientOptions, "name="), "/"))
 			strcat_s(tmpstr, ptmp);
+
 		m_caClientOptions = tmpstr;
 	}
 }

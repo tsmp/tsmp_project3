@@ -30,9 +30,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cl_intersect.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>Kernel</Filter>
     </ClInclude>
@@ -98,6 +95,9 @@
     </ClInclude>
     <ClInclude Include="voicechat\SoundVoiceChat.h">
       <Filter>VoiceChat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrEngine\cl_intersect.h">
+      <Filter>Kernel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
