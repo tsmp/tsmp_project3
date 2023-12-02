@@ -88,22 +88,10 @@ void CScriptBinder::reload(LPCSTR section)
 #ifndef DBG_DISABLE_SCRIPTS
 	VERIFY(!m_object);
 
-	const char* scriptBinding = nullptr;
+	if (!pSettings->line_exist(section, "script_binding"))
+		return;
 
-	if (!xr_strcmp(section, "mp_actor"))
-	{
-		if (OnServer())
-			return;
-
-		scriptBinding = "bind_stalker.actor_init";
-	}
-	else
-	{
-		if (!pSettings->line_exist(section, "script_binding"))
-			return;
-
-		scriptBinding = pSettings->r_string(section, "script_binding");
-	}
+	const char* scriptBinding = pSettings->r_string(section, "script_binding");
 
 	luabind::functor<void> lua_function;
 
@@ -199,12 +187,6 @@ void CScriptBinder::net_Destroy()
 	xr_delete(m_object);
 }
 
-bool AllowNonLocalActorBind()
-{
-	static const bool allow = pSettings->section_exist("client_all_actors_script_bind") && pSettings->r_bool("client_all_actors_script_bind", "enabled");
-	return allow;
-}
-
 bool CanBind(CGameObject &obj)
 {
 	if (IsGameTypeSingle())
@@ -212,21 +194,16 @@ bool CanBind(CGameObject &obj)
 
 	shared_str section = obj.cNameSect();
 
+	bool exceptionsection = section == "mp_actor" || section == "space_restrictor";
+
+#ifdef _DEBUG
+	Msg("section=%s, OnServer=%s, exceptionsection=%s, server_bind=%s",*section ,OnServer() ? "true" : "false", exceptionsection ? "true" : "false", READ_IF_EXISTS(pSettings, r_bool, section, "server_bind", false) ? "true" : "false");
+#endif // _DEBUG
 	if (OnServer())
 	{
-		if (section == "mp_actor" || section == "space_restrictor")
-			return false;
-
-		return true;
+		return !exceptionsection || READ_IF_EXISTS(pSettings, r_bool, section, "server_bind", false);
 	}
-
-	if (section == "space_restrictor")
-		return true;
-
-	if (section == "mp_actor" && (obj.Local() || AllowNonLocalActorBind()))
-		return true;
-	
-	return false;
+	return exceptionsection || READ_IF_EXISTS(pSettings, r_bool, section, "client_bind", false);
 }
 
 void CScriptBinder::set_object(CScriptBinderObject *object)

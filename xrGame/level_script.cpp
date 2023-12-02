@@ -634,7 +634,9 @@ void CLevel::script_register(lua_State *L)
 	module(L)
 		[def("command_line", &command_line),
 		def("IsGameTypeSingle", &IsGameTypeSingle),
-		def("is_dedicated", &is_dedicated)];
+		def("is_dedicated", &is_dedicated),
+		def("on_server", OnServer),
+		def("on_client", OnClient)];
 
 	module(L, "relation_registry")
 		[def("community_goodwill", &g_community_goodwill),
