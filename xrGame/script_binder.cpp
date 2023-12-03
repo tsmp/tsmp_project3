@@ -205,9 +205,18 @@ bool CanBind(CGameObject &obj)
 
 	if (OnServer())
 	{
-		return !(section == "mp_actor" || section == "space_restrictor") || READ_IF_EXISTS(pSettings, r_bool, section, "server_bind", false);
+		if (section == "space_restrictor" || section == "mp_actor" && !READ_IF_EXISTS(pSettings, r_bool, section, "server_bind", false))
+			return false;
+
+		return true;
 	}
-	return ((section == "mp_actor" && (obj.Local() || READ_IF_EXISTS(pSettings, r_bool, section, "global_bind", false))) || section == "space_restrictor") || READ_IF_EXISTS(pSettings, r_bool, section, "client_bind", false);
+	if (section == "space_restrictor")
+		return true;
+
+	if (section == "mp_actor" && (obj.Local() || READ_IF_EXISTS(pSettings, r_bool, section, "global_bind", false)))
+		return true;
+
+	return READ_IF_EXISTS(pSettings, r_bool, section, "client_bind", false);
 }
 
 void CScriptBinder::set_object(CScriptBinderObject *object)
