@@ -88,10 +88,19 @@ void CScriptBinder::reload(LPCSTR section)
 #ifndef DBG_DISABLE_SCRIPTS
 	VERIFY(!m_object);
 
-	if (!pSettings->line_exist("actor", "script_binding"))
-		return;
+	const char* scriptBinding = nullptr;
 
-	const char* scriptBinding = pSettings->r_string("actor", "script_binding");
+	if (!xr_strcmp(section, "mp_actor"))
+	{
+		scriptBinding = pSettings->r_string("actor", "script_binding");
+	}
+	else
+	{
+		if (!pSettings->line_exist(section, "script_binding"))
+			return;
+
+		scriptBinding = pSettings->r_string(section, "script_binding");
+	}
 
 	luabind::functor<void> lua_function;
 
