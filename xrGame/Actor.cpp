@@ -429,12 +429,6 @@ void CActor::Hit(SHit *pHDS)
 		sprintf_s(err, "Unknown/unregistered hit type [%d]", HDS.hit_type);
 		R_ASSERT2(0, err);
 	}
-	callback(GameObject::eHit)(
-		lua_game_object(),
-		HDS.damage(),
-		HDS.dir,
-		smart_cast<const CGameObject*>(HDS.who)->lua_game_object(),
-		HDS.bone());
 #ifdef DEBUG
 	if (ph_dbg_draw_mask.test(phDbgCharacterControl))
 	{

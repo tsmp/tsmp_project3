@@ -92,7 +92,10 @@ void CScriptBinder::reload(LPCSTR section)
 
 	if (!xr_strcmp(section, "mp_actor"))
 	{
-		scriptBinding = pSettings->r_string("actor", "script_binding");
+		if (OnServer())
+			return;
+
+		scriptBinding = "bind_stalker.actor_init";
 	}
 	else
 	{
@@ -196,6 +199,12 @@ void CScriptBinder::net_Destroy()
 	xr_delete(m_object);
 }
 
+bool AllowNonLocalActorBind()
+{
+	static const bool allow = pSettings->section_exist("client_all_actors_script_bind") && pSettings->r_bool("client_all_actors_script_bind", "enabled");
+	return allow;
+}
+
 bool CanBind(CGameObject &obj)
 {
 	if (IsGameTypeSingle())
@@ -205,9 +214,19 @@ bool CanBind(CGameObject &obj)
 
 	if (OnServer())
 	{
-		return !(section == "mp_actor" || section == "space_restrictor") || READ_IF_EXISTS(pSettings, r_bool, section, "server_bind", false);
+		if (section == "mp_actor" || section == "space_restrictor")
+			return false;
+
+		return true;
 	}
-	return ((section == "mp_actor" && (obj.Local() || READ_IF_EXISTS(pSettings, r_bool, section, "global_bind", false))) || section == "space_restrictor") || READ_IF_EXISTS(pSettings, r_bool, section, "client_bind", false);
+
+	if (section == "space_restrictor")
+		return true;
+
+	if (section == "mp_actor" && (obj.Local() || AllowNonLocalActorBind()))
+		return true;
+	
+	return false;
 }
 
 void CScriptBinder::set_object(CScriptBinderObject *object)
