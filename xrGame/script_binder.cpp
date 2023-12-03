@@ -88,10 +88,10 @@ void CScriptBinder::reload(LPCSTR section)
 #ifndef DBG_DISABLE_SCRIPTS
 	VERIFY(!m_object);
 
-	if (!pSettings->line_exist(section, "script_binding"))
+	if (!pSettings->line_exist("actor", "script_binding"))
 		return;
 
-	const char* scriptBinding = pSettings->r_string(section, "script_binding");
+	const char* scriptBinding = pSettings->r_string("actor", "script_binding");
 
 	luabind::functor<void> lua_function;
 
@@ -194,16 +194,11 @@ bool CanBind(CGameObject &obj)
 
 	shared_str section = obj.cNameSect();
 
-	bool exceptionsection = section == "mp_actor" || section == "space_restrictor";
-
-#ifdef _DEBUG
-	Msg("section=%s, OnServer=%s, exceptionsection=%s, server_bind=%s",*section ,OnServer() ? "true" : "false", exceptionsection ? "true" : "false", READ_IF_EXISTS(pSettings, r_bool, section, "server_bind", false) ? "true" : "false");
-#endif // _DEBUG
 	if (OnServer())
 	{
-		return !exceptionsection || READ_IF_EXISTS(pSettings, r_bool, section, "server_bind", false);
+		return !(section == "mp_actor" || section == "space_restrictor") || READ_IF_EXISTS(pSettings, r_bool, section, "server_bind", false);
 	}
-	return exceptionsection || READ_IF_EXISTS(pSettings, r_bool, section, "client_bind", false);
+	return ((section == "mp_actor" && (obj.Local() || READ_IF_EXISTS(pSettings, r_bool, section, "global_bind", false))) || section == "space_restrictor") || READ_IF_EXISTS(pSettings, r_bool, section, "client_bind", false);
 }
 
 void CScriptBinder::set_object(CScriptBinderObject *object)
