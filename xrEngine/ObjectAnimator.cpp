@@ -73,7 +73,7 @@ void CObjectAnimator::LoadMotions(LPCSTR fname)
             }
             FS.r_close(F);
         }
-        std::sort(m_Motions.begin(), m_Motions.end(), motion_sort_pred);
+        sort(m_Motions.begin(), m_Motions.end(), motion_sort_pred);
     }
 }
 
@@ -100,7 +100,7 @@ COMotion *CObjectAnimator::Play(bool loop, LPCSTR name)
 {
     if (name && name[0])
     {
-        MotionIt it = std::lower_bound(m_Motions.begin(), m_Motions.end(), name, motion_find_pred);
+        MotionIt it = lower_bound(m_Motions.begin(), m_Motions.end(), name, motion_find_pred);
         if ((it != m_Motions.end()) && (0 == xr_strcmp((*it)->Name(), name)))
         {
             bLoop = loop;

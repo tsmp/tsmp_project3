@@ -604,6 +604,9 @@
     <ClCompile Include="UrlEncode.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Components\EASTL\EASTL.vcxproj">
+      <Project>{2c9a6580-067d-3e3a-a2af-245019327655}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\xrCore\xrCore.vcxproj">
       <Project>{a0f7d1fb-59a7-4717-a7e4-96f37e91998e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

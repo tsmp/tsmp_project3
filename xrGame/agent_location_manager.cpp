@@ -64,7 +64,7 @@ struct CDangerLocationPredicate
 
 IC CAgentLocationManager::CDangerLocationPtr CAgentLocationManager::location(const Fvector &position)
 {
-	LOCATIONS::iterator I = std::find_if(m_danger_locations.begin(), m_danger_locations.end(), CDangerLocationPredicate(position));
+	LOCATIONS::iterator I = find_if(m_danger_locations.begin(), m_danger_locations.end(), CDangerLocationPredicate(position));
 	if (I != m_danger_locations.end())
 		return (*I);
 	return (0);
@@ -165,7 +165,7 @@ void CAgentLocationManager::add(CDangerLocationPtr location)
 void CAgentLocationManager::remove_old_danger_covers()
 {
 	m_danger_locations.erase(
-		std::remove_if(
+		remove_if(
 			m_danger_locations.begin(),
 			m_danger_locations.end(),
 			CRemoveOldDangerCover(
@@ -206,7 +206,7 @@ void CAgentLocationManager::update()
 void CAgentLocationManager::remove_links(CObject *object)
 {
 	m_danger_locations.erase(
-		std::remove_if(
+		remove_if(
 			m_danger_locations.begin(),
 			m_danger_locations.end(),
 			CRemoveDangerObject(object)),

@@ -98,7 +98,7 @@ void CAgentCorpseManager::react_on_member_death()
 		}
 
 		m_corpses.erase(
-			std::remove_if(
+			remove_if(
 				m_corpses.begin(),
 				m_corpses.end(),
 				CRemoveMemberCorpsesPredicate()),
@@ -109,7 +109,7 @@ void CAgentCorpseManager::react_on_member_death()
 void CAgentCorpseManager::remove_links(CObject *object)
 {
 	m_corpses.erase(
-		std::remove_if(
+		remove_if(
 			m_corpses.begin(),
 			m_corpses.end(),
 			CRemoveOfflineCorpsesPredicate(object)),

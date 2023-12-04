@@ -62,7 +62,7 @@ struct CEnemyFiller
 
 	IC void operator()(const CEntityAlive *enemy) const
 	{
-		ENEMIES::iterator I = std::find(m_enemies->begin(), m_enemies->end(), enemy);
+		ENEMIES::iterator I = find(m_enemies->begin(), m_enemies->end(), enemy);
 		if (I == m_enemies->end())
 		{
 			m_enemies->push_back(CMemberEnemy(enemy, m_mask));
@@ -111,7 +111,7 @@ void CAgentEnemyManager::fill_enemies()
 		for (int i = 0, n = (int)m_wounded.size(); i < n; ++i)
 		{
 			const CEntityAlive *enemy = m_wounded[i].first;
-			ENEMIES::const_iterator I = std::find(m_enemies.begin(), m_enemies.end(), enemy);
+			ENEMIES::const_iterator I = find(m_enemies.begin(), m_enemies.end(), enemy);
 			if (I != m_enemies.end())
 				continue;
 
@@ -154,7 +154,7 @@ void CAgentEnemyManager::fill_enemies()
 	if (!m_only_wounded_left && m_is_any_wounded)
 	{
 		enemies().erase(
-			std::remove_if(
+			remove_if(
 				enemies().begin(),
 				enemies().end(),
 				remove_wounded_predicate()),
@@ -205,7 +205,7 @@ void CAgentEnemyManager::compute_enemy_danger()
 		(*I).m_probability = best;
 	}
 
-	std::sort(m_enemies.begin(), m_enemies.end());
+	sort(m_enemies.begin(), m_enemies.end());
 }
 
 void CAgentEnemyManager::assign_enemies()
@@ -250,7 +250,7 @@ void CAgentEnemyManager::assign_enemies()
 		// recovering sort order
 		for (u32 i = 0, n = m_enemies.size() - 1; i < n; ++i)
 			if (m_enemies[i + 1] < m_enemies[i])
-				std::swap(m_enemies[i], m_enemies[i + 1]);
+				swap(m_enemies[i], m_enemies[i + 1]);
 			else
 				break;
 	}
@@ -324,7 +324,7 @@ void CAgentEnemyManager::permutate_enemies()
 					{
 						K = (J & (J - 1)) ^ J;
 						CAgentMemberManager::iterator j = object().member().member(K);
-						xr_vector<u32>::iterator ii = std::find((*j)->enemies().begin(), (*j)->enemies().end(), (*I)->selected_enemy());
+						xr_vector<u32>::iterator ii = find((*j)->enemies().begin(), (*j)->enemies().end(), (*I)->selected_enemy());
 						// check if member can my current enemy
 						if (ii == (*j)->enemies().end())
 							continue;
@@ -381,7 +381,7 @@ void CAgentEnemyManager::permutate_enemies()
 template <typename T>
 IC void CAgentEnemyManager::setup_mask(xr_vector<T> &objects, CMemberEnemy &enemy, const squad_mask_type &non_combat_members)
 {
-	xr_vector<T>::iterator I = std::find(objects.begin(), objects.end(), enemy.m_object->ID());
+	xr_vector<T>::iterator I = find(objects.begin(), objects.end(), enemy.m_object->ID());
 	if (I != objects.end())
 	{
 		(*I).m_squad_mask.assign(
@@ -436,7 +436,7 @@ void CAgentEnemyManager::assign_wounded()
 
 	u32 previous_wounded_count = m_wounded.size();
 	WOUNDED_ENEMY *previous_wounded = (WOUNDED_ENEMY *)_alloca(previous_wounded_count * sizeof(WOUNDED_ENEMY));
-	std::copy(m_wounded.begin(), m_wounded.end(), previous_wounded);
+	copy(m_wounded.begin(), m_wounded.end(), previous_wounded);
 	m_wounded.clear();
 
 #ifdef DEBUG
@@ -457,7 +457,7 @@ void CAgentEnemyManager::assign_wounded()
 		WOUNDED_ENEMY *E = previous_wounded + previous_wounded_count;
 		for (; I != E; ++I)
 		{
-			ENEMIES::iterator J = std::find(m_enemies.begin(), m_enemies.end(), (*I).first);
+			ENEMIES::iterator J = find(m_enemies.begin(), m_enemies.end(), (*I).first);
 			if (J == m_enemies.end())
 				continue;
 
@@ -646,7 +646,7 @@ struct wounded_predicate
 void CAgentEnemyManager::remove_links(CObject *object)
 {
 	m_wounded.erase(
-		std::remove_if(
+		remove_if(
 			m_wounded.begin(),
 			m_wounded.end(),
 			wounded_predicate(object)),
@@ -691,18 +691,18 @@ public:
 void CAgentEnemyManager::wounded_processor(const CEntityAlive *object, const ALife::_OBJECT_ID &wounded_processor_id)
 {
 	VERIFY(
-		std::find_if(
+		find_if(
 			m_wounded.begin(),
 			m_wounded.end(),
 			find_wounded_predicate(object)) ==
 		m_wounded.end());
-	m_wounded.push_back(std::make_pair(object, std::make_pair(wounded_processor_id, false)));
+	m_wounded.push_back(mk_pair(object, mk_pair(wounded_processor_id, false)));
 }
 
 void CAgentEnemyManager::wounded_processed(const CEntityAlive *object, bool value)
 {
 	VERIFY(value);
-	WOUNDED_ENEMIES::iterator I = std::find_if(m_wounded.begin(), m_wounded.end(), find_wounded_predicate(object));
+	WOUNDED_ENEMIES::iterator I = find_if(m_wounded.begin(), m_wounded.end(), find_wounded_predicate(object));
 	if (I == m_wounded.end())
 		return;
 	VERIFY((*I).second.first != ALife::_OBJECT_ID(-1));
@@ -712,7 +712,7 @@ void CAgentEnemyManager::wounded_processed(const CEntityAlive *object, bool valu
 
 bool CAgentEnemyManager::wounded_processed(const CEntityAlive *object) const
 {
-	WOUNDED_ENEMIES::const_iterator I = std::find_if(m_wounded.begin(), m_wounded.end(), find_wounded_predicate(object));
+	WOUNDED_ENEMIES::const_iterator I = find_if(m_wounded.begin(), m_wounded.end(), find_wounded_predicate(object));
 	if (I == m_wounded.end())
 		return (false);
 	return ((*I).second.second);
@@ -740,7 +740,7 @@ bool CAgentEnemyManager::useful_enemy(const CEntityAlive *enemy, const CAI_Stalk
 	if (!object().member().registered_in_combat(member))
 		return (true);
 
-	ENEMIES::const_iterator I = std::find(m_enemies.begin(), m_enemies.end(), enemy);
+	ENEMIES::const_iterator I = find(m_enemies.begin(), m_enemies.end(), enemy);
 	if (I == m_enemies.end())
 		return (true);
 

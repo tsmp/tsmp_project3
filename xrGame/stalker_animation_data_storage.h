@@ -14,7 +14,7 @@ class IKinematicsAnimated;
 class CStalkerAnimationDataStorage
 {
 public:
-	typedef std::pair<IKinematicsAnimated *, CStalkerAnimationData *> OBJECT;
+	typedef pair<IKinematicsAnimated *, CStalkerAnimationData *> OBJECT;
 	typedef xr_vector<OBJECT> OBJECTS;
 
 private:

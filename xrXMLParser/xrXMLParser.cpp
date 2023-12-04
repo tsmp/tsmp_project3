@@ -452,7 +452,7 @@ LPCSTR CXml::CheckUniqueAttrib(XML_NODE *start_node, LPCSTR tag_name, LPCSTR att
 	{
 		LPCSTR attrib = ReadAttrib(start_node, tag_name, i, attrib_name, NULL);
 
-		xr_vector<shared_str>::iterator it = std::find(m_AttribValues.begin(), m_AttribValues.end(), attrib);
+		auto it = find(m_AttribValues.begin(), m_AttribValues.end(), attrib);
 
 		if (m_AttribValues.end() != it)
 			return attrib;

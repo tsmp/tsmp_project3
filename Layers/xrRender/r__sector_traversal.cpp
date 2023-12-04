@@ -74,7 +74,7 @@ void CPortalTraverser::destroy()
 	f_geom.destroy();
 	f_shader.destroy();
 }
-ICF bool psort_pred(const std::pair<CPortal *, float> &_1, const std::pair<CPortal *, float> &_2)
+ICF bool psort_pred(const pair<CPortal *, float> &_1, const pair<CPortal *, float> &_2)
 {
 	float d1 = PortalTraverser.i_vBase.distance_to_sqr(_1.first->S.P);
 	float d2 = PortalTraverser.i_vBase.distance_to_sqr(_2.first->S.P);
@@ -88,7 +88,7 @@ void CPortalTraverser::fade_render()
 		return;
 
 	// re-sort, back to front
-	std::sort(f_portals.begin(), f_portals.end(), psort_pred);
+	sort(f_portals.begin(), f_portals.end(), psort_pred);
 
 	// calc poly-count
 	u32 _pcount = 0;
@@ -103,7 +103,7 @@ void CPortalTraverser::fade_render()
 	u32 _ambient = color_rgba_f(_ambient_f.x, _ambient_f.y, _ambient_f.z, 0);
 	for (u32 _it = 0; _it < f_portals.size(); _it++)
 	{
-		std::pair<CPortal *, float> &fp = f_portals[_it];
+		pair<CPortal *, float> &fp = f_portals[_it];
 		CPortal *_P = fp.first;
 		float _ssa = fp.second;
 		float ssaDiff = _ssa - r_ssaLOD_B;

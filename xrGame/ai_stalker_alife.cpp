@@ -102,7 +102,7 @@ void CAI_Stalker::attach_available_ammo(CWeapon *weapon)
 			continue;
 
 		if (
-			std::find(
+			find(
 				weapon->m_ammoTypes.begin(),
 				weapon->m_ammoTypes.end(),
 				(*I).m_item->object().cNameSect()) ==
@@ -249,7 +249,7 @@ void CAI_Stalker::update_sell_info()
 	m_total_money = get_money();
 	u32 money_delta = fill_items(inventory(), this, ALife::_OBJECT_ID(-1));
 	m_total_money += money_delta;
-	std::sort(m_temp_items.begin(), m_temp_items.end());
+	sort(m_temp_items.begin(), m_temp_items.end());
 	select_items();
 
 	TIItemContainer::iterator I = inventory().m_all.begin();
@@ -264,7 +264,7 @@ void CAI_Stalker::update_sell_info()
 bool CAI_Stalker::can_sell(CInventoryItem const *item)
 {
 	update_sell_info();
-	xr_vector<CTradeItem>::const_iterator I = std::find(m_temp_items.begin(), m_temp_items.end(), item->object().ID());
+	xr_vector<CTradeItem>::const_iterator I = find(m_temp_items.begin(), m_temp_items.end(), item->object().ID());
 	VERIFY(I != m_temp_items.end());
 	return ((*I).m_new_owner_id != ID());
 }
@@ -343,7 +343,7 @@ bool CAI_Stalker::enough_ammo(const CWeapon *new_weapon) const
 	TIItemContainer::const_iterator E = inventory().m_all.end();
 	for (; I != E; ++I)
 	{
-		if (std::find(new_weapon->m_ammoTypes.begin(), new_weapon->m_ammoTypes.end(), (*I)->object().cNameSect()) == new_weapon->m_ammoTypes.end())
+		if (find(new_weapon->m_ammoTypes.begin(), new_weapon->m_ammoTypes.end(), (*I)->object().cNameSect()) == new_weapon->m_ammoTypes.end())
 			continue;
 
 		++ammo_box_count;
@@ -423,7 +423,7 @@ void CAI_Stalker::remove_personal_only_ammo(const CInventoryItem *item)
 			if (!temp)
 				continue;
 
-			if (std::find(temp->m_ammoTypes.begin(), temp->m_ammoTypes.end(), *I) == temp->m_ammoTypes.end())
+			if (find(temp->m_ammoTypes.begin(), temp->m_ammoTypes.end(), *I) == temp->m_ammoTypes.end())
 				continue;
 
 			found = true;

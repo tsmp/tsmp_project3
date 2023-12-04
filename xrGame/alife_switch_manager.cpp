@@ -83,7 +83,7 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject *object, bool upd
 	if (inventory_owner)
 	{
 		m_saved_chidren.erase(
-			std::remove_if(
+			remove_if(
 				m_saved_chidren.begin(),
 				m_saved_chidren.end(),
 				remove_non_savable_predicate(&server())),
@@ -137,7 +137,7 @@ bool CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject *I)
 		u32 size = I->children.size();
 		ALife::_OBJECT_ID *test = (ALife::_OBJECT_ID *)_alloca(size * sizeof(ALife::_OBJECT_ID));
 		Memory.mem_copy(test, &*I->children.begin(), size * sizeof(ALife::_OBJECT_ID));
-		std::sort(test, test + size);
+		sort(test, test + size);
 		for (u32 i = 1; i < size; ++i)
 		{
 			VERIFY3(test[i - 1] != test[i], "Child is registered twice in the child list", (*I).name_replace());

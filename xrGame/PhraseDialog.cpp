@@ -87,7 +87,7 @@ bool CPhraseDialog::SayPhrase(DIALOG_SHARED_PTR &phrase_dialog, const shared_str
 	const CGameObject *pSpeakerGO2 = smart_cast<const CGameObject *>(phrase_dialog->SecondSpeaker());
 	VERIFY(pSpeakerGO2);
 	if (!first_is_speaking)
-		std::swap(pSpeakerGO1, pSpeakerGO2);
+		swap(pSpeakerGO1, pSpeakerGO2);
 
 	CPhraseGraph::CVertex *phrase_vertex = phrase_dialog->data()->m_PhraseGraph.vertex(phrase_dialog->m_SaidPhraseID);
 	THROW(phrase_vertex);
@@ -137,7 +137,7 @@ bool CPhraseDialog::SayPhrase(DIALOG_SHARED_PTR &phrase_dialog, const shared_str
 				*phrase_dialog->m_DialogId));
 
 		//упорядочить списко по убыванию благосклонности
-		std::sort(phrase_dialog->m_PhraseVector.begin(),
+		sort(phrase_dialog->m_PhraseVector.begin(),
 				  phrase_dialog->m_PhraseVector.end(), PhraseGoodwillPred);
 	}
 

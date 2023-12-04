@@ -160,7 +160,7 @@ void draw_planner(const planner_type &brain, LPCSTR start_indent, LPCSTR indent,
 	planner_type::EVALUATORS::const_iterator E = brain.evaluators().end();
 	for (; I != E; ++I)
 	{
-		xr_vector<planner_type::COperatorCondition>::const_iterator J = std::lower_bound(brain.current_state().conditions().begin(), brain.current_state().conditions().end(), planner_type::CWorldProperty((*I).first, false));
+		xr_vector<planner_type::COperatorCondition>::const_iterator J = lower_bound(brain.current_state().conditions().begin(), brain.current_state().conditions().end(), planner_type::CWorldProperty((*I).first, false));
 		char temp = '?';
 		if ((J != brain.current_state().conditions().end()) && ((*J).condition() == (*I).first))
 		{
@@ -173,7 +173,7 @@ void draw_planner(const planner_type &brain, LPCSTR start_indent, LPCSTR indent,
 	I = brain.evaluators().begin();
 	for (; I != E; ++I)
 	{
-		xr_vector<planner_type::COperatorCondition>::const_iterator J = std::lower_bound(brain.target_state().conditions().begin(), brain.target_state().conditions().end(), planner_type::CWorldProperty((*I).first, false));
+		xr_vector<planner_type::COperatorCondition>::const_iterator J = lower_bound(brain.target_state().conditions().begin(), brain.target_state().conditions().end(), planner_type::CWorldProperty((*I).first, false));
 		char temp = '?';
 		if ((J != brain.target_state().conditions().end()) && ((*J).condition() == (*I).first))
 		{
@@ -893,7 +893,7 @@ void CAI_Stalker::OnRender()
 
 		xr_vector<CObject *> objects;
 		feel_vision_get(objects);
-		if (std::find(objects.begin(), objects.end(), memory().enemy().selected()) != objects.end())
+		if (find(objects.begin(), objects.end(), memory().enemy().selected()) != objects.end())
 		{
 			Fvector position = feel_vision_get_vispoint(const_cast<CEntityAlive *>(memory().enemy().selected()));
 			Level().debug_renderer().draw_aabb(position, .05f, .05f, .05f, D3DCOLOR_XRGB(0 * 255, 255, 0 * 255));

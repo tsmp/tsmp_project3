@@ -488,8 +488,8 @@ u16 NET_Compressor::Decompress(BYTE *dest, const u32 &dest_size, BYTE *src, cons
 
 void NET_Compressor::DumpStats(bool brief)
 {
-	xr_map<u32, SCompressorStats::SStatPacket>::const_iterator it = m_stats.m_packets.begin();
-	xr_map<u32, SCompressorStats::SStatPacket>::const_iterator it_e = m_stats.m_packets.end();
+	auto it = m_stats.m_packets.cbegin();
+	auto it_e = m_stats.m_packets.cend();
 
 	Msg("---------NET_Compressor::DumpStats-----------");
 

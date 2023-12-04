@@ -46,7 +46,7 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion *info_portion) const
 		 it != info_portion->ArticlesDisable().end(); it++)
 	{
 		FindArticleByIDPred pred(*it);
-		last_end = std::remove_if(B, last_end, pred);
+		last_end = remove_if(B, last_end, pred);
 	}
 	article_vector.erase(last_end, E);
 
@@ -54,7 +54,7 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion *info_portion) const
 		 it != info_portion->Articles().end(); it++)
 	{
 		FindArticleByIDPred pred(*it);
-		if (std::find_if(article_vector.begin(), article_vector.end(), pred) != article_vector.end())
+		if (find_if(article_vector.begin(), article_vector.end(), pred) != article_vector.end())
 			continue;
 
 		CEncyclopediaArticle article;
@@ -298,7 +298,7 @@ void CActor::AddGameNews_deffered(GAME_NEWS_DATA &news_data, u32 delay)
 	m_defferedMessages.push_back(SDefNewsMsg());
 	m_defferedMessages.back().news_data = d;
 	m_defferedMessages.back().time = Device.dwTimeGlobal + delay;
-	std::sort(m_defferedMessages.begin(), m_defferedMessages.end());
+	sort(m_defferedMessages.begin(), m_defferedMessages.end());
 }
 void CActor::UpdateDefferedMessages()
 {

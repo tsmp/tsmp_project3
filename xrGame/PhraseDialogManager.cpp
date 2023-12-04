@@ -59,7 +59,7 @@ void CPhraseDialogManager::InitDialog(CPhraseDialogManager *dialog_partner, DIAL
 
 void CPhraseDialogManager::AddDialog(DIALOG_SHARED_PTR &phrase_dialog)
 {
-	DIALOG_VECTOR_IT it = std::find(m_ActiveDialogs.begin(), m_ActiveDialogs.end(), phrase_dialog);
+	DIALOG_VECTOR_IT it = find(m_ActiveDialogs.begin(), m_ActiveDialogs.end(), phrase_dialog);
 	THROW(m_ActiveDialogs.end() == it);
 	m_ActiveDialogs.push_back(phrase_dialog);
 }
@@ -70,7 +70,7 @@ void CPhraseDialogManager::ReceivePhrase(DIALOG_SHARED_PTR &phrase_dialog)
 
 void CPhraseDialogManager::SayPhrase(DIALOG_SHARED_PTR &phrase_dialog, const shared_str &phrase_id)
 {
-	DIALOG_VECTOR_IT it = std::find(m_ActiveDialogs.begin(), m_ActiveDialogs.end(), phrase_dialog);
+	DIALOG_VECTOR_IT it = find(m_ActiveDialogs.begin(), m_ActiveDialogs.end(), phrase_dialog);
 	THROW(m_ActiveDialogs.end() != it);
 
 	THROW(phrase_dialog->IsWeSpeaking(this));
@@ -90,13 +90,13 @@ static bool dialog_priority(DIALOG_SHARED_PTR dialog1, DIALOG_SHARED_PTR dialog2
 
 void CPhraseDialogManager::UpdateAvailableDialogs(CPhraseDialogManager *partner)
 {
-	std::sort(m_AvailableDialogs.begin(), m_AvailableDialogs.end(), dialog_priority);
+	sort(m_AvailableDialogs.begin(), m_AvailableDialogs.end(), dialog_priority);
 }
 
 bool CPhraseDialogManager::AddAvailableDialog(shared_str dialog_id, CPhraseDialogManager *partner)
 {
 	//	PHRASE_DIALOG_INDEX dialog_index =  CPhraseDialog::IdToIndex(dialog_id);
-	if (std::find(m_CheckedDialogs.begin(), m_CheckedDialogs.end(), dialog_id) != m_CheckedDialogs.end())
+	if (find(m_CheckedDialogs.begin(), m_CheckedDialogs.end(), dialog_id) != m_CheckedDialogs.end())
 		return false;
 	m_CheckedDialogs.push_back(dialog_id);
 

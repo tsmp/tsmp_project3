@@ -41,10 +41,10 @@ CSoundCollectionStorage::~CSoundCollectionStorage()
 const CSoundCollectionStorage::SOUND_COLLECTION_PAIR &
 CSoundCollectionStorage::object(const CSoundCollectionParams &params)
 {
-	OBJECTS::const_iterator I = std::find_if(m_objects.begin(), m_objects.end(), collection_predicate(params));
+	OBJECTS::const_iterator I = find_if(m_objects.begin(), m_objects.end(), collection_predicate(params));
 	if (I != m_objects.end())
 		return (*I);
 
-	m_objects.push_back(std::make_pair(params, xr_new<CSoundCollection>(params)));
+	m_objects.push_back(mk_pair(params, xr_new<CSoundCollection>(params)));
 	return (m_objects.back());
 }

@@ -774,7 +774,7 @@ void CAI_Stalker::notify_on_wounded_or_killed(CObject *object)
 	typedef CAgentCorpseManager::MEMBER_CORPSES MEMBER_CORPSES;
 
 	const MEMBER_CORPSES &corpses = agent_manager().corpse().corpses();
-	if (std::find(corpses.begin(), corpses.end(), this) != corpses.end())
+	if (find(corpses.begin(), corpses.end(), this) != corpses.end())
 		return;
 
 	agent_manager().corpse().register_corpse(this);

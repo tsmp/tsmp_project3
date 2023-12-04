@@ -26,7 +26,7 @@ void read_bones(IKinematics *K, LPCSTR S, xr_vector<u16> &bones)
 
 		u16 bone_id = K->LL_BoneID(S1);
 		R_ASSERT3(bone_id != BI_NONE, "wrong bone", S1);
-		xr_vector<u16>::iterator iter = std::find(bones.begin(), bones.end(), bone_id);
+		xr_vector<u16>::iterator iter = find(bones.begin(), bones.end(), bone_id);
 		R_ASSERT3(iter == bones.end(), "double bone", S1);
 		bones.push_back(bone_id);
 	}

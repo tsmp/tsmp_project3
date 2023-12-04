@@ -215,7 +215,7 @@ IC void CPlanner::show_current_world_state()
 	EVALUATORS::const_iterator E = evaluators().end();
 	for (; I != E; ++I)
 	{
-		xr_vector<COperatorCondition>::const_iterator J = std::lower_bound(current_state().conditions().begin(), current_state().conditions().end(), CWorldProperty((*I).first, false));
+		xr_vector<COperatorCondition>::const_iterator J = lower_bound(current_state().conditions().begin(), current_state().conditions().end(), CWorldProperty((*I).first, false));
 		char temp = '?';
 		if ((J != current_state().conditions().end()) && ((*J).condition() == (*I).first))
 		{
@@ -233,7 +233,7 @@ IC void CPlanner::show_target_world_state()
 	EVALUATORS::const_iterator E = evaluators().end();
 	for (; I != E; ++I)
 	{
-		xr_vector<COperatorCondition>::const_iterator J = std::lower_bound(target_state().conditions().begin(), target_state().conditions().end(), CWorldProperty((*I).first, false));
+		xr_vector<COperatorCondition>::const_iterator J = lower_bound(target_state().conditions().begin(), target_state().conditions().end(), CWorldProperty((*I).first, false));
 		char temp = '?';
 		if ((J != target_state().conditions().end()) && ((*J).condition() == (*I).first))
 		{

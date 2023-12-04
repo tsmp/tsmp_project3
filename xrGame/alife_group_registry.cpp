@@ -22,7 +22,7 @@ void CALifeGroupRegistry::add(CSE_ALifeDynamicObject *object)
 
 	OBJECTS::const_iterator I = objects().find(group->ID);
 	VERIFY(I == objects().end());
-	m_objects.insert(std::make_pair(group->ID, group));
+	m_objects.insert(mk_pair(group->ID, group));
 }
 
 void CALifeGroupRegistry::remove(CSE_ALifeDynamicObject *object)

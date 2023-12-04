@@ -68,7 +68,7 @@ private:
 		if (tInvalidValueID == tValueID)
 			return (VALUE_ID(l_tID_Block.m_tpIDs[--l_tID_Block.m_tCount]) + l_tBlockID * tBlockSize + tMinValue);
 
-		TYPE_ID *l_tpBlockID = std::find(l_tID_Block.m_tpIDs, l_tID_Block.m_tpIDs + l_tID_Block.m_tCount, TYPE_ID((tValueID - tMinValue) % tBlockSize));
+		TYPE_ID *l_tpBlockID = find(l_tID_Block.m_tpIDs, l_tID_Block.m_tpIDs + l_tID_Block.m_tCount, TYPE_ID((tValueID - tMinValue) % tBlockSize));
 		R_ASSERT2(l_tID_Block.m_tpIDs + l_tID_Block.m_tCount != l_tpBlockID, "Requesting ID has already been used!");
 		*l_tpBlockID = *(l_tID_Block.m_tpIDs + --l_tID_Block.m_tCount);
 		return (tValueID);
@@ -86,7 +86,7 @@ public:
 		}
 		VERIFY(m_available_count == m_tBlockCount);
 		for (u32 j = 0; j < m_tBlockCount; ++j)
-			std::reverse(m_tppBlocks[j].m_tpIDs, m_tppBlocks[j].m_tpIDs + m_tppBlocks[j].m_tCount);
+			reverse(m_tppBlocks[j].m_tpIDs, m_tppBlocks[j].m_tpIDs + m_tppBlocks[j].m_tCount);
 	}
 
 	IC VALUE_ID tfGetID(VALUE_ID tValueID = tInvalidValueID)
@@ -95,7 +95,7 @@ public:
 			return (tfGetFromBlock(m_tppBlocks[tfGetBlockByValue(tValueID)], tValueID));
 
 		R_ASSERT2(m_available_count, "Not enough IDs");
-		SID_Block *I = std::min_element(m_tppBlocks, m_tppBlocks + m_tBlockCount);
+		SID_Block *I = min_element(m_tppBlocks, m_tppBlocks + m_tBlockCount);
 		VERIFY(I != m_tppBlocks + m_tBlockCount);
 		return (tfGetFromBlock(*I, tValueID));
 	}
@@ -114,7 +114,7 @@ public:
 		}
 
 #ifdef DEBUG
-		TYPE_ID *l_tpBlockID = std::find(l_tID_Block.m_tpIDs, l_tID_Block.m_tpIDs + l_tID_Block.m_tCount, TYPE_ID((tValueID - tMinValue) % tBlockSize));
+		TYPE_ID *l_tpBlockID = find(l_tID_Block.m_tpIDs, l_tID_Block.m_tpIDs + l_tID_Block.m_tCount, TYPE_ID((tValueID - tMinValue) % tBlockSize));
 		VERIFY(l_tpBlockID == l_tID_Block.m_tpIDs + l_tID_Block.m_tCount);
 #endif
 		l_tID_Block.m_tpIDs[l_tID_Block.m_tCount++] = TYPE_ID((tValueID - tMinValue) % tBlockSize);

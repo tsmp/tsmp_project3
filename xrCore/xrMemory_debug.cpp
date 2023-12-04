@@ -104,7 +104,7 @@ void xrMemory::dbg_unregister(void *_p)
 			memset(debug_info[_found]._p, 'C', debug_info[_found]._size);
 
 		// clear record
-		std::swap(debug_info[_found], debug_info.back());
+		swap(debug_info[_found], debug_info.back());
 		debug_info.pop_back();
 		debug_info_update++;
 	}
@@ -113,7 +113,7 @@ void xrMemory::dbg_unregister(void *_p)
 	if (debug_info_update > 1024 * 100)
 	{
 		debug_info_update = 0;
-		debug_info.erase(std::remove_if(debug_info.begin(), debug_info.end(), pred_mdbg), debug_info.end());
+		debug_info.erase(remove_if(debug_info.begin(), debug_info.end(), pred_mdbg), debug_info.end());
 		dbg_check();
 	}
 

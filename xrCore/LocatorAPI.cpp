@@ -95,7 +95,7 @@ XRCORE_API xr_vector<_open_file> g_open_files;
 
 void _check_open_file(const shared_str &_fname)
 {
-	xr_vector<_open_file>::iterator it = std::find_if(g_open_files.begin(), g_open_files.end(), eq_fname_check(_fname));
+	xr_vector<_open_file>::iterator it = find_if(g_open_files.begin(), g_open_files.end(), eq_fname_check(_fname));
 	
 	if (it != g_open_files.end())
 		Log("file opened at least twice", _fname.c_str());
@@ -103,7 +103,7 @@ void _check_open_file(const shared_str &_fname)
 
 _open_file &find_free_item(const shared_str &_fname)
 {
-	xr_vector<_open_file>::iterator it = std::find_if(g_open_files.begin(), g_open_files.end(), eq_fname_free(_fname));
+	xr_vector<_open_file>::iterator it = find_if(g_open_files.begin(), g_open_files.end(), eq_fname_free(_fname));
 	
 	if (it == g_open_files.end())
 	{
@@ -149,7 +149,7 @@ void _unregister_open_file(T *_r)
 	xrCriticalSection _lock;
 	_lock.Enter();
 
-	xr_vector<_open_file>::iterator it = std::find_if(g_open_files.begin(), g_open_files.end(), eq_pointer<T>(_r));
+	xr_vector<_open_file>::iterator it = find_if(g_open_files.begin(), g_open_files.end(), eq_pointer<T>(_r));
 	VERIFY(it != g_open_files.end());
 	_open_file &_of = *it;
 	_of._reader = NULL;
@@ -273,7 +273,7 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 			desc.size_compressed = 0;
 			desc.modif = u32(-1);
 
-			std::pair<files_it, bool> Ins = files.insert(desc);
+			auto Ins = files.insert(desc);
 			R_ASSERT(Ins.second);
 		}
 
@@ -567,12 +567,10 @@ bool CLocatorAPI::Recurse(const char *path)
 
 	u32 count = rec_files.size();
 	_finddata_t *buffer = (_finddata_t *)_alloca(count * sizeof(_finddata_t));
-	std::copy(&*rec_files.begin(), &*rec_files.begin() + count, buffer);
-
-	//.	std::copy		(&*rec_files.begin(),&*rec_files.end(),buffer);
+	copy(&*rec_files.begin(), &*rec_files.begin() + count, buffer);
 
 	rec_files.clear_not_free();
-	std::sort(buffer, buffer + count, pred_str_ff);
+	sort(buffer, buffer + count, pred_str_ff);
 	for (_finddata_t *I = buffer, *E = buffer + count; I != E; ++I)
 		ProcessOne(path, I);
 
@@ -725,11 +723,10 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
 			PathPairIt p_it = pathes.find(root);
 
-			std::pair<PathPairIt, bool> I;
 			FS_Path *P = xr_new<FS_Path>((p_it != pathes.end()) ? p_it->second->m_Path : root, lp_add, lp_def, lp_capt, fl);
 			bNoRecurse = !(fl & FS_Path::flRecurse);
 			Recurse(P->m_Path);
-			I = pathes.insert(mk_pair(xr_strdup(id), P));
+			auto I = pathes.insert(mk_pair(xr_strdup(id), P));
 #ifndef DEBUG
 			m_Flags.set(flCacheFiles, FALSE);
 #endif // DEBUG

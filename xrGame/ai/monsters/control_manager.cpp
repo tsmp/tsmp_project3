@@ -114,7 +114,7 @@ void CControl_Manager::update_frame()
 	}
 
 	m_active_elems.erase(
-		std::remove_if(
+		remove_if(
 			m_active_elems.begin(),
 			m_active_elems.end(),
 			predicate_remove()),
@@ -134,7 +134,7 @@ void CControl_Manager::update_schedule()
 	}
 
 	m_active_elems.erase(
-		std::remove_if(
+		remove_if(
 			m_active_elems.begin(),
 			m_active_elems.end(),
 			predicate_remove()),
@@ -395,14 +395,14 @@ void CControl_Manager::check_active_com(CControl_Com *com, bool b_add)
 	{
 		if (com->is_active() && !com->ced()->is_locked())
 		{
-			COM_VEC_IT it = std::find(m_active_elems.begin(), m_active_elems.end(), com);
+			COM_VEC_IT it = find(m_active_elems.begin(), m_active_elems.end(), com);
 			if (it == m_active_elems.end())
 				m_active_elems.push_back(com);
 		}
 	}
 	else
 	{
-		COM_VEC_IT it = std::find(m_active_elems.begin(), m_active_elems.end(), com);
+		COM_VEC_IT it = find(m_active_elems.begin(), m_active_elems.end(), com);
 		if (it != m_active_elems.end())
 			(*it) = 0; // do not remove just mark
 	}

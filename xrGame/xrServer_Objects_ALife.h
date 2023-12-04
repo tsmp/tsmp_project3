@@ -525,7 +525,7 @@ u8 light;
 u8 lookout;
 u16 owner;
 float m_health;
-std::vector<SPHNetState> StateVec;
+xr_vector<SPHNetState> StateVec;
 
 u8 wpnActive;
 u8 wpnShooting;

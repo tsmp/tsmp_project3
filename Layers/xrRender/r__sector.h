@@ -103,7 +103,7 @@ public:
 	Fmatrix i_mXFORM_01;							  //
 	CSector *i_start;								  // input:	starting point
 	xr_vector<IRender_Sector *> r_sectors;			  // result
-	xr_vector<std::pair<CPortal *, float>> f_portals; //
+	xr_vector<pair<CPortal *, float>> f_portals; //
 	ref_shader f_shader;
 	ref_geom f_geom;
 

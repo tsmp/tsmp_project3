@@ -47,7 +47,7 @@ CObject *CObjectList::FindObjectByName(LPCSTR name)
 
 void CObjectList::o_remove(xr_vector<CObject*> &v, CObject *O)
 {
-	auto it = std::find(v.begin(), v.end(), O);
+	auto it = find(v.begin(), v.end(), O);
 	VERIFY(it != v.end());
 	v.erase(it);
 }
@@ -79,23 +79,14 @@ void CObjectList::SingleUpdate(CObject *O)
 		O->IAmNotACrowAnyMore();
 		O->UpdateCL();
 		VERIFY3(O->dbg_update_cl == Device.CurrentFrameNumber, "Broken sequence of calls to 'UpdateCL'", *O->cName());
-		//		if (O->getDestroy())
-		//		{
-		//			destroy_queue.push_back(O);
-		//.			Msg				("- destroy_queue.push_back %s[%d] frame [%d]",O->cName().c_str(), O->ID(), Device.CurrentFrameNumber);
-		//		}
-		//		else
+
 		if (O->H_Parent() && (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy()))
 		{
-			// Push to destroy-queue if it isn't here already
 			Msg("! ERROR: incorrect destroy sequence for object[%d:%s], section[%s], parent[%d:%s]", O->ID(), *O->cName(), *O->cNameSect(), O->H_Parent()->ID(), *O->H_Parent()->cName());
-			//			if (std::find(destroy_queue.begin(),destroy_queue.end(),O)==destroy_queue.end())
-			//				destroy_queue.push_back	(O);
 		}
 	}
 	if (O->getDestroy() && (Device.CurrentFrameNumber != O->dwFrame_UpdateCL))
 	{
-		//		destroy_queue.push_back(O);
 		Msg("- !!!processing_enabled ->destroy_queue.push_back %s[%d] frame [%d]", O->cName().c_str(), O->ID(), Device.CurrentFrameNumber);
 	}
 }
@@ -356,20 +347,20 @@ void CObjectList::Destroy(CObject *O)
 	net_Unregister(O);
 
 	// crows
-	xr_vector<CObject *>::iterator _i0 = std::find(crows_0.begin(), crows_0.end(), O);
+	xr_vector<CObject *>::iterator _i0 = find(crows_0.begin(), crows_0.end(), O);
 	if (_i0 != crows_0.end())
 		crows_0.erase(_i0);
-	xr_vector<CObject *>::iterator _i1 = std::find(crows_1.begin(), crows_1.end(), O);
+	xr_vector<CObject *>::iterator _i1 = find(crows_1.begin(), crows_1.end(), O);
 	if (_i1 != crows_1.end())
 		crows_1.erase(_i1);
 
 	// active/inactive
-	xr_vector<CObject *>::iterator _i = std::find(objects_active.begin(), objects_active.end(), O);
+	xr_vector<CObject *>::iterator _i = find(objects_active.begin(), objects_active.end(), O);
 	if (_i != objects_active.end())
 		objects_active.erase(_i);
 	else
 	{
-		xr_vector<CObject *>::iterator _ii = std::find(objects_sleeping.begin(), objects_sleeping.end(), O);
+		xr_vector<CObject *>::iterator _ii = find(objects_sleeping.begin(), objects_sleeping.end(), O);
 		if (_ii != objects_sleeping.end())
 			objects_sleeping.erase(_ii);
 		else
@@ -381,7 +372,7 @@ void CObjectList::Destroy(CObject *O)
 void CObjectList::relcase_register(RELCASE_CALLBACK cb, int *ID)
 {
 #ifdef DEBUG
-	RELCASE_CALLBACK_VEC::iterator It = std::find(m_relcase_callbacks.begin(),
+	RELCASE_CALLBACK_VEC::iterator It = find(m_relcase_callbacks.begin(),
 												  m_relcase_callbacks.end(),
 												  cb);
 	VERIFY(It == m_relcase_callbacks.end());
@@ -457,7 +448,7 @@ void CObjectList::register_object_to_destroy(CObject *object_to_destroy)
 bool CObjectList::registered_object_to_destroy(const CObject *object_to_destroy) const
 {
 	return (
-		std::find(
+		find(
 			destroy_queue.begin(),
 			destroy_queue.end(),
 			object_to_destroy) !=

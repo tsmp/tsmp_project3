@@ -10,7 +10,7 @@ xr_vector<u16> g_perform_spawn_ids;
 
 void xrServer::Perform_connect_spawn(CSE_Abstract *E, xrClientData *CL, NET_Packet &P)
 {
-	xr_vector<u16>::iterator it = std::find(g_perform_spawn_ids.begin(), g_perform_spawn_ids.end(), E->ID);
+	xr_vector<u16>::iterator it = find(g_perform_spawn_ids.begin(), g_perform_spawn_ids.end(), E->ID);
 	if (it != g_perform_spawn_ids.end())
 		return;
 

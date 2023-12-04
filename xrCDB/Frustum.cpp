@@ -258,7 +258,7 @@ void CFrustum::CreateFromPortal(sPoly *poly, Fvector &vPN, Fvector &vBase, Fmatr
 	// and reverse if needed
 	if (P.classify(vBase) < 0)
 	{
-		std::reverse(poly->begin(), poly->end());
+		reverse(poly->begin(), poly->end());
 		P.build_precise((*poly)[0], (*poly)[1], (*poly)[2]);
 	}
 
@@ -384,7 +384,7 @@ sPoly *CFrustum::ClipPoly(sPoly &S, sPoly &D) const
 	{
 		// cache plane and swap lists
 		const fplane &P = planes[i];
-		std::swap(src, dest);
+		swap(src, dest);
 		dest->clear();
 
 		// classify all points relative to plane #i

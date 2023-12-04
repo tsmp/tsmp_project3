@@ -16,6 +16,10 @@
 #include "MathUtils.h"
 #include "clsid_game.h"
 
+#ifdef USE_EASTL
+using eastl::swap;
+#endif
+
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
@@ -769,6 +773,6 @@ void CWeaponMagazinedWGrenade::net_Import(NET_Packet &P)
 
 bool CWeaponMagazinedWGrenade::IsNecessaryItem(const shared_str &item_sect)
 {
-	return (std::find(m_ammoTypes.begin(), m_ammoTypes.end(), item_sect) != m_ammoTypes.end() ||
-			std::find(m_ammoTypes2.begin(), m_ammoTypes2.end(), item_sect) != m_ammoTypes2.end());
+	return (find(m_ammoTypes.begin(), m_ammoTypes.end(), item_sect) != m_ammoTypes.end() ||
+			find(m_ammoTypes2.begin(), m_ammoTypes2.end(), item_sect) != m_ammoTypes2.end());
 }

@@ -360,7 +360,7 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect &def, Fbox &
         // remove if stopped
         if (rem_cnt)
         {
-            VisualVecIt new_end = std::remove_if(_children_free.begin(), _children_free.end(), zero_vis_pred());
+            VisualVecIt new_end = remove_if(_children_free.begin(), _children_free.end(), zero_vis_pred());
             _children_free.erase(new_end, _children_free.end());
         }
     }

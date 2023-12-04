@@ -127,7 +127,7 @@ void CBackend::set_Textures(STextureList *_T)
 	STextureList::iterator _end = _T->end();
 	for (; _it != _end; _it++)
 	{
-		std::pair<u32, ref_texture> &loader = *_it;
+		pair<u32, ref_texture> &loader = *_it;
 		u32 load_id = loader.first;
 		CTexture *load_surf = &*loader.second;
 		if (load_id < 256)

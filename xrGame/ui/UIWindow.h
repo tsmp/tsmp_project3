@@ -2,8 +2,9 @@
 #include "../xr_level_controller.h"
 class CUIWindow;
 
-template <typename T, typename allocator = xalloc<T>>
-using ui_list = std::list<T, allocator>;
+#define ui_list xr_list
+//template <typename T, typename allocator = xalloc<T>>
+//using ui_list = std::list<T, allocator>;
 
 using WINDOW_LIST = ui_list<CUIWindow*>;
 using WINDOW_LIST_it = WINDOW_LIST::iterator;
@@ -154,7 +155,7 @@ public:
 protected:
 	IC void SafeRemoveChild(CUIWindow *child)
 	{
-		WINDOW_LIST_it it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), child);
+		WINDOW_LIST_it it = find(m_ChildWndList.begin(), m_ChildWndList.end(), child);
 		if (it != m_ChildWndList.end())
 			m_ChildWndList.erase(it);
 	};

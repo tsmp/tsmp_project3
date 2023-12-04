@@ -66,7 +66,7 @@ void CUIGameCustom::OnFrame()
 		(*it).Update();
 
 	m_custom_statics.erase(
-		std::remove_if(
+		remove_if(
 			m_custom_statics.begin(),
 			m_custom_statics.end(),
 			predicate_remove_stat()),
@@ -169,7 +169,7 @@ SDrawStaticStruct *CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstanc
 {
 	if (bSingleInstance)
 	{
-		st_vec::iterator it = std::find(m_custom_statics.begin(), m_custom_statics.end(), id);
+		st_vec::iterator it = find(m_custom_statics.begin(), m_custom_statics.end(), id);
 		if (it != m_custom_statics.end())
 			return &(*it);
 	}
@@ -190,7 +190,7 @@ SDrawStaticStruct *CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstanc
 
 SDrawStaticStruct *CUIGameCustom::GetCustomStatic(LPCSTR id)
 {
-	st_vec::iterator it = std::find(m_custom_statics.begin(), m_custom_statics.end(), id);
+	st_vec::iterator it = find(m_custom_statics.begin(), m_custom_statics.end(), id);
 	if (it != m_custom_statics.end())
 	{
 		return &(*it);
@@ -200,7 +200,7 @@ SDrawStaticStruct *CUIGameCustom::GetCustomStatic(LPCSTR id)
 
 void CUIGameCustom::RemoveCustomStatic(LPCSTR id)
 {
-	st_vec::iterator it = std::find(m_custom_statics.begin(), m_custom_statics.end(), id);
+	st_vec::iterator it = find(m_custom_statics.begin(), m_custom_statics.end(), id);
 	if (it != m_custom_statics.end())
 	{
 		xr_delete((*it).m_static);
@@ -335,7 +335,7 @@ void CMapListHelper::Load()
 				}
 				shared_str _map_name = (*fit).name.substr(0, (*fit).name.find('\\')).c_str();
 
-				if (M->m_map_names.end() == std::find(M->m_map_names.begin(), M->m_map_names.end(), _map_name))
+				if (M->m_map_names.end() == find(M->m_map_names.begin(), M->m_map_names.end(), _map_name))
 					M->m_map_names.push_back(_map_name);
 			}
 		}

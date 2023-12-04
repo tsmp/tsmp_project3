@@ -2,6 +2,10 @@
 #include "igame_persistent.h"
 #include "irenderable.h"
 
+#ifdef USE_EASTL
+using eastl::swap;
+#endif
+
 const float tweak_COP_initial_offs = 1200.f;
 const float tweak_ortho_xform_initial_offs = 1000.f; //. ?
 const float tweak_guaranteed_range = 20.f;			 //. ?
@@ -52,12 +56,12 @@ struct BoundingBox
 			Merge(&points[i]);
 	}
 
-	explicit BoundingBox(const std::vector<D3DXVECTOR3> *points) : minPt(1e33f, 1e33f, 1e33f), maxPt(-1e33f, -1e33f, -1e33f)
+	explicit BoundingBox(const xr_vector<D3DXVECTOR3> *points) : minPt(1e33f, 1e33f, 1e33f), maxPt(-1e33f, -1e33f, -1e33f)
 	{
 		for (unsigned int i = 0; i < points->size(); i++)
 			Merge(&(*points)[i]);
 	}
-	explicit BoundingBox(const std::vector<BoundingBox> *boxes) : minPt(1e33f, 1e33f, 1e33f), maxPt(-1e33f, -1e33f, -1e33f)
+	explicit BoundingBox(const xr_vector<BoundingBox> *boxes) : minPt(1e33f, 1e33f, 1e33f), maxPt(-1e33f, -1e33f, -1e33f)
 	{
 		for (unsigned int i = 0; i < boxes->size(); i++)
 		{
@@ -259,7 +263,7 @@ public:
 		{
 			_poly &base = polys[it];
 			if (base.classify(cog) > 0)
-				std::reverse(base.points.begin(), base.points.end());
+				reverse(base.points.begin(), base.points.end());
 		}
 
 		// remove faceforward polys, build list of edges -> find open ones
@@ -330,7 +334,7 @@ public:
 		{
 			_poly &base = polys[it];
 			if (base.classify(cog) > 0)
-				std::reverse(base.points.begin(), base.points.end());
+				reverse(base.points.begin(), base.points.end());
 		}
 
 		// Export

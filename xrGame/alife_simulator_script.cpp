@@ -22,7 +22,7 @@
 
 using namespace luabind;
 
-typedef xr_vector<std::pair<shared_str, int>> STORY_PAIRS;
+typedef xr_vector<pair<shared_str, int>> STORY_PAIRS;
 typedef STORY_PAIRS SPAWN_STORY_PAIRS;
 LPCSTR _INVALID_STORY_ID = "INVALID_STORY_ID";
 LPCSTR _INVALID_SPAWN_STORY_ID = "INVALID_SPAWN_STORY_ID";
@@ -103,10 +103,10 @@ void generate_story_ids(
 		for (; I != E; ++I)
 			R_ASSERT3((*I).first != temp, duplicated_id_description, *temp);
 
-		result.push_back(std::make_pair(*temp, atoi(N)));
+		result.push_back(mk_pair(*temp, atoi(N)));
 	}
 
-	result.push_back(std::make_pair(INVALID_ID_STRING, INVALID_ID));
+	result.push_back(mk_pair(INVALID_ID_STRING, INVALID_ID));
 }
 
 void kill_entity0(CALifeSimulator *alife, CSE_ALifeMonsterAbstract *monster, const GameGraph::_GRAPH_ID &game_vertex_id)
@@ -310,7 +310,7 @@ bool has_info(const CALifeSimulator *self, const ALife::_OBJECT_ID &id, LPCSTR i
 	if (!known_info)
 		return (false);
 
-	if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)) == known_info->end())
+	if (find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)) == known_info->end())
 		return (false);
 
 	return (true);

@@ -405,7 +405,7 @@ CUICellItem *CUIDragDropListEx::GetItemIdx(u32 idx)
 {
 	R_ASSERT(idx < ItemsCount());
 	WINDOW_LIST_it it = m_container->GetChildWndList().begin();
-	std::advance(it, idx);
+	advance(it, idx);
 	return smart_cast<CUICellItem *>(*it);
 }
 
@@ -615,7 +615,7 @@ u32 CUICellContainer::GetCellsInRange(const Irect &rect, UI_CELLS_VEC &res)
 		for (int y = rect.y1; y <= rect.y2; ++y)
 			res.push_back(GetCellAt(Ivector2().set(x, y)));
 
-	std::unique(res.begin(), res.end());
+	unique(res.begin(), res.end());
 	return res.size();
 }
 

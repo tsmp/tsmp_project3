@@ -28,7 +28,7 @@ CActorFollowerMngr::~CActorFollowerMngr()
 void CActorFollowerMngr::AddFollower(u16 id)
 {
 #ifdef DEBUG
-	FOLLOWER_IT it = std::find(m_followers.begin(),m_followers.end(),id);
+	FOLLOWER_IT it = find(m_followers.begin(),m_followers.end(),id);
 	if(it!=m_followers.end()){
 		Msg("Attempt to add follower [%d] twice !!!",id);
 		return;
@@ -42,12 +42,12 @@ void CActorFollowerMngr::AddFollower(u16 id)
 
 void CActorFollowerMngr::RemoveFollower(u16 id)
 {
-	FOLLOWER_IT it = std::find(m_followers.begin(),m_followers.end(),id);
+	FOLLOWER_IT it = find(m_followers.begin(),m_followers.end(),id);
 	if(it==m_followers.end()){
 		Msg("Attempt to remove not registered follower [%d] !!!",id);
 		return;
 	}
-	std::remove(m_followers.begin(),m_followers.end(),id);
+	remove(m_followers.begin(),m_followers.end(),id);
 	m_uiPanel->RemoveFollower(id);
 }
 

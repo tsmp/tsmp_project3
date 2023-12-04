@@ -331,7 +331,7 @@ void CAI_Stalker::Die(CObject *who)
 		TIItemContainer::iterator E = inventory().m_all.end();
 		for (; I != E; ++I)
 		{
-			if (std::find(weapon->m_ammoTypes.begin(), weapon->m_ammoTypes.end(), (*I)->object().cNameSect()) == weapon->m_ammoTypes.end())
+			if (find(weapon->m_ammoTypes.begin(), weapon->m_ammoTypes.end(), (*I)->object().cNameSect()) == weapon->m_ammoTypes.end())
 				continue;
 
 			NET_Packet packet;
@@ -512,7 +512,7 @@ void CAI_Stalker::net_Destroy()
 	{
 		fastdelegate::FastDelegate0<> f = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
 		xr_vector<fastdelegate::FastDelegate0<>>::const_iterator I;
-		I = std::find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
+		I = find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
 		VERIFY(I == Device.seqParallel.end());
 	}
 #endif // DEBUG
@@ -910,7 +910,7 @@ void CAI_Stalker::UpdateCL()
 			fastdelegate::FastDelegate0<> f = fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler);
 #ifdef DEBUG
 			xr_vector<fastdelegate::FastDelegate0<>>::const_iterator I;
-			I = std::find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
+			I = find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
 			VERIFY(I == Device.seqParallel.end());
 #endif
 			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CAI_Stalker::update_object_handler));
@@ -1349,7 +1349,7 @@ void CAI_Stalker::fill_bones_body_parts(LPCSTR bone_id, const ECriticalWoundType
 	CInifile::SectCIt E = body_part_section.Data.end();
 	for (; I != E; ++I)
 		m_bones_body_parts.insert(
-			std::make_pair(
+			mk_pair(
 				kinematics->LL_BoneID((*I).first),
 				u32(wound_type)));
 }

@@ -221,14 +221,14 @@ bool CInventory::DropItem(CGameObject *pObj)
 	case eItemPlaceBelt:
 	{
 		R_ASSERT(InBelt(pIItem));
-		m_belt.erase(std::find(m_belt.begin(), m_belt.end(), pIItem));
+		m_belt.erase(find(m_belt.begin(), m_belt.end(), pIItem));
 		pIItem->object().processing_deactivate();
 	}
 	break;
 	case eItemPlaceRuck:
 	{
 		R_ASSERT(InRuck(pIItem));
-		m_ruck.erase(std::find(m_ruck.begin(), m_ruck.end(), pIItem));
+		m_ruck.erase(find(m_ruck.begin(), m_ruck.end(), pIItem));
 	}
 	break;
 	case eItemPlaceSlot:
@@ -245,7 +245,7 @@ bool CInventory::DropItem(CGameObject *pObj)
 		NODEFAULT;
 	};
 
-	TIItemContainer::iterator it = std::find(m_all.begin(), m_all.end(), pIItem);
+	TIItemContainer::iterator it = find(m_all.begin(), m_all.end(), pIItem);
 	if (it != m_all.end())
 		m_all.erase(it);
 	else
@@ -288,10 +288,10 @@ bool CInventory::Slot(PIItem pIItem, bool bNotActivate)
 	m_slots[pIItem->GetSlot()].m_pIItem = pIItem;
 
 	//удалить из рюкзака или пояса
-	TIItemContainer::iterator it = std::find(m_ruck.begin(), m_ruck.end(), pIItem);
+	TIItemContainer::iterator it = find(m_ruck.begin(), m_ruck.end(), pIItem);
 	if (m_ruck.end() != it)
 		m_ruck.erase(it);
-	it = std::find(m_belt.begin(), m_belt.end(), pIItem);
+	it = find(m_belt.begin(), m_belt.end(), pIItem);
 	if (m_belt.end() != it)
 		m_belt.erase(it);
 
@@ -325,7 +325,7 @@ bool CInventory::Belt(PIItem pIItem)
 
 	if (!in_slot)
 	{
-		TIItemContainer::iterator it = std::find(m_ruck.begin(), m_ruck.end(), pIItem);
+		TIItemContainer::iterator it = find(m_ruck.begin(), m_ruck.end(), pIItem);
 		if (m_ruck.end() != it)
 			m_ruck.erase(it);
 	}
@@ -362,7 +362,7 @@ bool CInventory::Ruck(PIItem pIItem)
 	else
 	{
 		//вещь была на поясе или вообще только поднята с земли
-		TIItemContainer::iterator it = std::find(m_belt.begin(), m_belt.end(), pIItem);
+		TIItemContainer::iterator it = find(m_belt.begin(), m_belt.end(), pIItem);
 		if (m_belt.end() != it)
 			m_belt.erase(it);
 	}

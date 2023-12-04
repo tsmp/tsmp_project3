@@ -148,7 +148,7 @@ public:
 
 	ICF void remove_from_seq_parallel(const fastdelegate::FastDelegate0<> &delegate)
 	{
-		auto It = std::find(seqParallel.begin(), seqParallel.end(), delegate);
+		auto It = find(seqParallel.begin(), seqParallel.end(), delegate);
 
 		if (It != seqParallel.end())
 			seqParallel.erase(It);

@@ -43,7 +43,7 @@ struct CCloner
 	}
 
 	template <typename T1, typename T2>
-	IC static void clone(const std::pair<T1, T2> &_1, std::pair<T1, T2> &_2)
+	IC static void clone(const pair<T1, T2> &_1, pair<T1, T2> &_2)
 	{
 		clone(const_cast<object_type_traits::remove_const<T1>::type &>(_1.first), const_cast<object_type_traits::remove_const<T1>::type &>(_2.first));
 		clone(_1.second, _2.second);

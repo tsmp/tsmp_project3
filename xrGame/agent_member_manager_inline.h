@@ -51,14 +51,14 @@ IC CAgentMemberManager::MEMBER_STORAGE &CAgentMemberManager::members()
 
 IC CMemberOrder &CAgentMemberManager::member(const CAI_Stalker *object)
 {
-	iterator I = std::find_if(members().begin(), members().end(), CMemberPredicate(object));
+	iterator I = find_if(members().begin(), members().end(), CMemberPredicate(object));
 	VERIFY(I != members().end());
 	return (**I);
 }
 
 IC MemorySpace::squad_mask_type CAgentMemberManager::mask(const CAI_Stalker *object) const
 {
-	const_iterator I = std::find_if(members().begin(), members().end(), CMemberPredicate(object));
+	const_iterator I = find_if(members().begin(), members().end(), CMemberPredicate(object));
 	VERIFY(I != members().end());
 	return (MemorySpace::squad_mask_type(1) << (I - members().begin()));
 }

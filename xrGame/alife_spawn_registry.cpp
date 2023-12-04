@@ -180,7 +180,7 @@ void CALifeSpawnRegistry::build_root_spawns()
 	process_spawns(m_temp1);
 
 	m_spawn_roots.resize(m_temp0.size() + m_temp1.size());
-	xr_vector<ALife::_SPAWN_ID>::iterator I = std::set_difference(
+	xr_vector<ALife::_SPAWN_ID>::iterator I = set_difference(
 		m_temp0.begin(),
 		m_temp0.end(),
 		m_temp1.begin(),
@@ -201,6 +201,6 @@ void CALifeSpawnRegistry::build_story_spawns()
 		if (object->m_spawn_story_id == INVALID_SPAWN_STORY_ID)
 			continue;
 
-		m_spawn_story_ids.insert(std::make_pair(object->m_spawn_story_id, (*I).first));
+		m_spawn_story_ids.insert(mk_pair(object->m_spawn_story_id, (*I).first));
 	}
 }

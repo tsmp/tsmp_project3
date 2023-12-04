@@ -139,7 +139,7 @@ void CSpaceRestrictionComposition::initialize()
 	m_initialized = true;
 
 	m_border.erase(
-		std::remove_if(
+		remove_if(
 			m_border.begin(),
 			m_border.end(),
 			CMergePredicate(this)),
@@ -166,9 +166,9 @@ void CSpaceRestrictionComposition::test_correctness()
 	}
 
 	{
-		std::sort(m_test_storage.begin(), m_test_storage.end());
+		sort(m_test_storage.begin(), m_test_storage.end());
 		m_test_storage.erase(
-			std::unique(
+			unique(
 				m_test_storage.begin(),
 				m_test_storage.end()),
 			m_test_storage.end());

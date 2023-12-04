@@ -580,7 +580,7 @@ void CRender::Statistics(CGameFont *_F)
 #endif
 }
 
-static const std::map<NewFlagsR2, const char*> NewFlagDefines
+static const xr_map<NewFlagsR2, const char*> NewFlagDefines
 {
 	{ NewFlagsR2::SSAO, "USE_SSAO"},
 	{ NewFlagsR2::DOF, "USE_DEPTH_OF_FIELD"},

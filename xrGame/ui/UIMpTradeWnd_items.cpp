@@ -107,7 +107,7 @@ SBuyItemInfo *CUIMpTradeWnd::CreateItem(const shared_str &name_sect, SBuyItemInf
 
 SBuyItemInfo *CUIMpTradeWnd::FindItem(SBuyItemInfo::EItmState state)
 {
-	auto it = std::find_if(m_all_items.begin(), m_all_items.end(), [&state](SBuyItemInfo* itm) 
+	auto it = find_if(m_all_items.begin(), m_all_items.end(), [&state](SBuyItemInfo* itm) 
 	{
 		return state == itm->GetState();
 	});
@@ -224,7 +224,7 @@ void CUIMpTradeWnd::UpdateCorrespondingItemsForList(CUIDragDropListEx *_list)
 
 void CUIMpTradeWnd::DestroyItem(SBuyItemInfo *item)
 {
-	ITEMS_vec_it it = std::find(m_all_items.begin(), m_all_items.end(), item);
+	ITEMS_vec_it it = find(m_all_items.begin(), m_all_items.end(), item);
 	R_ASSERT(it != m_all_items.end());
 
 	R_ASSERT(!IsAddonAttached(item, at_scope));
@@ -237,7 +237,7 @@ void CUIMpTradeWnd::DestroyItem(SBuyItemInfo *item)
 
 u32 CUIMpTradeWnd::GetItemCount(SBuyItemInfo::EItmState state) const
 {
-	return static_cast<u32>(std::count_if(m_all_items.begin(), m_all_items.end(), [state](SBuyItemInfo* info)
+	return static_cast<u32>(count_if(m_all_items.begin(), m_all_items.end(), [state](SBuyItemInfo* info)
 	{
 		return (info->GetState() == state);
 	}));
@@ -245,7 +245,7 @@ u32 CUIMpTradeWnd::GetItemCount(SBuyItemInfo::EItmState state) const
 
 u32 CUIMpTradeWnd::GetItemCount(const shared_str &name_sect, SBuyItemInfo::EItmState state) const
 {
-	return static_cast<u32>(std::count_if(m_all_items.begin(), m_all_items.end(), [&name_sect, state](SBuyItemInfo* info)
+	return static_cast<u32>(count_if(m_all_items.begin(), m_all_items.end(), [&name_sect, state](SBuyItemInfo* info)
 	{
 		return (info->m_name_sect == name_sect) && (info->GetState() == state); 
 	}));
@@ -253,7 +253,7 @@ u32 CUIMpTradeWnd::GetItemCount(const shared_str &name_sect, SBuyItemInfo::EItmS
 
 u32 CUIMpTradeWnd::GetItemCount(const shared_str &name_sect, SBuyItemInfo::EItmState state, u8 addon) const
 {
-	return static_cast<u32>(std::count_if(m_all_items.begin(), m_all_items.end(), [&name_sect, state, addon](SBuyItemInfo* info)
+	return static_cast<u32>(count_if(m_all_items.begin(), m_all_items.end(), [&name_sect, state, addon](SBuyItemInfo* info)
 	{
 		if ((info->m_name_sect == name_sect) && (info->GetState() == state))			
 			return GetItemAddonsState_ext(info) == addon;
@@ -264,7 +264,7 @@ u32 CUIMpTradeWnd::GetItemCount(const shared_str &name_sect, SBuyItemInfo::EItmS
 
 u32 CUIMpTradeWnd::GetGroupCount(const shared_str &name_group, SBuyItemInfo::EItmState state) const
 {
-	return static_cast<u32>(std::count_if(m_all_items.begin(), m_all_items.end(), [&name_group, state](SBuyItemInfo* info)
+	return static_cast<u32>(count_if(m_all_items.begin(), m_all_items.end(), [&name_group, state](SBuyItemInfo* info)
 	{
 		if (info->GetState() != state)
 			return false;
@@ -349,7 +349,7 @@ void CUIMpTradeWnd::StorePreset(ETradePreset idx, bool bSilent, bool check_allow
 			continue;
 
 		u8 addon_state = GetItemAddonsState_ext(iinfo);
-		preset_items::iterator fit = std::find_if(v.begin(), v.end(), preset_eq(iinfo->m_name_sect, addon_state));
+		preset_items::iterator fit = find_if(v.begin(), v.end(), preset_eq(iinfo->m_name_sect, addon_state));
 
 		if (fit != v.end())
 			continue;
@@ -381,7 +381,7 @@ void CUIMpTradeWnd::StorePreset(ETradePreset idx, bool bSilent, bool check_allow
 			_one.addon_names[2] = GetAddonNameSect(iinfo, at_silencer);
 	}
 
-	std::sort(v.begin(), v.end(), preset_sorter(m_item_mngr));
+	sort(v.begin(), v.end(), preset_sorter(m_item_mngr));
 }
 
 void CUIMpTradeWnd::ApplyPreset(ETradePreset idx)
@@ -607,7 +607,7 @@ struct items_sorter
 
 void CUIMpTradeWnd::DumpAllItems(LPCSTR s)
 {
-	std::sort(m_all_items.begin(), m_all_items.end(), items_sorter());
+	sort(m_all_items.begin(), m_all_items.end(), items_sorter());
 
 	Msg("CUIMpTradeWnd::DumpAllItems.total[%d] reason [%s]", m_all_items.size(), s);
 	ITEMS_vec_cit it = m_all_items.begin();

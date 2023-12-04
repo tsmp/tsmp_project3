@@ -28,7 +28,7 @@ public:
 
 public:
 	typedef xr_vector<float> ANIMATION_WEIGHTS;
-	typedef std::pair<LPCSTR, LPCSTR> BLEND_ID;
+	typedef pair<LPCSTR, LPCSTR> BLEND_ID;
 
 public:
 	typedef fastdelegate::FastDelegate0<> CALLBACK_ID;

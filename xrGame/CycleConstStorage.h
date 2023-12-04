@@ -14,7 +14,7 @@ public:
 	}
 	IC void fill_in(const T &val)
 	{
-		std::fill(array, array + size, val);
+		fill(array, array + size, val);
 	}
 	IC void push_back(T &val)
 	{

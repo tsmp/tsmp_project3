@@ -107,7 +107,7 @@ SoundElem &CMonsterSoundMemory::GetSound()
 {
 	VERIFY(!Sounds.empty());
 
-	xr_vector<SoundElem>::iterator it = std::max_element(Sounds.begin(), Sounds.end());
+	xr_vector<SoundElem>::iterator it = max_element(Sounds.begin(), Sounds.end());
 	return (*it);
 }
 
@@ -144,7 +144,7 @@ void CMonsterSoundMemory::UpdateHearing()
 {
 	// удаление устаревших звуков
 	Sounds.erase(
-		std::remove_if(
+		remove_if(
 			Sounds.begin(),
 			Sounds.end(),
 			pred_remove_nonactual_sounds(
@@ -199,7 +199,7 @@ void CMonsterSoundMemory::remove_links(CObject *O)
 {
 	// удаление устаревших звуков
 	Sounds.erase(
-		std::remove_if(
+		remove_if(
 			Sounds.begin(),
 			Sounds.end(),
 			pred_remove_relcase(O)),

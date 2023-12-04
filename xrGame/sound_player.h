@@ -120,7 +120,7 @@ public:
 	};
 
 public:
-	typedef std::pair<CSoundCollectionParamsFull, CSoundCollection *> SOUND_COLLECTION;
+	typedef pair<CSoundCollectionParamsFull, CSoundCollection *> SOUND_COLLECTION;
 	typedef associative_vector<u32, SOUND_COLLECTION> SOUND_COLLECTIONS;
 
 private:

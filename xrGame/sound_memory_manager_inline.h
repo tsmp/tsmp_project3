@@ -31,7 +31,7 @@ IC void CSoundMemoryManager::priority(const ESoundTypes &sound_type, u32 priorit
 {
 	PRIORITIES::const_iterator I = m_priorities.find(sound_type);
 	VERIFY(m_priorities.end() == I);
-	m_priorities.insert(std::make_pair(sound_type, priority));
+	m_priorities.insert(mk_pair(sound_type, priority));
 }
 
 #ifdef USE_SELECTED_SOUND

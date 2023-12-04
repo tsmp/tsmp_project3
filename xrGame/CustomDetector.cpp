@@ -65,7 +65,7 @@ void CCustomDetector::Load(LPCSTR section)
 			LPCSTR z_Class = pSettings->r_string(section, temp);
 			CLASS_ID zone_cls = TEXT2CLSID(pSettings->r_string(z_Class, "class"));
 
-			m_ZoneTypeMap.insert(std::make_pair(zone_cls, ZONE_TYPE()));
+			m_ZoneTypeMap.insert(mk_pair(zone_cls, ZONE_TYPE()));
 			ZONE_TYPE &zone_type = m_ZoneTypeMap[zone_cls];
 			sprintf_s(temp, "zone_min_freq_%d", i);
 			zone_type.min_freq = pSettings->r_float(section, temp);

@@ -147,7 +147,7 @@ void CStalkerAnimationPair::play(IKinematicsAnimated *skeleton_animated, PlayCal
 }
 
 #ifdef DEBUG
-std::pair<LPCSTR, LPCSTR> *CStalkerAnimationPair::blend_id(IKinematicsAnimated *skeleton_animated, std::pair<LPCSTR, LPCSTR> &result) const
+pair<LPCSTR, LPCSTR> *CStalkerAnimationPair::blend_id(IKinematicsAnimated *skeleton_animated, pair<LPCSTR, LPCSTR> &result) const
 {
 	if (!blend())
 		return nullptr;

@@ -15,7 +15,7 @@ void CMonsterEventManager::add_delegate(EEventType event, typeEvent delegate)
 	EVENT_MAP_IT it = m_event_storage.find(event);
 	if (it == m_event_storage.end())
 	{
-		std::pair<EVENT_MAP_IT, bool> res;
+		pair<EVENT_MAP_IT, bool> res;
 		res = m_event_storage.insert(mk_pair(event, EVENT_VECTOR()));
 		it = res.first;
 	}
@@ -48,7 +48,7 @@ void CMonsterEventManager::raise(EEventType event, IEventData *data)
 			(I->delegate)(data);
 	}
 
-	EVENT_VECTOR_IT it_del = std::remove_if(it->second.begin(), it->second.end(), pred_remove());
+	EVENT_VECTOR_IT it_del = remove_if(it->second.begin(), it->second.end(), pred_remove());
 	it->second.erase(it_del, it->second.end());
 }
 

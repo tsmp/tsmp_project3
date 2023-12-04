@@ -8,9 +8,9 @@ class game_sv_Freeplay : public game_sv_mp
 	using inherited = game_sv_mp;
 	CRandom m_ItemsRnd;
 
-	std::vector<std::string> m_Skins;
-	std::vector<std::string> m_RandomItems;	
-	std::vector<std::string> m_PersistentItems;
+	std::vector<xr_string> m_Skins;
+	std::vector<xr_string> m_RandomItems;	
+	std::vector<xr_string> m_PersistentItems;
 
 public:
 

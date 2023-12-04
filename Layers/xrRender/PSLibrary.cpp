@@ -52,7 +52,7 @@ PS::PEDIt CPSLibrary::FindPEDIt(LPCSTR Name)
 	if (!Name)
 		return m_PEDs.end();
 
-	PS::PEDIt I = std::lower_bound(m_PEDs.begin(), m_PEDs.end(), Name, ped_find_pred);
+	PS::PEDIt I = lower_bound(m_PEDs.begin(), m_PEDs.end(), Name, ped_find_pred);
 	if (I == m_PEDs.end() || (0 != xr_strcmp((*I)->m_Name, Name)))
 		return m_PEDs.end();
 	else
@@ -70,7 +70,7 @@ PS::PGDIt CPSLibrary::FindPGDIt(LPCSTR Name)
 	if (!Name)
 		return m_PGDs.end();
 
-	PS::PGDIt I = std::lower_bound(m_PGDs.begin(), m_PGDs.end(), Name, pgd_find_pred);
+	PS::PGDIt I = lower_bound(m_PGDs.begin(), m_PGDs.end(), Name, pgd_find_pred);
 	if (I == m_PGDs.end() || (0 != xr_strcmp((*I)->m_Name, Name)))
 		return m_PGDs.end();
 	else
@@ -173,16 +173,15 @@ bool CPSLibrary::Load(const char *nm)
 	// final
 	FS.r_close(F);
 
-	std::sort(m_PEDs.begin(), m_PEDs.end(), ped_sort_pred);
-	std::sort(m_PGDs.begin(), m_PGDs.end(), pgd_sort_pred);
+	sort(m_PEDs.begin(), m_PEDs.end(), ped_sort_pred);
+	sort(m_PGDs.begin(), m_PGDs.end(), pgd_sort_pred);
 
 	return bRes;
 }
-//----------------------------------------------------
+
 void CPSLibrary::Reload()
 {
 	OnDestroy();
 	OnCreate();
 	Msg("PS Library was succesfully reloaded.");
 }
-//----------------------------------------------------

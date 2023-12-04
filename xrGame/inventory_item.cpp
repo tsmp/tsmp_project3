@@ -102,7 +102,7 @@ CInventoryItem::~CInventoryItem()
 	delete_data(m_net_updateData);
 
 	bool B_GOOD = (!m_pCurrentInventory ||
-				   (std::find(m_pCurrentInventory->m_all.begin(), m_pCurrentInventory->m_all.end(), this) == m_pCurrentInventory->m_all.end()));
+				   (find(m_pCurrentInventory->m_all.begin(), m_pCurrentInventory->m_all.end(), this) == m_pCurrentInventory->m_all.end()));
 	if (!B_GOOD)
 	{
 		CObject *p = object().H_Parent();

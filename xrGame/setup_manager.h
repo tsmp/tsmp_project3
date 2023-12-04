@@ -17,7 +17,7 @@ template <
 class CSetupManager
 {
 private:
-	typedef std::pair<_action_id_type, _action_type *> setup_pair;
+	typedef pair<_action_id_type, _action_type *> setup_pair;
 	typedef xr_vector<setup_pair> setup_actions;
 
 private:

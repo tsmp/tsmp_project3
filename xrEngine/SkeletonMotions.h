@@ -84,7 +84,7 @@ public:
 class ENGINE_API motion_marks
 {
 public:
-	typedef std::pair<float, float> interval;
+	typedef pair<float, float> interval;
 
 private:
 	typedef xr_vector<interval> STORAGE;
@@ -174,6 +174,8 @@ struct ENGINE_API motions_value
 	u32 m_dwReference;
 	BoneMotionMap m_motions;
 	MotionDefVec m_mdefs;
+
+	motions_value& operator=(const motions_value& v) = delete;
 
 	shared_str m_id;
 

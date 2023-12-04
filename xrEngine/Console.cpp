@@ -629,7 +629,7 @@ void CConsole::AddFilteredCommands(LPCSTR inStr, vecTipsEx& outVec)
 	{
 		shared_str temp;
 		temp._set(command);
-		return std::find(outVec.begin(), outVec.end(), temp) != outVec.end();
+		return find(outVec.begin(), outVec.end(), temp) != outVec.end();
 	};
 
 	// word in begin

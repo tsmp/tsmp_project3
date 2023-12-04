@@ -443,7 +443,7 @@ void CALifeUpdateManager::add_restriction(ALife::_OBJECT_ID id, ALife::_OBJECT_I
 	case RestrictionSpace::eRestrictorTypeOut:
 	{
 #ifdef DEBUG
-		if (std::find(creature->m_dynamic_out_restrictions.begin(), creature->m_dynamic_out_restrictions.end(), restriction_id) != creature->m_dynamic_out_restrictions.end())
+		if (find(creature->m_dynamic_out_restrictions.begin(), creature->m_dynamic_out_restrictions.end(), restriction_id) != creature->m_dynamic_out_restrictions.end())
 		{
 			Msg("! cannot add out-restriction with id %d, name %s to the entity with id %d, name %s, because it is already added", restriction_id, restrictor->name_replace(), id, creature->name_replace());
 			return;
@@ -457,7 +457,7 @@ void CALifeUpdateManager::add_restriction(ALife::_OBJECT_ID id, ALife::_OBJECT_I
 	case RestrictionSpace::eRestrictorTypeIn:
 	{
 #ifdef DEBUG
-		if (std::find(creature->m_dynamic_in_restrictions.begin(), creature->m_dynamic_in_restrictions.end(), restriction_id) != creature->m_dynamic_in_restrictions.end())
+		if (find(creature->m_dynamic_in_restrictions.begin(), creature->m_dynamic_in_restrictions.end(), restriction_id) != creature->m_dynamic_in_restrictions.end())
 		{
 			Msg("! cannot add in-restriction with id %d, name %s to the entity with id %d, name %s, because it is already added", restriction_id, restrictor->name_replace(), id, creature->name_replace());
 			return;
@@ -510,7 +510,7 @@ void CALifeUpdateManager::remove_restriction(ALife::_OBJECT_ID id, ALife::_OBJEC
 	{
 	case RestrictionSpace::eRestrictorTypeOut:
 	{
-		xr_vector<ALife::_OBJECT_ID>::iterator I = std::find(creature->m_dynamic_out_restrictions.begin(), creature->m_dynamic_out_restrictions.end(), restriction_id);
+		xr_vector<ALife::_OBJECT_ID>::iterator I = find(creature->m_dynamic_out_restrictions.begin(), creature->m_dynamic_out_restrictions.end(), restriction_id);
 		if (I == creature->m_dynamic_out_restrictions.end())
 		{
 			Msg("~ cannot remove restriction with id [%d][%s] to the entity with id [%d][%s], because it is not added", restriction_id, object_restrictor->name_replace(), id, object->name_replace());
@@ -523,7 +523,7 @@ void CALifeUpdateManager::remove_restriction(ALife::_OBJECT_ID id, ALife::_OBJEC
 	}
 	case RestrictionSpace::eRestrictorTypeIn:
 	{
-		xr_vector<ALife::_OBJECT_ID>::iterator I = std::find(creature->m_dynamic_in_restrictions.begin(), creature->m_dynamic_in_restrictions.end(), restriction_id);
+		xr_vector<ALife::_OBJECT_ID>::iterator I = find(creature->m_dynamic_in_restrictions.begin(), creature->m_dynamic_in_restrictions.end(), restriction_id);
 		if (I == creature->m_dynamic_in_restrictions.end())
 		{
 			Msg("~ cannot remove restriction with id [%d][%s] to the entity with id [%d][%s], because it is not added", restriction_id, object_restrictor->name_replace(), id, object->name_replace());

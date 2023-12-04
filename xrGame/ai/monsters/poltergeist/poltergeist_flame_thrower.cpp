@@ -247,7 +247,7 @@ void CPolterFlame::update_schedule()
 
 	// удалить все элементы, выполнение которых закончено
 	m_flames.erase(
-		std::remove_if(
+		remove_if(
 			m_flames.begin(),
 			m_flames.end(),
 			remove_predicate()),
@@ -333,7 +333,7 @@ bool CPolterFlame::get_valid_flame_position(const CObject *target_object, Fvecto
 		}
 	}
 
-	float angle = ai().level_graph().vertex_cover_angle(Obj->ai_location().level_vertex_id(), PI_DIV_6, std::less<float>());
+	float angle = ai().level_graph().vertex_cover_angle(Obj->ai_location().level_vertex_id(), PI_DIV_6, less<float>());
 
 	dir.set(1.f, 0.f, 0.f);
 	dir.setHP(angle + PI, 0.f);

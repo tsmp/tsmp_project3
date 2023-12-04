@@ -144,7 +144,7 @@ void CUIEncyclopediaWnd::Draw()
 		if (Actor()->encyclopedia_registry->registry().objects_ptr() && Actor()->encyclopedia_registry->registry().objects_ptr()->size() > prevArticlesCount)
 		{
 			ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
-			std::advance(it, prevArticlesCount);
+			advance(it, prevArticlesCount);
 			for (; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++)
 			{
 				if (ARTICLE_DATA::eEncyclopediaArticle == it->article_type)

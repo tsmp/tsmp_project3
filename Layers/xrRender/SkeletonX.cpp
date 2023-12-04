@@ -330,7 +330,7 @@ void CSkeletonX::_Load(const char *N, IReader *data, u32 &dwVertCount)
 		for (it = 0; it < dwVertCount; it++)
 		{
 			u16 mid = (u16)VO[it].matrix;
-			if (bids.end() == std::find(bids.begin(), bids.end(), mid))
+			if (bids.end() == find(bids.begin(), bids.end(), mid))
 				bids.push_back(mid);
 			if (mid > sw_bones)
 				sw_bones = mid;
@@ -370,9 +370,9 @@ void CSkeletonX::_Load(const char *N, IReader *data, u32 &dwVertCount)
 				sw_bones = VO[it].matrix0;
 			if (VO[it].matrix1 > sw_bones)
 				sw_bones = VO[it].matrix1;
-			if (bids.end() == std::find(bids.begin(), bids.end(), VO[it].matrix0))
+			if (bids.end() == find(bids.begin(), bids.end(), VO[it].matrix0))
 				bids.push_back(VO[it].matrix0);
-			if (bids.end() == std::find(bids.begin(), bids.end(), VO[it].matrix1))
+			if (bids.end() == find(bids.begin(), bids.end(), VO[it].matrix1))
 				bids.push_back(VO[it].matrix1);
 		}
 		if (sw_bones <= hw_bones)

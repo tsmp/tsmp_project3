@@ -342,7 +342,7 @@ game_PlayerState *game_cl_GameState::GetPlayerByGameID(u32 GameID)
 game_PlayerState *game_cl_GameState::GetPlayerByOrderID(u32 idx)
 {
 	PLAYERS_MAP_IT I = players.begin();
-	std::advance(I, idx);
+	advance(I, idx);
 	game_PlayerState *ps = I->second;
 	return ps;
 }
@@ -350,7 +350,7 @@ game_PlayerState *game_cl_GameState::GetPlayerByOrderID(u32 idx)
 ClientID game_cl_GameState::GetClientIDByOrderID(u32 idx)
 {
 	PLAYERS_MAP_IT I = players.begin();
-	std::advance(I, idx);
+	advance(I, idx);
 	return I->first;
 }
 

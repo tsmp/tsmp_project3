@@ -503,7 +503,7 @@ void CPHWorld::GetState(V_PH_WORLD_STATE &state)
 		const u16 els = obj->get_elements_number();
 		for (u16 i = 0; els > i; ++i)
 		{
-			std::pair<CPHSynchronize *, SPHNetState> s;
+			pair<CPHSynchronize *, SPHNetState> s;
 			s.first = obj->get_element_sync(i);
 			s.first->get_State(s.second);
 			state.push_back(s);

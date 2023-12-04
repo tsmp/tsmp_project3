@@ -101,7 +101,7 @@ struct CSaver
 	}
 
 	template <typename T1, typename T2>
-	IC static void save_data(const std::pair<T1, T2> &data, M &stream, const P &p)
+	IC static void save_data(const pair<T1, T2> &data, M &stream, const P &p)
 	{
 		if (p(data, data.first, true))
 			CSaver<M, P>::save_data(data.first, stream, p);

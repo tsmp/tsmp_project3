@@ -216,7 +216,7 @@ void xrServer::client_Destroy(IClient* C)
 
 	do
 	{
-		auto it = std::find(m_aDelayedPackets.begin(), m_aDelayedPackets.end(), pp);
+		auto it = find(m_aDelayedPackets.begin(), m_aDelayedPackets.end(), pp);
 
 		if (it != m_aDelayedPackets.end())
 		{
@@ -1051,7 +1051,7 @@ void xrServer::verify_entity(const CSE_Abstract *entity) const
 		VERIFY3(J != entities.end(), "SERVER : Cannot find parent in the map", entity->name_replace());
 		VERIFY3((*J).second, "SERVER : Null entity object in the map", entity->name_replace());
 		VERIFY3((*J).first == (*J).second->ID, "SERVER : ID mismatch - map key doesn't correspond to the real entity ID", (*J).second->name_replace());
-		VERIFY3(std::find((*J).second->children.begin(), (*J).second->children.end(), entity->ID) != (*J).second->children.end(), "SERVER : Parent/Children relationship mismatch - Object has parent, but corresponding parent doesn't have children", (*J).second->name_replace());
+		VERIFY3(find((*J).second->children.begin(), (*J).second->children.end(), entity->ID) != (*J).second->children.end(), "SERVER : Parent/Children relationship mismatch - Object has parent, but corresponding parent doesn't have children", (*J).second->name_replace());
 	}
 
 	xr_vector<u16>::const_iterator I = entity->children.begin();

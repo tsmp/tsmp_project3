@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "game_sv_hardmatch.h"
 
-const std::vector<std::string> HardMatchDefaultRandomWeapons
+const std::vector<xr_string> HardMatchDefaultRandomWeapons
 {
 	"wpn_winchester_m1", "wpn_spas12_m1", "wpn_ak74u_m1", "wpn_groza_m1", "wpn_sig_m1", "wpn_l85_m2", "wpn_l85_m1", "wpn_abakan_m2",
 	"wpn_abakan_m1", "wpn_sig_m2", "wpn_ak74_m1", "wpn_mp5_m2", "wpn_mp5_m1", "wpn_lr300_m1",  "wpn_val_m1", "wpn_svd_m1",
@@ -10,7 +10,7 @@ const std::vector<std::string> HardMatchDefaultRandomWeapons
 	"mp_wpn_vintorez", "mp_wpn_wincheaster1300", "mp_wpn_bm16", "mp_wpn_spas12"
 };
 
-const std::vector<std::string> HardMatchDefaultPersistentItems
+const std::vector<xr_string> HardMatchDefaultPersistentItems
 {
 	"mp_medkit", "mp_medkit", "mp_medkit", "mp_device_torch"
 };
@@ -76,6 +76,6 @@ void game_sv_Hardmatch::SpawnWeaponsForActor(CSE_Abstract* pE, game_PlayerState*
 
 	SpawnWeapon4Actor(pA->ID, m_RandomWeapons[m_WeaponsRandom.randI(static_cast<u32>(m_RandomWeapons.size()))].c_str(), 0);
 
-	for(std::string &itemName:m_PersistentItems)
+	for(xr_string &itemName:m_PersistentItems)
 		SpawnWeapon4Actor(pA->ID, itemName.c_str(), 0);
 }

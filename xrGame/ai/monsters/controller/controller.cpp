@@ -212,7 +212,7 @@ bool CController::is_community_friend_overrides(const CEntityAlive *entity_alive
 		return false;
 
 	return (
-		std::find(
+		find(
 			m_friend_community_overrides.begin(),
 			m_friend_community_overrides.end(),
 			IO->CharacterInfo().Community().id()) !=

@@ -39,7 +39,7 @@ void CSSetupManager::reinit()
 TEMPLATE_SPECIALIZATION
 IC _action_type &CSSetupManager::action(const _action_id_type &action_id) const
 {
-	setup_actions::const_iterator I = std::find_if(actions().begin(), actions().end(), setup_pred(action_id));
+	setup_actions::const_iterator I = find_if(actions().begin(), actions().end(), setup_pred(action_id));
 	VERIFY(I != actions().end());
 	return (*(*I).second);
 }
@@ -70,11 +70,11 @@ IC void CSSetupManager::add_action(const _action_id_type &action_id, _action_typ
 {
 	m_actuality = false;
 	VERIFY(action);
-	VERIFY(std::find_if(actions().begin(), actions().end(), setup_pred(action_id)) == actions().end());
+	VERIFY(find_if(actions().begin(), actions().end(), setup_pred(action_id)) == actions().end());
 	action->set_object(m_object);
 	if (actions().empty())
 		m_current_action_id = action_id;
-	actions().push_back(std::make_pair(action_id, action));
+	actions().push_back(mk_pair(action_id, action));
 }
 
 TEMPLATE_SPECIALIZATION
@@ -125,7 +125,7 @@ IC void CSSetupManager::select_action()
 				continue;
 			if (m_total_weight > m_random)
 			{
-				if (std::find_if(actions().begin(), actions().end(), setup_pred(m_current_action_id)) != actions().end())
+				if (find_if(actions().begin(), actions().end(), setup_pred(m_current_action_id)) != actions().end())
 					current_action().finalize();
 				m_current_action_id = (*I).first;
 				(*I).second->initialize();

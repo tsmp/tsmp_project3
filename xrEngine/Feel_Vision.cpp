@@ -73,13 +73,13 @@ namespace Feel
 	void Vision::feel_vision_relcase(CObject *object)
 	{
 		xr_vector<CObject *>::iterator Io;
-		Io = std::find(seen.begin(), seen.end(), object);
+		Io = find(seen.begin(), seen.end(), object);
 		if (Io != seen.end())
 			seen.erase(Io);
-		Io = std::find(query.begin(), query.end(), object);
+		Io = find(query.begin(), query.end(), object);
 		if (Io != query.end())
 			query.erase(Io);
-		Io = std::find(diff.begin(), diff.end(), object);
+		Io = find(diff.begin(), diff.end(), object);
 		if (Io != diff.end())
 			diff.erase(Io);
 		xr_vector<feel_visible_Item>::iterator Ii = feel_visible.begin(), IiE = feel_visible.end();
@@ -115,8 +115,8 @@ namespace Feel
 		}
 		if (seen.size() > 1)
 		{
-			std::sort(seen.begin(), seen.end());
-			xr_vector<CObject *>::iterator end = std::unique(seen.begin(), seen.end());
+			sort(seen.begin(), seen.end());
+			xr_vector<CObject *>::iterator end = unique(seen.begin(), seen.end());
 			if (end != seen.end())
 				seen.erase(end, seen.end());
 		}
@@ -127,12 +127,12 @@ namespace Feel
 		// B-A = objects, that become visible
 		if (!seen.empty())
 		{
-			xr_vector<CObject *>::iterator E = std::remove(seen.begin(), seen.end(), parent);
+			xr_vector<CObject *>::iterator E = remove(seen.begin(), seen.end(), parent);
 			seen.resize(E - seen.begin());
 
 			{
 				diff.resize(_max(seen.size(), query.size()));
-				xr_vector<CObject *>::iterator EI = std::set_difference(
+				xr_vector<CObject *>::iterator EI = set_difference(
 					seen.begin(), seen.end(),
 					query.begin(), query.end(),
 					diff.begin());
@@ -146,7 +146,7 @@ namespace Feel
 		if (!query.empty())
 		{
 			diff.resize(_max(seen.size(), query.size()));
-			xr_vector<CObject *>::iterator E = std::set_difference(
+			xr_vector<CObject *>::iterator E = set_difference(
 				query.begin(), query.end(),
 				seen.begin(), seen.end(),
 				diff.begin());

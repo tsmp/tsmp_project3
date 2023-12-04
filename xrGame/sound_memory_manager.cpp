@@ -112,7 +112,7 @@ IC u32 CSoundMemoryManager::priority(const MemorySpace::CSoundObject &sound) con
 
 void CSoundMemoryManager::enable(const CObject *object, bool enable)
 {
-	xr_vector<CSoundObject>::iterator J = std::find(m_sounds->begin(), m_sounds->end(), object_id(object));
+	xr_vector<CSoundObject>::iterator J = find(m_sounds->begin(), m_sounds->end(), object_id(object));
 	if (J == m_sounds->end())
 		return;
 	(*J).m_enabled = enable;
@@ -208,7 +208,7 @@ void CSoundMemoryManager::add(const CSoundObject &sound_object, bool check_for_e
 {
 	if (check_for_existance)
 	{
-		if (m_sounds->end() != std::find(m_sounds->begin(), m_sounds->end(), object_id(sound_object.m_object)))
+		if (m_sounds->end() != find(m_sounds->begin(), m_sounds->end(), object_id(sound_object.m_object)))
 			return;
 	}
 
@@ -316,7 +316,7 @@ void CSoundMemoryManager::add(const CObject *object, int sound_type, const Fvect
 
 	const CGameObject *self = m_object;
 
-	xr_vector<CSoundObject>::iterator J = std::find(m_sounds->begin(), m_sounds->end(), object_id(object));
+	xr_vector<CSoundObject>::iterator J = find(m_sounds->begin(), m_sounds->end(), object_id(object));
 	if (m_sounds->end() == J)
 	{
 		CSoundObject sound_object;
@@ -359,7 +359,7 @@ void CSoundMemoryManager::update()
 
 	VERIFY(m_sounds);
 	m_sounds->erase(
-		std::remove_if(
+		remove_if(
 			m_sounds->begin(),
 			m_sounds->end(),
 			CRemoveOfflinePredicate()),
@@ -407,7 +407,7 @@ struct CSoundObjectPredicate
 void CSoundMemoryManager::remove_links(CObject *object)
 {
 	VERIFY(m_sounds);
-	SOUNDS::iterator I = std::find_if(m_sounds->begin(), m_sounds->end(), CSoundObjectPredicate(object));
+	SOUNDS::iterator I = find_if(m_sounds->begin(), m_sounds->end(), CSoundObjectPredicate(object));
 	if (I != m_sounds->end())
 		m_sounds->erase(I);
 

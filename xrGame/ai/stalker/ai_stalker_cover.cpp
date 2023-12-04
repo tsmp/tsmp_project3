@@ -25,13 +25,13 @@ static int g_far_cover_search_count = 0;
 
 void CAI_Stalker::subscribe_on_best_cover_changed(const on_best_cover_changed_delegate &delegate)
 {
-	VERIFY(m_cover_delegates.end() == std::find(m_cover_delegates.begin(), m_cover_delegates.end(), delegate));
+	VERIFY(m_cover_delegates.end() == find(m_cover_delegates.begin(), m_cover_delegates.end(), delegate));
 	m_cover_delegates.push_back(delegate);
 }
 
 void CAI_Stalker::unsubscribe_on_best_cover_changed(const on_best_cover_changed_delegate &delegate)
 {
-	cover_delegates::iterator I = std::find(m_cover_delegates.begin(), m_cover_delegates.end(), delegate);
+	cover_delegates::iterator I = find(m_cover_delegates.begin(), m_cover_delegates.end(), delegate);
 	VERIFY(I != m_cover_delegates.end());
 	m_cover_delegates.erase(I);
 }

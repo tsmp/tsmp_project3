@@ -53,15 +53,15 @@ void CClientSpawnManager::add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID
 	if (I == m_registry.end())
 	{
 		REQUESTED_REGISTRY registry;
-		registry.insert(std::make_pair(requested_id, spawn_callback));
-		m_registry.insert(std::make_pair(requesting_id, registry));
+		registry.insert(mk_pair(requested_id, spawn_callback));
+		m_registry.insert(mk_pair(requesting_id, registry));
 		return;
 	}
 
 	REQUESTED_REGISTRY::iterator J = (*I).second.find(requested_id);
 	if (J == (*I).second.end())
 	{
-		(*I).second.insert(std::make_pair(requested_id, spawn_callback));
+		(*I).second.insert(mk_pair(requested_id, spawn_callback));
 		return;
 	}
 

@@ -136,7 +136,7 @@ void DownloadingMod(xrServer *server, ClientID const &ID)
 	moddllinfo.procarg1 = fz_downloader_mod_name.c_str();
 
 	if (fz_downloader_reconnect_ip.empty())
-		fz_downloader_reconnect_ip = Address.to_string();
+		fz_downloader_reconnect_ip = Address.to_string().c_str();
 
 	moddllinfo.procarg2 = ModLoadArgs.c_str(); //Аргументы для передачи в процедуру
 	

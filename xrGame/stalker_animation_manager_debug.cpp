@@ -18,7 +18,7 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-typedef std::pair<shared_str, shared_str> ANIMATION_ID;
+typedef pair<shared_str, shared_str> ANIMATION_ID;
 
 struct animation_id_predicate
 {
@@ -57,11 +57,11 @@ struct animation_stats
 	}
 };
 
-typedef std::pair<ANIMATION_ID, animation_stats> ANIMATION_STATS_PAIR;
+typedef pair<ANIMATION_ID, animation_stats> ANIMATION_STATS_PAIR;
 typedef xr_map<ANIMATION_ID, animation_stats, animation_id_predicate> ANIMATION_STATS;
 static ANIMATION_STATS g_animation_stats;
 
-typedef std::pair<ANIMATION_ID, ANIMATION_ID> BLEND_ID;
+typedef pair<ANIMATION_ID, ANIMATION_ID> BLEND_ID;
 
 struct blend_id_predicate
 {
@@ -71,7 +71,7 @@ struct blend_id_predicate
 	}
 
 	template <typename T>
-	IC bool less(const std::pair<T, T> &_1, const std::pair<T, T> &_2) const
+	IC bool less(const pair<T, T> &_1, const pair<T, T> &_2) const
 	{
 		if (less(_1.first, _2.first))
 			return (true);
@@ -88,7 +88,7 @@ struct blend_id_predicate
 	}
 };
 
-typedef std::pair<BLEND_ID, u32> BLEND_STATS_PAIR;
+typedef pair<BLEND_ID, u32> BLEND_STATS_PAIR;
 typedef xr_map<BLEND_ID, u32, blend_id_predicate> BLEND_STATS;
 static BLEND_STATS g_blend_stats;
 
@@ -111,7 +111,7 @@ void show_animations()
 	};
 
 	const ANIMATION_STATS_PAIR **const e = animations + animation_count;
-	std::sort(animations, e, &predicate::frame_count);
+	sort(animations, e, &predicate::frame_count);
 
 	Msg("frames starts animation                        animation_set");
 	for (i = animations; i != e; ++i)
@@ -142,7 +142,7 @@ void show_blends()
 	};
 
 	const BLEND_STATS_PAIR **const e = blends + blend_count;
-	std::sort(blends, e, &predicate::blend_count);
+	sort(blends, e, &predicate::blend_count);
 
 	Msg("       animation_set1                                  animation1    count     animation2                                  animation_set2");
 	for (i = blends; i != e; ++i)
@@ -181,7 +181,7 @@ void add_animation(const shared_str &animation_id, const shared_str &animation_s
 	}
 
 	g_animation_stats.insert(
-		std::make_pair(
+		mk_pair(
 			query,
 			animation_stats(
 				visual_id,
@@ -189,17 +189,17 @@ void add_animation(const shared_str &animation_id, const shared_str &animation_s
 				just_started ? 1 : 0)));
 }
 
-void add_blend(const shared_str &animation_id, const shared_str &animation_set_id, const shared_str &visual_id, const std::pair<LPCSTR, LPCSTR> *blend_id)
+void add_blend(const shared_str &animation_id, const shared_str &animation_set_id, const shared_str &visual_id, const pair<LPCSTR, LPCSTR> *blend_id)
 {
 	if (!blend_id)
 		return;
 
 	BLEND_ID query =
-		std::make_pair(
-			std::make_pair(
+		mk_pair(
+			mk_pair(
 				animation_id,
 				animation_set_id),
-			std::make_pair(
+			mk_pair(
 				shared_str(blend_id->first),
 				shared_str(blend_id->second)));
 
@@ -211,12 +211,12 @@ void add_blend(const shared_str &animation_id, const shared_str &animation_set_i
 	}
 
 	g_blend_stats.insert(
-		std::make_pair(
+		mk_pair(
 			query,
 			1));
 }
 
-void add_animation_stats(const shared_str &animation_id, const shared_str &animation_set_id, const shared_str &visual_id, const std::pair<LPCSTR, LPCSTR> *blend_id, bool just_started)
+void add_animation_stats(const shared_str &animation_id, const shared_str &animation_set_id, const shared_str &visual_id, const pair<LPCSTR, LPCSTR> *blend_id, bool just_started)
 {
 	add_animation(animation_id, animation_set_id, visual_id, just_started);
 	add_blend(animation_id, animation_set_id, visual_id, blend_id);
@@ -229,7 +229,7 @@ void CStalkerAnimationManager::add_animation_stats(const ANIMATION_ID &animation
 
 void CStalkerAnimationManager::add_animation_stats()
 {
-	std::pair<LPCSTR, LPCSTR> blend;
+	pair<LPCSTR, LPCSTR> blend;
 
 	if (script().animation())
 	{

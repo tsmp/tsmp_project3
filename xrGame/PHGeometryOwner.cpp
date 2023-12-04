@@ -419,7 +419,7 @@ struct SFindPred
 CODEGeom *CPHGeometryOwner::GeomByBoneID(u16 bone_id)
 {
 
-	GEOM_I g = std::find_if(m_geoms.begin(), m_geoms.end(), SFindPred(bone_id));
+	GEOM_I g = find_if(m_geoms.begin(), m_geoms.end(), SFindPred(bone_id));
 	if (g != m_geoms.end())
 	{
 		return *g;

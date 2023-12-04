@@ -325,7 +325,7 @@ void game_cl_mp::draw_all_active_binder_states()
 	}
 
 	m_detected_cheaters.erase(
-		std::remove_if(
+		remove_if(
 			m_detected_cheaters.begin(),
 			m_detected_cheaters.end(),
 			old_detected_cheater()
@@ -1225,7 +1225,7 @@ void game_cl_mp::OnPlayerKilled(NET_Packet &P)
 		break;
 		case SKT_HEADSHOT: // Head Shot
 		{
-			BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "headshot");
+			BONUSES_it it = find(m_pBonusList.begin(), m_pBonusList.end(), "headshot");
 			if (it != m_pBonusList.end() && (*it == "headshot"))
 			{
 				Bonus_Struct *pBS = &(*it);
@@ -1244,7 +1244,7 @@ void game_cl_mp::OnPlayerKilled(NET_Packet &P)
 		break;
 		case SKT_BACKSTAB: // BackStab
 		{
-			BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "backstab");
+			BONUSES_it it = find(m_pBonusList.begin(), m_pBonusList.end(), "backstab");
 			if (it != m_pBonusList.end() && (*it == "backstab"))
 			{
 				Bonus_Struct *pBS = &(*it);
@@ -1530,7 +1530,7 @@ void game_cl_mp::OnEventMoneyChanged(NET_Packet &P)
 		}
 		break;
 		};
-		BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), BName.c_str());
+		BONUSES_it it = find(m_pBonusList.begin(), m_pBonusList.end(), BName.c_str());
 		if (it != m_pBonusList.end() && (*it == BName.c_str()))
 		{
 			Bonus_Struct *pBS = &(*it);

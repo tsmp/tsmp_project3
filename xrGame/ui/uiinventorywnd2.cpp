@@ -90,7 +90,7 @@ void CUIInventoryWnd::InitInventory()
 	}
 
 	ruck_list = m_pInv->m_ruck;
-	std::sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
+	sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
 
 	int i = 1;
 	for (it = ruck_list.begin(), it_e = ruck_list.end(); it != it_e; ++it, ++i)

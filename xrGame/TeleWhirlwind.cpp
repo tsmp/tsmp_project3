@@ -71,7 +71,7 @@ void CTeleWhirlwind::clear_notrelevant()
 {
 	//убрать все объеты со старыми параметрами
 	objects.erase(
-		std::remove_if(
+		remove_if(
 			objects.begin(),
 			objects.end(),
 			&RemovePred),

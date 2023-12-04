@@ -31,7 +31,7 @@ void CBlendInstance::blend_add(CBlend *H)
 }
 void CBlendInstance::blend_remove(CBlend *H)
 {
-	CBlend **I = std::find(Blend.begin(), Blend.end(), H);
+	CBlend **I = find(Blend.begin(), Blend.end(), H);
 	if (I != Blend.end())
 		Blend.erase(I);
 }
@@ -59,14 +59,14 @@ void CKinematicsAnimated::Bone_Motion_Stop_IM(CBoneData *bd, CBlend *handle)
 }
 
 #ifdef DEBUG
-std::pair<LPCSTR, LPCSTR> CKinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
+pair<LPCSTR, LPCSTR> CKinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
 {
 	shared_motions &s_mots = m_Motions[ID.slot].motions;
 	accel_map::iterator _I, _E = s_mots.motion_map()->end();
 	for (_I = s_mots.motion_map()->begin(); _I != _E; ++_I)
 		if (_I->second == ID.idx)
-			return std::make_pair(*_I->first, *s_mots.id());
-	return std::make_pair((LPCSTR)0, (LPCSTR)0);
+			return mk_pair(*_I->first, *s_mots.id());
+	return mk_pair((LPCSTR)0, (LPCSTR)0);
 }
 /*
 LPCSTR CKinematicsAnimated::LL_MotionDefName_dbg	(LPVOID ptr)
@@ -691,7 +691,7 @@ IC bool operator<(const ConsistantKey &A, const ConsistantKey &B) // note: inver
 IC void MakeKeysSelected(ConsistantKey *keys, int count)
 {
 	// sort in decreasing order
-	std::sort(keys, keys + count);
+	sort(keys, keys + count);
 }
 
 IC void QR2Quat(const CKeyQR &K, Fquaternion &Q)
@@ -789,7 +789,7 @@ IC void MixInterlerp(CKey &Result, const CKey *R, const float *BA, int b_count)
 		for (int i = 0; i < b_count; i++)
 			S[i].set(R + i, BA[i]);
 
-		std::sort(S, S + b_count);
+		sort(S, S + b_count);
 		CKey tmp;
 		total = S[0].w;
 		tmp = *S[0].K;

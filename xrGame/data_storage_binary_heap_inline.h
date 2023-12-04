@@ -61,7 +61,7 @@ IC void CBinaryHeap::add_opened(CGraphVertex &vertex)
 		*m_heap_tail = *m_heap_head;
 		*m_heap_head = &vertex;
 	}
-	std::push_heap(m_heap_head, ++m_heap_tail, CGraphNodePredicate());
+	push_heap(m_heap_head, ++m_heap_tail, CGraphNodePredicate());
 }
 
 TEMPLATE_SPECIALIZATION
@@ -71,14 +71,14 @@ IC void CBinaryHeap::decrease_opened(CGraphVertex &vertex, const _dist_type valu
 	CGraphVertex **i;
 	for (i = m_heap_head; *i != &vertex; ++i)
 		;
-	std::push_heap(m_heap_head, i + 1, CGraphNodePredicate());
+	push_heap(m_heap_head, i + 1, CGraphNodePredicate());
 }
 
 TEMPLATE_SPECIALIZATION
 IC void CBinaryHeap::remove_best_opened()
 {
 	VERIFY(!is_opened_empty());
-	std::pop_heap(m_heap_head, m_heap_tail--, CGraphNodePredicate());
+	pop_heap(m_heap_head, m_heap_tail--, CGraphNodePredicate());
 }
 
 TEMPLATE_SPECIALIZATION

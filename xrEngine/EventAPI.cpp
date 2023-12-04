@@ -35,12 +35,12 @@ public:
 
 	void Attach(IEventReceiver *H)
 	{
-		if (std::find(Handlers.begin(), Handlers.end(), H) == Handlers.end())
+		if (find(Handlers.begin(), Handlers.end(), H) == Handlers.end())
 			Handlers.push_back(H);
 	}
 	void Detach(IEventReceiver *H)
 	{
-		xr_vector<IEventReceiver *>::iterator I = std::find(Handlers.begin(), Handlers.end(), H);
+		xr_vector<IEventReceiver *>::iterator I = find(Handlers.begin(), Handlers.end(), H);
 		if (I != Handlers.end())
 			Handlers.erase(I);
 	}
@@ -70,7 +70,7 @@ IC bool ev_sort(CEvent *E1, CEvent *E2)
 
 void CEventAPI::Dump()
 {
-	std::sort(Events.begin(), Events.end(), ev_sort);
+	sort(Events.begin(), Events.end(), ev_sort);
 	for (u32 i = 0; i < Events.size(); i++)
 		Msg("* [%d] %s", Events[i]->RefCount(), Events[i]->GetFull());
 }
@@ -101,7 +101,7 @@ void CEventAPI::Destroy(EVENT &E)
 	E->dwRefCount--;
 	if (E->dwRefCount == 0)
 	{
-		xr_vector<CEvent *>::iterator I = std::find(Events.begin(), Events.end(), E);
+		xr_vector<CEvent *>::iterator I = find(Events.begin(), Events.end(), E);
 		R_ASSERT(I != Events.end());
 		Events.erase(I);
 		xr_delete(E);

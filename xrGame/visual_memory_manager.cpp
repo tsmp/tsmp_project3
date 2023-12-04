@@ -162,7 +162,7 @@ IC const CVisionParameters &CVisualMemoryManager::current_state() const
 
 u32 CVisualMemoryManager::visible_object_time_last_seen(const CObject *object) const
 {
-	VISIBLES::iterator I = std::find(m_objects->begin(), m_objects->end(), object_id(object));
+	VISIBLES::iterator I = find(m_objects->begin(), m_objects->end(), object_id(object));
 	if (I != m_objects->end())
 		return (I->m_level_time);
 	else
@@ -171,7 +171,7 @@ u32 CVisualMemoryManager::visible_object_time_last_seen(const CObject *object) c
 
 bool CVisualMemoryManager::visible_right_now(const CGameObject *game_object) const
 {
-	VISIBLES::const_iterator I = std::find(objects().begin(), objects().end(), object_id(game_object));
+	VISIBLES::const_iterator I = find(objects().begin(), objects().end(), object_id(game_object));
 	if ((objects().end() == I))
 		return (false);
 
@@ -186,13 +186,13 @@ bool CVisualMemoryManager::visible_right_now(const CGameObject *game_object) con
 
 bool CVisualMemoryManager::visible_now(const CGameObject *game_object) const
 {
-	VISIBLES::const_iterator I = std::find(objects().begin(), objects().end(), object_id(game_object));
+	VISIBLES::const_iterator I = find(objects().begin(), objects().end(), object_id(game_object));
 	return ((objects().end() != I) && (*I).visible(mask()));
 }
 
 void CVisualMemoryManager::enable(const CObject *object, bool enable)
 {
-	VISIBLES::iterator J = std::find(m_objects->begin(), m_objects->end(), object_id(object));
+	VISIBLES::iterator J = find(m_objects->begin(), m_objects->end(), object_id(object));
 	if (J == m_objects->end())
 		return;
 	(*J).m_enabled = enable;
@@ -300,7 +300,7 @@ float CVisualMemoryManager::get_visible_value(float distance, float object_dista
 CNotYetVisibleObject *CVisualMemoryManager::not_yet_visible_object(const CGameObject *game_object)
 {
 	START_PROFILE("Memory Manager/visuals/not_yet_visible_object")
-	xr_vector<CNotYetVisibleObject>::iterator I = std::find_if(
+	xr_vector<CNotYetVisibleObject>::iterator I = find_if(
 		m_not_yet_visible_objects.begin(),
 		m_not_yet_visible_objects.end(),
 		CNotYetVisibleObjectPredicate(game_object));
@@ -394,7 +394,7 @@ void CVisualMemoryManager::add_visible_object(const CObject *object, float time_
 
 	//	START_PROFILE("Memory Manager/visuals/update/add_visibles/find_object_by_id")
 	self = m_object;
-	J = std::find(m_objects->begin(), m_objects->end(), object_id(game_object));
+	J = find(m_objects->begin(), m_objects->end(), object_id(game_object));
 	//	STOP_PROFILE
 
 	//	START_PROFILE("Memory Manager/visuals/update/add_visibles/fill")
@@ -412,7 +412,7 @@ void CVisualMemoryManager::add_visible_object(const CObject *object, float time_
 
 		if (m_max_object_count <= m_objects->size())
 		{
-			xr_vector<CVisibleObject>::iterator I = std::min_element(m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>());
+			xr_vector<CVisibleObject>::iterator I = min_element(m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>());
 			VERIFY(m_objects->end() != I);
 			*I = visible_object;
 		}
@@ -441,12 +441,12 @@ void CVisualMemoryManager::add_visible_object(const CVisibleObject visible_objec
 #endif // MASTER_GOLD
 
 	VERIFY(m_objects);
-	xr_vector<CVisibleObject>::iterator J = std::find(m_objects->begin(), m_objects->end(), object_id(visible_object.m_object));
+	xr_vector<CVisibleObject>::iterator J = find(m_objects->begin(), m_objects->end(), object_id(visible_object.m_object));
 	if (m_objects->end() != J)
 		*J = visible_object;
 	else if (m_max_object_count <= m_objects->size())
 	{
-		xr_vector<CVisibleObject>::iterator I = std::min_element(m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>());
+		xr_vector<CVisibleObject>::iterator I = min_element(m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>());
 		VERIFY(m_objects->end() != I);
 		*I = visible_object;
 	}
@@ -541,12 +541,12 @@ void CVisualMemoryManager::remove_links(CObject *object)
 {
 	{
 		VERIFY(m_objects);
-		VISIBLES::iterator I = std::find_if(m_objects->begin(), m_objects->end(), CVisibleObjectPredicateEx(object));
+		VISIBLES::iterator I = find_if(m_objects->begin(), m_objects->end(), CVisibleObjectPredicateEx(object));
 		if (I != m_objects->end())
 			m_objects->erase(I);
 	}
 	{
-		NOT_YET_VISIBLES::iterator I = std::find_if(m_not_yet_visible_objects.begin(), m_not_yet_visible_objects.end(), CVisibleObjectPredicateEx(object));
+		NOT_YET_VISIBLES::iterator I = find_if(m_not_yet_visible_objects.begin(), m_not_yet_visible_objects.end(), CVisibleObjectPredicateEx(object));
 		if (I != m_not_yet_visible_objects.end())
 			m_not_yet_visible_objects.erase(I);
 	}
@@ -554,7 +554,7 @@ void CVisualMemoryManager::remove_links(CObject *object)
 
 CVisibleObject *CVisualMemoryManager::visible_object(const CGameObject *game_object)
 {
-	VISIBLES::iterator I = std::find_if(m_objects->begin(), m_objects->end(), CVisibleObjectPredicateEx(game_object));
+	VISIBLES::iterator I = find_if(m_objects->begin(), m_objects->end(), CVisibleObjectPredicateEx(game_object));
 	if (I == m_objects->end())
 		return (0);
 	return (&*I);
@@ -626,7 +626,7 @@ void CVisualMemoryManager::update(float time_delta)
 	// verifying if object is online
 	{
 		m_objects->erase(
-			std::remove_if(
+			remove_if(
 				m_objects->begin(),
 				m_objects->end(),
 				SRemoveOfflinePredicate()),
@@ -636,7 +636,7 @@ void CVisualMemoryManager::update(float time_delta)
 	// verifying if object is online
 	{
 		m_not_yet_visible_objects.erase(
-			std::remove_if(
+			remove_if(
 				m_not_yet_visible_objects.begin(),
 				m_not_yet_visible_objects.end(),
 				SRemoveOfflinePredicate()),
@@ -655,7 +655,7 @@ void CVisualMemoryManager::update(float time_delta)
 
 	if (m_object && g_actor && m_object->is_relation_enemy(Actor()))
 	{
-		xr_vector<CNotYetVisibleObject>::iterator I = std::find_if(
+		xr_vector<CNotYetVisibleObject>::iterator I = find_if(
 			m_not_yet_visible_objects.begin(),
 			m_not_yet_visible_objects.end(),
 			CNotYetVisibleObjectPredicate(Actor()));

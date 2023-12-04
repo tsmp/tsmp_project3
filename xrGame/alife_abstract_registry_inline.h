@@ -49,7 +49,7 @@ IC void CSALifeAbstractRegistry::add(const _index_type &index, _data_type &data,
 		THROW2(no_assert, "Specified object has been already found in the specified registry!");
 		return;
 	}
-	m_objects.insert(std::make_pair(index, data));
+	m_objects.insert(mk_pair(index, data));
 }
 
 TEMPLATE_SPECIALIZATION

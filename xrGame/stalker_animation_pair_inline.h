@@ -91,7 +91,7 @@ IC void CStalkerAnimationPair::make_inactual()
 
 IC const CStalkerAnimationPair::CALLBACK_ID *CStalkerAnimationPair::callback(const CALLBACK_ID &callback) const
 {
-	CALLBACKS::const_iterator I = std::find(m_callbacks.begin(), m_callbacks.end(), callback);
+	CALLBACKS::const_iterator I = find(m_callbacks.begin(), m_callbacks.end(), callback);
 	if (I != m_callbacks.end())
 		return (&*I);
 
@@ -100,13 +100,13 @@ IC const CStalkerAnimationPair::CALLBACK_ID *CStalkerAnimationPair::callback(con
 
 IC void CStalkerAnimationPair::add_callback(const CALLBACK_ID &callback)
 {
-	VERIFY(std::find(m_callbacks.begin(), m_callbacks.end(), callback) == m_callbacks.end());
+	VERIFY(find(m_callbacks.begin(), m_callbacks.end(), callback) == m_callbacks.end());
 	m_callbacks.push_back(callback);
 }
 
 IC void CStalkerAnimationPair::remove_callback(const CALLBACK_ID &callback)
 {
-	CALLBACKS::iterator I = std::find(m_callbacks.begin(), m_callbacks.end(), callback);
+	CALLBACKS::iterator I = find(m_callbacks.begin(), m_callbacks.end(), callback);
 	VERIFY(I != m_callbacks.end());
 	m_callbacks.erase(I);
 }

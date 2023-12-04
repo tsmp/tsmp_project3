@@ -370,7 +370,7 @@ void SHeliMovementState::goByRoundPath(Fvector center_, float radius_, bool cloc
 	xr_vector<STmpPt>::iterator it, it_e;
 	CreateRoundPoints(center_, radius_, start_h, end_h, round_points);
 	if (clockwise_)
-		std::reverse(round_points.begin() + 1, round_points.end());
+		reverse(round_points.begin() + 1, round_points.end());
 
 	it = round_points.begin();
 	it_e = round_points.end();

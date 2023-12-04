@@ -154,7 +154,7 @@ struct CLoader
 	}
 
 	template <typename T1, typename T2>
-	IC static void load_data(std::pair<T1, T2> &data, M &stream, const P &p)
+	IC static void load_data(pair<T1, T2> &data, M &stream, const P &p)
 	{
 		if (p(data, const_cast<object_type_traits::remove_const<T1>::type &>(data.first), true))
 		{

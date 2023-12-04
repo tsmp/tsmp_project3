@@ -32,11 +32,11 @@ struct CRemoveExplosivesPredicate
 
 void CAgentExplosiveManager::remove_links(CObject *object)
 {
-	TO_BE_DESTROYED::iterator I = std::find(m_explosives_to_remove.begin(), m_explosives_to_remove.end(), object->ID());
+	TO_BE_DESTROYED::iterator I = find(m_explosives_to_remove.begin(), m_explosives_to_remove.end(), object->ID());
 	if (I != m_explosives_to_remove.end())
 		m_explosives_to_remove.erase(I);
 
-	EXPLOSIVES::iterator J = std::find(m_explosives.begin(), m_explosives.end(), object->ID());
+	EXPLOSIVES::iterator J = find(m_explosives.begin(), m_explosives.end(), object->ID());
 	if (J != m_explosives.end())
 		m_explosives.erase(J);
 }
@@ -44,12 +44,12 @@ void CAgentExplosiveManager::remove_links(CObject *object)
 void CAgentExplosiveManager::register_explosive(const CExplosive *explosive, const CGameObject *game_object)
 {
 	{
-		xr_vector<CDangerExplosive>::iterator I = std::find(m_explosives.begin(), m_explosives.end(), explosive);
+		xr_vector<CDangerExplosive>::iterator I = find(m_explosives.begin(), m_explosives.end(), explosive);
 		if (I != m_explosives.end())
 			return;
 	}
 	{
-		TO_BE_DESTROYED::iterator I = std::find(m_explosives_to_remove.begin(), m_explosives_to_remove.end(), game_object->ID());
+		TO_BE_DESTROYED::iterator I = find(m_explosives_to_remove.begin(), m_explosives_to_remove.end(), game_object->ID());
 		if (I != m_explosives_to_remove.end())
 			return;
 	}
@@ -126,7 +126,7 @@ void CAgentExplosiveManager::react_on_explosives()
 		}
 
 		m_explosives.erase(
-			std::remove_if(
+			remove_if(
 				m_explosives.begin(),
 				m_explosives.end(),
 				CRemoveExplosivesPredicate()),

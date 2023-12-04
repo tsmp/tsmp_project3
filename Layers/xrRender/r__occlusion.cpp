@@ -22,7 +22,7 @@ void R_occlusion::occq_create(u32 limit)
 			break;
 		pool.push_back(q);
 	}
-	std::reverse(pool.begin(), pool.end());
+	reverse(pool.begin(), pool.end());
 }
 void R_occlusion::occq_destroy()
 {

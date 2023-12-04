@@ -157,7 +157,7 @@ public:
     // material routine
     IC GameMtlIt GetMaterialIt(LPCSTR name)
     {
-        return std::find_if(m_Materials.begin(), m_Materials.end(), [&name](const SGameMtl& mtl)
+        return find_if(m_Materials.begin(), m_Materials.end(), [&name](const SGameMtl& mtl)
         {
             return !strcmpi(*mtl.m_Name, name);
         });
@@ -165,7 +165,7 @@ public:
 
     IC GameMtlIt GetMaterialItByID(int id)
     {
-        return std::find_if(m_Materials.begin(), m_Materials.end(), [&id](const SGameMtl& mtl)
+        return find_if(m_Materials.begin(), m_Materials.end(), [&id](const SGameMtl& mtl)
         {
             return mtl.ID == id;
         });

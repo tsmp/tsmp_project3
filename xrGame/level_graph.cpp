@@ -189,7 +189,7 @@ u32 CLevelGraph::vertex_id(const Fvector &position) const
 	CPosition _vertex_position = vertex_position(position);
 	CVertex *B = m_nodes;
 	CVertex *E = m_nodes + header().vertex_count();
-	CVertex *I = std::lower_bound(B, E, _vertex_position.xz());
+	CVertex *I = lower_bound(B, E, _vertex_position.xz());
 	if ((I == E) || ((*I).position().xz() != _vertex_position.xz()))
 		return (u32(-1));
 

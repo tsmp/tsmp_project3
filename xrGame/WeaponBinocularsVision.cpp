@@ -95,7 +95,7 @@ void SBinocVisibleObj::Update()
 	if (new_rect.in(screen_rect.lt) && new_rect.in(screen_rect.rb))
 		return;
 
-	std::swap(mn.y, mx.y);
+	swap(mn.y, mx.y);
 	mn.x = (1.f + mn.x) / 2.f * UI_BASE_WIDTH;
 	mx.x = (1.f + mx.x) / 2.f * UI_BASE_WIDTH;
 	mn.y = (1.f - mn.y) / 2.f * UI_BASE_HEIGHT;
@@ -234,7 +234,7 @@ void CBinocularsVision::Update()
 
 		FindVisObjByObject f(object_);
 		VIS_OBJECTS_IT found;
-		found = std::find_if(m_active_objects.begin(), m_active_objects.end(), f);
+		found = find_if(m_active_objects.begin(), m_active_objects.end(), f);
 
 		if (found != m_active_objects.end())
 		{
@@ -252,7 +252,7 @@ void CBinocularsVision::Update()
 				m_snd_found.play_at_pos(0, Fvector().set(0, 0, 0), sm_2D);
 		}
 	}
-	std::sort(m_active_objects.begin(), m_active_objects.end());
+	sort(m_active_objects.begin(), m_active_objects.end());
 
 	while (m_active_objects.size() && m_active_objects.back()->m_flags.test(flVisObjNotValid))
 	{
@@ -281,7 +281,7 @@ void CBinocularsVision::Load(const shared_str &section)
 
 void CBinocularsVision::remove_links(CObject *object)
 {
-	VIS_OBJECTS::iterator I = std::find_if(m_active_objects.begin(), m_active_objects.end(), FindVisObjByObject(object));
+	VIS_OBJECTS::iterator I = find_if(m_active_objects.begin(), m_active_objects.end(), FindVisObjByObject(object));
 	if (I == m_active_objects.end())
 		return;
 

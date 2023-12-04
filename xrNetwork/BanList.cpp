@@ -97,7 +97,7 @@ void CBanList::BanAddress(const ip_address& address, u32 banTimeSec)
 
 void CBanList::UnbanAddress(const ip_address& address)
 {
-	auto it = std::find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
+	auto it = find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
 	{
 		return cl.IpAddr == address;
 	});
@@ -114,7 +114,7 @@ void CBanList::UnbanAddress(const ip_address& address)
 
 void CBanList::BanUid(u32 uid)
 {
-	auto it = std::find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
+	auto it = find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
 	{
 		return cl.uid == uid;
 	});
@@ -142,7 +142,7 @@ void CBanList::BanUid(u32 uid)
 
 void CBanList::UnbanUid(u32 uid)
 {
-	auto it = std::find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
+	auto it = find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
 	{
 		return cl.uid == uid;
 	});
@@ -196,7 +196,7 @@ void CBanList::Update()
 	if (m_Banned.empty())
 		return;
 
-	std::sort(m_Banned.begin(), m_Banned.end(), [](const BannedClient& cl1, const BannedClient& cl2)
+	sort(m_Banned.begin(), m_Banned.end(), [](const BannedClient& cl1, const BannedClient& cl2)
 	{
 		return cl1.BanTime > cl2.BanTime;
 	});
@@ -211,7 +211,7 @@ void CBanList::Update()
 
 bool CBanList::IsAddressBanned(const ip_address& address)
 {
-	auto it = std::find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
+	auto it = find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
 	{
 		return cl.IpAddr == address;
 	});
@@ -221,7 +221,7 @@ bool CBanList::IsAddressBanned(const ip_address& address)
 
 bool CBanList::IsUidBanned(u32 uid)
 {
-	auto it = std::find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
+	auto it = find_if(m_Banned.begin(), m_Banned.end(), [&](const BannedClient& cl)
 	{
 		return cl.uid == uid;
 	});

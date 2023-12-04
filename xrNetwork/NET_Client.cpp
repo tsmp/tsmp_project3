@@ -270,7 +270,7 @@ static HRESULT WINAPI DPMessageHandler(PVOID pvUserContext, DWORD dwMessageType,
 
 namespace ParseParams
 {
-	std::string ServerName(const char* cmdLine)
+	xr_string ServerName(const char* cmdLine)
 	{
 		string256 server_name = "";
 
@@ -279,10 +279,10 @@ namespace ParseParams
 		if (strchr(server_name, '/'))
 			*strchr(server_name, '/') = '\0';
 
-		return std::string(server_name);
+		return xr_string(server_name);
 	}
 
-	std::string PlayerName(const char* cmdLine)
+	xr_string PlayerName(const char* cmdLine)
 	{
 		string64 user_name_str = "";
 
@@ -296,10 +296,10 @@ namespace ParseParams
 				strcpy(user_name_str, NM);
 		}
 
-		return std::string(user_name_str);
+		return xr_string(user_name_str);
 	}
 
-	std::string PlayerPass(const char* cmdLine)
+	xr_string PlayerPass(const char* cmdLine)
 	{
 		string64 user_pass = "";
 
@@ -313,10 +313,10 @@ namespace ParseParams
 				strcpy(user_pass, UP);
 		}
 
-		return std::string(user_pass);
+		return xr_string(user_pass);
 	}
 
-	std::string Password(const char* cmdLine)
+	xr_string Password(const char* cmdLine)
 	{
 		string64 password_str = "";
 
@@ -330,7 +330,7 @@ namespace ParseParams
 				strcpy(password_str, PSW);
 		}
 
-		return std::string(password_str);
+		return xr_string(password_str);
 	}
 
 	u32 PortSv(const char* cmdLine)
@@ -383,7 +383,7 @@ bool IPureClient::ConnectLocal(LPCSTR options, DPN_APPLICATION_DESC &dpAppDesc)
 		basePortCl = BASE_PORT_LAN_CL;
 	}
 
-	std::string password = ParseParams::Password(options);
+	xr_string password = ParseParams::Password(options);
 	WCHAR SessionPasswordUNICODE[MaxPasswordLen];
 
 	if (!password.empty())
@@ -509,7 +509,7 @@ bool IPureClient::ConnectGlobal(LPCSTR options, DPN_APPLICATION_DESC& dpAppDesc)
 	}
 
 	WCHAR SessionPasswordUNICODE[MaxPasswordLen];
-	std::string password = ParseParams::Password(options);
+	xr_string password = ParseParams::Password(options);
 
 	if (!password.empty())
 	{
@@ -599,7 +599,7 @@ bool IPureClient::Connect(LPCSTR options)
 	// Create our IDirectPlay8Address Server Address, --- Set the SP for our Server Address
 	static const u32 MaxServerNameLen = 256;
 	WCHAR ServerNameUNICODE[MaxServerNameLen];
-	std::string serverName = ParseParams::ServerName(options);
+	xr_string serverName = ParseParams::ServerName(options);
 	R_CHK(MultiByteToWideChar(CP_ACP, 0, serverName.c_str(), -1, ServerNameUNICODE, MaxServerNameLen));
 
 	int svPort = ParseParams::PortSv(options);
@@ -619,7 +619,7 @@ bool IPureClient::Connect(LPCSTR options)
 	// Setup client info
 	static const int MaxClientNameLen = 256;
 	WCHAR ClientNameUNICODE[MaxClientNameLen];
-	std::string clientName = ParseParams::PlayerName(options);
+	xr_string clientName = ParseParams::PlayerName(options);
 	R_CHK(MultiByteToWideChar(CP_ACP, 0, clientName.c_str(), -1, ClientNameUNICODE, MaxClientNameLen));
 
 	{

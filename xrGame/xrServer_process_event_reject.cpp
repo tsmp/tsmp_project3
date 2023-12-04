@@ -36,7 +36,7 @@ bool xrServer::Process_event_reject(NET_Packet &P, const ClientID const &sender,
 #endif // MP_LOGGING
 
     xr_vector<u16> &C = e_parent->children;
-    xr_vector<u16>::iterator c = std::find(C.begin(), C.end(), id_entity);
+    xr_vector<u16>::iterator c = find(C.begin(), C.end(), id_entity);
 
     if (c == C.end())
     {

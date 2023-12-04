@@ -39,7 +39,7 @@ float CLevelChanger::Radius() const
 void CLevelChanger::net_Destroy()
 {
 	inherited ::net_Destroy();
-	xr_vector<CLevelChanger *>::iterator it = std::find(g_lchangers.begin(), g_lchangers.end(), this);
+	xr_vector<CLevelChanger *>::iterator it = find(g_lchangers.begin(), g_lchangers.end(), this);
 	if (it != g_lchangers.end())
 		g_lchangers.erase(it);
 }

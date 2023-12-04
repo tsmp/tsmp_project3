@@ -1,6 +1,24 @@
 #pragma once
 
-using std::swap;
+#ifndef LUABIND_BUILDING
+#define USE_EASTL 1
+#endif
+
+#ifdef USE_EASTL
+
+#include "EASTL/vector.h"
+#include "EASTL/deque.h"
+#include "EASTL/sort.h"
+#include "EASTL/stack.h"
+#include "EASTL/list.h"
+#include "EASTL/set.h"
+#include "EASTL/map.h"
+#include "EASTL/string.h"
+
+#include "EASTL/algorithm.h"
+
+#endif // USE_EASTL
+
 
 #ifdef _M_AMD64
 #define M_DONTDEFERCLEAR_EXT
@@ -8,7 +26,6 @@ using std::swap;
 
 #define M_DONTDEFERCLEAR_EXT //. for mem-debug only
 
-//--------
 #ifdef M_NOSTDCONTAINERS_EXT
 
 #define xr_list std::list
@@ -65,6 +82,61 @@ public:
 };
 
 #else
+
+template <typename T>
+class AllocatorEA
+{
+public:
+	using difference_type = ptrdiff_t;
+
+	AllocatorEA(const char* pName = EASTL_NAME_VAL("custom allocator"))
+	{
+#if EASTL_NAME_ENABLED
+		mpName = pName ? pName : EASTL_ALLOCATOR_DEFAULT_NAME;
+#endif
+	}
+
+	~AllocatorEA() = default;
+	AllocatorEA& operator=(const AllocatorEA& x) { return *this; }
+	bool operator==(const AllocatorEA& x) { return true; }
+
+	void* allocate(size_t n, int flags = 0)
+	{
+		return Memory.mem_alloc(n);
+	}
+
+	void* allocate(size_t n, size_t alignment, size_t offset, int flags = 0)
+	{
+		R_ASSERT2(false, "aligned alloc not implemented");
+		return nullptr;
+	}
+
+	void deallocate(void* p, size_t n)
+	{
+		Memory.mem_free(p);
+	}
+
+	const char* get_name() const
+	{
+#if EASTL_NAME_ENABLED
+		return mpName;
+#else
+		return "custom allocator";
+#endif
+	}
+
+	void set_name(const char* pName)
+	{
+#if EASTL_NAME_ENABLED
+		mpName = pName;
+#endif
+	}
+
+protected:
+#if EASTL_NAME_ENABLED
+	const char* mpName; // Debug name, used to track memory.
+#endif
+};
 
 template <typename T>
 class xalloc
@@ -151,15 +223,25 @@ namespace std
 	inline xalloc<_Tp2> __stl_alloc_create(xalloc<_Tp1> &, const _Tp2 *) { return xalloc<_Tp2>(); }
 }; // namespace std
 
-// string(char)
-typedef std::basic_string<char, std::char_traits<char>, xalloc<char>> xr_string;
-
 // vector
+
+#ifdef USE_EASTL
+
+template <typename T, typename allocator = AllocatorEA<T>>
+class xr_vector : public eastl::vector<T, allocator>
+{
+private:
+	typedef eastl::vector<T, allocator> inherited;
+
+#else
+
 template <typename T, typename allocator = xalloc<T>>
 class xr_vector : public std::vector<T, allocator>
 {
 private:
 	typedef std::vector<T, allocator> inherited;
+
+#endif	
 
 public:
 	typedef allocator allocator_type;
@@ -172,6 +254,7 @@ public:
 
 	void clear_and_free() { inherited::clear(); }
 	void clear_not_free() { erase(begin(), end()); }
+
 	void clear_and_reserve()
 	{
 		if (capacity() <= (size() + size() / 4))
@@ -213,11 +296,24 @@ public:
 };
 
 // vector<bool>
+
+#ifdef USE_EASTL
+
+template <>
+class xr_vector<bool, AllocatorEA<bool>> : public eastl::vector<bool, AllocatorEA<bool>>
+{
+private:
+	typedef eastl::vector<bool, AllocatorEA<bool>> inherited;
+
+#else
+
 template <>
 class xr_vector<bool, xalloc<bool>> : public std::vector<bool, xalloc<bool>>
 {
 private:
 	typedef std::vector<bool, xalloc<bool>> inherited;
+
+#endif
 
 public:
 	u32 size() const { return xr_narrow_cast<u32>(inherited::size()); }
@@ -225,15 +321,59 @@ public:
 };
 
 template <typename allocator>
-class xr_vector<bool, allocator> : public std::vector<bool, allocator>
+class xr_vector<bool, allocator> : 
+#ifdef USE_EASTL
+	public eastl::vector<bool, allocator>
+#else
+	public std::vector<bool, allocator>
+#endif
 {
 private:
+#ifdef USE_EASTL
+	typedef eastl::vector<bool, allocator> inherited;
+#else
 	typedef std::vector<bool, allocator> inherited;
+#endif
 
 public:
 	u32 size() const { return xr_narrow_cast<u32>(inherited::size()); }
 	void clear() { erase(begin(), end()); }
 };
+
+#ifdef USE_EASTL
+
+// deque
+template <typename T, typename allocator = AllocatorEA<T>>
+using xr_deque = eastl::deque<T, allocator>;
+
+// stack
+template <typename T, class C = xr_deque<T>>
+using xr_stack = eastl::stack<T, C>;
+
+// list
+template <typename T, typename allocator = AllocatorEA<T>>
+using xr_list = eastl::list<T, allocator>;
+
+// set
+template <typename K, class P = eastl::less<K>, typename allocator = AllocatorEA<K>>
+using xr_set = eastl::set<K, P, allocator>;
+
+// multiset
+template <typename K, class P = eastl::less<K>, typename allocator = AllocatorEA<K>>
+using xr_multiset = eastl::multiset<K, P, allocator>;
+
+// map
+template <typename K, class V, class P = eastl::less<K>, typename allocator = AllocatorEA<K>>
+using xr_map = eastl::map<K, V, P, allocator>;
+
+// multimap
+template <typename K, class V, class P = eastl::less<K>, typename allocator = AllocatorEA<K>>
+using xr_multimap = eastl::multimap<K, V, P, allocator>;
+
+// string(char)
+typedef eastl::basic_string<char, AllocatorEA<char>> xr_string;
+
+#else
 
 // deque
 template <typename T, typename allocator = xalloc<T>>
@@ -263,9 +403,80 @@ using xr_map = std::map<K, V, P, allocator>;
 template <typename K, class V, class P = std::less<K>, typename allocator = xalloc<std::pair<const K, V>>>
 using xr_multimap = std::multimap<K, V, P, allocator>;
 
-#endif
+// string(char)
+typedef std::basic_string<char, std::char_traits<char>, xalloc<char>> xr_string;
 
+#endif // USE_EASTL
+
+#endif // M_NOSTDCONTAINERS_EXT
+
+#ifdef USE_EASTL
+#define mk_pair eastl::make_pair
+using eastl::swap;
+using eastl::pair;
+using eastl::sort;
+using eastl::find;
+using eastl::reverse;
+using eastl::remove_if;
+using eastl::remove;
+using eastl::find_if;
+using eastl::count_if;
+using eastl::stable_sort;
+using eastl::lower_bound;
+using eastl::upper_bound;
+using eastl::unique;
+using eastl::set_difference;
+using eastl::max;
+using eastl::min;
+using eastl::push_heap;
+using eastl::pop_heap;
+using eastl::advance;
+using eastl::distance;
+using eastl::copy;
+using eastl::less;
+using eastl::greater;
+using eastl::to_string;
+using eastl::for_each;
+using eastl::fill_n;
+using eastl::fill;
+using eastl::lexicographical_compare;
+using eastl::binary_search;
+using eastl::max_element;
+using eastl::min_element;
+#else
 #define mk_pair std::make_pair
+using std::swap;
+using std::pair;
+using std::sort;
+using std::find;
+using std::reverse;
+using std::remove_if;
+using std::remove;
+using std::find_if;
+using std::count_if;
+using std::stable_sort;
+using std::lower_bound;
+using std::upper_bound;
+using std::unique;
+using std::set_difference;
+using std::max;
+using std::min;
+using std::push_heap;
+using std::pop_heap;
+using std::advance;
+using std::distance;
+using std::copy;
+using std::less;
+using std::greater;
+using std::to_string;
+using std::for_each;
+using std::fill_n;
+using std::fill;
+using std::lexicographical_compare;
+using std::binary_search;
+using std::max_element;
+using std::min_element;
+#endif
 
 struct pred_str
 {

@@ -316,7 +316,7 @@ u32 CUIScrollView::GetSize()
 CUIWindow *CUIScrollView::GetItem(u32 idx)
 {
 	WINDOW_LIST_it it = m_pad->GetChildWndList().begin();
-	std::advance(it, idx);
+	advance(it, idx);
 	return (*it);
 }
 

@@ -115,7 +115,7 @@ void CMapManager::initialize(u16 id)
 CMapLocation *CMapManager::AddMapLocation(const shared_str &spot_type, u16 id)
 {
 	FindLocationBySpotID key(spot_type, id);
-	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
+	Locations_it it = find_if(Locations().begin(), Locations().end(), key);
 	if (it == Locations().end())
 	{
 		CMapLocation *l = xr_new<CMapLocation>(*key.spot_id, key.object_id);
@@ -146,7 +146,7 @@ CMapLocation *CMapManager::AddRelationLocation(CInventoryOwner *pInvOwner)
 		sname = "deadbody_location";
 
 	FindLocationBySpotID key(sname, pInvOwner->object_id());
-	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
+	Locations_it it = find_if(Locations().begin(), Locations().end(), key);
 	if (it == Locations().end())
 	{
 		CMapLocation *l = xr_new<CRelationMapLocation>(*key.spot_id, key.object_id, pActor->object_id(), pInvOwner->object_id());
@@ -166,7 +166,7 @@ void CMapManager::RemoveMapLocation(const shared_str &spot_type, u16 id)
 		return;
 
 	FindLocationBySpotID key(spot_type, id);
-	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
+	Locations_it it = find_if(Locations().begin(), Locations().end(), key);
 
 	if (it != Locations().end())
 	{
@@ -186,13 +186,13 @@ void CMapManager::RemoveMapLocationByObjectID(u16 id) //call on destroy object
 		return;
 
 	FindLocationByID key(id);
-	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
+	Locations_it it = find_if(Locations().begin(), Locations().end(), key);
 
 	while (it != Locations().end())
 	{
 		delete_data(*it);
 		Locations().erase(it);
-		it = std::find_if(Locations().begin(), Locations().end(), key);
+		it = find_if(Locations().begin(), Locations().end(), key);
 	}
 }
 
@@ -201,7 +201,7 @@ void CMapManager::RemoveMapLocation(CMapLocation *ml)
 	VERIFY(ml->CanBeUserRemoved());
 	FindLocation key(ml);
 
-	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
+	Locations_it it = find_if(Locations().begin(), Locations().end(), key);
 	if (it != Locations().end())
 	{
 		delete_data(*it);
@@ -218,7 +218,7 @@ u16 CMapManager::HasMapLocation(const shared_str &spot_type, u16 id)
 CMapLocation *CMapManager::GetMapLocation(const shared_str &spot_type, u16 id)
 {
 	FindLocationBySpotID key(spot_type, id);
-	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
+	Locations_it it = find_if(Locations().begin(), Locations().end(), key);
 	if (it != Locations().end())
 		return (*it).location;
 
@@ -232,7 +232,7 @@ void CMapManager::Update()
 	{
 		(*it).actual = (*it).location->Update();
 	}
-	std::sort(Locations().begin(), Locations().end());
+	sort(Locations().begin(), Locations().end());
 
 	while ((!Locations().empty()) && (!Locations().back().actual))
 	{

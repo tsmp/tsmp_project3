@@ -55,10 +55,10 @@ void CStalkerAnimationDataStorage::clear()
 
 const CStalkerAnimationData *CStalkerAnimationDataStorage::object(IKinematicsAnimated *skeleton_animated)
 {
-	OBJECTS::const_iterator I = std::find_if(m_objects.begin(), m_objects.end(), data_predicate(skeleton_animated));
+	OBJECTS::const_iterator I = find_if(m_objects.begin(), m_objects.end(), data_predicate(skeleton_animated));
 	if (I != m_objects.end())
 		return ((*I).second);
 
-	m_objects.push_back(std::make_pair(skeleton_animated, xr_new<CStalkerAnimationData>(skeleton_animated)));
+	m_objects.push_back(mk_pair(skeleton_animated, xr_new<CStalkerAnimationData>(skeleton_animated)));
 	return (m_objects.back().second);
 }

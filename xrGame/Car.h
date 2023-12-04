@@ -39,7 +39,7 @@ class car_memory;
 struct SCarNetUpdate
 {
 	u32 TimeStamp;
-	std::vector<SPHNetState> StateVec;
+	xr_vector<SPHNetState> StateVec;
 	bool wpnActive;
 	bool wpnShooting;
 	Fvector enemyPos;

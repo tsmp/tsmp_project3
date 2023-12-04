@@ -66,8 +66,7 @@ private:
 	// misc
 public:
 	CTextureDescrMngr m_textures_description;
-	//.	CInifile*											m_textures_description;
-	xr_vector<std::pair<shared_str, R_constant_setup *>> v_constant_setup;
+	xr_vector<pair<shared_str, R_constant_setup *>> v_constant_setup;
 	lua_State *LSVM;
 	BOOL bDeferredLoad;
 

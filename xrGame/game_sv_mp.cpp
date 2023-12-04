@@ -595,7 +595,7 @@ void game_sv_mp::SpawnWeapon4Actor(u16 actorId, LPCSTR N, u8 Addons)
 
 void game_sv_mp::OnDestroyObject(u16 eid_who)
 {
-	CORPSE_LIST_it it = std::find(m_CorpseList.begin(), m_CorpseList.end(), eid_who);
+	CORPSE_LIST_it it = find(m_CorpseList.begin(), m_CorpseList.end(), eid_who);
 	if (it != m_CorpseList.end())
 	{
 		m_CorpseList.erase(it);
@@ -1438,7 +1438,7 @@ void game_sv_mp::UpdatePlayersMoney()
 bool	game_sv_mp::GetTeamItem_ByID		(WeaponDataStruct** pRes, TEAM_WPN_LIST* pWpnList, u16 ItemID)
 {
 	if (!pWpnList) return false;
-	TEAM_WPN_LIST_it pWpnI	= std::find(pWpnList->begin(), pWpnList->end(), (ItemID));
+	TEAM_WPN_LIST_it pWpnI	= find(pWpnList->begin(), pWpnList->end(), (ItemID));
 	if (pWpnI == pWpnList->end() || !((*pWpnI) == (ItemID))) return false;
 	*pRes = &(*pWpnI);
 	return true;
@@ -1447,7 +1447,7 @@ bool	game_sv_mp::GetTeamItem_ByID		(WeaponDataStruct** pRes, TEAM_WPN_LIST* pWpn
 bool	game_sv_mp::GetTeamItem_ByName		(WeaponDataStruct** pRes,TEAM_WPN_LIST* pWpnList, LPCSTR ItemName)
 {
 	if (!pWpnList) return false;
-	TEAM_WPN_LIST_it pWpnI	= std::find(pWpnList->begin(), pWpnList->end(), ItemName);
+	TEAM_WPN_LIST_it pWpnI	= find(pWpnList->begin(), pWpnList->end(), ItemName);
 	if (pWpnI == pWpnList->end() || !((*pWpnI) == ItemName)) return false;
 	*pRes = &(*pWpnI);
 	return true;
@@ -1683,16 +1683,16 @@ void game_sv_mp::SvSendChatMessageCow(LPCSTR str)
 	P.w_s16(0);
 	P.w_stringZ("ServerAdmin");
 
-	std::string strText = str;
+	xr_string strText = str;
 	int textLen = static_cast<int>(strText.size());
 
-	std::string top,bottom;
+	xr_string top,bottom;
 	top = "  ";
 	bottom = "  ";
 
-	const std::string newLine = "\n ";
+	const xr_string newLine = "\n ";
 
-	std::string cow[6];
+	xr_string cow[6];
 	cow[0] = "     \\ ";
 	cow[1] = "   ^__^ ";
 	cow[2] = "   (oo)\\______ ";

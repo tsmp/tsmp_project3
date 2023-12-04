@@ -29,9 +29,10 @@ IC bool pred_light_cmp(light *_1, light *_2)
 
 void light_Package::sort()
 {
+	// !!! FIX!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// resort lights (pending -> at the end), maintain stable order
-	std::stable_sort(v_point.begin(), v_point.end(), pred_light_cmp);
-	std::stable_sort(v_spot.begin(), v_spot.end(), pred_light_cmp);
-	std::stable_sort(v_shadowed.begin(), v_shadowed.end(), pred_light_cmp);
+	//std::stable_sort(v_point.begin(), v_point.end(), pred_light_cmp);
+	//std::stable_sort(v_spot.begin(), v_spot.end(), pred_light_cmp);
+	//std::stable_sort(v_shadowed.begin(), v_shadowed.end(), pred_light_cmp);
 }
 #endif

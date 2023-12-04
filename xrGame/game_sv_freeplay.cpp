@@ -5,17 +5,17 @@
 
 ENGINE_API bool g_dedicated_server;
 
-const std::vector<std::string> FreeplayDefaultRandomItems
+const std::vector<xr_string> FreeplayDefaultRandomItems
 {
 	"mp_wpn_pm","mp_wpn_pb"
 };
 
-const std::vector<std::string> FreeplayDefaultSkins
+const std::vector<xr_string> FreeplayDefaultSkins
 {
 	"stalker_killer_antigas"
 };
 
-const std::vector<std::string> FreeplayDefaultPersistentItems
+const std::vector<xr_string> FreeplayDefaultPersistentItems
 {
 	"mp_medkit","mp_wpn_knife", "mp_device_torch","mp_ammo_9x18_fmj","mp_ammo_9x18_fmj","mp_ammo_9x18_fmj"
 };
@@ -104,7 +104,7 @@ void game_sv_Freeplay::Create(shared_str &options)
 	LoadSettings();
 
 	TeamStruct NewTeam;
-	for (std::string& skin : m_Skins)
+	for (xr_string& skin : m_Skins)
 		NewTeam.aSkins.push_back(skin.c_str());
 	TeamList.push_back(NewTeam);
 
@@ -238,7 +238,7 @@ void game_sv_Freeplay::SpawnItemsForActor(CSE_Abstract* pE, game_PlayerState* ps
 
 	SpawnWeapon4Actor(pA->ID, m_RandomItems[m_ItemsRnd.randI(static_cast<u32>(m_RandomItems.size()))].c_str(), 0);
 
-	for (std::string& itemName : m_PersistentItems)
+	for (xr_string& itemName : m_PersistentItems)
 		SpawnWeapon4Actor(pA->ID, itemName.c_str(), 0);
 }
 

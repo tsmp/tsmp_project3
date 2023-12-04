@@ -82,7 +82,7 @@ IC bool CProblemSolverAbstract::actual() const
 	for (; I != E; ++I)
 	{
 		if ((*i).first < (*I).condition())
-			i = std::lower_bound(i, e, (*I).condition(), evaluators().value_comp());
+			i = lower_bound(i, e, (*I).condition(), evaluators().value_comp());
 		VERIFY(i != e);
 		VERIFY((*i).first == (*I).condition());
 		if ((*i).second->evaluate() != (*I).value())
@@ -94,7 +94,7 @@ IC bool CProblemSolverAbstract::actual() const
 TEMPLATE_SPECIALIZATION
 IC void CProblemSolverAbstract::add_operator(const _edge_type &operator_id, _operator_ptr _operator)
 {
-	OPERATOR_VECTOR::iterator I = std::lower_bound(m_operators.begin(), m_operators.end(), operator_id);
+	OPERATOR_VECTOR::iterator I = lower_bound(m_operators.begin(), m_operators.end(), operator_id);
 	THROW((I == m_operators.end()) || ((*I).m_operator_id != operator_id));
 #ifdef DEBUG
 	validate_properties(_operator->conditions());
@@ -124,7 +124,7 @@ IC void CProblemSolverAbstract::validate_properties(const CState &conditions) co
 TEMPLATE_SPECIALIZATION
 IC void CProblemSolverAbstract::remove_operator(const _edge_type &operator_id)
 {
-	OPERATOR_VECTOR::iterator I = std::lower_bound(m_operators.begin(), m_operators.end(), operator_id);
+	OPERATOR_VECTOR::iterator I = lower_bound(m_operators.begin(), m_operators.end(), operator_id);
 	THROW(m_operators.end() != I);
 	try
 	{
@@ -168,7 +168,7 @@ TEMPLATE_SPECIALIZATION
 IC void CProblemSolverAbstract::add_evaluator(const _condition_type &condition_id, _condition_evaluator_ptr evaluator)
 {
 	THROW(evaluators().end() == evaluators().find(condition_id));
-	m_evaluators.insert(std::make_pair(condition_id, evaluator));
+	m_evaluators.insert(mk_pair(condition_id, evaluator));
 }
 
 TEMPLATE_SPECIALIZATION
@@ -361,7 +361,7 @@ IC const xr_vector<typename CProblemSolverAbstract::_edge_type> &CProblemSolverA
 TEMPLATE_SPECIALIZATION
 IC typename CProblemSolverAbstract::_operator_ptr CProblemSolverAbstract::get_operator(const _edge_type &operator_id)
 {
-	OPERATOR_VECTOR::iterator I = std::lower_bound(m_operators.begin(), m_operators.end(), operator_id);
+	OPERATOR_VECTOR::iterator I = lower_bound(m_operators.begin(), m_operators.end(), operator_id);
 	THROW(m_operators.end() != I);
 	return ((*I).get_operator());
 }

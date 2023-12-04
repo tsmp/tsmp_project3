@@ -66,7 +66,7 @@ namespace file_transfer
 			int current_pos = tmp_reader.tell();
 			u8 const *tmp_buffer_ptr = static_cast<u8 const *>(tmp_reader.pointer());
 			dst_buffers.push_back(
-				std::make_pair(tmp_buffer_ptr, tmp_buffer_size));
+				mk_pair(tmp_buffer_ptr, tmp_buffer_size));
 			tmp_reader.seek(current_pos + tmp_buffer_size);
 		}
 	}

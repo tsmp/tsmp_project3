@@ -477,7 +477,7 @@ void CRender::Calculate()
 				ViewBase);
 
 			// Exact sorting order (front-to-back)
-			std::sort(lstRenderables.begin(), lstRenderables.end(), pred_sp_sort);
+			sort(lstRenderables.begin(), lstRenderables.end(), pred_sp_sort);
 
 			// Determine visibility for dynamic part of scene
 			set_Object(0);

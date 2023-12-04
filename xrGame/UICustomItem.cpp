@@ -48,9 +48,9 @@ void CUICustomItem::Render(const Fvector2 &pos, u32 color,
 
 	// Check mirror mode
 	if (tmMirrorHorisontal == eMirrorMode || tmMirrorBoth == eMirrorMode)
-		std::swap(LTt.x, RBt.x);
+		swap(LTt.x, RBt.x);
 	if (tmMirrorVertical == eMirrorMode || tmMirrorBoth == eMirrorMode)
-		std::swap(LTt.y, RBt.y);
+		swap(LTt.y, RBt.y);
 
 	float offset = -0.5f;
 
@@ -118,9 +118,9 @@ void CUICustomItem::Render(const Fvector2 &pos_ns, u32 color, float angle)
 	RBt.set(iOriginalRect.x2 / ts.x + hp.x, iOriginalRect.y2 / ts.y + hp.y);
 	// Check mirror mode
 	if (tmMirrorHorisontal == eMirrorMode || tmMirrorBoth == eMirrorMode)
-		std::swap(LTt.x, RBt.x);
+		swap(LTt.x, RBt.x);
 	if (tmMirrorVertical == eMirrorMode || tmMirrorBoth == eMirrorMode)
-		std::swap(LTt.y, RBt.y);
+		swap(LTt.y, RBt.y);
 
 	float kx = (UI()->is_16_9_mode()) ? 0.8333f : 1.0f;
 	// clip poly

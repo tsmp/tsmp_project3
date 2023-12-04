@@ -6,7 +6,7 @@ struct SGameMtl;
 
 class CPHCollisionDamageReceiver
 {
-	typedef std::pair<u16, float> SControledBone;
+	typedef pair<u16, float> SControledBone;
 	DEFINE_VECTOR(SControledBone, DAMAGE_CONTROLED_BONES_V, DAMAGE_BONES_I);
 	struct SFind
 	{
@@ -27,7 +27,7 @@ private:
 
 	IC DAMAGE_BONES_I FindBone(u16 id)
 	{
-		return std::find_if(m_controled_bones.begin(), m_controled_bones.end(), SFind(id));
+		return find_if(m_controled_bones.begin(), m_controled_bones.end(), SFind(id));
 	}
 	static void CollisionCallback(bool &do_colide, bool bo1, dContact &c, SGameMtl *material_1, SGameMtl *material_2);
 };

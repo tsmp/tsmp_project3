@@ -48,7 +48,7 @@ void IConsole_Command::add_to_LRU(shared_str const& arg)
 	if (arg.size() == 0 || bEmptyArgsHandled)	
 		return;	
 
-	if (std::find(m_LRU.begin(), m_LRU.end(), arg) != m_LRU.end())
+	if (find(m_LRU.begin(), m_LRU.end(), arg) != m_LRU.end())
 		return;
 
 	m_LRU.push_back(arg);

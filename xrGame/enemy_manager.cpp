@@ -190,7 +190,7 @@ void CEnemyManager::remove_links(CObject *object)
 {
 	// since we use no members in CEntityAlive during search,
 	// we just use the pinter itself, we can just statically cast object
-	OBJECTS::iterator I = std::find(m_objects.begin(), m_objects.end(), (CEntityAlive *)object);
+	OBJECTS::iterator I = find(m_objects.begin(), m_objects.end(), (CEntityAlive *)object);
 	if (I != m_objects.end())
 		m_objects.erase(I);
 
@@ -311,7 +311,7 @@ void CEnemyManager::remove_wounded()
 	};
 
 	m_objects.erase(
-		std::remove_if(
+		remove_if(
 			m_objects.begin(),
 			m_objects.end(),
 			&no_wounded::predicate),

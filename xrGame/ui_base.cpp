@@ -48,7 +48,7 @@ sPoly2D *C2DFrustum::ClipPoly(sPoly2D &S, sPoly2D &D) const
 	{
 		// cache plane and swap lists
 		const Fplane2 &P = planes[i];
-		std::swap(src, dest);
+		swap(src, dest);
 		dest->clear();
 
 		// classify all points relative to plane #i

@@ -40,7 +40,7 @@ public:
 	u32 GetTextColor();
 
 private:
-	//typedef xr_set<int, std::greater<int> > ToDelIndexes;
+	//typedef xr_set<int, greater<int> > ToDelIndexes;
 	//typedef ToDelIndexes::iterator			ToDelIndexes_it;
 	xr_vector<CUIWindow *> toDelList;
 	float kill_msg_height;

@@ -25,7 +25,7 @@
 			q->BufferAdd(o, "");         \
 	}
 extern u32 g_sv_dwMaxClientPing;
-extern std::string server_name;
+extern xr_string server_name;
 
 void __cdecl callback_serverkey(int keyid, void *outbuf, void *userdata)
 {

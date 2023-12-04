@@ -14,6 +14,10 @@
 #include "game_object_space.h"
 #include "trade_parameters.h"
 
+#ifdef USE_EASTL
+using eastl::swap;
+#endif
+
 bool CTrade::CanTrade()
 {
 	CEntity *pEntity;

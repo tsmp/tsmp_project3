@@ -58,7 +58,7 @@ IC const CObjectFactory::OBJECT_ITEM_STORAGE &CObjectFactory::clsids() const
 IC const CObjectItemAbstract &CObjectFactory::item(const CLASS_ID &clsid) const
 {
 	actualize();
-	const_iterator I = std::lower_bound(clsids().begin(), clsids().end(), clsid, CObjectItemPredicate());
+	const_iterator I = lower_bound(clsids().begin(), clsids().end(), clsid, CObjectItemPredicate());
 	VERIFY((I != clsids().end()) && ((*I)->clsid() == clsid));
 	return (**I);
 }
@@ -66,7 +66,7 @@ IC const CObjectItemAbstract &CObjectFactory::item(const CLASS_ID &clsid) const
 IC const CObjectItemAbstract *CObjectFactory::item(const CLASS_ID &clsid, bool no_assert) const
 {
 	actualize();
-	const_iterator I = std::lower_bound(clsids().begin(), clsids().end(), clsid, CObjectItemPredicate());
+	const_iterator I = lower_bound(clsids().begin(), clsids().end(), clsid, CObjectItemPredicate());
 	if ((I == clsids().end()) || ((*I)->clsid() != clsid))
 	{
 		R_ASSERT(no_assert);
@@ -80,11 +80,11 @@ IC void CObjectFactory::add(CObjectItemAbstract *item)
 {
 	const_iterator I;
 
-	I = std::find_if(clsids().begin(), clsids().end(), CObjectItemPredicateCLSID(item->clsid()));
+	I = find_if(clsids().begin(), clsids().end(), CObjectItemPredicateCLSID(item->clsid()));
 	VERIFY(I == clsids().end());
 
 #ifndef NO_XR_GAME
-	I = std::find_if(clsids().begin(), clsids().end(), CObjectItemPredicateScript(item->script_clsid()));
+	I = find_if(clsids().begin(), clsids().end(), CObjectItemPredicateScript(item->script_clsid()));
 	VERIFY(I == clsids().end());
 #endif
 
@@ -95,7 +95,7 @@ IC void CObjectFactory::add(CObjectItemAbstract *item)
 IC int CObjectFactory::script_clsid(const CLASS_ID &clsid) const
 {
 	actualize();
-	const_iterator I = std::lower_bound(clsids().begin(), clsids().end(), clsid, CObjectItemPredicate());
+	const_iterator I = lower_bound(clsids().begin(), clsids().end(), clsid, CObjectItemPredicate());
 	VERIFY((I != clsids().end()) && ((*I)->clsid() == clsid));
 	return (int(I - clsids().begin()));
 }
@@ -124,7 +124,7 @@ IC void CObjectFactory::actualize() const
 		return;
 
 	m_actual = true;
-	std::sort(m_clsids.begin(), m_clsids.end(), CObjectItemPredicate());
+	sort(m_clsids.begin(), m_clsids.end(), CObjectItemPredicate());
 }
 
 #endif

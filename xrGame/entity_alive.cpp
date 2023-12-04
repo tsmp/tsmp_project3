@@ -425,7 +425,7 @@ void CEntityAlive::StartFireParticles(CWound *pWound)
 {
 	if (pWound->TypeSize(ALife::eHitTypeBurn) > m_fStartBurnWoundSize)
 	{
-		if (std::find(m_ParticleWounds.begin(),
+		if (find(m_ParticleWounds.begin(),
 					  m_ParticleWounds.end(),
 					  pWound) == m_ParticleWounds.end())
 		{
@@ -526,7 +526,7 @@ void CEntityAlive::StartBloodDrops(CWound *pWound)
 {
 	if (pWound->BloodSize() > m_fStartBloodWoundSize)
 	{
-		if (std::find(m_BloodWounds.begin(), m_BloodWounds.end(),
+		if (find(m_BloodWounds.begin(), m_BloodWounds.end(),
 					  pWound) == m_BloodWounds.end())
 		{
 			m_BloodWounds.push_back(pWound);

@@ -34,7 +34,7 @@ ui_shader* g_MPCharIconsShader = nullptr;
 ui_shader* g_tmpWMShader = nullptr;
 static CUIStatic *GetUIStatic();
 
-typedef std::pair<CHARACTER_RANK_VALUE, shared_str> CharInfoStringID;
+typedef pair<CHARACTER_RANK_VALUE, shared_str> CharInfoStringID;
 DEF_MAP(CharInfoStrings, CHARACTER_RANK_VALUE, shared_str);
 
 CharInfoStrings *charInfoReputationStrings = nullptr;
@@ -105,7 +105,7 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer &item_list, PIItem _ite
 			ruck_room[i * width + j] = false;
 
 	item_list.push_back(_item);
-	std::sort(item_list.begin(), item_list.end(), GreaterRoomInRuck);
+	sort(item_list.begin(), item_list.end(), GreaterRoomInRuck);
 
 	found_place = true;
 
@@ -156,7 +156,7 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer &item_list, PIItem _ite
 	}
 
 	// remove
-	item_list.erase(std::remove(item_list.begin(), item_list.end(), _item), item_list.end());
+	item_list.erase(remove(item_list.begin(), item_list.end(), _item), item_list.end());
 
 	//для какого-то элемента места не нашлось
 	if (!found_place)

@@ -142,7 +142,7 @@ void CALifeGraphRegistry::detach(CSE_Abstract &object, CSE_ALifeInventoryItem *i
 	else
 	{
 #ifdef DEBUG
-		bool value = std::find(object.children.begin(), object.children.end(), item->base()->ID) != object.children.end();
+		bool value = find(object.children.begin(), object.children.end(), item->base()->ID) != object.children.end();
 		if (!value)
 		{
 			Msg("! ERROR: can't detach independant object. entity[%s:%d], parent[%s:%d], section[%s]",

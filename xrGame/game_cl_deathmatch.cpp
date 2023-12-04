@@ -371,7 +371,7 @@ int game_cl_Deathmatch::GetPlayersPlace(game_PlayerState *ps)
 	for (const auto &it: playersMap)
 		Players.push_back(it.second);
 
-	std::sort(Players.begin(), Players.end(), DM_Compare_Players);
+	sort(Players.begin(), Players.end(), DM_Compare_Players);
 
 	int Place = 1;
 

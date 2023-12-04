@@ -50,7 +50,7 @@ void CEnvAmbient::load(const shared_str &sect)
 		sound_period.set(iFloor(t.x * 1000.f), iFloor(t.y * 1000.f));
 		sound_dist = pSettings->r_fvector2(sect, "sound_dist");
 		if (sound_dist[0] > sound_dist[1])
-			std::swap(sound_dist[0], sound_dist[1]);
+			swap(sound_dist[0], sound_dist[1]);
 		LPCSTR snds = pSettings->r_string(sect, "sounds");
 		u32 cnt = _GetItemCount(snds);
 		if (cnt)
@@ -336,7 +336,7 @@ void CEnvironment::load()
 		for (auto &_I : WeatherCycles)
 		{
 			R_ASSERT3(_I.second.size() > 1, "Environment in weather must >=2", *_I.first);
-			std::sort(_I.second.begin(), _I.second.end(), sort_env_etl_pred);
+			sort(_I.second.begin(), _I.second.end(), sort_env_etl_pred);
 		}
 
 		R_ASSERT2(!WeatherCycles.empty(), "Empty weathers.");
@@ -381,7 +381,7 @@ void CEnvironment::load()
 		for (; _I != _E; _I++)
 		{
 			R_ASSERT3(_I->second.size() > 1, "Environment in weather must >=2", *_I->first);
-			std::sort(_I->second.begin(), _I->second.end(), sort_env_etl_pred);
+			sort(_I->second.begin(), _I->second.end(), sort_env_etl_pred);
 		}
 	}
 }

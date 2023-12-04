@@ -68,7 +68,7 @@ const u32 CItemMgr::GetItemIdx(const shared_str &sect_name) const
 		return u32(-1);
 	}
 
-	return u32(std::distance(m_items.begin(), it));
+	return u32(distance(m_items.begin(), it));
 }
 
 void CItemMgr::Dump() const

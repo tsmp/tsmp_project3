@@ -43,7 +43,7 @@ struct CComparer
 	}
 
 	template <typename T1, typename T2>
-	IC static bool compare(const std::pair<T1, T2> &_1, const std::pair<T1, T2> &_2, const P &p)
+	IC static bool compare(const pair<T1, T2> &_1, const pair<T1, T2> &_2, const P &p)
 	{
 		return (
 			compare(_1.first, _2.first, p) &&
@@ -204,11 +204,11 @@ namespace object_comparer
 		return (compare(p0, p1, object_comparer::detail::comparer<b>())); \
 	}
 
-declare_comparer(equal, std::equal_to);
-declare_comparer(greater_equal, std::greater_equal);
-declare_comparer(greater, std::greater);
-declare_comparer(less_equal, std::less_equal);
-declare_comparer(less, std::less);
-declare_comparer(not_equal, std::not_equal_to);
-declare_comparer(logical_and, std::logical_and);
-declare_comparer(logical_or, std::logical_or);
+//declare_comparer(equal, std::equal_to);
+//declare_comparer(greater_equal, greater_equal);
+//declare_comparer(greater, greater);
+//declare_comparer(less_equal, less_equal);
+//declare_comparer(less, less);
+//declare_comparer(not_equal, std::not_equal_to);
+//declare_comparer(logical_and, std::logical_and);
+//declare_comparer(logical_or, std::logical_or);

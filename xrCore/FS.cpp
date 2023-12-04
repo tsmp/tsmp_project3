@@ -16,14 +16,14 @@ extern void _compressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz
 #ifdef DEBUG
 XRCORE_API u32 g_file_mapped_memory = 0;
 u32 g_file_mapped_count = 0;
-typedef std::map<u32, std::pair<u32, shared_str>> FILE_MAPPINGS;
+typedef map<u32, pair<u32, shared_str>> FILE_MAPPINGS;
 FILE_MAPPINGS g_file_mappings;
 
 void register_file_mapping(void *address, const u32 &size, LPCSTR file_name)
 {
 	FILE_MAPPINGS::const_iterator I = g_file_mappings.find(*(u32 *)&address);
 	VERIFY(I == g_file_mappings.end());
-	g_file_mappings.insert(std::make_pair(*(u32 *)&address, std::make_pair(size, shared_str(file_name))));
+	g_file_mappings.insert(mk_pair(*(u32 *)&address, mk_pair(size, shared_str(file_name))));
 
 	g_file_mapped_memory += size;
 	++g_file_mapped_count;

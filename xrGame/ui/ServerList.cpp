@@ -616,22 +616,22 @@ void CServerList::RefreshList_internal()
 		m_tmp_srv_lst[i] = i;
 
 	if (0 == xr_strcmp(m_sort_func, "server_name"))
-		std::sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_ServerName);
+		sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_ServerName);
 
 	else if (0 == xr_strcmp(m_sort_func, "map"))
-		std::sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_Map);
+		sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_Map);
 
 	else if (0 == xr_strcmp(m_sort_func, "game_type"))
-		std::sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_GameType);
+		sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_GameType);
 
 	else if (0 == xr_strcmp(m_sort_func, "player"))
-		std::sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_Players);
+		sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_Players);
 
 	else if (0 == xr_strcmp(m_sort_func, "ping"))
-		std::sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_Ping);
+		sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_Ping);
 
 	else if (0 == xr_strcmp(m_sort_func, "version"))
-		std::sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_Version);
+		sort(m_tmp_srv_lst.begin(), m_tmp_srv_lst.end(), sort_by_Version);
 
 	for (u32 i = 0; i < NumServersFound; i++)
 	{
@@ -828,7 +828,7 @@ CUIListItemServer *CServerList::GetFreeItem()
 	SrvItems_It it_e = m_items_cache.end();
 
 	if (m_last_retreived_index != u32(-1))
-		std::advance(it, m_last_retreived_index);
+		advance(it, m_last_retreived_index);
 
 	for (; it != it_e; ++it)
 	{

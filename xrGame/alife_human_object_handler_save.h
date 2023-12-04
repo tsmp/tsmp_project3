@@ -180,7 +180,7 @@ u16	CSE_ALifeHumanAbstract::get_available_ammo_count(const CSE_ALifeItemWeapon *
 	ITEM_P_IT					E = tpItemVector.end();
 	for ( ; I != E; ++I) {
 		CSE_ALifeItemAmmo		*l_tpALifeItemAmmo = smart_cast<CSE_ALifeItemAmmo*>(*I);
-		if (l_tpALifeItemAmmo && strstr(tpALifeItemWeapon->m_caAmmoSections,*l_tpALifeItemAmmo->s_name) && (l_tpALifeItemAmmo->m_dwCost <= m_dwTotalMoney) && (!tpObjectVector || (std::find(tpObjectVector->begin(),tpObjectVector->end(),l_tpALifeItemAmmo->ID) == tpObjectVector->end()))) {
+		if (l_tpALifeItemAmmo && strstr(tpALifeItemWeapon->m_caAmmoSections,*l_tpALifeItemAmmo->s_name) && (l_tpALifeItemAmmo->m_dwCost <= m_dwTotalMoney) && (!tpObjectVector || (find(tpObjectVector->begin(),tpObjectVector->end(),l_tpALifeItemAmmo->ID) == tpObjectVector->end()))) {
 			l_dwResult			+= l_tpALifeItemAmmo->a_elapsed;
 			m_dwTotalMoney		-= l_tpALifeItemAmmo->m_dwCost;
 		}
@@ -197,7 +197,7 @@ void CSE_ALifeHumanAbstract::attach_available_ammo(CSE_ALifeItemWeapon *tpALifeI
 	ITEM_P_IT					E = tpItemVector.end();
 	for ( ; I != E; ++I) {
 		CSE_ALifeItemAmmo		*l_tpALifeItemAmmo = smart_cast<CSE_ALifeItemAmmo*>(*I);
-		if (l_tpALifeItemAmmo && strstr(tpALifeItemWeapon->m_caAmmoSections,*l_tpALifeItemAmmo->s_name) && (l_tpALifeItemAmmo->m_dwCost <= m_dwTotalMoney) && bfCanGetItem(l_tpALifeItemAmmo) && (!tpObjectVector || (std::find(tpObjectVector->begin(),tpObjectVector->end(),l_tpALifeItemAmmo->ID) == tpObjectVector->end()))) {
+		if (l_tpALifeItemAmmo && strstr(tpALifeItemWeapon->m_caAmmoSections,*l_tpALifeItemAmmo->s_name) && (l_tpALifeItemAmmo->m_dwCost <= m_dwTotalMoney) && bfCanGetItem(l_tpALifeItemAmmo) && (!tpObjectVector || (find(tpObjectVector->begin(),tpObjectVector->end(),l_tpALifeItemAmmo->ID) == tpObjectVector->end()))) {
 			if (!tpObjectVector)
 				alife().graph().attach(*this,l_tpALifeItemAmmo,l_tpALifeItemAmmo->m_tGraphID);
 			else {
@@ -361,7 +361,7 @@ int CSE_ALifeHumanAbstract::ifChooseEquipment(OBJECT_VECTOR *tpObjectVector)
 //		// evaluating item
 //		float					l_fCurrentValue = ai().ef_storage().m_pfEquipmentType->ffGetValue();
 //		// choosing the best item
-//		if ((l_fCurrentValue > l_fItemBestValue) && bfCanGetItem(*I) && (!tpObjectVector || (std::find(tpObjectVector->begin(),tpObjectVector->end(),(*I)->base()->ID) == tpObjectVector->end()))) {
+//		if ((l_fCurrentValue > l_fItemBestValue) && bfCanGetItem(*I) && (!tpObjectVector || (find(tpObjectVector->begin(),tpObjectVector->end(),(*I)->base()->ID) == tpObjectVector->end()))) {
 //			l_fItemBestValue	= l_fCurrentValue;
 //			l_tpALifeItemBest	= *I;
 //			X					= I;
@@ -424,7 +424,7 @@ int  CSE_ALifeHumanAbstract::ifChooseWeapon(EWeaponPriorityType tWeaponPriorityT
 			default : NODEFAULT;
 		}
 		// choosing the best item
-		if ((l_fCurrentValue > l_fItemBestValue) && bfCanGetItem(*I) && (!tpObjectVector || (std::find(tpObjectVector->begin(),tpObjectVector->end(),(*I)->base()->ID) == tpObjectVector->end()))) {
+		if ((l_fCurrentValue > l_fItemBestValue) && bfCanGetItem(*I) && (!tpObjectVector || (find(tpObjectVector->begin(),tpObjectVector->end(),(*I)->base()->ID) == tpObjectVector->end()))) {
 			l_fItemBestValue = l_fCurrentValue;
 			l_tpALifeItemBest = *I;
 		}
@@ -464,7 +464,7 @@ int  CSE_ALifeHumanAbstract::ifChooseFood(OBJECT_VECTOR *tpObjectVector)
 			continue;
 		if (m_dwTotalMoney < (*I)->m_dwCost)
 			continue;
-		if (bfCanGetItem(*I) && (!tpObjectVector || (std::find(tpObjectVector->begin(),tpObjectVector->end(),(*I)->base()->ID) == tpObjectVector->end()))) {
+		if (bfCanGetItem(*I) && (!tpObjectVector || (find(tpObjectVector->begin(),tpObjectVector->end(),(*I)->base()->ID) == tpObjectVector->end()))) {
 			m_dwTotalMoney		-= (*I)->m_dwCost;
 			if (!tpObjectVector)
 				alife().graph().attach	(*this,*I,smart_cast<CSE_ALifeDynamicObject*>(*I)->m_tGraphID);
@@ -497,7 +497,7 @@ int  CSE_ALifeHumanAbstract::ifChooseMedikit(OBJECT_VECTOR *tpObjectVector)
 			continue;
 		if (m_dwTotalMoney < (*I)->m_dwCost)
 			continue;
-		if (bfCanGetItem(*I) && (!tpObjectVector || (std::find(tpObjectVector->begin(),tpObjectVector->end(),(*I)->base()->ID) == tpObjectVector->end()))) {
+		if (bfCanGetItem(*I) && (!tpObjectVector || (find(tpObjectVector->begin(),tpObjectVector->end(),(*I)->base()->ID) == tpObjectVector->end()))) {
 			m_dwTotalMoney	-= (*I)->m_dwCost;
 			if (!tpObjectVector)
 				alife().graph().attach	(*this,*I,smart_cast<CSE_ALifeDynamicObject*>(*I)->m_tGraphID);
@@ -538,7 +538,7 @@ int  CSE_ALifeHumanAbstract::ifChooseDetector(OBJECT_VECTOR *tpObjectVector)
 		ai().ef_storage().alife().member_item() = l_tpALifeItem;
 		float					l_fCurrentValue = ai().ef_storage().m_pfEquipmentType->ffGetValue();
 		// choosing the best item
-		if ((l_fCurrentValue > l_fItemBestValue) && bfCanGetItem(l_tpALifeItem) && (!tpObjectVector || (std::find(tpObjectVector->begin(),tpObjectVector->end(),l_tpALifeItem->ID) == tpObjectVector->end()))) {
+		if ((l_fCurrentValue > l_fItemBestValue) && bfCanGetItem(l_tpALifeItem) && (!tpObjectVector || (find(tpObjectVector->begin(),tpObjectVector->end(),l_tpALifeItem->ID) == tpObjectVector->end()))) {
 			l_fItemBestValue = l_fCurrentValue;
 			l_tpALifeItemBest = l_tpALifeItem;
 			X = I;

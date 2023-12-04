@@ -530,7 +530,7 @@ void CObjectHandlerPlanner::remove_operators(CObject *object)
 	//#pragma todo("Dima to Dima : safe, but not optimal!")
 	for (;;)
 	{
-		OPERATOR_VECTOR::iterator I = std::lower_bound(m_operators.begin(), m_operators.end(), uid(object->ID(), 0));
+		OPERATOR_VECTOR::iterator I = lower_bound(m_operators.begin(), m_operators.end(), uid(object->ID(), 0));
 		if (!object_action((*I).m_operator_id, object))
 			break;
 		remove_operator((*I).m_operator_id);

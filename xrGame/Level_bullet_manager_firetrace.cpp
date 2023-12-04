@@ -326,7 +326,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event &E)
 
 	Fvector original_dir = E.bullet.dir;
 	float power, impulse;
-	std::pair<float, float> hit_result = E.result; //ObjectHit(&E.bullet, E.end_point, E.R, E.tgt_material, hit_normal);
+	pair<float, float> hit_result = E.result; //ObjectHit(&E.bullet, E.end_point, E.R, E.tgt_material, hit_normal);
 	power = hit_result.first;
 	impulse = hit_result.second;
 
@@ -416,7 +416,7 @@ FvectorVec g_hit[3];
 
 extern void random_dir(Fvector &tgt_dir, const Fvector &src_dir, float dispersion);
 
-std::pair<float, float> CBulletManager::ObjectHit(SBullet *bullet, const Fvector &end_point,
+pair<float, float> CBulletManager::ObjectHit(SBullet *bullet, const Fvector &end_point,
 												  collide::rq_result &R, u16 target_material,
 												  Fvector &hit_normal)
 {
@@ -474,7 +474,7 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet *bullet, const Fvector
 #ifdef DEBUG
 		bullet_state = 2;
 #endif
-		return std::make_pair(power, impulse);
+		return mk_pair(power, impulse);
 	}
 
 	//рикошет
@@ -550,5 +550,5 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet *bullet, const Fvector
 		g_hit[bullet_state].push_back(dbg_bullet_pos);
 #endif
 
-	return std::make_pair(power, impulse);
+	return mk_pair(power, impulse);
 }

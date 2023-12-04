@@ -230,7 +230,7 @@ public:
 			SObjID.push_back(pEntity->ID);
 		}
 
-		std::sort(SObjID.begin(), SObjID.end());
+		sort(SObjID.begin(), SObjID.end());
 
 		u32 CLObjNum = Level().Objects.o_count();
 		xr_vector<u16> CObjID;
@@ -238,7 +238,7 @@ public:
 		for (u32 i = 0; i < CLObjNum; i++)		
 			CObjID.push_back(Level().Objects.o_get_by_iterator(i)->ID());
 		
-		std::sort(CObjID.begin(), CObjID.end());
+		sort(CObjID.begin(), CObjID.end());
 
 		Msg("Client Objects : %d", CLObjNum);
 		Msg("Server Objects : %d", SVObjNum);
@@ -1808,7 +1808,7 @@ public:
 	virtual void Info(TInfo& I) { strcpy(I, "Unmute chat for player by ClientID"); }
 };
 
-std::string server_name = "";
+xr_string server_name = "";
 class CCC_SV_SERVERNAME : public IConsole_Command
 {
 	public:

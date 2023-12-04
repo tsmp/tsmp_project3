@@ -84,7 +84,7 @@ bool CAbstractObjectManager::add(T *object)
 	if (!is_useful(object))
 		return (false);
 
-	OBJECTS::const_iterator I = std::find(m_objects.begin(), m_objects.end(), object);
+	OBJECTS::const_iterator I = find(m_objects.begin(), m_objects.end(), object);
 	if (m_objects.end() == I)
 	{
 		m_objects.push_back(object);

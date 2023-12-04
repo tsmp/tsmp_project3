@@ -77,7 +77,7 @@ void CBlackGraviArtefact::net_Relcase(CObject *O)
 {
 	inherited::net_Relcase(O);
 	//for vector
-	GAME_OBJECT_LIST_it I = std::remove_if(m_GameObjectList.begin(), m_GameObjectList.end(), SRP(smart_cast<CPhysicsShellHolder *>(O)));
+	GAME_OBJECT_LIST_it I = remove_if(m_GameObjectList.begin(), m_GameObjectList.end(), SRP(smart_cast<CPhysicsShellHolder *>(O)));
 	m_GameObjectList.erase(I, m_GameObjectList.end());
 	//for list
 	//m_GameObjectList.remove_if(SRP(smart_cast<CPhysicsShellHolder*>(O)));
@@ -152,7 +152,7 @@ void CBlackGraviArtefact::feel_touch_delete(CObject *O)
 
 	if (pGameObject && !pArtefact)
 	{
-		m_GameObjectList.erase(std::find(m_GameObjectList.begin(),
+		m_GameObjectList.erase(find(m_GameObjectList.begin(),
 										 m_GameObjectList.end(),
 										 pGameObject));
 	}

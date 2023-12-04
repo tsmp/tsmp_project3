@@ -317,7 +317,7 @@ void xrGameSpyServer::Assign_ServerType(string512 &res)
 	Msg(res);
 }
 
-extern std::string server_name;
+extern xr_string server_name;
 
 void xrGameSpyServer::GetServerInfo(CServerInfo *si)
 {

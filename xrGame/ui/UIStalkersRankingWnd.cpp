@@ -98,13 +98,13 @@ extern CSE_ALifeTraderAbstract *ch_info_get_from_id(u16 id);
 
 int get_actor_ranking()
 {
-	std::sort(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), GreaterRankPred);
+	sort(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), GreaterRankPred);
 	CSE_ALifeTraderAbstract *pActorAbstract = ch_info_get_from_id(Actor()->ID());
 	SStatData d;
 	d.id = Actor()->ID();
 	d.trader = pActorAbstract;
 
-	TOP_LIST::iterator it = std::find(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), d);
+	TOP_LIST::iterator it = find(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), d);
 	if (it != g_all_statistic_humans.end())
 		return (int)std::distance(g_all_statistic_humans.begin(), it);
 	else
@@ -215,7 +215,7 @@ void add_human_to_top_list(u16 id)
 	d.id = id;
 	d.trader = t;
 
-	TOP_LIST::iterator it = std::find(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), d);
+	TOP_LIST::iterator it = find(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), d);
 
 	if (it != g_all_statistic_humans.end())
 		g_all_statistic_humans.erase(it);
@@ -234,7 +234,7 @@ void remove_human_from_top_list(u16 id)
 	SStatData d;
 	d.id = id;
 	d.trader = t;
-	TOP_LIST::iterator it = std::find(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), d);
+	TOP_LIST::iterator it = find(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), d);
 	if (it != g_all_statistic_humans.end())
 		g_all_statistic_humans.erase(it);
 }

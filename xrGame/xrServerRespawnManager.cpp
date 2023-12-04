@@ -5,7 +5,7 @@
 #include "xrServerRespawnManager.h"
 
 UINT_PTR RespawnTimer = 0;
-std::vector <ObjectRespawnClass> xr_add_object;
+xr_vector <ObjectRespawnClass> xr_add_object;
 
 void ObjectRespawnClass::AddObject(shared_str &pSection, shared_str& pCustomData, u16 pID, int pTimeRespawn, Fvector& XYZ)
 {

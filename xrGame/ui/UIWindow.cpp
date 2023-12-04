@@ -593,7 +593,7 @@ CUIWindow *CUIWindow::GetChildMouseHandler()
 bool CUIWindow::BringToTop(CUIWindow *pChild)
 {
 	//найти окно в списке
-	/*	WINDOW_LIST_it it = std::find(m_ChildWndList.begin(), 
+	/*	WINDOW_LIST_it it = find(m_ChildWndList.begin(), 
 										m_ChildWndList.end(), 
 										pChild);
 */
@@ -643,7 +643,7 @@ CUIWindow *CUIWindow::GetMessageTarget()
 
 bool CUIWindow::IsChild(CUIWindow *pPossibleChild) const
 {
-	WINDOW_LIST::const_iterator it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pPossibleChild);
+	WINDOW_LIST::const_iterator it = find(m_ChildWndList.begin(), m_ChildWndList.end(), pPossibleChild);
 	return it != m_ChildWndList.end();
 }
 

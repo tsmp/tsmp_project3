@@ -183,7 +183,7 @@ void CALifeMonsterPatrolPathManager::navigate()
 
 			VERIFY(vertex.edges().size() == 1);
 			VERIFY(vertex.edges().front().vertex_id() == m_previous_vertex_index);
-			std::swap(m_current_vertex_index, m_previous_vertex_index);
+			swap(m_current_vertex_index, m_previous_vertex_index);
 			break;
 		};
 		default:

@@ -16,7 +16,7 @@ class IKinematics
 {
 public:
 	typedef void (*UpdateCallback)(IKinematics* P);
-	typedef xr_vector<std::pair<shared_str, u16>> accel;
+	typedef xr_vector<pair<shared_str, u16>> accel;
 	struct pick_result
 	{
 		Fvector normal;

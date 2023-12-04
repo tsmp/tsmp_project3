@@ -107,7 +107,7 @@ void CUIMotionIcon::Update()
 		m_bchanged = false;
 		if (m_npc_visibility.size())
 		{
-			std::sort(m_npc_visibility.begin(), m_npc_visibility.end());
+			sort(m_npc_visibility.begin(), m_npc_visibility.end());
 			SetLuminosity(m_npc_visibility.back().value);
 		}
 		else
@@ -142,7 +142,7 @@ void CUIMotionIcon::SetActorVisibility(u16 who_id, float value)
 	value *= v;
 	value += m_luminosity_progress.GetRange_min();
 
-	xr_vector<_npc_visibility>::iterator it = std::find(m_npc_visibility.begin(),
+	xr_vector<_npc_visibility>::iterator it = find(m_npc_visibility.begin(),
 														m_npc_visibility.end(),
 														who_id);
 

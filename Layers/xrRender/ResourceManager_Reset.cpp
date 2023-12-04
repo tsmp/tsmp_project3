@@ -56,7 +56,7 @@ void CResourceManager::reset_end()
 		xr_vector<CRT *> rt;
 		for (map_RTIt rt_it = m_rtargets.begin(); rt_it != m_rtargets.end(); rt_it++)
 			rt.push_back(rt_it->second);
-		std::sort(rt.begin(), rt.end(), cmp_rt);
+		sort(rt.begin(), rt.end(), cmp_rt);
 		for (u32 _it = 0; _it < rt.size(); _it++)
 			rt[_it]->reset_end();
 	}
@@ -66,7 +66,7 @@ void CResourceManager::reset_end()
 		xr_vector<CRTC *> rt;
 		for (map_RTCIt rt_it = m_rtargets_c.begin(); rt_it != m_rtargets_c.end(); rt_it++)
 			rt.push_back(rt_it->second);
-		std::sort(rt.begin(), rt.end(), cmp_rtc);
+		sort(rt.begin(), rt.end(), cmp_rtc);
 		for (u32 _it = 0; _it < rt.size(); _it++)
 			rt[_it]->reset_end();
 	}

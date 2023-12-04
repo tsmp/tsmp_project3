@@ -73,7 +73,7 @@ void CAgentMemoryManager::update_memory_masks(const squad_mask_type &mask)
 void CAgentMemoryManager::object_information(const CObject *object, u32 &level_time, Fvector &position)
 {
 	{
-		VISIBLES::const_iterator I = std::find(visibles().begin(), visibles().end(), object_id(object));
+		VISIBLES::const_iterator I = find(visibles().begin(), visibles().end(), object_id(object));
 		if (visibles().end() != I)
 		{
 			level_time = (*I).m_last_level_time;
@@ -82,7 +82,7 @@ void CAgentMemoryManager::object_information(const CObject *object, u32 &level_t
 	}
 
 	{
-		SOUNDS::const_iterator I = std::find(sounds().begin(), sounds().end(), object_id(object));
+		SOUNDS::const_iterator I = find(sounds().begin(), sounds().end(), object_id(object));
 		if ((sounds().end() != I) && (level_time < (*I).m_last_level_time))
 		{
 			level_time = (*I).m_last_level_time;
@@ -91,7 +91,7 @@ void CAgentMemoryManager::object_information(const CObject *object, u32 &level_t
 	}
 
 	{
-		HITS::const_iterator I = std::find(hits().begin(), hits().end(), object_id(object));
+		HITS::const_iterator I = find(hits().begin(), hits().end(), object_id(object));
 		if ((hits().end() != I) && (level_time < (*I).m_last_level_time))
 		{
 			level_time = (*I).m_last_level_time;

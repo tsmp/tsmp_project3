@@ -24,7 +24,7 @@ private:
 		ISheduled *Object;
 		u32 dwPadding; // for align-issues
 
-		IC bool operator<(Item &I)
+		IC bool operator<(const Item &I)
 		{
 			return dwTimeForExecute > I.dwTimeForExecute;
 		}
@@ -64,12 +64,12 @@ private:
 	IC void Push(Item& I)
 	{
 		Items.push_back(I);
-		std::push_heap(Items.begin(), Items.end());
+		push_heap(Items.begin(), Items.end());
 	}
 
 	IC void Pop()
 	{
-		std::pop_heap(Items.begin(), Items.end());
+		pop_heap(Items.begin(), Items.end());
 		Items.pop_back();
 	}
 

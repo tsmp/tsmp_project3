@@ -733,13 +733,13 @@ void CLevel::RemoveObject_From_4CrPr(CGameObject *pObj)
 	if (!pObj)
 		return;
 
-	OBJECTS_LIST_it OIt = std::find(pObjects4CrPr.begin(), pObjects4CrPr.end(), pObj);
+	OBJECTS_LIST_it OIt = find(pObjects4CrPr.begin(), pObjects4CrPr.end(), pObj);
 	if (OIt != pObjects4CrPr.end())
 	{
 		pObjects4CrPr.erase(OIt);
 	}
 
-	OBJECTS_LIST_it AIt = std::find(pActors4CrPr.begin(), pActors4CrPr.end(), pObj);
+	OBJECTS_LIST_it AIt = find(pActors4CrPr.begin(), pActors4CrPr.end(), pObj);
 	if (AIt != pActors4CrPr.end())
 	{
 		pActors4CrPr.erase(AIt);

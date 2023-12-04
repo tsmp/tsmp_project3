@@ -88,11 +88,10 @@ XRCORE_API void _decorate(LPSTR dest, LPCSTR src)
 	}
 	*dest = 0;
 }
-//------------------------------------------------------------------------------
 
 BOOL CInifile::Sect::line_exist(LPCSTR L, LPCSTR *val)
 {
-	SectCIt A = std::lower_bound(Data.begin(), Data.end(), L, item_pred);
+	SectCIt A = lower_bound(Data.begin(), Data.end(), L, item_pred);
 	if (A != Data.end() && xr_strcmp(*A->first, L) == 0)
 	{
 		if (val)
@@ -101,7 +100,6 @@ BOOL CInifile::Sect::line_exist(LPCSTR L, LPCSTR *val)
 	}
 	return FALSE;
 }
-//------------------------------------------------------------------------------
 
 CInifile::CInifile(IReader *F, LPCSTR path)
 {
@@ -148,7 +146,7 @@ CInifile::~CInifile()
 
 static void insert_item(CInifile::Sect *tgt, const CInifile::Item &I)
 {
-	CInifile::SectIt_ sect_it = std::lower_bound(tgt->Data.begin(), tgt->Data.end(), *I.first, item_pred);
+	CInifile::SectIt_ sect_it = lower_bound(tgt->Data.begin(), tgt->Data.end(), *I.first, item_pred);
 	if (sect_it != tgt->Data.end() && sect_it->first.equal(I.first))
 	{
 		sect_it->second = I.second;
@@ -213,7 +211,7 @@ void CInifile::Load(IReader *F, LPCSTR path)
 			// insert previous filled section
 			if (Current)
 			{
-				RootIt I = std::lower_bound(DATA.begin(), DATA.end(), *Current->Name, sect_pred);
+				RootIt I = lower_bound(DATA.begin(), DATA.end(), *Current->Name, sect_pred);
 				if ((I != DATA.end()) && ((*I)->Name == Current->Name))
 					Debug.fatal(DEBUG_INFO, "Duplicate section '%s' found.", *Current->Name);
 				DATA.insert(I, Current);
@@ -285,7 +283,7 @@ void CInifile::Load(IReader *F, LPCSTR path)
 	}
 	if (Current)
 	{
-		RootIt I = std::lower_bound(DATA.begin(), DATA.end(), *Current->Name, sect_pred);
+		RootIt I = lower_bound(DATA.begin(), DATA.end(), *Current->Name, sect_pred);
 		if ((I != DATA.end()) && ((*I)->Name == Current->Name))
 			Debug.fatal(DEBUG_INFO, "Duplicate section '%s' found.", *Current->Name);
 		DATA.insert(I, Current);
@@ -414,7 +412,7 @@ bool CInifile::save_as(LPCSTR new_fname)
 
 BOOL CInifile::section_exist(LPCSTR S)
 {
-	RootIt I = std::lower_bound(DATA.begin(), DATA.end(), S, sect_pred);
+	RootIt I = lower_bound(DATA.begin(), DATA.end(), S, sect_pred);
 	return (I != DATA.end() && xr_strcmp(*(*I)->Name, S) == 0);
 }
 
@@ -423,7 +421,7 @@ BOOL CInifile::line_exist(LPCSTR S, LPCSTR L)
 	if (!section_exist(S))
 		return FALSE;
 	Sect &I = r_section(S);
-	SectCIt A = std::lower_bound(I.Data.begin(), I.Data.end(), L, item_pred);
+	SectCIt A = lower_bound(I.Data.begin(), I.Data.end(), L, item_pred);
 	return (A != I.Data.end() && xr_strcmp(*A->first, L) == 0);
 }
 
@@ -452,7 +450,7 @@ CInifile::Sect &CInifile::r_section(LPCSTR S)
 	char section[256];
 	strcpy_s(section, sizeof(section), S);
 	strlwr(section);
-	RootIt I = std::lower_bound(DATA.begin(), DATA.end(), section, sect_pred);
+	RootIt I = lower_bound(DATA.begin(), DATA.end(), section, sect_pred);
 	if (!(I != DATA.end() && xr_strcmp(*(*I)->Name, section) == 0))
 		Debug.fatal(DEBUG_INFO, "Can't open section '%s'", S);
 	return **I;
@@ -461,7 +459,7 @@ CInifile::Sect &CInifile::r_section(LPCSTR S)
 LPCSTR CInifile::r_string(LPCSTR S, LPCSTR L)
 {
 	Sect &I = r_section(S);
-	SectCIt A = std::lower_bound(I.Data.begin(), I.Data.end(), L, item_pred);
+	SectCIt A = lower_bound(I.Data.begin(), I.Data.end(), L, item_pred);
 	if (A != I.Data.end() && xr_strcmp(*A->first, L) == 0)
 		return *A->second;
 	else
@@ -636,7 +634,7 @@ void CInifile::w_string(LPCSTR S, LPCSTR L, LPCSTR V, LPCSTR comment)
 		// create _new_ section
 		Sect *NEW = xr_new<Sect>();
 		NEW->Name = sect;
-		RootIt I = std::lower_bound(DATA.begin(), DATA.end(), sect, sect_pred);
+		RootIt I = lower_bound(DATA.begin(), DATA.end(), sect, sect_pred);
 		DATA.insert(I, NEW);
 	}
 
@@ -654,7 +652,7 @@ void CInifile::w_string(LPCSTR S, LPCSTR L, LPCSTR V, LPCSTR comment)
 #ifdef DEBUG
 	I.comment = (comment ? comment : 0);
 #endif
-	SectIt_ it = std::lower_bound(data.Data.begin(), data.Data.end(), *I.first, item_pred);
+	SectIt_ it = lower_bound(data.Data.begin(), data.Data.end(), *I.first, item_pred);
 
 	if (it != data.Data.end())
 	{
@@ -782,7 +780,7 @@ void CInifile::remove_line(LPCSTR S, LPCSTR L)
 	if (line_exist(S, L))
 	{
 		Sect &data = r_section(S);
-		SectIt_ A = std::lower_bound(data.Data.begin(), data.Data.end(), L, item_pred);
+		SectIt_ A = lower_bound(data.Data.begin(), data.Data.end(), L, item_pred);
 		R_ASSERT(A != data.Data.end() && xr_strcmp(*A->first, L) == 0);
 		data.Data.erase(A);
 	}

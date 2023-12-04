@@ -20,7 +20,7 @@ clientdata_proxy::~clientdata_proxy()
 			m_ft_server->stop_receive_file(m_chearer_id);
 
 		if (m_ft_server->is_transfer_active(m_admin_id, m_chearer_id))
-			m_ft_server->stop_transfer_file(std::make_pair(m_admin_id, m_chearer_id));
+			m_ft_server->stop_transfer_file(mk_pair(m_admin_id, m_chearer_id));
 	}
 }
 

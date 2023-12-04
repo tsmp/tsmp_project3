@@ -226,11 +226,11 @@ bool CPolterTele::tele_raise_objects()
 	tele_find_objects(tele_objects, pos);
 
 	// сортировать и оставить только необходимое количество объектов
-	std::sort(tele_objects.begin(), tele_objects.end(), best_object_predicate2(m_object->Position(), Actor()->Position()));
+	sort(tele_objects.begin(), tele_objects.end(), best_object_predicate2(m_object->Position(), Actor()->Position()));
 
 	// оставить уникальные объекты
 	tele_objects.erase(
-		std::unique(
+		unique(
 			tele_objects.begin(),
 			tele_objects.end()),
 		tele_objects.end());

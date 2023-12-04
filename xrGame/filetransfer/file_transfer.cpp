@@ -144,7 +144,7 @@ namespace file_transfer
 		break;
 		case receive_rejected:
 		{
-			auto temp_iter = m_transfers.find(std::make_pair(sender, ClientID(packet->r_u32())));
+			auto temp_iter = m_transfers.find(mk_pair(sender, ClientID(packet->r_u32())));
 
 			if (temp_iter != m_transfers.end())
 			{
@@ -198,8 +198,8 @@ namespace file_transfer
 		}
 
 		filetransfer_node *ftnode = xr_new<filetransfer_node>(file_name, data_max_chunk_size, tstate_callback);
-		dst_src_pair_t tkey = std::make_pair(to_client, from_client);
-		m_transfers.insert(std::make_pair(tkey, ftnode));
+		dst_src_pair_t tkey = mk_pair(to_client, from_client);
+		m_transfers.insert(mk_pair(tkey, ftnode));
 
 		if (!ftnode->opened())
 		{
@@ -224,7 +224,7 @@ namespace file_transfer
 		filetransfer_node *ftnode = xr_new<filetransfer_node>(&mem_writer, mem_writer_max_size, data_max_chunk_size,
 			tstate_callback, user_param);
 
-		m_transfers.insert(std::make_pair(std::make_pair(to_client, from_client), ftnode));
+		m_transfers.insert(mk_pair(mk_pair(to_client, from_client), ftnode));
 	}
 
 	void server_site::start_transfer_file(u8 *data_ptr,
@@ -243,7 +243,7 @@ namespace file_transfer
 		filetransfer_node* ftnode = xr_new<filetransfer_node>(data_ptr, data_size, data_max_chunk_size,
 			tstate_callback, user_param);
 
-		m_transfers.insert(std::make_pair(std::make_pair(to_client, from_client), ftnode));
+		m_transfers.insert(mk_pair(mk_pair(to_client, from_client), ftnode));
 	}
 
 	void server_site::start_transfer_file(buffer_vector<mutable_buffer_t> &vector_of_buffers,
@@ -261,7 +261,7 @@ namespace file_transfer
 		filetransfer_node* ftnode = xr_new<filetransfer_node>(&vector_of_buffers, data_max_chunk_size,
 			tstate_callback, user_param);
 
-		m_transfers.insert(std::make_pair(std::make_pair(to_client, from_client), ftnode));
+		m_transfers.insert(mk_pair(mk_pair(to_client, from_client), ftnode));
 	}
 
 	void server_site::stop_transfer_file(dst_src_pair_t const &tkey)
@@ -300,7 +300,7 @@ namespace file_transfer
 		}
 
 		filereceiver_node *frnode = xr_new<filereceiver_node>(file_name, rstate_callback);
-		m_receivers.insert(std::make_pair(from_client, frnode));
+		m_receivers.insert(mk_pair(from_client, frnode));
 
 		if (!frnode->get_writer())
 		{
@@ -325,7 +325,7 @@ namespace file_transfer
 		}
 
 		filereceiver_node *frnode = xr_new<filereceiver_node>(&mem_writer, rstate_callback);
-		m_receivers.insert(std::make_pair(from_client, frnode));
+		m_receivers.insert(mk_pair(from_client, frnode));
 		return frnode;
 	}
 
@@ -352,7 +352,7 @@ namespace file_transfer
 
 	bool server_site::is_transfer_active(ClientID const &to_client, ClientID const &from_client) const
 	{
-		return m_transfers.find(std::make_pair(to_client, from_client)) != m_transfers.end();
+		return m_transfers.find(mk_pair(to_client, from_client)) != m_transfers.end();
 	}
 
 	bool server_site::is_receiving_active(ClientID const &from_client) const
@@ -526,7 +526,7 @@ namespace file_transfer
 		}
 
 		filereceiver_node *frnode = xr_new<filereceiver_node>(file_name, rstate_callback);
-		m_receivers.insert(std::make_pair(from_client, frnode));
+		m_receivers.insert(mk_pair(from_client, frnode));
 		
 		if (!frnode->get_writer())
 		{
@@ -548,7 +548,7 @@ namespace file_transfer
 
 		mem_writer.clear();
 		filereceiver_node *frnode = xr_new<filereceiver_node>(&mem_writer, rstate_callback);
-		m_receivers.insert(std::make_pair(from_client, frnode));
+		m_receivers.insert(mk_pair(from_client, frnode));
 		return frnode;
 	}
 

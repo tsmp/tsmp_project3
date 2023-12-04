@@ -23,7 +23,7 @@ public:
 	typedef _compare_predicate_type _compare_predicate_type;
 
 public:
-	typedef std::pair<_key_type, _data_type> value_type;
+	typedef pair<_key_type, _data_type> value_type;
 
 public:
 	IC associative_vector_compare_predicate();

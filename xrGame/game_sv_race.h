@@ -7,8 +7,8 @@ class game_sv_Race : public game_sv_mp
 {
 	using inherited = game_sv_mp;
 
-	std::vector<std::vector<std::string>> m_AvailableCars;
-	std::vector<std::string> m_AvailableSkins;
+	xr_vector<xr_vector<xr_string>> m_AvailableCars;
+	xr_vector<xr_string> m_AvailableSkins;
 	CRandom m_CarRandom;
 	CRandom m_CarVisualRandom;
 	u32 m_WinnerFinishTime;

@@ -443,7 +443,7 @@ void CInput::iRelease(IInputReceiver *p)
 			if (cbStack[cnt - 1] == p)
 			{
 				xr_vector<IInputReceiver *>::iterator it = cbStack.begin();
-				std::advance(it, cnt - 1);
+				advance(it, cnt - 1);
 				cbStack.erase(it);
 				break;
 			}

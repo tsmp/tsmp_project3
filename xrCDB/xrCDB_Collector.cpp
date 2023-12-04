@@ -131,7 +131,7 @@ namespace CDB
 				(*i).vertex_id0 = (u16)(*I).verts[0];
 				(*i).vertex_id1 = (u16)(*I).verts[1];
 				if ((*i).vertex_id0 > (*i).vertex_id1)
-					std::swap((*i).vertex_id0, (*i).vertex_id1);
+					swap((*i).vertex_id0, (*i).vertex_id1);
 				++i;
 
 				(*i).face_id = face_id;
@@ -139,7 +139,7 @@ namespace CDB
 				(*i).vertex_id0 = (u16)(*I).verts[1];
 				(*i).vertex_id1 = (u16)(*I).verts[2];
 				if ((*i).vertex_id0 > (*i).vertex_id1)
-					std::swap((*i).vertex_id0, (*i).vertex_id1);
+					swap((*i).vertex_id0, (*i).vertex_id1);
 				++i;
 
 				(*i).face_id = face_id;
@@ -147,12 +147,12 @@ namespace CDB
 				(*i).vertex_id0 = (u16)(*I).verts[2];
 				(*i).vertex_id1 = (u16)(*I).verts[0];
 				if ((*i).vertex_id0 > (*i).vertex_id1)
-					std::swap((*i).vertex_id0, (*i).vertex_id1);
+					swap((*i).vertex_id0, (*i).vertex_id1);
 				++i;
 			}
 		}
 
-		std::sort(edges, edges + edge_count, sort_predicate());
+		sort(edges, edges + edge_count, sort_predicate());
 
 		dest.assign(edge_count, u32(-1));
 

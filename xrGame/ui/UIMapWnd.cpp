@@ -527,7 +527,7 @@ CUICustomMap *CUIMapWnd::GetMapByIdx(u16 idx)
 {
 	VERIFY(idx != u16(-1));
 	GameMapsPairIt it = m_GameMaps.begin();
-	std::advance(it, idx);
+	advance(it, idx);
 	return it->second;
 }
 
@@ -539,7 +539,7 @@ u16 CUIMapWnd::GetIdxByName(const shared_str &map_name)
 		Msg("~ Level Map '%s' not registered", map_name.c_str());
 		return u16(-1);
 	}
-	return (u16)std::distance(m_GameMaps.begin(), it);
+	return (u16)distance(m_GameMaps.begin(), it);
 }
 
 void CUIMapWnd::UpdateScroll()

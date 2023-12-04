@@ -53,7 +53,7 @@ void CAgentMemberManager::add(CEntity *member)
 			m_members.front()->object().g_Squad(),
 			m_members.front()->object().g_Group()));
 
-	iterator I = std::find_if(m_members.begin(), m_members.end(), CMemberPredicate(stalker));
+	iterator I = find_if(m_members.begin(), m_members.end(), CMemberPredicate(stalker));
 	VERIFY(I == m_members.end());
 	m_members.push_back(xr_new<CMemberOrder>(stalker));
 }
@@ -73,7 +73,7 @@ void CAgentMemberManager::remove(CEntity *member)
 	object().memory().update_memory_masks(m);
 	object().memory().update_memory_mask(m, m_combat_mask);
 
-	iterator I = std::find_if(m_members.begin(), m_members.end(), CMemberPredicate(stalker));
+	iterator I = find_if(m_members.begin(), m_members.end(), CMemberPredicate(stalker));
 	VERIFY(I != m_members.end());
 	xr_delete(*I);
 	m_members.erase(I);
@@ -231,14 +231,14 @@ bool CAgentMemberManager::can_cry_noninfo_phrase() const
 
 MemorySpace::squad_mask_type CAgentMemberManager::mask(const ALife::_OBJECT_ID &object_id) const
 {
-	const_iterator I = std::find_if(members().begin(), members().end(), CMemberPredicate2(object_id));
+	const_iterator I = find_if(members().begin(), members().end(), CMemberPredicate2(object_id));
 	VERIFY(I != members().end());
 	return (MemorySpace::squad_mask_type(1) << (I - members().begin()));
 }
 
 CMemberOrder *CAgentMemberManager::get_member(const ALife::_OBJECT_ID &object_id)
 {
-	iterator I = std::find_if(members().begin(), members().end(), CMemberPredicate2(object_id));
+	iterator I = find_if(members().begin(), members().end(), CMemberPredicate2(object_id));
 	if (I == members().end())
 		return (0);
 

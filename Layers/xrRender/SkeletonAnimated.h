@@ -103,7 +103,7 @@ private:
 	//.	bool						LoadMotions				(LPCSTR N, IReader *data);
 public:
 #ifdef DEBUG
-	std::pair<LPCSTR, LPCSTR> LL_MotionDefName_dbg(MotionID ID);
+	pair<LPCSTR, LPCSTR> LL_MotionDefName_dbg(MotionID ID);
 //	LPCSTR						LL_MotionDefName_dbg	(LPVOID		ptr);
 #endif
 

@@ -47,7 +47,7 @@ struct CRemoveMergedFreeInRestrictions
 
 	IC bool operator()(const CSpaceRestriction::CFreeInRestriction &free_in_restriction) const
 	{
-		return (std::find(m_restrictions->begin(), m_restrictions->end(), free_in_restriction.m_restriction) != m_restrictions->end());
+		return (find(m_restrictions->begin(), m_restrictions->end(), free_in_restriction.m_restriction) != m_restrictions->end());
 	}
 };
 
@@ -124,7 +124,7 @@ void CSpaceRestriction::merge_in_out_restrictions()
 
 	m_border = m_out_space_restriction->border();
 	m_border.erase(
-		std::remove_if(
+		remove_if(
 			m_border.begin(),
 			m_border.end(),
 			CMergeInOutPredicate<true>(
@@ -136,7 +136,7 @@ void CSpaceRestriction::merge_in_out_restrictions()
 	{
 		temp_border = m_in_space_restriction->border();
 		temp_border.erase(
-			std::remove_if(
+			remove_if(
 				temp_border.begin(),
 				temp_border.end(),
 				CMergeInOutPredicate<false>(
@@ -146,9 +146,9 @@ void CSpaceRestriction::merge_in_out_restrictions()
 		m_border.insert(m_border.end(), temp_border.begin(), temp_border.end());
 	}
 
-	std::sort(m_border.begin(), m_border.end());
+	sort(m_border.begin(), m_border.end());
 	m_border.erase(
-		std::unique(
+		unique(
 			m_border.begin(),
 			m_border.end()),
 		m_border.end());

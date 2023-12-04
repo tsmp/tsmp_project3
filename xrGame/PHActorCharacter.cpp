@@ -237,7 +237,7 @@ void CPHActorCharacter::InitContact(dContact *c, bool &do_collide, u16 material_
 {
 	bool b1;
 	SFindPredicate fp(c, &b1);
-	RESTRICTOR_I r = std::find_if(begin(m_restrictors), end(m_restrictors), fp);
+	RESTRICTOR_I r = find_if(begin(m_restrictors), end(m_restrictors), fp);
 	bool b_restrictor = (r != end(m_restrictors));
 	SGameMtl *material_1 = GMLib.GetMaterialByIdx(material_idx_1);
 	SGameMtl *material_2 = GMLib.GetMaterialByIdx(material_idx_2);

@@ -147,13 +147,11 @@ void ISpatial_NODE::_insert(ISpatial *S)
 void ISpatial_NODE::_remove(ISpatial *S)
 {
 	S->spatial.node_ptr = NULL;
-	xr_vector<ISpatial *>::iterator it = std::find(items.begin(), items.end(), S);
+	xr_vector<ISpatial *>::iterator it = find(items.begin(), items.end(), S);
 	VERIFY(it != items.end());
 	items.erase(it);
 	S->spatial.space->stat_objects--;
 }
-
-//////////////////////////////////////////////////////////////////////////
 
 ISpatial_DB::ISpatial_DB()
 #ifdef PROFILE_CRITICAL_SECTIONS
@@ -184,7 +182,7 @@ void ISpatial_DB::initialize(Fbox &BB)
 
 		allocator_pool.reserve(128);
 		m_center.set(bbc);
-		m_bounds = std::max(std::max(bbd.x, bbd.y), bbd.z);
+		m_bounds = max(max(bbd.x, bbd.y), bbd.z);
 		rt_insert_object = nullptr;
 		
 		if (!m_root)

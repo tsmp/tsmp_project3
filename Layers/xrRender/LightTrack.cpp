@@ -256,7 +256,7 @@ void CROS_impl::update(IRenderable *O)
 		}
 
 		// Sort lights by importance - important for R1-shadows
-		std::sort(lights.begin(), lights.end(), pred_energy);
+		sort(lights.begin(), lights.end(), pred_energy);
 	}
 
 	// Process ambient lighting and approximate average lighting

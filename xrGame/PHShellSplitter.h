@@ -27,7 +27,7 @@ private:
 //class CPHShellSplitter;
 class CPHShell;
 class CODEGeom;
-typedef std::pair<u16, CODEGeom *> id_geom;
+typedef pair<u16, CODEGeom *> id_geom;
 DEFINE_MAP(u16, CODEGeom *, GEOM_MAP, GEOM_MAP_I)
 DEFINE_VECTOR(CPHShellSplitter, SPLITTER_STORAGE, SPLITTER_I)
 typedef xr_vector<CPHShellSplitter>::reverse_iterator SPLITTER_RI;

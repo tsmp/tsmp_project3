@@ -58,7 +58,7 @@ void CMonsterSquad::Attack_AssignTargetDir(ENTITY_VEC &members, CEntity *enemy)
 	lines.clear();
 
 	// сортировать по убыванию расстояния от npc до врага
-	std::sort(members.begin(), members.end(), sort_predicate(enemy));
+	sort(members.begin(), members.end(), sort_predicate(enemy));
 	if (members.empty())
 		return;
 

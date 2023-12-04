@@ -115,7 +115,7 @@ void CSpaceRestrictionShape::build_border()
 
 	{
 		m_border.erase(
-			std::remove_if(
+			remove_if(
 				m_border.begin(),
 				m_border.end(),
 				CBorderMergePredicate(this)),
@@ -140,9 +140,9 @@ void CSpaceRestrictionShape::test_correctness()
 		return;
 
 	// leave only unique nodes in m_test_storage
-	std::sort(m_test_storage.begin(), m_test_storage.end());
+	sort(m_test_storage.begin(), m_test_storage.end());
 	m_test_storage.erase(
-		std::unique(
+		unique(
 			m_test_storage.begin(),
 			m_test_storage.end()),
 		m_test_storage.end());

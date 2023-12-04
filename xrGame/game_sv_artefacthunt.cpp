@@ -394,7 +394,7 @@ void game_sv_ArtefactHunt::SetRP(CSE_Abstract *E, RPoint *pRP)
 	pRP->BlockedByID = E->ID;
 	pRP->BlockTime = Level().timeServer();
 
-	if (std::find(rpointsBlocked.begin(), rpointsBlocked.end(), pRP) == rpointsBlocked.end())
+	if (find(rpointsBlocked.begin(), rpointsBlocked.end(), pRP) == rpointsBlocked.end())
 		rpointsBlocked.push_back(pRP);
 }
 
@@ -579,7 +579,7 @@ void game_sv_ArtefactHunt::OnObjectEnterTeamBase(u16 id, u16 zone_team)
 		signal_Syncronize();
 
 		xr_vector<u16> &C = eActor->children;
-		xr_vector<u16>::iterator c = std::find(C.begin(), C.end(), m_dwArtefactID);
+		xr_vector<u16>::iterator c = find(C.begin(), C.end(), m_dwArtefactID);
 
 		if (C.end() != c)
 		{

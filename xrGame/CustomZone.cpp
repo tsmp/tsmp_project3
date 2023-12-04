@@ -644,7 +644,7 @@ void CCustomZone::feel_touch_delete(CObject *O)
 		StopObjectIdleParticles(pGameObject);
 	}
 
-	OBJECT_INFO_VEC_IT it = std::find(m_ObjectInfoMap.begin(), m_ObjectInfoMap.end(), pGameObject);
+	OBJECT_INFO_VEC_IT it = find(m_ObjectInfoMap.begin(), m_ObjectInfoMap.end(), pGameObject);
 	if (it != m_ObjectInfoMap.end())
 	{
 		exit_Zone(*it);
@@ -917,7 +917,7 @@ void CCustomZone::StopObjectIdleParticles(CGameObject *pObject)
 	if (!PP)
 		return;
 
-	OBJECT_INFO_VEC_IT it = std::find(m_ObjectInfoMap.begin(), m_ObjectInfoMap.end(), pObject);
+	OBJECT_INFO_VEC_IT it = find(m_ObjectInfoMap.begin(), m_ObjectInfoMap.end(), pObject);
 	if (m_ObjectInfoMap.end() == it)
 		return;
 
@@ -1369,7 +1369,7 @@ void CCustomZone::CreateHit(u16 id_to,
 void CCustomZone::net_Relcase(CObject *O)
 {
 	CGameObject *GO = smart_cast<CGameObject *>(O);
-	OBJECT_INFO_VEC_IT it = std::find(m_ObjectInfoMap.begin(), m_ObjectInfoMap.end(), GO);
+	OBJECT_INFO_VEC_IT it = find(m_ObjectInfoMap.begin(), m_ObjectInfoMap.end(), GO);
 	if (it != m_ObjectInfoMap.end())
 	{
 		exit_Zone(*it);

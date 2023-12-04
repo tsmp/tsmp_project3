@@ -174,7 +174,7 @@ void CLevel::Load_GameSpecific_CFORM(CDB::TRI *tris, u32 count)
 		for (auto I = tris, E = tris + count; I != E; ++I)
 		{
 			CDB::TRI& it = *I;
-			auto i = std::find(translator.begin(), translator.end(), static_cast<u16>(it.material));
+			auto i = find(translator.begin(), translator.end(), static_cast<u16>(it.material));
 			R_ASSERT2(i != translator.end(), make_string("Game material %d not found", it.material).c_str());
 
 			it.material = (*i).m_index;
@@ -186,12 +186,12 @@ void CLevel::Load_GameSpecific_CFORM(CDB::TRI *tris, u32 count)
 		return;
 	}
 
-	std::sort(translator.begin(), translator.end());
+	sort(translator.begin(), translator.end());
 
 	for (auto I = tris, E = tris + count; I != E; ++I)
 	{
 		CDB::TRI& it = *I;
-		auto i = std::lower_bound(translator.begin(), translator.end(), static_cast<u16>(it.material));
+		auto i = lower_bound(translator.begin(), translator.end(), static_cast<u16>(it.material));
 		R_ASSERT(i != translator.end() && (*i).m_id == it.material, make_string("Game material '%d' not found", it.material).c_str());
 
 		it.material = (*i).m_index;

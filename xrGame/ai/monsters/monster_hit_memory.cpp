@@ -26,7 +26,7 @@ void CMonsterHitMemory::update()
 
 bool CMonsterHitMemory::is_hit(CObject *pO)
 {
-	return (std::find(m_hits.begin(), m_hits.end(), pO) != m_hits.end());
+	return (find(m_hits.begin(), m_hits.end(), pO) != m_hits.end());
 }
 
 void CMonsterHitMemory::add_hit(CObject *who, EHitSide side)
@@ -37,7 +37,7 @@ void CMonsterHitMemory::add_hit(CObject *who, EHitSide side)
 	new_hit_info.side = side;
 	new_hit_info.position = monster->Position();
 
-	MONSTER_HIT_VECTOR_IT it = std::find(m_hits.begin(), m_hits.end(), who);
+	MONSTER_HIT_VECTOR_IT it = find(m_hits.begin(), m_hits.end(), who);
 
 	if (it == m_hits.end())
 		m_hits.push_back(new_hit_info);
@@ -73,7 +73,7 @@ struct predicate_old_hit
 void CMonsterHitMemory::remove_non_actual()
 {
 	m_hits.erase(
-		std::remove_if(
+		remove_if(
 			m_hits.begin(),
 			m_hits.end(),
 			predicate_old_hit(
@@ -183,7 +183,7 @@ struct predicate_old_info
 void CMonsterHitMemory::remove_hit_info(const CObject *obj)
 {
 	m_hits.erase(
-		std::remove_if(
+		remove_if(
 			m_hits.begin(),
 			m_hits.end(),
 			predicate_old_info(obj)),

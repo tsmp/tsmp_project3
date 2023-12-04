@@ -195,7 +195,7 @@ void CStateBurerAttackTeleAbstract::FindObjects()
 
 	// оставить уникальные объекты
 	tele_objects.erase(
-		std::unique(
+		unique(
 			tele_objects.begin(),
 			tele_objects.end()),
 		tele_objects.end());
@@ -348,7 +348,7 @@ public:
 TEMPLATE_SPECIALIZATION
 void CStateBurerAttackTeleAbstract::SelectObjects()
 {
-	std::sort(tele_objects.begin(), tele_objects.end(), best_object_predicate2(object->Position(), object->EnemyMan.get_enemy()->Position()));
+	sort(tele_objects.begin(), tele_objects.end(), best_object_predicate2(object->Position(), object->EnemyMan.get_enemy()->Position()));
 
 	// выбрать объект
 	for (u32 i = 0; i < tele_objects.size(); i++)

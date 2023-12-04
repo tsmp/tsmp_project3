@@ -39,7 +39,7 @@ IC bool CALifeSpawnRegistry::time_limit(CSE_Abstract &abstract, ALife::_TIME_ID 
 
 IC bool CALifeSpawnRegistry::spawned_item(CSE_Abstract &abstract, SPAWN_IDS &objects) const
 {
-	SPAWN_IDS::iterator I = std::lower_bound(objects.begin(), objects.end(), abstract.m_tSpawnID);
+	SPAWN_IDS::iterator I = lower_bound(objects.begin(), objects.end(), abstract.m_tSpawnID);
 	return ((I != objects.end()) && (*I == abstract.m_tSpawnID));
 }
 

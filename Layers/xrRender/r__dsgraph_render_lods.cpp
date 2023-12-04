@@ -6,7 +6,7 @@
 extern float r_ssaLOD_A;
 extern float r_ssaLOD_B;
 
-ICF bool pred_dot(const std::pair<float, u32> &_1, const std::pair<float, u32> &_2) { return _1.first < _2.first; }
+ICF bool pred_dot(const pair<float, u32> &_1, const pair<float, u32> &_2) { return _1.first < _2.first; }
 void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 {
 	if (_setup_zb)
@@ -56,10 +56,10 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 
 		// gen geometry
 		FLOD::_face *facets = lodV->facets;
-		svector<std::pair<float, u32>, 8> selector;
+		svector<pair<float, u32>, 8> selector;
 		for (u32 s = 0; s < 8; s++)
 			selector.push_back(mk_pair(Ldir.dotproduct(facets[s].N), s));
-		std::sort(selector.begin(), selector.end(), pred_dot);
+		sort(selector.begin(), selector.end(), pred_dot);
 
 		float dot_best = selector[selector.size() - 1].first;
 		float dot_next = selector[selector.size() - 2].first;

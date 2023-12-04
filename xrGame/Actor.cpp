@@ -485,7 +485,7 @@ void CActor::Hit(SHit *pHDS)
 		(ALife::eHitTypeTelepatic != HDS.hit_type))
 	{
 		ref_sound &S = sndHit[HDS.hit_type][Random.randI(sndHit[HDS.hit_type].size())];
-		bool b_snd_hit_playing = sndHit[HDS.hit_type].end() != std::find_if(sndHit[HDS.hit_type].begin(), sndHit[HDS.hit_type].end(), playing_pred());
+		bool b_snd_hit_playing = sndHit[HDS.hit_type].end() != find_if(sndHit[HDS.hit_type].begin(), sndHit[HDS.hit_type].end(), playing_pred());
 
 		if (ALife::eHitTypeExplosion == HDS.hit_type)
 		{
@@ -1525,12 +1525,12 @@ void CActor::MoveArtefactBelt(const CArtefact *artefact, bool on_belt)
 	//повесить артефакт на пояс
 	if (on_belt)
 	{
-		VERIFY(m_ArtefactsOnBelt.end() == std::find(m_ArtefactsOnBelt.begin(), m_ArtefactsOnBelt.end(), artefact));
+		VERIFY(m_ArtefactsOnBelt.end() == find(m_ArtefactsOnBelt.begin(), m_ArtefactsOnBelt.end(), artefact));
 		m_ArtefactsOnBelt.push_back(artefact);
 	}
 	else
 	{
-		xr_vector<const CArtefact *>::iterator it = std::remove(m_ArtefactsOnBelt.begin(), m_ArtefactsOnBelt.end(), artefact);
+		xr_vector<const CArtefact *>::iterator it = remove(m_ArtefactsOnBelt.begin(), m_ArtefactsOnBelt.end(), artefact);
 		VERIFY(it != m_ArtefactsOnBelt.end());
 		m_ArtefactsOnBelt.erase(it);
 	}
@@ -1702,7 +1702,7 @@ bool CActor::can_attach(const CInventoryItem *inventory_item) const
 		return (false);
 
 	//можно ли присоединять объекты такого типа
-	if (m_attach_item_sections.end() == std::find(m_attach_item_sections.begin(), m_attach_item_sections.end(), inventory_item->object().cNameSect()))
+	if (m_attach_item_sections.end() == find(m_attach_item_sections.begin(), m_attach_item_sections.end(), inventory_item->object().cNameSect()))
 		return false;
 
 	//если уже есть присоединненый объет такого типа

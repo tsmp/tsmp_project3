@@ -566,7 +566,7 @@ void fill_vid_mode_list(CHW *_hw)
 
 		sprintf_s(str, sizeof(str), "%dx%d", Mode.Width, Mode.Height);
 
-		if (_tmp.end() != std::find_if(_tmp.begin(), _tmp.end(), _uniq_mode(str)))
+		if (_tmp.end() != find_if(_tmp.begin(), _tmp.end(), _uniq_mode(str)))
 			continue;
 
 		_tmp.push_back(NULL);

@@ -32,5 +32,5 @@ void CALifeStoryRegistry::add(ALife::_STORY_ID id, CSE_ALifeDynamicObject *objec
 		return;
 	}
 
-	m_objects.insert(std::make_pair(id, object));
+	m_objects.insert(mk_pair(id, object));
 }

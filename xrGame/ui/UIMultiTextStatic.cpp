@@ -29,11 +29,9 @@ CUIMultiTextStatic::SinglePhrase *CUIMultiTextStatic::AddPhrase()
 void CUIMultiTextStatic::RemovePhraseByIndex(u32 idx)
 {
 	Phrases_it it = m_vPhrases.begin();
-	std::advance(it, idx);
+	advance(it, idx);
 	m_vPhrases.erase(it);
 }
-
-//////////////////////////////////////////////////////////////////////////
 
 void CUIMultiTextStatic::Draw()
 {
@@ -145,7 +143,7 @@ u32 CUICaption::findIndexOf_(const shared_str &key_)
 	for (Phrases_it it = m_vPhrases.begin(); it != m_vPhrases.end(); ++it)
 	{
 		if ((*it).key == key_)
-			return (u32)std::distance(m_vPhrases.begin(), it);
+			return (u32)distance(m_vPhrases.begin(), it);
 	}
 	return u32(-1);
 }

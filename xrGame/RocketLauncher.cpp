@@ -73,8 +73,8 @@ void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
 		return;
 
 	VERIFY(pRocket);
-	ROCKETIT It = std::find(m_rockets.begin(), m_rockets.end(), pRocket);
-	ROCKETIT It_l = std::find(m_launched_rockets.begin(), m_launched_rockets.end(), pRocket);
+	ROCKETIT It = find(m_rockets.begin(), m_rockets.end(), pRocket);
+	ROCKETIT It_l = find(m_launched_rockets.begin(), m_launched_rockets.end(), pRocket);
 
 	if (OnServer())
 	{

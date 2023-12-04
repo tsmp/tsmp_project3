@@ -83,9 +83,9 @@ inline void buffer_vector_specialized::assign(size_type const &count, const_refe
 TEMPLATE_SPECIALIZATION
 inline void buffer_vector_specialized::swap(self_type &other)
 {
-	std::swap(m_begin, other.m_begin);
-	std::swap(m_end, other.m_end);
-	std::swap(m_max_end, other.m_max_end);
+	swap(m_begin, other.m_begin);
+	swap(m_end, other.m_end);
+	swap(m_max_end, other.m_max_end);
 }
 
 TEMPLATE_SPECIALIZATION

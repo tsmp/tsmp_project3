@@ -894,7 +894,7 @@ void CCustomMonster::load_killer_clsids(LPCSTR section)
 
 bool CCustomMonster::is_special_killer(CObject *obj)
 {
-	return (obj && (std::find(m_killer_clsids.begin(), m_killer_clsids.end(), obj->CLS_ID) != m_killer_clsids.end()));
+	return (obj && (find(m_killer_clsids.begin(), m_killer_clsids.end(), obj->CLS_ID) != m_killer_clsids.end()));
 }
 
 float CCustomMonster::feel_vision_mtl_transp(CObject *O, u32 element)

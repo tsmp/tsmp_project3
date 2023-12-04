@@ -47,7 +47,7 @@ bool CUIListWnd::AddItem(Element *pItem, int insertBeforeIdx)
 			R_ASSERT(static_cast<u32>(insertBeforeIdx) <= m_ItemList.size());
 
 		LIST_ITEM_LIST_it it2 = m_ItemList.begin();
-		std::advance(it2, insertBeforeIdx);
+		advance(it2, insertBeforeIdx);
 		for (LIST_ITEM_LIST_it it = it2; m_ItemList.end() != it; ++it)
 		{
 			(*it)->SetIndex((*it)->GetIndex() + 1);

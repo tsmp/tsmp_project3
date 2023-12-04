@@ -46,7 +46,7 @@ private:
 	DEF_MAP(Groups, shared_str, group_items);
 	Groups m_goups;
 
-	typedef std::pair<shared_str, u32> restr_item;
+	typedef pair<shared_str, u32> restr_item;
 	DEF_VECTOR(rank_rest_vec, restr_item);
 	rank_rest_vec m_restrictions[_RANK_COUNT + 1];
 	shared_str m_names[_RANK_COUNT];

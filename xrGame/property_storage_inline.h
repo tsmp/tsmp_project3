@@ -10,7 +10,7 @@
 
 IC void CPropertyStorage::set_property(const _condition_type &condition_id, const _value_type &value)
 {
-	CConditionStorage::iterator I = std::find(m_storage.begin(), m_storage.end(), condition_id);
+	CConditionStorage::iterator I = find(m_storage.begin(), m_storage.end(), condition_id);
 	if (m_storage.end() != I)
 		(*I).m_value = value;
 	else
@@ -19,7 +19,7 @@ IC void CPropertyStorage::set_property(const _condition_type &condition_id, cons
 
 IC const CPropertyStorage::_value_type &CPropertyStorage::property(const _condition_type &condition_id) const
 {
-	CConditionStorage::const_iterator I = std::find(m_storage.begin(), m_storage.end(), condition_id);
+	CConditionStorage::const_iterator I = find(m_storage.begin(), m_storage.end(), condition_id);
 	THROW(m_storage.end() != I);
 	return ((*I).m_value);
 }

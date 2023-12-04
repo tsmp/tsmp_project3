@@ -88,7 +88,7 @@ private:
 private:
 	DEFINE_VECTOR(ref_sound, SoundVec, SoundVecIt);
 	DEFINE_VECTOR(SBullet, BulletVec, BulletVecIt);
-	typedef std::pair<float, float> _hit;
+	typedef pair<float, float> _hit;
 	friend CLevel;
 
 	enum EventType

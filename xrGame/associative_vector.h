@@ -13,8 +13,8 @@
 template <
 	typename _key_type,
 	typename _data_type,
-	typename _compare_predicate_type = std::less<_key_type>>
-class associative_vector : protected xr_vector<std::pair<_key_type, _data_type>>,
+	typename _compare_predicate_type = less<_key_type>>
+class associative_vector : protected xr_vector<pair<_key_type, _data_type>>,
 						   protected associative_vector_compare_predicate<_key_type, _data_type, _compare_predicate_type>
 {
 private:
@@ -25,7 +25,7 @@ private:
 		self_type;
 
 	typedef xr_vector<
-		std::pair<
+		pair<
 			_key_type,
 			_data_type>>
 		inherited;
@@ -53,9 +53,9 @@ public:
 	typedef _data_type mapped_type;
 	typedef typename inherited::size_type size_type;
 	typedef typename inherited::value_type value_type;
-	typedef std::pair<iterator, bool> insert_result;
-	typedef std::pair<iterator, iterator> equal_range_result;
-	typedef std::pair<const_iterator, const_iterator> const_equal_range_result;
+	typedef pair<iterator, bool> insert_result;
+	typedef pair<iterator, iterator> equal_range_result;
+	typedef pair<const_iterator, const_iterator> const_equal_range_result;
 
 private:
 	IC void actualize() const; //.

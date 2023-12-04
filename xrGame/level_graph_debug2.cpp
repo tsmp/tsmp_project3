@@ -92,7 +92,7 @@ void CLevelGraph::draw_nodes()
 
 	CLevelGraph::const_vertex_iterator I, E;
 	if (valid_vertex_position(min_position))
-		I = std::lower_bound(begin(), end(), vertex_position(min_position).xz(), &vertex::predicate2);
+		I = lower_bound(begin(), end(), vertex_position(min_position).xz(), &vertex::predicate2);
 	else
 		I = begin();
 

@@ -62,7 +62,7 @@ public:
 		csPlayers.Enter();
 		VERIFY(!m_IteratingNowInPlayers);
 		m_IteratingNowInPlayers = true;
-
+		// TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		auto iter = std::find_if(m_NetPlayers.begin(), m_NetPlayers.end(), predicate);
 		IClient *clResult = nullptr;
 
@@ -157,7 +157,7 @@ public:
 	{
 		csPlayers.Enter();
 		m_IteratingNowInDisconnectedPlayers = true;
-		std::for_each(m_NetPlayersDisconnected.begin(), m_NetPlayersDisconnected.end(), functor);
+		for_each(m_NetPlayersDisconnected.begin(), m_NetPlayersDisconnected.end(), functor);
 		m_IteratingNowInDisconnectedPlayers = false;
 		csPlayers.Leave();
 	}

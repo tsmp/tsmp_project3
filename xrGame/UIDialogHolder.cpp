@@ -126,7 +126,7 @@ void CDialogHolder::StopMenu(CUIDialogWnd *pDialog)
 void CDialogHolder::AddDialogToRender(CUIWindow *pDialog)
 {
 	dlgItem itm(pDialog);
-	xr_vector<dlgItem>::iterator it = std::find(m_dialogsToRender.begin(), m_dialogsToRender.end(), itm);
+	xr_vector<dlgItem>::iterator it = find(m_dialogsToRender.begin(), m_dialogsToRender.end(), itm);
 	if ((it == m_dialogsToRender.end()) || (it != m_dialogsToRender.end() && (*it).enabled == false))
 	{
 		m_dialogsToRender.push_back(itm);
@@ -137,7 +137,7 @@ void CDialogHolder::AddDialogToRender(CUIWindow *pDialog)
 void CDialogHolder::RemoveDialogToRender(CUIWindow *pDialog)
 {
 	dlgItem itm(pDialog);
-	xr_vector<dlgItem>::iterator it = std::find(m_dialogsToRender.begin(), m_dialogsToRender.end(), itm);
+	xr_vector<dlgItem>::iterator it = find(m_dialogsToRender.begin(), m_dialogsToRender.end(), itm);
 	if (it != m_dialogsToRender.end())
 	{
 		(*it).wnd->Show(false);
@@ -186,7 +186,7 @@ void CDialogHolder::SetMainInputReceiver(CUIDialogWnd *ir, bool _find_remove)
 					m_input_receivers[cnt].m_flags.set(recvItem::eCrosshair, m_input_receivers[cnt - 1].m_flags.test(recvItem::eCrosshair));
 					m_input_receivers[cnt].m_flags.set(recvItem::eIndicators, m_input_receivers[cnt - 1].m_flags.test(recvItem::eIndicators));
 					xr_vector<recvItem>::iterator it = m_input_receivers.begin();
-					std::advance(it, cnt - 1);
+					advance(it, cnt - 1);
 					m_input_receivers.erase(it);
 					break;
 				}
@@ -223,7 +223,7 @@ void CDialogHolder::shedule_Update(u32 dt)
 	if (m_dialogsToRender.empty())
 		return;
 
-	std::sort(m_dialogsToRender.begin(), m_dialogsToRender.end());
+	sort(m_dialogsToRender.begin(), m_dialogsToRender.end());
 
 	while ((m_dialogsToRender.size()) && (!m_dialogsToRender[m_dialogsToRender.size() - 1].enabled))
 		m_dialogsToRender.pop_back();

@@ -13,7 +13,7 @@
 #include "ai_debug.h"
 #include "profiler.h"
 
-class CALifeScheduleRegistry : public CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeSchedulable, std::less<ALife::_OBJECT_ID>, false>
+class CALifeScheduleRegistry : public CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeSchedulable, less<ALife::_OBJECT_ID>, false>
 {
 private:
 	struct CUpdatePredicate
@@ -50,7 +50,7 @@ private:
 	};
 
 protected:
-	typedef CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeSchedulable, std::less<ALife::_OBJECT_ID>, false> inherited;
+	typedef CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeSchedulable, less<ALife::_OBJECT_ID>, false> inherited;
 
 protected:
 	u32 m_objects_per_update;

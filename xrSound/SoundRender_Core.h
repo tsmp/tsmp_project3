@@ -22,7 +22,7 @@ protected:
 	CSoundRender_Environment e_target;
 
 public:
-	typedef std::pair<ref_sound_data_ptr, float> event;
+	typedef pair<ref_sound_data_ptr, float> event;
 	xr_vector<event> s_events;
 
 public:

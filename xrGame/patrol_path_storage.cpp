@@ -36,7 +36,7 @@ void CPatrolPathStorage::load_raw(const CLevelGraph *level_graph, const CGameLev
 		const_iterator I = m_registry.find(patrol_name);
 		VERIFY3(I == m_registry.end(), "Duplicated patrol path found", *patrol_name);
 		m_registry.insert(
-			std::make_pair(
+			mk_pair(
 				patrol_name,
 				&xr_new<CPatrolPath>(
 					 patrol_name)

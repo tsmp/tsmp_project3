@@ -43,7 +43,7 @@ void dxObjectSpaceRender::dbgRender()
 
 	for (u32 i = 0; i < dbg_S.size(); i++)
 	{
-		std::pair<Fsphere, u32> &P = dbg_S[i];
+		pair<Fsphere, u32> &P = dbg_S[i];
 		Fsphere &S = P.first;
 		Fmatrix M;
 		M.scale(S.R, S.R, S.R);

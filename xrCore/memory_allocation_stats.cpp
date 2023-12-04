@@ -16,8 +16,8 @@ extern int g_stackTraceCount;
 static bool g_mem_alloc_gather_stats = false;
 static float g_mem_alloc_gather_stats_frequency = 0.f;
 
-typedef std::pair<PSTR, u32> STATS_PAIR;
-typedef std::multimap<u32, STATS_PAIR> STATS;
+typedef pair<PSTR, u32> STATS_PAIR;
+typedef multimap<u32, STATS_PAIR> STATS;
 static STATS stats;
 
 void mem_alloc_gather_stats(const bool &value)
@@ -54,7 +54,7 @@ void mem_alloc_show_stats()
 		}
 	};
 
-	std::sort(strings, e, predicate::compare);
+	sort(strings, e, predicate::compare);
 
 	int j = 0;
 	for (i = strings; i != e; ++i, ++j)
@@ -131,6 +131,6 @@ __declspec(noinline) void save_stack_trace()
 		return;
 	}
 
-	stats.insert(std::make_pair(crc, std::make_pair(string, 1)));
+	stats.insert(mk_pair(crc, mk_pair(string, 1)));
 }
 #endif // DEBUG

@@ -15,7 +15,7 @@ class CSoundCollectionStorage
 public:
 	typedef CSoundPlayer::CSoundCollectionParams CSoundCollectionParams;
 	typedef CSoundPlayer::CSoundCollection CSoundCollection;
-	typedef std::pair<CSoundCollectionParams, CSoundCollection *> SOUND_COLLECTION_PAIR;
+	typedef pair<CSoundCollectionParams, CSoundCollection *> SOUND_COLLECTION_PAIR;
 	typedef xr_vector<SOUND_COLLECTION_PAIR> OBJECTS;
 
 private:

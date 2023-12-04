@@ -26,7 +26,7 @@ xr_string to_string					(luabind::object const& o)
 #ifdef NO_STRINGSTREAM
 	std::strstream s;
 #else
-	std::stringstream s;
+	xr_stringstream s;
 #endif
 
 	if (o.type() == LUA_TNUMBER)
@@ -81,7 +81,7 @@ xr_string member_to_string			(luabind::object const& e, LPCSTR function_signatur
 #ifdef NO_STRINGSTREAM
 		std::strstream s;
 #else
-		std::stringstream s;
+		xr_stringstream s;
 #endif
 		{
 			lua_getupvalue(L, -1, 2);
@@ -93,7 +93,7 @@ xr_string member_to_string			(luabind::object const& e, LPCSTR function_signatur
 			detail::stack_pop p2(L, 1);
 			detail::method_rep* m = static_cast<detail::method_rep*>(lua_touserdata(L, -1));
 
-			for (std::vector<detail::overload_rep>::const_iterator i = m->overloads().begin();
+			for (xr_vector<detail::overload_rep>::const_iterator i = m->overloads().begin();
 				i != m->overloads().end(); ++i)
 			{
 				xr_string str;
@@ -122,7 +122,7 @@ void print_class						(lua_State *L, luabind::detail::class_rep *crep)
 	{
 		S				= (crep->get_class_type() != luabind::detail::class_rep::cpp_class) ? "LUA class " : "C++ class ";
 		S.append		(crep->name());
-		typedef std::vector<luabind::detail::class_rep::base_info> BASES;
+		typedef xr_vector<luabind::detail::class_rep::base_info> BASES;
 		const BASES &bases = crep->bases();
 		BASES::const_iterator	I = bases.begin(), B = I;
 		BASES::const_iterator	E = bases.end();
@@ -170,9 +170,9 @@ void print_class						(lua_State *L, luabind::detail::class_rep *crep)
 	}
 	// print class constructors
 	{
-		const std::vector<luabind::detail::construct_rep::overload_t>	&constructors = crep->constructors().overloads;
-		std::vector<luabind::detail::construct_rep::overload_t>::const_iterator	I = constructors.begin();
-		std::vector<luabind::detail::construct_rep::overload_t>::const_iterator	E = constructors.end();
+		const xr_vector<luabind::detail::construct_rep::overload_t>	&constructors = crep->constructors().overloads;
+		xr_vector<luabind::detail::construct_rep::overload_t>::const_iterator	I = constructors.begin();
+		xr_vector<luabind::detail::construct_rep::overload_t>::const_iterator	E = constructors.end();
 		for ( ; I != E; ++I) {
 			xr_string S;
 			(*I).get_signature(L,S);
@@ -236,8 +236,8 @@ void print_free_functions				(lua_State *L, const luabind::object &object, LPCST
 							Msg("\n%snamespace %s {",indent.c_str(),header);
 						++count;
 						rep = static_cast<luabind::detail::free_functions::function_rep*>(lua_touserdata(L, -1));
-						std::vector<luabind::detail::free_functions::overload_rep>::const_iterator	i = rep->overloads().begin();
-						std::vector<luabind::detail::free_functions::overload_rep>::const_iterator	e = rep->overloads().end();
+						xr_vector<luabind::detail::free_functions::overload_rep>::const_iterator	i = rep->overloads().begin();
+						xr_vector<luabind::detail::free_functions::overload_rep>::const_iterator	e = rep->overloads().end();
 						for ( ; i != e; ++i) {
 							xr_string	S;
 							(*i).get_signature(L,S);

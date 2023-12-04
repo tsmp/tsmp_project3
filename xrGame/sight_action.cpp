@@ -288,7 +288,7 @@ void CSightAction::execute_fire_object()
 		}
 
 		m_object->feel_vision_get(objects);
-		if (std::find(objects.begin(), objects.end(), m_object_to_look) != objects.end())
+		if (find(objects.begin(), objects.end(), m_object_to_look) != objects.end())
 		{
 			m_vector3d = m_object->feel_vision_get_vispoint(const_cast<CGameObject *>(m_object_to_look));
 			execute_position();

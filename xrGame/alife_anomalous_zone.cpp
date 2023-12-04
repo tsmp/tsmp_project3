@@ -74,7 +74,7 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
 	VERIFY2(!(n % 2), "Invalid parameters count in line artefacts for anomalous zone");
 	n >>= 1;
 
-	typedef std::pair<shared_str, float> ARTEFACT_PAIR;
+	typedef pair<shared_str, float> ARTEFACT_PAIR;
 
 	string256 temp0, temp1;
 	ARTEFACT_PAIR *m_weights = (ARTEFACT_PAIR *)_alloca(n * sizeof(ARTEFACT_PAIR));

@@ -456,11 +456,11 @@ void CUIMainIngameWnd::Update()
 			xr_vector<float>::reverse_iterator rit;
 
 			// —начала провер€ем на точное соответсвие
-			rit = std::find(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), value);
+			rit = find(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), value);
 
 			// ≈сли его нет, то берем последнее меньшее значение ()
 			if (rit == m_Thresholds[i].rend())
-				rit = std::find_if(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), std::bind(std::less<float>(), std::placeholders::_1, value));
+				rit = std::find_if(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), std::bind(less<float>(), std::placeholders::_1, value));
 
 			// ћинимальное и максимальное значени€ границы
 			float min = m_Thresholds[i].front();

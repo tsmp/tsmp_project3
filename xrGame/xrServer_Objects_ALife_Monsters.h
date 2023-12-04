@@ -399,8 +399,8 @@ net_physics_state physics_state;
 u8 phSyncFlag = 0;
 u16 motionIdx;
 
-std::deque<u32> m_SoundTypes;
-std::deque<u32> m_SoundDelays;
+xr_deque<u32> m_SoundTypes;
+xr_deque<u32> m_SoundDelays;
 
 CSE_ALifeMonsterBase(LPCSTR caSection); // constructor for variable initialization
 virtual ~CSE_ALifeMonsterBase();
@@ -513,7 +513,7 @@ struct StalkerSoundUpdateHolder
 	}
 };
 
-std::deque<StalkerSoundUpdateHolder> m_SoundUpdates;
+xr_deque<StalkerSoundUpdateHolder> m_SoundUpdates;
 
 virtual BOOL Net_Relevant();
 

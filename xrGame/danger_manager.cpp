@@ -113,7 +113,7 @@ void CDangerManager::update()
 {
 	START_PROFILE("Memory Manager/dangers::update")
 	m_objects.erase(
-		std::remove_if(
+		remove_if(
 			m_objects.begin(),
 			m_objects.end(),
 			CRemoveByTimePredicate(
@@ -145,7 +145,7 @@ void CDangerManager::remove_links(const CObject *object)
 		m_selected = 0;
 
 	{
-		OBJECTS::iterator I = std::remove_if(m_objects.begin(), m_objects.end(), CDangerPredicate(object));
+		OBJECTS::iterator I = remove_if(m_objects.begin(), m_objects.end(), CDangerPredicate(object));
 		m_objects.erase(I, m_objects.end());
 	}
 
@@ -164,7 +164,7 @@ void CDangerManager::remove_links(const CObject *object)
 		}
 	}
 
-	IGNORED::iterator I = std::find(m_ignored.begin(), m_ignored.end(), object->ID());
+	IGNORED::iterator I = find(m_ignored.begin(), m_ignored.end(), object->ID());
 	if (I != m_ignored.end())
 		m_ignored.erase(I);
 }
@@ -173,7 +173,7 @@ bool CDangerManager::useful(const CDangerObject &object) const
 {
 	if (object.object() && !object.dependent_object())
 	{
-		IGNORED::const_iterator I = std::find(m_ignored.begin(), m_ignored.end(), object.object()->ID());
+		IGNORED::const_iterator I = find(m_ignored.begin(), m_ignored.end(), object.object()->ID());
 		if (I != m_ignored.end())
 			return (false);
 	}
@@ -331,7 +331,7 @@ void CDangerManager::add(const CDangerObject &object)
 	if (!is_useful(object))
 		return;
 
-	OBJECTS::iterator I = std::find_if(m_objects.begin(), m_objects.end(), CFindPredicate(object));
+	OBJECTS::iterator I = find_if(m_objects.begin(), m_objects.end(), CFindPredicate(object));
 	if (I != m_objects.end())
 	{
 		*I = object;
@@ -344,7 +344,7 @@ void CDangerManager::add(const CDangerObject &object)
 void CDangerManager::ignore(const CGameObject *object)
 {
 	VERIFY(object);
-	IGNORED::const_iterator I = std::find(m_ignored.begin(), m_ignored.end(), object->ID());
+	IGNORED::const_iterator I = find(m_ignored.begin(), m_ignored.end(), object->ID());
 	if (I != m_ignored.end())
 		return;
 

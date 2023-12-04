@@ -1,7 +1,7 @@
 #pragma once
 #include "fixedmap.h"
 
-#define render_alloc xalloc
+#define render_alloc AllocatorEA
 
 using render_allocator = xr_allocator;
 class dxRender_Visual;
@@ -44,7 +44,7 @@ namespace R_dsgraph // Elementary types
 #endif
 
 	// NORMAL
-	using mapNormalDirect = xr_vector<_NormalItem, render_allocator::helper<_NormalItem>::result>;
+	using mapNormalDirect = xr_vector<_NormalItem, AllocatorEA<_NormalItem>>;
 
 	struct mapNormalItems : public mapNormalDirect
 	{
@@ -71,7 +71,7 @@ namespace R_dsgraph // Elementary types
 	};
 
 	// MATRIX
-	using mapMatrixDirect = xr_vector<_MatrixItem, render_allocator::helper<_MatrixItem>::result>;
+	using mapMatrixDirect = xr_vector<_MatrixItem, AllocatorEA<_MatrixItem>>;
 
 	struct mapMatrixItems : public mapMatrixDirect
 	{

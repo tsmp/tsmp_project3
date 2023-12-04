@@ -47,7 +47,7 @@ void CUIOutfitDragDropList::SetOutfit(CUICellItem *itm)
 		else
 			a = *m_default_outfit;
 
-		xr_string::iterator it = std::find(a.rbegin(), a.rend(), '\\').base();
+		xr_string::iterator it = find(a.rbegin(), a.rend(), '\\').base();
 
 		// Cut leading full path
 		if (it != a.begin())

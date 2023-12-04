@@ -48,8 +48,8 @@ public:
     void ApplyImpactsToElement(CPHElement *element);
 };
 
-typedef std::pair<CPhysicsShell *, u16> shell_root;
-typedef std::pair<CPHElement *, CShellSplitInfo> element_fracture;
+typedef pair<CPhysicsShell *, u16> shell_root;
+typedef pair<CPHElement *, CShellSplitInfo> element_fracture;
 DEFINE_VECTOR(CPHElement *, ELEMENT_STORAGE, ELEMENT_I)
 DEFINE_VECTOR(CPHJoint *, JOINT_STORAGE, JOINT_I)
 DEFINE_VECTOR(shell_root, PHSHELL_PAIR_VECTOR, SHELL_PAIR_I)

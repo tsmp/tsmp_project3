@@ -254,7 +254,7 @@ void CBastArtefact::feel_touch_delete(CObject *O)
 
 	if (pEntityAlive)
 	{
-		m_AliveList.erase(std::find(m_AliveList.begin(),
+		m_AliveList.erase(find(m_AliveList.begin(),
 									m_AliveList.end(),
 									pEntityAlive));
 	}

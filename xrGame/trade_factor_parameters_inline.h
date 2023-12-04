@@ -21,7 +21,7 @@ IC void CTradeFactorParameters::enable(const shared_str &section, const CTradeFa
 {
 	FACTORS::const_iterator I = m_factors.find(section);
 	VERIFY(I == m_factors.end());
-	m_factors.insert(std::make_pair(section, factors));
+	m_factors.insert(mk_pair(section, factors));
 }
 
 IC bool CTradeFactorParameters::enabled(const shared_str &section) const

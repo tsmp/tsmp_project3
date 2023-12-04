@@ -302,23 +302,23 @@ public:
 	inline_ Point &InvTransform(const Point &r, const Matrix3x3 &rotpos, const Point &linpos);
 
 	//! Returns min(x, y, z);
-	inline_ float Min() const { return std::min(x, std::min(y, z)); }
+	inline_ float Min() const { return min(x, min(y, z)); }
 	//! Returns max(x, y, z);
-	inline_ float Max() const { return std::max(x, std::max(y, z)); }
+	inline_ float Max() const { return max(x, max(y, z)); }
 	//! Sets each element to be componentwise minimum
 	inline_ Point &Min(const Point &p)
 	{
-		x = std::min(x, p.x);
-		y = std::min(y, p.y);
-		z = std::min(z, p.z);
+		x = min(x, p.x);
+		y = min(y, p.y);
+		z = min(z, p.z);
 		return *this;
 	}
 	//! Sets each element to be componentwise maximum
 	inline_ Point &Max(const Point &p)
 	{
-		x = std::max(x, p.x);
-		y = std::max(y, p.y);
-		z = std::max(z, p.z);
+		x = max(x, p.x);
+		y = max(y, p.y);
+		z = max(z, p.z);
 		return *this;
 	}
 

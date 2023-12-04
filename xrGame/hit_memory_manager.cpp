@@ -60,7 +60,7 @@ CHitMemoryManager::~CHitMemoryManager()
 const CHitObject *CHitMemoryManager::hit(const CEntityAlive *object) const
 {
 	VERIFY(m_hits);
-	HITS::const_iterator I = std::find_if(m_hits->begin(), m_hits->end(), CHitObjectPredicate(object));
+	HITS::const_iterator I = find_if(m_hits->begin(), m_hits->end(), CHitObjectPredicate(object));
 	if (m_hits->end() != I)
 		return (&*I);
 
@@ -165,7 +165,7 @@ void CHitMemoryManager::add(float amount, const Fvector &vLocalDir, const CObjec
 	if (!entity_alive || (m_object->tfGetRelationType(entity_alive) == ALife::eRelationTypeFriend))
 		return;
 
-	HITS::iterator J = std::find(m_hits->begin(), m_hits->end(), object_id(who));
+	HITS::iterator J = find(m_hits->begin(), m_hits->end(), object_id(who));
 	if (m_hits->end() == J)
 	{
 		CHitObject hit_object;
@@ -182,7 +182,7 @@ void CHitMemoryManager::add(float amount, const Fvector &vLocalDir, const CObjec
 
 		if (m_max_hit_count <= m_hits->size())
 		{
-			HITS::iterator I = std::min_element(m_hits->begin(), m_hits->end(), SLevelTimePredicate<CEntityAlive>());
+			HITS::iterator I = min_element(m_hits->begin(), m_hits->end(), SLevelTimePredicate<CEntityAlive>());
 			VERIFY(m_hits->end() != I);
 			*I = hit_object;
 		}
@@ -211,12 +211,12 @@ void CHitMemoryManager::add(const CHitObject &_hit_object)
 	hit_object.m_squad_mask.set(m_stalker->agent_manager().member().mask(m_stalker), TRUE);
 
 	const CEntityAlive *entity_alive = hit_object.m_object;
-	HITS::iterator J = std::find(m_hits->begin(), m_hits->end(), object_id(entity_alive));
+	HITS::iterator J = find(m_hits->begin(), m_hits->end(), object_id(entity_alive));
 	if (m_hits->end() == J)
 	{
 		if (m_max_hit_count <= m_hits->size())
 		{
-			HITS::iterator I = std::min_element(m_hits->begin(), m_hits->end(), SLevelTimePredicate<CEntityAlive>());
+			HITS::iterator I = min_element(m_hits->begin(), m_hits->end(), SLevelTimePredicate<CEntityAlive>());
 			VERIFY(m_hits->end() != I);
 			*I = hit_object;
 		}
@@ -247,7 +247,7 @@ void CHitMemoryManager::update()
 
 	VERIFY(m_hits);
 	m_hits->erase(
-		std::remove_if(
+		remove_if(
 			m_hits->begin(),
 			m_hits->end(),
 			CRemoveOfflinePredicate()),
@@ -273,7 +273,7 @@ void CHitMemoryManager::update()
 
 void CHitMemoryManager::enable(const CObject *object, bool enable)
 {
-	HITS::iterator J = std::find(m_hits->begin(), m_hits->end(), object_id(object));
+	HITS::iterator J = find(m_hits->begin(), m_hits->end(), object_id(object));
 	if (J == m_hits->end())
 		return;
 
@@ -283,7 +283,7 @@ void CHitMemoryManager::enable(const CObject *object, bool enable)
 void CHitMemoryManager::remove_links(CObject *object)
 {
 	VERIFY(m_hits);
-	HITS::iterator I = std::find_if(m_hits->begin(), m_hits->end(), CHitObjectPredicate(object));
+	HITS::iterator I = find_if(m_hits->begin(), m_hits->end(), CHitObjectPredicate(object));
 	if (I != m_hits->end())
 		m_hits->erase(I);
 

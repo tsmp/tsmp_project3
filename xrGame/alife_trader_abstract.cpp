@@ -121,7 +121,7 @@ void CSE_ALifeDynamicObject::attach(CSE_ALifeInventoryItem *tpALifeInventoryItem
 	if (!bAddChildren)
 		return;
 
-	R_ASSERT2(std::find(children.begin(), children.end(), tpALifeInventoryItem->base()->ID) == children.end(), "Item is already inside the inventory");
+	R_ASSERT2(find(children.begin(), children.end(), tpALifeInventoryItem->base()->ID) == children.end(), "Item is already inside the inventory");
 	children.push_back(tpALifeInventoryItem->base()->ID);
 }
 
@@ -148,7 +148,7 @@ void CSE_ALifeDynamicObject::detach(CSE_ALifeInventoryItem *tpALifeInventoryItem
 	if (!bRemoveChildren)
 		return;
 
-	ALife::OBJECT_IT i = std::find(children.begin(), children.end(), tpALifeInventoryItem->base()->ID);
+	ALife::OBJECT_IT i = find(children.begin(), children.end(), tpALifeInventoryItem->base()->ID);
 	R_ASSERT2(children.end() != i, "Can't detach an item which is not on my own");
 	children.erase(i);
 }

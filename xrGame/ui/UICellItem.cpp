@@ -108,7 +108,7 @@ CUICellItem *CUICellItem::PopChild()
 {
 	CUICellItem *itm = m_childs.back();
 	m_childs.pop_back();
-	std::swap(itm->m_pData, m_pData);
+	swap(itm->m_pData, m_pData);
 	UpdateItemText();
 	R_ASSERT(itm->ChildsCount() == 0);
 	itm->SetOwnerList(NULL);
@@ -117,7 +117,7 @@ CUICellItem *CUICellItem::PopChild()
 
 bool CUICellItem::HasChild(CUICellItem *item)
 {
-	return (m_childs.end() != std::find(m_childs.begin(), m_childs.end(), item));
+	return (m_childs.end() != find(m_childs.begin(), m_childs.end(), item));
 }
 
 void CUICellItem::UpdateItemText()

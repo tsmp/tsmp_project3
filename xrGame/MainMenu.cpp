@@ -470,7 +470,7 @@ void CMainMenu::RegisterPPDraw(CUIWindow *w)
 void CMainMenu::UnregisterPPDraw(CUIWindow *w)
 {
 	m_pp_draw_wnds.erase(
-		std::remove(
+		remove(
 			m_pp_draw_wnds.begin(),
 			m_pp_draw_wnds.end(),
 			w),

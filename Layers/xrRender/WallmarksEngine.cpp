@@ -38,7 +38,7 @@ const int MAX_TRIS = 1024;
 IC bool operator==(const CWallmarksEngine::wm_slot *slot, const ref_shader &shader) { return slot->shader == shader; }
 CWallmarksEngine::wm_slot *CWallmarksEngine::FindSlot(ref_shader shader)
 {
-	WMSlotVecIt it = std::find(marks.begin(), marks.end(), shader);
+	WMSlotVecIt it = find(marks.begin(), marks.end(), shader);
 	return (it != marks.end()) ? *it : 0;
 }
 CWallmarksEngine::wm_slot *CWallmarksEngine::AppendSlot(ref_shader shader)

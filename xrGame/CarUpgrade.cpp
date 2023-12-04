@@ -29,7 +29,7 @@ void CCarUpgrade::ReadUpgrades(LPCSTR section)
 
 void CCarUpgrade::ApplyUpgrades(CCar* car)
 {
-	car->ChangeEnginePower(car->GetEnginePower() * m_EnginePowerCoeff);
+	//car->ChangeEnginePower(car->GetEnginePower() * m_EnginePowerCoeff);
 	car->m_HitTypeK[ALife::eHitTypeExplosion] *= m_ExplosionImmunityCoeff;
 	car->m_HitTypeK[ALife::eHitTypeFireWound] *= m_FireWoundImmunityCoeff;
 	

@@ -9,7 +9,7 @@ class CPHCondition;
 class CPHAction;
 struct SPHNetState;
 class CPHSynchronize;
-typedef xr_vector<std::pair<CPHSynchronize *, SPHNetState>> V_PH_WORLD_STATE;
+typedef xr_vector<pair<CPHSynchronize *, SPHNetState>> V_PH_WORLD_STATE;
 class CPHMesh
 {
 	dGeomID Geom;

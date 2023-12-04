@@ -16,9 +16,9 @@ class IBlender;
 
 #pragma pack(push, 4)
 
-struct STextureList : public xr_resource_flagged, public xr_vector<std::pair<u32, ref_texture>>
+struct STextureList : public xr_resource_flagged, public xr_vector<pair<u32, ref_texture>>
 {
-	typedef xr_vector<std::pair<u32, ref_texture>> inherited_vec;
+	typedef xr_vector<pair<u32, ref_texture>> inherited_vec;
 	~STextureList();
 
 	IC BOOL equal(const STextureList &base) const

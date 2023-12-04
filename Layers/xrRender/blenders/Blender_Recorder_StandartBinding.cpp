@@ -260,7 +260,7 @@ void CBlender_Compile::SetMapping()
 	// other common
 	for (u32 it = 0; it < DEV->v_constant_setup.size(); it++)
 	{
-		std::pair<shared_str, R_constant_setup *> cs = DEV->v_constant_setup[it];
+		pair<shared_str, R_constant_setup *> cs = DEV->v_constant_setup[it];
 		r_Constant(*cs.first, cs.second);
 	}
 }

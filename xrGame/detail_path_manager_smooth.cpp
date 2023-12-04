@@ -262,7 +262,7 @@ bool CDetailPathManager::build_circle_trajectory(
 	if (vertex_id)
 		*vertex_id = curr_vertex_id;
 	else if (path)
-		std::reverse(path->begin() + size, path->end());
+		reverse(path->begin() + size, path->end());
 
 	return (true);
 }
@@ -340,7 +340,7 @@ bool CDetailPathManager::build_trajectory(
 		}
 	}
 
-	std::sort(dist, dist + tangent_count);
+	sort(dist, dist + tangent_count);
 
 	{
 		for (u32 i = 0, j = path ? path->size() : 0; i < tangent_count; ++i)

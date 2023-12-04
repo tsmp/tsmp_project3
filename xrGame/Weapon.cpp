@@ -1380,7 +1380,7 @@ CInventoryItem *CWeapon::can_kill(CInventory *inventory) const
 		if (!inventory_item)
 			continue;
 
-		xr_vector<shared_str>::const_iterator i = std::find(m_ammoTypes.begin(), m_ammoTypes.end(), inventory_item->object().cNameSect());
+		xr_vector<shared_str>::const_iterator i = find(m_ammoTypes.begin(), m_ammoTypes.end(), inventory_item->object().cNameSect());
 		if (i != m_ammoTypes.end())
 			return (inventory_item);
 	}
@@ -1401,7 +1401,7 @@ const CInventoryItem *CWeapon::can_kill(const xr_vector<const CGameObject *> &it
 		if (!inventory_item)
 			continue;
 
-		xr_vector<shared_str>::const_iterator i = std::find(m_ammoTypes.begin(), m_ammoTypes.end(), inventory_item->object().cNameSect());
+		xr_vector<shared_str>::const_iterator i = find(m_ammoTypes.begin(), m_ammoTypes.end(), inventory_item->object().cNameSect());
 		if (i != m_ammoTypes.end())
 			return (inventory_item);
 	}
@@ -1485,7 +1485,7 @@ u32 CWeapon::ef_weapon_type() const
 
 bool CWeapon::IsNecessaryItem(const shared_str &item_sect)
 {
-	return (std::find(m_ammoTypes.begin(), m_ammoTypes.end(), item_sect) != m_ammoTypes.end());
+	return (find(m_ammoTypes.begin(), m_ammoTypes.end(), item_sect) != m_ammoTypes.end());
 }
 
 void CWeapon::modify_holder_params(float &range, float &fov) const

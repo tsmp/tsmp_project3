@@ -1,9 +1,5 @@
-//---------------------------------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
-
 #include "SkeletonMotions.h"
-#include "..\Include\xrRender\Kinematics.h"
 #include "fmesh.h"
 #include "motion.h"
 
@@ -17,7 +13,6 @@ u16 find_bone_id(vecBones *bones, shared_str nm)
 	return BI_NONE;
 }
 
-//-----------------------------------------------------------------------
 BOOL motions_value::load(LPCSTR N, IReader *data, vecBones *bones)
 {
 

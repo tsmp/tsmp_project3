@@ -739,7 +739,7 @@ void game_sv_Deathmatch::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 	}
 
 	R_ASSERT(tmpPoints.size());
-	std::sort(tmpPoints.begin(), tmpPoints.end());
+	sort(tmpPoints.begin(), tmpPoints.end());
 	u32 HalfList = tmpPoints.size() / (pEnemies.empty() ? 1 : 2);
 	u32 NewPointID = (HalfList) ? (tmpPoints.size() - HalfList + ::Random.randI(HalfList)) : 0;
 
@@ -1815,7 +1815,7 @@ BOOL game_sv_Deathmatch::Is_Anomaly_InLists(CSE_Abstract *E)
 			return TRUE;
 	}
 
-	ANOMALIES_it It = std::find(m_AnomaliesPermanent.begin(), m_AnomaliesPermanent.end(), E->name_replace());
+	ANOMALIES_it It = find(m_AnomaliesPermanent.begin(), m_AnomaliesPermanent.end(), E->name_replace());
 
 	if (It != m_AnomaliesPermanent.end())	
 		return TRUE;	
@@ -1823,7 +1823,7 @@ BOOL game_sv_Deathmatch::Is_Anomaly_InLists(CSE_Abstract *E)
 	for (u32 j = 0; j < m_AnomalySetsList.size(); j++)
 	{
 		ANOMALIES *Anomalies = &(m_AnomalySetsList[j]);
-		ANOMALIES_it It = std::find(Anomalies->begin(), Anomalies->end(), E->name_replace());
+		ANOMALIES_it It = find(Anomalies->begin(), Anomalies->end(), E->name_replace());
 
 		if (It != Anomalies->end())		
 			return TRUE;		
@@ -1866,7 +1866,7 @@ void game_sv_Deathmatch::OnPostCreate(u16 eid_who)
 	for (u32 j = 0; j < m_AnomalySetsList.size(); j++)
 	{
 		ANOMALIES *Anomalies = &(m_AnomalySetsList[j]);
-		ANOMALIES_it It = std::find(Anomalies->begin(), Anomalies->end(), pCustomZone->name_replace());
+		ANOMALIES_it It = find(Anomalies->begin(), Anomalies->end(), pCustomZone->name_replace());
 		if (It != Anomalies->end())
 		{
 			m_AnomalyIDSetsList[j].push_back(eid_who);
@@ -1881,7 +1881,7 @@ void game_sv_Deathmatch::OnPostCreate(u16 eid_who)
 		};
 	};
 
-	ANOMALIES_it It = std::find(m_AnomaliesPermanent.begin(), m_AnomaliesPermanent.end(), pCustomZone->name_replace());
+	ANOMALIES_it It = find(m_AnomaliesPermanent.begin(), m_AnomaliesPermanent.end(), pCustomZone->name_replace());
 	if (It == m_AnomaliesPermanent.end())
 	{
 		Msg("! Anomaly Not Found in any Set : %s", pCustomZone->name_replace());

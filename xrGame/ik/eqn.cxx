@@ -32,6 +32,10 @@
 #include "stdafx.h"
 #include "eqn.h"
 
+#ifdef USE_EASTL
+using eastl::swap;
+#endif
+
 /*
  * Put angle in range 0 .. 2*M_PI. Bounds on range of Psi 
  */

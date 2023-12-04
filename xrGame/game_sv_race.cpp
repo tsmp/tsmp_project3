@@ -36,7 +36,9 @@ void game_sv_Race::LoadRaceSettings()
 {
 	string_path temp;
 	m_AvailableSkins.push_back("stalker_killer_antigas");
-	m_AvailableCars.push_back({ "physics\\vehicles\\kamaz\\veh_kamaz_u_01.ogf" });
+	xr_vector< xr_string> vecc;
+	vecc.emplace_back("physics\\vehicles\\kamaz\\veh_kamaz_u_01.ogf");
+	m_AvailableCars.emplace_back(vecc);
 
 	if (!FS.exist(temp, "$level$", "race.ltx"))
 	{
@@ -79,33 +81,37 @@ void game_sv_Race::LoadCarVisuals(CInifile* settings)
 
 	for (const auto& item : sect)
 	{
-		std::string carPath = item.first.c_str();
+		xr_string carPath = item.first.c_str();
 
-		auto ModelExists = [&](const std::string& path) -> bool
+		auto ModelExists = [&](const xr_string& path) -> bool
 		{
 			string_path temp;
 			return FS.exist(temp, "$game_meshes$", path.c_str());
 		};
 
-		if (carPath.find(".ogf") != std::string::npos && ModelExists(carPath))
+		if (carPath.find(".ogf") != xr_string::npos && ModelExists(carPath))
 		{
-			m_AvailableCars.push_back({ carPath });
+			xr_vector<xr_string> vecc;
+			vecc.emplace_back(carPath);
+			m_AvailableCars.emplace_back(vecc);
 			continue;
 		}
 
 		if (ModelExists(carPath + ".ogf"))
 		{
-			m_AvailableCars.push_back({ carPath + ".ogf" });
+			xr_vector<xr_string> vecc;
+			vecc.emplace_back(carPath + ".ogf");
+			m_AvailableCars.emplace_back(vecc);
 			continue;
 		}
 
-		static const std::string ColorPrefix = "_color_";
+		static const xr_string ColorPrefix = "_color_";
 		u32 colorCounter = 0;
-		std::vector<std::string> coloredCars;
+		xr_vector<xr_string> coloredCars;
 
-		while (ModelExists(carPath + ColorPrefix + std::to_string(colorCounter) + ".ogf"))
+		while (ModelExists(carPath + ColorPrefix + std::to_string(colorCounter).c_str() + ".ogf"))
 		{
-			coloredCars.push_back(carPath + ColorPrefix + std::to_string(colorCounter) + ".ogf");
+			coloredCars.push_back(carPath + ColorPrefix + std::to_string(colorCounter).c_str() + ".ogf");
 			colorCounter++;
 		}
 
@@ -407,7 +413,7 @@ u16 game_sv_Race::GetRpointIdx(game_PlayerState* ps)
 	}
 
 	// try to find free rpoint 
-	std::vector<u16> freeRpointsVec;
+	xr_vector<u16> freeRpointsVec;
 
 	for (u32 i = 0, cnt = rpoints[rpointsTeam].size(); i < cnt; i++)
 		freeRpointsVec.push_back(true);

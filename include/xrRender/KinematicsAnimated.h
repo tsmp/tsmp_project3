@@ -26,7 +26,7 @@ struct SKeyTable
 	CKey keys[MAX_CHANNELS][MAX_BLENDED];	   // all keys
 	CBlend *blends[MAX_CHANNELS][MAX_BLENDED]; // blend pointers
 	int chanel_blend_conts[MAX_CHANNELS];	   // channel counts
-	SKeyTable() { std::fill_n(chanel_blend_conts, MAX_CHANNELS, 0); }
+	SKeyTable() { fill_n(chanel_blend_conts, MAX_CHANNELS, 0); }
 };
 
 class IKinematicsAnimated
@@ -39,7 +39,7 @@ public:
 	virtual void OnCalculateBones() = 0;
 
 #ifdef DEBUG
-	virtual std::pair<LPCSTR, LPCSTR> LL_MotionDefName_dbg(MotionID ID) = 0;
+	virtual pair<LPCSTR, LPCSTR> LL_MotionDefName_dbg(MotionID ID) = 0;
 	//virtual void LL_DumpBlends_dbg() = 0;
 #endif
 

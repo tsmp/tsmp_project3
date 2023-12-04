@@ -63,7 +63,7 @@ GameTasks &CGameTaskManager::GameTasks()
 CGameTask *CGameTaskManager::HasGameTask(const TASK_ID &id)
 {
 	FindTaskByID key(id);
-	GameTasks_it it = std::find_if(GameTasks().begin(), GameTasks().end(), key);
+	GameTasks_it it = find_if(GameTasks().begin(), GameTasks().end(), key);
 	if (it != GameTasks().end())
 		return (*it).game_task;
 
@@ -90,7 +90,7 @@ CGameTask *CGameTaskManager::GiveGameTaskToActor(CGameTask *t, u32 timeToComplet
 	t->m_ReceiveTime = Level().GetGameTime();
 	t->m_TimeToComplete = t->m_ReceiveTime + timeToComplete;
 
-	std::sort(GameTasks().begin(), GameTasks().end(), task_prio_pred);
+	sort(GameTasks().begin(), GameTasks().end(), task_prio_pred);
 
 	ARTICLE_VECTOR &article_vector = Actor()->encyclopedia_registry->registry().objects();
 
@@ -101,7 +101,7 @@ CGameTask *CGameTaskManager::GiveGameTaskToActor(CGameTask *t, u32 timeToComplet
 		if (obj->article_id.size())
 		{
 			FindArticleByIDPred pred(obj->article_id);
-			if (std::find_if(article_vector.begin(), article_vector.end(), pred) == article_vector.end())
+			if (find_if(article_vector.begin(), article_vector.end(), pred) == article_vector.end())
 			{
 				CEncyclopediaArticle article;
 				article.Load(obj->article_id);

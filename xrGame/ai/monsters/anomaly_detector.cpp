@@ -66,7 +66,7 @@ void CAnomalyDetector::update_schedule()
 
 	// remove from storage
 	m_storage.erase(
-		std::remove_if(
+		remove_if(
 			m_storage.begin(),
 			m_storage.end(),
 			remove_predicate(m_time_to_rememeber)),
@@ -90,7 +90,7 @@ void CAnomalyDetector::on_contact(CObject *obj)
 			m_object->control().path_builder().restrictions().in_restrictions(), custom_zone->cName()))
 		return;
 
-	ANOMALY_INFO_VEC_IT it = std::find(m_storage.begin(), m_storage.end(), custom_zone);
+	ANOMALY_INFO_VEC_IT it = find(m_storage.begin(), m_storage.end(), custom_zone);
 	if (it != m_storage.end())
 		return;
 

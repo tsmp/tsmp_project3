@@ -5,8 +5,8 @@
 class game_sv_Hardmatch : public game_sv_Deathmatch
 {
 	CRandom m_WeaponsRandom;
-	std::vector<std::string> m_RandomWeapons;
-	std::vector<std::string> m_PersistentItems;
+	std::vector<xr_string> m_RandomWeapons;
+	std::vector<xr_string> m_PersistentItems;
 
 public:
 	game_sv_Hardmatch();

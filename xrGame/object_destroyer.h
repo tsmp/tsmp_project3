@@ -20,7 +20,7 @@ struct CDestroyer
 	}
 
 	template <typename T1, typename T2>
-	IC static void delete_data(std::pair<T1, T2> &data)
+	IC static void delete_data(pair<T1, T2> &data)
 	{
 		delete_data(data.first);
 		delete_data(data.second);

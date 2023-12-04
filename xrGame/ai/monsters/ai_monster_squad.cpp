@@ -167,7 +167,7 @@ void CMonsterSquad::remove_links(CObject *O)
 bool CMonsterSquad::is_locked_cover(u32 node)
 {
 	return (
-		std::find(
+		find(
 			m_locked_covers.begin(),
 			m_locked_covers.end(),
 			node) !=
@@ -181,7 +181,7 @@ void CMonsterSquad::lock_cover(u32 node)
 
 void CMonsterSquad::unlock_cover(u32 node)
 {
-	NODES_VECTOR_IT it = std::find(m_locked_covers.begin(), m_locked_covers.end(), node);
+	NODES_VECTOR_IT it = find(m_locked_covers.begin(), m_locked_covers.end(), node);
 	if (it != m_locked_covers.end())
 		m_locked_covers.erase(it);
 }
@@ -209,7 +209,7 @@ u8 CMonsterSquad::get_count(const CEntity *object, float radius)
 bool CMonsterSquad::is_locked_corpse(const CEntityAlive *corpse)
 {
 	return (
-		std::find(
+		find(
 			m_locked_corpses.begin(),
 			m_locked_corpses.end(),
 			corpse) !=
@@ -223,7 +223,7 @@ void CMonsterSquad::lock_corpse(const CEntityAlive *corpse)
 
 void CMonsterSquad::unlock_corpse(const CEntityAlive *corpse)
 {
-	CORPSES_VECTOR_IT it = std::find(m_locked_corpses.begin(), m_locked_corpses.end(), corpse);
+	CORPSES_VECTOR_IT it = find(m_locked_corpses.begin(), m_locked_corpses.end(), corpse);
 	if (it != m_locked_corpses.end())
 		m_locked_corpses.erase(it);
 }

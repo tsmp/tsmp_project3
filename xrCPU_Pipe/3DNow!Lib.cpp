@@ -94,7 +94,7 @@ static const __int32 q0         =       0x45E451C5;
 static const __int32 p0         =       0x451E424B;
 static const __int32 mine       =       0xC2FC0000;
 static const __int32 maxe       =       0x43000000;
-static const __int32 max        =       0x7F7FFFFF;
+static const __int32 ma1x        =       0x7F7FFFFF;
 static const __int32 rle10      =       0x3ede5bdb;
 // For alt_acos
 static const __m64f  a_c7		=	{ 2.838933f,	0.f};

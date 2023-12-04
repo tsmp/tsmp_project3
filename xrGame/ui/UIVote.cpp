@@ -98,7 +98,7 @@ void CUIVote::Update()
 		items.push_back(I->second);
 	};
 
-	std::sort(items.begin(), items.end(), DM_Compare_Players);
+	sort(items.begin(), items.end(), DM_Compare_Players);
 
 	list[0]->Clear();
 	list[1]->Clear();

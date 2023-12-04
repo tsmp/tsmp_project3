@@ -105,7 +105,7 @@ public:
 	virtual void OnCalculateBones() {}
 
 public:
-	typedef xr_vector<std::pair<shared_str, u16>> accel;
+	typedef xr_vector<pair<shared_str, u16>> accel;
 
 public:
 	dxRender_Visual *m_lod;

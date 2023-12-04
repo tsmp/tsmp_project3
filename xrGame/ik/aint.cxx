@@ -33,15 +33,15 @@
 //#include <math.h>
 #include "aint.h"
 
-inline float min(float x, float y)
-{
-	return x < y ? x : y;
-}
-
-inline float max(float x, float y)
-{
-	return x > y ? x : y;
-}
+//inline float min(float x, float y)
+//{
+//	return x < y ? x : y;
+//}
+//
+//inline float max(float x, float y)
+//{
+//	return x > y ? x : y;
+//}
 
 //
 // Sets the low bound for the interval

@@ -20,8 +20,8 @@ class CAgentEnemyManager
 public:
 	typedef xr_vector<CMemberEnemy> ENEMIES;
 	typedef MemorySpace::squad_mask_type squad_mask_type;
-	typedef std::pair<ALife::_OBJECT_ID, bool> WOUNDED;
-	typedef std::pair<const CEntityAlive *, WOUNDED> WOUNDED_ENEMY;
+	typedef pair<ALife::_OBJECT_ID, bool> WOUNDED;
+	typedef pair<const CEntityAlive *, WOUNDED> WOUNDED_ENEMY;
 	typedef xr_vector<WOUNDED_ENEMY> WOUNDED_ENEMIES;
 
 private:

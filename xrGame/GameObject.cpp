@@ -742,7 +742,7 @@ BOOL CGameObject::TestServerFlag(u32 Flag) const
 void CGameObject::add_visual_callback(visual_callback *callback)
 {
 	VERIFY(smart_cast<IKinematics *>(Visual()));
-	CALLBACK_VECTOR_IT I = std::find(visual_callbacks().begin(), visual_callbacks().end(), callback);
+	CALLBACK_VECTOR_IT I = find(visual_callbacks().begin(), visual_callbacks().end(), callback);
 	VERIFY(I == visual_callbacks().end());
 
 	if (m_visual_callback.empty())
@@ -753,7 +753,7 @@ void CGameObject::add_visual_callback(visual_callback *callback)
 
 void CGameObject::remove_visual_callback(visual_callback *callback)
 {
-	CALLBACK_VECTOR_IT I = std::find(m_visual_callback.begin(), m_visual_callback.end(), callback);
+	CALLBACK_VECTOR_IT I = find(m_visual_callback.begin(), m_visual_callback.end(), callback);
 	VERIFY(I != m_visual_callback.end());
 	m_visual_callback.erase(I);
 	if (m_visual_callback.empty())

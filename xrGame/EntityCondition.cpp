@@ -183,7 +183,7 @@ void CEntityCondition::UpdateWounds()
 {
 	//убрать все зашившие раны из списка
 	m_WoundVector.erase(
-		std::remove_if(
+		remove_if(
 			m_WoundVector.begin(),
 			m_WoundVector.end(),
 			&RemoveWoundPred),

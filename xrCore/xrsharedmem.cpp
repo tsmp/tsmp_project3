@@ -1,7 +1,4 @@
 #include "stdafx.h"
-#pragma hdrstop
-
-using namespace std;
 
 XRCORE_API smem_container *g_pSharedMemoryContainer = NULL;
 
@@ -18,7 +15,7 @@ smem_value *smem_container::dock(u32 dwCRC, u32 dwLength, void *ptr)
 	value->dwReference = 0;
 	value->dwCRC = dwCRC;
 	value->dwLength = dwLength;
-	cdb::iterator it = std::lower_bound(container.begin(), container.end(), value, smem_search);
+	cdb::iterator it = lower_bound(container.begin(), container.end(), value, smem_search);
 	cdb::iterator saved_place = it;
 	if (container.end() != it)
 	{

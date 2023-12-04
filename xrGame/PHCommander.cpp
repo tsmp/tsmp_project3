@@ -141,7 +141,7 @@ struct SFRemovePred2
 
 PHCALL_I CPHCommander::find_call(CPHReqComparerV *cmp_condition, CPHReqComparerV *cmp_action, PHCALL_STORAGE &cs)
 {
-	return std::find_if(cs.begin(), cs.end(), SFEqualPred(cmp_condition, cmp_action));
+	return find_if(cs.begin(), cs.end(), SFEqualPred(cmp_condition, cmp_action));
 }
 PHCALL_I CPHCommander::find_call(CPHReqComparerV *cmp_condition, CPHReqComparerV *cmp_action)
 {
@@ -150,7 +150,7 @@ PHCALL_I CPHCommander::find_call(CPHReqComparerV *cmp_condition, CPHReqComparerV
 void CPHCommander::remove_call(CPHReqComparerV *cmp_condition, CPHReqComparerV *cmp_action, PHCALL_STORAGE &cs)
 {
 	cs.erase(
-		std::remove_if(
+		remove_if(
 			cs.begin(),
 			cs.end(),
 			SFRemovePred2(
@@ -196,7 +196,7 @@ struct SRemoveRped
 void CPHCommander::remove_calls(CPHReqComparerV *cmp_object, PHCALL_STORAGE &cs)
 {
 	cs.erase(
-		std::remove_if(
+		remove_if(
 			cs.begin(),
 			cs.end(),
 			SRemoveRped(cmp_object)),

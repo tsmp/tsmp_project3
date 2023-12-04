@@ -278,7 +278,7 @@ void CGlowManager::render_hw()
 void CGlowManager::render_selected()
 {
 	// 2. Sort by shader
-	std::sort(Selected.begin(), Selected.end(), glow_compare);
+	sort(Selected.begin(), Selected.end(), glow_compare);
 
 	FVF::LIT *pv;
 

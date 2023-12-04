@@ -82,7 +82,7 @@ void CScriptZone::net_Relcase(CObject *O)
 	if (!l_tpGameObject)
 		return;
 
-	xr_vector<CObject *>::iterator I = std::find(feel_touch.begin(), feel_touch.end(), O);
+	xr_vector<CObject *>::iterator I = find(feel_touch.begin(), feel_touch.end(), O);
 	if (I != feel_touch.end())
 	{
 		callback(GameObject::eZoneExit)(lua_game_object(), l_tpGameObject->lua_game_object());

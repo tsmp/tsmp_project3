@@ -150,7 +150,7 @@ void CUIListBox::MoveSelectedUp()
 			if (it_prev == it_e)
 				break;
 
-			std::swap(*it, *it_prev);
+			swap(*it, *it_prev);
 			ForceUpdate();
 			break;
 		}
@@ -176,7 +176,7 @@ void CUIListBox::MoveSelectedDown()
 			if (it_next == it_e)
 				break;
 
-			std::swap(*it, *it_next);
+			swap(*it, *it_next);
 			ForceUpdate();
 			break;
 		}

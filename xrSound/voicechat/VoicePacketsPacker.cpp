@@ -44,7 +44,7 @@ void CVoicePacketsPacker::AddSender(IVoicePacketSender* ref)
 
 void CVoicePacketsPacker::RemoveSender(IVoicePacketSender* ref)
 {
-	m_senders.erase(std::remove(m_senders.begin(), m_senders.end(), ref));
+	m_senders.erase(remove(m_senders.begin(), m_senders.end(), ref));
 }
 
 void CVoicePacketsPacker::AddPacket(const void* data, const int length)

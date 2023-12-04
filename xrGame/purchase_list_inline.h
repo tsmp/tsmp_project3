@@ -31,5 +31,5 @@ IC void CPurchaseList::deficit(const shared_str &section, const float &deficit)
 		return;
 	}
 
-	m_deficits.insert(std::make_pair(section, deficit));
+	m_deficits.insert(mk_pair(section, deficit));
 }

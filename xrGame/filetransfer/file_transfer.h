@@ -12,7 +12,7 @@ namespace file_transfer
 	class server_site
 	{
 	public:
-		typedef std::pair<ClientID, ClientID> dst_src_pair_t;
+		typedef pair<ClientID, ClientID> dst_src_pair_t;
 
 	private:
 		typedef associative_vector<dst_src_pair_t, filetransfer_node *> transfer_sessions_t;

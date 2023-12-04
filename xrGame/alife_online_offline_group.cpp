@@ -58,7 +58,7 @@ void CSE_ALifeOnlineOfflineGroup::register_member(ALife::_OBJECT_ID member_id)
 	stalker->m_group_id = ID;
 
 	bool empty = m_members.empty();
-	m_members.insert(std::make_pair(member_id, stalker));
+	m_members.insert(mk_pair(member_id, stalker));
 	if (empty)
 	{
 		o_Position = stalker->o_Position;
