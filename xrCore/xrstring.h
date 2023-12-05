@@ -1,13 +1,12 @@
-#ifndef xrstringH
-#define xrstringH
 #pragma once
 
 #pragma pack(push, 4)
-//////////////////////////////////////////////////////////////////////////
+
 typedef const char *str_c;
 
-//////////////////////////////////////////////////////////////////////////
+#pragma warning(push)
 #pragma warning(disable : 4200)
+
 struct XRCORE_API str_value
 {
 	u32 dwReference;
@@ -15,13 +14,15 @@ struct XRCORE_API str_value
 	u32 dwCRC;
 	char value[];
 };
+
 struct XRCORE_API str_value_cmp
-{ // less
+{
+	// less
 	IC bool operator()(const str_value *A, const str_value *B) const { return A->dwCRC < B->dwCRC; };
 };
-#pragma warning(default : 4200)
 
-//////////////////////////////////////////////////////////////////////////
+#pragma warning(pop)
+
 class XRCORE_API str_container
 {
 private:
@@ -44,7 +45,6 @@ public:
 };
 XRCORE_API extern str_container *g_pStringContainer;
 
-//////////////////////////////////////////////////////////////////////////
 class shared_str
 {
 private:
@@ -158,6 +158,7 @@ IC void swap(shared_str &lhs, shared_str &rhs) { lhs.swap(rhs); }
 IC u32 xr_strlen(shared_str &a) { return a.size(); }
 IC int xr_strcmp(const shared_str &a, const char *b) { return xr_strcmp(*a, b); }
 IC int xr_strcmp(const char *a, const shared_str &b) { return xr_strcmp(a, *b); }
+
 IC int xr_strcmp(const shared_str &a, const shared_str &b)
 {
 	if (a.equal(b))
@@ -165,11 +166,13 @@ IC int xr_strcmp(const shared_str &a, const shared_str &b)
 	else
 		return xr_strcmp(*a, *b);
 }
+
 IC void xr_strlwr(xr_string &src)
 {
 	for (xr_string::iterator it = src.begin(); it != src.end(); it++)
 		*it = xr_string::value_type(tolower(*it));
 }
+
 IC void xr_strlwr(shared_str &src)
 {
 	if (*src)
@@ -182,5 +185,3 @@ IC void xr_strlwr(shared_str &src)
 }
 
 #pragma pack(pop)
-
-#endif

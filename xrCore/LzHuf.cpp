@@ -80,11 +80,7 @@ public:
 		*out_iterator++ = u8(c & 0xFF);
 	}
 
-	LZfs()
-	{
-		in_start = in_end = in_iterator = 0;
-		out_start = out_end = out_iterator = 0;
-	}
+	LZfs() = default;
 
 	IC void Init_Input(u8 *_start, u8 *_end)
 	{

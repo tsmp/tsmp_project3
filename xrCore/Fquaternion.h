@@ -181,9 +181,6 @@ public:
 
 	IC Fquaternion& mul(const Fquaternion& q1l, const Fquaternion& q2l)
 	{
-		VERIFY(q1l.isValid());
-		VERIFY(q2l.isValid());
-
 		w = ((q1l.w * q2l.w) - (q1l.x * q2l.x) - (q1l.y * q2l.y) - (q1l.z * q2l.z));
 
 		x = ((q1l.w * q2l.x) + (q1l.x * q2l.w) + (q1l.y * q2l.z) - (q1l.z * q2l.y));
@@ -228,20 +225,6 @@ public:
 		z -= q.z;
 		w -= q.w;
 		return *this;
-	}
-
-	// validates numerical stability
-	IC const bool isValid(void) const
-	{
-		if ((w * w) < 0.0f)
-			return false;
-		if ((x * x) < 0.0f)
-			return false;
-		if ((y * y) < 0.0f)
-			return false;
-		if ((z * z) < 0.0f)
-			return false;
-		return true;
 	}
 
 	// checks for Unit-length quanternion

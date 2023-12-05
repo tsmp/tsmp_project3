@@ -72,7 +72,7 @@ public:
 	}
 	IC void w_stringZ(const xr_string &p)
 	{
-		w(p.c_str() ? p.c_str() : "", (u32)p.size());
+		w(p.c_str(), xr_narrow_cast<u32>(p.size()));
 		w_u8(0);
 	}
 	IC void w_fcolor(const Fcolor &v) { w(&v, sizeof(Fcolor)); }
@@ -330,21 +330,22 @@ class XRCORE_API IReader : public IReaderBase<IReader>
 {
 protected:
 	char *data;
-	int Pos;
+	int Pos = 0;
 	int Size;
 	int iterpos;
 
 public:
 	IC IReader()
 	{
-		Pos = 0;
+		data = nullptr;
+		Size = 0;
+		iterpos = 0;
 	}
 
 	IC IReader(void *_data, int _size, int _iterpos = 0)
 	{
 		data = (char *)_data;
 		Size = _size;
-		Pos = 0;
 		iterpos = _iterpos;
 	}
 

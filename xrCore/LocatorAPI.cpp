@@ -748,7 +748,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 	m_Flags.set(flReady, TRUE);
 
 	Msg("Init FileSystem %f sec", t.GetElapsed_sec());
-	//-----------------------------------------------------------
+
 	if (strstr(Core.Params, "-overlaypath"))
 	{
 		string1024 c_newAppPathRoot;
@@ -763,14 +763,9 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 			pAppdataPath->_set_root(c_newAppPathRoot);
 			rescan_path(pAppdataPath->m_Path, pAppdataPath->m_Flags.is(FS_Path::flRecurse));
 		}
-
-		int x = 0;
-		x = x;
 	}
 
 	rec_files.clear();
-	//-----------------------------------------------------------
-
 	CreateLog(0 != strstr(Core.Params, "-nolog"));
 }
 
@@ -778,24 +773,29 @@ void CLocatorAPI::_destroy()
 {
 	CloseLog();
 
-	for (files_it I = files.begin(); I != files.end(); I++)
+	for (auto &file: files)
 	{
-		char *str = LPSTR(I->name);
-		xr_free(str);
+		char *fname = LPSTR(file.name);
+		xr_free(fname);
 	}
+
 	files.clear();
-	for (PathPairIt p_it = pathes.begin(); p_it != pathes.end(); p_it++)
+
+	for (auto& [pathStr, pathStruct]: pathes)
 	{
-		char *str = LPSTR(p_it->first);
+		char *str = LPSTR(pathStr);
 		xr_free(str);
-		xr_delete(p_it->second);
+		xr_delete(pathStruct);
 	}
+
 	pathes.clear();
-	for (archives_it a_it = archives.begin(); a_it != archives.end(); a_it++)
+
+	for (const auto &archive: archives)
 	{
-		CloseHandle(a_it->hSrcMap);
-		CloseHandle(a_it->hSrcFile);
+		CloseHandle(archive.hSrcMap);
+		CloseHandle(archive.hSrcFile);
 	}
+
 	archives.clear();
 }
 
