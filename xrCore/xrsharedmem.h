@@ -1,10 +1,10 @@
-#ifndef xrsharedmemH
-#define xrsharedmemH
 #pragma once
 
 #pragma pack(push, 4)
-//////////////////////////////////////////////////////////////////////////
+
+#pragma warning(push)
 #pragma warning(disable : 4200)
+
 struct XRCORE_API smem_value
 {
 	u32 dwReference;
@@ -13,6 +13,7 @@ struct XRCORE_API smem_value
 	u32 _align_16;
 	u8 value[];
 };
+
 // generic predicate for "less"
 IC bool smem_sort(const smem_value *A, const smem_value *B)
 {
@@ -46,9 +47,9 @@ IC bool smem_equal(const smem_value *A, u32 dwCRC, u32 dwLength, u8 *ptr)
 		return false;
 	return 0 == memcmp(A->value, ptr, dwLength);
 };
-#pragma warning(default : 4200)
 
-//////////////////////////////////////////////////////////////////////////
+#pragma warning(pop)
+
 class XRCORE_API smem_container
 {
 private:
@@ -70,7 +71,6 @@ public:
 };
 XRCORE_API extern smem_container *g_pSharedMemoryContainer;
 
-//////////////////////////////////////////////////////////////////////////
 template <class T>
 class ref_smem
 {
@@ -174,5 +174,3 @@ template <class T>
 IC void swap(ref_smem<T> &lhs, ref_smem<T> &rhs) { lhs.swap(rhs); }
 
 #pragma pack(pop)
-
-#endif

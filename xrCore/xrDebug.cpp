@@ -658,7 +658,7 @@ void format_message(LPSTR buffer, const u32 &buffer_size)
 
 	if (!error_code)
 	{
-		*buffer = 0;
+		*buffer = '\0';
 		return;
 	}
 
@@ -672,7 +672,7 @@ void format_message(LPSTR buffer, const u32 &buffer_size)
 		0,
 		NULL);
 
-	sprintf(buffer, "[error][%8d]    : %s", error_code, message);
+	sprintf(buffer, "[error][%8d]    : %s", error_code, message); //-V576
 	LocalFree(message);
 }
 

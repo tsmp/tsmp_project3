@@ -39,7 +39,7 @@ public:
 
     IC Fmatrix33& set(const Fmatrix33& a)
     {
-        CopyMemory(this, &a, 9 * sizeof(float));
+        CopyMemory(&m, &a.m, sizeof(m));
         return *this;
     }
 
@@ -102,7 +102,7 @@ public:
     IC Fmatrix33& transpose(void) // self transpose - slower
     {
         Fmatrix33 a;
-        CopyMemory(&a, this, 9 * sizeof(float)); // save matrix
+        CopyMemory(&a.m, &m, sizeof(m)); // save matrix
         transpose(a);
         return *this;
     }

@@ -93,12 +93,12 @@ public:
 	u32 dwOpenCounter;
 
 private:
-	void check_cached_files(LPSTR fname, const file &desc, LPCSTR &source_name);
+	void check_cached_files(string_path &fname, const file &desc, LPCSTR &source_name);
 
 	void file_from_cache_impl(IReader *&R, LPSTR fname, const file &desc);
 	void file_from_cache_impl(CStreamReader *&R, LPSTR fname, const file &desc);
 	template <typename T>
-	void file_from_cache(T *&R, LPSTR fname, const file &desc, LPCSTR &source_name);
+	void file_from_cache(T *&R, string_path &fname, const file &desc, LPCSTR &source_name);
 
 	void file_from_archive(IReader *&R, LPCSTR fname, const file &desc);
 	void file_from_archive(CStreamReader *&R, LPCSTR fname, const file &desc);

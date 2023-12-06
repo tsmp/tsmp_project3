@@ -58,8 +58,8 @@ public:
 	u32 stat_strdock;
 #endif // DEBUG_MEMORY_MANAGER
 
-	u32 stat_calls;
-	s32 stat_counter;
+	u32 stat_calls = 0;
+	s32 stat_counter = 0;
 
 public:
 	void dbg_register(void *_p, size_t _size, const char *_name);

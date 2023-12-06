@@ -1,23 +1,4 @@
-#ifndef STREAM_READER_INLINE_H
-#define STREAM_READER_INLINE_H
-
-IC CStreamReader::CStreamReader()
-{
-}
-
-IC CStreamReader::CStreamReader(const CStreamReader &object) : m_start_offset(object.m_start_offset),
-															   m_file_size(object.m_file_size),
-															   m_archive_size(object.m_archive_size),
-															   m_window_size(object.m_window_size)
-{
-	// should be never called
-}
-
-IC CStreamReader &CStreamReader::operator=(const CStreamReader &)
-{
-	// should be never called
-	return (*this);
-}
+#pragma once
 
 IC const HANDLE &CStreamReader::file_mapping_handle() const
 {
@@ -65,5 +46,3 @@ IC void CStreamReader::close()
 	CStreamReader *self = this;
 	xr_delete(self);
 }
-
-#endif // STREAM_READER_INLINE_H

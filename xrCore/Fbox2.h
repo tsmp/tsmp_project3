@@ -372,13 +372,13 @@ public:
 			result.set(min.x, min.y);
 			break;
 		case 1:
-			result.set(min.x, min.y);
+			result.set(min.x, max.y);
 			break;
 		case 2:
 			result.set(max.x, min.y);
 			break;
 		case 3:
-			result.set(max.x, min.y);
+			result.set(max.x, max.y);
 			break;
 		default:
 			result.set(0.f, 0.f);

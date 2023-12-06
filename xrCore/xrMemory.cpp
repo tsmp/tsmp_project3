@@ -59,9 +59,6 @@ void xrMemory::_initialize(BOOL bDebug)
 	debug_info_update = 0;
 #endif // DEBUG_MEMORY_MANAGER
 
-	stat_calls = 0;
-	stat_counter = 0;
-
 	u32 features = CPU::ID.feature & CPU::ID.os_support;
 	if (features & _CPU_FEATURE_MMX)
 	{
@@ -141,7 +138,7 @@ void xrMemory::mem_compact()
 {
 	RegFlushKey(HKEY_CLASSES_ROOT);
 	RegFlushKey(HKEY_CURRENT_USER);
-	_heapmin();
+	std::ignore = _heapmin();
 	HeapCompact(GetProcessHeap(), 0);
 	if (g_pStringContainer)
 		g_pStringContainer->clean();
