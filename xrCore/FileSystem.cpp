@@ -98,12 +98,10 @@ LPCSTR MakeFilter(string1024 &dest, LPCSTR info, LPCSTR ext)
     return dest;
 }
 
-//------------------------------------------------------------------------------
 // start_flt_ext = -1-all 0..n-indices
-//------------------------------------------------------------------------------
 bool EFS_Utils::GetOpenName(LPCSTR initial, string_path &buffer, int sz_buf, bool bMulti, LPCSTR offset, int start_flt_ext)
 {
-    VERIFY(buffer && (sz_buf > 0));
+    VERIFY(sz_buf > 0);
     FS_Path &P = *FS.get_path(initial);
     string1024 flt;
     MakeFilter(flt, P.m_FilterCaption ? P.m_FilterCaption : "", P.m_DefExt);
