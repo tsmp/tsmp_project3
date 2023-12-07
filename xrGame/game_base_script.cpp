@@ -2,6 +2,7 @@
 #include "game_base.h"
 #include "xrServer_script_macroses.h"
 #include "../../xrNetwork/client_id.h"
+#include "Level.h"
 
 using namespace luabind;
 
@@ -34,6 +35,20 @@ void game_PlayerState::script_register(lua_State *L)
 			 .def_readwrite("GameID", &BaseType::GameID)
 			 .def_readwrite("skin", &BaseType::skin)
 			 .def_readwrite("RespawnTime", &BaseType::RespawnTime)
+			 .def_readwrite("m_iSelfKills", &BaseType::m_iSelfKills)
+			 .def_readwrite("m_iTeamKills", &BaseType::m_iTeamKills)
+			 .def_readwrite("m_iKillsInRowCurr", &BaseType::m_iKillsInRowCurr)
+			 .def_readwrite("money_for_round", &BaseType::money_for_round)
+			 .def_readwrite("money_for_round_team2", &BaseType::money_for_round_team2)
+			 .def_readwrite("experience_Real", &BaseType::experience_Real)
+			 .def_readwrite("experience_New", &BaseType::experience_New)
+			 .def_readwrite("experience_D", &BaseType::experience_D)
+			 .def_readwrite("rank", &BaseType::rank)
+			 .def_readwrite("DeathTime", &BaseType::DeathTime)
+			 .def_readwrite("m_online_time", &BaseType::m_online_time)
+			 //.def_readwrite("m_Stats", &BaseType::m_Stats) todo
+			 //.def_readwrite("m_StatsBeforeDisconnect", &BaseType::m_StatsBeforeDisconnect)
+			 .def("frags", &BaseType::frags)
 
 			 .def_readwrite("pItemList", &BaseType::pItemList)
 			 .def_readwrite("LastBuyAcount", &BaseType::LastBuyAcount)
