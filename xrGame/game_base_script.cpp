@@ -49,6 +49,7 @@ void game_PlayerState::script_register(lua_State *L)
 			 //.def_readwrite("m_Stats", &BaseType::m_Stats) todo
 			 //.def_readwrite("m_StatsBeforeDisconnect", &BaseType::m_StatsBeforeDisconnect)
 			 .def("frags", &BaseType::frags)
+			 .def("set_team", &BaseType::SetTeam)
 
 			 .def_readwrite("pItemList", &BaseType::pItemList)
 			 .def_readwrite("LastBuyAcount", &BaseType::LastBuyAcount)

@@ -32,6 +32,8 @@
 #include "screenshot_manager.h"
 #include "VoiceChat.h"
 #include "game_cl_mp_snd_messages.h"
+#include "xrServer_Object_Base.h"
+#include "game_sv_mp.h"
 
 #define EQUIPMENT_ICONS "ui\\ui_mp_icon_kill"
 #define KILLEVENT_ICONS "ui\\ui_hud_mp_icon_death"
@@ -684,6 +686,24 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 			Msg("! File transfer error: from client [%u]: %s", tmp_client.value(), error_msg.c_str());
 		}
 	}break;
+	case GAME_EVENT_INSTANT_TEAM_CHANGE:
+	{
+		u16 gid = P.r_u16();
+		u8 team = P.r_u8();
+		shared_str visual;
+		P.r_stringZ(visual);
+		game_PlayerState* player = Game().GetPlayerByGameID(gid);
+		if (player)
+		{
+			player->team = team;
+			CActor* pobj = smart_cast<CActor*>(Level().Objects.net_Find(gid));
+			if (pobj)
+			{
+				pobj->ChangeVisual(visual.c_str());
+			}
+		}
+	}
+	break;
 
 	default:
 		inherited::TranslateGameMessage(msg, P);
