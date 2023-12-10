@@ -76,7 +76,6 @@ public:
 	float m_fPowerRestoreSpeed;
 	float m_fBleedingRestoreSpeed;
 	CHitImmunity m_ArtefactHitImmunities;
-	float m_fWalkAccelMultiplier;
 
 protected:
 	MotionSVec m_anim_idle;

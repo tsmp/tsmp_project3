@@ -299,7 +299,8 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 					else
 						scale *= m_fWalk_StrafeFactor;
 				}
-				vControlAccel.mul(scale * (float) WalkAccelMultiplierOnBelt());
+
+				vControlAccel.mul(scale);
 			}
 		}
 	}
