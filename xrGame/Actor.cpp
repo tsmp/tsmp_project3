@@ -1591,6 +1591,22 @@ float CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type)
 	return res_hit_power_k * hit_power;
 }
 
+float CActor::WalkAccelMultiplierOnBelt()
+{
+	float walk_accel_k = 1.0f;
+	for (TIItemContainer::iterator it = inventory().m_belt.begin();
+		inventory().m_belt.end() != it; ++it)
+	{
+		CArtefact* artefact = smart_cast<CArtefact*>(*it);
+		if (artefact)
+		{
+			walk_accel_k += artefact->m_fWalkAccelMultiplier;
+		}
+	}
+
+	return walk_accel_k;
+}
+
 void CActor::SetZoomRndSeed(s32 Seed)
 {
 	if (Seed)
