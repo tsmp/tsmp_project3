@@ -1174,6 +1174,8 @@ void CActor::shedule_Update(u32 DT)
 	Check_for_AutoPickUp();
 }
 
+int CActor::GetHeadId() { return m_head; }
+
 void CActor::UpdateVisibleUsableObjects()
 {
 	//что актер видит перед собой
