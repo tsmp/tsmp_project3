@@ -1000,14 +1000,10 @@ void game_sv_Deathmatch::OnPlayerHitPlayer_Case(game_PlayerState *ps_hitter, gam
 	}
 	if (g_sv_dm_HeadShotOnly)
 	{
-		CActor* pobj = smart_cast<CActor*>(Level().Objects.net_Find(ps_hitted->GameID));
-		if (pobj)
+		if (CActor* pobj = smart_cast<CActor*>(Level().Objects.net_Find(ps_hitted->GameID)))
 		{
-			if (pHitS->boneID != pobj->GetHeadId())
-			{
-				pHitS->power = 0;
-				pHitS->impulse = 0;
-			}
+			pHitS->power = 0;
+			pHitS->impulse = 0;
 		}
 	}
 }

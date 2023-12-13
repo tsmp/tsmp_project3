@@ -489,7 +489,7 @@ public:
 	virtual BOOL g_State(SEntityState &state) const;
 	virtual float GetWeaponAccuracy() const;
 	bool IsZoomAimingMode() const { return m_bZoomAimingMode; }
-	virtual int GetHeadId();
+	int GetHeadId();
 
 protected:
 	//если актер целится в прицел
