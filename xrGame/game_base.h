@@ -141,8 +141,6 @@ public:
 
 	s16 frags() const { return m_Stats.m_iRivalKills - m_iSelfKills - m_iTeamKills; }
 
-	void SetTeam(u8 id);
-
 	virtual void net_Export(NET_Packet &P, BOOL Full = FALSE);
 	virtual void net_Import(NET_Packet &P);
 
