@@ -146,58 +146,6 @@ bool game_PlayerState::HasOldID(u16 ID)
 	return false;
 }
 
-void game_PlayerState::SetTeam(u8 id)
-{
-	if (!OnServer())
-		return;
-
-	if (!Level().Server || !Level().Server->game)
-		return;
-
-	game_sv_mp* game = smart_cast<game_sv_mp*>(Level().Server->game);
-
-	if (game)
-	{
-		NET_Packet P;
-		Level().Server->ForEachClientDo([&](IClient* client)
-		{
-			xrClientData* C = static_cast<xrClientData*>(client);
-			game_PlayerState* ps = C->ps;
-			u16 gid = ps->GameID;
-			shared_str NewVisual = NULL;
-			if (ps && gid == GameID)
-			{
-				ps->team = id;
-				CActor* obj = smart_cast<CActor*>(Level().Objects.net_Find(gid));
-				if (obj)
-				{
-					string256 SkinName;
-					std::strcpy(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));
-					TEAM_SKINS_NAMES skins = game->GetTeamData(id)->aSkins;
-					u8 skinid = ps->skin;
-					if (skins.size() < skinid)
-					{
-						skinid = 0;
-					}
-					std::strcat(SkinName, skins[skinid].c_str());
-					std::strcat(SkinName, ".ogf");
-					NewVisual._set(SkinName);
-					obj->ChangeVisual(NewVisual);
-				}
-				game->GenerateGameMessage(P);
-		
-				P.w_u32(GAME_EVENT_INSTANT_TEAM_CHANGE);
-				P.w_u16(gid);
-				P.w_u8(id);
-				P.w_stringZ(NewVisual);
-		
-				game->u_EventSend(P);
-				Level().Server->game->signal_Syncronize();
-			}
-		});
-	}
-}
-
 game_GameState::game_GameState()
 {
 	m_type = -1;
