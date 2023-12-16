@@ -35,6 +35,7 @@ BOOL g_sv_dm_bPDAHunt = TRUE;
 u32 g_sv_dm_dwWarmUp_MaxTime = 0;
 BOOL g_sv_dm_bDMIgnore_Money_OnBuy = FALSE;
 BOOL g_sv_dm_HeadShotOnly = FALSE;
+BOOL g_sv_dm_DisableScore = FALSE;
 
 BOOL game_sv_Deathmatch::IsDamageBlockIndEnabled() { return g_sv_dm_bDamageBlockIndicators; };
 s32 game_sv_Deathmatch::GetTimeLimit() { return g_sv_dm_dwTimeLimit; };
@@ -1236,6 +1237,9 @@ void game_sv_Deathmatch::OnPlayerChangeSkin(ClientID const &id_who, s8 skin)
 
 void game_sv_Deathmatch::SetTeamScore(u32 idx, int val)
 {
+	if (g_sv_dm_DisableScore)
+		return;
+
 	VERIFY((idx >= 0) && (idx < m_TeamsScores.size()));
 	m_TeamsScores[idx] = val;
 }
