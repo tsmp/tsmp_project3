@@ -195,6 +195,7 @@ protected:
 
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
+	void SetScriptTeamScore(u32 idx, int val);
 };
 
 add_to_type_list(game_sv_Deathmatch)
