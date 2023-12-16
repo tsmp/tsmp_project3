@@ -1763,3 +1763,13 @@ void game_sv_mp::SetTeam(u16 gameid,u8 id)
 		}
 	}
 }
+
+void game_sv_mp::Release(u16 gameid)
+{
+	if (!OnServer())
+		return;
+
+	NET_Packet packet;
+	game_GameState::u_EventGen(packet, GE_DESTROY, gameid);
+	Level().Send(packet, net_flags(TRUE, TRUE));
+}
