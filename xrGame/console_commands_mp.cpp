@@ -59,7 +59,6 @@ extern BOOL g_sv_tdm_bAutoTeamSwap;
 extern BOOL g_sv_tdm_bFriendlyIndicators;
 extern BOOL g_sv_tdm_bFriendlyNames;
 extern BOOL g_sv_tdm_bFriendlyFireEnabled;
-extern BOOL g_sv_dm_HeadShotOnly;
 extern BOOL g_sv_dm_DisableScore;
 extern BOOL g_bLeaveTDemo;
 extern int g_sv_tdm_iTeamKillLimit;
@@ -1965,7 +1964,6 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer, "sv_friendly_indicators", (int *)&g_sv_tdm_bFriendlyIndicators, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_friendly_names", (int *)&g_sv_tdm_bFriendlyNames, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_friendly_fire", (int*)&g_sv_tdm_bFriendlyFireEnabled, 0, 1);
-	CMD4(CCC_SV_Integer, "sv_headshot_only", (int*)&g_sv_dm_HeadShotOnly, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_disable_score", (int*)&g_sv_dm_DisableScore, 0, 1);
 	CMD4(CCC_SV_Integer, "sv_teamkill_limit", &g_sv_tdm_iTeamKillLimit, 0, 100);
 	CMD4(CCC_SV_Integer, "sv_teamkill_punish", (int *)&g_sv_tdm_bTeamKillPunishment, 0, 1);

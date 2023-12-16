@@ -34,7 +34,6 @@ u32 g_sv_dm_dwAnomalySetLengthTime = 3;
 BOOL g_sv_dm_bPDAHunt = TRUE;
 u32 g_sv_dm_dwWarmUp_MaxTime = 0;
 BOOL g_sv_dm_bDMIgnore_Money_OnBuy = FALSE;
-BOOL g_sv_dm_HeadShotOnly = FALSE;
 BOOL g_sv_dm_DisableScore = FALSE;
 
 BOOL game_sv_Deathmatch::IsDamageBlockIndEnabled() { return g_sv_dm_bDamageBlockIndicators; };
@@ -997,18 +996,6 @@ void game_sv_Deathmatch::OnPlayerHitPlayer_Case(game_PlayerState *ps_hitter, gam
 		{
 			pHitS->power = 0;
 			pHitS->impulse = 0;
-		}
-	}
-	if (g_sv_dm_HeadShotOnly)
-	{
-		CActor* pobj = smart_cast<CActor*>(Level().Objects.net_Find(ps_hitted->GameID));
-		if (pobj)
-		{
-			if (pHitS->boneID != pobj->GetHeadId())
-			{
-				pHitS->power = 0;
-				pHitS->impulse = 0;
-			}
 		}
 	}
 }
