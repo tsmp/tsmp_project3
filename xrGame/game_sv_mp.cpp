@@ -1735,8 +1735,7 @@ void game_sv_mp::SetTeam(u16 gameid,u8 id)
 			NET_Packet P;
 			shared_str NewVisual = NULL;
 			ps->team = id;
-			CActor* obj = smart_cast<CActor*>(Level().Objects.net_Find(gameid));
-			if (obj)
+			if (CActor* obj = smart_cast<CActor*>(Level().Objects.net_Find(gameid)))
 			{
 				string256 SkinName;
 				std::strcpy(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));

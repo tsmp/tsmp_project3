@@ -4,9 +4,6 @@
 #include "script_engine.h"
 #include "level.h"
 #include "xrMessages.h"
-#include "game_sv_mp.h"
-#include "Actor.h"
-#include "xrServer_Object_Base.h"
 
 extern u64 GetStartGameTime();
 
