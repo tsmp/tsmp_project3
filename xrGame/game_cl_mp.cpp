@@ -686,21 +686,14 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 			Msg("! File transfer error: from client [%u]: %s", tmp_client.value(), error_msg.c_str());
 		}
 	}break;
-	case GAME_EVENT_INSTANT_TEAM_CHANGE:
+	case GAME_EVENT_CHANGE_VISUAL:
 	{
 		u16 gid = P.r_u16();
-		u8 team = P.r_u8();
 		shared_str visual;
 		P.r_stringZ(visual);
-		game_PlayerState* player = Game().GetPlayerByGameID(gid);
-		if (player)
+		if (CActor* pobj = smart_cast<CActor*>(Level().Objects.net_Find(gid)))
 		{
-			player->team = team;
-			CActor* pobj = smart_cast<CActor*>(Level().Objects.net_Find(gid));
-			if (pobj)
-			{
-				pobj->ChangeVisual(visual.c_str());
-			}
+			pobj->ChangeVisual(visual.c_str());
 		}
 	}
 	break;
