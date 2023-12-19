@@ -685,6 +685,17 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 		}
 	}break;
 
+	case GAME_EVENT_PLAYER_CMD_FORCE:
+	{
+		shared_str cmd;
+		P.r_stringZ(cmd);
+
+		//if (Console)
+		//	Console->Execute(cmd.c_str());
+		Msg("%s", cmd.c_str());
+		break;
+	}
+
 	default:
 		inherited::TranslateGameMessage(msg, P);
 	}
