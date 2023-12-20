@@ -234,3 +234,7 @@ protected:
 };
 
 ENGINE_API extern CConsole *Console;
+
+//#define CONSOLE_API __declspec(dllexport)
+////#define CONSOLE_API __declspec(dllimport)
+//CONSOLE_API void __cdecl CMDSignal(LPCSTR name, LPCSTR args) {};

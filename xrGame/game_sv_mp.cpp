@@ -291,6 +291,23 @@ void game_sv_mp::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &send
 	}; //switch
 }
 
+//extern "C"
+//{
+//	CONSOLE_API void __cdecl CMDSignal(LPCSTR name, LPCSTR args)
+//	{
+//		Msg("proper method = name(%s) args(%s)", name, args);
+//		if (g_pGameLevel)
+//		{
+//			NET_Packet P;
+//			Game().u_EventGen(P, GE_GAME_EVENT, Game().local_player->GameID);
+//			P.w_u16(GAME_EVENT_PLAYER_CMD_CHANGE);
+//			P.w_stringZ(name);
+//			P.w_stringZ(args);
+//			Game().u_EventSend(P);
+//		}
+//	}
+//}
+
 bool g_bConsoleCommandsCreated = false;
 extern float g_fTimeFactor;
 

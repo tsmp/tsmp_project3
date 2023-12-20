@@ -501,8 +501,11 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 			
 			if (last[0] == '\0')
 			{
-				if (cc->bEmptyArgsHandled)				
-					cc->Execute(last);				
+				if (cc->bEmptyArgsHandled)
+				{
+					cc->Execute(last);
+					//CMDSignal(cc->Name(), last);
+				}
 				else
 				{
 					IConsole_Command::TStatus stat;
@@ -513,6 +516,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 			else
 			{
 				cc->Execute(last);
+				//CMDSignal(cc->Name(), last);
 
 				if (record_cmd)
 					cc->add_to_LRU((LPCSTR)last);
