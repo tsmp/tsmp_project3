@@ -41,6 +41,10 @@ void IGame_Persistent::OnAppActivate()
 {
 }
 
+void IGame_Persistent::CMDSignal(LPCSTR name, PSTR args)
+{
+}
+
 void IGame_Persistent::OnAppDeactivate()
 {
 }

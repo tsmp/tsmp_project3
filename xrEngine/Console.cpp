@@ -504,7 +504,8 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 				if (cc->bEmptyArgsHandled)
 				{
 					cc->Execute(last);
-					//CMDSignal(cc->Name(), last);
+					if (g_pGamePersistent)
+						g_pGamePersistent->CMDSignal(cc->Name(), last);
 				}
 				else
 				{
@@ -516,7 +517,8 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 			else
 			{
 				cc->Execute(last);
-				//CMDSignal(cc->Name(), last);
+				if (g_pGamePersistent)
+					g_pGamePersistent->CMDSignal(cc->Name(), last);
 
 				if (record_cmd)
 					cc->add_to_LRU((LPCSTR)last);

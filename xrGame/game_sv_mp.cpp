@@ -268,45 +268,10 @@ void game_sv_mp::OnEvent(NET_Packet &P, u16 type, u32 time, ClientID const &send
 		OnPlayerGameMenu(P, sender);		
 		break;
 
-	case GAME_EVENT_PLAYER_CMD_CHANGE:
-	{
-		string1024 cmd = "";
-		P.r_stringZ(cmd);
-		string1024 args = "";
-		P.r_stringZ(args);
-		Msg("player (%s) changed command (%s) with arguments (%d)", get_id(sender)->getName(), cmd, args);
-
-		NET_Packet P2;
-		GenerateGameMessage(P2);
-		P2.w_u32(GAME_EVENT_PLAYER_CMD_FORCE);
-		P2.w_stringZ(("%s 1", cmd));
-		Msg(("%s 1", cmd));
-
-		m_server->SendTo(sender, P2);
-		break;
-	}
-
 	default:
 		inherited::OnEvent(P, type, time, sender);
 	}; //switch
 }
-
-//extern "C"
-//{
-//	CONSOLE_API void __cdecl CMDSignal(LPCSTR name, LPCSTR args)
-//	{
-//		Msg("proper method = name(%s) args(%s)", name, args);
-//		if (g_pGameLevel)
-//		{
-//			NET_Packet P;
-//			Game().u_EventGen(P, GE_GAME_EVENT, Game().local_player->GameID);
-//			P.w_u16(GAME_EVENT_PLAYER_CMD_CHANGE);
-//			P.w_stringZ(name);
-//			P.w_stringZ(args);
-//			Game().u_EventSend(P);
-//		}
-//	}
-//}
 
 bool g_bConsoleCommandsCreated = false;
 extern float g_fTimeFactor;

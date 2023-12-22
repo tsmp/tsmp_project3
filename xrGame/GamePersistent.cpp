@@ -571,6 +571,25 @@ void CGamePersistent::OnAppActivate()
 	bEntryFlag = TRUE;
 }
 
+void CGamePersistent::CMDSignal(LPCSTR name, PSTR args)
+{
+	if (g_pGamePersistent->MustCMDSignal)
+	{
+		if (g_pGameLevel && Level().game && Game().local_player)
+		{
+			NET_Packet P;
+			CGameObject::u_EventGen(P, GE_PLAYER_CMD_CHANGE, Game().local_player->GameID);
+			P.w_stringZ(name);
+			P.w_stringZ(args);
+			CGameObject::u_EventSend(P);
+		}
+	}
+	else
+	{
+		g_pGamePersistent->MustCMDSignal = true;
+	}
+}
+
 void CGamePersistent::OnAppDeactivate()
 {
 	if (!bEntryFlag)

@@ -79,6 +79,8 @@ public:
 	virtual void OnAppStart();
 	virtual void OnAppEnd();
 	virtual void OnAppActivate();
+	virtual void CMDSignal(LPCSTR name, PSTR args);
+	bool MustCMDSignal;
 	virtual void OnAppDeactivate();
 	virtual void OnFrame();
 

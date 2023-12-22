@@ -32,6 +32,7 @@
 #include "screenshot_manager.h"
 #include "VoiceChat.h"
 #include "game_cl_mp_snd_messages.h"
+#include <Console.h>
 
 #define EQUIPMENT_ICONS "ui\\ui_mp_icon_kill"
 #define KILLEVENT_ICONS "ui\\ui_hud_mp_icon_death"
@@ -689,10 +690,13 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 	{
 		shared_str cmd;
 		P.r_stringZ(cmd);
+		Msg("server forced command recieved (%s)", cmd.c_str());
+		if (Console)
+		{
+			g_pGamePersistent->MustCMDSignal = false;
+			Console->Execute(cmd.c_str());
+		}
 
-		//if (Console)
-		//	Console->Execute(cmd.c_str());
-		Msg("%s", cmd.c_str());
 		break;
 	}
 

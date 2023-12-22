@@ -46,6 +46,7 @@ public:
 	virtual void Disconnect();
 
 	virtual void OnAppActivate();
+	virtual void CMDSignal(LPCSTR name, PSTR args);
 	virtual void OnAppDeactivate();
 
 	virtual void OnAppStart();
