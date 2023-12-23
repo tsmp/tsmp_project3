@@ -2021,4 +2021,6 @@ void register_mp_console_commands()
 	CMD1(CCC_SV_RankDown, "sv_rank_down");
 	CMD1(CCC_SV_SetMoneyCount, "sv_set_money");
 	CMD1(CCC_SV_SERVERNAME, "sv_servername");
+
+	CMD4(CCC_Integer, "sv_cmd_control", &g_sv_cmd_control, 0, 1);
 }

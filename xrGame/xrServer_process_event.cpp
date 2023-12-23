@@ -16,6 +16,8 @@
 #include "..\TSMP3_Build_Config.h"
 #include "InfoPortion.h"
 
+int g_sv_cmd_control = 0;
+
 void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 {
 #ifdef SLOW_VERIFY_ENTITIES
@@ -419,37 +421,55 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 
 	case GE_PLAYER_CMD_CHANGE:
 	{
+		if (g_sv_cmd_control == 0)
+			return;
+
 		shared_str cmd;
 		P.r_stringZ(cmd);
 		shared_str args;
 		P.r_stringZ(args);
+		str_c cmdname = cmd.c_str();
+		str_c cmdargs = args.c_str();
 
-		CMDRESTR item = get_cmdrestrictor(cmd.c_str());
-		float forcevalue, pvalue = std::stof(args.c_str());
-
-		clamp(forcevalue, item.min, item.max);
-
-		if (forcevalue != pvalue)
+		CMDRESTR item;
+		if (get_cmdrestrictor(cmdname, item))
 		{
-			string512 argument = "";
-			if (forcevalue == 0 || forcevalue == 1)
-			{
-				sprintf_s(argument, "%d", static_cast<int>(forcevalue));
-			}
-			else
-			{
-				sprintf_s(argument, "%f", forcevalue);
-			}
+			float pvalue = std::stof(args.c_str());
+			float forcevalue = pvalue;
+			float cmdmin = item.min;
+			float cmdmax = item.max;
 
-			NET_Packet P2;
-			Level().Server->game->GenerateGameMessage(P2);
-			P2.w_u32(GAME_EVENT_PLAYER_CMD_FORCE);
-			xr_string command = cmd.c_str();
-			command += " ";
-			command += argument;
-			P2.w_stringZ(command.c_str());
+			clamp(forcevalue, cmdmin, cmdmax);
 
-			Level().Server->SendTo(sender, P2);
+			if (forcevalue != pvalue)
+			{
+				string512 argument = "";
+				if (forcevalue == 0 || forcevalue == 1)
+				{
+					sprintf_s(argument, "%d", static_cast<int>(forcevalue));
+				}
+				else
+				{
+					sprintf_s(argument, "%f", forcevalue);
+				}
+
+				NET_Packet P2;
+				game->GenerateGameMessage(P2);
+				P2.w_u32(GAME_EVENT_PLAYER_CMD_FORCE);
+				xr_string command = cmdname;
+				command += " ";
+				command += argument;
+				P2.w_stringZ(command.c_str());
+
+				SendTo(sender, P2, net_flags(TRUE, TRUE));
+
+				NET_Packet P_answ;
+				P_answ.w_begin(M_REMOTE_CONTROL_CMD);
+				string512 msgstr = "";
+				sprintf_s(msgstr, "cmd (%s) value (%s) out of bounds (%f/%f)", cmdname, cmdargs, cmdmin, cmdmax);
+				P_answ.w_stringZ(msgstr);
+				SendTo(sender, P_answ, net_flags(TRUE, TRUE));
+			}
 		}
 		break;
 	}
@@ -460,13 +480,18 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 	}
 }
 
-CMDRESTR get_cmdrestrictor(const shared_str& name)
+bool get_cmdrestrictor(const str_c& name, CMDRESTR& val)
 {
-	CMDRESTR restr;
-	for (const auto& cmdrestr : cmdrestr_list)
+	Msg("%s", name);
+	for (const auto& r : cmdrestr_list)
 	{
-		if (cmdrestr.name == name)
-			return cmdrestr;
+		Msg("%s", r.name);
+		Msg("%f", r.min);
+		Msg("%f", r.max);
+		if (r.name == name) {
+			val = r;
+			return true;
+		}
 	}
-	return restr;
+	return false;
 }
