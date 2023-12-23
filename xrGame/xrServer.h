@@ -25,7 +25,7 @@ typedef struct CMDRESTR
 CMDRESTR CreateCMDRestr(const shared_str& item);
 
 extern xr_list<CMDRESTR> cmdrestr_list;
-bool get_cmdrestrictor(const str_c& name, CMDRESTR &val);
+bool get_cmdrestrictor(const str_c& name, CMDRESTR& val);
 extern int g_sv_cmd_control;
 
 class xrClientData : public IClient

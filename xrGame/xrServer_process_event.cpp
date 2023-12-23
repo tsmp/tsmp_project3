@@ -482,13 +482,9 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 
 bool get_cmdrestrictor(const str_c& name, CMDRESTR& val)
 {
-	Msg("%s", name);
 	for (const auto& r : cmdrestr_list)
 	{
-		Msg("%s", r.name);
-		Msg("%f", r.min);
-		Msg("%f", r.max);
-		if (r.name == name) {
+		if (r.name.c_str() == name) {
 			val = r;
 			return true;
 		}
