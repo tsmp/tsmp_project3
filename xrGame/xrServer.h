@@ -16,6 +16,17 @@ const u32 NET_Latency = 50; // time in (ms)
 // t-defs
 typedef xr_map<u16, CSE_Abstract *> xrS_entities;
 
+typedef struct CMDRESTR
+{
+	shared_str name;
+	float min;
+	float max;
+};
+CMDRESTR CreateCMDRestr(const shared_str& item);
+
+extern xr_list<CMDRESTR> cmdrestr_list;
+CMDRESTR get_cmdrestrictor(const shared_str& name);
+
 class xrClientData : public IClient
 {
 public:

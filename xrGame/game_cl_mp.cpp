@@ -690,7 +690,6 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 	{
 		shared_str cmd;
 		P.r_stringZ(cmd);
-		Msg("server forced command recieved (%s)", cmd.c_str());
 		if (Console)
 		{
 			g_pGamePersistent->MustCMDSignal = false;

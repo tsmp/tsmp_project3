@@ -423,19 +423,34 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		P.r_stringZ(cmd);
 		shared_str args;
 		P.r_stringZ(args);
-		auto svGame = Level().Server->game;
-		if (svGame)
-		Msg("player (%s) changed command (%s) with arguments (%s)", svGame->get_id(sender)->getName(), cmd.c_str(), args.c_str());
 
-		NET_Packet P2;
-		Level().Server->game->GenerateGameMessage(P2);
-		P2.w_u32(GAME_EVENT_PLAYER_CMD_FORCE);
-		xr_string command = cmd.c_str();
-		command += " ";
-		command += "1";
-		P2.w_stringZ(command.c_str());
+		CMDRESTR item = get_cmdrestrictor(cmd.c_str());
+		float forcevalue, pvalue = std::stof(args.c_str());
 
-		Level().Server->SendTo(sender, P2);
+		clamp(forcevalue, item.min, item.max);
+
+		if (forcevalue != pvalue)
+		{
+			string512 argument = "";
+			if (forcevalue == 0 || forcevalue == 1)
+			{
+				sprintf_s(argument, "%d", static_cast<int>(forcevalue));
+			}
+			else
+			{
+				sprintf_s(argument, "%f", forcevalue);
+			}
+
+			NET_Packet P2;
+			Level().Server->game->GenerateGameMessage(P2);
+			P2.w_u32(GAME_EVENT_PLAYER_CMD_FORCE);
+			xr_string command = cmd.c_str();
+			command += " ";
+			command += argument;
+			P2.w_stringZ(command.c_str());
+
+			Level().Server->SendTo(sender, P2);
+		}
 		break;
 	}
 
@@ -443,4 +458,15 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		R_ASSERT2(0, "Game Event not implemented!!!");
 		break;
 	}
+}
+
+CMDRESTR get_cmdrestrictor(const shared_str& name)
+{
+	CMDRESTR restr;
+	for (const auto& cmdrestr : cmdrestr_list)
+	{
+		if (cmdrestr.name == name)
+			return cmdrestr;
+	}
+	return restr;
 }

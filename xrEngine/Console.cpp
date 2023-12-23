@@ -502,11 +502,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 			if (last[0] == '\0')
 			{
 				if (cc->bEmptyArgsHandled)
-				{
 					cc->Execute(last);
-					if (g_pGamePersistent)
-						g_pGamePersistent->CMDSignal(cc->Name(), last);
-				}
 				else
 				{
 					IConsole_Command::TStatus stat;

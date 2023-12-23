@@ -35,6 +35,7 @@ float g_sv_mp_fVoteQuota = VOTE_QUOTA;
 float g_sv_mp_fVoteTime = VOTE_LENGTH_TIME;
 
 extern xr_token round_end_result_str[];
+xr_list<CMDRESTR> cmdrestr_list;
 
 #include "ui\UIBuyWndShared.h"
 
@@ -286,6 +287,40 @@ void game_sv_mp::Create(shared_str &options)
 
 	LoadRanks();
 	Set_RankUp_Allowed(false);
+
+	string256 singleItem;
+	LPCSTR restrstr = pSettings->r_string("cmd_base", "cmd_restrictions");
+	u32 count = _GetItemCount(restrstr);
+	for (u32 j = 0; j < count; ++j)
+	{
+		_GetItem(restrstr, j, singleItem);
+		CMDRESTR r = CreateCMDRestr(singleItem);
+		cmdrestr_list.push_back(r);
+	}
+}
+
+CMDRESTR CreateCMDRestr(const shared_str& item)
+{ 
+	CMDRESTR ret;
+	string512 _name;
+	int _cnt = 0;
+	ptrdiff_t n = strchr(item.c_str(), ':') - item.c_str();
+	if (n > 0)
+	{
+		strncpy(_name, item.c_str(), n);
+		_name[n] = 0;
+		float minV, maxV;
+		_cnt = sscanf(item.c_str() + n + 1, "%f:%f", &minV, &maxV);
+		if (_cnt == 2)
+		{
+			ret.min = minV;
+			ret.max = maxV;
+		}
+	}
+	R_ASSERT3(n > 0 && _cnt == 2, "invalid record format <cmd:min:max>", item.c_str());
+	ret.name = _name;
+
+	return ret;
 }
 
 u8 game_sv_mp::SpectatorModes_Pack()
