@@ -1826,6 +1826,58 @@ class CCC_SV_SERVERNAME : public IConsole_Command
 	virtual void Info(TInfo& I) { strcpy(I, "set server name"); }
 };
 
+class CCC_CMDControl : public IConsole_Command
+{
+protected:
+	int min, max;
+public:
+	CCC_CMDControl(LPCSTR N, int _min = 0, int _max = 999) : IConsole_Command(N),
+		min(_min),
+		max(_max) {};
+	virtual void Execute(LPCSTR args)
+	{
+		int v = atoi(args);
+		bool mustupd = g_pGameLevel && g_sv_cmd_control != v && g_sv_cmd_control == 0;
+
+		if (v < min || v > max)
+			InvalidSyntax();
+		else
+			g_sv_cmd_control = v;
+
+		if (mustupd)
+		{
+			Level().Server->ForEachClientDoSender([&](IClient* id_who)
+			{
+				if (xrClientData* l_pC = static_cast<xrClientData*>(id_who))
+				{
+					NET_Packet P2;
+					Level().Server->game->GenerateGameMessage(P2);
+					P2.w_u32(GAME_EVENT_PLAYER_CFG_DUMP);
+					Level().Server->SendTo(l_pC->ID, P2, net_flags(TRUE, TRUE));
+				}
+			});
+		}
+	};
+
+	virtual void Status(TStatus& S)
+	{
+		itoa(g_sv_cmd_control, S, 10);
+	}
+
+	virtual void Info(TInfo& I)
+	{
+		sprintf_s(I, sizeof(I), "integer value in range [%d,%d]", min, max);
+	}
+
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		TStatus str;
+		sprintf_s(str, sizeof(str), "%d  (current)  [%d,%d]", g_sv_cmd_control, min, max);
+		tips.push_back(str);
+		IConsole_Command::fill_tips(tips, mode);
+	}
+};
+
 void register_mp_console_commands()
 {
 	CMD1(CCC_Restart, "g_restart");
@@ -2022,5 +2074,5 @@ void register_mp_console_commands()
 	CMD1(CCC_SV_SetMoneyCount, "sv_set_money");
 	CMD1(CCC_SV_SERVERNAME, "sv_servername");
 
-	CMD4(CCC_Integer, "sv_cmd_control", &g_sv_cmd_control, 0, 1);
+	CMD3(CCC_CMDControl, "sv_cmd_control", 0, 1);
 }

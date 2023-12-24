@@ -688,10 +688,10 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 
 	case GAME_EVENT_PLAYER_CMD_FORCE:
 	{
-		shared_str cmd;
-		P.r_stringZ(cmd);
-		if (Console)
+		if (Console && !g_dedicated_server)
 		{
+			shared_str cmd;
+			P.r_stringZ(cmd);
 			g_pGamePersistent->MustCMDSignal = false;
 			Console->Execute(cmd.c_str());
 		}
@@ -700,7 +700,7 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 	}
 	case GAME_EVENT_PLAYER_CFG_DUMP:
 	{
-		if (Console)
+		if (Console && !g_dedicated_server)
 		{
 			xr_string command = "cfg_load ";
 			command += Console->ConfigFile;
