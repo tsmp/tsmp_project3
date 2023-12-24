@@ -468,7 +468,6 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 				command += " ";
 				command += argument;
 				P2.w_stringZ(command.c_str());
-
 				SendTo(sender, P2, net_flags(TRUE, TRUE));
 
 				NET_Packet P_answ;

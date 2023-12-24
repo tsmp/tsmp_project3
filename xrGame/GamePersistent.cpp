@@ -575,13 +575,13 @@ void CGamePersistent::CMDSignal(LPCSTR name, PSTR args)
 {
 	if (g_pGamePersistent->MustCMDSignal)
 	{
-		if (g_pGameLevel && Level().game && Game().local_player)
+		if (g_pGameLevel)
 		{
 			NET_Packet P;
-			CGameObject::u_EventGen(P, GE_PLAYER_CMD_CHANGE, Game().local_player->GameID);
+			Level().game->u_EventGen(P, GE_PLAYER_CMD_CHANGE, 0); //hack
 			P.w_stringZ(name);
 			P.w_stringZ(args);
-			CGameObject::u_EventSend(P);
+			Level().game->u_EventSend(P);
 		}
 	}
 	else

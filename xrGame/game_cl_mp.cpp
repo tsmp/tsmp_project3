@@ -698,6 +698,16 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 
 		break;
 	}
+	case GAME_EVENT_PLAYER_CFG_DUMP:
+	{
+		if (Console)
+		{
+			xr_string command = "cfg_load ";
+			command += Console->ConfigFile;
+			Console->Execute(command.c_str());
+		}
+		break;
+	}
 
 	default:
 		inherited::TranslateGameMessage(msg, P);

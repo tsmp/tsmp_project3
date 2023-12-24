@@ -1642,6 +1642,14 @@ void game_sv_Deathmatch::OnPlayerConnectFinished(ClientID const &id_who)
 		P.w_u32(GAME_EVENT_PLAYER_CONNECTED);
 		P.w_stringZ(xrCData->name.c_str());
 		u_EventSend(P);
+
+		if (g_sv_cmd_control)
+		{
+			NET_Packet P2;
+			GenerateGameMessage(P2);
+			P2.w_u32(GAME_EVENT_PLAYER_CFG_DUMP);
+			m_server->SendTo(id_who, P2, net_flags(TRUE, TRUE));
+		}
 	}
 
 	Send_Anomaly_States(id_who);

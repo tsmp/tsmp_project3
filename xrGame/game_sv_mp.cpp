@@ -288,7 +288,6 @@ void game_sv_mp::Create(shared_str &options)
 	LoadRanks();
 	Set_RankUp_Allowed(false);
 
-	//if (LPCSTR restrstr = pSettings->r_string("cmd_base", "cmd_restrictions"))
 	LPCSTR restrstr = READ_IF_EXISTS(pSettings, r_string, "cmd_base", "cmd_restrictions", "");
 	string256 singleItem;
 	u32 count = _GetItemCount(restrstr);
