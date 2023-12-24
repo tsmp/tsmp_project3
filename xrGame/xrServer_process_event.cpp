@@ -434,7 +434,15 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		CMDRESTR item;
 		if (get_cmdrestrictor(cmdname, item))
 		{
-			float pvalue = std::stof(args.c_str());
+			float pvalue;
+			if (args == "on" || args == "off")
+			{
+				pvalue = args == "on" ? 1 : 0;
+			}
+			else
+			{
+				pvalue = float(atof(cmdargs));
+			}
 			float forcevalue = pvalue;
 			float cmdmin = item.min;
 			float cmdmax = item.max;
