@@ -140,6 +140,12 @@ public:
 	bool IsSkip() const { return testFlag(GAME_PLAYER_FLAG_SKIP); }
 
 	s16 frags() const { return m_Stats.m_iRivalKills - m_iSelfKills - m_iTeamKills; }
+	s16 rivalfrags() const { return m_Stats.m_iRivalKills; }
+	s16 deaths() const { return m_Stats.m_iDeaths; }
+	s16 aifrags() const { return m_Stats.m_iAiKills; }
+	s16 headshots() const { return m_Stats.m_iHeadshots; }
+	s16 maxkillstreak() const { return m_Stats.m_iKillsInRowMax; }
+	s16 afcount() const { return m_Stats.af_count; }
 
 	virtual void net_Export(NET_Packet &P, BOOL Full = FALSE);
 	virtual void net_Import(NET_Packet &P);

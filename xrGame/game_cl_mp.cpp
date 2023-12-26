@@ -32,8 +32,6 @@
 #include "screenshot_manager.h"
 #include "VoiceChat.h"
 #include "game_cl_mp_snd_messages.h"
-#include "xrServer_Object_Base.h"
-#include "game_sv_mp.h"
 
 #define EQUIPMENT_ICONS "ui\\ui_mp_icon_kill"
 #define KILLEVENT_ICONS "ui\\ui_hud_mp_icon_death"
