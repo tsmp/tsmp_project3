@@ -2076,3 +2076,11 @@ void game_sv_Deathmatch::WriteGameState(CInifile &ini, LPCSTR sect, bool bRoundR
 		ini.w_u32(sect, "round_time_sec", game_time / 1000);
 	}
 }
+
+
+void game_sv_Deathmatch::SetScriptTeamScore(u32 idx, int val)
+{
+	VERIFY((idx >= 0) && (idx < m_TeamsScores.size()));
+	m_TeamsScores[idx] = val;
+	signal_Syncronize();
+}

@@ -190,12 +190,13 @@ public:
 
 	virtual u32 GetNumTeams() { return m_TeamsScores.size(); };
 
+	void SetScriptTeamScore(u32 idx, int val);
+
 protected:
 	virtual void WriteGameState(CInifile &ini, LPCSTR sect, bool bRoundResult);
 
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
-	void SetScriptTeamScore(u32 idx, int val);
 };
 
 add_to_type_list(game_sv_Deathmatch)

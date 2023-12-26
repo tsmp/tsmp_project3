@@ -6,6 +6,7 @@
 #include "level.h"
 #include "ai_space.h"
 #include "script_engine.h"
+#include "game_sv_deathmatch.h"
 
 using namespace luabind;
 
@@ -199,7 +200,9 @@ void game_sv_mp::script_register(lua_State *L)
 			 .def("signal_Syncronize", &game_sv_GameState::signal_Syncronize)
 			 .def("set_team", &game_sv_mp::SetTeam)
 			 .def("release", &game_sv_mp::Release)
-			 .def("set_visual", &game_sv_mp::SetVisual)];
+			 .def("set_visual", &game_sv_mp::SetVisual)
+			 .def("GetTeamScore", &game_sv_Deathmatch::GetTeamScore)
+			 .def("SetTeamScore", &game_sv_Deathmatch::SetScriptTeamScore)];
 }
 
 void game_sv_mp_script::script_register(lua_State *L)
