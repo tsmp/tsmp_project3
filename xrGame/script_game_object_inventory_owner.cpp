@@ -364,6 +364,7 @@ void CScriptGameObject::GiveItem(LPCSTR section, CScriptGameObject* pForWho)
 	NET_Packet P;
 	CGameObject::u_EventGen(P, GE_CLIENT_INV_SPAWN, pForWho->object().ID());
 	P.w_stringZ(section);
+	P.w_clientID(Game().local_svdpnid);
 	CGameObject::u_EventSend(P);
 }
 

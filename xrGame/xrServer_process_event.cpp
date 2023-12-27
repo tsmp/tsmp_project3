@@ -16,6 +16,8 @@
 #include "..\TSMP3_Build_Config.h"
 #include "InfoPortion.h"
 
+#include "game_cl_base.h"
+
 void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 {
 #ifdef SLOW_VERIFY_ENTITIES
@@ -410,7 +412,10 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 
 		shared_str nameSect;
 		P.r_stringZ(nameSect);
+		ClientID ID;
+		P.r_clientID(ID);
 		const Fvector3 pos = { 0,0,0 };
+		Msg("! GE_CLIENT_INV_SPAWN: Client[%d] Object[%s] ID[%d] Section[%s] Destination[%d]", ID.value(), receiver->name_replace(), receiver->ID, nameSect.c_str(), destination);
 
 		if (auto svGame = Level().Server->game)
 			svGame->SpawnObject(nameSect.c_str(), pos, shared_str(nullptr), destination);
