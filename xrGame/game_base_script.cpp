@@ -2,7 +2,6 @@
 #include "game_base.h"
 #include "xrServer_script_macroses.h"
 #include "../../xrNetwork/client_id.h"
-#include "Level.h"
 
 using namespace luabind;
 
