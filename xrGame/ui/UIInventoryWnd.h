@@ -151,4 +151,5 @@ protected:
 
 	TIItemContainer ruck_list;
 	u32 m_iCurrentActiveSlot;
+	bool m_iAltDrop;
 };
