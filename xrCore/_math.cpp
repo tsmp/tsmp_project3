@@ -15,123 +15,67 @@
 XRCORE_API Fmatrix Fidentity;
 XRCORE_API CRandom Random;
 
-#ifdef _M_AMD64
-u16 getFPUsw()
-{
-	return 0;
-}
-
+//#ifdef _M_AMD64
 namespace FPU
 {
-	XRCORE_API void m24(void)
+	// Задать точность вычислений
+	IC void SetFloatingPointPrecisionMode(unsigned int precisionBits)
 	{
-		_control87(_PC_24, MCW_PC);
-		_control87(_RC_CHOP, MCW_RC);
-	}
-	XRCORE_API void m24r(void)
-	{
-		_control87(_PC_24, MCW_PC);
-		_control87(_RC_NEAR, MCW_RC);
-	}
-	XRCORE_API void m53(void)
-	{
-		_control87(_PC_53, MCW_PC);
-		_control87(_RC_CHOP, MCW_RC);
-	}
-	XRCORE_API void m53r(void)
-	{
-		_control87(_PC_53, MCW_PC);
-		_control87(_RC_NEAR, MCW_RC);
-	}
-	XRCORE_API void m64(void)
-	{
-		_control87(_PC_64, MCW_PC);
-		_control87(_RC_CHOP, MCW_RC);
-	}
-	XRCORE_API void m64r(void)
-	{
-		_control87(_PC_64, MCW_PC);
-		_control87(_RC_NEAR, MCW_RC);
+#ifndef _WIN64 // Не поддерживается на x64
+		_control87(precisionBits, MCW_PC);
+#endif
 	}
 
-	void initialize() {}
-}; // namespace FPU
-#else
-u16 getFPUsw()
-{
-	u16 SW;
-	__asm fstcw SW;
-	return SW;
-}
-
-namespace FPU
-{
-	u16 _24 = 0;
-	u16 _24r = 0;
-	u16 _53 = 0;
-	u16 _53r = 0;
-	u16 _64 = 0;
-	u16 _64r = 0;
+	// Результат вычислений с плавающей точкой округляется до ближайшего, либо отбрасывается
+	// Например для 1.9 без округления будет 1.0, с округление 2.0
+	IC void SetFloatingPointRoundingMode(bool round)
+	{
+		_control87(round ? _RC_NEAR : _RC_CHOP, MCW_RC);
+	}
 
 	XRCORE_API void m24()
 	{
-		u16 p = _24;
-		__asm fldcw p;
+		SetFloatingPointPrecisionMode(_PC_24);
+		SetFloatingPointRoundingMode(false);
 	}
+
 	XRCORE_API void m24r()
 	{
-		u16 p = _24r;
-		__asm fldcw p;
+		SetFloatingPointPrecisionMode(_PC_24);
+		SetFloatingPointRoundingMode(true);
 	}
+
 	XRCORE_API void m53()
 	{
-		u16 p = _53;
-		__asm fldcw p;
+		SetFloatingPointPrecisionMode(_PC_53);
+		SetFloatingPointRoundingMode(false);
 	}
+
 	XRCORE_API void m53r()
 	{
-		u16 p = _53r;
-		__asm fldcw p;
+		SetFloatingPointPrecisionMode(_PC_53);
+		SetFloatingPointRoundingMode(true);
 	}
+
 	XRCORE_API void m64()
 	{
-		u16 p = _64;
-		__asm fldcw p;
+		SetFloatingPointPrecisionMode(_PC_64);
+		SetFloatingPointRoundingMode(false);
 	}
+
 	XRCORE_API void m64r()
 	{
-		u16 p = _64r;
-		__asm fldcw p;
+		SetFloatingPointPrecisionMode(_PC_64);
+		SetFloatingPointRoundingMode(true);
 	}
 
 	void initialize()
 	{
 		_clear87();
-
-		_control87(_PC_24, MCW_PC);
-		_control87(_RC_CHOP, MCW_RC);
-		_24 = getFPUsw(); // 24, chop
-		_control87(_RC_NEAR, MCW_RC);
-		_24r = getFPUsw(); // 24, rounding
-
-		_control87(_PC_53, MCW_PC);
-		_control87(_RC_CHOP, MCW_RC);
-		_53 = getFPUsw(); // 53, chop
-		_control87(_RC_NEAR, MCW_RC);
-		_53r = getFPUsw(); // 53, rounding
-
-		_control87(_PC_64, MCW_PC);
-		_control87(_RC_CHOP, MCW_RC);
-		_64 = getFPUsw(); // 64, chop
-		_control87(_RC_NEAR, MCW_RC);
-		_64r = getFPUsw(); // 64, rounding
-
 		m24r();
-
 		::Random.seed(u32(CPU::GetCLK() % (1i64 << 32i64)));
 	}
 }; // namespace FPU
-#endif
 
 namespace CPU
 {
@@ -211,11 +155,10 @@ namespace CPU
 		clk_per_milisec = clk_per_second / 1000;
 		clk_per_microsec = clk_per_milisec / 1000;
 
-		_control87(_PC_64, MCW_PC);
-		//		_control87	( _RC_CHOP, MCW_RC );
-		double a, b;
-		a = 1;
-		b = double(clk_per_second);
+		FPU::m64r();
+
+		double a = 1;
+		double b = double(clk_per_second);
 		clk_to_seconds = float(double(a / b));
 		a = 1000;
 		b = double(clk_per_second);
@@ -226,7 +169,6 @@ namespace CPU
 	}
 }; // namespace CPU
 
-//------------------------------------------------------------------------------------
 void _initialize_cpu(void)
 {
 	Msg("* Detected CPU: %s %s, F%d/M%d/S%d, %.2f mhz, %d-clk 'rdtsc'",
@@ -234,8 +176,6 @@ void _initialize_cpu(void)
 		CPU::ID.family, CPU::ID.model, CPU::ID.stepping,
 		float(CPU::clk_per_second / u64(1000000)),
 		u32(CPU::clk_overhead));
-
-	//	DUMP_PHASE;
 
 	if (strstr(Core.Params, "-x86"))
 	{
