@@ -2,7 +2,6 @@
 #include "game_sv_deathmatch.h"
 #include "xrServer_script_macroses.h"
 #include "xrserver.h"
-#include "Level.h"
 
 using namespace luabind;
 

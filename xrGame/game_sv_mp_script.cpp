@@ -182,6 +182,9 @@ struct CWrapperBase : public T, public luabind::wrap_base
 
 game_sv_mp* GetSVGame()
 {
+	if (!Level().IsServer())
+		return;
+
 	return smart_cast<game_sv_mp*>(Level().Server->game);
 }
 
@@ -198,11 +201,10 @@ void game_sv_mp::script_register(lua_State *L)
 			 .def("KillPlayer", &game_sv_mp::KillPlayer)
 			 .def("SendPlayerKilledMessage", &game_sv_mp::SendPlayerKilledMessage)
 			 .def("signal_Syncronize", &game_sv_GameState::signal_Syncronize)
-			 .def("set_team", &game_sv_mp::SetTeam)
 			 .def("release", &game_sv_mp::Release)
 			 .def("set_visual", &game_sv_mp::SetVisual)
 			 .def("GetTeamScore", &game_sv_Deathmatch::GetTeamScore)
-			 .def("SetTeamScore", &game_sv_Deathmatch::SetScriptTeamScore)];
+			 .def("SetTeamScore", &game_sv_Deathmatch::SetTeamScore)];
 }
 
 void game_sv_mp_script::script_register(lua_State *L)

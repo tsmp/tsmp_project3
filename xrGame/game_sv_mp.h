@@ -143,7 +143,6 @@ public:
 	virtual void DumpOnlineStatistic();
 	void SvSendChatMessage(LPCSTR str);
 	void SvSendChatMessageCow(LPCSTR str);
-	void SetTeam(u16 gameid, u8 id);
 	void Release(u16 gameid);
 	void SetVisual(u16 gameid, LPCSTR visual);
 	CRandom monsterResp; // для респавна монстров

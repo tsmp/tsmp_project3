@@ -1723,21 +1723,6 @@ void game_sv_mp::SvSendChatMessageCow(LPCSTR str)
 	u_EventSend(P);
 }
 
-void game_sv_mp::SetTeam(u16 gameid,u8 id)
-{
-	if (!OnServer())
-		return;
-
-	if (xrClientData* C = get_client(gameid))
-	{
-		if (game_PlayerState* ps = C->ps)
-		{
-			ps->team = id;
-			Level().Server->game->signal_Syncronize();
-		}
-	}
-}
-
 void game_sv_mp::Release(u16 gameid)
 {
 	if (!OnServer())
