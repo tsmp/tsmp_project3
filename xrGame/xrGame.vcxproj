@@ -232,9 +232,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>
-				/MACHINE:I386
-				%(AdditionalOptions)
-			</AdditionalOptions>
+      </AdditionalOptions>
       <ShowProgress>NotSet</ShowProgress>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

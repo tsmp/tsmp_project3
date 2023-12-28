@@ -395,7 +395,7 @@ void xrServer::MakeUpdatePackets(xrClientData* xr_client, u32 writeOffset)
 			continue;
 #ifdef DEBUG
 		if (g_Dump_Update_Write)
-			Msg("* %s : %d", Test.name(), ObjectSize);
+			Msg("* %s : %d", entity.name(), ObjectSize);
 #endif
 
 		if (pCurUpdatePacket->B.count + tmpPacket.B.count + 100 > NET_PacketSizeLimit)
