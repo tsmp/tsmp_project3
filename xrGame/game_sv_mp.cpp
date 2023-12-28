@@ -1728,9 +1728,9 @@ void game_sv_mp::Release(u16 gameid)
 	if (!OnServer())
 		return;
 
-	NET_Packet packet;
-	game_GameState::u_EventGen(packet, GE_DESTROY, gameid);
-	Level().Send(packet, net_flags(TRUE, TRUE));
+	NET_Packet P;
+	game_GameState::u_EventGen(P, GE_DESTROY, gameid);
+	m_server->OnMessage(P, m_server->GetServerClient()->ID);
 }
 
 void game_sv_mp::SetVisual(u16 gameid, LPCSTR visual)

@@ -1514,31 +1514,33 @@ void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
 
 			R_ASSERT(e_item->ID_Parent == e_parent->ID);
 
+			bool drop = false;
+			bool destroy = false;
 			switch (e_item->m_tClassID)
 			{
 			case CLSID_OBJECT_AMMO:
 			case CLSID_OBJECT_A_VOG25:
 			case CLSID_OBJECT_A_OG7B:
 			case CLSID_OBJECT_A_M209:
-
+			
 				// Weapons Add-ons
 			case CLSID_OBJECT_W_SCOPE:
 			case CLSID_OBJECT_W_SILENCER:
 			case CLSID_OBJECT_W_GLAUNCHER:
-
+			
 				// Detectors
 			case CLSID_DETECTOR_SIMPLE:
 			case CLSID_DEVICE_PDA:
-
+			
 			case CLSID_DEVICE_TORCH:
 			case CLSID_IITEM_MEDKIT:
 			case CLSID_IITEM_ANTIRAD:
-
+			
 				// Grenades
 			case CLSID_GRENADE_F1:
 			case CLSID_OBJECT_G_RPG7:
 			case CLSID_GRENADE_RGD5:
-
+			
 				// Weapons
 			case CLSID_OBJECT_W_M134:
 			case CLSID_OBJECT_W_FN2000:
@@ -1560,16 +1562,33 @@ void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
 			case CLSID_OBJECT_W_BM16:
 			case CLSID_OBJECT_W_RG6:
 			{
-				to_transfer.push_back(e_item);
+				drop = true;
 			}
 			break;
-
+			
 			case CLSID_OBJECT_W_KNIFE:
 			{
-				to_destroy.push_back(e_item);
+				destroy = true;
 			}
 			break;
 			}; //case
+			if (!drop)
+			{
+				drop = READ_IF_EXISTS(pSettings, r_bool, e_item->s_name, "mp_drop", false);
+			}
+			if (!destroy)
+			{
+				destroy = READ_IF_EXISTS(pSettings, r_bool, e_item->s_name, "mp_destroy", false);
+			}
+
+			if (destroy)
+			{
+				to_destroy.push_back(e_item);
+			}
+			else if (drop)
+			{
+				to_transfer.push_back(e_item);
+			}
 		}
 
 		xr_vector<CSE_Abstract *>::const_iterator tr_it = to_transfer.begin();

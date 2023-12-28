@@ -183,7 +183,7 @@ struct CWrapperBase : public T, public luabind::wrap_base
 game_sv_mp* GetSVGame()
 {
 	if (!Level().IsServer())
-		return;
+		return false;
 
 	return smart_cast<game_sv_mp*>(Level().Server->game);
 }
