@@ -350,9 +350,10 @@ public:
 	}
 	IC CCameraBase *cam_Active() { return cameras[cam_active]; }
 	IC CCameraBase *cam_FirstEye() { return cameras[eacFirstEye]; }
+	int cam_Get() { return cam_active; }
+	void cam_Set(EActorCameras style);
 
 protected:
-	void cam_Set(EActorCameras style);
 	void cam_Update(float dt, float fFOV);
 	void camUpdateLadder(float dt);
 	void cam_SetLadder();
