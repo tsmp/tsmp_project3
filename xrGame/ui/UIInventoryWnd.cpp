@@ -37,6 +37,7 @@ using namespace InventoryUtilities;
 #define INVENTORY_XML "inventory_new.xml"
 
 CUIInventoryWnd *g_pInvWnd = NULL;
+bool m_iAltDrop = false;
 
 CUIInventoryWnd::CUIInventoryWnd()
 {
@@ -335,6 +336,7 @@ void CUIInventoryWnd::Show()
 
 	Update();
 	PlaySnd(eInvSndOpen);
+	m_iAltDrop = false;
 }
 
 void CUIInventoryWnd::Hide()
@@ -491,7 +493,7 @@ bool CUIInventoryWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 	if (is_binded(kDROP, dik))
 	{
 		if (WINDOW_KEY_PRESSED == keyboard_action)
-			DropCurrentItem(false);
+			DropCurrentItem(m_iAltDrop);
 		return true;
 	}
 
@@ -510,6 +512,12 @@ bool CUIInventoryWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 		}
 #endif
 	}
+
+	if (DIK_LSHIFT == dik)
+	{
+		m_iAltDrop = WINDOW_KEY_PRESSED == keyboard_action;
+	}
+
 	if (inherited::OnKeyboard(dik, keyboard_action))
 		return true;
 
