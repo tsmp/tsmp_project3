@@ -190,7 +190,11 @@ void game_sv_mp::script_register(lua_State *L)
 			 .def("SpawnWeaponForActor", &game_sv_mp::SpawnWeaponForActor)
 			 .def("KillPlayer", &game_sv_mp::KillPlayer)
 			 .def("SendPlayerKilledMessage", &game_sv_mp::SendPlayerKilledMessage)
-			 .def("signal_Syncronize", &game_sv_GameState::signal_Syncronize)];
+			 .def("signal_Syncronize", &game_sv_GameState::signal_Syncronize)
+			 .def("release", &game_sv_mp::Release)
+			 .def("set_visual", &game_sv_mp::SetVisual)
+			 .def("GetTeamScore", &game_sv_Deathmatch::GetTeamScore)
+			 .def("SetTeamScore", &game_sv_Deathmatch::SetTeamScore)];
 }
 
 void game_sv_mp_script::script_register(lua_State *L)

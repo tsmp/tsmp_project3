@@ -1722,3 +1722,28 @@ void game_sv_mp::SvSendChatMessageCow(LPCSTR str)
 	P.w_s16(0);
 	u_EventSend(P);
 }
+
+void game_sv_mp::Release(u16 gameid)
+{
+	if (!OnServer())
+		return;
+
+	NET_Packet P;
+	game_GameState::u_EventGen(P, GE_DESTROY, gameid);
+	m_server->OnMessage(P, m_server->GetServerClient()->ID);
+}
+
+void game_sv_mp::SetVisual(u16 gameid, LPCSTR visual)
+{
+	if (!OnServer())
+		return;
+
+	NET_Packet P;
+	GenerateGameMessage(P);
+	P.w_u32(GAME_EVENT_CHANGE_VISUAL);
+	P.w_u16(gameid);
+	P.w_stringZ(visual);
+	u_EventSend(P);
+
+	Level().Server->game->signal_Syncronize();
+}
