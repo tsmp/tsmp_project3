@@ -6,7 +6,6 @@
 #include "level.h"
 #include "ai_space.h"
 #include "script_engine.h"
-#include "game_sv_deathmatch.h"
 
 using namespace luabind;
 
