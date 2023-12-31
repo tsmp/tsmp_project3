@@ -1510,7 +1510,7 @@ void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
 		for (; it != it_e; ++it)
 		{
 			u16 ItemID = *it;
-			CSE_Abstract* e_item = get_entity_from_eid(ItemID);
+			CSE_Abstract *e_item = get_entity_from_eid(ItemID);
 
 			R_ASSERT(e_item->ID_Parent == e_parent->ID);
 
