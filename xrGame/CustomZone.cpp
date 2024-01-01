@@ -369,10 +369,7 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract *DC)
 	m_bBlowoutWindActive = false;
 
 	o_fastmode = TRUE; // start initially with fast-mode enabled
-	if (spawn_ini() && spawn_ini()->line_exist("fast_mode", "always_fast"))
-	{
-		m_b_always_fastmode = spawn_ini()->r_bool("fast_mode", "always_fast");
-	}
+	m_b_always_fastmode = READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "always_fast", false);
 	return (TRUE);
 }
 
