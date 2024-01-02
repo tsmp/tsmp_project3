@@ -20,7 +20,11 @@
 #define PREFETCHED_ARTEFACTS_NUM 1 //количество предварительно проспавненых артефактов
 #define WIND_RADIUS (4 * Radius()) //расстояние до актера, когда появляется ветер
 #define FASTMODE_DISTANCE (50.f)   //distance to camera from sphere, when zone switches to fast update sequence
-const bool m_b_always_fastmode = READ_IF_EXISTS(pSettings, r_bool, "fast_mode", "always_fast", false);
+bool AlwaysFastMode()
+{
+	static const bool always = READ_IF_EXISTS(pSettings, r_bool, "fast_mode", "always_fast", false);
+	return always;
+}
 
 CCustomZone::CCustomZone(void)
 {
@@ -563,7 +567,7 @@ void CCustomZone::shedule_Update(u32 dt)
 
 		// check "fast-mode" border
 		float cam_distance = Device.vCameraPosition.distance_to(P) - s.R;
-		if (cam_distance > FASTMODE_DISTANCE && !m_b_always_fastmode)
+		if (cam_distance > FASTMODE_DISTANCE && !AlwaysFastMode())
 			o_switch_2_slow();
 		else
 			o_switch_2_fast();
@@ -1477,7 +1481,7 @@ BOOL CCustomZone::feel_touch_on_contact(CObject *O)
 
 BOOL CCustomZone::AlwaysTheCrow()
 {
-	if (m_b_always_fastmode && IsEnabled())
+	if (AlwaysFastMode() && IsEnabled())
 		return TRUE;
 	else
 		return inherited::AlwaysTheCrow();
