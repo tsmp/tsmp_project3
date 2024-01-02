@@ -6,6 +6,7 @@
 #include "level.h"
 #include "ai_space.h"
 #include "script_engine.h"
+#include "game_sv_deathmatch.h"
 
 using namespace luabind;
 
@@ -179,18 +180,31 @@ struct CWrapperBase : public T, public luabind::wrap_base
 	DEFINE_LUA_WRAPPER_METHOD_R2P3_V3(OnPlayerHitPlayer, u16, u16, NET_Packet)
 };
 
+game_sv_mp* GetSVGame()
+{
+	if (!Level().IsServer())
+		return false;
+
+	return smart_cast<game_sv_mp*>(Level().Server->game);
+}
+
 #pragma warning(pop)
 
 #pragma optimize("s", on)
 void game_sv_mp::script_register(lua_State *L)
 {
 	module(L)
-		[class_<game_sv_mp, game_sv_GameState>("game_sv_mp")
+		[def("get_svgame", &GetSVGame),
+		class_<game_sv_mp, game_sv_GameState>("game_sv_mp")
 			 .def(constructor<>())
 			 .def("SpawnWeaponForActor", &game_sv_mp::SpawnWeaponForActor)
 			 .def("KillPlayer", &game_sv_mp::KillPlayer)
 			 .def("SendPlayerKilledMessage", &game_sv_mp::SendPlayerKilledMessage)
-			 .def("signal_Syncronize", &game_sv_GameState::signal_Syncronize)];
+			 .def("signal_Syncronize", &game_sv_GameState::signal_Syncronize)
+			 .def("release", &game_sv_mp::Release)
+			 .def("set_visual", &game_sv_mp::SetVisual)
+			 .def("GetTeamScore", &game_sv_Deathmatch::GetTeamScore)
+			 .def("SetTeamScore", &game_sv_Deathmatch::SetTeamScore)];
 }
 
 void game_sv_mp_script::script_register(lua_State *L)

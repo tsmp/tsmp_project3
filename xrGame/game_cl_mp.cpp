@@ -684,6 +684,17 @@ void game_cl_mp::TranslateGameMessage(u32 msg, NET_Packet &P)
 			Msg("! File transfer error: from client [%u]: %s", tmp_client.value(), error_msg.c_str());
 		}
 	}break;
+	case GAME_EVENT_CHANGE_VISUAL:
+	{
+		u16 gid = P.r_u16();
+		shared_str visual;
+		P.r_stringZ(visual);
+		if (CActor* pobj = smart_cast<CActor*>(Level().Objects.net_Find(gid)))
+		{
+			pobj->ChangeVisual(visual.c_str());
+		}
+	}
+	break;
 
 	default:
 		inherited::TranslateGameMessage(msg, P);
