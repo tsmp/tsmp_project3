@@ -15,6 +15,7 @@
 #include "UI/UIGameTutorial.h"
 #include "string_table.h"
 #include "object_broker.h"
+#include "Actor.h"
 
 using namespace luabind;
 
@@ -48,6 +49,24 @@ LPCSTR translate_string(LPCSTR str)
 bool has_active_tutotial()
 {
 	return (g_tutorial != NULL);
+}
+
+int cam_Get()
+{
+	int cam = 0;
+	if (CActor* pA = smart_cast<CActor*>(Level().CurrentControlEntity()))
+	{
+		cam = pA->cam_Get();
+	}
+	return cam;
+}
+
+void cam_Set(int cam)
+{
+	if (CActor* pA = smart_cast<CActor*>(Level().CurrentControlEntity()))
+	{
+		pA->cam_Set(EActorCameras(cam));
+	}
 }
 
 #pragma optimize("s", on)
@@ -111,7 +130,9 @@ void game_sv_GameState::script_register(lua_State *L)
 
 		 def("start_tutorial", &start_tutorial),
 		 def("has_active_tutorial", &has_active_tutotial),
-		 def("translate_string", &translate_string)
+		 def("translate_string", &translate_string),
+		 def("cam_get", &cam_Get),
+		 def("cam_set", &cam_Set)
 
 	];
 

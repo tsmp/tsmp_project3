@@ -88,13 +88,21 @@ LPCSTR game_cl_mp_script::GetRoundTime()
 	return bufTime;
 }
 
+game_cl_GameState* GetGame()
+{
+	return Level().game;
+}
+
 #pragma optimize("s", on)
 void game_cl_mp::script_register(lua_State *L)
 {
 	module(L)
-		[class_<game_cl_GameState, game_GameState>("game_cl_GameState")
-			 .def_readwrite("local_svdpnid", &game_cl_GameState::local_svdpnid)
-			 .def_readwrite("local_player", &game_cl_GameState::local_player),
+		[def("get_game", &GetGame),
+		class_<game_cl_GameState, game_GameState>("game_cl_GameState")
+			.def_readwrite("local_svdpnid", &game_cl_GameState::local_svdpnid)
+			.def_readwrite("local_player", &game_cl_GameState::local_player)
+			.def("GetPlayerByGameID", &game_cl_GameState::GetPlayerByGameID)
+			.def("GetPlayersCount", &game_cl_GameState::GetPlayersCount),
 
 		 class_<game_cl_mp, game_cl_GameState>("game_cl_mp")];
 }
