@@ -20,6 +20,7 @@
 #define PREFETCHED_ARTEFACTS_NUM 1 //количество предварительно проспавненых артефактов
 #define WIND_RADIUS (4 * Radius()) //расстояние до актера, когда появляется ветер
 #define FASTMODE_DISTANCE (50.f)   //distance to camera from sphere, when zone switches to fast update sequence
+const bool m_b_always_fastmode = READ_IF_EXISTS(pSettings, r_bool, "fast_mode", "always_fast", false);
 
 CCustomZone::CCustomZone(void)
 {
@@ -52,7 +53,6 @@ CCustomZone::CCustomZone(void)
 
 	m_effector = NULL;
 	m_bIdleObjectParticlesDontStop = FALSE;
-	m_b_always_fastmode = FALSE;
 }
 
 CCustomZone::~CCustomZone(void)
@@ -369,7 +369,6 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract *DC)
 	m_bBlowoutWindActive = false;
 
 	o_fastmode = TRUE; // start initially with fast-mode enabled
-	m_b_always_fastmode = READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "always_fast", false);
 	return (TRUE);
 }
 
