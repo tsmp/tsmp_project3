@@ -84,6 +84,27 @@ void CUIGameFP::HideShownDialogs()
 		mir->GetHolder()->StartStopMenu(mir, true);
 }
 
+bool CUIGameFP::IR_OnKeyboardPress(int dik)
+{
+	if (inherited::IR_OnKeyboardPress(dik))
+		return true;
+
+	EGameActions cmd = get_binded_action(dik);
+	switch (cmd)
+	{
+	case kINVENTORY:
+	case kBUY:
+	case kSKIN:
+	case kTEAM:
+	case kMAP:
+	{
+		return Game().OnKeyboardPress(cmd);
+	}
+	break;
+	}
+	return false;
+};
+
 void CUIGameFP::ShowPlayersList(bool bShow)
 {
 	if (bShow)
