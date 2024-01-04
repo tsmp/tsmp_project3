@@ -26,6 +26,8 @@ public:
 	void ShowPlayersList(bool bShow);
 	CUIInventoryWnd* m_pInventoryMenu;
 
+	virtual bool IR_OnKeyboardPress(int dik);
+
 protected:
 	
 	shared_str m_pressjump_caption;
