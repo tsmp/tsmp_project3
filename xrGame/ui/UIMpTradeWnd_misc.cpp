@@ -13,6 +13,8 @@
 #include "../object_broker.h"
 #include <dinput.h>
 
+extern u8 GetRanksCount();
+
 bool CUIMpTradeWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 #ifdef DEBUG
@@ -391,7 +393,8 @@ void CUIMpTradeWnd::SetSkin(u8 SkinID)
 void CUIMpTradeWnd::SetRank(u32 rank)
 {
 	if (m_bIgnoreMoneyAndRank)
-		rank = _RANK_COUNT - 1;
+		rank = GetRanksCount() - 1;
+
 	g_mp_restrictions.SetRank(rank);
 
 	string64 tex_name;

@@ -3,25 +3,25 @@
 #include "UIXmlInit.h"
 #include "UIStatic.h"
 
-CUIRankIndicator::CUIRankIndicator()
+CUIRankIndicator::CUIRankIndicator(u8 ranksCount) : max_rank(ranksCount * 2), m_current(static_cast<u8>(-1))
 {
-	m_current = u8(-1);
+	m_ranks.resize(max_rank);
 }
 
 CUIRankIndicator::~CUIRankIndicator()
 {
-	for (u8 i = 0; i < max_rank; ++i)
-		xr_delete(m_ranks[i]);
+	for (CUIStatic* stat : m_ranks)
+		xr_delete(stat);
 }
 
 void CUIRankIndicator::InitFromXml(CUIXml &xml_doc)
 {
 	CUIXmlInit::InitWindow(xml_doc, "rank_wnd", 0, this);
 	string256 str;
+
 	for (u8 i = 0; i < max_rank; ++i)
 	{
-		CUIStatic *&s = m_ranks[i];
-		s = xr_new<CUIStatic>();
+		auto s = m_ranks.emplace_back(xr_new<CUIStatic>());
 		sprintf_s(str, "rank_wnd:rank_%d", i);
 		CUIXmlInit::InitStatic(xml_doc, str, 0, s);
 	}

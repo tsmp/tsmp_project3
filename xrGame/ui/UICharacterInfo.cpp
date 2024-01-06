@@ -22,6 +22,7 @@
 #include "../xrServer_Objects_ALife_Monsters.h"
 
 using namespace InventoryUtilities;
+extern u8 GetRanksCount();
 
 CSE_ALifeTraderAbstract *ch_info_get_from_id(u16 id)
 {
@@ -228,30 +229,39 @@ void CUICharacterInfo::InitCharacterPlayerMP(CInventoryOwner* player)
 	string256 str;
 
 	if (m_icons[eUIName])	
-		m_icons[eUIName]->SetText(ps->name);	
+		m_icons[eUIName]->SetText(ps->name);
 
 	if (m_icons[eUIRank])
 	{
-		switch (ps->rank)
+		if (GetRanksCount() == 5)
 		{
-		case 0:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_novice"));
-			break;
-		case 1:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_experienced"));
-			break;
-		case 2:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_professional"));
-			break;
-		case 3:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_veteran"));
-			break;
-		case 4:
-			sprintf_s(str, "%s", *CStringTable().translate("st_rank_legend"));
-			break;
-		default:
-			R_ASSERT(0, "Unknown rank!!");
-			break;
+			switch (ps->rank)
+			{
+			case 0:
+				sprintf_s(str, "%s", *CStringTable().translate("st_rank_novice"));
+				break;
+			case 1:
+				sprintf_s(str, "%s", *CStringTable().translate("st_rank_experienced"));
+				break;
+			case 2:
+				sprintf_s(str, "%s", *CStringTable().translate("st_rank_professional"));
+				break;
+			case 3:
+				sprintf_s(str, "%s", *CStringTable().translate("st_rank_veteran"));
+				break;
+			case 4:
+				sprintf_s(str, "%s", *CStringTable().translate("st_rank_legend"));
+				break;
+			default:
+				R_ASSERT(0, "Unknown rank!!");
+				break;
+			}
+		}
+		else
+		{
+			string256 current_rank;
+			sprintf_s(current_rank, "st_rank_%d", ps->rank);
+			sprintf_s(str, "%s", *CStringTable().translate(current_rank));
 		}
 
 		m_icons[eUIRank]->SetText(str);
