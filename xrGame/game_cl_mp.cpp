@@ -106,7 +106,7 @@ bool game_cl_mp::NeedToSendReady_Actor(int key, game_PlayerState *ps)
 {
 	return ((GAME_PHASE_PENDING == Phase()) ||
 			true == ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) &&
-		   (kWPN_FIRE == key);
+		   (kWPN_FIRE == key) && ps->DeathTime > 1000;
 }
 
 bool game_cl_mp::NeedToSendReady_Spectator(int key, game_PlayerState *ps)
