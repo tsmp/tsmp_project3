@@ -13,6 +13,7 @@
 #include "script_binder.h"
 #include "Hit.h"
 #include "game_object_space.h"
+#include "alife_registry_wrappers.h"
 
 class CPhysicsShell;
 class CSE_Abstract;
@@ -100,6 +101,12 @@ public:
 	static void u_EventGen(NET_Packet &P, u32 type, u32 dest);
 	static void u_EventSend(NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED);
 
+	bool HasInfo(shared_str info_id) const;
+
+	void TransferInfo(shared_str info_id, bool add_info) const;
+
+	bool OnReceiveInfo(shared_str info_id) const;
+
 	// Methods
 	virtual void Load(LPCSTR section);
 	virtual BOOL net_Spawn(CSE_Abstract *DC);
@@ -130,6 +137,10 @@ public:
 
 	//игровое имя объекта
 	virtual LPCSTR Name() const;
+
+	void OnDisableInfo(shared_str info_id) const;
+	bool GetInfo(shared_str info_id, INFO_DATA& info_data) const;
+	CInfoPortionWrapper* m_known_info_registry;
 
 	//virtual void			OnH_A_Independent	();
 	virtual void OnH_B_Chield();
