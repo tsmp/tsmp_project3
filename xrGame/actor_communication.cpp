@@ -127,7 +127,7 @@ void CActor::AddGameNews(GAME_NEWS_DATA &news_data)
 
 bool CActor::OnReceiveInfo(shared_str info_id) const
 {
-	if (!OnReceiveInfo(info_id))
+	if (!CInventoryOwner::OnReceiveInfo(info_id))
 		return false;
 
 #ifdef DEBUG
@@ -160,7 +160,7 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 
 void CActor::OnDisableInfo(shared_str info_id) const
 {
-	OnDisableInfo(info_id);
+	CInventoryOwner::OnDisableInfo(info_id);
 
 	if (Actor() != this)
 		return;
@@ -193,10 +193,10 @@ void CActor::UpdateAvailableDialogs(CPhraseDialogManager *partner)
 	m_AvailableDialogs.clear();
 	m_CheckedDialogs.clear();
 
-	if (m_known_info_registry->registry().objects_ptr())
+	if (CInventoryOwner::m_known_info_registry->registry().objects_ptr())
 	{
-		for (KNOWN_INFO_VECTOR::const_iterator it = m_known_info_registry->registry().objects_ptr()->begin();
-			 m_known_info_registry->registry().objects_ptr()->end() != it; ++it)
+		for (KNOWN_INFO_VECTOR::const_iterator it = CInventoryOwner::m_known_info_registry->registry().objects_ptr()->begin();
+			 CInventoryOwner::m_known_info_registry->registry().objects_ptr()->end() != it; ++it)
 		{
 			//подгрузить кусочек информации с которым мы работаем
 			CInfoPortion info_portion;
@@ -251,7 +251,7 @@ void CActor::StartTalk(CInventoryOwner *talk_partner)
 	//обновить информацию о контакте
 	//.	UpdateContact(GO->ID());
 
-	StartTalk(talk_partner);
+	CInventoryOwner::StartTalk(talk_partner);
 }
 
 void CActor::NewPdaContact(CInventoryOwner *pInvOwner)

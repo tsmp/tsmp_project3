@@ -37,7 +37,7 @@
 
 bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
 {
-	CGameObject* pInventoryOwner = smart_cast<CGameObject*>(&object());
+	CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
 	if (!pInventoryOwner)
 		return false;
 
@@ -47,7 +47,7 @@ bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
 
 bool CScriptGameObject::DisableInfoPortion(LPCSTR info_id)
 {
-	CGameObject* pInventoryOwner = smart_cast<CGameObject*>(&object());
+	CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
 	if (!pInventoryOwner)
 		return false;
 
@@ -107,7 +107,7 @@ bool _give_news(LPCSTR text, LPCSTR texture_name, const Frect &tex_rect, int del
 
 bool CScriptGameObject::HasInfo(LPCSTR info_id)
 {
-	CGameObject*pInventoryOwner = smart_cast<CGameObject*>(&object());
+	CInventoryOwner *pInventoryOwner = smart_cast<CInventoryOwner *>(&object());
 	if (!pInventoryOwner)
 		return false;
 
@@ -116,7 +116,7 @@ bool CScriptGameObject::HasInfo(LPCSTR info_id)
 
 bool CScriptGameObject::DontHasInfo(LPCSTR info_id)
 {
-	CGameObject*pInventoryOwner = smart_cast<CGameObject*>(&object());
+	CInventoryOwner *pInventoryOwner = smart_cast<CInventoryOwner *>(&object());
 	if (!pInventoryOwner)
 		return true;
 
@@ -125,7 +125,7 @@ bool CScriptGameObject::DontHasInfo(LPCSTR info_id)
 
 xrTime CScriptGameObject::GetInfoTime(LPCSTR info_id)
 {
-	CGameObject*pInventoryOwner = smart_cast<CGameObject*>(&object());
+	CInventoryOwner *pInventoryOwner = smart_cast<CInventoryOwner *>(&object());
 	if (!pInventoryOwner)
 		return xrTime(0);
 

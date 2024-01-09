@@ -33,7 +33,6 @@
 #include "debug_renderer.h"
 #include "PHDebug.h"
 #endif
-#include "InfoPortion.h"
 
 ENGINE_API bool g_dedicated_server;
 
@@ -49,7 +48,6 @@ CGameObject::CGameObject()
 
 	m_callbacks = xr_new<CALLBACK_MAP>();
 	m_anim_mov_ctrl = 0;
-	m_known_info_registry = xr_new<CInfoPortionWrapper>();
 }
 
 CGameObject::~CGameObject()
@@ -60,7 +58,6 @@ CGameObject::~CGameObject()
 	VERIFY(!m_spawned);
 	xr_delete(m_ai_location);
 	xr_delete(m_callbacks);
-	xr_delete(m_known_info_registry);
 }
 
 void CGameObject::init()
@@ -229,7 +226,6 @@ BOOL CGameObject::net_Spawn(CSE_Abstract *DC)
 	m_spawn_time = Device.CurrentFrameNumber;
 	CSE_Abstract *E = (CSE_Abstract *)DC;
 	VERIFY(E);
-	m_known_info_registry->registry().init(E->ID);
 
 	const CSE_Visual *visual = smart_cast<const CSE_Visual *>(E);
 	if (visual)
@@ -697,125 +693,6 @@ void CGameObject::u_EventGen(NET_Packet &P, u32 type, u32 dest)
 void CGameObject::u_EventSend(NET_Packet &P, u32 dwFlags)
 {
 	Level().Send(P, dwFlags);
-}
-
-class CFindByIDPred
-{
-public:
-	CFindByIDPred(shared_str element_to_find) { element = element_to_find; }
-	bool operator()(const INFO_DATA& data) const { return data.info_id == element; }
-
-private:
-	shared_str element;
-};
-
-bool CGameObject::HasInfo(shared_str info_id) const
-{
-	VERIFY(info_id.size());
-	const KNOWN_INFO_VECTOR* known_info = m_known_info_registry->registry().objects_ptr();
-	if (!known_info)
-		return false;
-
-	if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)) == known_info->end())
-		return false;
-
-	return true;
-}
-
-void CGameObject::TransferInfo(shared_str info_id, bool add_info) const
-{
-	VERIFY(info_id.size());
-	const CObject* pThisObject = smart_cast<const CObject*>(this);
-	VERIFY(pThisObject);
-
-	//отправляем от нашему PDA пакет информации с номером
-	NET_Packet P;
-	CGameObject::u_EventGen(P, GE_INFO_TRANSFER, pThisObject->ID());
-	P.w_u16(pThisObject->ID()); //отправитель
-	P.w_stringZ(info_id);		//сообщение
-	P.w_u8(add_info ? 1 : 0);	//добавить/удалить информацию
-	CGameObject::u_EventSend(P);
-
-	CInfoPortion info_portion;
-	info_portion.Load(info_id);
-	{
-		if (add_info)
-			OnReceiveInfo(info_id);
-		else
-			OnDisableInfo(info_id);
-	}
-}
-
-bool CGameObject::OnReceiveInfo(shared_str info_id) const
-{
-	VERIFY(info_id.size());
-	//добавить запись в реестр
-	KNOWN_INFO_VECTOR& known_info = m_known_info_registry->registry().objects();
-	KNOWN_INFO_VECTOR_IT it = std::find_if(known_info.begin(), known_info.end(), CFindByIDPred(info_id));
-
-	if (known_info.end() == it)
-		known_info.push_back(INFO_DATA(info_id, Level().GetGameTime()));
-	else
-		return false;
-
-#ifdef DEBUG
-	if (psAI_Flags.test(aiInfoPortion))
-		Msg("[%s] Received Info [%s]", Name(), *info_id);
-#endif
-
-	if (this != smart_cast<CGameObject*>(Level().CurrentControlEntity()))
-		return true;
-
-	//Запустить скриптовый callback
-	const CGameObject* pThisGameObject = smart_cast<const CGameObject*>(this);
-	VERIFY(pThisGameObject);
-
-	CInfoPortion info_portion;
-	info_portion.Load(info_id);
-
-	//запустить скриптовые функции
-	info_portion.RunScriptActions(pThisGameObject);
-
-	//выкинуть те info portions которые стали неактуальными
-	auto& infosToDisable = info_portion.DisableInfos();
-
-	for (const shared_str& info : infosToDisable)
-		TransferInfo(info, false);
-
-	return true;
-}
-
-void CGameObject::OnDisableInfo(shared_str info_id) const
-{
-	VERIFY(info_id.size());
-	//удалить запись из реестра
-
-#ifdef DEBUG
-	if (psAI_Flags.test(aiInfoPortion))
-		Msg("[%s] Disabled Info [%s]", Name(), *info_id);
-#endif
-
-	KNOWN_INFO_VECTOR& known_info = m_known_info_registry->registry().objects();
-
-	KNOWN_INFO_VECTOR_IT it = std::find_if(known_info.begin(), known_info.end(), CFindByIDPred(info_id));
-	if (known_info.end() == it)
-		return;
-	known_info.erase(it);
-}
-
-bool CGameObject::GetInfo(shared_str info_id, INFO_DATA& info_data) const
-{
-	VERIFY(info_id.size());
-	const KNOWN_INFO_VECTOR* known_info = m_known_info_registry->registry().objects_ptr();
-	if (!known_info)
-		return false;
-
-	KNOWN_INFO_VECTOR::const_iterator it = std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id));
-	if (known_info->end() == it)
-		return false;
-
-	info_data = *it;
-	return true;
 }
 
 #include "bolt.h"
