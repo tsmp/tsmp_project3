@@ -41,7 +41,6 @@ CInventoryOwner::CInventoryOwner()
 	EnableTalk();
 	EnableTrade();
 
-	m_known_info_registry = xr_new<CInfoPortionWrapper>();
 	m_tmp_active_slot_num = NO_ACTIVE_SLOT;
 	m_need_osoznanie_mode = FALSE;
 }
@@ -59,7 +58,6 @@ CInventoryOwner::~CInventoryOwner()
 	xr_delete(m_inventory);
 	xr_delete(m_pTrade);
 	xr_delete(m_pCharacterInfo);
-	xr_delete(m_known_info_registry);
 	xr_delete(m_trade_parameters);
 	xr_delete(m_purchase_list);
 }
@@ -116,7 +114,6 @@ BOOL CInventoryOwner::net_Spawn(CSE_Abstract *DC)
 	if (!pThis)
 		return FALSE;
 	CSE_Abstract *E = (CSE_Abstract *)(DC);
-	m_known_info_registry->registry().init(E->ID);
 
 	if (!smart_cast<CSE_ALifeCreatureActor*>(E) || IsGameTypeSingle())
 	{

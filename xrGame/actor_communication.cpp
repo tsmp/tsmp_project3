@@ -127,7 +127,7 @@ void CActor::AddGameNews(GAME_NEWS_DATA &news_data)
 
 bool CActor::OnReceiveInfo(shared_str info_id) const
 {
-	if (!CInventoryOwner::OnReceiveInfo(info_id))
+	if (!CGameObject::OnReceiveInfo(info_id))
 		return false;
 
 #ifdef DEBUG
@@ -160,7 +160,7 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 
 void CActor::OnDisableInfo(shared_str info_id) const
 {
-	CInventoryOwner::OnDisableInfo(info_id);
+	CGameObject::OnDisableInfo(info_id);
 
 	if (Actor() != this)
 		return;
@@ -193,10 +193,10 @@ void CActor::UpdateAvailableDialogs(CPhraseDialogManager *partner)
 	m_AvailableDialogs.clear();
 	m_CheckedDialogs.clear();
 
-	if (CInventoryOwner::m_known_info_registry->registry().objects_ptr())
+	if (CGameObject::m_known_info_registry->registry().objects_ptr())
 	{
-		for (KNOWN_INFO_VECTOR::const_iterator it = CInventoryOwner::m_known_info_registry->registry().objects_ptr()->begin();
-			 CInventoryOwner::m_known_info_registry->registry().objects_ptr()->end() != it; ++it)
+		for (KNOWN_INFO_VECTOR::const_iterator it = CGameObject::m_known_info_registry->registry().objects_ptr()->begin();
+			CGameObject::m_known_info_registry->registry().objects_ptr()->end() != it; ++it)
 		{
 			//подгрузить кусочек информации с которым мы работаем
 			CInfoPortion info_portion;

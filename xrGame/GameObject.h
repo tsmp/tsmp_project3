@@ -13,6 +13,7 @@
 #include "script_binder.h"
 #include "Hit.h"
 #include "game_object_space.h"
+#include "alife_registry_wrappers.h"
 
 class CPhysicsShell;
 class CSE_Abstract;
@@ -91,6 +92,25 @@ public:
 public:
 	virtual BOOL feel_touch_on_contact(CObject *) { return TRUE; }
 	virtual bool use(CGameObject *who_use) { return CUsableScriptObject::use(who_use); };
+
+	//////////////////////////////////////////////////////////////////////////
+	// сюжетная информация
+public:
+	//персонаж получил новую порцию информации
+	virtual bool OnReceiveInfo(shared_str info_id) const;
+	//убрать информацию
+	virtual void OnDisableInfo(shared_str info_id) const;
+	//передать/удалить информацию через сервер
+	virtual void TransferInfo(shared_str info_id, bool add_info) const;
+	//есть ли информация у персонажа
+	virtual bool HasInfo(shared_str info_id) const;
+	virtual bool GetInfo(shared_str info_id, INFO_DATA& info_data) const;
+
+#ifdef DEBUG
+	void CInventoryOwner::DumpInfo() const;
+#endif
+
+	CInfoPortionWrapper* m_known_info_registry;
 
 public:
 	CInifile *m_ini_file;

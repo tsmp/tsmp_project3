@@ -103,24 +103,6 @@ protected:
 	bool m_bTalking;
 
 	u32 m_tmp_active_slot_num;
-	//////////////////////////////////////////////////////////////////////////
-	// сюжетная информация
-public:
-	//персонаж получил новую порцию информации
-	virtual bool OnReceiveInfo(shared_str info_id) const;
-	//убрать информацию
-	virtual void OnDisableInfo(shared_str info_id) const;
-	//передать/удалить информацию через сервер
-	virtual void TransferInfo(shared_str info_id, bool add_info) const;
-	//есть ли информация у персонажа
-	virtual bool HasInfo(shared_str info_id) const;
-	virtual bool GetInfo(shared_str info_id, INFO_DATA &) const;
-
-#ifdef DEBUG
-	void CInventoryOwner::DumpInfo() const;
-#endif
-
-	CInfoPortionWrapper *m_known_info_registry;
 
 	//////////////////////////////////////////////////////////////////////////
 	// инвентарь
