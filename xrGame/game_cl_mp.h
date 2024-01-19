@@ -11,6 +11,7 @@ class CUISpeechMenu;
 class CUIMessageBoxEx;
 class CUIGameBaseMP;
 class CVoiceChat;
+struct KillMessageStruct;
 
 struct SND_Message
 {
@@ -136,15 +137,12 @@ protected:
 
 	virtual void UpdateMapLocations(){};
 
-	ui_shader m_EquipmentIconsShader;
 	ui_shader m_RankIconsShader;
-
-	virtual const ui_shader& GetEquipmentIconsShader();
-	virtual const ui_shader& GetKillEventIconsShader();
-	virtual const ui_shader& GetRadiationIconsShader();
-	virtual const ui_shader& GetBloodLossIconsShader();
+	ui_shader m_KillIconsShader;
 	virtual const ui_shader& GetRankIconsShader();
+	virtual const ui_shader& GetKillMessageShader();
 
+	void FillHitKillMessage(KillMessageStruct& KMS, u8 specialKill, u16 killedID, u16 killerID, u16 weaponID);
 	virtual void OnPlayerKilled(NET_Packet &P);
 
 	virtual bool NeedToSendReady_Actor(int key, game_PlayerState *ps);

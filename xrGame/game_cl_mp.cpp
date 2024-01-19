@@ -33,11 +33,11 @@
 #include "VoiceChat.h"
 #include "game_cl_mp_snd_messages.h"
 
-#define EQUIPMENT_ICONS "ui\\ui_mp_icon_kill"
-#define KILLEVENT_ICONS "ui\\ui_hud_mp_icon_death"
-#define RADIATION_ICONS "ui\\ui_mn_radiations_hard"
-#define BLOODLOSS_ICONS "ui\\ui_mn_wounds_hard"
-#define RANK_ICONS "ui\\ui_mp_icon_rank"
+const char* MP_KILL_ICONS = "ui\\ui_mp_icon_kill";
+const char* KILLEVENT_ICONS = "ui\\ui_hud_mp_icon_death";
+const char* RADIATION_ICONS = "ui\\ui_mn_radiations_hard";
+const char* BLOODLOSS_ICONS = "ui\\ui_mn_wounds_hard";
+const char* RANK_ICONS = "ui\\ui_mp_icon_rank";
 
 #define KILLEVENT_GRID_WIDTH 64
 #define KILLEVENT_GRID_HEIGHT 64
@@ -1103,30 +1103,6 @@ void game_cl_mp::OnSwitchPhase(u32 old_phase, u32 new_phase)
 	}
 }
 
-const ui_shader& game_cl_mp::GetEquipmentIconsShader()
-{
-	if (m_EquipmentIconsShader->inited()) 
-		return m_EquipmentIconsShader;
-
-	m_EquipmentIconsShader->create("hud\\default", EQUIPMENT_ICONS);
-	return m_EquipmentIconsShader;
-}
-
-const ui_shader& game_cl_mp::GetKillEventIconsShader()
-{
-	return GetEquipmentIconsShader();
-}
-
-const ui_shader& game_cl_mp::GetRadiationIconsShader()
-{
-	return GetEquipmentIconsShader();
-}
-
-const ui_shader& game_cl_mp::GetBloodLossIconsShader()
-{
-	return GetEquipmentIconsShader();
-}
-
 const ui_shader& game_cl_mp::GetRankIconsShader()
 {
 	if (m_RankIconsShader->inited()) 
@@ -1136,220 +1112,184 @@ const ui_shader& game_cl_mp::GetRankIconsShader()
 	return m_RankIconsShader;
 }
 
-void game_cl_mp::OnPlayerKilled(NET_Packet &P)
+const ui_shader& game_cl_mp::GetKillMessageShader()
+{
+	if (!m_KillIconsShader->inited())
+		m_KillIconsShader->create("hud\\default", MP_KILL_ICONS);
+
+	return m_KillIconsShader;
+}
+
+void game_cl_mp::FillHitKillMessage(KillMessageStruct &KMS, u8 specialKillU, u16 killedID, u16 killerID, u16 weaponID)
 {
 	CStringTable st;
-	//-----------------------------------------------------------
-	KILL_TYPE KillType = KILL_TYPE(P.r_u8());
-	u16 KilledID = P.r_u16();
-	u16 KillerID = P.r_u16();
-	u16 WeaponID = P.r_u16();
-	SPECIAL_KILL_TYPE SpecialKill = SPECIAL_KILL_TYPE(P.r_u8());
-	//-----------------------------------------------------------
-	CObject *pOKiller = Level().Objects.net_Find(KillerID);
-	CObject *pWeapon = Level().Objects.net_Find(WeaponID);
+	const CObject* pKiller = Level().Objects.net_Find(killerID);
+	CObject* pWeapon = Level().Objects.net_Find(weaponID);
+	string1024 sWeapon = "";
+	string1024 sSpecial = "";
 
-	game_PlayerState *pPlayer = GetPlayerByGameID(KilledID);
-	if (!pPlayer)
+	if (smart_cast<CCustomZone*>(pWeapon))
 	{
-		Msg("! Non existant player[%d] killed by [%d] with [%d]", KilledID, KillerID, WeaponID);
+		KMS.m_initiator.m_shader = GetKillMessageShader();
+		KMS.m_initiator.m_rect.x1 = 1;
+		KMS.m_initiator.m_rect.y1 = 202;
+		KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + 31;
+		KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + 30;
+		sprintf_s(sWeapon, *st.translate("mp_by_anomaly"));
+	}
+	else if (CInventoryItem* pIItem = smart_cast<CInventoryItem*>(pWeapon))
+	{
+		KMS.m_initiator.m_shader = GetKillMessageShader();
+		KMS.m_initiator.m_rect.x1 = pIItem->GetKillMsgXPos();
+		KMS.m_initiator.m_rect.y1 = pIItem->GetKillMsgYPos();
+		KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + pIItem->GetKillMsgWidth();
+		KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + pIItem->GetKillMsgHeight();
+		sprintf_s(sWeapon, "%s %s", st.translate("mp_from").c_str(), pIItem->NameShort());
+	}
+
+	if (const game_PlayerState* pKillerPlayer = GetPlayerByGameID(killerID))
+	{
+		KMS.m_killer.m_name = pKillerPlayer->name;
+		KMS.m_killer.m_color = Color_Teams_u32[pKillerPlayer->team];
+	}
+	else if (smart_cast<const CCustomZone*>(pKiller))
+	{
+		KMS.m_initiator.m_shader = GetKillMessageShader();
+		KMS.m_initiator.m_rect.x1 = 1;
+		KMS.m_initiator.m_rect.y1 = 202;
+		KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + 31;
+		KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + 30;
+		Msg("%s killed by anomaly", *KMS.m_victim.m_name);
 		return;
 	}
-	R_ASSERT(pPlayer);
-	game_PlayerState *pKiller = GetPlayerByGameID(KillerID);
-	//	R_ASSERT(pKiller);
-	//-----------------------------------------------------------
+
+	auto GiveBonus=[&](const char* bonusName, const char* translateName, u32 soundId)
+	{
+		auto it = std::find(m_pBonusList.begin(), m_pBonusList.end(), bonusName);
+
+		if (it != m_pBonusList.end())
+		{
+			Bonus_Struct& bonus = *it;
+			KMS.m_ext_info.m_shader = bonus.IconShader;
+			KMS.m_ext_info.m_rect.x1 = bonus.IconRects[0].x1;
+			KMS.m_ext_info.m_rect.y1 = bonus.IconRects[0].y1;
+			KMS.m_ext_info.m_rect.x2 = bonus.IconRects[0].x1 + bonus.IconRects[0].x2;
+			KMS.m_ext_info.m_rect.y2 = bonus.IconRects[0].y1 + bonus.IconRects[0].y2;
+		}
+
+		sprintf_s(sSpecial, *st.translate(translateName));
+
+		if (pKiller && pKiller == Level().CurrentViewEntity())
+			PlaySndMessage(soundId);
+	};
+
+	switch (static_cast<SPECIAL_KILL_TYPE>(specialKillU))
+	{
+	case SKT_NONE:
+		if (pKiller && pKiller == Level().CurrentViewEntity() && pWeapon && pWeapon->CLS_ID == CLSID_OBJECT_W_KNIFE)
+			PlaySndMessage(ID_BUTCHER);
+		break;
+
+	case SKT_HEADSHOT:
+		GiveBonus("headshot", "mp_with_headshot", ID_HEADSHOT);
+		break;
+
+	case SKT_BACKSTAB:
+		GiveBonus("backstab", "mp_with_backstab", ID_ASSASSIN);
+		break;
+	}
+
+	if (killedID == killerID)
+	{
+		// Suicide
+		KMS.m_victim.m_name = nullptr;
+
+		KMS.m_ext_info.m_shader = GetKillMessageShader();
+		KMS.m_ext_info.m_rect.x1 = 32;
+		KMS.m_ext_info.m_rect.y1 = 202;
+		KMS.m_ext_info.m_rect.x2 = KMS.m_ext_info.m_rect.x1 + 30;
+		KMS.m_ext_info.m_rect.y2 = KMS.m_ext_info.m_rect.y1 + 30;
+
+		if (sWeapon[0])
+			Msg("%s killed himself by %s", *KMS.m_killer.m_name, sWeapon + 5);
+		else
+			Msg("%s killed himself", *KMS.m_killer.m_name);
+	}
+	else
+		Msg("%s killed %s %s%s", *KMS.m_killer.m_name, *KMS.m_victim.m_name, sWeapon, sSpecial);
+}
+
+void game_cl_mp::OnPlayerKilled(NET_Packet &P)
+{
+	const auto killType = static_cast<KILL_TYPE>(P.r_u8());
+	const u16 killedID = P.r_u16();
+	const u16 killerID = P.r_u16();
+	const u16 weaponID = P.r_u16();
+	const u8 specialKill = P.r_u8();
+	const game_PlayerState *pPlayer = GetPlayerByGameID(killedID);
+
+	if (!pPlayer)
+	{
+		Msg("! Non existant player[%d] killed by [%d] with [%d]", killedID, killerID, weaponID);
+		return;
+	}
+
 	KillMessageStruct KMS;
 	KMS.m_victim.m_name = pPlayer->name;
 	KMS.m_victim.m_color = Color_Teams_u32[pPlayer->team];
 
-	KMS.m_killer.m_name = NULL;
+	KMS.m_killer.m_name = nullptr;
 	KMS.m_killer.m_color = color_rgba(255, 255, 255, 255);
 
-	switch (KillType)
+	switch (killType)
 	{
-		//-----------------------------------------------------------
-	case KT_HIT: //from hit
+	case KT_HIT:
+		FillHitKillMessage(KMS, specialKill, killedID, killerID, weaponID);
+		break;
+
+	case KT_BLEEDING:
 	{
-		string1024 sWeapon = "", sSpecial = "";
-		if (pWeapon)
-		{
-			CInventoryItem *pIItem = smart_cast<CInventoryItem *>(pWeapon);
-			if (pIItem)
-			{
-				KMS.m_initiator.m_shader = GetEquipmentIconsShader();
-				KMS.m_initiator.m_rect.x1 = pIItem->GetKillMsgXPos();
-				KMS.m_initiator.m_rect.y1 = pIItem->GetKillMsgYPos();
-				KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + pIItem->GetKillMsgWidth();
-				KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + pIItem->GetKillMsgHeight();
-				sprintf_s(sWeapon, "%s %s", st.translate("mp_from").c_str(), pIItem->NameShort());
-			}
-			else
-			{
-				CCustomZone *pAnomaly = smart_cast<CCustomZone *>(pWeapon);
-				if (pAnomaly)
-				{
-					KMS.m_initiator.m_shader = GetKillEventIconsShader();
-					KMS.m_initiator.m_rect.x1 = 1;
-					KMS.m_initiator.m_rect.y1 = 202;
-					KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + 31;
-					KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + 30;
-					sprintf_s(sWeapon, *st.translate("mp_by_anomaly"));
-				}
-			}
-		}
-
-		if (pKiller || pOKiller)
-		{
-			if (!pKiller)
-			{
-				CCustomZone *pAnomaly = smart_cast<CCustomZone *>(pOKiller);
-				if (pAnomaly)
-				{
-					KMS.m_initiator.m_shader = GetKillEventIconsShader();
-					KMS.m_initiator.m_rect.x1 = 1;
-					KMS.m_initiator.m_rect.y1 = 202;
-					KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + 31;
-					KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + 30;
-					Msg("%s killed by anomaly", *KMS.m_victim.m_name);
-					break;
-				}
-			};
-
-			if (pKiller)
-			{
-				KMS.m_killer.m_name = pKiller ? pKiller->name : *(pOKiller->cNameSect());
-				KMS.m_killer.m_color = pKiller ? Color_Teams_u32[pKiller->team] : Color_Neutral_u32;
-			};
-		};
-		//-------------------------------------------
-		switch (SpecialKill)
-		{
-		case SKT_NONE: // not special
-		{
-			if (pOKiller && pOKiller == Level().CurrentViewEntity())
-			{
-				if (pWeapon && pWeapon->CLS_ID == CLSID_OBJECT_W_KNIFE)
-					PlaySndMessage(ID_BUTCHER);
-			};
-		}
-		break;
-		case SKT_HEADSHOT: // Head Shot
-		{
-			BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "headshot");
-			if (it != m_pBonusList.end() && (*it == "headshot"))
-			{
-				Bonus_Struct *pBS = &(*it);
-				KMS.m_ext_info.m_shader = pBS->IconShader;
-				KMS.m_ext_info.m_rect.x1 = pBS->IconRects[0].x1;
-				KMS.m_ext_info.m_rect.y1 = pBS->IconRects[0].y1;
-				KMS.m_ext_info.m_rect.x2 = pBS->IconRects[0].x1 + pBS->IconRects[0].x2;
-				KMS.m_ext_info.m_rect.y2 = pBS->IconRects[0].y1 + pBS->IconRects[0].y2;
-			};
-
-			sprintf_s(sSpecial, *st.translate("mp_with_headshot"));
-
-			if (pOKiller && pOKiller == Level().CurrentViewEntity())
-				PlaySndMessage(ID_HEADSHOT);
-		}
-		break;
-		case SKT_BACKSTAB: // BackStab
-		{
-			BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "backstab");
-			if (it != m_pBonusList.end() && (*it == "backstab"))
-			{
-				Bonus_Struct *pBS = &(*it);
-				KMS.m_ext_info.m_shader = pBS->IconShader;
-				KMS.m_ext_info.m_rect.x1 = pBS->IconRects[0].x1;
-				KMS.m_ext_info.m_rect.y1 = pBS->IconRects[0].y1;
-				KMS.m_ext_info.m_rect.x2 = pBS->IconRects[0].x1 + pBS->IconRects[0].x2;
-				KMS.m_ext_info.m_rect.y2 = pBS->IconRects[0].y1 + pBS->IconRects[0].y2;
-			};
-
-			sprintf_s(sSpecial, *st.translate("mp_with_backstab"));
-
-			if (pOKiller && pOKiller == Level().CurrentViewEntity())
-				PlaySndMessage(ID_ASSASSIN);
-		}
-		break;
-		}
-		//suicide
-		if (KilledID == KillerID)
-		{
-			KMS.m_victim.m_name = NULL;
-
-			KMS.m_ext_info.m_shader = GetKillEventIconsShader();
-			KMS.m_ext_info.m_rect.x1 = 32;
-			KMS.m_ext_info.m_rect.y1 = 202;
-			KMS.m_ext_info.m_rect.x2 = KMS.m_ext_info.m_rect.x1 + 30;
-			KMS.m_ext_info.m_rect.y2 = KMS.m_ext_info.m_rect.y1 + 30;
-			//-------------------------------------
-			Msg(sWeapon[0] ? "%s killed himself by %s" : "%s killed himself", *KMS.m_killer.m_name, sWeapon[0] ? sWeapon + 5 : "");
-		}
-		else
-		{
-			//-------------------------------------
-			Msg("%s killed %s %s%s", *KMS.m_killer.m_name, *KMS.m_victim.m_name, sWeapon, sSpecial[0] ? sSpecial : "");
-		}
-	}
-	break;
-		//-----------------------------------------------------------
-	case KT_BLEEDING: //from bleeding
-	{
-		KMS.m_initiator.m_shader = GetBloodLossIconsShader();
+		KMS.m_initiator.m_shader = GetKillMessageShader();
 		KMS.m_initiator.m_rect.x1 = 238;
 		KMS.m_initiator.m_rect.y1 = 31;
 		KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + 17;
 		KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + 26;
 
-		if (!pKiller)
+		if (const game_PlayerState* pKillerPlayer = GetPlayerByGameID(killerID))
 		{
-			CCustomZone *pAnomaly = smart_cast<CCustomZone *>(pOKiller);
-			if (pAnomaly)
-			{
-				KMS.m_ext_info.m_shader = GetKillEventIconsShader();
-				KMS.m_ext_info.m_rect.x1 = 1;
-				KMS.m_ext_info.m_rect.y1 = 202;
-				KMS.m_ext_info.m_rect.x2 = KMS.m_ext_info.m_rect.x1 + 31;
-				KMS.m_ext_info.m_rect.y2 = KMS.m_ext_info.m_rect.y1 + 30;
-
-				Msg("%s died from bleeding, thanks to anomaly", *KMS.m_victim.m_name);
-				break;
-			}
-		};
-
-		if (pKiller)
-		{
-			KMS.m_killer.m_name = pKiller ? pKiller->name : *(pOKiller->cNameSect());
-			KMS.m_killer.m_color = pKiller ? Color_Teams_u32[pKiller->team] : Color_Neutral_u32;
-			//-----------------------------------------------------------------------
+			KMS.m_killer.m_name = pKillerPlayer->name;
+			KMS.m_killer.m_color = Color_Teams_u32[pKillerPlayer->team];
 			Msg("%s died from bleeding, thanks to %s ", *KMS.m_victim.m_name, *KMS.m_killer.m_name);
 		}
-		else
+		else if (smart_cast<CCustomZone*>(Level().Objects.net_Find(killerID)))
 		{
-			//-----------------------------------------------------------------
+			KMS.m_ext_info.m_shader = GetKillMessageShader();
+			KMS.m_ext_info.m_rect.x1 = 1;
+			KMS.m_ext_info.m_rect.y1 = 202;
+			KMS.m_ext_info.m_rect.x2 = KMS.m_ext_info.m_rect.x1 + 31;
+			KMS.m_ext_info.m_rect.y2 = KMS.m_ext_info.m_rect.y1 + 30;
+			Msg("%s died from bleeding, thanks to anomaly", *KMS.m_victim.m_name);
+		}
+		else
 			Msg("%s died from bleeding", *KMS.m_victim.m_name);
-		};
 	}
 	break;
-		//-----------------------------------------------------------
-	case KT_RADIATION: //from radiation
+
+	case KT_RADIATION:
 	{
-		KMS.m_initiator.m_shader = GetRadiationIconsShader();
+		KMS.m_initiator.m_shader = GetKillMessageShader();
 		KMS.m_initiator.m_rect.x1 = 215;
 		KMS.m_initiator.m_rect.y1 = 195;
 		KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + 24;
 		KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + 24;
-		//---------------------------------------------------------
 		Msg("%s killed by radiation", *KMS.m_victim.m_name);
 	}
 	break;
-	default:
-		break;
 	}
+
 	if (HUD().GetUI() && HUD().GetUI()->m_pMessagesWnd)
 		HUD().GetUI()->m_pMessagesWnd->AddLogMessage(KMS);
-};
+}
 
 void game_cl_mp::OnPlayerChangeName(NET_Packet &P)
 {
