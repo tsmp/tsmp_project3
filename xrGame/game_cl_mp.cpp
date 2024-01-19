@@ -32,6 +32,7 @@
 #include "screenshot_manager.h"
 #include "VoiceChat.h"
 #include "game_cl_mp_snd_messages.h"
+#include "Car.h"
 
 const char* MP_KILL_ICONS = "ui\\ui_mp_icon_kill";
 const char* KILLEVENT_ICONS = "ui\\ui_hud_mp_icon_death";
@@ -1137,14 +1138,19 @@ void game_cl_mp::FillHitKillMessage(KillMessageStruct &KMS, u8 specialKillU, u16
 		KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + 30;
 		sprintf_s(sWeapon, *st.translate("mp_by_anomaly"));
 	}
-	else if (CInventoryItem* pIItem = smart_cast<CInventoryItem*>(pWeapon))
+	else if (smart_cast<CInventoryItem*>(pWeapon) || smart_cast<CCar*>(pWeapon))
 	{
+		const auto &section = pWeapon->cNameSect();
 		KMS.m_initiator.m_shader = GetKillMessageShader();
-		KMS.m_initiator.m_rect.x1 = pIItem->GetKillMsgXPos();
-		KMS.m_initiator.m_rect.y1 = pIItem->GetKillMsgYPos();
-		KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + pIItem->GetKillMsgWidth();
-		KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + pIItem->GetKillMsgHeight();
-		sprintf_s(sWeapon, "%s %s", st.translate("mp_from").c_str(), pIItem->NameShort());
+		KMS.m_initiator.m_rect.x1 = READ_IF_EXISTS(pSettings, r_float, section, "kill_msg_x", 0.0f);
+		KMS.m_initiator.m_rect.y1 = READ_IF_EXISTS(pSettings, r_float, section, "kill_msg_y", 0.0f);
+		KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + READ_IF_EXISTS(pSettings, r_float, section, "kill_msg_width", 0.0f);
+		KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + READ_IF_EXISTS(pSettings, r_float, section, "kill_msg_height", 0.0f);
+
+		if(auto item = smart_cast<CInventoryItem*>(pWeapon))
+			sprintf_s(sWeapon, "%s %s", st.translate("mp_from").c_str(), item->NameShort());
+		else
+			sprintf_s(sWeapon, "%s %s", st.translate("mp_from").c_str(), section.c_str());
 	}
 
 	if (const game_PlayerState* pKillerPlayer = GetPlayerByGameID(killerID))
