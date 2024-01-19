@@ -83,7 +83,7 @@ static Fvector vFootExt;
 
 Flags32 psActorFlags = {0};
 
-CActor::CActor() : CEntityAlive(), m_DeadInCarGameType(false)
+CActor::CActor() : CEntityAlive()
 {
 	encyclopedia_registry = xr_new<CEncyclopediaRegistryWrapper>();
 	game_news_registry = xr_new<CGameNewsRegistryWrapper>();
@@ -1020,18 +1020,6 @@ void CActor::shedule_Update(u32 DT)
 	// Check controls, create accel, prelimitary setup "mstate_real"
 	if (Level().CurrentControlEntity() == this && (!Level().IsDemoPlay() || Level().IsServerDemo()))
 	{
-		const bool carGameType = Game().Type() == GAME_RACE || Game().Type() == GAME_CARFIGHT;
-		if (!m_holder && carGameType && g_Alive() && PHGetSyncItem(0) && !m_DeadInCarGameType)
-		{
-			Msg("- actor die in car gametype");
-			NET_Packet P;
-			u_EventGen(P, GE_GAME_EVENT, ID());
-			P.w_u16(GAME_EVENT_PLAYER_KILL);
-			P.w_u16(ID());
-			u_EventSend(P);
-			m_DeadInCarGameType = true;
-		}
-
 		g_cl_CheckControls(mstate_wishful, NET_SavedAccel, NET_Jump, dt);
 		g_cl_Orientate(mstate_real, dt);
 		g_Orientate(mstate_real, dt);

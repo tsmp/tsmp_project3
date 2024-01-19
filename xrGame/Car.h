@@ -538,6 +538,8 @@ private:
 	bool HUDview() { return IsFocused(); }
 
 	static void cb_Steer(CBoneInstance *B);
+
+	void SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir) override;
 	virtual void Hit(SHit *pHDS);
 	virtual void Die(CObject *who);
 	virtual void PHHit(float P, Fvector &dir, CObject *who, s16 element, Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* =ALife::eHitTypeWound */);

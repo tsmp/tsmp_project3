@@ -2276,6 +2276,13 @@ void CCar::SetExplodeTime(u32 et)
 {
 	CDelayedActionFuse::Initialize(float(et) / 1000.f, CDamagableItem::DamageLevelToHealth(2));
 }
+
+bool IsCarGameType()
+{
+	auto type = Game().Type();
+	return type == GAME_RACE || type == GAME_CARFIGHT;
+}
+
 u32 CCar::ExplodeTime()
 {
 	if (CDelayedActionFuse::isInitialized())
@@ -2284,9 +2291,34 @@ u32 CCar::ExplodeTime()
 		return 0;
 }
 
+void CCar::SetHitInfo(CObject* hitter, CObject* weapon, s16 element, Fvector Pos, Fvector Dir)
+{
+	if (!OnServer() || !IsCarGameType())
+		return;
+
+	if (CActor* driver = OwnerActor())
+	{
+		if (auto hitterCar = smart_cast<CCar*>(hitter))
+			if (auto hitterDriver = hitterCar->OwnerActor())
+				hitter = hitterDriver;
+
+		driver->SetHitInfo(hitter, weapon, 0, Pos, Dir);
+	}
+}
+
 void CCar::Die(CObject *who)
 {
 	inherited::Die(who);
+
+	if (IsCarGameType() && OnServer())
+	{
+		if (CActor* driver = OwnerActor())
+		{
+			driver->SetfHealth(-1.f);
+			driver->OnCriticalHitHealthLoss();
+		}
+	}
+
 	CarExplode();
 }
 
