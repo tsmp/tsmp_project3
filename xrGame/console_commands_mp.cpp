@@ -1850,7 +1850,7 @@ void register_mp_console_commands()
 	CMD4(CCC_Integer, "net_sv_update_rate", &psNET_ServerUpdate, 1, 1000000);
 	CMD4(CCC_Integer, "net_sv_pending_lim", &psNET_ServerPending, 0, 10);
 	CMD4(CCC_Integer, "net_sv_gpmode", &psNET_GuaranteedPacketMode, 0, 2);
-	CMD4(CCC_Integer, "net_sv_control_hit", &psNET_GuaranteedPacketMode, 0, 1);
+	CMD4(CCC_Integer, "net_sv_control_hit", &net_sv_control_hit, 0, 1);
 
 	CMD3(CCC_Mask, "net_sv_log_data", &psNET_Flags, NETFLAG_LOG_SV_PACKETS);
 	CMD3(CCC_Mask, "net_cl_log_data", &psNET_Flags, NETFLAG_LOG_CL_PACKETS);
