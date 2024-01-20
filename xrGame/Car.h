@@ -64,6 +64,7 @@ private:
 	bool m_FirstInterpolation;
 	bool m_AllowLookout = false;
 	bool m_InLookout = false;
+	float m_DriverHeading = 0.f;
 
 	SCarNetUpdate *m_Update1;
 	SCarNetUpdate *m_Update2;

@@ -524,6 +524,7 @@ u8 engine;
 u8 light;
 u8 lookout;
 u16 owner;
+float driverHeading;
 float m_health;
 std::vector<SPHNetState> StateVec;
 

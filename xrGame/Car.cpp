@@ -485,12 +485,35 @@ void CCar::VisualUpdate(float fov)
 			OwnerActor()->Orientation().pitch = -0.0728002042;
 		}
 
-		Fmatrix sit = m_sits_transforms[0];
+		if (m_InLookout)
+		{
+			if (Owner() == Actor())
+			{
+				collide::rq_result RQ;
+				Level().ObjectSpace.RayPick(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, collide::rqtBoth, RQ, this);
+				const Fvector cameraTargetWorldPos = active_camera->vPosition.add(active_camera->vDirection.mul(RQ.range));
+				const Fvector driverWorldPos = Owner()->XFORM().c;
+				const Fvector driverTargetDir = Fvector(cameraTargetWorldPos).sub(driverWorldPos).normalize();
+				m_DriverHeading = driverTargetDir.getH();
+			}
 
-		if(m_InLookout)
-			sit.translate(m_DriverLookoutTranslation);
+			Fvector carWorldAngles;
+			XFORM().getHPB(carWorldAngles);
+			const float carWorldHeading = carWorldAngles.x;
 
-		Owner()->XFORM().mul_43(XFORM(), sit);
+			Fmatrix driverOffset = m_sits_transforms[0];
+			driverOffset.translate(m_DriverLookoutTranslation);
+
+			Fmatrix lookoutTransform;
+			lookoutTransform.setXYZ(0.f, m_DriverHeading - carWorldHeading, 0.f);
+			lookoutTransform.c = driverOffset.c;
+			Owner()->XFORM().mul_43(XFORM(), lookoutTransform);
+		}
+		else
+		{
+			Owner()->XFORM().mul_43(XFORM(), m_sits_transforms[0]);
+			m_DriverHeading = 0.f;
+		}
 
 		if (HUD().GetUI() && Owner() == Actor())
 		{
@@ -635,6 +658,7 @@ void CCar::net_Export(NET_Packet &P)
 	P.w_u8(u8(b_engine_on));
 	P.w_u8(u8(m_lights.IsLightTurnedOn()));
 	P.w_u8(u8(m_InLookout));
+	P.w_float(m_DriverHeading);
 	P.w_float(Health());
 
 	if (OwnerActor())
@@ -712,6 +736,9 @@ void CCar::net_Import(NET_Packet &P)
 	u8 lookout;
 	P.r_u8(lookout);
 
+	float driverHeading;
+	P.r_float(driverHeading);
+
 	float health;
 	P.r_float(health);
 	SetfHealth(health);
@@ -736,6 +763,7 @@ void CCar::net_Import(NET_Packet &P)
 	if (!IsMyCar())
 	{
 		OnChangeLookout(lookout);
+		m_DriverHeading = driverHeading;
 
 		bool e = !!engine;
 
