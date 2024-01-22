@@ -102,7 +102,8 @@ void game_cl_mp::script_register(lua_State *L)
 			.def_readwrite("local_svdpnid", &game_cl_GameState::local_svdpnid)
 			.def_readwrite("local_player", &game_cl_GameState::local_player)
 			.def("GetPlayerByGameID", &game_cl_GameState::GetPlayerByGameID)
-			.def("GetPlayersCount", &game_cl_GameState::GetPlayersCount),
+			.def("GetPlayersCount", &game_cl_GameState::GetPlayersCount)
+			.def("ForEachPlayer", &game_cl_GameState::ForEachPlayer),
 
 		 class_<game_cl_mp, game_cl_GameState>("game_cl_mp")];
 }
