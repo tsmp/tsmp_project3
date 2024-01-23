@@ -325,6 +325,16 @@ void game_cl_GameState::OnGameMessage(NET_Packet &P)
 	TranslateGameMessage(msg, P);
 };
 
+void game_cl_GameState::ForEachPlayer(luabind::functor<void> functor)
+{
+	Level().Server->ForEachClientDo([&](IClient* client)
+		{
+			xrClientData* C = static_cast<xrClientData*>(client);
+			functor(C->ps, this);
+		}
+	);
+}
+
 game_PlayerState *game_cl_GameState::GetPlayerByGameID(u32 GameID)
 {
 	PLAYERS_MAP_IT I = players.begin();
