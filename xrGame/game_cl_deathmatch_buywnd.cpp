@@ -48,10 +48,13 @@ void game_cl_Deathmatch::OnBuyMenu_Ok()
 		}
 	}
 
-	//принудительно добавляем нож
-	PresetItem knifeItem;
-	pCurBuyMenu->GetPresetItemByName("mp_wpn_knife", knifeItem);
-	tmpItems.push_back(knifeItem);
+	// Принудительно добавляем нож
+	if (Type() != GAME_CARFIGHT)
+	{
+		PresetItem knifeItem;
+		pCurBuyMenu->GetPresetItemByName("mp_wpn_knife", knifeItem);
+		tmpItems.push_back(knifeItem);
+	}
 
 	if (pCurBuyMenu->IsIgnoreMoneyAndRank())	
 		P.w_s32(0);	
