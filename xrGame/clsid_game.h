@@ -233,3 +233,4 @@
 
 #define CLSID_CAR_UPGRADE MK_CLSID('C', 'A', 'R', '_', 'U', 'P', 'G', 'R')
 #define CLSID_CAR_REPAIR_KIT MK_CLSID('C', 'A', 'R', '_', 'R', 'E', 'P', 'K')
+#define CLSID_HELI_CALL MK_CLSID('H', 'E', 'L', 'I', 'C', 'A', 'L', 'L')

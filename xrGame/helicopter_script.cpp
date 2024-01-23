@@ -17,6 +17,11 @@ int CHelicopter::GetBodyState()
 	return m_body.type;
 }
 
+void CHelicopter::SetKillerEnemy(u32 team) { KillerMode.SetEnemyTeam(team); }
+bool CHelicopter::KillerModeEnabled() { return KillerMode.Enabled(); }
+bool CHelicopter::KillerModeFinished() { return KillerMode.Finished(); }
+u16 CHelicopter::GetKillerEnemyId() { return KillerMode.GetEnemyId(); }
+
 using namespace luabind;
 
 #pragma optimize("s", on)
@@ -85,6 +90,11 @@ void CHelicopter::script_register(lua_State *L)
 
 			 .def("isVisible", &CHelicopter::isVisible)
 
+			 .def("SetKillerEnemy", &CHelicopter::SetKillerEnemy)
+			 .def("KillerModeEnabled", &CHelicopter::KillerModeEnabled)
+			 .def("KillerModeFinished", &CHelicopter::KillerModeFinished)
+			 .def("GetKillerEnemyId", &CHelicopter::GetKillerEnemyId)
+
 			 .def("GetRealAltitude", &CHelicopter::GetRealAltitude)
 			 .def("GetSafeAltitude", &CHelicopter::GetSafeAltitude)
 			 .def("TurnLighting", &CHelicopter::TurnLighting)
@@ -101,8 +111,5 @@ void CHelicopter::script_register(lua_State *L)
 			 .def_readonly("m_light_started", &CHelicopter::m_light_started)
 			 .def_readonly("m_exploded", &CHelicopter::m_exploded)
 			 .def_readonly("m_dead", &CHelicopter::m_dead)
-
-		 //				.def_readwrite("", &CHelicopter::)
-
 	];
 }

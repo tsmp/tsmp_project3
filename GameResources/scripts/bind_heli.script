@@ -69,9 +69,14 @@ function heli_binder:update( delta )
 --	printf( "heli_binder update" )
 --	printf( "%d", self.object:level_vertex_light( db.actor:level_vertex_id() ) )
 
-	if not self.initialized and db.actor then
+	if not self.initialized then
 		self.initialized = true
-		xr_logic.initialize_obj( self.object, self.st, self.loaded, db.actor, modules.stype_heli )
+
+		if db.actor ~= nil then
+			xr_logic.initialize_obj( self.object, self.st, self.loaded, db.actor, modules.stype_heli )
+		else
+			xr_logic.initialize_obj( self.object, self.st, self.loaded, nil, modules.stype_heli )
+		end
 	end
 
 	self.object:info_clear()
@@ -152,6 +157,12 @@ function heli_binder:check_health()
 
 			heli_snd.play_snd( self.st, heli_snd.snd_down, 4 )
 		end
+	end
+end
+
+function heli_binder:net_Relcase(obj)
+	if self.st.combat then
+		self.st.combat:net_Relcase(obj)
 	end
 end
 

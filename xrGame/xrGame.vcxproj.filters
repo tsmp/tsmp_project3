@@ -2341,6 +2341,9 @@
     <Filter Include="Core\Client\Objects\items &amp; weapons\Devices\CarRepairKit">
       <UniqueIdentifier>{bdb468f9-69ae-4be3-bb83-ee366f4e7d2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Client\Objects\items &amp; weapons\Devices\HeliCall">
+      <UniqueIdentifier>{cf110ad5-b563-49ae-85a4-be5b979f9abc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6661,6 +6664,12 @@
     <ClInclude Include="CarRepairKit.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\CarRepairKit</Filter>
     </ClInclude>
+    <ClInclude Include="HeliKillerMode.h">
+      <Filter>Core\Client\Objects\vehicles\heli</Filter>
+    </ClInclude>
+    <ClInclude Include="HeliCall.h">
+      <Filter>Core\Client\Objects\items &amp; weapons\Devices\HeliCall</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9866,6 +9875,12 @@
     </ClCompile>
     <ClCompile Include="CarRepairKit.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\CarRepairKit</Filter>
+    </ClCompile>
+    <ClCompile Include="HeliKillerMode.cpp">
+      <Filter>Core\Client\Objects\vehicles\heli</Filter>
+    </ClCompile>
+    <ClCompile Include="HeliCall.cpp">
+      <Filter>Core\Client\Objects\items &amp; weapons\Devices\HeliCall</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

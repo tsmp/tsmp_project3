@@ -181,6 +181,7 @@
 
 #include "CarUpgrade.h"
 #include "CarRepairKit.h"
+#include "HeliCall.h"
 #endif // NO_XR_GAME
 
 ENGINE_API bool g_dedicated_server;
@@ -397,4 +398,5 @@ void CObjectFactory::register_classes()
 
 	ADD(CCarUpgrade, CSE_ALifeItem, CLSID_CAR_UPGRADE, "car_upgrade");
 	ADD(CCarRepairKit, CSE_ALifeItem, CLSID_CAR_REPAIR_KIT, "car_repair");
+	ADD(CHeliCall, CSE_ALifeItem, CLSID_HELI_CALL, "heli_call");
 }

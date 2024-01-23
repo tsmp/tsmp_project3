@@ -15,6 +15,7 @@
 #include "ai_object_location.h"
 #include "..\TSMP3_Build_Config.h"
 #include "InfoPortion.h"
+#include "HeliKillerMode.h"
 
 void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 {
@@ -371,6 +372,16 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 
 	case GE_FREEZE_OBJECT:
 		break;
+
+	case GE_CALL_HELICOPTER:
+	{
+		if (!receiver || !receiver->owner)
+			break;
+
+		if (auto svGame = Level().Server->game)
+			HeliKillerMode::SpawnHeli(receiver->owner->ps);
+	}
+	break;
 
 	case GE_CLIENT_SPAWN:
 	{

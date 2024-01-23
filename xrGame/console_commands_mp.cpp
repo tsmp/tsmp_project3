@@ -1500,6 +1500,24 @@ public:
 	}
 };
 
+#ifndef PUBLIC_BUILD
+class ÑÑÑ_Helli : public IConsole_Command
+{
+public:
+	ÑÑÑ_Helli(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		if (!g_pGameLevel)
+			return;
+
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GE_CALL_HELICOPTER, Level().CurrentControlEntity()->ID());
+		CGameObject::u_EventSend(P);
+	}
+};
+#endif
+
 extern int fz_downloader_enabled;
 extern int fz_downloader_skip_full_check;
 extern int fz_downloader_allow_x64;
@@ -1995,6 +2013,10 @@ void register_mp_console_commands()
 	CMD1(CCC_SvChat, "chat");
 	CMD1(CCC_SvChatCow, "chat_cow");
 	CMD1(CCC_SvEventMsg, "event_msg");
+
+#ifndef PUBLIC_BUILD
+	CMD1(ÑÑÑ_Helli, "call_helli");
+#endif
 
 	CMD1(CCC_ClSpawn, "cl_spawn");
 	CMD1(CCC_SvSpawn, "sv_spawn");

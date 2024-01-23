@@ -199,7 +199,8 @@ float CHelicopter::GetRealAltitude()
 
 void CHelicopter::Hit(SHit *pHDS)
 {
-	//	inherited::Hit(pHDS);
+	if (KillerMode.Enabled())
+		return;
 
 	if (GetfHealth() < 0.005f)
 		return;

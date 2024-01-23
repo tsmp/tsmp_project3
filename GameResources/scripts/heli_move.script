@@ -107,7 +107,7 @@ function heli_move:update( delta )
 --		self.combat_mgr.enemy_id = o and o:id()
 --	end
 
-	if xr_logic.try_switch_to_another_section( self.object, self.a, db.actor ) then
+	if db.actor and xr_logic.try_switch_to_another_section( self.object, self.a, db.actor ) then
 		return
 	end
 

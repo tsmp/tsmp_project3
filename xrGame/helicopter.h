@@ -14,6 +14,7 @@
 #include "PHDestroyable.h"
 #include "Explosive.h"
 #include "PHSynchronize.h"
+#include "HeliKillerMode.h"
 
 class CScriptGameObject;
 class CLAItem;
@@ -261,6 +262,9 @@ protected:
 	CParticlesObject *m_pParticle;
 	Fmatrix m_particleXFORM;
 
+	u16 callerID = static_cast<u16>(-1);
+	HeliKillerMode KillerMode;
+
 	void StartFlame();
 	void UpdateHeliParticles();
 	void DieHelicopter();
@@ -376,6 +380,11 @@ public:
 	float GetSafeAltitude() { return m_movement.GetSafeAltitude(); };
 	float GetHeliHealth() const { return inherited::GetfHealth(); }
 	float SetHeliHealth(float value) { return inherited::SetfHealth(value); }
+
+	void SetKillerEnemy(u32 team);
+	bool KillerModeEnabled();
+	u16 GetKillerEnemyId();
+	bool KillerModeFinished();
 
 #ifdef DEBUG
 public:

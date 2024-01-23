@@ -141,6 +141,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract *DC)
 
 	SetfHealth(100.0f);
 	setState(CHelicopter::eAlive);
+	KillerMode.SetHeliId(DC->ID);
 	m_flame_started = false;
 	m_light_started = false;
 	m_exploded = false;

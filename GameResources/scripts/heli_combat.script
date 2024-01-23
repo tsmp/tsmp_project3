@@ -120,6 +120,12 @@ function heli_combat:set_enemy_from_custom_data( combat_enemy )
 			end
 		elseif combat_enemy == "nil" then
 			self:forget_enemy()
+		elseif combat_enemy == "team1" then
+			self.heliObject:SetKillerEnemy(1)
+			self.enemy_id = self.heliObject:GetKillerEnemyId()
+		elseif combat_enemy == "team2" then
+			self.heliObject:SetKillerEnemy(2)
+			self.enemy_id = self.heliObject:GetKillerEnemyId()
 		else
 			self.enemy_id = id_by_sid( tonumber( combat_enemy ) )
 		end
@@ -277,9 +283,16 @@ function heli_combat:forget_enemy()
 	self.initialized = false
 end
 
+function heli_combat:net_Relcase(obj)
+	if self.enemy_id and self.enemy_id == obj:id() then
+		printfa("heli relcase enemy!")
+		self:forget_enemy()
+	end
+end
+
 function heli_combat:update_forgetting()
 	if ( ( self.enemy_forgetable and self.can_forget_enemy ) and
-	   ( time_global() - self.enemy_last_seen_time > self.forget_timeout ) ) or not self.enemy:alive()
+	   ( time_global() - self.enemy_last_seen_time > self.forget_timeout ) ) or not self.enemy or not self.enemy:alive()
 	then
 		self:forget_enemy()
 	end
@@ -352,6 +365,10 @@ end
 
 -- нужно ли игнорировать врага
 function heli_combat:combat_ignore_check()
+	if self.heliObject:KillerModeEnabled() then
+		return false
+	end
+
 	return self.combat_ignore ~= nil and xr_logic.pick_section_from_condlist( db.actor, self.object, self.combat_ignore ) ~= nil
 end
 
@@ -390,10 +407,26 @@ function heli_combat:update()
 		self.enemy = level.object_by_id( self.enemy_id )
 		if not self.enemy then
 			self:forget_enemy()
-			return false
+
+			if self.heliObject:KillerModeEnabled() then
+				return true
+			else
+				return false
+			end
 		end
 	else
-		return false
+		if self.heliObject:KillerModeEnabled() then
+			if not self.heliObject:KillerModeFinished() then
+				self.enemy_id = self.heliObject:GetKillerEnemyId()
+				self:set_combat_type( combat_type_search )
+				return true
+			else
+				self:retreat_update();
+				return true
+			end
+		else
+			return false
+		end
 	end
 
 	if self:combat_ignore_check() then
@@ -437,6 +470,11 @@ function heli_combat:calc_position_in_radius( r )
 	v:normalize()
 
 	local o = self.enemy_last_seen_pos
+
+	if o == nil then
+		o = p
+	end
+
 	o.y = 0
 
 	local ret = cross_ray_circle( p, v, o, r )
