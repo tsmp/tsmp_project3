@@ -586,7 +586,7 @@ void game_cl_TeamDeathmatch::LoadSndMessages()
 	{
 		string16 lineTeam1, lineTeam2;
 		sprintf(lineTeam1, "team1_rank%u", i);
-		sprintf(lineTeam1, "team2_rank%u", i);
+		sprintf(lineTeam2, "team2_rank%u", i);
 		LoadSndMessage("tdm_snd_messages", lineTeam1, ID_TEAM1_RANK_1 + i - 1);
 		LoadSndMessage("tdm_snd_messages", lineTeam2, ID_TEAM2_RANK_1 + i - 1);
 	}
