@@ -511,7 +511,7 @@ void CActor::Hit(SHit *pHDS)
 		};
 	}
 
-	//slow actor, only when he gets hit
+	// Slow actor, only when he gets hit
 	if (HDS.hit_type == ALife::eHitTypeWound || HDS.hit_type == ALife::eHitTypeStrike)
 	{
 		hit_slowmo = HDS.damage();
@@ -519,85 +519,66 @@ void CActor::Hit(SHit *pHDS)
 	}
 	else
 		hit_slowmo = 0.f;
-	//---------------------------------------------------------------
+
 	if (Level().CurrentViewEntity() == this && !g_dedicated_server && HDS.hit_type == ALife::eHitTypeFireWound)
 	{
 		CObject *pLastHitter = Level().Objects.net_Find(m_iLastHitterID);
 		CObject *pLastHittingWeapon = Level().Objects.net_Find(m_iLastHittingWeaponID);
 		HitSector(pLastHitter, pLastHittingWeapon);
-	};
+	}
 
 	if ((mstate_real & mcSprint) && Level().CurrentControlEntity() == this &&
 		HDS.hit_type != ALife::eHitTypeTelepatic &&
 		HDS.hit_type != ALife::eHitTypeRadiation)
 	{
-		//		mstate_real	&=~mcSprint;
 		mstate_wishful &= ~mcSprint;
-	};
+	}
 
 	if (!g_dedicated_server && g_Alive() && Local() && Level().CurrentEntity() == this)	
-		HitMark(HDS.damage(), HDS.dir, HDS.who, HDS.hit_type);	
+		HitMark(HDS.damage(), HDS.dir, HDS.who, HDS.hit_type);
 
-	switch (GameID())
+	if(GameID() == GAME_SINGLE)
 	{
-	case GAME_SINGLE:
-	{
-		float hit_power = HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
-
-		if (GodMode()) //psActorFlags.test(AF_GODMODE))
-		{
+		if(GodMode())
 			HDS.power = 0.0f;
-			//				inherited::Hit(0.f,dir,who,element,position_in_bone_space,impulse, hit_type);
-			inherited::Hit(&HDS);
-			return;
-		}
 		else
-		{
-			//inherited::Hit		(hit_power,dir,who,element,position_in_bone_space, impulse, hit_type);
-			HDS.power = hit_power;
-			inherited::Hit(&HDS);
-		};
-	}
-	break;
-	default:
-	{
-		m_bWasBackStabbed = false;
-		if (HDS.hit_type == ALife::eHitTypeWound_2 && Check_for_BackStab_Bone(HDS.bone()))
-		{
-			// convert impulse into local coordinate system
-			Fmatrix mInvXForm;
-			mInvXForm.invert(XFORM());
-			Fvector vLocalDir;
-			mInvXForm.transform_dir(vLocalDir, HDS.dir);
-			vLocalDir.invert();
+			HDS.power = HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
 
-			Fvector a = {0, 0, 1};
-			float res = a.dotproduct(vLocalDir);
-			if (res < -0.707)
-			{
-				game_PlayerState *ps = Game().GetPlayerByGameID(ID());
-				if (!ps || !ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
-					m_bWasBackStabbed = true;
-			}
-		};
-
-		float hit_power = 0;
-
-		if (m_bWasBackStabbed)
-			hit_power = (HDS.damage() == 0) ? 0 : 100000.0f;
-		else
-			hit_power = HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
-
-		HDS.power = hit_power;
 		inherited::Hit(&HDS);
+		return;
+	}
 
-		if (OnServer() && !g_Alive() && HDS.hit_type == ALife::eHitTypeExplosion)
+	m_bWasBackStabbed = false;
+
+	if (HDS.hit_type == ALife::eHitTypeWound_2 && Check_for_BackStab_Bone(HDS.bone()) && GameID() != GAME_CARFIGHT)
+	{
+		// Convert impulse into local coordinate system
+		Fmatrix mInvXForm;
+		mInvXForm.invert(XFORM());
+		Fvector vLocalDir;
+		mInvXForm.transform_dir(vLocalDir, HDS.dir);
+		vLocalDir.invert();
+		Fvector a = {0, 0, 1};
+
+		if (a.dotproduct(vLocalDir) < -0.707)
 		{
 			game_PlayerState *ps = Game().GetPlayerByGameID(ID());
-			Game().m_WeaponUsageStatistic->OnExplosionKill(ps, HDS);
+			if (!ps || !ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
+				m_bWasBackStabbed = true;
 		}
 	}
-	break;
+
+	if (m_bWasBackStabbed)
+		HDS.power = fis_zero(HDS.damage()) ? 0 : 100000.0f;
+	else
+		HDS.power = HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
+
+	inherited::Hit(&HDS);
+
+	if (OnServer() && !g_Alive() && HDS.hit_type == ALife::eHitTypeExplosion)
+	{
+		game_PlayerState *ps = Game().GetPlayerByGameID(ID());
+		Game().m_WeaponUsageStatistic->OnExplosionKill(ps, HDS);
 	}
 }
 
