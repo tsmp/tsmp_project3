@@ -762,7 +762,9 @@ void CCar::net_Import(NET_Packet &P)
 
 	if (!IsMyCar())
 	{
-		OnChangeLookout(lookout);
+		if(m_InLookout != lookout)
+			OnChangeLookout(lookout);
+
 		m_DriverHeading = driverHeading;
 
 		bool e = !!engine;

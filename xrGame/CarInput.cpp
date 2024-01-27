@@ -19,6 +19,7 @@
 #include "..\include\xrRender\Kinematics.h"
 #include "level.h"
 #include "CarWeapon.h"
+#include "Inventory.h"
 
 void CCar::OnMouseMove(int dx, int dy)
 {
@@ -145,15 +146,35 @@ void CCar::OnChangeLookout(bool enabled)
 	if (enabled && !m_AllowLookout)
 		return;
 
-	if (enabled == m_InLookout)
-		return;
-
 	CActor* ownerAct = OwnerActor();
 
 	if (!ownerAct)
 	{
 		m_InLookout = false;
 		return;
+	}
+
+	auto& ownerInv = ownerAct->inventory();
+	ownerInv.SetSlotsBlocked(INV_STATE_BLOCK_ALL, !enabled);
+
+	if (!enabled)
+		ownerInv.SetActiveSlot(NO_ACTIVE_SLOT);
+	else
+	{
+		ownerInv.SetActiveSlot(RIFLE_SLOT);
+		ownerInv.Activate(RIFLE_SLOT);
+
+		if (!ownerInv.ActiveItem())
+		{
+			ownerInv.SetActiveSlot(GRENADE_SLOT);
+			ownerInv.Activate(GRENADE_SLOT);
+		}
+
+		if (!ownerInv.ActiveItem())
+		{
+			m_InLookout = false;
+			return;
+		}
 	}
 
 	m_InLookout = enabled;
@@ -170,16 +191,8 @@ void CCar::OnChangeLookout(bool enabled)
 
 void CCar::OnWeaponChange(int cmd)
 {
-	if (cmd == 1)
-	{
-		OnChangeLookout(false);
-		m_car_weapon->Action(CCarWeapon::eWpnActivate, true);
-	}
-	else
-	{
-		OnChangeLookout(true);
-		m_car_weapon->Action(CCarWeapon::eWpnActivate, false);
-	}
+	OnChangeLookout(cmd != 1);
+	m_car_weapon->Action(CCarWeapon::eWpnActivate, !m_InLookout);
 }
 
 void CCar::OnKeyboardPress(int cmd)
