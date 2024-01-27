@@ -1734,9 +1734,10 @@ void CActor::OnHitHealthLoss(float NewHealth)
 
 void CActor::OnCriticalHitHealthLoss()
 {
-	if (GameID() == GAME_SINGLE || !OnServer())
+	if (GameID() == GAME_SINGLE || !OnServer() || m_GotCriticalHit)
 		return;
 
+	m_GotCriticalHit = true;
 	CObject *pLastHitter = Level().Objects.net_Find(m_iLastHitterID);
 	CObject *pLastHittingWeapon = Level().Objects.net_Find(m_iLastHittingWeaponID);
 
