@@ -1,7 +1,7 @@
 #pragma once
 // ’з как назвать, назвал Killer)
 
-class game_PlayerState;
+class xrClientData;
 
 class HeliKillerMode
 {
@@ -14,7 +14,7 @@ class HeliKillerMode
 	u16 m_HeliId = 0;
 
 public:
-	static void SpawnHeli(game_PlayerState* caller);
+	static void SpawnHeli(xrClientData* caller);
 
 	void SetHeliId(u16 id);
 	void SetEnemyTeam(u32 team);

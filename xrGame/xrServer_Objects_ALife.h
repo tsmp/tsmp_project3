@@ -488,6 +488,7 @@ virtual bool can_save() const;
 virtual bool used_ai_locations() const;
 virtual CSE_Motion *__stdcall motion();
 
+ClientID CallerClID;
 SPHNetState State;
 virtual BOOL Net_Relevant() { return true; }
 virtual CSE_Abstract *cast_abstract() { return this; }

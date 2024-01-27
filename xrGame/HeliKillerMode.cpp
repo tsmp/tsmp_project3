@@ -28,8 +28,11 @@ void SendStatusMessage(const char* msg)
 	}
 }
 
-void HeliKillerMode::SpawnHeli(game_PlayerState* caller)
+void HeliKillerMode::SpawnHeli(xrClientData* callerData)
 {
+	auto caller = callerData->ps;
+	R_ASSERT(caller);
+
 	std::string customData =
 		"[logic]\n\
 		active = heli_move\n\
@@ -63,6 +66,7 @@ void HeliKillerMode::SpawnHeli(game_PlayerState* caller)
 
 	E->m_ini_string = customData.c_str();
 	CSE_Abstract* spawned = svGame->spawn_end(E, Level().Server->GetServerClient()->ID);
+	smart_cast<CSE_ALifeHelicopter*>(spawned)->CallerClID = callerData->ID;
 	svGame->signal_Syncronize();
 
 	string256 msg;

@@ -379,7 +379,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 			break;
 
 		if (auto svGame = Level().Server->game)
-			HeliKillerMode::SpawnHeli(receiver->owner->ps);
+			HeliKillerMode::SpawnHeli(receiver->owner);
 	}
 	break;
 

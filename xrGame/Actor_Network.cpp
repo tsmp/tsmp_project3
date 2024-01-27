@@ -1661,14 +1661,14 @@ void CActor::Check_for_AutoPickUp()
 	Fbox APU_Box;
 	APU_Box.set(Fvector().sub(bc, m_AutoPickUp_AABB), Fvector().add(bc, m_AutoPickUp_AABB));
 
-	xr_vector<ISpatial *> ISpatialResult;
+	xr_vector<ISpatial*> ISpatialResult;
 	g_SpatialSpace->q_box(ISpatialResult, 0, STYPE_COLLIDEABLE, bc, m_AutoPickUp_AABB);
 
 	// Determine visibility for dynamic part of scene
 	for (u32 o_it = 0; o_it < ISpatialResult.size(); o_it++)
 	{
 		ISpatial *spatial = ISpatialResult[o_it];
-		CInventoryItem *pIItem = smart_cast<CInventoryItem *>(spatial->dcast_CObject());
+		CInventoryItem *pIItem = smart_cast<CInventoryItem*>(spatial->dcast_CObject());
 		if (0 == pIItem)
 			continue;
 		if (!pIItem->CanTake())
@@ -1738,10 +1738,17 @@ void CActor::OnCriticalHitHealthLoss()
 		return;
 
 	m_GotCriticalHit = true;
-	CObject *pLastHitter = Level().Objects.net_Find(m_iLastHitterID);
-	CObject *pLastHittingWeapon = Level().Objects.net_Find(m_iLastHittingWeaponID);
+	CObject* pLastHittingWeapon = Level().Objects.net_Find(m_iLastHittingWeaponID);
+
+	if (auto heli = smart_cast<CSE_ALifeHelicopter*>(Level().Server->ID_to_entity(m_iLastHitterID)))
+	{
+		if (auto heliCallerCL = Level().Server->GetClientByID(heli->CallerClID))
+			m_iLastHitterID = static_cast<xrClientData*>(heliCallerCL)->ps->GameID;
+	}
 
 #ifdef DEBUG
+	CObject* pLastHitter = Level().Objects.net_Find(m_iLastHitterID);
+
 	Msg("%s killed by hit from %s %s",
 		*cName(),
 		(pLastHitter ? *(pLastHitter->cName()) : ""),
@@ -1771,8 +1778,7 @@ void CActor::OnCriticalHitHealthLoss()
 	{
 		if (m_s16LastHittedElement == m_head)
 		{
-			CWeaponMagazined *pWeaponMagazined = smart_cast<CWeaponMagazined *>(pLastHittingWeapon);
-			if (pWeaponMagazined)
+			if (auto pWeaponMagazined = smart_cast<CWeaponMagazined*>(pLastHittingWeapon))
 			{
 				SpecialHit = SKT_HEADSHOT;
 				NET_Packet P;

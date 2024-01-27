@@ -7,11 +7,11 @@ void CHeliCall::UseBy(CEntityAlive* user)
 {
 	if (!m_Called && OnServer())
 	{
-		if (auto playerState = Level().Server->game->get_eid(user->ID()))
+		if (auto usedClient = Level().Server->game->get_client(user->ID()))
 		{
 			m_Called = true;
-			Msg("- Player [%s] called heli!", playerState->name);
-			HeliKillerMode::SpawnHeli(playerState);
+			Msg("- Player [%s] called heli!", usedClient->ps->name);
+			HeliKillerMode::SpawnHeli(usedClient);
 		}
 		else
 			Msg("! can not call heli!");
