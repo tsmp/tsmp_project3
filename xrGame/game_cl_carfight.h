@@ -7,4 +7,6 @@ class game_cl_Carfight : public game_cl_TeamDeathmatch
 public:
 	game_cl_Carfight();
 	~game_cl_Carfight() override = default;
+
+	void OnSpawn(CObject* pObj) override;
 };
