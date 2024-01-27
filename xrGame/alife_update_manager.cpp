@@ -244,18 +244,20 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
 	spawn_new_objects();
 	can_register_objects(true);
 
-	CALifeObjectRegistry::OBJECT_REGISTRY::iterator I = objects().objects().begin();
-	CALifeObjectRegistry::OBJECT_REGISTRY::iterator E = objects().objects().end();
-	ObjectRespawnClass::DestroyRespawner();
-	for (; I != E; ++I)
+	const auto& objectsRegistry = objects().objects();
+
+	if (!IsGameTypeSingle())
+		server().m_RespawnerMP.CleanRespawnList();
+
+	for (auto& idObjectPair : objectsRegistry)
 	{
-		(*I).second->on_register();
-		if (CSE_Abstract* entity = (*I).second)
-		{
-			ObjectRespawnClass::AddObject(entity->s_name, entity->m_ini_string, entity->ID, entity->RespawnTime, entity->o_Position);
-			entity->RespawnTime = 0; // если время не 0, сервер ругается на dummy16
-		}
+		CSE_ALifeDynamicObject* entity = idObjectPair.second;
+		entity->on_register();
+
+		if (!IsGameTypeSingle())
+			server().m_RespawnerMP.RegisterToRespawn(entity);
 	}
+
 	save(save_name);
 	Msg("* New game is successfully created!");
 }

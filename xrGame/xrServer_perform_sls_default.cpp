@@ -3,6 +3,8 @@
 #include "xrmessages.h"
 #include "xrServerRespawnManager.h"
 
+extern bool IsGameTypeSingle();
+
 #if 1 //def DEBUG
 #define USE_DESIGNER_KEY
 #endif
@@ -13,6 +15,9 @@
 
 void xrServer::SLS_Default()
 {
+	if(!IsGameTypeSingle())
+		m_RespawnerMP.CleanRespawnList();
+
 	if (game->custom_sls_default())
 	{
 		game->sls_default();
@@ -24,15 +29,15 @@ void xrServer::SLS_Default()
 	CSE_ALifeCreatureActor *_actor = 0;
 #endif
 
-	ObjectRespawnClass::DestroyRespawner(); // очищаем список респавнера
-
 	string_path fn_spawn;
+
 	if (FS.exist(fn_spawn, "$level$", "level.spawn"))
 	{
 		IReader *SP = FS.r_open(fn_spawn);
 		NET_Packet P;
 		u32 S_id;
-		for (IReader *S = SP->open_chunk_iterator(S_id); S; S = SP->open_chunk_iterator(S_id, S))
+
+		for (IReader* S = SP->open_chunk_iterator(S_id); S; S = SP->open_chunk_iterator(S_id, S))
 		{
 			P.B.count = S->length();
 			S->r(P.B.data, P.B.count);
@@ -43,27 +48,21 @@ void xrServer::SLS_Default()
 			ClientID clientID;
 			clientID.set(0);
 
-			CSE_Abstract* entity = Process_spawn(P, clientID);
-			if (entity)
+			if (CSE_Abstract* entity = Process_spawn(P, clientID))
 			{
-				ObjectRespawnClass::AddObject(
-					entity->s_name,
-					entity->m_ini_string,
-					entity->ID,
-					entity->RespawnTime,
-					entity->o_Position);
-			}
-
+				if (!IsGameTypeSingle())
+					m_RespawnerMP.RegisterToRespawn(entity);
 
 #ifdef USE_DESIGNER_KEY
-			if (_designer)
-			{
-				CSE_ALifeCreatureActor *actor = smart_cast<CSE_ALifeCreatureActor *>(entity);
-				if (actor)
-					_actor = actor;
-			}
+				if (_designer)
+				{
+					if (auto actor = smart_cast<CSE_ALifeCreatureActor*>(entity))
+						_actor = actor;
+				}
 #endif
+			}
 		}
+
 		FS.r_close(SP);
 	}
 

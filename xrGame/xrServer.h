@@ -3,6 +3,7 @@
 #include "game_sv_base.h"
 #include "id_generator.h"
 #include "filetransfer/file_transfer.h"
+#include "xrServerRespawnManager.h"
 
 #ifdef DEBUG
 //. #define SLOW_VERIFY_ENTITIES
@@ -124,6 +125,7 @@ protected:
 
 public:
 	game_sv_GameState *game;
+	ServerRespawnManager m_RespawnerMP;
 
 	void Export_game_type(IClient *CL);
 	void Perform_game_export();

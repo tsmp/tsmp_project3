@@ -9,6 +9,8 @@
 #include "alife_object_registry.h"
 #include "xrServerRespawnManager.h"
 
+extern bool IsGameTypeSingle();
+
 xr_string xrServer::ent_name_safe(u16 eid)
 {
 	string1024 buff;
@@ -23,105 +25,104 @@ xr_string xrServer::ent_name_safe(u16 eid)
 
 void xrServer::Process_event_destroy(NET_Packet &P, ClientID const &sender, u32 time, u16 ID, NET_Packet *pEPack)
 {
-	u32 MODE = net_flags(TRUE, TRUE);
-	// Parse message
-	u16 id_dest = ID;
+	const u32 sendFlags = net_flags(TRUE, TRUE);
+	u16 destID = ID;
+	CSE_Abstract *entityToDestroy = game->get_entity_from_eid(destID);
 
-	CSE_Abstract *e_dest = game->get_entity_from_eid(id_dest); // кто должен быть уничтожен
-	if (!e_dest)
+	if (!entityToDestroy)
 	{
-		Msg("!SV:ge_destroy: [%d] not found on server", id_dest);
-		return;
-	};
-
-	ObjectRespawnClass::DestroyRespawnID(id_dest); // объект удален, обнуляем id в нашем респавнере
-
-	R_ASSERT(e_dest);
-	xrClientData *c_dest = e_dest->owner; // клиент, чей юнит
-	R_ASSERT(c_dest);
-	xrClientData *c_from = ID_to_client(sender); // клиент, кто прислал
-	R_ASSERT(c_from);
-
-	if (c_dest != c_from && c_from != GetServerClient())
-	{
-		CSE_Abstract *parent = game->get_entity_from_eid(e_dest->ID_Parent);
-		LPCSTR parentName = parent ? parent->name() : "unknown";
-		Msg("! ERROR: client [%s] sent destroy for object which owner is [%s]", c_from->ps->getName(), c_dest->ps->getName());
-		Msg("object id [%u], name [%s], parent id [%u], name [%s]", id_dest, e_dest->name(), e_dest->ID_Parent, parentName);
+		Msg("!SV:ge_destroy: [%d] not found on server", destID);
 		return;
 	}
 
-	u16 parent_id = e_dest->ID_Parent;
+	if (!IsGameTypeSingle())
+		m_RespawnerMP.MarkReadyForRespawn(destID);
+
+	R_ASSERT(entityToDestroy);
+	xrClientData* clientOwner = entityToDestroy->owner;
+	R_ASSERT(clientOwner);
+	xrClientData *clientSender = ID_to_client(sender);
+	R_ASSERT(clientSender);
+
+	if (clientOwner != clientSender && clientSender != GetServerClient())
+	{
+		CSE_Abstract *parent = game->get_entity_from_eid(entityToDestroy->ID_Parent);
+		LPCSTR parentName = parent ? parent->name() : "unknown";
+		Msg("! ERROR: client [%s] sent destroy for object which owner is [%s]", clientSender->ps->getName(), clientOwner->ps->getName());
+		Msg("object id [%u], name [%s], parent id [%u], name [%s]", destID, entityToDestroy->name(), entityToDestroy->ID_Parent, parentName);
+		return;
+	}
+
+	const u16 parentID = entityToDestroy->ID_Parent;
 
 #ifdef MP_LOGGING
-	Msg("--- SV: Process destroy: parent [%d] item [%d][%s]", parent_id, id_dest, e_dest->name());
+	Msg("--- SV: Process destroy: parent [%d] item [%d][%s]", parentID, destID, entityToDestroy->name());
 #endif //#ifdef MP_LOGGING
 
-	NET_Packet P2, *pEventPack = pEPack;
-	P2.w_begin(M_EVENT_PACK);
-	//---------------------------------------------
-	// check if we have children
-	if (!e_dest->children.empty())
-	{
-		if (!pEventPack)
-			pEventPack = &P2;
+	NET_Packet tempPacket;
+	NET_Packet *pEventPack = pEPack;
 
-		while (!e_dest->children.empty()) 
+	if (!pEventPack)
+	{
+		pEventPack = &tempPacket;
+		pEventPack->w_begin(M_EVENT_PACK);
+	}
+
+	if (!entityToDestroy->children.empty())
+	{
+		while (!entityToDestroy->children.empty())
 		{
-			Process_event_destroy(P, sender, time, *e_dest->children.begin(), pEventPack);
+			Process_event_destroy(P, sender, time, *entityToDestroy->children.begin(), pEventPack);
+
 			if ((pEventPack->B.count + 100) > NET_PacketSizeLimit)
 			{
-				SendBroadcast(BroadcastCID, *pEventPack, MODE);
+				SendBroadcast(BroadcastCID, *pEventPack, sendFlags);
 				pEventPack->w_begin(M_EVENT_PACK);
 			}
 		}
-	};
-
-	if (0xffff == parent_id && NULL == pEventPack)
-	{
-		SendBroadcast(BroadcastCID, P, MODE);
 	}
+
+	const u16 invalidID = static_cast<u16>(-1);
+
+	if (parentID == invalidID && !pEventPack)
+		SendBroadcast(BroadcastCID, P, sendFlags);
 	else
 	{
 		NET_Packet tmpP;
-		if (0xffff != parent_id && Process_event_reject(P, sender, time, parent_id, ID, false))
-		{
-			game->u_EventGen(tmpP, GE_OWNERSHIP_REJECT, parent_id);
-			tmpP.w_u16(id_dest);
-			tmpP.w_u8(1);
 
-			if (!pEventPack)
-				pEventPack = &P2;
+		if (parentID != invalidID && Process_event_reject(P, sender, time, parentID, ID, false))
+		{
+			game->u_EventGen(tmpP, GE_OWNERSHIP_REJECT, parentID);
+			tmpP.w_u16(destID);
+			tmpP.w_u8(1);
 
 			pEventPack->w_u8(u8(tmpP.B.count));
 			pEventPack->w(&tmpP.B.data, tmpP.B.count);
-		};
+		}
 
-		game->u_EventGen(tmpP, GE_DESTROY, id_dest);
+		game->u_EventGen(tmpP, GE_DESTROY, destID);
 
 		pEventPack->w_u8(u8(tmpP.B.count));
 		pEventPack->w(&tmpP.B.data, tmpP.B.count);
-	};
-
-	if (NULL == pEPack && NULL != pEventPack)
-	{
-		SendBroadcast(BroadcastCID, *pEventPack, MODE);
 	}
 
+	if (!pEPack && pEventPack)
+		SendBroadcast(BroadcastCID, *pEventPack, sendFlags);
+
 	// Everything OK, so perform entity-destroy
-	if (e_dest->m_bALifeControl && ai().get_alife())
+	if (entityToDestroy->m_bALifeControl && ai().get_alife())
 	{
 		const game_sv_GameState* pGame = smart_cast<game_sv_GameState*>(game);
 		
 		R_ASSERT(pGame);
 		R_ASSERT(pGame->HasAlifeSimulator());
 
-		if (ai().alife().objects().object(id_dest, true))
-			pGame->alife().release(e_dest, false);
+		if (ai().alife().objects().object(destID, true))
+			pGame->alife().release(entityToDestroy, false);
 	}
 
 	if (game)
-		game->OnDestroyObject(e_dest->ID);
+		game->OnDestroyObject(entityToDestroy->ID);
 
-	entity_Destroy(e_dest);
+	entity_Destroy(entityToDestroy);
 }

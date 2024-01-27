@@ -1,27 +1,30 @@
 #pragma once
-class ObjectRespawnClass
+
+class ServerRespawnManager
 {
+	struct ObjectToRespawn
+	{
+		u16 objectID;
+		u32 secondsToRespawn;
+		u32 secondsElapsed;
+		shared_str section;
+		shared_str customData;
+		Fvector pos;
+	};
+
+	UINT_PTR m_RespawnTimerHandle = { 0 };
+	xr_vector<ObjectToRespawn> m_ObjectsToRespawn;
+	using RespObjIt = decltype(m_ObjectsToRespawn)::iterator;
+
+	RespObjIt FindObject(u16 objectID);
+
 public:
+	ServerRespawnManager();
+	~ServerRespawnManager();
 
-	// Вызывать в таймере - находим объекты, у которых нулевой айдишник с просроченым временем и спавним его.
-	static void CheckRespawnObjects();
-
-	// В xrServer::Process_event_destroy
-	static u16 DestroyRespawnID(u16 id);
-
-	// В xrServer::Process_event_destroy
-	static u16 GetRespawnObjectID(u16 id);
-
-	// добавить объект в респавн xrServer::SLS_Default()
-	static void AddObject(shared_str& pSection, shared_str &pCustomData, u16 pID, int pTimeRespawn, Fvector& XYZ);
-
-	// вызвать перед вызовом чтения level.spawn xrServer::SLS_Default()
-	static void DestroyRespawner();
-
-	u16 id_object;
-	int time_respawn;
-	int time_tick;
-	shared_str section;
-	shared_str custom_data;
-	Fvector spawn_position;
+	void RegisterToRespawn(CSE_Abstract* object);
+	bool RegisteredForRespawn(u16 objectID);
+	void MarkReadyForRespawn(u16 objectID);
+	void CleanRespawnList();
+	void OnTimer();
 };

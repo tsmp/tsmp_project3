@@ -1,87 +1,91 @@
 #include "stdafx.h"
+#include "xrServerRespawnManager.h"
 #include "xrServer.h"
 #include "xrserver_objects.h"
 #include "Level.h"
-#include "xrServerRespawnManager.h"
-
-UINT_PTR RespawnTimer = 0;
-std::vector <ObjectRespawnClass> xr_add_object;
-
-void ObjectRespawnClass::AddObject(shared_str &pSection, shared_str& pCustomData, u16 pID, int pTimeRespawn, Fvector& XYZ)
-{
-    if (pTimeRespawn != 0)
-    {
-        ObjectRespawnClass add;
-        add.custom_data = pCustomData;
-        add.section = pSection;
-        add.id_object = pID;
-        add.time_respawn = pTimeRespawn;
-        add.spawn_position = Fvector().set(XYZ);
-        add.time_tick = 0;
-        xr_add_object.push_back(add);
-    }
-}
-
-void ObjectRespawnClass::CheckRespawnObjects()
-{
-    if (!OnServer() || IsGameTypeSingle())
-        return;
-
-    for (auto& respawn : xr_add_object)
-    {
-        if (respawn.id_object == 0)
-        {
-            respawn.time_tick++;
-            if (respawn.time_respawn <= respawn.time_tick)
-            {
-                respawn.time_tick = 0;
-
-                if (CSE_Abstract* resp = Level().Server->game->SpawnObject(respawn.section.c_str(), respawn.spawn_position, respawn.custom_data))
-                {
-                    respawn.id_object = resp->ID;
-                    Msg("- Object spawned: [%s], id: [%d], X: [%3.2f], Y: [%3.2f], Z: [%3.2f], Time respawn: [%u]",
-                        respawn.section.c_str(), respawn.id_object, respawn.spawn_position.x, respawn.spawn_position.y, respawn.spawn_position.z, respawn.time_respawn);
-                }
-            }
-        }
-    }
-}
-
-
-u16 ObjectRespawnClass::DestroyRespawnID(u16 id)
-{
-    for (auto& respawn : xr_add_object)
-    {
-        if (respawn.id_object == id)
-        {
-            respawn.id_object = 0;
-            return id;
-        }
-    }
-    return 0;
-}
-
-u16 ObjectRespawnClass::GetRespawnObjectID(u16 id)
-{
-    for (auto& respawn : xr_add_object)
-    {
-        if (respawn.id_object == id)
-            return id;
-    }
-    return 0;
-}
 
 void CALLBACK TimerProc(HWND, UINT, UINT_PTR, DWORD)
 {
-    ObjectRespawnClass::CheckRespawnObjects();
+    Level().Server->m_RespawnerMP.OnTimer();
 }
 
-void ObjectRespawnClass::DestroyRespawner()
+ServerRespawnManager::ServerRespawnManager()
 {
-    xr_add_object.clear();
-    if (RespawnTimer)
+    if (!IsGameTypeSingle())
     {
-        KillTimer(NULL, RespawnTimer);
+        const UINT TimerPeriodMs = 1000;
+        m_RespawnTimerHandle = SetTimer(NULL, 0, TimerPeriodMs, &TimerProc);
     }
-    RespawnTimer = SetTimer(NULL, 0, 1000, &TimerProc);
+}
+
+ServerRespawnManager::~ServerRespawnManager()
+{
+    if(m_RespawnTimerHandle)
+        KillTimer(NULL, m_RespawnTimerHandle);
+}
+
+void ServerRespawnManager::RegisterToRespawn(CSE_Abstract* entity)
+{
+    if (!entity->RespawnTime)
+        return;
+
+    ObjectToRespawn &obj = m_ObjectsToRespawn.emplace_back();
+    obj.customData = entity->m_ini_string;
+    obj.section = entity->s_name;
+    obj.objectID = entity->ID;
+    obj.secondsToRespawn = entity->RespawnTime;
+    obj.pos = entity->o_Position;
+    obj.secondsElapsed = 0;
+
+    // Если время не 0, сервер ругается на dummy16
+    entity->RespawnTime = 0;
+}
+
+ServerRespawnManager::RespObjIt ServerRespawnManager::FindObject(u16 objectID)
+{
+    return std::find_if(m_ObjectsToRespawn.begin(), m_ObjectsToRespawn.end(), [objectID](const ObjectToRespawn& obj)
+    {
+        return obj.objectID == objectID;
+    });
+}
+
+bool ServerRespawnManager::RegisteredForRespawn(u16 objectID)
+{
+    return FindObject(objectID) != m_ObjectsToRespawn.end();
+}
+
+void ServerRespawnManager::MarkReadyForRespawn(u16 objectID)
+{
+    auto it = FindObject(objectID);
+
+    if (it != m_ObjectsToRespawn.end())
+        it->objectID = 0;
+}
+
+void ServerRespawnManager::CleanRespawnList()
+{
+    m_ObjectsToRespawn.clear();
+}
+
+void ServerRespawnManager::OnTimer()
+{
+    for (auto& obj : m_ObjectsToRespawn)
+    {
+        if (obj.objectID)
+            continue;
+
+        obj.secondsElapsed++;
+
+        if (obj.secondsToRespawn > obj.secondsElapsed)
+            continue;
+
+        obj.secondsElapsed = 0;
+
+        if (CSE_Abstract* resp = Level().Server->game->SpawnObject(obj.section.c_str(), obj.pos, obj.customData))
+        {
+            obj.objectID = resp->ID;
+            Msg("- Object spawned: [%s], id: [%d], X: [%3.2f], Y: [%3.2f], Z: [%3.2f], Respawn time: [%u]",
+                obj.section.c_str(), obj.objectID, VPUSH(obj.pos), obj.secondsToRespawn);
+        }
+    }
 }

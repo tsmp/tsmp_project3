@@ -2344,6 +2344,9 @@
     <Filter Include="Core\Client\Objects\items &amp; weapons\Devices\HeliCall">
       <UniqueIdentifier>{cf110ad5-b563-49ae-85a4-be5b979f9abc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Server\RespawnMP">
+      <UniqueIdentifier>{7173d0f6-c31e-40e7-b458-42521d80d933}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6648,7 +6651,6 @@
     <ClInclude Include="VoiceSender.h">
       <Filter>Core\Client\VoiceChat</Filter>
     </ClInclude>
-    <ClInclude Include="xrServerRespawnManager.h" />
     <ClInclude Include="ScriptProfiler.h">
       <Filter>AI\AScript\ScriptProfiler</Filter>
     </ClInclude>
@@ -6669,6 +6671,9 @@
     </ClInclude>
     <ClInclude Include="HeliCall.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\HeliCall</Filter>
+    </ClInclude>
+    <ClInclude Include="xrServerRespawnManager.h">
+      <Filter>Core\Server\RespawnMP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -9860,7 +9865,6 @@
     <ClCompile Include="VoiceSender.cpp">
       <Filter>Core\Client\VoiceChat</Filter>
     </ClCompile>
-    <ClCompile Include="xrServerRespawnManager.cpp" />
     <ClCompile Include="ScriptProfiler.cpp">
       <Filter>AI\AScript\ScriptProfiler</Filter>
     </ClCompile>
@@ -9881,6 +9885,9 @@
     </ClCompile>
     <ClCompile Include="HeliCall.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\HeliCall</Filter>
+    </ClCompile>
+    <ClCompile Include="xrServerRespawnManager.cpp">
+      <Filter>Core\Server\RespawnMP</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
