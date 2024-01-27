@@ -18,6 +18,7 @@
 
 #include "xrApplication.h"
 #include "render.h"
+#include "IGame_Persistent.h"
 
 #include "..\TSMP3_Build_Config.h"
 
@@ -234,11 +235,9 @@ void CRenderDevice::Run()
 			continue;
 		}
 
-#ifdef DEDICATED_SERVER
 		u32 frameStartTime = m_GlobalTimer.GetElapsed_ms();
-#else
+
 		g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
-#endif
 
 		if (g_loading_events.size())
 		{
@@ -289,14 +288,22 @@ void CRenderDevice::Run()
 		if (CurrentFrameNumber != mt_Thread_marker)
 			ProcessTasksForMT();
 
+		u32 frameEndTime = m_GlobalTimer.GetElapsed_ms();
+		u32 frameTime = frameEndTime - frameStartTime;   
+
+		if (Device.Paused() || g_pGamePersistent && g_pGamePersistent->m_pMainMenu)
+		{
+			u32 UpdateDelta_ = 16; //16 ms = ~60 FPS
+
+			if (frameTime < UpdateDelta_)
+				Sleep(UpdateDelta_ - frameTime);
+		}
+
 		if (!b_is_Active)
 			Sleep(1);
 
 #else // DEDICATED_SERVER
 		Device.seqFrameMT.Process(rp_Frame);
-
-		u32 frameEndTime = m_GlobalTimer.GetElapsed_ms();
-		u32 frameTime = (frameEndTime - frameStartTime);
 		u32 dedicatedSrvUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
 
 		if (frameTime < dedicatedSrvUpdateDelta)
