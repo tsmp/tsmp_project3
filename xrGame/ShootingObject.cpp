@@ -376,24 +376,24 @@ bool CShootingObject::SendHitAllowed(CObject *pUser)
 
 	if (OnServer())
 	{
-		if (pUser->CLS_ID == CLSID_OBJECT_ACTOR)
+		if (pUser->CLS_ID == CLSID_OBJECT_ACTOR && Level().CurrentControlEntity() != pUser)
+			return false;
+
+		if (pUser->CLS_ID == CLSID_SCRIPT_CAR)
 		{
-			if (Level().CurrentControlEntity() != pUser)
-			{
+			auto act = smart_cast<CActor*>(Level().CurrentControlEntity());
+
+			// С встроенного оружия машины стреляет игрок, но не сервер. Он сам отправит хит, серверу не нужно этого делать
+			if (!act || smart_cast<CGameObject*>(act->Holder()) != pUser)
 				return false;
-			}
 		}
+
 		return true;
 	}
 	else
 	{
-		if (pUser->CLS_ID == CLSID_OBJECT_ACTOR)
-		{
-			if (Level().CurrentControlEntity() == pUser)
-			{
-				return true;
-			}
-		}
+		if (pUser->CLS_ID == CLSID_OBJECT_ACTOR && Level().CurrentControlEntity() == pUser)
+			return true;
 
 		if (pUser->CLS_ID == CLSID_SCRIPT_CAR)
 		{
@@ -406,7 +406,7 @@ bool CShootingObject::SendHitAllowed(CObject *pUser)
 
 		return false;
 	}
-};
+}
 
 extern void random_dir(Fvector &tgt_dir, const Fvector &src_dir, float dispersion);
 

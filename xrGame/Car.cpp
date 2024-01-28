@@ -741,8 +741,10 @@ void CCar::net_Import(NET_Packet &P)
 
 	float health;
 	P.r_float(health);
-	SetfHealth(health);
 	
+	if(!OnServer())
+		SetfHealth(health);
+
 	u16 owner;
 	P.r_u16(owner);
 
