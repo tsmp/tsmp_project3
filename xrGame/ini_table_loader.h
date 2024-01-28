@@ -39,15 +39,16 @@ public:
 private:
 	ITEM_TABLE *m_pTable;
 	LPCSTR table_sect;
-	//ширина таблицы, если -1 то таблица делается квадратной (ширина равна высоте)
+
+	// Ширина таблицы, если -1 то таблица делается квадратной (ширина равна высоте)
 	int table_width;
 
-	//перобразование из LPCSTR в T_ITEM
+	// Преобразование из LPCSTR в T_ITEM
 
 	template <typename T_CONVERT_ITEM>
 	T_ITEM convert(LPCSTR)
 	{
-		STATIC_CHECK(false, Specialization_for_convert_in_CIni_Table_not_found);
+		static_assert(false, "Specialization for convert in CIni Table not found");
 		NODEFAULT;
 	}
 

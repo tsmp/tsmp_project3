@@ -11,14 +11,13 @@
 template <class M, typename P>
 struct CLoader
 {
-
 	template <typename T>
 	struct CHelper1
 	{
 		template <bool a>
 		IC static void load_data(T &data, M &stream, const P &p)
 		{
-			STATIC_CHECK(!std::is_polymorphic_v<T>, Cannot_load_polymorphic_classes_as_binary_data);
+			static_assert(!std::is_polymorphic_v<T>, "Cannot load polymorphic classes as binary data");
 			stream.r(&data, sizeof(T));
 		}
 
