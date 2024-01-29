@@ -124,7 +124,7 @@ struct CDestroyer
 		template <bool a>
 		IC static void delete_data(T &data)
 		{
-			CHelper2<T>::delete_data<object_type_traits::is_pointer<T>::value>(data);
+			CHelper2<T>::delete_data<std::is_pointer_v<T>>(data);
 		}
 
 		template <>

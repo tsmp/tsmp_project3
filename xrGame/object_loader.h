@@ -45,7 +45,7 @@ struct CLoader
 		template <>
 		IC static void load_data<true>(T &data, M &stream, const P &p)
 		{
-			CLoader<M, P>::load_data(*(data = xr_new<object_type_traits::remove_pointer<T>::type>()), stream, p);
+			CLoader<M, P>::load_data(*(data = xr_new<std::remove_pointer_t<T>>()), stream, p);
 		}
 	};
 
@@ -118,7 +118,7 @@ struct CLoader
 		template <bool a>
 		IC static void load_data(T &data, M &stream, const P &p)
 		{
-			CHelper<T>::load_data<object_type_traits::is_pointer<T>::value>(data, stream, p);
+			CHelper<T>::load_data<std::is_pointer_v<T>>(data, stream, p);
 		}
 
 		template <>
@@ -155,14 +155,16 @@ struct CLoader
 	template <typename T1, typename T2>
 	IC static void load_data(std::pair<T1, T2> &data, M &stream, const P &p)
 	{
-		if (p(data, const_cast<object_type_traits::remove_const<T1>::type &>(data.first), true))
+		if (p(data, const_cast<std::remove_const_t<T1> &>(data.first), true))
 		{
-			const bool value = object_type_traits::is_same<T1, LPCSTR>::value;
+			const bool value = std::is_same_v<T1, LPCSTR>;
 			VERIFY(!value);
-			load_data(const_cast<object_type_traits::remove_const<T1>::type &>(data.first), stream, p);
+			load_data(const_cast<std::remove_const_t<T1> &>(data.first), stream, p);
 		}
+
 		if (p(data, data.second, false))
 			load_data(data.second, stream, p);
+
 		p.after_load(data, stream);
 	}
 
@@ -170,11 +172,13 @@ struct CLoader
 	{
 		if (p.can_clear())
 			data.clear();
+
 		u32 prev_count = data.size();
 		data.resize(prev_count + stream.r_u32());
-		xr_vector<bool>::iterator I = data.begin() + prev_count;
-		xr_vector<bool>::iterator E = data.end();
+		auto I = data.begin() + prev_count;
+		auto E = data.end();
 		u32 mask = 0;
+
 		for (int j = 32; I != E; ++I, ++j)
 		{
 			if (j >= 32)
@@ -184,7 +188,7 @@ struct CLoader
 			}
 			*I = !!(mask & (u32(1) << j));
 		}
-	};
+	}
 
 	template <typename T, int size>
 	IC static void load_data(svector<T, size> &data, M &stream, const P &p)

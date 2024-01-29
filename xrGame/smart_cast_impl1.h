@@ -110,8 +110,7 @@ namespace SmartDynamicCast
 				typedef typename search_base<Tail>::result result;
 			};
 
-			typedef typename selector<
-				is_type<Base, typename Head::Head>::value>::result result;
+			typedef typename selector<std::is_same_v<Base, typename Head::Head>>::result result;
 		};
 
 		template <>
@@ -143,11 +142,7 @@ namespace SmartDynamicCast
 
 			enum
 			{
-				value =
-					selector<
-						object_type_traits::is_same<
-							typename T::Head,
-							Source>::value>::value
+				value = selector<std::is_same_v<typename T::Head, Source>>::value
 			};
 		};
 
@@ -246,10 +241,7 @@ namespace SmartDynamicCast
 						typedef Loki::Typelist<typename PrevHead::Head, Loki::Typelist<Head, Loki::Typelist<Target, Loki::NullType>>> result;
 					};
 
-					typedef typename _selector<
-						object_type_traits::is_same<
-							Head,
-							typename PrevHead::Head>::value>::result result;
+					typedef typename _selector<std::is_same_v<Head, typename PrevHead::Head>>::result result;
 				};
 
 				template <>
@@ -290,7 +282,7 @@ namespace SmartDynamicCast
 			};
 
 			typedef typename selector<
-				object_type_traits::is_base_and_derived<typename Head::Head, Source>::value || object_type_traits::is_same<typename Head::Head, Source>::value>::result result;
+				object_type_traits::is_base_and_derived<typename Head::Head, Source>::value || std::is_same_v<typename Head::Head, Source>>::result result;
 		};
 
 		template <>
@@ -330,8 +322,7 @@ namespace SmartDynamicCast
 					typedef search_result result;
 				};
 
-				typedef typename selector<
-					is_type<Loki::NullType, search_result>::value>::result result;
+				typedef typename selector<std::is_same_v<Loki::NullType, search_result>>::result result;
 			};
 
 			template <bool>
@@ -351,7 +342,7 @@ namespace SmartDynamicCast
 					typedef typename list_iterator<Tail>::result result;
 				};
 
-				typedef typename _selector<!is_type<Loki::NullType, helper_result>::value>::result result;
+				typedef typename _selector<!std::is_same_v<Loki::NullType, helper_result>>::result result;
 			};
 
 			template <>
@@ -374,7 +365,7 @@ namespace SmartDynamicCast
 						typedef typename list_iterator<Tail>::result result;
 					};
 
-					typedef typename _selector2<!is_type<Loki::NullType, helper_result>::value>::result result;
+					typedef typename _selector2<!std::is_same_v<Loki::NullType, helper_result>>::result result;
 				};
 
 				template <>
@@ -418,8 +409,7 @@ namespace SmartDynamicCast
 				typedef typename list_iterator<cast_type_list>::result result;
 			};
 
-			typedef typename _selector<
-				!is_type<Loki::NullType, nearest>::value>::result result;
+			typedef typename _selector<!std::is_same_v<Loki::NullType, nearest>>::result result;
 		};
 
 		template <>
@@ -517,7 +507,7 @@ namespace SmartDynamicCast
 	template <typename T1, typename T2>
 	IC T1 *smart_cast(T2 *p)
 	{
-		return (CHelper1<T1, T2>::smart_cast < object_type_traits::is_base_and_derived<T1, T2>::value || object_type_traits::is_same<T1, T2>::value > (p));
+		return (CHelper1<T1, T2>::smart_cast < object_type_traits::is_base_and_derived<T1, T2>::value || std::is_same_v<T1, T2>> (p));
 	}
 
 	template <typename T2>
@@ -526,9 +516,9 @@ namespace SmartDynamicCast
 		template <typename T1>
 		IC static T1 *smart_cast(T2 *p)
 		{
-			static_assert(!object_type_traits::is_const<T2>::value || object_type_traits::is_const<T1>::value, "Cannot use smart_cast to convert const to non const");
-			typedef object_type_traits::remove_const<T1>::type _T1;
-			typedef object_type_traits::remove_const<T2>::type _T2;
+			static_assert(!std::is_const_v<T2> || std::is_const_v<T1>, "Cannot use smart_cast to convert const to non const");
+			typedef std::remove_const_t<T1> _T1;
+			typedef std::remove_const_t<T2> _T2;
 
 #ifdef DEBUG
 			T1 *temp = SmartDynamicCast::smart_cast<_T1>(const_cast<_T2 *>(p));
@@ -567,8 +557,8 @@ template <typename T1, typename T2>
 IC T1 smart_cast(T2 *p)
 {
 #ifdef PURE_DYNAMIC_CAST_COMPATIBILITY_CHECK
-	static_assert(object_type_traits::is_pointer<T1>::value, "Invalid target type for dynamic_cast");
-	static_assert(object_type_traits::is_void<object_type_traits::remove_pointer<T1>::type>::value || std::is_polymorphic_v<object_type_traits::remove_pointer<T1>::type>, "Invalid target type for dynamic_cast");
+	static_assert(std::is_pointer_v<T1>, "Invalid target type for dynamic_cast");
+	static_assert(std::is_void_v<std::remove_pointer_t<T1>> || std::is_polymorphic_v<std::remove_pointer_t<T1>>, "Invalid target type for dynamic_cast");
 	static_assert(std::is_polymorphic_v<T2>, "Invalid source type for dynamic_cast");
 #endif
 
@@ -578,23 +568,23 @@ IC T1 smart_cast(T2 *p)
 
 	if (!p)
 		return (reinterpret_cast<T1>(p));
-	return SmartDynamicCast::CHelper2<T2>::smart_cast<object_type_traits::remove_pointer<T1>::type>(p);
+	return SmartDynamicCast::CHelper2<T2>::smart_cast<std::remove_pointer_t<T1>>(p);
 }
 
 template <typename T1, typename T2>
 IC T1 smart_cast(T2 &p)
 {
 #ifdef PURE_DYNAMIC_CAST_COMPATIBILITY_CHECK
-	static_assert(object_type_traits::is_reference<T1>::value, "Invalid target type for dynamic_cast");
-	static_assert(std::is_polymorphic_v<object_type_traits::remove_reference<T1>::type>, "Invalid target type for dynamic_cast");
+	static_assert(std::is_reference_v<T1>, "Invalid target type for dynamic_cast");
+	static_assert(std::is_polymorphic_v<std::remove_reference_t<T1>>, "Invalid target type for dynamic_cast");
 	static_assert(std::is_polymorphic_v<T2>, "Invalid source type for dynamic_cast");
 #endif
 
 #ifdef SMART_CAST_STATS_ALL
-	add_smart_cast_stats_all(typeid(T2 *).name(), typeid(object_type_traits::remove_reference<T1>::type *).name());
+	add_smart_cast_stats_all(typeid(T2 *).name(), typeid(std::remove_reference_t<T1>*).name());
 #endif
 
-	return *SmartDynamicCast::CHelper2<T2>::smart_cast<object_type_traits::remove_reference<T1>::type>(&p);
+	return *SmartDynamicCast::CHelper2<T2>::smart_cast<std::remove_reference_t<T1>>(&p);
 }
 
 #ifdef XRGAME_EXPORTS

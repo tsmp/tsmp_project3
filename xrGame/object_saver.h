@@ -69,7 +69,7 @@ struct CSaver
 		template <bool a>
 		IC static void save_data(const T &data, M &stream, const P &p)
 		{
-			CHelper<T>::save_data<object_type_traits::is_pointer<T>::value>(data, stream, p);
+			CHelper<T>::save_data<std::is_pointer_v<T>>(data, stream, p);
 		}
 
 		template <>
