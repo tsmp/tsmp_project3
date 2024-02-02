@@ -11,6 +11,7 @@
 #include "../Include/xrRender/ParticleCustom.h"
 #include "render.h"
 #include "IGame_Persistent.h"
+#include "Level.h"
 
 const Fvector zero_vel = {0.f, 0.f, 0.f};
 
@@ -24,7 +25,7 @@ void CParticlesObject::Init(LPCSTR p_name, IRender_Sector *S, BOOL bAutoRemove)
 	m_bLooped = false;
 	m_bStopping = false;
 	m_bAutoRemove = bAutoRemove;
-	float time_limit = 0.0f;
+	float time_limit;
 
 	if (!g_dedicated_server)
 	{
@@ -67,16 +68,21 @@ void CParticlesObject::Init(LPCSTR p_name, IRender_Sector *S, BOOL bAutoRemove)
 	shedule_register();
 
 	dwLastTime = Device.dwTimeGlobal;
-	mt_dt = 0;
+	Level().m_Particles.emplace_back(this);
 }
 
 //----------------------------------------------------
 CParticlesObject::~CParticlesObject()
 {
-	VERIFY(0 == mt_dt);
+	Device.remove_from_seq_parallel(fastdelegate::FastDelegate0<>(this, &CParticlesObject::PerformAllTheWork_mt));
 
-	//	we do not need this since CPS_Instance does it
-	//	shedule_unregister		();
+	if (g_pGameLevel)
+	{
+		auto self_particles = std::find(Level().m_Particles.begin(), Level().m_Particles.end(), this);
+
+		if (self_particles != Level().m_Particles.end())
+			Level().m_Particles.erase(self_particles);
+	}
 }
 
 void CParticlesObject::UpdateSpatial()
@@ -136,8 +142,7 @@ void CParticlesObject::Play()
 	VERIFY(V);
 	V->Play();
 	dwLastTime = Device.dwTimeGlobal - 33ul;
-	mt_dt = 0;
-	PerformAllTheWork(0);
+	PerformAllTheWork();
 	m_bStopping = false;
 }
 
@@ -153,8 +158,7 @@ void CParticlesObject::play_at_pos(const Fvector &pos, BOOL xform)
 	V->UpdateParent(m, zero_vel, xform);
 	V->Play();
 	dwLastTime = Device.dwTimeGlobal - 33ul;
-	mt_dt = 0;
-	PerformAllTheWork(0);
+	PerformAllTheWork();
 	m_bStopping = false;
 }
 
@@ -172,35 +176,28 @@ void CParticlesObject::Stop(BOOL bDefferedStop)
 void CParticlesObject::shedule_Update(u32 _dt)
 {
 	inherited::shedule_Update(_dt);
+}
 
+void CParticlesObject::Update()
+{
 	if (g_dedicated_server)
 		return;
 
 	// Update
 	if (m_bDead)
 		return;
-	u32 dt = Device.dwTimeGlobal - dwLastTime;
-	if (dt)
+
+	if (psDeviceFlags.test(mtParticles))
 	{
-		if (0)
-		{ //.psDeviceFlags.test(mtParticles))	{    //. AlexMX comment this line// NO UNCOMMENT - DON'T WORK PROPERLY
-			mt_dt = dt;
-			fastdelegate::FastDelegate0<> delegate(this, &CParticlesObject::PerformAllTheWork_mt);
-			Device.seqParallel.push_back(delegate);
-		}
-		else
-		{
-			mt_dt = 0;
-			IParticleCustom *V = smart_cast<IParticleCustom *>(renderable.visual);
-			VERIFY(V);
-			V->OnFrame(dt);
-		}
-		dwLastTime = Device.dwTimeGlobal;
+		Device.seqParallel.emplace_back(fastdelegate::FastDelegate0(this, &CParticlesObject::PerformAllTheWork_mt));
+
+		UpdateSpatial();
 	}
-	UpdateSpatial();
+	else
+		PerformAllTheWork();
 }
 
-void CParticlesObject::PerformAllTheWork(u32 _dt)
+void CParticlesObject::PerformAllTheWork()
 {
 	if (g_dedicated_server)
 		return;
@@ -214,6 +211,7 @@ void CParticlesObject::PerformAllTheWork(u32 _dt)
 		V->OnFrame(dt);
 		dwLastTime = Device.dwTimeGlobal;
 	}
+
 	UpdateSpatial();
 }
 
@@ -222,12 +220,14 @@ void CParticlesObject::PerformAllTheWork_mt()
 	if (g_dedicated_server)
 		return;
 
-	if (0 == mt_dt)
-		return; //???
-	IParticleCustom *V = smart_cast<IParticleCustom *>(renderable.visual);
-	VERIFY(V);
-	V->OnFrame(mt_dt);
-	mt_dt = 0;
+	u32 dt = Device.dwTimeGlobal - dwLastTime;
+	if (dt)
+	{
+		IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
+		VERIFY(V);
+		V->OnFrame(dt);
+		dwLastTime = Device.dwTimeGlobal;
+	}
 }
 
 void CParticlesObject::SetXFORM(const Fmatrix &m)
@@ -274,17 +274,8 @@ float CParticlesObject::shedule_Scale()
 
 void CParticlesObject::renderable_Render()
 {
-	VERIFY(renderable.visual);
-	u32 dt = Device.dwTimeGlobal - dwLastTime;
-	if (dt)
-	{
-		IParticleCustom *V = smart_cast<IParticleCustom *>(renderable.visual);
-		VERIFY(V);
-		V->OnFrame(dt);
-		dwLastTime = Device.dwTimeGlobal;
-	}
-	::Render->set_Transform(&renderable.xform);
-	::Render->add_Visual(renderable.visual);
+	Render->set_Transform(&renderable.xform);
+	Render->add_Visual(renderable.visual);
 }
 bool CParticlesObject::IsAutoRemove()
 {

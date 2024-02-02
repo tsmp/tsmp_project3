@@ -16,19 +16,18 @@ protected:
 	bool m_bStopping; //вызвана функция Stop()
 
 protected:
-	u32 mt_dt;
-
-protected:
 	virtual ~CParticlesObject();
 
 public:
 	CParticlesObject(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load);
 
-	virtual bool shedule_Needed() { return true; };
+	virtual void Update();
+
+	virtual bool shedule_Needed() { return true; }
 	virtual float shedule_Scale();
 	virtual void shedule_Update(u32 dt);
 	virtual void renderable_Render();
-	void PerformAllTheWork(u32 dt);
+	void PerformAllTheWork();
 	void __stdcall PerformAllTheWork_mt();
 
 	Fvector &Position();
@@ -39,7 +38,6 @@ public:
 	void play_at_pos(const Fvector &pos, BOOL xform = FALSE);
 	virtual void Play();
 	void Stop(BOOL bDefferedStop = TRUE);
-	virtual BOOL Locked() { return mt_dt; }
 
 	bool IsLooped() { return m_bLooped; }
 	bool IsAutoRemove();

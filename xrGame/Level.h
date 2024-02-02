@@ -173,6 +173,7 @@ public:
 	// static particles
 	DEFINE_VECTOR(CParticlesObject *, POVec, POIt);
 	POVec m_StaticParticles;
+	POVec m_Particles;
 
 	game_cl_GameState *game;
 	BOOL m_bGameConfigStarted;
@@ -236,7 +237,7 @@ public:
 
 	// Events
 	virtual void OnEvent(EVENT E, u64 P1, u64 P2);
-	virtual void OnFrame(void);
+	virtual void OnFrame();
 	virtual void OnRender();
 	void cl_Process_Event(u16 dest, u16 type, NET_Packet &P);
 	void cl_Process_Spawn(NET_Packet &P);
@@ -256,6 +257,8 @@ public:
 	virtual void IR_OnActivate(void);
 
 	int get_RPID(LPCSTR name);
+
+	void UpdateParticles();
 
 	// Game
 	void InitializeClientGame(NET_Packet &P);

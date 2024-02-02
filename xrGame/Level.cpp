@@ -393,6 +393,8 @@ void CLevel::OnFrame()
 	debug_memory_guard __guard__;
 #endif // DEBUG_MEMORY_MANAGER
 
+	UpdateParticles();
+
 	m_feel_deny.update();
 
 	if (GameID() != GAME_SINGLE)
@@ -525,6 +527,18 @@ void CLevel::OnFrame()
 		pStatGraphR->AppendItem(float(m_dwRPS) * fRPS_Mult, 0xff00ff00, 0);
 	}
 }
+
+void CLevel::UpdateParticles()
+{
+	for (auto& m_Particle : m_Particles)
+	{
+		if (m_Particle)
+		{
+			m_Particle->Update();
+		}
+	}
+}
+
 
 int psLUA_GCSTEP = 10;
 void CLevel::script_gc()
