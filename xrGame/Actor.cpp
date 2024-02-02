@@ -333,8 +333,7 @@ void CActor::Load(LPCSTR section)
 	//загрузить параметры смещения firepoint
 	m_vMissileOffset = pSettings->r_fvector3(section, "missile_throw_offset");
 
-#pragma todo("TSMP: не уверен надо ли это выделенному или нет")
-	//if (!g_dedicated_server)	
+	if (!g_dedicated_server)	
 	{
 		LPCSTR hit_snd_sect = pSettings->r_string(section, "hit_sounds");
 
