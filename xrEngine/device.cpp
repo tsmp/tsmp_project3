@@ -291,7 +291,7 @@ void CRenderDevice::Run()
 		u32 frameEndTime = m_GlobalTimer.GetElapsed_ms();
 		u32 frameTime = frameEndTime - frameStartTime;   
 
-		if (Device.Paused() || g_pGamePersistent && g_pGamePersistent->m_pMainMenu)
+		if (Device.Paused() || g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
 		{
 			u32 UpdateDelta_ = 16; //16 ms = ~60 FPS
 
@@ -304,6 +304,9 @@ void CRenderDevice::Run()
 
 #else // DEDICATED_SERVER
 		Device.seqFrameMT.Process(rp_Frame);
+		u32 frameEndTime = m_GlobalTimer.GetElapsed_ms();
+		u32 frameTime = frameEndTime - frameStartTime;
+
 		u32 dedicatedSrvUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
 
 		if (frameTime < dedicatedSrvUpdateDelta)
