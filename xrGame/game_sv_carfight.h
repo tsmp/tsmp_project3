@@ -18,5 +18,5 @@ public:
 
 private:
 	bool SpawnPlayerInCar(ClientID const& playerId);
-	CSE_Abstract* SpawnCar(Fvector pos, Fvector angle);
+	CSE_Abstract* SpawnCar(Fvector pos, Fvector angle, bool team1);
 };

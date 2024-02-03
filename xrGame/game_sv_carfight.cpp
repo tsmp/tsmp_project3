@@ -9,7 +9,7 @@ game_sv_Carfight::game_sv_Carfight()
 	m_type = GAME_CARFIGHT;
 }
 
-CSE_Abstract* game_sv_Carfight::SpawnCar(Fvector pos, Fvector angle)
+CSE_Abstract* game_sv_Carfight::SpawnCar(Fvector pos, Fvector angle, bool team1)
 {
 	CSE_Abstract* E = nullptr;
 	E = spawn_begin("m_car");
@@ -19,7 +19,11 @@ CSE_Abstract* game_sv_Carfight::SpawnCar(Fvector pos, Fvector angle)
 	E->o_Angle.set(angle);
 
 	CSE_Visual* pV = smart_cast<CSE_Visual*>(E);
-	pV->set_visual("physics\\vehicles\\btr\\veh_btr_u_01.ogf");
+
+	if(team1)
+		pV->set_visual("physics\\vehicles\\btr\\veh_btr_u_01.ogf");
+	else
+		pV->set_visual("physics\\vehicles\\btr\\veh_btr_u_02.ogf");
 
 	CSE_Abstract* spawned = spawn_end(E, m_server->GetServerClient()->ID);
 	signal_Syncronize();
@@ -37,7 +41,7 @@ bool game_sv_Carfight::SpawnPlayerInCar(ClientID const& playerId)
 	fakeAct.s_team = xrCData->ps->team;
 	assign_RP(&fakeAct, xrCData->ps);
 
-	CSE_Abstract* car = SpawnCar(fakeAct.position(), fakeAct.angle());
+	CSE_Abstract* car = SpawnCar(fakeAct.position(), fakeAct.angle(), fakeAct.s_team == 1);
 	R_ASSERT(smart_cast<CSE_ALifeCar*>(car));
 
 	xrCData->ps->resetFlag(GAME_PLAYER_FLAG_SPECTATOR);
