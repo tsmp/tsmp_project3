@@ -588,6 +588,7 @@ bool CLocatorAPI::Recurse(const char *path)
 
 void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 {
+	game_pathes.push_back("$game_data$");
 	char _delimiter = '|'; //','
 	if (m_Flags.is(flReady))
 		return;
@@ -711,6 +712,10 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 #endif // DEBUG
 
 			CHECK_OR_EXIT(I.second, "The file 'fsgame.ltx' is corrupted (it contains duplicated lines).\nPlease reinstall the game or fix the problem manually.");
+			if (xr_strcmp(root, "$game_data$") || std::find(game_pathes.begin(), game_pathes.end(), root) != game_pathes.end())
+			{
+				game_pathes.push_back(id);
+			}
 		}
 
 		r_close(pFSltx);
