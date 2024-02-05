@@ -540,6 +540,7 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 {
 	if (g_pGameLevel && Level().IsDemoSave())
 		Level().Demo_StoreServerData(P.B.data, P.B.count);
+
 	u16 type;
 	P.r_begin(type);
 
@@ -549,11 +550,10 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 	switch (type)
 	{
 	case M_UPDATE:
-	{
 		Process_update(P, sender); // No broadcast
 		DEBUG_VERIFY(verify_entities());
-	}
-	break;
+		break;
+
 	case M_SPAWN:
 	{
 		if (CL->flags.bLocal)
@@ -562,33 +562,36 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+
 	case M_EVENT:
-	{
 		Process_event(P, sender);
 		DEBUG_VERIFY(verify_entities());
-	}
-	break;
+		break;
+
 	case M_FILE_TRANSFER:
-	{
 		AddDelayedPacket(P, sender);
-	}break;
+		break;
+
 	case M_EVENT_PACK:
 	{
 		NET_Packet tmpP;
+
 		while (!P.r_eof())
 		{
 			tmpP.B.count = P.r_u8();
 			P.r(&tmpP.B.data, tmpP.B.count);
-
 			OnMessage(tmpP, sender);
-		};
+		}
 	}
 	break;
+
 	case M_CL_UPDATE:
 	{
 		xrClientData *CL = ID_to_client(sender);
+
 		if (!CL)
 			break;
+
 		CL->net_Ready = TRUE;
 
 		if (!CL->net_PassUpdates)
@@ -599,111 +602,98 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 		
 		if (SV_Client)
 			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
+
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+
 	case M_MOVE_PLAYERS_RESPOND:
 	{
 		xrClientData *CL = ID_to_client(sender);
+
 		if (!CL)
 			break;
+
 		CL->net_Ready = TRUE;
 		CL->net_PassUpdates = TRUE;
 	}
 	break;
-	case M_CL_INPUT:
-	{
-		xrClientData *CL = ID_to_client(sender);
-		if (CL)
-			CL->net_Ready = TRUE;
-		if (SV_Client)
-			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
-		DEBUG_VERIFY(verify_entities());
-	}
-	break;
+
 	case M_GAMEMESSAGE:
-	{
 		SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
 		DEBUG_VERIFY(verify_entities());
-	}
-	break;
+		break;
+
 	case M_CLIENTREADY:
 	{
-		xrClientData *CL = ID_to_client(sender);
-		if (CL)
+		if (xrClientData* CL = ID_to_client(sender))
 		{
 			CL->net_Ready = TRUE;
 			CL->ps->DeathTime = Device.dwTimeGlobal;
 			game->OnPlayerConnectFinished(sender);
 			CL->ps->setName(CL->name.c_str());
-		};
+		}
 		game->signal_Syncronize();
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+
 	case M_SWITCH_DISTANCE:
 	{
 		game->switch_distance(P, sender);
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+
 	case M_CHANGE_LEVEL:
 	{
 		if (game->change_level(P, sender))
-		{
 			SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
-		}
+
 		DEBUG_VERIFY(verify_entities());
 	}
 	break;
+
 	case M_SAVE_GAME:
-	{
 		game->save_game(P, sender);
 		DEBUG_VERIFY(verify_entities());
-	}
-	break;
+		break;
+
 	case M_LOAD_GAME:
-	{
 		game->load_game(P, sender);
 		SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
 		DEBUG_VERIFY(verify_entities());
-	}
-	break;
+		break;
+
 	case M_RELOAD_GAME:
-	{
 		SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
 		DEBUG_VERIFY(verify_entities());
-	}
-	break;
+		break;
+
 	case M_SAVE_PACKET:
-	{
 		Process_save(P, sender);
 		DEBUG_VERIFY(verify_entities());
-	}
-	break;
+		break;
+
 	case M_CLIENT_REQUEST_CONNECTION_DATA:
-	{
 		AddDelayedPacket(P, sender);
-	}
-	break;
+		break;
+
 	case M_CHAT_MESSAGE:
-	{
-		xrClientData *l_pC = ID_to_client(sender);
-		OnChatMessage(&P, l_pC);
-	}
-	break;
+		OnChatMessage(&P, ID_to_client(sender));
+		break;
+
 	case M_CHANGE_LEVEL_GAME:
 	{
 		ClientID CID;
-		CID.set(0xffffffff);
+		CID.set(static_cast<u32>(-1));
 		SendBroadcast(CID, P, net_flags(TRUE, TRUE));
 	}
 	break;
+
 	case M_CL_AUTH:
-	{
 		game->AddDelayedEvent(P, GAME_EVENT_PLAYER_AUTH, 0, sender);
-	}
-	break;
+		break;
 
 	case M_STATISTIC_UPDATE:
 	{
@@ -724,12 +714,14 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
 	}
 	break;
+
 	case M_PLAYER_FIRE:
 	{
 		if (game)
 			game->OnPlayerFire(sender, P);
 	}
 	break;
+
 	case M_REMOTE_CONTROL_AUTH:
 	{
 		string512 reason;
@@ -737,7 +729,7 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 		shared_str pass;
 		P.r_stringZ(user);
 
-		if (0 == stricmp(user.c_str(), "logoff"))
+		if (!stricmp(user.c_str(), "logoff"))
 		{
 			CL->m_admin_rights.m_has_admin_rights = FALSE;
 			strcpy(reason, "logged off");
@@ -767,12 +759,7 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 	break;
 
 	case M_REMOTE_CONTROL_CMD:
-	{
 		AddDelayedPacket(P, sender);
-	}
-	break;
-
-	case M_BATTLEYE:
 		break;
 
 	case M_VOICE_MESSAGE:	
@@ -786,31 +773,31 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 
 bool xrServer::CheckAdminRights(const shared_str &user, const shared_str &pass, string512 reason)
 {
-	bool res = false;
 	string_path fn;
 	FS.update_path(fn, "$app_data_root$", "radmins.ltx");
-	if (FS.exist(fn))
-	{
-		CInifile ini(fn);
-		if (ini.line_exist("radmins", user.c_str()))
-		{
-			if (ini.r_string("radmins", user.c_str()) == pass)
-			{
-				strcpy(reason, "Access permitted.");
-				res = true;
-			}
-			else
-			{
-				strcpy(reason, "Access denied. Wrong password.");
-			}
-		}
-		else
-			strcpy(reason, "Access denied. No such user.");
-	}
-	else
-		strcpy(reason, "Access denied.");
 
-	return res;
+	if (!FS.exist(fn))
+	{
+		strcpy(reason, "Access denied.");
+		return false;
+	}
+
+	CInifile ini(fn);
+
+	if (!ini.line_exist("radmins", user.c_str()))
+	{
+		strcpy(reason, "Access denied. No such user.");
+		return false;
+	}
+
+	if (ini.r_string("radmins", user.c_str()) != pass)
+	{
+		strcpy(reason, "Access denied. Wrong password.");
+		return false;
+	}
+
+	strcpy(reason, "Access permitted.");
+	return true;
 }
 
 void xrServer::SendTo_LL(ClientID const &ID, void *data, u32 size, u32 dwFlags, u32 dwTimeout)

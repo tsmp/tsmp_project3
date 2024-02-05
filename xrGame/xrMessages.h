@@ -1,6 +1,3 @@
-#ifndef _INCDEF_XRMESSAGES_H_
-#define _INCDEF_XRMESSAGES_H_
-
 #pragma once
 
 // CL	== client 2 server message
@@ -15,13 +12,9 @@ enum
 	M_SV_CONFIG_GAME,
 	M_SV_CONFIG_FINISHED,
 
-	M_MIGRATE_DEACTIVATE, // TO:   Changing server, just deactivate
-	M_MIGRATE_ACTIVATE,	  // TO:   Changing server, full state
-
 	M_CHAT, // DUAL:
 
 	M_EVENT,	// Game Event
-	M_CL_INPUT, // Client Input Data
 	M_CL_UPDATE,
 	M_UPDATE_OBJECTS,
 	M_CLIENTREADY, // Client has finished to load level and are ready to play
@@ -63,7 +56,6 @@ enum
 	M_CHANGE_SELF_NAME,
 	M_REMOTE_CONTROL_AUTH,
 	M_REMOTE_CONTROL_CMD,
-	M_BATTLEYE,
 	M_MAP_SYNC,
 	M_FILE_TRANSFER,
 	M_TRANSFER_PATROL_PATHS,
@@ -288,5 +280,3 @@ enum
 
 	M_SPAWN_OBJECT_FORCEDWORD = u32(-1)
 };
-
-#endif /*_INCDEF_XRMESSAGES_H_*/
