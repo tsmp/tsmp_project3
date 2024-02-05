@@ -177,54 +177,29 @@ void CLevel::ClientReceive()
 			Send(PRespond, net_flags(TRUE, TRUE));
 		}
 		break;
+
 		case M_FILE_TRANSFER:
 		{
 			game_events->insert(*P);
-			if (g_bDebugEvents)		ProcessGameEvents();
-		}break;
-		//------------------------------------------------
-		case M_CL_INPUT:
-		{
-			P->r_u16(ID);
-			CObject *O = Objects.net_Find(ID);
-			if (0 == O)
-				break;
-			O->net_ImportInput(*P);
+
+			if (g_bDebugEvents)
+				ProcessGameEvents();
 		}
 		break;
-		//---------------------------------------------------
+
 		case M_SV_CONFIG_NEW_CLIENT:
 			InitializeClientGame(*P);
 			break;
+
 		case M_SV_CONFIG_GAME:
 			game->net_import_state(*P);
 			break;
+
 		case M_SV_CONFIG_FINISHED:
 			game_configured = TRUE;
 			Msg("- Game configuring : Finished ");
 			break;
-		case M_MIGRATE_DEACTIVATE: // TO:   Changing server, just deactivate
-		{
-			P->r_u16(ID);
-			CObject *O = Objects.net_Find(ID);
-			if (0 == O)
-				break;
-			O->net_MigrateInactive(*P);
-			if (bDebug)
-				Log("! MIGRATE_DEACTIVATE", *O->cName());
-		}
-		break;
-		case M_MIGRATE_ACTIVATE: // TO:   Changing server, full state
-		{
-			P->r_u16(ID);
-			CObject *O = Objects.net_Find(ID);
-			if (0 == O)
-				break;
-			O->net_MigrateActive(*P);
-			if (bDebug)
-				Log("! MIGRATE_ACTIVATE", *O->cName());
-		}
-		break;
+
 		case M_CHAT:
 		{
 			char buffer[256];
@@ -232,11 +207,11 @@ void CLevel::ClientReceive()
 			Msg("- %s", buffer);
 		}
 		break;
+
 		case M_GAMEMESSAGE:
 		{
-			if (!game)
-				break;
-			Game().OnGameMessage(*P);
+			if (game)
+				Game().OnGameMessage(*P);
 		}
 		break;
 
@@ -306,30 +281,27 @@ void CLevel::ClientReceive()
 
 		case M_CHAT_MESSAGE:
 		{
-			if (!game)
-				break;
-			Game().OnChatMessage(P);
-		}
-		break;
-		case M_CLIENT_WARN:
-		{
-			if (!game)
-				break;
-			Game().OnWarnMessage(P);
-		}
-		break;
-		case M_REMOTE_CONTROL_AUTH:
-		case M_REMOTE_CONTROL_CMD:
-		{
-			Game().OnRadminMessage(m_type, P);
+			if (game)
+				Game().OnChatMessage(P);
 		}
 		break;
 
+		case M_CLIENT_WARN:
+		{
+			if (game)
+				Game().OnWarnMessage(P);
+		}
+		break;
+
+		case M_REMOTE_CONTROL_AUTH:
+		case M_REMOTE_CONTROL_CMD:
+			Game().OnRadminMessage(m_type, P);
+			break;
+
 		case M_VOICE_MESSAGE:
 		{
-			if (!game) 
-				break;
-			Game().OnVoiceMessage(P);
+			if (game)
+				Game().OnVoiceMessage(P);
 		}
 		break;
 
@@ -345,11 +317,11 @@ void CLevel::ClientReceive()
 			else
 			{
 				const char *m_SO = m_caServerOptions.c_str();
-				//					const char* m_CO = m_caClientOptions.c_str();
-
 				m_SO = strchr(m_SO, '/');
+
 				if (m_SO)
 					m_SO++;
+
 				m_SO = strchr(m_SO, '/');
 
 				string128 LevelName = "";
@@ -367,40 +339,34 @@ void CLevel::ClientReceive()
 
 				Engine.Event.Defer("KERNEL:disconnect");
 				Engine.Event.Defer("KERNEL:start", size_t(xr_strdup(*m_caServerOptions)), size_t(xr_strdup(*m_caClientOptions)));
-			};
+			}
 		}
 		break;
+
 		case M_CHANGE_SELF_NAME:
-		{
 			net_OnChangeSelfName(P);
-		}
-		break;
+			break;
+
 		case M_BULLET_CHECK_RESPOND:
 		{
-			if (!game)
-				break;
-			if (GameID() != GAME_SINGLE)
+			if (game && GameID() != GAME_SINGLE)
 				Game().m_WeaponUsageStatistic->On_Check_Respond(P);
 		}
 		break;
+
 		case M_STATISTIC_UPDATE:
 		{
-			if (!game)
-				break;
-			if (GameID() != GAME_SINGLE)
+			if (game && GameID() != GAME_SINGLE)
 				Game().m_WeaponUsageStatistic->OnUpdateRequest(P);
 		}
 		break;
+
 		case M_STATISTIC_UPDATE_RESPOND:
 		{
-			if (!game)
-				break;
-			if (GameID() != GAME_SINGLE)
+			if (game && GameID() != GAME_SINGLE)
 				Game().m_WeaponUsageStatistic->OnUpdateRespond(P);
 		}
 		break;
-		case M_BATTLEYE:
-			break;
 		}
 
 		net_msg_Release();
