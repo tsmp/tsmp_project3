@@ -646,15 +646,17 @@ public:
 	virtual CEntity *cast_entity() { return this; }
 	void Teleport(Fvector outPos);
 
-#ifndef PUBLIC_BUILD
 	void ChangeEnginePower(float newPower);
+	float GetEnginePower();
+
+#ifndef PUBLIC_BUILD
 	void ChangeReferenceRadius(float newRad);
 	void ChangeSteeringSpeed(float newSpeed);
 	void ChangeFrictionFactor(float newFactor);
 	void ChangeHandBreakTorque(float newTorque);
 	void ChangeMaxPowerRpm(float newPower);
 	void ChangeMaxTorqueRpm(float newTorque);
-	float GetEnginePower();
+
 	float GetReferenceRadius();
 	float GetSteeringSpeed();
 	float GetFrictionFactor();

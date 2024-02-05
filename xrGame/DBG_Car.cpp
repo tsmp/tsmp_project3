@@ -2,7 +2,6 @@
 #include "Car.h"
 #include "..\TSMP3_Build_Config.h"
 
-#ifndef PUBLIC_BUILD
 constexpr float powerCoeff = 0.8f * 1000.f;
 constexpr float rpmCoeff = (1.f / 60.f * 2.f * M_PI);
 
@@ -17,6 +16,12 @@ void CCar::ChangeEnginePower(float newPower)
 #endif
 }
 
+float CCar::GetEnginePower()
+{
+	return m_max_power / powerCoeff;
+}
+
+#ifndef PUBLIC_BUILD
 void CCar::ChangeReferenceRadius(float newRefRad)
 {
 	for(SWheelDrive &drive:m_driving_wheels)
@@ -73,11 +78,6 @@ void CCar::ChangeMaxTorqueRpm(float newTorque)
 	DBgClearPlots();
 	DbgCreatePlots();
 #endif
-}
-
-float CCar::GetEnginePower()
-{
-	return m_max_power / powerCoeff;
 }
 
 float CCar::GetReferenceRadius()
