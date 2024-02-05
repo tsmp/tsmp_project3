@@ -61,36 +61,9 @@ game_sv_Deathmatch::game_sv_Deathmatch()
 	m_pSM_CurViewEntity = NULL;
 	m_dwSM_LastSwitchTime = 0;
 
-	m_vFreeRPoints.clear();
-	m_dwLastRPoint = u32(-1);
-
 	m_dwWarmUp_CurTime = 0;
 	m_bInWarmUp = false;
 }
-
-game_sv_Deathmatch::~game_sv_Deathmatch()
-{
-	if (!m_AnomalySetsList.empty())
-	{
-		for (u32 i = 0; i < m_AnomalySetsList.size(); i++)
-		{
-			m_AnomalySetsList[i].clear();
-		};
-		m_AnomalySetsList.clear();
-	};
-
-	if (!m_AnomalyIDSetsList.empty())
-	{
-		for (u32 i = 0; i < m_AnomalyIDSetsList.size(); i++)
-		{
-			m_AnomalyIDSetsList[i].clear();
-		};
-		m_AnomalyIDSetsList.clear();
-	};
-
-	m_AnomalySetID.clear();
-	m_vFreeRPoints.clear();
-};
 
 void game_sv_Deathmatch::Create(shared_str &options)
 {
@@ -132,8 +105,11 @@ void game_sv_Deathmatch::OnRoundStart()
 	if (IsAnomaliesEnabled())
 		StartAnomalies();
 
-	m_vFreeRPoints.clear();
-	m_dwLastRPoint = u32(-1);
+	for (int i = 0; i < TEAM_COUNT; ++i)
+	{
+		m_vFreeRPoints[i].clear();
+		m_dwLastRPoints[i] = static_cast<u32>(-1);
+	}
 
 	// Respawn all players and some info
 	m_server->ForEachClientDoSender([this](IClient* cl)
@@ -672,24 +648,15 @@ u32 game_sv_Deathmatch::RP_2_Use(CSE_Abstract *E)
 void game_sv_Deathmatch::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 {
 	VERIFY(E);
-	u32 Team = RP_2_Use(E);
-	VERIFY(rpoints[Team].size());
+	const u32 team = RP_2_Use(E);
+	VERIFY(rpoints[team].size());
 
-	if(auto pSpectator = smart_cast<CSE_Spectator *>(E))
+	if (smart_cast<CSE_Spectator*>(E) || !smart_cast<CSE_ALifeCreatureActor*>(E))
 	{
 		inherited::assign_RP(E, ps_who);
 		return;
 	}
 
-	CSE_ALifeCreatureActor *pA = smart_cast<CSE_ALifeCreatureActor*>(E);
-
-	if (!pA)
-	{
-		inherited::assign_RP(E, ps_who);
-		return;
-	}
-
-	xr_vector<RPoint> &rp = rpoints[Team];
 	xr_vector<xrClientData*> pEnemies;
 
 	m_server->ForEachClientDo([&](IClient* client)
@@ -697,29 +664,34 @@ void game_sv_Deathmatch::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 		xrClientData* C = static_cast<xrClientData*>(client);
 		game_PlayerState* ps = C->ps;
 
-		if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+		if (!ps || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 			return;
 
-		if (ps->team != pA->s_team || m_TeamsScores.empty())
+		if (ps->team != team || m_TeamsScores.empty())
 			pEnemies.push_back(C);
 	});
 
-	if (m_vFreeRPoints.empty())
+	xr_vector<RPoint>& rp = rpoints[team];
+	xr_vector<u32>& freeRPoints = m_vFreeRPoints[team];
+	u32& lastRPoint = m_dwLastRPoints[team];
+
+	if (freeRPoints.empty())
 	{
 		for (u32 i = 0; i < rp.size(); i++)
 		{
-			if (i == m_dwLastRPoint && rp.size() > 1)
+			if (i == lastRPoint && rp.size() > 1)
 				continue;
-			m_vFreeRPoints.push_back(i);
+
+			freeRPoints.push_back(i);
 		}
 	}
 
-	R_ASSERT(m_vFreeRPoints.size());
+	R_ASSERT(!freeRPoints.empty());
 	xr_vector<RPointData> tmpPoints;
 
-	for (u32 i = 0; i < m_vFreeRPoints.size(); i++)
+	for (u32 i = 0; i < freeRPoints.size(); i++)
 	{
-		RPoint &r = rp[m_vFreeRPoints[i]];
+		RPoint &r = rp[freeRPoints[i]];
 		float MinEnemyDist = 10000.0f;
 
 		for (u32 e = 0; e < pEnemies.size(); e++)
@@ -743,10 +715,11 @@ void game_sv_Deathmatch::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 	u32 HalfList = tmpPoints.size() / (pEnemies.empty() ? 1 : 2);
 	u32 NewPointID = (HalfList) ? (tmpPoints.size() - HalfList + ::Random.randI(HalfList)) : 0;
 
-	m_dwLastRPoint = m_vFreeRPoints[tmpPoints[NewPointID].PointID];
-	m_vFreeRPoints.erase(m_vFreeRPoints.begin() + tmpPoints[NewPointID].PointID);
+	lastRPoint = freeRPoints[tmpPoints[NewPointID].PointID];
+	freeRPoints.erase(freeRPoints.begin() + tmpPoints[NewPointID].PointID);
+	R_ASSERT(lastRPoint < rp.size());
 
-	RPoint &r = rp[m_dwLastRPoint];
+	const RPoint &r = rp[lastRPoint];
 	E->o_Position.set(r.P);
 	E->o_Angle.set(r.A);
 }

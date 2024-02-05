@@ -28,8 +28,8 @@ protected:
 		};
 	};
 
-	xr_vector<u32> m_vFreeRPoints;
-	u32 m_dwLastRPoint;
+	xr_vector<u32> m_vFreeRPoints[TEAM_COUNT];
+	u32 m_dwLastRPoints[TEAM_COUNT]{ static_cast<u32>(-1) };
 
 	BOOL m_delayedRoundEnd;
 	u32 m_roundEndDelay;
@@ -97,7 +97,7 @@ protected:
 
 public:
 	game_sv_Deathmatch();
-	virtual ~game_sv_Deathmatch();
+	virtual ~game_sv_Deathmatch() = default;
 	virtual void Create(shared_str &options);
 
 	virtual LPCSTR type_name() const { return "deathmatch"; };
