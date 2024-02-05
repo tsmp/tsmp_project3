@@ -127,8 +127,6 @@ public:
 
 	void Export_game_type(IClient *CL);
 	void Perform_game_export();
-	BOOL PerformRP(CSE_Abstract *E);
-	void PerformMigration(CSE_Abstract *E, xrClientData *from, xrClientData *to);
 
 	IC void clear_ids()
 	{
@@ -158,7 +156,6 @@ public:
 	bool Process_event_reject(NET_Packet &P, const ClientID const &sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message = true);
 	void Process_event_destroy(NET_Packet &P, ClientID const &sender, u32 time, u16 ID, NET_Packet *pEPack);
 
-	xrClientData *SelectBestClientToMigrateTo(CSE_Abstract *E, BOOL bForceAnother = FALSE);
 	void SendConnectResult(IClient *CL, u8 res, u8 res1, char *ResultStr);
 
 	void AttachNewClient(IClient *CL);
