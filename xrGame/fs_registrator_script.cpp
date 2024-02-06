@@ -109,7 +109,11 @@ public:
 
 FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
 {
-	FS_Path *P = FS.get_path(path);
+	if (FS.is_game_path(xr_strdup(path)))
+	{
+		return;
+	}
+	FS_Path* P = FS.get_path(path);
 	P->m_Flags.set(FS_Path::flNeedRescan, TRUE);
 	FS.m_Flags.set(CLocatorAPI::flNeedCheck, TRUE);
 	FS.rescan_pathes();
@@ -148,17 +152,25 @@ void FS_file_list_ex::Sort(u32 flags)
 
 FS_file_list_ex file_list_open_ex(CLocatorAPI *fs, LPCSTR path, u32 flags, LPCSTR mask)
 {
-	return FS_file_list_ex(std::find(FS.game_pathes.begin(), FS.game_pathes.end(), path) == FS.game_pathes.end() ? path : "", flags, mask);
+	return FS_file_list_ex(path, flags, mask);
 }
 
 FS_file_list file_list_open_script(CLocatorAPI *fs, LPCSTR initial, u32 flags)
 {
-	return FS_file_list(fs->file_list_open(std::find(FS.game_pathes.begin(), FS.game_pathes.end(), initial) == FS.game_pathes.end() ? initial : "", flags));
+	if (FS.is_game_path(xr_strdup(initial)))
+	{
+		return FS_file_list(xr_new<xr_vector<char*>>());
+	}
+	return FS_file_list(fs->file_list_open(initial, flags));
 }
 
 FS_file_list file_list_open_script_2(CLocatorAPI *fs, LPCSTR initial, LPCSTR folder, u32 flags)
 {
-	return FS_file_list(fs->file_list_open(std::find(FS.game_pathes.begin(), FS.game_pathes.end(), initial) == FS.game_pathes.end() ? initial : "", folder, flags));
+	if (FS.is_game_path(xr_strdup(initial)))
+	{
+		return FS_file_list(xr_new<xr_vector<char*>>());
+	}
+	return FS_file_list(fs->file_list_open(initial, folder, flags));
 }
 
 void dir_delete_script_2(CLocatorAPI *fs, LPCSTR path, LPCSTR nm, int remove_files)

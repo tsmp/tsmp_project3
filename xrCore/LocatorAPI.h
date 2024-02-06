@@ -91,8 +91,8 @@ public:
 	Flags32 m_Flags;
 	u32 dwAllocGranularity;
 	u32 dwOpenCounter;
-
-	xr_list<LPCSTR> game_pathes;
+	xr_vector<LPCSTR> game_pathes;
+	bool is_game_path(string_path path);
 
 private:
 	void check_cached_files(string_path &fname, const file &desc, LPCSTR &source_name);
