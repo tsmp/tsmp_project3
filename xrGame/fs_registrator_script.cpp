@@ -148,17 +148,17 @@ void FS_file_list_ex::Sort(u32 flags)
 
 FS_file_list_ex file_list_open_ex(CLocatorAPI *fs, LPCSTR path, u32 flags, LPCSTR mask)
 {
-	return FS_file_list_ex(std::find(FS.game_pathes.begin(), FS.game_pathes.end(), path) == FS.game_pathes.end() ? path : "", flags, mask);
+	return FS_file_list_ex(path, flags, mask);
 }
 
 FS_file_list file_list_open_script(CLocatorAPI *fs, LPCSTR initial, u32 flags)
 {
-	return FS_file_list(fs->file_list_open(std::find(FS.game_pathes.begin(), FS.game_pathes.end(), initial) == FS.game_pathes.end() ? initial : "", flags));
+	return FS_file_list(fs->file_list_open(initial, flags));
 }
 
 FS_file_list file_list_open_script_2(CLocatorAPI *fs, LPCSTR initial, LPCSTR folder, u32 flags)
 {
-	return FS_file_list(fs->file_list_open(std::find(FS.game_pathes.begin(), FS.game_pathes.end(), initial) == FS.game_pathes.end() ? initial : "", folder, flags));
+	return FS_file_list(fs->file_list_open(initial, folder, flags));
 }
 
 void dir_delete_script_2(CLocatorAPI *fs, LPCSTR path, LPCSTR nm, int remove_files)

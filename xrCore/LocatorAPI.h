@@ -92,8 +92,6 @@ public:
 	u32 dwAllocGranularity;
 	u32 dwOpenCounter;
 
-	xr_list<LPCSTR> game_pathes;
-
 private:
 	void check_cached_files(string_path &fname, const file &desc, LPCSTR &source_name);
 
