@@ -91,6 +91,7 @@ CCar::CCar()
 	m_FirstInterpolation = true;
 	m_current_rpm = 0.f;
 	m_current_engine_power = 0.f;
+	async_calls.zero();
 
 #ifdef DEBUG
 	InitDebug();
