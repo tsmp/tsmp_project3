@@ -426,6 +426,11 @@ BOOL CCar::AlwaysTheCrow()
 	return (m_car_weapon && m_car_weapon->IsActive());
 }
 
+bool CCar::ShowCrosshair()
+{
+	return HasWeapon() && m_car_weapon->IsActive();
+}
+
 void CCar::UpdateCL()
 {
 	inherited::UpdateCL();

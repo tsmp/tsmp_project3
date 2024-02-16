@@ -516,6 +516,7 @@ public:
 	void ReleaseHandBreak();
 	void OnChangeLookout(bool enabled);
 	void Repair();
+	bool ShowCrosshair() override;
 
 private:
 	void DriveForward();

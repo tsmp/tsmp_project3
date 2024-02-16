@@ -49,6 +49,9 @@ public:
 	virtual void Action(int id, u32 flags){};
 	virtual void SetParam(int id, Fvector2 val){};
 	virtual void SetParam(int id, Fvector val){};
+
+	virtual bool ShowCrosshair() { return false; }
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

@@ -945,8 +945,16 @@ void CActor::UpdateCL()
 	{
 		if (Level().CurrentEntity() && this->ID() == Level().CurrentEntity()->ID())
 		{
-			HUD().SetCrosshairDisp(0.f);
-			HUD().ShowCrosshair(false);
+			if (Holder() && Holder()->ShowCrosshair())
+			{
+				HUD().SetCrosshairDisp(0.02f, 0.02f);
+				HUD().ShowCrosshair(true);
+			}
+			else
+			{
+				HUD().SetCrosshairDisp(0.f);
+				HUD().ShowCrosshair(false);
+			}
 		}
 	}
 
