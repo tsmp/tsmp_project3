@@ -982,7 +982,6 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState *ps)
 
 void game_sv_mp::OnPlayerKilledNpc(NET_Packet& P)
 {
-	Msg("- ON NPC KILLED!");
 	u16 killerID = P.r_u16();
 
 	if (game_PlayerState* psKiller = get_eid(killerID))
