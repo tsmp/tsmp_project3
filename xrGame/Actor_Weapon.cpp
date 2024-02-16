@@ -66,16 +66,17 @@ void CActor::g_fireParams(const CHudItem *pHudItem, Fvector &fire_pos, Fvector &
 		fire_pos = car->Camera()->vPosition;
 		fire_dir = car->Camera()->vDirection;
 
-		if (auto wpn = smart_cast<CWeapon*>(const_cast<CHudItem*>(pHudItem)))
-		{
-			// Ќекрасиво когда от 3 лица с машины пули лет€т из центра экрана, пусть лет€т пр€мо из оружи€ но туда, куда смотрит центр экрана
-			collide::rq_result RQ;
-			Level().ObjectSpace.RayPick(fire_pos, fire_dir, 1000.0f, collide::rqtBoth, RQ, this);
-			const Fvector cameraTargetWorldPos = Fvector(fire_pos).add(Fvector(fire_dir).mul(RQ.range));
+		// Ќекрасиво когда от 3 лица с машины пули лет€т из центра экрана, пусть лет€т пр€мо из оружи€ но туда, куда смотрит центр экрана
+		collide::rq_result RQ;
+		Level().ObjectSpace.RayPick(fire_pos, fire_dir, 1000.0f, collide::rqtBoth, RQ, this);
+		const Fvector cameraTargetWorldPos = Fvector(fire_pos).add(Fvector(fire_dir).mul(RQ.range));
 
+		if (auto wpn = smart_cast<CWeapon*>(const_cast<CHudItem*>(pHudItem)))
 			fire_pos = wpn->get_LastFP();
-			fire_dir = Fvector(cameraTargetWorldPos).sub(fire_pos).normalize();
-		}
+		else if (auto missile = smart_cast<const CMissile*>(pHudItem))
+			fire_pos = missile->Position();
+
+		fire_dir = Fvector(cameraTargetWorldPos).sub(fire_pos).normalize();
 	}
 	else
 	{
