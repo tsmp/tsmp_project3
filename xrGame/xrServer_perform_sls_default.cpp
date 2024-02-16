@@ -15,9 +15,6 @@ extern bool IsGameTypeSingle();
 
 void xrServer::SLS_Default()
 {
-	if(!IsGameTypeSingle())
-		m_RespawnerMP.CleanRespawnList();
-
 	if (game->custom_sls_default())
 	{
 		game->sls_default();
@@ -28,6 +25,9 @@ void xrServer::SLS_Default()
 	bool _designer = !!strstr(Core.Params, "-designer");
 	CSE_ALifeCreatureActor *_actor = 0;
 #endif
+
+	if (!IsGameTypeSingle())
+		m_RespawnerMP.CleanRespawnList();
 
 	string_path fn_spawn;
 
