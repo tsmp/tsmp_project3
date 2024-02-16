@@ -15,6 +15,7 @@ public:
 	void ReadUpgrades(LPCSTR section);
 
 private:
+	float m_GunSpeedCoeff = 1.f;
 	float m_EnginePowerCoeff = 1.f;
 	float m_GunHitPowerCoeff = 1.f;
 	float m_ExplosionImmunityCoeff = 1.f;

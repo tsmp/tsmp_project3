@@ -21,6 +21,7 @@ void CCarUpgrade::OnH_A_Chield()
 
 void CCarUpgrade::ReadUpgrades(LPCSTR section)
 {
+	m_GunSpeedCoeff = READ_IF_EXISTS(pSettings, r_float, section, "gun_speed_coeff", 1.f);
 	m_EnginePowerCoeff = READ_IF_EXISTS(pSettings, r_float, section, "engine_power_coeff", 1.f);
 	m_GunHitPowerCoeff = READ_IF_EXISTS(pSettings, r_float, section, "gun_hit_power_coeff", 1.f);
 	m_ExplosionImmunityCoeff = READ_IF_EXISTS(pSettings, r_float, section, "explosion_immunity_coeff", 1.f);
@@ -33,6 +34,9 @@ void CCarUpgrade::ApplyUpgrades(CCar* car)
 	car->m_HitTypeK[ALife::eHitTypeExplosion] *= m_ExplosionImmunityCoeff;
 	car->m_HitTypeK[ALife::eHitTypeFireWound] *= m_FireWoundImmunityCoeff;
 	
-	if(car->HasWeapon())
+	if (car->HasWeapon())
+	{
 		car->m_car_weapon->SetHitPower(car->m_car_weapon->GetHitPower() * m_GunHitPowerCoeff);
+		car->m_car_weapon->SetTimeToFire(car->m_car_weapon->GetTimeToFire() / m_GunSpeedCoeff);
+	}
 }

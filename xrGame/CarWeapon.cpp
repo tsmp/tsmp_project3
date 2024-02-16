@@ -333,3 +333,13 @@ void CCarWeapon::SetHitPower(float power)
 	fvHitPower[egdVeteran] = power;
 	fvHitPower[egdMaster] = power;
 }
+
+float CCarWeapon::GetTimeToFire()
+{
+	return fTimeToFire;
+}
+
+void CCarWeapon::SetTimeToFire(float time)
+{
+	fTimeToFire = time;
+}
