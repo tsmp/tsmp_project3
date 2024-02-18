@@ -5,7 +5,7 @@
 
 CUIRankIndicator::CUIRankIndicator(u8 ranksCount) : max_rank(ranksCount * 2), m_current(static_cast<u8>(-1))
 {
-	m_ranks.resize(max_rank);
+	m_ranks.reserve(max_rank);
 }
 
 CUIRankIndicator::~CUIRankIndicator()
