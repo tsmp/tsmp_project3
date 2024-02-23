@@ -472,8 +472,9 @@ CUIDragDropListEx *CUIBagWnd::GetItemList(CUICellItem *pItem)
 
 void CUIBagWnd::GetPresetItemByName(const shared_str &sectionName, PresetItem &item)
 {
-	item.SetSlot(static_cast<u8>(-1));
-	item.SetItem(static_cast<u16>(-1));
+	// TSMP: THIS CLASS IS NOT USED
+	item.SetAddons(static_cast<u8>(-1));
+	item.SetItemID(static_cast<u16>(-1));
 
 	for (u8 i = 0; i < m_wpnSectStorage.size(); ++i)
 	{
@@ -481,8 +482,8 @@ void CUIBagWnd::GetPresetItemByName(const shared_str &sectionName, PresetItem &i
 		{
 			if (sectionName == m_wpnSectStorage[i][j])
 			{
-				item.SetSlot(i);
-				item.SetItem(j);
+				item.SetAddons(i);
+				item.SetItemID(j);
 				return;
 			}
 		}
@@ -833,9 +834,9 @@ void CUIBagWnd::SetRank(int r)
 
 const shared_str &CUIBagWnd::GetNameByPresetItem(const PresetItem &item)
 {
-	R_ASSERT(item.GetSlot() < m_wpnSectStorage.size());
-	R_ASSERT(item.GetItemID() < m_wpnSectStorage[item.GetSlot()].size());
-	return m_wpnSectStorage[item.GetSlot()][item.GetItemID()];
+	R_ASSERT(item.GetAddons() < m_wpnSectStorage.size());
+	R_ASSERT(item.GetItemID() < m_wpnSectStorage[item.GetAddons()].size());
+	return m_wpnSectStorage[item.GetAddons()][item.GetItemID()];
 }
 
 void CUIBagWnd::SetExternal(CUICellItem *itm, bool status)

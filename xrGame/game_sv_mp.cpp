@@ -942,8 +942,8 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState *ps)
 			if (newItemIdx == u32(-1))
 				continue;
 
-			item.SetItem(static_cast<u16>(newItemIdx));
-			item.SetSlot(0);
+			item.SetItemID(static_cast<u16>(newItemIdx));
+			item.SetAddons(0);
 		}
 	}
 

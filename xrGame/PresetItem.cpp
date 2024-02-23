@@ -5,11 +5,11 @@
 void PresetItem::Serialize(NET_Packet& p) const
 {
 	p.w_u16(ItemID);
-	p.w_u8(SlotID);	
+	p.w_u8(Addons);
 }
 
 void PresetItem::Deserialize(NET_Packet& p)
 {	
 	p.r_u16(ItemID);
-	p.r_u8(SlotID);
+	p.r_u8(Addons);
 }

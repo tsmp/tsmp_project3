@@ -141,7 +141,7 @@ void game_cl_Deathmatch::SetBuyMenuItems(PRESET_ITEMS *pItems, BOOL OnlyPreset)
 			if (presetItem.GetItemID() == knifeItem.GetItemID())
 				continue;
 
-			pCurBuyMenu->ItemToSlot(pCurBuyMenu->GetNameByPresetItem(PresetItem(0, presetItem.GetItemID())), presetItem.GetSlot());
+			pCurBuyMenu->ItemToSlot(pCurBuyMenu->GetNameByPresetItem(PresetItem(0, presetItem.GetItemID())), presetItem.GetAddons());
 		}
 	}
 
@@ -266,7 +266,7 @@ void game_cl_Deathmatch::LoadDefItemsForRank(IBuyWnd *pBuyMenu)
 		if (defItem.GetItemID() == knifeItem.GetItemID())
 			continue;
 
-		pCurBuyMenu->ItemToSlot(pCurBuyMenu->GetNameByPresetItem(PresetItem(0, defItem.GetItemID())), defItem.GetSlot());
+		pCurBuyMenu->ItemToSlot(pCurBuyMenu->GetNameByPresetItem(PresetItem(0, defItem.GetItemID())), defItem.GetAddons());
 	}
 
 	pCurBuyMenu->SetupDefaultItemsEnd();

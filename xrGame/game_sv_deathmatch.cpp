@@ -897,7 +897,7 @@ void game_sv_Deathmatch::SpawnWeaponsForActor(CSE_Abstract *pE, game_PlayerState
 	for (u32 i = 0; i < ps->pItemList.size(); i++)
 	{
 		const PresetItem &item = ps->pItemList[i];
-		SpawnWeapon4Actor(pA->ID, *m_strWeaponsData->GetItemName(item.GetItemID()), item.GetSlot());
+		SpawnWeapon4Actor(pA->ID, *m_strWeaponsData->GetItemName(item.GetItemID()), item.GetAddons());
 		Game().m_WeaponUsageStatistic->OnWeaponBought(ps, *m_strWeaponsData->GetItemName(item.GetItemID()));
 	}
 
