@@ -155,7 +155,7 @@ void CRenderDevice::PreCache(u32 amount)
 	}
 }
 
-int g_svDedicateServerUpdateReate = 100;
+int g_svDedicatedServerUpdateRate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
 
@@ -297,7 +297,7 @@ void CRenderDevice::Run()
 
 		u32 frameEndTime = m_GlobalTimer.GetElapsed_ms();
 		u32 frameTime = (frameEndTime - frameStartTime);
-		u32 dedicatedSrvUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
+		u32 dedicatedSrvUpdateDelta = 1000 / g_svDedicatedServerUpdateRate;
 
 		if (frameTime < dedicatedSrvUpdateDelta)
 			Sleep(dedicatedSrvUpdateDelta - frameTime);
