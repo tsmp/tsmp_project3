@@ -19,17 +19,10 @@
 #include "string_table.h"
 #include "map_manager.h"
 #include "map_location.h"
-
 #include "game_cl_deathmatch_snd_messages.h"
 #include "game_base_menu_events.h"
-
 #include "ActorCondition.h"
-
-#ifdef _new_buy_wnd
 #include "ui\UIMpTradeWnd.h"
-#else
-#include "ui\UIBuyWnd.h"
-#endif
 
 #define TEAM0_MENU "deathmatch_team0"
 
@@ -145,7 +138,7 @@ IBuyWnd *game_cl_Deathmatch::InitBuyMenu(const shared_str &BasePriceSection, s16
 
 	cl_TeamStruct *pTeamSect = &TeamList[ModifyTeam(Team)];
 
-	IBuyWnd *pMenu = xr_new<BUY_WND_TYPE>();
+	IBuyWnd *pMenu = xr_new<CUIMpTradeWnd>();
 	pMenu->Init(pTeamSect->caSection, BasePriceSection);
 	pMenu->SetSkin(0);
 	return pMenu;

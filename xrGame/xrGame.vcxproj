@@ -2042,10 +2042,7 @@
     <ClInclude Include="ui\UIMpItemsStoreWnd.h" />
     <ClInclude Include="ui\UIMpTradeWnd.h" />
     <ClInclude Include="ui\Restrictions.h" />
-    <ClInclude Include="ui\UIBuyWeaponTab.h" />
     <ClInclude Include="ui\UITabButtonMP.h" />
-    <ClInclude Include="ui\UIBagWnd.h" />
-    <ClInclude Include="ui\UIBuyWnd.h" />
     <ClInclude Include="ui\UIMapDesc.h" />
     <ClInclude Include="ui\UIMapInfo.h" />
     <ClInclude Include="ui\UISpawnWnd.h" />
@@ -7982,10 +7979,7 @@
     <ClCompile Include="ui\UIMpTradeWnd_trade.cpp" />
     <ClCompile Include="ui\UIMpTradeWnd_wpn.cpp" />
     <ClCompile Include="ui\Restrictions.cpp" />
-    <ClCompile Include="ui\UIBuyWeaponTab.cpp" />
     <ClCompile Include="ui\UITabButtonMP.cpp" />
-    <ClCompile Include="ui\UIBagWnd.cpp" />
-    <ClCompile Include="ui\UIBuyWnd.cpp" />
     <ClCompile Include="ui\UIMapDesc.cpp" />
     <ClCompile Include="ui\UIMapInfo.cpp" />
     <ClCompile Include="ui\UIMapInfo_script.cpp">

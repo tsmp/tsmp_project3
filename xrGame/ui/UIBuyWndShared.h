@@ -1,14 +1,6 @@
 #pragma once
-
-#define _new_buy_wnd
-
-#ifdef _new_buy_wnd
 class CUIMpTradeWnd;
-typedef CUIMpTradeWnd BUY_WND_TYPE;
-#else
-class CUIBuyWnd;
-typedef CUIBuyWnd BUY_WND_TYPE;
-#endif
+
 
 #include "../associative_vector.h"
 #include "restrictions.h"
@@ -20,6 +12,7 @@ struct string_lex_less
 		return (xr_strcmp(A, B) < 0);
 	}
 };
+
 class CItemMgr
 {
 	struct _i
@@ -27,6 +20,7 @@ class CItemMgr
 		u8 slot_idx;
 		xr_vector<u32> cost;
 	};
+
 	typedef associative_vector<shared_str, _i, string_lex_less> COST_MAP;
 	typedef COST_MAP::iterator COST_MAP_IT;
 	typedef COST_MAP::const_iterator COST_MAP_CIT;

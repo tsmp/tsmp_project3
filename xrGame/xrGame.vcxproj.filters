@@ -2260,9 +2260,6 @@
     <Filter Include="UI\Multiplayer\BuyWeaponWnd\TAB">
       <UniqueIdentifier>{9af94dc3-0688-4bc9-ac7a-6e2389f084f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI\Multiplayer\BuyWeaponWnd\buy_wnd">
-      <UniqueIdentifier>{2f27dc47-ed8a-4ec0-942e-7fb3c22e43a6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI\Multiplayer\team_skin_info">
       <UniqueIdentifier>{34f7215d-a02c-496e-a5d6-c8670b614887}</UniqueIdentifier>
     </Filter>
@@ -6531,17 +6528,8 @@
     <ClInclude Include="ui\Restrictions.h">
       <Filter>UI\Multiplayer\BuyWeaponWnd\rank_restrictions</Filter>
     </ClInclude>
-    <ClInclude Include="ui\UIBuyWeaponTab.h">
-      <Filter>UI\Multiplayer\BuyWeaponWnd\TAB</Filter>
-    </ClInclude>
     <ClInclude Include="ui\UITabButtonMP.h">
       <Filter>UI\Multiplayer\BuyWeaponWnd\TAB</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\UIBagWnd.h">
-      <Filter>UI\Multiplayer\BuyWeaponWnd\buy_wnd</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\UIBuyWnd.h">
-      <Filter>UI\Multiplayer\BuyWeaponWnd\buy_wnd</Filter>
     </ClInclude>
     <ClInclude Include="ui\UIMapDesc.h">
       <Filter>UI\Multiplayer\team_skin_info\MapDesc</Filter>
@@ -9728,17 +9716,8 @@
     <ClCompile Include="ui\Restrictions.cpp">
       <Filter>UI\Multiplayer\BuyWeaponWnd\rank_restrictions</Filter>
     </ClCompile>
-    <ClCompile Include="ui\UIBuyWeaponTab.cpp">
-      <Filter>UI\Multiplayer\BuyWeaponWnd\TAB</Filter>
-    </ClCompile>
     <ClCompile Include="ui\UITabButtonMP.cpp">
       <Filter>UI\Multiplayer\BuyWeaponWnd\TAB</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\UIBagWnd.cpp">
-      <Filter>UI\Multiplayer\BuyWeaponWnd\buy_wnd</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\UIBuyWnd.cpp">
-      <Filter>UI\Multiplayer\BuyWeaponWnd\buy_wnd</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIMapDesc.cpp">
       <Filter>UI\Multiplayer\team_skin_info\MapDesc</Filter>
