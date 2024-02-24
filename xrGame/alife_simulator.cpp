@@ -14,6 +14,9 @@
 #include "script_engine.h"
 #include "mainmenu.h"
 #include "object_factory.h"
+#include "xrServer_Objects_ALife_Monsters.h"
+#include "alife_schedule_registry.h"
+#include "alife_graph_registry.h"
 
 #include "..\TSMP3_Build_Config.h"
 
@@ -33,7 +36,6 @@ void restart_all()
 }
 
 CALifeSimulator::CALifeSimulator(xrServer *server, shared_str *command_line) : CALifeUpdateManager(server, alife_section),
-																			   CALifeInteractionManager(server, alife_section),
 																			   CALifeSimulatorBase(server, alife_section)
 {
 	restart_all();
@@ -86,4 +88,23 @@ void CALifeSimulator::setup_simulator(CSE_ALifeObject *object)
 void CALifeSimulator::reload(LPCSTR section)
 {
 	CALifeUpdateManager::reload(section);
+}
+
+void CALifeSimulator::kill_entity(CSE_ALifeMonsterAbstract* l_tpALifeMonsterAbstract, const GameGraph::_GRAPH_ID& l_tGraphID, CSE_ALifeSchedulable* schedulable)
+{
+	VERIFY(l_tpALifeMonsterAbstract->g_Alive());
+	append_item_vector(l_tpALifeMonsterAbstract->children, m_temp_item_vector);
+	GameGraph::_GRAPH_ID l_tGraphID1 = l_tpALifeMonsterAbstract->m_tGraphID;
+	assign_death_position(l_tpALifeMonsterAbstract, l_tGraphID, schedulable);
+	l_tpALifeMonsterAbstract->vfDetachAll();
+	R_ASSERT(l_tpALifeMonsterAbstract->children.empty());
+	scheduled().remove(l_tpALifeMonsterAbstract);
+	if (l_tpALifeMonsterAbstract->m_tGraphID != l_tGraphID1)
+	{
+		graph().remove(l_tpALifeMonsterAbstract, l_tGraphID1);
+		graph().add(l_tpALifeMonsterAbstract, l_tpALifeMonsterAbstract->m_tGraphID);
+	}
+	CSE_ALifeInventoryItem* l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeMonsterAbstract);
+	if (l_tpALifeInventoryItem)
+		m_temp_item_vector.push_back(l_tpALifeInventoryItem);
 }

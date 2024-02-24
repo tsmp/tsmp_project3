@@ -7,16 +7,13 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
-#include "alife_interaction_manager.h"
 #include "alife_update_manager.h"
 #include "script_export_space.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4005)
 
-class CALifeSimulator : public CALifeUpdateManager,
-						public CALifeInteractionManager
+class CALifeSimulator : public CALifeUpdateManager
 {
 protected:
 	virtual void setup_simulator(CSE_ALifeObject *object);
@@ -26,6 +23,8 @@ public:
 	CALifeSimulator(xrServer *server, shared_str *command_line);
 	virtual ~CALifeSimulator();
 	virtual void destroy();
+
+	void kill_entity(CSE_ALifeMonsterAbstract* l_tpALifeMonsterAbstract, const GameGraph::_GRAPH_ID& l_tGraphID, CSE_ALifeSchedulable* schedulable);
 
 #if 0  //def DEBUG
 			void	validate			();
