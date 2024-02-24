@@ -882,11 +882,8 @@
     <ClInclude Include="alife_time_manager.h" />
     <ClInclude Include="alife_time_manager_inline.h" />
     <ClInclude Include="alife_update_manager.h" />
-    <ClInclude Include="alife_update_manager_inline.h" />
     <ClInclude Include="alife_storage_manager.h" />
-    <ClInclude Include="alife_storage_manager_inline.h" />
     <ClInclude Include="alife_surge_manager.h" />
-    <ClInclude Include="alife_surge_manager_inline.h" />
     <ClInclude Include="alife_switch_manager.h" />
     <ClInclude Include="alife_switch_manager_inline.h" />
     <ClInclude Include="saved_game_wrapper.h" />

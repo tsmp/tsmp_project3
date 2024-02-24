@@ -3072,19 +3072,10 @@
     <ClInclude Include="alife_update_manager.h">
       <Filter>AI\ALife\update_manager</Filter>
     </ClInclude>
-    <ClInclude Include="alife_update_manager_inline.h">
-      <Filter>AI\ALife\update_manager</Filter>
-    </ClInclude>
     <ClInclude Include="alife_storage_manager.h">
       <Filter>AI\ALife\update_manager\storage_manager</Filter>
     </ClInclude>
-    <ClInclude Include="alife_storage_manager_inline.h">
-      <Filter>AI\ALife\update_manager\storage_manager</Filter>
-    </ClInclude>
     <ClInclude Include="alife_surge_manager.h">
-      <Filter>AI\ALife\update_manager\surge_manager</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_surge_manager_inline.h">
       <Filter>AI\ALife\update_manager\surge_manager</Filter>
     </ClInclude>
     <ClInclude Include="alife_switch_manager.h">

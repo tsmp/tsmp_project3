@@ -25,6 +25,8 @@ private:
 	friend class CALifeGraphRegistry;
 	friend class CALifeSpawnRegistry;
 	friend class CALifeSpawnRegistry;
+	friend class CALifeSurgeManager;
+	friend class CALifeStorageManager;
 	friend class CLevel;
 
 private:

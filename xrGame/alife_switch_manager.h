@@ -10,7 +10,7 @@
 
 #include "alife_simulator_base.h"
 
-class CALifeSwitchManager : public virtual CALifeSimulatorBase, CRandom
+class CALifeSwitchManager: public CALifeSimulatorBase
 {
 protected:
 	typedef CALifeSimulatorBase inherited;
@@ -38,7 +38,7 @@ public:
 
 public:
 	IC CALifeSwitchManager(xrServer *server, LPCSTR section);
-	virtual ~CALifeSwitchManager();
+	virtual ~CALifeSwitchManager() = default;
 	void switch_object(CSE_ALifeDynamicObject *object);
 	IC float online_distance() const;
 	IC float offline_distance() const;

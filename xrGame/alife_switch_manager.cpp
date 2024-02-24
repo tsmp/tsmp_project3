@@ -43,10 +43,6 @@ struct remove_non_savable_predicate
 	}
 };
 
-CALifeSwitchManager::~CALifeSwitchManager()
-{
-}
-
 void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject *object, bool update_registries)
 {
 	START_PROFILE("ALife/switch/add_online")

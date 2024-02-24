@@ -25,20 +25,15 @@ using namespace ALife;
 
 extern string_path g_last_saved_game;
 
-CALifeStorageManager::~CALifeStorageManager()
-{
-}
-
 void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
 {
 	strcpy_s(g_last_saved_game, sizeof(g_last_saved_game), save_name);
 
 	string_path save;
 	strcpy(save, m_save_name);
+
 	if (save_name)
-	{
 		strconcat(sizeof(m_save_name), m_save_name, save_name, SAVE_EXTENSION);
-	}
 	else
 	{
 		if (!xr_strlen(m_save_name))
@@ -48,22 +43,24 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
 		}
 	}
 
-	u32 source_count;
-	u32 dest_count;
-	void *dest_data;
+	u32 sourceCount;
+	u32 destCount;
+	void *destData;
+
 	{
 		CMemoryWriter stream;
-		header().save(stream);
-		time_manager().save(stream);
-		spawns().save(stream);
-		objects().save(stream);
-		registry().save(stream);
+		auto simulator = ai().m_alife_simulator;
+		simulator->header().save(stream);
+		simulator->time_manager().save(stream);
+		simulator->spawns().save(stream);
+		simulator->objects().save(stream);
+		simulator->registry().save(stream);
 
-		source_count = stream.tell();
+		sourceCount = stream.tell();
 		void *source_data = stream.pointer();
-		dest_count = rtc_csize(source_count);
-		dest_data = xr_malloc(dest_count);
-		dest_count = rtc_compress(dest_data, dest_count, source_data, source_count);
+		destCount = rtc_csize(sourceCount);
+		destData = xr_malloc(destCount);
+		destCount = rtc_compress(destData, destCount, source_data, sourceCount);
 	}
 
 	string_path temp;
@@ -72,12 +69,13 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
 	writer->w_u32(u32(-1));
 	writer->w_u32(ALIFE_VERSION);
 
-	writer->w_u32(source_count);
-	writer->w(dest_data, dest_count);
-	xr_free(dest_data);
+	writer->w_u32(sourceCount);
+	writer->w(destData, destCount);
+	xr_free(destData);
 	FS.w_close(writer);
+
 #ifdef DEBUG
-	Msg("* Game %s is successfully saved to file '%s' (%d bytes compressed to %d)", m_save_name, temp, source_count, dest_count + 4);
+	Msg("* Game %s is successfully saved to file '%s' (%d bytes compressed to %d)", m_save_name, temp, sourceCount, destCount + 4);
 #else  // DEBUG
 	Msg("* Game %s is successfully saved to file '%s'", m_save_name, temp);
 #endif // DEBUG
@@ -89,81 +87,84 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
 void CALifeStorageManager::load(void *buffer, const u32 &buffer_size, LPCSTR file_name)
 {
 	IReader source(buffer, buffer_size);
-	header().load(source);
-	time_manager().load(source);
-	spawns().load(source, file_name);
-	graph().on_load();
-	objects().load(source);
+	auto simulator = ai().m_alife_simulator;
+	simulator->header().load(source);
+	simulator->time_manager().load(source);
+	simulator->spawns().load(source, file_name);
+	simulator->graph().on_load();
+	simulator->objects().load(source);
 
-	VERIFY(can_register_objects());
-	can_register_objects(false);
-	CALifeObjectRegistry::OBJECT_REGISTRY::iterator B = objects().objects().begin();
-	CALifeObjectRegistry::OBJECT_REGISTRY::iterator E = objects().objects().end();
-	CALifeObjectRegistry::OBJECT_REGISTRY::iterator I;
-	for (I = B; I != E; ++I)
+	VERIFY(simulator->can_register_objects());
+	simulator->can_register_objects(false);
+	auto &simulatorObjects = simulator->objects().objects();
+
+	for (auto &pair: simulatorObjects)
 	{
-		ALife::_OBJECT_ID id = (*I).second->ID;
-		(*I).second->ID = server().PerformIDgen(id);
-		VERIFY(id == (*I).second->ID);
-		register_object((*I).second, false);
+		CSE_ALifeDynamicObject* object = pair.second;
+		ALife::_OBJECT_ID id = object->ID;
+		object->ID = simulator->server().PerformIDgen(id);
+		VERIFY(id == object->ID);
+		simulator->register_object(object, false);
 	}
 
-	registry().load(source);
+	simulator->registry().load(source);
+	simulator->can_register_objects(true);
 
-	can_register_objects(true);
-
-	for (I = B; I != E; ++I)
-		(*I).second->on_register();
+	for (auto& pair : simulatorObjects)
+		pair.second->on_register();
 }
 
-bool CALifeStorageManager::load(LPCSTR save_name)
+bool CALifeStorageManager::load(LPCSTR saveName)
 {
 	CTimer timer;
 	timer.Start();
+
 	string256 save;
 	strcpy(save, m_save_name);
-	if (!save_name)
+
+	if (!saveName)
 	{
 		if (!xr_strlen(m_save_name))
 			R_ASSERT2(false, "There is no file name specified!");
 	}
 	else
-		strconcat(sizeof(m_save_name), m_save_name, save_name, SAVE_EXTENSION);
-	string_path file_name;
-	FS.update_path(file_name, "$game_saves$", m_save_name);
+		strconcat(sizeof(m_save_name), m_save_name, saveName, SAVE_EXTENSION);
+
+	string_path fileName;
+	FS.update_path(fileName, "$game_saves$", m_save_name);
 
 	IReader *stream;
-	stream = FS.r_open(file_name);
+	stream = FS.r_open(fileName);
+
 	if (!stream)
 	{
-		Msg("* Cannot find saved game %s", file_name);
+		Msg("* Cannot find saved game %s", fileName);
 		strcpy(m_save_name, save);
-		return (false);
+		return false;
 	}
 
-	CHECK_OR_EXIT(CSavedGameWrapper::valid_saved_game(*stream), make_string("%s\nSaved game version mismatch or saved game is corrupted", file_name));
+	CHECK_OR_EXIT(CSavedGameWrapper::valid_saved_game(*stream), make_string("%s\nSaved game version mismatch or saved game is corrupted", fileName));
 
 	string512 temp;
-	strconcat(sizeof(temp), temp, CStringTable().translate("st_loading_saved_game").c_str(), " \"", save_name, SAVE_EXTENSION, "\"");
+	strconcat(sizeof(temp), temp, CStringTable().translate("st_loading_saved_game").c_str(), " \"", saveName, SAVE_EXTENSION, "\"");
 	g_pGamePersistent->LoadTitle(temp);
 
-	unload();
-	reload(m_section);
+	auto simulator = ai().m_alife_simulator;
+	simulator->unload();
+	simulator->reload(m_section);
 
-	u32 source_count = stream->r_u32();
-	void *source_data = xr_malloc(source_count);
-	rtc_decompress(source_data, source_count, stream->pointer(), stream->length() - 3 * sizeof(u32));
+	u32 sourceCount = stream->r_u32();
+	void *sourceData = xr_malloc(sourceCount);
+	rtc_decompress(sourceData, sourceCount, stream->pointer(), stream->length() - 3 * sizeof(u32));
 	FS.r_close(stream);
-	load(source_data, source_count, file_name);
-	xr_free(source_data);
+	load(sourceData, sourceCount, fileName);
+	xr_free(sourceData);
 
-	groups().on_after_game_load();
+	simulator->groups().on_after_game_load();
+	VERIFY(simulator->graph().actor());
 
-	VERIFY(graph().actor());
-
-	Msg("* Game %s is successfully loaded from file '%s' (%.3fs)", save_name, file_name, timer.GetElapsed_sec());
-
-	return (true);
+	Msg("* Game %s is successfully loaded from file '%s' (%.3fs)", saveName, fileName, timer.GetElapsed_sec());
+	return true;
 }
 
 void CALifeStorageManager::save(NET_Packet &net_packet)

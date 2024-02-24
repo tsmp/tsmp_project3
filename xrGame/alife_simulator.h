@@ -15,6 +15,9 @@
 
 class CALifeSimulator : public CALifeUpdateManager
 {
+	friend class CALifeSurgeManager;
+	friend class CALifeStorageManager;
+
 protected:
 	virtual void setup_simulator(CSE_ALifeObject *object);
 	virtual void reload(LPCSTR section);

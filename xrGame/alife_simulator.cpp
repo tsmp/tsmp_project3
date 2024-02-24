@@ -35,8 +35,7 @@ void restart_all()
 	ai().script_engine().init();
 }
 
-CALifeSimulator::CALifeSimulator(xrServer *server, shared_str *command_line) : CALifeUpdateManager(server, alife_section),
-																			   CALifeSimulatorBase(server, alife_section)
+CALifeSimulator::CALifeSimulator(xrServer *server, shared_str *command_line) : CALifeUpdateManager(server, alife_section)
 {
 	restart_all();
 
