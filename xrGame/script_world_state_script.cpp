@@ -10,11 +10,11 @@
 #include "script_world_state.h"
 #include "condition_state.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptWorldStateWrapper::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptWorldState>("world_state")
 			 .def(constructor<>())

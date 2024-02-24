@@ -4,11 +4,11 @@
 #include "CarWeapon.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CCar::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CCar, bases<CGameObject, CHolderCustom>>("CCar")
 			 .enum_("wpn_action")
@@ -19,7 +19,6 @@ void CCar::script_register(lua_State *L)
 				  value("eWpnAutoFire", int(CCarWeapon::eWpnAutoFire)),
 				  value("eWpnToDefaultDir", int(CCarWeapon::eWpnToDefaultDir))]
 			 .def("Action", &CCar::Action)
-			 //		.def("SetParam",		(void (CCar::*)(int,Fvector2)) &CCar::SetParam)
 			 .def("SetParam", (void (CCar::*)(int, Fvector)) & CCar::SetParam)
 			 .def("CanHit", &CCar::WpnCanHit)
 			 .def("FireDirDiff", &CCar::FireDirDiff)

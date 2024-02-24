@@ -10,11 +10,11 @@
 #include "script_hit.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptHit::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptHit>("hit")
 			 .enum_("hit_type")

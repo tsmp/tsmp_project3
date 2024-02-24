@@ -2,8 +2,6 @@
 #include "UIOptionsItem.h"
 #include "UIOptionsManagerScript.h"
 
-using namespace luabind;
-
 void CUIOptionsManagerScript::SetCurrentValues(const char *group)
 {
 	CUIOptionsItem::GetOptionsManager()->SetCurrentValues(group);
@@ -42,6 +40,8 @@ void CUIOptionsManagerScript::SendMessage2Group(const char *group, const char *m
 #pragma optimize("s", on)
 void CUIOptionsManagerScript::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CUIOptionsManagerScript>("COptionsManager")
 			 .def(constructor<>())

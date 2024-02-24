@@ -12,11 +12,11 @@ CWeaponGroza::~CWeaponGroza(void)
 {
 }
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CWeaponGroza::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CWeaponGroza, CGameObject>("CWeaponGroza")
 			 .def(constructor<>())];

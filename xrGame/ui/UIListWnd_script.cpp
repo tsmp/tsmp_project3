@@ -7,8 +7,6 @@
 #include "UIMapInfo.h"
 #include "UIComboBox.h"
 
-using namespace luabind;
-
 bool CUIListWnd::AddItem_script(CUIListItem *item)
 {
 	return AddItem(item, -1);
@@ -31,13 +29,12 @@ struct CUIListItemExWrapper : public CUIListItemEx, public luabind::wrap_base
 #pragma optimize("s", on)
 void CUIListWnd::script_register(lua_State *L)
 {
+	using namespace luabind;
 
 	module(L)
 		[
-
 			class_<CUIListWnd, CUIWindow>("CUIListWnd")
 				.def(constructor<>())
-				//		.def("AddText",					&CUIListWnd::AddText_script)
 				.def("AddItem", &CUIListWnd::AddItem_script, adopt<2>())
 				.def("RemoveItem", &CUIListWnd::RemoveItem)
 				.def("RemoveAll", &CUIListWnd::RemoveAll)

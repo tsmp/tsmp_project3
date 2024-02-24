@@ -8,8 +8,8 @@ class CF1 : public CGrenade
 	typedef CGrenade inherited;
 
 public:
-	CF1(void);
-	virtual ~CF1(void);
+	CF1() = default;
+	virtual ~CF1() = default;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

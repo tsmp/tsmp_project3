@@ -9,9 +9,7 @@
 #include "pch_script.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
-class_<CScriptGameObject> script_register_game_object_trader(class_<CScriptGameObject> &&instance)
+luabind::class_<CScriptGameObject> script_register_game_object_trader(luabind::class_<CScriptGameObject> &&instance)
 {
 	return std::move(instance)
 		.def("set_trader_global_anim", &CScriptGameObject::set_trader_global_anim)

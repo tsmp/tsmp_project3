@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "script_sound_action.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptSoundAction::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptSoundAction>("sound")
 			 .enum_("type")

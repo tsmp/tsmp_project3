@@ -10,8 +10,6 @@
 #include "script_lanim.h"
 #include "LightAnimLibrary.h"
 
-using namespace luabind;
-
 struct lanim_wrapper
 {
 	CLAItem *item;
@@ -39,6 +37,8 @@ public:
 #pragma optimize("s", on)
 void lanim_registrator::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<lanim_wrapper>("color_animator")
 			 .def(constructor<LPCSTR>())

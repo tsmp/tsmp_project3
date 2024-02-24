@@ -8,6 +8,7 @@ struct CWrapperBase : public T, public luabind::wrap_base
 
 	virtual bool OnKeyboard(int dik, EUIMessages keyboard_action)
 	{
+		using namespace luabind;
 		return call_member<bool>(this, "OnKeyboard", dik, keyboard_action);
 	}
 	static bool OnKeyboard_static(inherited *ptr, int dik, EUIMessages keyboard_action)
@@ -17,6 +18,7 @@ struct CWrapperBase : public T, public luabind::wrap_base
 
 	virtual void Update()
 	{
+		using namespace luabind;
 		call_member<void>(this, "Update");
 	}
 	static void Update_static(inherited *ptr)
@@ -26,6 +28,7 @@ struct CWrapperBase : public T, public luabind::wrap_base
 
 	virtual bool Dispatch(int cmd, int param)
 	{
+		using namespace luabind;
 		return call_member<bool>(this, "Dispatch", cmd, param);
 	}
 	static bool Dispatch_static(inherited *ptr, int cmd, int param)

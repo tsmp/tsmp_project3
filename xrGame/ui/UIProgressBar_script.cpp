@@ -1,11 +1,11 @@
 #include "pch_script.h"
 #include "UIProgressBar.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CUIProgressBar::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CUIProgressBar, CUIWindow>("CUIProgressBar")
 			 .def(constructor<>())

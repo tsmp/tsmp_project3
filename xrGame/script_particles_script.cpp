@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "script_particles.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptParticles::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptParticles>("particles_object")
 			 .def(constructor<LPCSTR>())

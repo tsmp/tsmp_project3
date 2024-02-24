@@ -10,11 +10,11 @@
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_script_macroses.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CSE_ALifeSchedulable::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[class_<IPureSchedulableObject>("ipure_schedulable_object"),
 			  //			.def(		constructor<>()),
 
@@ -25,6 +25,8 @@ void CSE_ALifeSchedulable::script_register(lua_State *L)
 
 void CSE_ALifeGraphPoint::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_abstract1(
 		CSE_ALifeGraphPoint,
 		"cse_alife_graph_point",
@@ -33,6 +35,8 @@ void CSE_ALifeGraphPoint::script_register(lua_State *L)
 
 void CSE_ALifeObject::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_alife1(
 				  CSE_ALifeObject,
 				  "cse_alife_object",
@@ -51,6 +55,8 @@ void CSE_ALifeObject::script_register(lua_State *L)
 
 void CSE_ALifeGroupAbstract::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[class_<CSE_ALifeGroupAbstract>("cse_alife_group_abstract")
 			  //			.def(		constructor<LPCSTR>())
 	];
@@ -58,6 +64,8 @@ void CSE_ALifeGroupAbstract::script_register(lua_State *L)
 
 void CSE_ALifeDynamicObject::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_dynamic_alife1(
 		CSE_ALifeDynamicObject,
 		"cse_alife_dynamic_object",
@@ -66,6 +74,8 @@ void CSE_ALifeDynamicObject::script_register(lua_State *L)
 
 void CSE_ALifeDynamicObjectVisual::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_dynamic_alife2(
 		CSE_ALifeDynamicObjectVisual,
 		"cse_alife_dynamic_object_visual",
@@ -75,6 +85,8 @@ void CSE_ALifeDynamicObjectVisual::script_register(lua_State *L)
 
 void CSE_ALifePHSkeletonObject::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_dynamic_alife2(
 		CSE_ALifePHSkeletonObject,
 		"cse_alife_ph_skeleton_object",
@@ -84,6 +96,8 @@ void CSE_ALifePHSkeletonObject::script_register(lua_State *L)
 
 void CSE_ALifeSpaceRestrictor::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_dynamic_alife2(
 		CSE_ALifeSpaceRestrictor,
 		"cse_alife_space_restrictor",
@@ -93,6 +107,8 @@ void CSE_ALifeSpaceRestrictor::script_register(lua_State *L)
 
 void CSE_ALifeLevelChanger::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_dynamic_alife1(
 		CSE_ALifeLevelChanger,
 		"cse_alife_level_changer",

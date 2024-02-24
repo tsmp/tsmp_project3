@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "property_storage.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CPropertyStorage::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CPropertyStorage>("property_storage")
 			 .def(constructor<>())

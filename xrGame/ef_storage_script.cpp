@@ -15,8 +15,6 @@
 #include "ef_base.h"
 #include "xrServer_Objects_ALife.h"
 
-using namespace luabind;
-
 CEF_Storage *ef_storage()
 {
 	return (&ai().ef_storage());
@@ -117,6 +115,8 @@ float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *_0)
 #pragma optimize("s", on)
 void CEF_Storage::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[def("ef_storage", &ef_storage),
 

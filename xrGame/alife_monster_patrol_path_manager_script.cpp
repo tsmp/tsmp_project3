@@ -9,8 +9,6 @@
 #include "pch_script.h"
 #include "alife_monster_patrol_path_manager.h"
 
-using namespace luabind;
-
 Fvector CALifeMonsterPatrolPathManager__target_position(CALifeMonsterPatrolPathManager *self)
 {
 	THROW(self);
@@ -20,6 +18,8 @@ Fvector CALifeMonsterPatrolPathManager__target_position(CALifeMonsterPatrolPathM
 #pragma optimize("s", on)
 void CALifeMonsterPatrolPathManager::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CALifeMonsterPatrolPathManager>("CALifeMonsterPatrolPathManager")
 			 .def("path", (void (CALifeMonsterPatrolPathManager::*)(LPCSTR))(&CALifeMonsterPatrolPathManager::path))

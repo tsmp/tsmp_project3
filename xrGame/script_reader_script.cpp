@@ -9,8 +9,6 @@
 #include "pch_script.h"
 #include "script_reader.h"
 
-using namespace luabind;
-
 bool r_eof(IReader *self)
 {
 	return (!!self->eof());
@@ -36,6 +34,8 @@ void r_fvector3(IReader *self, Fvector *arg0)
 #pragma optimize("s", on)
 void CScriptReader::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<IReader>("reader")
 			 .def("r_seek", &IReader::seek)

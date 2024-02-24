@@ -10,11 +10,11 @@
 #include "xrServer_Objects_ALife_Items.h"
 #include "xrServer_script_macroses.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CSE_ALifeItemPDA::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemPDA,
 		"cse_alife_item_pda",
@@ -23,6 +23,8 @@ void CSE_ALifeItemPDA::script_register(lua_State *L)
 
 void CSE_ALifeItemDocument::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemDocument,
 		"cse_alife_item_document",
@@ -31,6 +33,8 @@ void CSE_ALifeItemDocument::script_register(lua_State *L)
 
 void CSE_ALifeItemGrenade::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemGrenade,
 		"cse_alife_item_grenade",
@@ -39,6 +43,8 @@ void CSE_ALifeItemGrenade::script_register(lua_State *L)
 
 void CSE_ALifeItemExplosive::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemExplosive,
 		"cse_alife_item_explosive",
@@ -47,6 +53,8 @@ void CSE_ALifeItemExplosive::script_register(lua_State *L)
 
 void CSE_ALifeItemBolt::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemBolt,
 		"cse_alife_item_bolt",
@@ -55,6 +63,8 @@ void CSE_ALifeItemBolt::script_register(lua_State *L)
 
 void CSE_ALifeItemCustomOutfit::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemCustomOutfit,
 		"cse_alife_item_custom_outfit",
@@ -63,6 +73,8 @@ void CSE_ALifeItemCustomOutfit::script_register(lua_State *L)
 
 void CSE_ALifeItemWeaponMagazined::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemWeaponMagazined,
 		"cse_alife_item_weapon_magazined",

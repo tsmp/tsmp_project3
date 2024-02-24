@@ -10,8 +10,6 @@
 #include "game_graph.h"
 #include "ai_space.h"
 
-using namespace luabind;
-
 const CGameGraph *get_game_graph()
 {
 	return (&ai().game_graph());
@@ -47,6 +45,8 @@ Fvector CVertex__game_point(const CGameGraph::CVertex *vertex)
 #pragma optimize("s", on)
 void CGameGraph::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[def("game_graph", &get_game_graph),
 

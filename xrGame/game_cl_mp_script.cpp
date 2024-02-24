@@ -9,8 +9,6 @@
 #include "date_time.h"
 #include "ui/UIDialogWnd.h"
 
-using namespace luabind;
-
 #pragma warning(push)
 #pragma warning(disable : 4709)
 
@@ -31,6 +29,7 @@ struct CWrapperBase : public T, public luabind::wrap_base
 
 	virtual game_PlayerState *createPlayerState()
 	{
+		using namespace luabind;
 		return call_member<game_PlayerState *>(this, "createPlayerState")[adopt<result>()];
 	}
 	static game_PlayerState *createPlayerState_static(inherited *ptr)
@@ -96,6 +95,8 @@ game_cl_GameState* GetGame()
 #pragma optimize("s", on)
 void game_cl_mp::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[def("get_game", &GetGame),
 		class_<game_cl_GameState, game_GameState>("game_cl_GameState")
@@ -110,6 +111,8 @@ void game_cl_mp::script_register(lua_State *L)
 
 void game_cl_mp_script::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	typedef CWrapperBase<game_cl_mp_script> WrapType;
 	typedef game_cl_mp_script BaseType;
 

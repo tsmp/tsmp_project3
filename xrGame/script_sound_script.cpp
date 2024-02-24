@@ -10,11 +10,11 @@
 #include "script_sound.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptSound::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CSound_params>("sound_params")
 			 .def_readwrite("position", &CSound_params::position)

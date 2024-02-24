@@ -27,12 +27,12 @@
 #include "relation_registry.h"
 #include "danger_object.h"
 
-using namespace luabind;
-
 extern CScriptActionPlanner *script_action_planner(CScriptGameObject *obj);
 
-class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject> &&instance)
+luabind::class_<CScriptGameObject> script_register_game_object1(luabind::class_<CScriptGameObject> &&instance)
 {
+	using namespace luabind;
+
 	return std::move(instance)
 		.enum_("relation")
 			[value("friend", int(ALife::eRelationTypeFriend)),

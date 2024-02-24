@@ -10,11 +10,11 @@
 #include "xrServer_Objects_ALife_Items.h"
 #include "xrServer_script_macroses.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CSE_ALifeInventoryItem::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[class_<CSE_ALifeInventoryItem>("cse_alife_inventory_item")
 			  //			.def(		constructor<LPCSTR>())
 	];
@@ -22,6 +22,8 @@ void CSE_ALifeInventoryItem::script_register(lua_State *L)
 
 void CSE_ALifeItem::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[
 		//		luabind_class_item2(
 		luabind_class_abstract2(
@@ -33,6 +35,8 @@ void CSE_ALifeItem::script_register(lua_State *L)
 
 void CSE_ALifeItemTorch::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemTorch,
 		"cse_alife_item_torch",
@@ -41,6 +45,8 @@ void CSE_ALifeItemTorch::script_register(lua_State *L)
 
 void CSE_ALifeItemAmmo::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemAmmo,
 		"cse_alife_item_ammo",
@@ -49,6 +55,8 @@ void CSE_ALifeItemAmmo::script_register(lua_State *L)
 
 void CSE_ALifeItemWeapon::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemWeapon,
 		"cse_alife_item_weapon",
@@ -57,6 +65,8 @@ void CSE_ALifeItemWeapon::script_register(lua_State *L)
 
 void CSE_ALifeItemWeaponShotGun::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemWeaponShotGun,
 		"cse_alife_item_weapon_shotgun",
@@ -65,6 +75,8 @@ void CSE_ALifeItemWeaponShotGun::script_register(lua_State *L)
 
 void CSE_ALifeItemDetector::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemDetector,
 		"cse_alife_item_detector",
@@ -73,6 +85,8 @@ void CSE_ALifeItemDetector::script_register(lua_State *L)
 
 void CSE_ALifeItemArtefact::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_item1(
 		CSE_ALifeItemArtefact,
 		"cse_alife_item_artefact",

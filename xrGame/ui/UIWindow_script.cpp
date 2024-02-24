@@ -87,18 +87,16 @@ TEX_INFO get_texture_info(LPCSTR name, LPCSTR def_name)
 	return CUITextureMaster::FindItem(name, def_name);
 }
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CUIWindow::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[def("GetARGB", &GetARGB),
 		 def("GetFontSmall", &GetFontSmall),
 		 def("GetFontMedium", &GetFontMedium),
 		 def("GetFontDI", &GetFontDI),
-		 //.		def("GetFontHeaderRussian",		&GetFontHeaderRussian),
-		 //.		def("GetFontHeaderEurope",		&GetFontHeaderEurope),
 		 def("GetFontGraffiti19Russian", &GetFontGraffiti19Russian),
 		 def("GetFontGraffiti22Russian", &GetFontGraffiti22Russian),
 		 def("GetFontLetterica16Russian", &GetFontLetterica16Russian),
@@ -144,8 +142,6 @@ void CUIWindow::script_register(lua_State *L)
 			 .def("SetWindowName", &CUIWindow::SetWindowName)
 			 .def("SetPPMode", &CUIWindow::SetPPMode)
 			 .def("ResetPPMode", &CUIWindow::ResetPPMode),
-
-		 //		.def("",						&CUIWindow::)
 
 		 class_<CDialogHolder>("CDialogHolder")
 			 .def("MainInputReceiver", &CDialogHolder::MainInputReceiver)
@@ -193,10 +189,6 @@ void CUIWindow::script_register(lua_State *L)
 			 .def("GetMaxScrollPos", &CUIScrollView::GetMaxScrollPos)
 			 .def("GetCurrentScrollPos", &CUIScrollView::GetCurrentScrollPos)
 			 .def("SetScrollPos", &CUIScrollView::SetScrollPos),
-
-		 //		.def("",						&CUIFrameLineWnd::)
-		 //		.def("",						&CUIFrameLineWnd::)
-		 //		.def("",						&CUIFrameLineWnd::)
 
 		 class_<enum_exporter<EUIMessages>>("ui_events")
 			 .enum_("events")
@@ -278,9 +270,6 @@ void CUIWindow::script_register(lua_State *L)
 
 					 // CUITradeWnd
 					 value("TRADE_WND_CLOSED", int(TRADE_WND_CLOSED)),
-
-					 // CUISleepWnd
-					 //				value("SLEEP_WND_PERFORM_BUTTON_CLICKED",			int(SLEEP_WND_PERFORM_BUTTON_CLICKED)),
 
 					 // CUIOutfitSlot
 					 value("UNDRESS_OUTFIT", int(UNDRESS_OUTFIT)),

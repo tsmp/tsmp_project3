@@ -10,8 +10,6 @@
 #include "script_net_packet.h"
 #include "../../xrNetwork/net_utils.h"
 
-using namespace luabind;
-
 bool r_eof(NET_Packet *self)
 {
 	return (!!self->r_eof());
@@ -46,6 +44,8 @@ extern u16 script_server_object_version();
 #pragma optimize("s", on)
 void CScriptNetPacket::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[def("script_server_object_version", &script_server_object_version),
 

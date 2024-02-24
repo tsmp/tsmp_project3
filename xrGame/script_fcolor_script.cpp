@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "script_fcolor.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptFcolor::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<Fcolor>("fcolor")
 			 .def_readwrite("r", &Fcolor::r)

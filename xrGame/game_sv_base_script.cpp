@@ -17,8 +17,6 @@
 #include "object_broker.h"
 #include "Actor.h"
 
-using namespace luabind;
-
 CUISequencer *g_tutorial = NULL;
 CUISequencer *g_tutorial2 = NULL;
 
@@ -72,6 +70,7 @@ void cam_Set(int cam)
 #pragma optimize("s", on)
 void game_sv_GameState::script_register(lua_State *L)
 {
+	using namespace luabind;
 
 	module(L, "game")
 		[class_<xrTime>("CTime")

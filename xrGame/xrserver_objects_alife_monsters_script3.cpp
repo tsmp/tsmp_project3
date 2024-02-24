@@ -10,11 +10,11 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "xrServer_script_macroses.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CSE_ALifeCreatureActor::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_creature3(
 		CSE_ALifeCreatureActor,
 		"cse_alife_creature_actor",
@@ -25,6 +25,8 @@ void CSE_ALifeCreatureActor::script_register(lua_State *L)
 
 void CSE_ALifeTorridZone::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_dynamic_alife2(
 		CSE_ALifeTorridZone,
 		"cse_torrid_zone",
@@ -34,6 +36,8 @@ void CSE_ALifeTorridZone::script_register(lua_State *L)
 
 void CSE_ALifeZoneVisual::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_dynamic_alife2(
 		CSE_ALifeZoneVisual,
 		"cse_zone_visual",
@@ -43,6 +47,8 @@ void CSE_ALifeZoneVisual::script_register(lua_State *L)
 
 void CSE_ALifeCreaturePhantom::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_creature1(
 		CSE_ALifeCreaturePhantom,
 		"cse_alife_creature_phantom",
@@ -51,6 +57,8 @@ void CSE_ALifeCreaturePhantom::script_register(lua_State *L)
 
 void CSE_ALifeCreatureAbstract::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_creature1(
 				  CSE_ALifeCreatureAbstract,
 				  "cse_alife_creature_abstract",
@@ -64,6 +72,8 @@ void CSE_ALifeCreatureAbstract::script_register(lua_State *L)
 
 void CSE_ALifeOnlineOfflineGroup::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_dynamic_alife2(
 		CSE_ALifeOnlineOfflineGroup,
 		"cse_alife_online_offline_group",

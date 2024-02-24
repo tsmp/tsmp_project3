@@ -11,8 +11,6 @@
 #include "xrServer_script_macroses.h"
 #include "alife_human_brain.h"
 
-using namespace luabind;
-
 CALifeMonsterBrain *monster_brain(CSE_ALifeMonsterAbstract *monster)
 {
 	THROW(monster);
@@ -52,6 +50,8 @@ ALife::_OBJECT_ID smart_terrain_id(CSE_ALifeMonsterAbstract *monster)
 #pragma optimize("s", on)
 void CSE_ALifeMonsterAbstract::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_monster2(
 				  CSE_ALifeMonsterAbstract,
 				  "cse_alife_monster_abstract",
@@ -68,6 +68,8 @@ void CSE_ALifeMonsterAbstract::script_register(lua_State *L)
 
 void CSE_ALifeHumanAbstract::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_monster2(
 				  CSE_ALifeHumanAbstract,
 				  "cse_alife_human_abstract",
@@ -84,6 +86,8 @@ void CSE_ALifeHumanAbstract::script_register(lua_State *L)
 
 void CSE_ALifePsyDogPhantom::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_monster1(
 		CSE_ALifePsyDogPhantom,
 		"cse_alife_psydog_phantom",

@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "script_entity_action.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptEntityAction::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptEntityAction>("entity_action")
 			 .def(constructor<>())

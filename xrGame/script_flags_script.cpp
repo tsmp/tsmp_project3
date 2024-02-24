@@ -9,8 +9,6 @@
 #include "pch_script.h"
 #include "script_flags.h"
 
-using namespace luabind;
-
 template <typename T>
 T &set(T *self, const typename T::TYPE mask, bool value)
 {
@@ -56,29 +54,10 @@ void one(T *self)
 #pragma optimize("s", on)
 void CScriptFlags::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[
-			//		class_<Flags8>		("flags8")
-			//			.def(			constructor<>())
-			//			.def("get",		&Flags8::get)
-			//			.def("zero",	&Flags8::zero)
-			//			.def("one",		&one<Flags8>)
-			//			.def("invert",	(Flags8& (Flags8::*)())(&Flags8::invert))
-			//			.def("invert",	(Flags8& (Flags8::*)(const Flags8&))(&Flags8::invert))
-			//			.def("invert",	(Flags8& (Flags8::*)(const Flags8::TYPE))(&Flags8::invert))
-			//			.def("assign",	(Flags8& (Flags8::*)(const Flags8&))(&Flags8::assign))
-			//			.def("assign",	(Flags8& (Flags8::*)(const Flags8::TYPE))(&Flags8::assign))
-			//			.def("or",		(Flags8& (Flags8::*)(const Flags8::TYPE))(&Flags8::or))
-			//			.def("or",		(Flags8& (Flags8::*)(const Flags8&,const Flags8::TYPE))(&Flags8::or))
-			//			.def("and",		(Flags8& (Flags8::*)(const Flags8::TYPE))(&Flags8::and))
-			//			.def("and",		(Flags8& (Flags8::*)(const Flags8&,const Flags8::TYPE))(&Flags8::and))
-			//			.def("set",		&set<Flags8>)
-			//			.def("is",		&is<Flags8>)
-			//			.def("is_any",	&is_any<Flags8>)
-			//			.def("test",	&test<Flags8>)
-			//			.def("equal",	(bool (*)(Flags8*,const Flags8&))(&equal<Flags8>))
-			//			.def("equal",	(bool (*)(Flags8*,const Flags8&,const Flags8::TYPE))(&equal<Flags8>)),
-			//
 			class_<Flags16>("flags16")
 				.def(constructor<>())
 				.def("get", &Flags16::get)

@@ -12,15 +12,15 @@
 #include "script_ini_file.h"
 #include "sight_manager_space.h"
 
-using namespace luabind;
-
-extern class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject> &&);
-extern class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject> &&);
-extern class_<CScriptGameObject> script_register_game_object_trader(class_<CScriptGameObject> &&);
+extern luabind::class_<CScriptGameObject> script_register_game_object1(luabind::class_<CScriptGameObject> &&);
+extern luabind::class_<CScriptGameObject> script_register_game_object2(luabind::class_<CScriptGameObject> &&);
+extern luabind::class_<CScriptGameObject> script_register_game_object_trader(luabind::class_<CScriptGameObject> &&);
 
 #pragma optimize("s", on)
 void CScriptGameObject::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	class_<CScriptGameObject> instance("game_object");
 
 	module(L)

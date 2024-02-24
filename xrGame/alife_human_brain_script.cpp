@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "alife_human_brain.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CALifeHumanBrain::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CALifeHumanBrain, CALifeMonsterBrain>("CALifeHumanBrain")];
 }

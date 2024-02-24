@@ -3,8 +3,6 @@
 #include "xrServer_script_macroses.h"
 #include "ui/UIMultiTextStatic.h"
 
-using namespace luabind;
-
 template <typename T>
 struct CWrapperBase : public T, public luabind::wrap_base
 {
@@ -18,6 +16,8 @@ struct CWrapperBase : public T, public luabind::wrap_base
 #pragma optimize("s", on)
 void UIGame_custom_script::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	typedef CWrapperBase<UIGame_custom_script> WrapType;
 	typedef UIGame_custom_script BaseType;
 	module(L)

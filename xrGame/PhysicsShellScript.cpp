@@ -1,8 +1,6 @@
 #include "pch_script.h"
 #include "physicsshell.h"
 
-using namespace luabind;
-
 Fmatrix global_transform(CPhysicsElement *E)
 {
 	Fmatrix m;
@@ -13,6 +11,8 @@ Fmatrix global_transform(CPhysicsElement *E)
 #pragma optimize("s", on)
 void CPhysicsShell::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CPhysicsShell>("physics_shell")
 			 .def("apply_force", (void (CPhysicsShell::*)(float, float, float))(&CPhysicsShell::applyForce))
@@ -34,6 +34,8 @@ void CPhysicsShell::script_register(lua_State *L)
 
 void CPhysicsElement::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CPhysicsElement>("physics_element")
 			 .def("apply_force", (void (CPhysicsElement::*)(float, float, float))(&CPhysicsElement::applyForce))
@@ -51,6 +53,8 @@ void CPhysicsElement::script_register(lua_State *L)
 
 void CPhysicsJoint::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CPhysicsJoint>("physics_joint")
 			 .def("get_bone_id", &CPhysicsJoint::BoneID)

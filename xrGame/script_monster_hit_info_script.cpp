@@ -4,8 +4,6 @@
 #include "ai_monster_space.h"
 #include "AI/Monsters/monster_sound_defs.h"
 
-using namespace luabind;
-
 struct CMonsterSpace
 {
 };
@@ -13,6 +11,8 @@ struct CMonsterSpace
 #pragma optimize("s", on)
 void CScriptMonsterHitInfo::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptMonsterHitInfo>("MonsterHitInfo")
 			 .def_readwrite("who", &CScriptMonsterHitInfo::who)

@@ -2,11 +2,11 @@
 #include "UITabControl.h"
 #include "UITabButton.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CUITabControl::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CUITabControl, CUIWindow>("CUITabControl")
 			 .def(constructor<>())
@@ -21,8 +21,5 @@ void CUITabControl::script_register(lua_State *L)
 
 		 class_<CUITabButton, CUIButton>("CUITabButton")
 			 .def(constructor<>())
-		 //.		.def("AssociateWindow",			&CUITabButton::AssociateWindow)
-		 //.		.def("GetAssociatedWindow",		&CUITabButton::GetAssociatedWindow)
-		 //.		.def("ShowAssociatedWindow",	&CUITabButton::ShowAssociatedWindow)
 	];
 }

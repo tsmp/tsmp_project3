@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "script_animation_action.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptAnimationAction::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptAnimationAction>("anim")
 			 .enum_("type")

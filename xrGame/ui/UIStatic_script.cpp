@@ -1,11 +1,11 @@
 #include "pch_script.h"
 #include "UIStatic.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CUIStatic::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CUIStatic, CUIWindow>("CUIStatic")
 			 .def(constructor<>())

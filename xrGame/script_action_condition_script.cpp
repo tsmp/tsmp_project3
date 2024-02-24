@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "script_action_condition.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptActionCondition::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptActionCondition>("cond")
 			 .enum_("cond")

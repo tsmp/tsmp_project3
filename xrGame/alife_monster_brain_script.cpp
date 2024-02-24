@@ -10,8 +10,6 @@
 #include "alife_monster_brain.h"
 #include "alife_monster_movement_manager.h"
 
-using namespace luabind;
-
 CALifeMonsterMovementManager *get_movement(const CALifeMonsterBrain *brain)
 {
 	return (&brain->movement());
@@ -20,6 +18,8 @@ CALifeMonsterMovementManager *get_movement(const CALifeMonsterBrain *brain)
 #pragma optimize("s", on)
 void CALifeMonsterBrain::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CALifeMonsterBrain>("CALifeMonsterBrain")
 			 .def("movement", &get_movement)

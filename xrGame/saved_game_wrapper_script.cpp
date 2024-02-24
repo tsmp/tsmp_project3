@@ -12,8 +12,6 @@
 #include "game_graph.h"
 #include "xr_time.h"
 
-using namespace luabind;
-
 xrTime CSavedGameWrapper__game_time(const CSavedGameWrapper *self)
 {
 	return (xrTime(self->game_time()));
@@ -27,6 +25,8 @@ LPCSTR CSavedGameWrapper__level_name(const CSavedGameWrapper *self)
 #pragma optimize("s", on)
 void CSavedGameWrapper::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CSavedGameWrapper>("CSavedGameWrapper")
 			 .def(constructor<LPCSTR>())

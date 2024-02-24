@@ -3,8 +3,6 @@
 #include "xrServer_script_macroses.h"
 #include "../../xrNetwork/client_id.h"
 
-using namespace luabind;
-
 template <typename T>
 struct CWrapperBase : public T, public luabind::wrap_base
 {
@@ -19,6 +17,8 @@ struct CWrapperBase : public T, public luabind::wrap_base
 #pragma optimize("s", on)
 void game_PlayerState::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	typedef CWrapperBase<game_PlayerState> WrapType;
 	typedef game_PlayerState BaseType;
 
@@ -65,6 +65,7 @@ void game_PlayerState::script_register(lua_State *L)
 
 void game_GameState::script_register(lua_State *L)
 {
+	using namespace luabind;
 
 	module(L)
 		[luabind::class_<game_GameState, DLL_Pure>("game_GameState")

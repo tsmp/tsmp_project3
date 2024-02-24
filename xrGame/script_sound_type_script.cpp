@@ -10,11 +10,11 @@
 #include "script_sound_type.h"
 #include "ai_sounds.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptSoundType::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<enum_exporter<ESoundTypes>>("snd_type")
 			 .enum_("sound_types")

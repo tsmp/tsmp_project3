@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "script_fmatrix.h"
 
-using namespace luabind;
 void get_matrix_hpb(Fmatrix *self, float *h, float *p, float *b)
 {
 	self->getHPB(*h, *p, *b);
 }
+
 void matrix_transform(Fmatrix *self, Fvector *v)
 {
 	self->transform(*v);
@@ -22,6 +22,8 @@ void matrix_transform(Fmatrix *self, Fvector *v)
 #pragma optimize("s", on)
 void CScriptFmatrix::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<Fmatrix>("matrix")
 			 .def_readwrite("i", &Fmatrix::i)

@@ -22,8 +22,6 @@
 #include "ui\UIScrollView.h"
 #include "ui\UIProgressBar.h"
 
-using namespace luabind;
-
 void _attach_child(CUIWindow *_child, CUIWindow *_parent)
 {
 	if (!_parent)
@@ -34,6 +32,7 @@ void _attach_child(CUIWindow *_child, CUIWindow *_parent)
 	else
 		_parent->AttachChild(_child);
 }
+
 CScriptXmlInit::CScriptXmlInit()
 {
 }
@@ -308,6 +307,8 @@ CUIEditBox *CScriptXmlInit::InitCDkey(LPCSTR path, CUIWindow *parent)
 #pragma optimize("s", on)
 void CScriptXmlInit::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptXmlInit>("CScriptXmlInit")
 			 .def(constructor<>())

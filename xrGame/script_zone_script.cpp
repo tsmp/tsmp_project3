@@ -10,11 +10,11 @@
 #include "script_zone.h"
 #include "smart_zone.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptZone::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptZone, DLL_Pure>("ce_script_zone")
 			 .def(constructor<>())];
@@ -22,6 +22,8 @@ void CScriptZone::script_register(lua_State *L)
 
 void CSmartZone::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CSmartZone, DLL_Pure>("ce_smart_zone")
 			 .def(constructor<>())];

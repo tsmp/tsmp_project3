@@ -14,11 +14,11 @@
 #include "RustyHairArtifact.h"
 #include "GalantineArtifact.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CArtefact::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CMercuryBall, CGameObject>("CMercuryBall").def(constructor<>()),
 		 class_<CBlackDrops, CGameObject>("CBlackDrops").def(constructor<>()),

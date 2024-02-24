@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "alife_smart_terrain_task.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CALifeSmartTerrainTask::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CALifeSmartTerrainTask>("CALifeSmartTerrainTask")
 			 .def(constructor<LPCSTR>())

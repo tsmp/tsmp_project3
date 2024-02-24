@@ -8,8 +8,6 @@
 #include "script_engine.h"
 #include "game_sv_deathmatch.h"
 
-using namespace luabind;
-
 void game_sv_mp_script::SetHitParams(NET_Packet *P, float impulse, float power)
 {
 	u32 PowRPos = 16;
@@ -170,7 +168,8 @@ struct CWrapperBase : public T, public luabind::wrap_base
 
 	virtual game_PlayerState *createPlayerState()
 	{
-		return call_member<game_PlayerState *>(this, "createPlayerState")[adopt<result>()];
+		using namespace luabind;
+		return call_member<game_PlayerState*>(this, "createPlayerState")[adopt<result>()];
 	}
 	static game_PlayerState *createPlayerState_static(inherited *ptr)
 	{
@@ -193,6 +192,8 @@ game_sv_mp* GetSVGame()
 #pragma optimize("s", on)
 void game_sv_mp::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[def("get_svgame", &GetSVGame),
 		class_<game_sv_mp, game_sv_GameState>("game_sv_mp")
@@ -209,6 +210,8 @@ void game_sv_mp::script_register(lua_State *L)
 
 void game_sv_mp_script::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	typedef CWrapperBase<game_sv_mp_script> WrapType;
 	typedef game_sv_mp_script BaseType;
 

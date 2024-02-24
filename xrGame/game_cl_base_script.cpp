@@ -1,11 +1,11 @@
 #include "pch_script.h"
 #include "game_cl_base.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void SZoneMapEntityData::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[luabind::class_<SZoneMapEntityData>("SZoneMapEntityData")
 			 .def(constructor<>())
@@ -20,6 +20,8 @@ void SZoneMapEntityData::script_register(lua_State *L)
 
 void RPoint::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[luabind::class_<RPoint>("RPoint")
 			 .def(constructor<>())

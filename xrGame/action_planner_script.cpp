@@ -10,8 +10,6 @@
 #include "script_action_planner_wrapper.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
 void set_goal_world_state(CScriptActionPlanner *action_planner, CScriptActionPlanner::CState *world_state)
 {
 	action_planner->set_target_state(*world_state);
@@ -25,6 +23,8 @@ bool get_actual(const CScriptActionPlanner *action_planner)
 #pragma optimize("s", on)
 void CActionPlanner<CScriptGameObject>::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptActionPlanner, CScriptActionPlannerWrapper>("action_planner")
 			 .def_readonly("object", &CScriptActionPlanner::m_object)

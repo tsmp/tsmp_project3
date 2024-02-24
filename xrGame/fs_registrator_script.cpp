@@ -2,9 +2,8 @@
 #include "fs_registrator.h"
 #include "LocatorApi.h"
 
-using namespace luabind;
-
 LPCSTR get_file_age_str(CLocatorAPI *fs, LPCSTR nm);
+
 CLocatorAPI *getFS()
 {
 	return &FS;
@@ -182,6 +181,8 @@ LPCSTR get_file_age_str(CLocatorAPI *fs, LPCSTR nm)
 #pragma optimize("s", on)
 void fs_registrator::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<FS_item>("FS_item")
 			 .def("NameFull", &FS_item::NameFull)
@@ -200,13 +201,6 @@ void fs_registrator::script_register(lua_State *L)
 			 .def("GetAt", &FS_file_list::GetAt)
 			 .def("Free", &FS_file_list::Free),
 
-		 /*		class_<FS_Path>("FS_Path")
-			.def_readonly("m_Path",						&FS_Path::m_Path)
-			.def_readonly("m_Root",						&FS_Path::m_Root)
-			.def_readonly("m_Add",						&FS_Path::m_Add)
-			.def_readonly("m_DefExt",					&FS_Path::m_DefExt)
-			.def_readonly("m_FilterCaption",			&FS_Path::m_FilterCaption),
-*/
 		 class_<CLocatorAPI::file>("fs_file")
 			 .def_readonly("name", &CLocatorAPI::file::name)
 			 .def_readonly("vfs", &CLocatorAPI::file::vfs)

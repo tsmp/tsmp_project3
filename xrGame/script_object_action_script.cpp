@@ -10,11 +10,11 @@
 #include "script_object_action.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptObjectAction::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptObjectAction>("object")
 			 .enum_("state")

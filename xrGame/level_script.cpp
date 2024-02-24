@@ -30,8 +30,6 @@
 #include "phworld.h"
 #include "UIGameCustom.h"
 
-using namespace luabind;
-
 LPCSTR command_line()
 {
 	return (Core.Params);
@@ -304,6 +302,7 @@ void remove_call(const luabind::functor<bool> &condition, const luabind::functor
 
 void add_call(const luabind::object &lua_object, LPCSTR condition, LPCSTR action)
 {
+	using namespace luabind;
 	luabind::functor<bool> _condition = object_cast<luabind::functor<bool>>(lua_object[condition]);
 	luabind::functor<void> _action = object_cast<luabind::functor<void>>(lua_object[action]);
 	CPHScriptObjectConditionN *c = xr_new<CPHScriptObjectConditionN>(lua_object, _condition);
@@ -535,6 +534,8 @@ void g_change_community_goodwill(LPCSTR _community, int _entity_id, int val)
 #pragma optimize("s", on)
 void CLevel::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	class_<CEnvDescriptor>("CEnvDescriptor")
 		.def_readonly("fog_density", &CEnvDescriptor::fog_density)
 		.def_readonly("far_plane", &CEnvDescriptor::far_plane),

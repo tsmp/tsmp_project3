@@ -10,11 +10,11 @@
 #include "script_action_wrapper.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CActionBase<CScriptGameObject>::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptActionBase, CScriptActionWrapper>("action_base")
 			 .def_readonly("object", &CScriptActionBase::m_object)

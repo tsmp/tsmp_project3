@@ -2,11 +2,11 @@
 #include "UIEditBox.h"
 #include "UIEditBoxEx.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CUIEditBox::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CUICustomEdit, CUIWindow>("CUICustomEdit")
 			 .def("SetText", &CUICustomEdit::SetText)

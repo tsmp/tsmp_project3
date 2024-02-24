@@ -5,8 +5,6 @@
 #include "script_callback_ex.h"
 #include "game_object_space.h"
 
-using namespace luabind;
-
 CUsableScriptObject::CUsableScriptObject()
 {
 	m_bNonscriptUsable = true;
@@ -32,10 +30,12 @@ LPCSTR CUsableScriptObject::tip_text()
 {
 	return *m_sTipText;
 }
+
 void CUsableScriptObject::set_tip_text(LPCSTR new_text)
 {
 	m_sTipText = new_text;
 }
+
 void CUsableScriptObject::set_tip_text_default()
 {
 	m_sTipText = NULL;
@@ -45,6 +45,7 @@ bool CUsableScriptObject::nonscript_usable()
 {
 	return m_bNonscriptUsable;
 }
+
 void CUsableScriptObject::set_nonscript_usable(bool usable)
 {
 	m_bNonscriptUsable = usable;

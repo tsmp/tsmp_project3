@@ -4,8 +4,6 @@
 #include "clsid_game.h"
 #include "actor.h"
 
-using namespace luabind;
-
 ESingleGameDifficulty g_SingleGameDifficulty = egdMaster;
 
 xr_token difficulty_type_token[] = {
@@ -42,6 +40,8 @@ void game_cl_Single::OnDifficultyChanged()
 #pragma optimize("s", on)
 void CScriptGameDifficulty::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<enum_exporter<ESingleGameDifficulty>>("game_difficulty")
 			 .enum_("game_difficulty")

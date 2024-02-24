@@ -10,8 +10,6 @@
 #include "script_effector.h"
 #include "script_effector_wrapper.h"
 
-using namespace luabind;
-
 void SPPInfo_assign(SPPInfo *self, SPPInfo *obj)
 {
 	*self = *obj;
@@ -30,6 +28,8 @@ void remove_effector(CScriptEffector *self)
 #pragma optimize("s", on)
 void CScriptEffector::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<SPPInfo::SDuality>("duality")
 			 .def_readwrite("h", &SPPInfo::SDuality::h)

@@ -9,8 +9,6 @@
 #include "pch_script.h"
 #include "script_render_device.h"
 
-using namespace luabind;
-
 bool is_device_paused(CRenderDevice *d)
 {
 	return !!Device.Paused();
@@ -36,6 +34,8 @@ u32 time_global(const CRenderDevice *self)
 #pragma optimize("s", on)
 void CScriptRenderDevice::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CRenderDevice>("render_device")
 			 .def_readonly("width", &CRenderDevice::dwWidth)
@@ -46,9 +46,6 @@ void CScriptRenderDevice::script_register(lua_State *L)
 			 .def_readonly("cam_dir", &CRenderDevice::vCameraDirection)
 			 .def_readonly("cam_top", &CRenderDevice::vCameraTop)
 			 .def_readonly("cam_right", &CRenderDevice::vCameraRight)
-			 //			.def_readonly("view",					&CRenderDevice::mView)
-			 //			.def_readonly("projection",				&CRenderDevice::mProject)
-			 //			.def_readonly("full_transform",			&CRenderDevice::mFullTransform)
 			 .def_readonly("fov", &CRenderDevice::fFOV)
 			 .def_readonly("aspect_ratio", &CRenderDevice::fASPECT)
 			 .def("time_global", &time_global)

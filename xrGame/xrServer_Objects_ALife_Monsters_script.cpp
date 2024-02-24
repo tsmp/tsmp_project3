@@ -10,8 +10,6 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "xrServer_script_macroses.h"
 
-using namespace luabind;
-
 LPCSTR profile_name_script(CSE_ALifeTraderAbstract *ta)
 {
 	return *ta->character_profile();
@@ -20,8 +18,10 @@ LPCSTR profile_name_script(CSE_ALifeTraderAbstract *ta)
 #pragma optimize("s", on)
 void CSE_ALifeTraderAbstract::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[class_<CSE_ALifeTraderAbstract>("cse_alife_trader_abstract")
-//			.def(		constructor<LPCSTR>())
+
 #ifdef XRGAME_EXPORTS
 				  .def("community", &CommunityName)
 				  .def("profile_name", &profile_name_script)
@@ -33,6 +33,8 @@ void CSE_ALifeTraderAbstract::script_register(lua_State *L)
 
 void CSE_ALifeTrader::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_dynamic_alife2(
 		CSE_ALifeTrader,
 		"cse_alife_trader",
@@ -42,6 +44,8 @@ void CSE_ALifeTrader::script_register(lua_State *L)
 
 void CSE_ALifeCustomZone::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_dynamic_alife2(
 		CSE_ALifeCustomZone,
 		"cse_custom_zone",
@@ -51,6 +55,8 @@ void CSE_ALifeCustomZone::script_register(lua_State *L)
 
 void CSE_ALifeAnomalousZone::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_dynamic_alife1(
 				  CSE_ALifeAnomalousZone,
 				  "cse_anomalous_zone",

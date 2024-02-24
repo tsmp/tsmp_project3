@@ -14,10 +14,7 @@
 #include "UIFrameLineWnd.h"
 #include "UIProgressBar.h"
 #include "UITabControl.h"
-
 #include "uiscriptwnd_script.h"
-
-using namespace luabind;
 
 #pragma optimize("s", on)
 export_class script_register_ui_window2(export_class &&instance)

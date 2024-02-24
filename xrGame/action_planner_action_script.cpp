@@ -10,11 +10,11 @@
 #include "script_action_planner_action_wrapper.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CActionPlannerAction<CScriptGameObject>::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptActionPlannerAction, CScriptActionPlannerActionWrapper, bases<CScriptActionPlanner, CScriptActionBase>>("planner_action")
 			 .def(constructor<>())

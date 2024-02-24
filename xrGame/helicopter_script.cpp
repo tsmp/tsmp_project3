@@ -22,11 +22,11 @@ bool CHelicopter::KillerModeEnabled() { return KillerMode.Enabled(); }
 bool CHelicopter::KillerModeFinished() { return KillerMode.Finished(); }
 u16 CHelicopter::GetKillerEnemyId() { return KillerMode.GetEnemyId(); }
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CHelicopter::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CHelicopter, CGameObject>("CHelicopter")
 			 .def(constructor<>())

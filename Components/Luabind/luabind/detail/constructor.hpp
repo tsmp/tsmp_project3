@@ -80,9 +80,9 @@ namespace luabind { namespace detail
         template <typename... ConstructorArgs, size_t... Indices>
         static T* applyImpl(lua_State* L, weak_ref const& ref, std::index_sequence<Indices...>)
         {
-            W* result = luabind::luabind_new<W>(applyArg<ConstructorArgs, Indices>(L)...);
-            static_cast<weak_ref&>(wrap_access::ref(*result)) = ref;
-            return result;
+            W* res = luabind::luabind_new<W>(applyArg<ConstructorArgs, Indices>(L)...);
+            static_cast<weak_ref&>(wrap_access::ref(*res)) = ref;
+            return res;
         }
 
     public:

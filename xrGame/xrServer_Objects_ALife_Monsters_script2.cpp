@@ -10,11 +10,11 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "xrServer_script_macroses.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CSE_ALifeCreatureCrow::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_creature1(
 		CSE_ALifeCreatureCrow,
 		"cse_alife_creature_crow",
@@ -23,6 +23,8 @@ void CSE_ALifeCreatureCrow::script_register(lua_State *L)
 
 void CSE_ALifeMonsterZombie::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_monster1(
 		CSE_ALifeMonsterZombie,
 		"cse_alife_monster_zombie",
@@ -31,6 +33,8 @@ void CSE_ALifeMonsterZombie::script_register(lua_State *L)
 
 void CSE_ALifeMonsterBase::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_monster2(
 		CSE_ALifeMonsterBase,
 		"cse_alife_monster_base",
@@ -40,6 +44,8 @@ void CSE_ALifeMonsterBase::script_register(lua_State *L)
 
 void CSE_ALifeHumanStalker::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_monster2(
 		CSE_ALifeHumanStalker,
 		"cse_alife_human_stalker",

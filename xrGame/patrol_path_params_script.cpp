@@ -9,8 +9,6 @@
 #include "pch_script.h"
 #include "patrol_path_params.h"
 
-using namespace luabind;
-
 Fvector CPatrolPathParams__point(const CPatrolPathParams *self, u32 index)
 {
 	THROW(self);
@@ -20,6 +18,8 @@ Fvector CPatrolPathParams__point(const CPatrolPathParams *self, u32 index)
 #pragma optimize("s", on)
 void CPatrolPathParams::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CPatrolPathParams>("patrol")
 			 .enum_("start")

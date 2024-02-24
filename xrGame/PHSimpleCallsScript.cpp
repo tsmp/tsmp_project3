@@ -2,11 +2,11 @@
 #include "PHSimpleCalls.h"
 #include "PhysicsShell.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CPHCallOnStepCondition::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CPHCallOnStepCondition>("phcondition_callonstep")
 			 .def("set_step", &CPHCallOnStepCondition::set_step)
@@ -20,6 +20,8 @@ void CPHCallOnStepCondition::script_register(lua_State *L)
 
 void CPHExpireOnStepCondition::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CPHExpireOnStepCondition, CPHCallOnStepCondition>("phcondition_expireonstep")
 			 .def(constructor<>())];
@@ -27,10 +29,9 @@ void CPHExpireOnStepCondition::script_register(lua_State *L)
 
 void CPHConstForceAction::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CPHConstForceAction>("phaction_constforce")
 			 .def(constructor<CPhysicsShell *, const Fvector &>())];
 }
-//(CPhysicsJoint*(CPhysicsShell::*)(u16))(&CPhysicsShell::get_Joint))
-//.def("set_gravity",					&CPHWorld::SetGravity),
-//.def("add_call",					&CPHWorld::AddCall)

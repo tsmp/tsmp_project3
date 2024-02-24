@@ -12,8 +12,6 @@
 #include "xrServer_script_macroses.h"
 #include "script_ini_file.h"
 
-using namespace luabind;
-
 LPCSTR get_section_name(const CSE_Abstract *abstract)
 {
 	return (abstract->name());
@@ -81,17 +79,20 @@ struct CWrapperBase : public T, public luabind::wrap_base
 #pragma optimize("s", on)
 void CPureServerObject::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[class_<IPureLîadableObject<IReader>>("ipure_alife_load_object"),
 			  class_<IPureSavableObject<IWriter>>("ipure_alife_save_object"),
 			  class_<IPureSerializeObject<IReader, IWriter>, bases<IPureLîadableObject<IReader>, IPureSavableObject<IWriter>>>("ipure_alife_load_save_object"),
 			  class_<IPureServerObject, IPureSerializeObject<IReader, IWriter>>("ipure_server_object"),
 			  class_<CPureServerObject, IPureServerObject>("cpure_server_object")
-			  //			.def(		constructor<>())
 	];
 }
 
 void CSE_Abstract::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	typedef CWrapperBase<CSE_Abstract> WrapType;
 	typedef CSE_Abstract BaseType;
 	module(L)[class_<CSE_Abstract, WrapType, CPureServerObject>("cse_abstract")
@@ -107,35 +108,37 @@ void CSE_Abstract::script_register(lua_State *L)
 				  .def("STATE_Write", &BaseType::STATE_Write, &WrapType::STATE_Write_static)
 				  .def("UPDATE_Read", &BaseType::UPDATE_Read, &WrapType::UPDATE_Read_static)
 				  .def("UPDATE_Write", &BaseType::UPDATE_Write, &WrapType::UPDATE_Write_static)
-			  //			.def(		constructor<LPCSTR>())
 	];
 }
 
 void CSE_Shape::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[class_<CSE_Shape>("cse_shape")
-			  //			.def(		constructor<>())
 	];
 }
 
 void CSE_Visual::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[class_<CSE_Visual>("cse_visual")
-			  //			.def(		constructor<>())
-			  //			.def(		constructor<LPCSTR>())
 	];
 }
 
 void CSE_Motion::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[class_<CSE_Motion>("cse_motion")
-			  //			.def(		constructor<>())
-			  //			.def(		constructor<LPCSTR>())
 	];
 }
 
 void CSE_Spectator::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_abstract1(
 		CSE_Spectator,
 		"cse_spectator",
@@ -144,6 +147,8 @@ void CSE_Spectator::script_register(lua_State *L)
 
 void CSE_Temporary::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[luabind_class_abstract1(
 		CSE_Temporary,
 		"cse_temporary",

@@ -11,8 +11,6 @@
 #include "alife_monster_detail_path_manager.h"
 #include "alife_monster_patrol_path_manager.h"
 
-using namespace luabind;
-
 CALifeMonsterDetailPathManager *get_detail(const CALifeMonsterMovementManager *self)
 {
 	return (&self->detail());
@@ -26,6 +24,8 @@ CALifeMonsterPatrolPathManager *get_patrol(const CALifeMonsterMovementManager *s
 #pragma optimize("s", on)
 void CALifeMonsterMovementManager::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CALifeMonsterMovementManager>("CALifeMonsterMovementManager")
 			 .def("detail", &get_detail)

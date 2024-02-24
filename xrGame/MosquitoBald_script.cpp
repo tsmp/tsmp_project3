@@ -1,11 +1,11 @@
 #include "pch_script.h"
 #include "MosquitoBald.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CMosquitoBald::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CMosquitoBald, CGameObject>("CMosquitoBald")
 			 .def(constructor<>())];

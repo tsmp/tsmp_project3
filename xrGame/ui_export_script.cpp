@@ -4,13 +4,13 @@
 #include "UI\UIMultiTextStatic.h"
 #include "MainMenu.h"
 
-using namespace luabind;
-
 CMainMenu *MainMenu();
 
 #pragma optimize("s", on)
 void UIRegistrator::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[
 

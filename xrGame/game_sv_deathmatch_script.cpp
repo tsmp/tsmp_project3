@@ -3,8 +3,6 @@
 #include "xrServer_script_macroses.h"
 #include "xrserver.h"
 
-using namespace luabind;
-
 template <typename T>
 struct CWrapperBase : public T, public luabind::wrap_base
 {
@@ -16,6 +14,8 @@ struct CWrapperBase : public T, public luabind::wrap_base
 #pragma optimize("s", on)
 void game_sv_Deathmatch::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	typedef CWrapperBase<game_sv_Deathmatch> WrapType;
 	module(L)
 		[luabind::class_<game_sv_Deathmatch, WrapType, game_sv_GameState>("game_sv_Deathmatch")

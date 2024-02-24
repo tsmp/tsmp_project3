@@ -10,9 +10,6 @@
 #include "script_engine.h"
 #include "ai_space.h"
 #include "script_debugger.h"
-//#include <ostream>
-
-using namespace luabind;
 
 void LuaLog(LPCSTR caMessage)
 {
@@ -183,12 +180,6 @@ IC profile_timer_script operator+(const profile_timer_script &portion0, const pr
 	return (result);
 }
 
-//IC	std::ostream& operator<<(std::ostream &stream, profile_timer_script &timer)
-//{
-//	stream					<< timer.time();
-//	return					(stream);
-//}
-
 #ifdef XRGAME_EXPORTS
 ICF u32 script_time_global()
 {
@@ -204,6 +195,8 @@ ICF u32 script_time_global()
 #pragma optimize("s", on)
 void CScriptEngine::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)[class_<profile_timer_script>("profile_timer")
 				  .def(constructor<>())
 				  .def(constructor<profile_timer_script &>())

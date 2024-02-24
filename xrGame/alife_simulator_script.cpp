@@ -20,8 +20,6 @@
 #include "xrServer.h"
 #include "level.h"
 
-using namespace luabind;
-
 typedef xr_vector<std::pair<shared_str, int>> STORY_PAIRS;
 typedef STORY_PAIRS SPAWN_STORY_PAIRS;
 LPCSTR _INVALID_STORY_ID = "INVALID_STORY_ID";
@@ -336,6 +334,8 @@ bool dont_has_info(const CALifeSimulator *self, const ALife::_OBJECT_ID &id, LPC
 #pragma optimize("s", on)
 void CALifeSimulator::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CALifeSimulator>("alife_simulator")
 			 .def("valid_object_id", &valid_object_id)

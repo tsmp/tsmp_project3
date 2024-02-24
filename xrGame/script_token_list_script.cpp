@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "script_token_list.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptTokenList::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<xr_token>("token")
 			 .def(constructor<>())

@@ -10,11 +10,11 @@
 #include "pch_script.h"
 #include "UIComboBox.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CUIComboBox::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CUIComboBox, CUIWindow>("CUIComboBox")
 			 .def(constructor<>())
@@ -24,8 +24,5 @@ void CUIComboBox::script_register(lua_State *L)
 			 .def("SetListLength", &CUIComboBox::SetListLength)
 			 .def("CurrentID", &CUIComboBox::CurrentID)
 			 .def("SetCurrentID", &CUIComboBox::SetItem)
-
-		 //		.def("AddItem",				(void (CUIComboBox::*)(LPCSTR, bool)) CUIComboBox::AddItem)
-		 //		.def("AddItem",				(void (CUIComboBox::*)(LPCSTR)) CUIComboBox::AddItem)
 	];
 }

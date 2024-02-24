@@ -15,11 +15,11 @@
 #include "patrol_path_params.h"
 #include "patrol_path.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptMovementAction::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptMovementAction>("move")
 			 .enum_("body")

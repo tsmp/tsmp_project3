@@ -21,10 +21,12 @@
 ALife::_STORY_ID story_id(LPCSTR story_id);
 u16 storyId2GameId(ALife::_STORY_ID);
 
-using namespace luabind;
+// using namespace luabind;
 
 ALife::_STORY_ID story_id(LPCSTR story_id)
 {
+	using namespace luabind;
+
 	int res =
 		(object_cast<int>(
 			luabind::object(

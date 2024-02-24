@@ -13,11 +13,11 @@
 #include "xrServer_Objects_ALife.h"
 #include "../../xrNetwork/net_utils.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptBinderObject::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptBinderObject, CScriptBinderObjectWrapper>("object_binder")
 			 .def_readonly("object", &CScriptBinderObject::m_object)

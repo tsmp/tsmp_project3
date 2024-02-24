@@ -4,8 +4,6 @@
 #include "hudmanager.h"
 #include "ui/uistatic.h"
 
-using namespace luabind;
-
 CUIGameCustom *get_hud()
 {
 	return HUD().GetUI()->UIGame();
@@ -14,6 +12,8 @@ CUIGameCustom *get_hud()
 #pragma optimize("s", on)
 void CUIGameCustom::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<SDrawStaticStruct>("SDrawStaticStruct")
 			 .def_readwrite("m_endTime", &SDrawStaticStruct::m_endTime)

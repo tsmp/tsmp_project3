@@ -50,6 +50,7 @@ public:
 
 	virtual DLL_Pure *_construct()
 	{
+		using namespace luabind;
 		return (call_member<DLL_Pure *>(this, "_construct"));
 	}
 

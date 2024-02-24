@@ -11,11 +11,11 @@
 #include "script_game_object.h"
 #include "sight_manager_space.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptWatchAction::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptWatchAction>("look")
 			 .enum_("look")

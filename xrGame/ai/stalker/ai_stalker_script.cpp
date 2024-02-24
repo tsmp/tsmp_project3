@@ -13,11 +13,11 @@
 #include "../../script_game_object.h"
 #include "../../stalker_planner.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CAI_Stalker::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CStalkerPlanner>("stalker_ids")
 			 .enum_("properties")

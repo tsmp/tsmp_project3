@@ -9,8 +9,6 @@
 #include "pch_script.h"
 #include "script_ini_file.h"
 
-using namespace luabind;
-
 CScriptIniFile *get_system_ini()
 {
 	return ((CScriptIniFile *)pSettings);
@@ -59,6 +57,8 @@ CScriptIniFile *create_ini_file(LPCSTR ini_string)
 #pragma optimize("s", on)
 void CScriptIniFile::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptIniFile>("ini_file")
 			 .def(constructor<LPCSTR>())

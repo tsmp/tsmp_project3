@@ -64,8 +64,6 @@ void CObjectFactory::register_script_classes()
 	ai();
 }
 
-using namespace luabind;
-
 struct CInternal
 {
 };
@@ -87,6 +85,8 @@ void CObjectFactory::register_script() const
 #pragma optimize("s", on)
 void CObjectFactory::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CObjectFactory>("object_factory")
 			 .def("register", (void (CObjectFactory::*)(LPCSTR, LPCSTR, LPCSTR, LPCSTR))(&CObjectFactory::register_script_class))

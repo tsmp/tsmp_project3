@@ -2,11 +2,11 @@
 #include "script_sound_info.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptSoundInfo::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptSoundInfo>("SoundInfo")
 			 .def_readwrite("who", &CScriptSoundInfo::who)

@@ -1,11 +1,11 @@
 #include "pch_script.h"
 #include "GameTask.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CGameTask::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<enum_exporter<ETaskState>>("task")
 			 .enum_("task_state")

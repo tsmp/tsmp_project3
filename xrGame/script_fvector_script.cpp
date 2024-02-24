@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "script_fvector.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptFvector::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<Fvector>("vector")
 			 .def_readwrite("x", &Fvector::x)

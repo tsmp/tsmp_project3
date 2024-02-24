@@ -10,11 +10,11 @@
 #include "script_monster_action.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CScriptMonsterAction::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CScriptMonsterAction>("act")
 			 .enum_("type")

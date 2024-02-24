@@ -9,11 +9,11 @@
 #include "pch_script.h"
 #include "particle_params.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CParticleParams::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CParticleParams>("particle_params")
 			 .def(constructor<>())

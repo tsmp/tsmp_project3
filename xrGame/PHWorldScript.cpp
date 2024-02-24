@@ -3,11 +3,11 @@
 #include "PHWorld.h"
 #include "PHCommander.h"
 
-using namespace luabind;
-
 #pragma optimize("s", on)
 void CPHWorld::script_register(lua_State *L)
 {
+	using namespace luabind;
+
 	module(L)
 		[class_<CPHWorld>("physics_world")
 			 .def("set_gravity", &CPHWorld::SetGravity)
