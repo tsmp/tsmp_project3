@@ -33,10 +33,9 @@ protected:
 	u16 size;
 
 public:
-	class iterator;
-	typedef class iterator
-	{
 
+	class iterator
+	{
 		T *my_ptr;
 
 	public:
@@ -46,6 +45,7 @@ public:
 		T *operator*() { return my_ptr; }
 		bool operator!=(iterator right) { return my_ptr != right.my_ptr; }
 	};
+
 	CPHItemList() { empty(); }
 	u16 count() { return size; }
 	void push_back(T *item)

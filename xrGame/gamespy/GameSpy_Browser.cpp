@@ -346,6 +346,20 @@ void CGameSpy_Browser::GetServerInfoByIndex(ServerInfo *pServerInfo, int idx)
 		}                                                                                               \
 	}
 
+#define ADD_INT_INFO_F(i, s, m, t1, t2, k)                                                              \
+	{                                                                                                   \
+		if (xrGS_SBServerGetIntValue(s, m_pQR2->xrGS_RegisteredKey(k), 0))                              \
+		{                                                                                               \
+			string256 tmp;                                                                              \
+			sprintf_s(tmp, "%f" t2, xrGS_SBServerGetIntValue(s, m_pQR2->xrGS_RegisteredKey(k), 0) * m); \
+			i->m_aInfos.push_back(GameInfo(t1, tmp));                                                   \
+		}                                                                                               \
+		else                                                                                            \
+		{                                                                                               \
+			i->m_aInfos.push_back(GameInfo(t1, *st.translate("mp_si_no")));                             \
+		}                                                                                               \
+	}
+
 #define ADD_TIME_INFO(i, s, m, t1, t2, t3, k)                                                            \
 	{                                                                                                    \
 		if (xrGS_SBServerGetIntValue(s, m_pQR2->xrGS_RegisteredKey(k), 0))                               \
@@ -458,7 +472,7 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo *pServerInfo, void *pServer)
 		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_friendly_indicators"), G_FRIENDLY_INDICATORS_KEY);
 		ADD_BOOL_INFO(pServerInfo, pServer, *st.translate("mp_si_friendly_names"), G_FRIENDLY_NAMES_KEY);
 
-		ADD_INT_INFO_N(pServerInfo, pServer, 1 / 100.0f, *st.translate("mp_si_friendly_fire"), " %%", G_FRIENDLY_FIRE_KEY);
+		ADD_INT_INFO_F(pServerInfo, pServer, 1 / 100.0f, *st.translate("mp_si_friendly_fire"), " %%", G_FRIENDLY_FIRE_KEY);
 	};
 
 	if (pServerInfo->m_GameType == GAME_ARTEFACTHUNT)

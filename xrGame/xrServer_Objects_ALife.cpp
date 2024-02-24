@@ -1497,7 +1497,7 @@ void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
 	P.w_float(m_health);
 	P.w_u16(owner);
 
-	u16 cnt = StateVec.size();
+	u16 cnt = xr_narrow_cast<u16>(StateVec.size());
 	P.w_u16(cnt);
 
 	for (int i = 0; i < cnt; i++)

@@ -192,7 +192,7 @@ void CLevel::Load_GameSpecific_CFORM(CDB::TRI *tris, u32 count)
 	{
 		CDB::TRI& it = *I;
 		auto i = std::lower_bound(translator.begin(), translator.end(), static_cast<u16>(it.material));
-		R_ASSERT(i != translator.end() && (*i).m_id == it.material, make_string("Game material '%d' not found", it.material).c_str());
+		R_ASSERT2(i != translator.end() && (*i).m_id == it.material, make_string("Game material '%d' not found", it.material).c_str());
 
 		it.material = (*i).m_index;
 		SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);

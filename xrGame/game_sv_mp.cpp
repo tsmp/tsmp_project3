@@ -1127,7 +1127,7 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID const &sender)
 		return;
 	}
 
-	int nameLength = strlen(NewName);
+	int nameLength = xr_strlen(NewName);
 
 	for (int i = 0; i < nameLength; i++)
 	{

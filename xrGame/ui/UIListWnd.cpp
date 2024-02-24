@@ -220,14 +220,14 @@ void CUIListWnd::UpdateList()
 	//спрятать все элементы до участка
 	//отображающейся в данный момент
 	int i;
-	for (i = 0; i < _min(m_ItemList.size(), m_iFirstShownIndex); ++i, ++it)
+	for (i = 0; i < _min(static_cast<int>(m_ItemList.size()), m_iFirstShownIndex); ++i, ++it)
 	{
 		(*it)->Show(false);
 	}
 
 	//показать текущий список
 	for (i = m_iFirstShownIndex;
-		 i < _min(m_ItemList.size(), m_iFirstShownIndex + m_iRowNum + 1);
+		 i < _min(static_cast<int>(m_ItemList.size()), m_iFirstShownIndex + m_iRowNum + 1);
 		 ++i, ++it)
 	{
 		(*it)->SetWndRect((*it)->GetWndRect().left, m_bVertFlip ? GetHeight() - (i - m_iFirstShownIndex) * m_iItemHeight - m_iItemHeight : (i - m_iFirstShownIndex) * m_iItemHeight,

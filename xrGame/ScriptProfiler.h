@@ -1,7 +1,7 @@
 #pragma once
 
 class CScriptEngine;
-class lua_State;
+struct lua_State;
 
 // sampling interval
 extern int script_profile_interval_ms;

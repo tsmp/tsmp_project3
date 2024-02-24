@@ -70,7 +70,7 @@ IClient *xrServer::new_client(SClientConnectData *cl_data)
 	new_name[63] = '\0';
 	Msg("- Connecting player - %s", new_name);
 
-	int nameLength = strlen(new_name);
+	int nameLength = xr_strlen(new_name);
 	
 	for (int i = 0; i < nameLength; i++)
 	{

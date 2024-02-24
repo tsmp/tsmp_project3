@@ -155,7 +155,7 @@ public:
 	void Process_save(NET_Packet &P, ClientID const &sender);
 	void Process_event(NET_Packet &P, ClientID const &sender);
 	void Process_event_ownership(NET_Packet &P, ClientID const &sender, u32 time, u16 ID, BOOL bForced = FALSE);
-	bool Process_event_reject(NET_Packet &P, const ClientID const &sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message = true);
+	bool Process_event_reject(NET_Packet &P, ClientID const &sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message = true);
 	void Process_event_destroy(NET_Packet &P, ClientID const &sender, u32 time, u16 ID, NET_Packet *pEPack);
 
 	void SendConnectResult(IClient *CL, u8 res, u8 res1, char *ResultStr);

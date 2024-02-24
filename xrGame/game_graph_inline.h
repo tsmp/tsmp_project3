@@ -12,7 +12,7 @@ IC CGameGraph::CGameGraph(LPCSTR spawnName)
 {
 	string_path file_name;
 
-	if (!strcmp("all", spawnName))	
+	if (!xr_strcmp("all", spawnName))
 		FS.update_path(file_name, "$game_data$", GRAPH_NAME);	
 	else
 	{

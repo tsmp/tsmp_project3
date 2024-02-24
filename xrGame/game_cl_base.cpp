@@ -26,7 +26,7 @@ struct Color
 	{
 		string32 ch;
 		sprintf(ch, "11[%u,%u,%u,%u]", a, r, g, b);
-		ch[0] = '%%';
+		ch[0] = '%';
 		ch[1] = 'c';
 
 		strcpy(str, ch);

@@ -112,8 +112,7 @@ xrClientData *game_sv_GameState::get_client(u16 id) //if exist
 		if (!ps)
 			return false;
 
-		if (ps->HasOldID(id))
-			return true;
+		return ps->HasOldID(id);
 	});
 
 	if (!cl)
@@ -913,13 +912,14 @@ bool game_sv_GameState::NewPlayerName_Exists(void *pClient, LPCSTR NewName)
 
 	auto cl = m_server->FindClient([&](IClient* client)
 	{
-		IClient* pIC = dynamic_cast<xrClientData*>(client);
+		IClient* pIC = static_cast<xrClientData*>(client);
+
 		if (!pIC || pIC == CL)
 			return false;
+
 		string64 xName;
 		strcpy(xName, pIC->name.c_str());
-		if (!xr_strcmp(NewName, xName))
-			return true;
+		return !xr_strcmp(NewName, xName);
 	});
 
 	return !!cl;

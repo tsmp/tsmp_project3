@@ -706,7 +706,7 @@ void CCar::net_Export(NET_Packet &P)
 	else
 	{
 		auto& vec = m_CarNetUpdates.back().StateVec;
-		P.w_u16(vec.size());
+		P.w_u16(xr_narrow_cast<u16>(vec.size()));
 
 		for (int i = 0; i < vec.size(); i++)
 		{
@@ -739,8 +739,7 @@ void CCar::net_Import(NET_Packet &P)
 	u8 light;
 	P.r_u8(light);
 
-	u8 lookout;
-	P.r_u8(lookout);
+	bool lookout = !!P.r_u8();
 
 	float driverHeading;
 	P.r_float(driverHeading);

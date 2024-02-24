@@ -3,7 +3,7 @@
 #include "xrserver_objects.h"
 #include "..\..\TSMP3_Build_Config.h"
 
-bool xrServer::Process_event_reject(NET_Packet &P, const ClientID const &sender, const u32 time, const u16 id_parent,
+bool xrServer::Process_event_reject(NET_Packet &P, ClientID const &sender, const u32 time, const u16 id_parent,
                                     const u16 id_entity, bool send_message)
 {
     // Parse message

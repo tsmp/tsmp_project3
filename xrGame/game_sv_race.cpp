@@ -381,7 +381,7 @@ CSE_Abstract* game_sv_Race::SpawnCar(u16 rpoint)
 	CSE_Visual* pV = smart_cast<CSE_Visual*>(E);
 	const auto& carVisuals = m_AvailableCars[m_CurrentRoundCar];
 	R_ASSERT2(!carVisuals.empty(), "There are no visuals for cars");
-	pV->set_visual(carVisuals[m_CarVisualRandom.randI(carVisuals.size())].c_str());
+	pV->set_visual(carVisuals[m_CarVisualRandom.randI(static_cast<u32>(carVisuals.size()))].c_str());
 
 	CSE_Abstract* spawned = spawn_end(E, m_server->GetServerClient()->ID);
 	signal_Syncronize();

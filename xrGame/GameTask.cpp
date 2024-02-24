@@ -499,7 +499,10 @@ std::string GetActionDescr(const char* type)
 		return "general_complete_task";
 
 	if (typee == "fail")
-		return "general_fail_task";	
+		return "general_fail_task";
+
+	R_ASSERT(false);
+	return "general_fail_task";
 }
 
 std::string action_descr_by_type[]

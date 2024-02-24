@@ -3,6 +3,7 @@
 #include "PHInterpolation.h"
 #include "PHSynchronize.h"
 #include "PHDisabling.h"
+
 class CPhysicsShellHolder;
 class CClimableObject;
 class CGameObject;
@@ -10,7 +11,9 @@ class ICollisionDamageInfo;
 class CElevatorState;
 class CPHActorCharacter;
 class CPHAICharacter;
-static enum EEnvironment {
+
+enum EEnvironment
+{
 	peOnGround,
 	peAtWall,
 	peInAir

@@ -253,7 +253,7 @@ void CUICharacterInfo::InitCharacterPlayerMP(CInventoryOwner* player)
 				sprintf_s(str, "%s", *CStringTable().translate("st_rank_legend"));
 				break;
 			default:
-				R_ASSERT(0, "Unknown rank!!");
+				R_ASSERT2(false, "Unknown rank!!");
 				break;
 			}
 		}
@@ -287,7 +287,7 @@ void CUICharacterInfo::InitCharacterPlayerMP(CInventoryOwner* player)
 			sprintf_s(str, "%s", *CStringTable().translate("ui_st_team2_name"));
 			break;
 		default:
-			R_ASSERT(0, "Unknown community!!");
+			R_ASSERT2(false, "Unknown community!!");
 			break;
 		}
 				

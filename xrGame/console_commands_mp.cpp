@@ -111,7 +111,7 @@ static xrClientData* GetCommandInitiator(LPCSTR commandLine)
 	if (!clientidstr)
 		return nullptr;
 
-	clientidstr += strlen(RadminIdPrefix);
+	clientidstr += xr_strlen(RadminIdPrefix);
 	u32 client_id = static_cast<u32>(strtoul(clientidstr, NULL, 10));
 
 	ClientID tmp_id;
@@ -119,6 +119,8 @@ static xrClientData* GetCommandInitiator(LPCSTR commandLine)
 
 	if (g_pGameLevel && Level().Server)
 		return Level().Server->ID_to_client(tmp_id);
+
+	return nullptr;
 }
 
 ENGINE_API const char* RadminIdPrefix;
