@@ -43,11 +43,11 @@ void CDbgLuaHelper::PrepareLuaBind()
 #endif
 }
 
-int CDbgLuaHelper::OutputTop(lua_State *L)
+int CDbgLuaHelper::OutputTop(lua_State *state)
 {
 	if (!m_pThis)
 		return 0;
-	m_pThis->debugger()->Write(luaL_checkstring(L, -1));
+	m_pThis->debugger()->Write(luaL_checkstring(state, -1));
 	m_pThis->debugger()->Write("\n");
 	return 0;
 }

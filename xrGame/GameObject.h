@@ -97,7 +97,7 @@ public:
 	shared_str m_ini_str;
 
 	// Utilities
-	static void u_EventGen(NET_Packet &P, u32 type, u32 dest);
+	static void u_EventGen(NET_Packet &P, u16 type, u32 dest);
 	static void u_EventSend(NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED);
 
 	// Methods

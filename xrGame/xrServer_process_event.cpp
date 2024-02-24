@@ -410,7 +410,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		Msg("! Player [%s] is spawning [%s]", receiver->name_replace(), name_sect.c_str());
 				
 		if (auto svGame = Level().Server->game)
-			svGame->SpawnObject(name_sect.c_str(), pos, shared_str(nullptr));
+			svGame->SpawnObject(name_sect.c_str(), pos);
 	}
 	break;
 
@@ -424,7 +424,7 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 		const Fvector3 pos = { 0,0,0 };
 
 		if (auto svGame = Level().Server->game)
-			svGame->SpawnObject(nameSect.c_str(), pos, shared_str(nullptr), destination);
+			svGame->SpawnObject(nameSect.c_str(), pos, nullptr, destination);
 	}
 	break;
 

@@ -198,10 +198,10 @@ void CGameTaskManager::UpdateTasks()
 	SGameTaskKey *tasks = (SGameTaskKey *)_alloca(task_count * sizeof(SGameTaskKey));
 	SGameTaskKey *I = tasks;
 	SGameTaskKey *E = tasks + task_count;
-	GameTasks_it i = GameTasks().begin();
+	GameTasks_it it = GameTasks().begin();
 
-	for (; I != E; ++I, ++i)
-		new (I) SGameTaskKey(*i);
+	for (; I != E; ++I, ++it)
+		new (I) SGameTaskKey(*it);
 
 	for (I = tasks; I != E; ++I)
 	{
@@ -221,7 +221,7 @@ void CGameTaskManager::UpdateTasks()
 		}
 	}
 
-	for (; I != E; ++I, ++i)
+	for (; I != E; ++I, ++it)
 		I->~SGameTaskKey();
 
 	SGameTaskObjective *obj = ActiveObjective();
@@ -275,8 +275,8 @@ void CGameTaskManager::UpdateActiveTask()
 	if (!bHasSpotPointer)
 	{
 		bool bDone = false;
-		GameTasks::iterator it = GameTasks().begin();
-		GameTasks::iterator it_e = GameTasks().end();
+		it = GameTasks().begin();
+		it_e = GameTasks().end();
 
 		for (; (it != it_e) && (!bDone); ++it)
 		{

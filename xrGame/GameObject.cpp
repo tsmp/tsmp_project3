@@ -685,7 +685,7 @@ CObject::SavedPosition CGameObject::ps_Element(u32 ID) const
 	return SP;
 }
 
-void CGameObject::u_EventGen(NET_Packet &P, u32 type, u32 dest)
+void CGameObject::u_EventGen(NET_Packet &P, u16 type, u32 dest)
 {
 	game_GameState::u_EventGen(P, type, u16(dest & 0xffff));
 }

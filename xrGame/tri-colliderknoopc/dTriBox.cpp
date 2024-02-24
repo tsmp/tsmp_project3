@@ -358,47 +358,11 @@ int dcTriListCollider::dTriBox(
 #undef CMP
 #undef TEST
 
-	unsigned int i;
-
 	dVector3 axis, outAx;
-
-	/*
-#define TEST(ax,ox,c) \
-for(i=0;i<3;++i){\
-	dCROSS114(axis,=,triSideAx##ax,R+i);\
-	accurate_normalize(axis);\
-	int ix1=(i+1)%3;\
-	int ix2=(i+2)%3;\
-	sidePr=\
-		dFabs(dDOT14(axis,R+ix1)*hside[ix1])+\
-		dFabs(dDOT14(axis,R+ix2)*hside[ix2]);\
-\
-	dist##ax=(dDOT(v##ax,axis)-dDOT(p,axis));\
-	dist##ox=(dDOT(v##ox,axis)-dDOT(p,axis));\
-			signum=dist##ox<0.f ? -1.f : 1.f;\
-\
-depth##ax=sidePr-signum*dist##ax;\
-depth##ox=sidePr-signum*dist##ox;\
-	if(depth##ax<depth##ox){\
-			if(depth##ax>0.f){\
-			if(depth##ax<outDepth){ \
-				if(dDOT(axis,triAx)*signum<0.f)	{\
-						outDepth=depth##ax;\
-						outAx[0]=axis[0];\
-						outAx[1]=axis[1];\
-						outAx[2]=axis[2];\
-						code=c+i;\
-					}\
-			}\
-				}\
-			else return 0;\
-	}\
-}
-*/
 	dVector3 pos;
 
 #define TEST(ax, ox, c)                                                                                                \
-	for (i = 0; i < 3; ++i)                                                                                            \
+	for (u32 i = 0; i < 3; ++i)                                                                                            \
 	{                                                                                                                  \
 		dCROSS114(axis, =, triSideAx##ax, R + i);                                                                      \
 		accurate_normalize(axis);                                                                                      \
@@ -579,33 +543,7 @@ depth##ox=sidePr-signum*dist##ox;\
 				BAR(1, 2, prc->pos, prc->depth);
 			}
 		}
-		/*
 
-  if (B1 < B2) {
-    if (B3 < B1) goto use_side_3; else {
-      BAR(0,1,pos);	// use side 1
-      if (maxc == 2) goto done;
-      if (B2 < B3) goto contact2_2; else goto contact2_3;
-    }
-  }
-  else {
-    if (B3 < B2) {
-      use_side_3:	// use side 3
-      BAR(2,3,pos);
-      if (maxc == 2) goto done;
-      if (B1 < B2) goto contact2_1; else goto contact2_2;
-    }
-    else {
-      BAR(1,2,pos);	// use side 2
-      if (maxc == 2) goto done;
-      if (B1 < B3) goto contact2_1; else goto contact2_3;
-    }
-  }
-
-  contact2_1: BAR(0,1,pos); goto done;
-  contact2_2: BAR(1,2,pos); goto done;
-  contact2_3: BAR(2,3,pos); goto done;
-*/
 #undef FOO
 #undef FOO1
 #undef BAR
@@ -665,66 +603,6 @@ depth##ox=sidePr-signum*dist##ox;\
 		norm[0] = outAx[0] * signum;
 		norm[1] = outAx[1] * signum;
 		norm[2] = outAx[2] * signum;
-
-		//pos[0]=crpos[0];
-		//pos[1]=crpos[1];
-		//pos[2]=crpos[2];
-
-		/////////////
-		/*
-  dReal Q1 = -signum*dDOT14(outAx,R+0);
-  dReal Q2 = -signum*dDOT14(outAx,R+1);
-  dReal Q3 = -signum*dDOT14(outAx,R+2);
-  dReal A1 = 2.f*hside[0] * Q1;
-  dReal A2 = 2.f*hside[1] * Q2;
-  dReal A3 = 2.f*hside[2] * Q3;
-  pos[0]=p[0];
-  pos[1]=p[1];
-  pos[2]=p[2];
-
-#define FOO(i,op) \
-  pos[0] op hside[i] * R[0+i]; \
-  pos[1] op hside[i] * R[4+i]; \
-  pos[2] op hside[i] * R[8+i];
-#define BAR(i,iinc) if (A ## iinc > 0) { FOO(i,-=) } else { FOO(i,+=) }
-  BAR(0,1);
-  BAR(1,2);
-  BAR(2,3);
-#undef FOO
-#undef BAR
-////////////////
-
-
-switch((code-10)/3){
-
-case 0:
-			CrossProjLine1(v0,triSideAx0,pos,R+(code-10),pos);
-			if(pos[0]==dInfinity){
-									pos[0]=(v1[0]+v0[0])/2.f;
-									pos[1]=(v1[1]+v0[1])/2.f;
-									pos[2]=(v1[2]+v0[2])/2.f;
-								}
-break;
-
-case 1:
-			CrossProjLine1(v1,triSideAx1,pos,R+(code-13),pos);
-			if(pos[0]==dInfinity){
-									pos[0]=(v2[0]+v1[0])/2.f;
-									pos[1]=(v2[1]+v1[1])/2.f;
-									pos[2]=(v2[2]+v1[2])/2.f;
-									}
-break;
-
-case 2:
-			CrossProjLine1(v0,triSideAx2,pos,R+(code-16),pos);
-			if(pos[0]==dInfinity){
-									pos[0]=(v2[0]+v0[0])/2.f;
-									pos[1]=(v2[1]+v0[1])/2.f;
-									pos[2]=(v2[2]+v0[2])/2.f;
-								}
-
-}
-*/
 	}
 
 	if (dDOT(norm, triAx) > 0.f)

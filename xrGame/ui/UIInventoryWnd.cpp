@@ -346,10 +346,10 @@ void CUIInventoryWnd::Hide()
 	SendInfoToActor("ui_inventory_hide");
 	ClearAllLists();
 
-	//достать вещь в активный слот
-	CActor *pActor = smart_cast<CActor *>(Level().CurrentEntity());
-	if (pActor && m_iCurrentActiveSlot != NO_ACTIVE_SLOT &&
-		pActor->inventory().m_slots[m_iCurrentActiveSlot].m_pIItem)
+	// Достать вещь в активный слот
+	CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
+
+	if (pActor && m_iCurrentActiveSlot != NO_ACTIVE_SLOT && pActor->inventory().m_slots[m_iCurrentActiveSlot].m_pIItem)
 	{
 		pActor->inventory().Activate(m_iCurrentActiveSlot);
 		m_iCurrentActiveSlot = NO_ACTIVE_SLOT;
@@ -357,7 +357,6 @@ void CUIInventoryWnd::Hide()
 
 	if (!IsGameTypeSingle())
 	{
-		CActor *pActor = smart_cast<CActor *>(Level().CurrentEntity());
 		if (!pActor)
 			return;
 
@@ -369,13 +368,14 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 {
 	PlaySnd(eInvAttachAddon);
 	R_ASSERT(item_to_upgrade);
+
 	if (OnClient())
 	{
 		NET_Packet P;
 		item_to_upgrade->object().u_EventGen(P, GE_ADDON_ATTACH, item_to_upgrade->object().ID());
 		P.w_u32(CurrentIItem()->object().ID());
 		item_to_upgrade->object().u_EventSend(P);
-	};
+	}
 
 	item_to_upgrade->Attach(CurrentIItem(), true);
 

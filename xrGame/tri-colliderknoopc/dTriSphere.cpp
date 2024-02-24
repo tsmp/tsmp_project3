@@ -136,14 +136,11 @@ int dcTriListCollider::dSortedTriSphere(const dReal * /**v1/**/, const dReal * /
 										CDB::TRI *T,
 										dReal dist,
 										dxGeom *Sphere,
-										dxGeom *Geometry,
+										dxGeom *Geom,
 										int Flags,
 										dContactGeom *Contacts,
 										int skip)
 {
-
-	//const dReal* v1=(dReal*)T->verts[1];
-	//const dReal* v2=(dReal*)T->verts[2];
 	const dReal *SphereCenter = dGeomGetPosition(Sphere);
 	const float SphereRadius = dGeomSphereGetRadius(Sphere);
 
@@ -164,7 +161,7 @@ int dcTriListCollider::dSortedTriSphere(const dReal * /**v1/**/, const dReal * /
 		Contacts->pos[0] = ContactPos[0];
 		Contacts->pos[1] = ContactPos[1];
 		Contacts->pos[2] = ContactPos[2];
-		Contacts->g1 = Geometry;
+		Contacts->g1 = Geom;
 		Contacts->g2 = Sphere;
 		((dxGeomUserData *)dGeomGetData(Sphere))->tri_material = T->material;
 		if (dGeomGetUserData(Sphere)->callback)
@@ -179,10 +176,9 @@ int dcTriListCollider::dSortedTriSphere(const dReal * /**v1/**/, const dReal * /
 
 int dcTriListCollider::dTriSphere(const dReal *v0, const dReal *v1, const dReal *v2,
 								  Triangle *T,
-								  dxGeom *Sphere, dxGeom *Geometry, int Flags,
+								  dxGeom *Sphere, dxGeom *Geome, int Flags,
 								  dContactGeom *Contacts, int /**skip/**/)
 {
-
 	const dVector3 &triSideAx0 = T->side0;
 	const dVector3 &triSideAx1 = T->side1;
 	const dVector3 &triAx = T->norm;
@@ -250,7 +246,7 @@ int dcTriListCollider::dTriSphere(const dReal *v0, const dReal *v1, const dReal 
 	Contacts->pos[0] = pos[0] - ContactNormal[0] * radius;
 	Contacts->pos[1] = pos[1] - ContactNormal[1] * radius;
 	Contacts->pos[2] = pos[2] - ContactNormal[2] * radius;
-	Contacts->g1 = Geometry;
+	Contacts->g1 = Geome;
 	Contacts->g2 = Sphere;
 	((dxGeomUserData *)dGeomGetData(Sphere))->tri_material = T->T->material;
 	if (dGeomGetUserData(Sphere)->callback)

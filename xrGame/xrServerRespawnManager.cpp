@@ -81,7 +81,7 @@ void ServerRespawnManager::OnTimer()
 
         obj.secondsElapsed = 0;
 
-        if (CSE_Abstract* resp = Level().Server->game->SpawnObject(obj.section.c_str(), obj.pos, obj.customData))
+        if (CSE_Abstract* resp = Level().Server->game->SpawnObject(obj.section.c_str(), obj.pos, obj.customData.c_str()))
         {
             obj.objectID = resp->ID;
             Msg("- Object spawned: [%s], id: [%d], X: [%3.2f], Y: [%3.2f], Z: [%3.2f], Respawn time: [%u]",

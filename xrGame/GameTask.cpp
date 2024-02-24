@@ -560,8 +560,8 @@ void SendTask(CActor* actor, const char* type, CGameTask* task, SGameTaskObjecti
 
 	if (tyype == "new" || tyype == "update")
 	{
-		//Выдать новое подзадание
-		if (task->m_Objectives.size() == objective->GetIDX_script() + 1)
+		// Выдать новое подзадание
+		if (task->m_Objectives.size() == static_cast<u32>(objective->GetIDX_script() + 1))
 			return;
 
 		news_text = translate_string((task->Objective(objective->GetIDX_script() + 1).description).c_str());
@@ -570,7 +570,7 @@ void SendTask(CActor* actor, const char* type, CGameTask* task, SGameTaskObjecti
 	auto hud = HUD().GetUI()->UIGame();
 	hud->AddCustomStatic("main_task", true);
 	hud->GetCustomStatic("main_task")->wnd()->SetTextST(news_text.c_str());
-	hud->GetCustomStatic("main_task")->m_endTime = Device.dwTimeGlobal / 1000 + 5;
+	hud->GetCustomStatic("main_task")->m_endTime = static_cast<float>(Device.dwTimeGlobal) / 1000 + 5;
 }
 
 void SGameTaskObjective::ChangeStateCallback()

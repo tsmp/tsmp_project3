@@ -1444,7 +1444,7 @@ public:
 			return;
 
 		if (game_sv_GameState* svGame = smart_cast<game_sv_GameState*>(Level().Server->game))
-			svGame->SpawnObject(args, SvSpawnPos, shared_str(nullptr));
+			svGame->SpawnObject(args, SvSpawnPos);
 	}
 
 	virtual void fill_tips(vecTips &tips, u32 mode)
@@ -1494,7 +1494,7 @@ public:
 		}
 
 		if (game_sv_GameState* svGame = smart_cast<game_sv_GameState*>(Level().Server->game))
-			svGame->SpawnObject(args, resultPos, shared_str(nullptr));		
+			svGame->SpawnObject(args, resultPos);
 	}
 
 	virtual void fill_tips(vecTips &tips, u32 mode)

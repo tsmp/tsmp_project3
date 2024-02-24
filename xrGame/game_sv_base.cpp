@@ -513,7 +513,7 @@ CSE_Abstract *game_sv_GameState::spawn_end(CSE_Abstract *E, ClientID const &id)
 	return N;
 }
 
-CSE_Abstract* game_sv_GameState::SpawnObject(const char* section, const Fvector& pos, shared_str& pCustomData, ALife::_OBJECT_ID parent)
+CSE_Abstract* game_sv_GameState::SpawnObject(const char* section, const Fvector& pos, const char* customData, ALife::_OBJECT_ID parent)
 {
 	if (!pSettings->section_exist(section))
 	{
@@ -543,11 +543,11 @@ CSE_Abstract* game_sv_GameState::SpawnObject(const char* section, const Fvector&
 			}
 		}
 
-		if (!pCustomData.size())
+		if (!customData)
 			return spawnedObject;
 
 		if (auto alifeObject = smart_cast<CSE_ALifeCreatureAbstract*>(spawnedObject))		
-			alifeObject->m_ini_string = pCustomData;
+			alifeObject->m_ini_string = customData;
 		
 		return spawnedObject;
 	}
@@ -562,7 +562,7 @@ CSE_Abstract* game_sv_GameState::SpawnObject(const char* section, const Fvector&
 		E->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
 		E->o_Position.set(pos);
 		E->o_Angle.set(0.f, 0.f, 0.f);
-		E->m_ini_string = pCustomData;
+		E->m_ini_string = customData;
 
 		E = spawn_end(E, m_server->GetServerClient()->ID);
 		signal_Syncronize();

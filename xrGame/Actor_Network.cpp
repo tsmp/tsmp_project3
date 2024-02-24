@@ -1661,14 +1661,14 @@ void CActor::Check_for_AutoPickUp()
 	Fbox APU_Box;
 	APU_Box.set(Fvector().sub(bc, m_AutoPickUp_AABB), Fvector().add(bc, m_AutoPickUp_AABB));
 
-	xr_vector<ISpatial*> ISpatialResult;
-	g_SpatialSpace->q_box(ISpatialResult, 0, STYPE_COLLIDEABLE, bc, m_AutoPickUp_AABB);
+	xr_vector<ISpatial*> spatialResult;
+	g_SpatialSpace->q_box(spatialResult, 0, STYPE_COLLIDEABLE, bc, m_AutoPickUp_AABB);
 
 	// Determine visibility for dynamic part of scene
-	for (u32 o_it = 0; o_it < ISpatialResult.size(); o_it++)
+	for (u32 o_it = 0; o_it < spatialResult.size(); o_it++)
 	{
-		ISpatial *spatial = ISpatialResult[o_it];
-		CInventoryItem *pIItem = smart_cast<CInventoryItem*>(spatial->dcast_CObject());
+		ISpatial *spatialRes = spatialResult[o_it];
+		CInventoryItem *pIItem = smart_cast<CInventoryItem*>(spatialRes->dcast_CObject());
 		if (0 == pIItem)
 			continue;
 		if (!pIItem->CanTake())

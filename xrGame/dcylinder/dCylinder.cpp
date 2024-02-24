@@ -494,7 +494,7 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1,
   {
     //find point on the cylinder pa deepest along normal
     dVector3 pa;
-    dReal sign, cos1, cos3, factor;
+    dReal sign, factor;
 
     for (i = 0; i < 3; ++i)
       pa[i] = p1[i];
@@ -517,7 +517,6 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1,
       pa[i] += cos3 * radius * R1[i * 4 + 2];
 
     // find vertex of the box  deepest along normal
-    dVector3 pb;
     for (i = 0; i < 3; ++i)
       pb[i] = p2[i];
     sign = (dDOT14(normal, R2 + 0) > 0) ? REAL(-1.0) : REAL(1.0);
@@ -577,7 +576,7 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1,
   else
   {
 
-    dReal sign, cos1, cos3, factor;
+    dReal sign, factor;
     dVector3 center;
     cos1 = dDOT14(normal, R1 + 0);
     cos3 = dDOT14(normal, R1 + 2);
@@ -851,7 +850,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1,
     for (i = 0; i < 3; ++i)
       cb[i] -= sign * hlz2 * R2[i * 4 + 1];
 
-    dVector3 tAx, tAx1;
+    dVector3 tAx1;
     circleIntersection(R1 + 1, ca, radius1, R2 + 1, cb, radius2, point);
 
     Ax[0] = point[0] - ca[0];
@@ -947,8 +946,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1,
 
   if (*code == 6)
   {
-    dVector3 pa;
-    dReal sign, cos1, cos3, factor;
+    dReal sign, factor;
 
     for (i = 0; i < 3; ++i)
       pa[i] = p1[i];
@@ -972,7 +970,6 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1,
       pa[i] += cos3 * radius1 * R1[i * 4 + 2];
 
     // find a point pb on the intersecting edge of cylinder 2
-    dVector3 pb;
     for (i = 0; i < 3; ++i)
       pb[i] = p2[i];
     cos1 = dDOT14(normal, R2 + 0);
@@ -1024,7 +1021,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1,
   {
 
     // flat face from cylinder 1 touches a edge/face from cylinder 2.
-    dReal sign, cos1, cos3, factor;
+    dReal sign, factor;
     // for (i=0; i<3; ++i) vertex[i] = p2[i];
     cos1 = dDOT14(normal, R2 + 0);
     cos3 = dDOT14(normal, R2 + 2);
@@ -1074,7 +1071,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1,
   else
   {
     // flat face from cylinder 2 touches a edge/face from cylinder 1.
-    dReal sign, cos1, cos3, factor;
+    dReal sign, factor;
     // for (i=0; i<3; ++i) vertex[i] = p1[i];
     cos1 = dDOT14(normal, R1 + 0);
     cos3 = dDOT14(normal, R1 + 2);

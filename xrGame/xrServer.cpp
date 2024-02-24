@@ -167,22 +167,22 @@ IClient *xrServer::client_Find_Get(ClientID const &ID)
 
 void xrServer::ReportClientStats(IClient *CL)
 {
-	PlayerGameStats stats{ 0 };
+	PlayerGameStats stat{ 0 };
 	const game_PlayerState* state = static_cast<xrClientData*>(CL)->ps;
 	CollectedStatistic clStat = state->m_Stats - state->m_StatsBeforeDisconnect;
 
-	stats.fragsCnt = clStat.m_iRivalKills;
-	stats.fragsNpc = clStat.m_iAiKills;
-	stats.headShots = clStat.m_iHeadshots;
-	stats.deathsCnt = clStat.m_iDeaths;
-	stats.artsCnt = clStat.af_count;
-	stats.maxFragsOneLife = clStat.m_iKillsInRowMax;
-	stats.timeInGame = (Level().timeServer() - state->m_online_time) / 60000; // minutes
+	stat.fragsCnt = clStat.m_iRivalKills;
+	stat.fragsNpc = clStat.m_iAiKills;
+	stat.headShots = clStat.m_iHeadshots;
+	stat.deathsCnt = clStat.m_iDeaths;
+	stat.artsCnt = clStat.af_count;
+	stat.maxFragsOneLife = clStat.m_iKillsInRowMax;
+	stat.timeInGame = (Level().timeServer() - state->m_online_time) / 60000; // minutes
 
 	if (auto gameMp = smart_cast<game_sv_mp*>(game))
-		gameMp->GetPlayerWpnStats(state, stats.weaponNames, stats.hitsCount);
+		gameMp->GetPlayerWpnStats(state, stat.weaponNames, stat.hitsCount);
 
-	ReportPlayerStats(CL, stats);
+	ReportPlayerStats(CL, stat);
 }
 
 INT g_sv_Client_Reconnect_Time = 0;
@@ -587,8 +587,6 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 
 	case M_CL_UPDATE:
 	{
-		xrClientData *CL = ID_to_client(sender);
-
 		if (!CL)
 			break;
 
@@ -609,8 +607,6 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 
 	case M_MOVE_PLAYERS_RESPOND:
 	{
-		xrClientData *CL = ID_to_client(sender);
-
 		if (!CL)
 			break;
 
@@ -626,13 +622,14 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 
 	case M_CLIENTREADY:
 	{
-		if (xrClientData* CL = ID_to_client(sender))
+		if (CL)
 		{
 			CL->net_Ready = TRUE;
 			CL->ps->DeathTime = Device.dwTimeGlobal;
 			game->OnPlayerConnectFinished(sender);
 			CL->ps->setName(CL->name.c_str());
 		}
+
 		game->signal_Syncronize();
 		DEBUG_VERIFY(verify_entities());
 	}
@@ -1151,7 +1148,7 @@ void xrServer::GetServerInfo(CServerInfo *si)
 	if (Device.fTimeDelta > EPS_S)
 	{
 		float fps = 1.f / Device.fTimeDelta;
-		iFps = fps;
+		iFps = static_cast<int>(fps);
 	}
 
 	si->AddItem("Server FPS: ", itoa(iFps, tmp, 10), RGB(255, 228, 0));

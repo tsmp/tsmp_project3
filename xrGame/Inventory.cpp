@@ -959,7 +959,7 @@ bool CInventory::Eat(PIItem pIItem)
 
 	if (pInventory != this)
 	{
-		Msg("! ERROR: cant eat item because this inventory[%s][%d] doesnt correspond items[%s][%d] owner[%d]", m_pOwner->Name(), m_pOwner->object_id(), pIItem->object().cNameSect(), pIItem->object().ID(), pInventory->m_pOwner->Name(), pInventory->m_pOwner->object_id());
+		Msg("! ERROR: cant eat item because this inventory[%s][%d] doesnt correspond items[%s][%d] owner[%d]", m_pOwner->Name(), m_pOwner->object_id(), pIItem->object().cNameSect().c_str(), pIItem->object().ID(), pInventory->m_pOwner->Name(), pInventory->m_pOwner->object_id());
 		return false;
 	}
 
