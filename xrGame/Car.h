@@ -231,7 +231,6 @@ public:
 		float lo_limit;
 		float hi_limit;
 		float steering_velocity;
-		float steering_torque;
 		bool limited; //zero limited for idle steering drive
 		float GetSteerAngle()
 		{

@@ -646,9 +646,9 @@ void CMissile::activate_physic_shell()
 	CEntityAlive *entity_alive = smart_cast<CEntityAlive *>(H_Root());
 	if (entity_alive && entity_alive->character_physics_support())
 	{
-		Fvector parent_vel;
-		entity_alive->character_physics_support()->movement()->GetCharacterVelocity(parent_vel);
-		l_vel.add(parent_vel);
+		Fvector parentVelocity;
+		entity_alive->character_physics_support()->movement()->GetCharacterVelocity(parentVelocity);
+		l_vel.add(parentVelocity);
 	}
 
 	VERIFY(!m_pPhysicsShell);

@@ -937,12 +937,12 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState *ps)
 				continue;
 
 			strcpy_s(NewItemStr, sizeof(NewItemStr), pSettings->r_string(RankStr, ItemStr));
-			u32 newItemIdx = m_strWeaponsData->GetItemIdx(NewItemStr);
+			u16 newItemIdx = m_strWeaponsData->GetItemIdx(NewItemStr);
 
-			if (newItemIdx == u32(-1))
+			if (newItemIdx == static_cast<u16>(-1))
 				continue;
 
-			item.SetItemID(static_cast<u16>(newItemIdx));
+			item.SetItemID(newItemIdx);
 			item.SetAddons(0);
 		}
 	}
@@ -959,23 +959,24 @@ void game_sv_mp::SetPlayersDefItems(game_PlayerState *ps)
 		if (!xr_strcmp(*WeaponName, "mp_wpn_knife"))
 			continue;
 
-		u32 AmmoId = u32(-1);
+		const u16 InvalidIdx = static_cast<u16>(-1);
+		u16 AmmoIdx = InvalidIdx;
 
 		if (pSettings->line_exist(WeaponName, "ammo_class"))
 		{
 			string1024 wpnAmmos, BaseAmmoName;
 			std::strcpy(wpnAmmos, pSettings->r_string(WeaponName, "ammo_class"));
 			_GetItem(wpnAmmos, 0, BaseAmmoName);
-			AmmoId = m_strWeaponsData->GetItemIdx(BaseAmmoName);
+			AmmoIdx = m_strWeaponsData->GetItemIdx(BaseAmmoName);
 		}
 
-		if (AmmoId == u32(-1))
+		if (AmmoIdx == InvalidIdx)
 			continue;
 
 		if (Type() == GAME_ARTEFACTHUNT)
 		{
-			ps->pItemList.emplace_back(PresetItem(0, AmmoId));
-			ps->pItemList.emplace_back(PresetItem(0, AmmoId));
+			ps->pItemList.emplace_back(PresetItem(0, AmmoIdx));
+			ps->pItemList.emplace_back(PresetItem(0, AmmoIdx));
 		}
 	}
 }
@@ -1022,9 +1023,9 @@ void game_sv_mp::OnPlayerHitCreature(game_PlayerState* psHitter, CSE_Abstract* p
 {
 	u32 wpnIdx = m_strWeaponsData->GetItemIdx(pWeapon->s_name);
 
-	if (wpnIdx == static_cast<u32>(-1))
+	if (wpnIdx == static_cast<u16>(-1))
 	{
-		Msg("! can not get idx for weapon [%s]", pWeapon->s_name.c_str());
+		// Msg("! can not get idx for weapon [%s]", pWeapon->s_name.c_str());
 		return;
 	}
 
@@ -1119,11 +1120,11 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID const &sender)
 	{
 		Msg("Player \"%s\" try to change name on \"%s\" at protected server.", ps->getName(), NewName);
 
-		NET_Packet P;
-		GenerateGameMessage(P);
-		P.w_u32(GAME_EVENT_SERVER_STRING_MESSAGE);
-		P.w_stringZ("Server is protected. Can\'t change player name!");
-		m_server->SendTo(sender, P);
+		NET_Packet packet;
+		GenerateGameMessage(packet);
+		packet.w_u32(GAME_EVENT_SERVER_STRING_MESSAGE);
+		packet.w_stringZ("Server is protected. Can\'t change player name!");
+		m_server->SendTo(sender, packet);
 		return;
 	}
 
@@ -1143,22 +1144,23 @@ void game_sv_mp::OnPlayerChangeName(NET_Packet &P, ClientID const &sender)
 
 	if (pClient->owner)
 	{
-		NET_Packet P;
-		GenerateGameMessage(P);
-		P.w_u32(GAME_EVENT_PLAYER_NAME);
-		P.w_u16(pClient->owner->ID);
-		P.w_s16(ps->team);
-		P.w_stringZ(ps->getName());
-		P.w_stringZ(NewName);
+		NET_Packet packet;
+		GenerateGameMessage(packet);
+		packet.w_u32(GAME_EVENT_PLAYER_NAME);
+		packet.w_u16(pClient->owner->ID);
+		packet.w_s16(ps->team);
+		packet.w_stringZ(ps->getName());
+		packet.w_stringZ(NewName);
 
-		m_server->ForEachClientDo([this, &P](IClient* client)
+		m_server->ForEachClientDo([this, &packet](IClient* client)
 		{
-			xrClientData* l_pC = dynamic_cast<xrClientData*>(client);
-			game_PlayerState* ps = l_pC->ps;
+			xrClientData* clData = static_cast<xrClientData*>(client);
+			game_PlayerState* ps = clData->ps;
 
-			if (!l_pC || !l_pC->net_Ready || !ps)
+			if (!clData || !clData->net_Ready || !ps)
 				return;
-			m_server->SendTo(l_pC->ID, P);
+
+			m_server->SendTo(clData->ID, packet);
 		});
 
 		pClient->owner->set_name_replace(NewName);

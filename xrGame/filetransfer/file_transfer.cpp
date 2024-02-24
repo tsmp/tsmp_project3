@@ -386,7 +386,7 @@ namespace file_transfer
 	{
 		if (is_transfer_active() && m_transfering->is_ready_to_send())
 		{
-			IClientStatistic &peer_stats = Level().GetStatistic();
+			const IClientStatistic &peer_stats = Level().GetStatistic();
 			m_transfering->calculate_chunk_size(peer_stats.getPeakBPS(), peer_stats.getBPS());
 #ifdef DEBUG
 			if (psDeviceFlags.test(rsStatistic))

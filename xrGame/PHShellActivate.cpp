@@ -85,16 +85,18 @@ void CPHShell::Activate(const Fmatrix &m0, float dt01, const Fmatrix &m2, bool d
 
 void CPHShell::Activate(const Fmatrix &transform, const Fvector &lin_vel, const Fvector &ang_vel, bool disable)
 {
-
 	if (isActive())
 		return;
+
 	activate(disable);
 
-	ELEMENT_I i;
-	mXFORM.set(transform);
-	for (i = elements.begin(); elements.end() != i; ++i)
 	{
-		(*i)->Activate(transform, lin_vel, ang_vel);
+		ELEMENT_I i;
+		mXFORM.set(transform);
+		for (i = elements.begin(); elements.end() != i; ++i)
+		{
+			(*i)->Activate(transform, lin_vel, ang_vel);
+		}
 	}
 
 	{

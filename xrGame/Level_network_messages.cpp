@@ -159,18 +159,21 @@ void CLevel::ClientReceive()
 		case M_MOVE_PLAYERS:
 		{
 			u8 Count = P->r_u8();
+
 			for (u8 i = 0; i < Count; i++)
 			{
-				u16 ID = P->r_u16();
+				u16 actorId = P->r_u16();
 				Fvector NewPos, NewDir;
 				P->r_vec3(NewPos);
 				P->r_vec3(NewDir);
 
-				CActor *OActor = smart_cast<CActor *>(Objects.net_Find(ID));
-				if (0 == OActor)
+				if (auto act = smart_cast<CActor*>(Objects.net_Find(actorId)))
+					act->MoveActor(NewPos, NewDir);
+				else
 					break;
-				OActor->MoveActor(NewPos, NewDir);
-			};
+
+#pragma TODO("TSMP: why break?")
+			}
 
 			NET_Packet PRespond;
 			PRespond.w_begin(M_MOVE_PLAYERS_RESPOND);

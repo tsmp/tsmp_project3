@@ -232,7 +232,7 @@ void CBulletManager::UpdateWorkload()
 	m_Lock.Leave();
 }
 
-bool CBulletManager::CalcBullet(collide::rq_results &rq_storage, xr_vector<ISpatial *> &rq_spatial, SBullet *bullet, u32 delta_time)
+bool CBulletManager::CalcBullet(collide::rq_results &rqStorage, xr_vector<ISpatial*> &, SBullet *bullet, u32 delta_time)
 {
 	VERIFY(bullet);
 
@@ -243,9 +243,9 @@ bool CBulletManager::CalcBullet(collide::rq_results &rq_storage, xr_vector<ISpat
 	if (range > max_range)
 		range = max_range;
 
-	//запомнить текущую скорость пули, т.к. в
-	//RayQuery() она может поменяться из-за рикошетов
-	//и столкновений с объектами
+	// Запомнить текущую скорость пули, т.к. в
+	// RayQuery() она может поменяться из-за рикошетов
+	// и столкновений с объектами
 	Fvector cur_dir = bullet->dir;
 	bullet_test_callback_data bullet_data;
 	bullet_data.pBullet = bullet;
@@ -256,19 +256,18 @@ bool CBulletManager::CalcBullet(collide::rq_results &rq_storage, xr_vector<ISpat
 	collide::ray_defs RD(bullet->pos, bullet->dir, range, CDB::OPT_CULL, collide::rqtBoth);
 	BOOL result = FALSE;
 	VERIFY(!fis_zero(RD.dir.square_magnitude()));
-	result = Level().ObjectSpace.RayQuery(rq_storage, RD, firetrace_callback, &bullet_data, test_callback, NULL);
+	result = Level().ObjectSpace.RayQuery(rqStorage, RD, firetrace_callback, &bullet_data, test_callback, NULL);
 
 	if (result && bullet_data.bStopTracing)
-	{
-		range = (rq_storage.r_begin() + rq_storage.r_count() - 1)->range;
-	}
+		range = (rqStorage.r_begin() + rqStorage.r_count() - 1)->range;
+
 	range = _max(EPS_L, range);
 
 	bullet->flags.skipped_frame = (Device.CurrentFrameNumber >= bullet->frame_num);
 
 	if (!bullet->flags.ricochet_was)
 	{
-		//изменить положение пули
+		// Изменить положение пули
 		bullet->pos.mad(bullet->pos, cur_dir, range);
 		bullet->fly_dist += range;
 
@@ -277,19 +276,14 @@ bool CBulletManager::CalcBullet(collide::rq_results &rq_storage, xr_vector<ISpat
 
 		Fbox level_box = Level().ObjectSpace.GetBoundingVolume();
 
-		/*		if(!level_box.contains(bullet->pos))
-			return false;
-*/
 		if (!((bullet->pos.x >= level_box.x1) &&
 			  (bullet->pos.x <= level_box.x2) &&
 			  (bullet->pos.y >= level_box.y1) &&
-			  //			 (bullet->pos.y<=level_box.y2) &&
 			  (bullet->pos.z >= level_box.z1) &&
 			  (bullet->pos.z <= level_box.z2)))
 			return false;
 
-		//изменить скорость и направление ее полета
-		//с учетом гравитации
+		// Изменить скорость и направление ее полета с учетом гравитации
 		bullet->dir.mul(bullet->speed);
 
 		Fvector air_resistance = bullet->dir;
@@ -305,7 +299,7 @@ bool CBulletManager::CalcBullet(collide::rq_results &rq_storage, xr_vector<ISpat
 		bullet->speed = bullet->dir.magnitude();
 		VERIFY(_valid(bullet->speed));
 		VERIFY(!fis_zero(bullet->speed));
-		//вместо normalize(),	 чтоб не считать 2 раза magnitude()
+		// Вместо normalize(), чтоб не считать 2 раза magnitude()
 		//#pragma todo("а как насчет bullet->speed==0")
 		bullet->dir.x /= bullet->speed;
 		bullet->dir.y /= bullet->speed;

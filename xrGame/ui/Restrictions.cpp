@@ -20,10 +20,10 @@ u32 get_rank(const shared_str &section)
 	if (g_ranks.empty())
 	{
 		// load
-		for (int i = 0; i < _RANK_COUNT; i++)
+		for (u32 i = 0; i < _RANK_COUNT; i++)
 		{
 			string32 buff;
-			sprintf_s(buff, "rank_%d", i);
+			sprintf_s(buff, "rank_%u", i);
 			g_ranks.emplace_back(pSettings->r_string(buff, "available_items"));
 		}
 	}
@@ -238,16 +238,18 @@ const CRestrictions::restr_item *CRestrictions::find_restr_item(const u32 &rank,
 void CRestrictions::Dump() const
 {
 	Msg("------------item groups ---count=[%d]-------------------", m_goups.size());
-	Groups::const_iterator it = m_goups.begin();
 
-	Groups::const_iterator it_e = m_goups.end();
-	for (; it != it_e; ++it)
 	{
-		Msg("group [%s]", it->first.c_str());
-		group_items::const_iterator it2 = it->second.begin();
-		group_items::const_iterator it2_e = it->second.end();
-		for (; it2 != it2_e; ++it2)
-			Msg("	[%s]", (*it2).c_str());
+		Groups::const_iterator it = m_goups.begin();
+		Groups::const_iterator it_e = m_goups.end();
+		for (; it != it_e; ++it)
+		{
+			Msg("group [%s]", it->first.c_str());
+			group_items::const_iterator it2 = it->second.begin();
+			group_items::const_iterator it2_e = it->second.end();
+			for (; it2 != it2_e; ++it2)
+				Msg("	[%s]", (*it2).c_str());
+		}
 	}
 
 	Msg("------------rank restrictions------------");

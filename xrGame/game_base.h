@@ -186,7 +186,7 @@ add_to_type_list(game_PlayerState)
 class game_GameState : public DLL_Pure
 {
 protected:
-	s32 m_type;
+	u32 m_type;
 	u16 m_phase;
 	s32 m_round;
 	u32 m_start_time;

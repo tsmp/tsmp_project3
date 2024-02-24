@@ -306,16 +306,18 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 
 	case GEG_PLAYER_ATTACH_HOLDER:
 	{
-		u32 id = P.r_u32();
-		CObject *O = Level().Objects.net_Find(id);
+		u32 objId = P.r_u32();
+		CObject *O = Level().Objects.net_Find(objId);
 
 		if (!O)
 		{
-			Msg("! Error: No object to attach holder [%d]", id);
+			Msg("! Error: No object to attach holder [%d]", objId);
 			break;
 		}
-		VERIFY(m_holder == NULL);
-		CHolderCustom *holder = smart_cast<CHolderCustom *>(O);
+
+		VERIFY(!m_holder);
+		CHolderCustom *holder = smart_cast<CHolderCustom*>(O);
+
 		if (!holder->Engaged())
 			use_Holder(holder);
 	}
@@ -326,10 +328,10 @@ void CActor::OnEvent(NET_Packet &P, u16 type)
 		if (!m_holder)
 			break;
 
-		u32 id = P.r_u32();
-		CGameObject *GO = smart_cast<CGameObject *>(m_holder);
-		VERIFY(id == GO->ID());
-		use_Holder(NULL);
+		u32 objId = P.r_u32();
+		CGameObject *GO = smart_cast<CGameObject*>(m_holder);
+		VERIFY(objId == GO->ID());
+		use_Holder(nullptr);
 	}
 	break;
 

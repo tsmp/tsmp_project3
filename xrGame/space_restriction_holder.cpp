@@ -37,16 +37,18 @@ void CSpaceRestrictionHolder::clear()
 shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictors)
 {
 	u32 n = xr_strlen(space_restrictors);
-	if (!n)
-		return ("");
 
-	//1. parse the string, copying to temp buffer with leading zeroes, storing pointers in vector
+	if (!n)
+		return "";
+
+	// 1. parse the string, copying to temp buffer with leading zeroes, storing pointers in vector
 	LPSTR *strings = (LPSTR *)_alloca(MAX_RESTRICTION_PER_TYPE_COUNT * sizeof(LPSTR));
 	LPSTR *string_current = strings;
 
 	LPSTR temp_string = (LPSTR)_alloca((n + 1) * sizeof(char));
 	LPCSTR I = *space_restrictors;
 	LPSTR i = temp_string, j = i;
+
 	for (; *I; ++I, ++i)
 	{
 		if (*I != ',')
@@ -61,6 +63,7 @@ shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictor
 		++string_current;
 		j = i + 1;
 	}
+
 	if (string_current == strings)
 		return (space_restrictors);
 
@@ -69,28 +72,31 @@ shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictor
 	*string_current = j;
 	++string_current;
 
-	//2. sort the vector (svector???)
+	// 2. sort the vector (svector???)
 	std::sort(strings, string_current, pred_str());
 
-	//3. copy back to another temp string, based on sorted vector
+	// 3. copy back to another temp string, based on sorted vector
 	LPSTR result_string = (LPSTR)_alloca((n + 1) * sizeof(char));
 	LPSTR pointer = result_string;
+
 	{
-		LPSTR *I = strings;
-		LPSTR *E = string_current;
-		for (; I != E; ++I)
+		LPSTR *II = strings;
+		LPSTR *EE = string_current;
+
+		for (; II != EE; ++II)
 		{
-			for (LPSTR i = *I; *i; ++i, ++pointer)
-				*pointer = *i;
+			for (LPSTR ii = *II; *ii; ++ii, ++pointer)
+				*pointer = *ii;
 
 			*pointer = ',';
 			++pointer;
 		}
 	}
+
 	*(pointer - 1) = 0;
 
-	//4. finally, dock shared_str
-	return (result_string);
+	// 4. finally, dock shared_str
+	return result_string;
 }
 
 SpaceRestrictionHolder::CBaseRestrictionPtr CSpaceRestrictionHolder::restriction(shared_str space_restrictors)

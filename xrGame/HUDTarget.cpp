@@ -151,8 +151,8 @@ void CHUDTarget::Render()
 	CObject *O = Level().CurrentEntity();
 	if (0 == O)
 		return;
-	CEntity *E = smart_cast<CEntity *>(O);
-	if (0 == E)
+
+	if (!smart_cast<CEntity*>(O))
 		return;
 
 	Fvector p1 = Device.vCameraPosition;

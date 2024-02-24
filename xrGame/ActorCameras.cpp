@@ -87,9 +87,9 @@ void CActor::camUpdateLadder(float dt)
 	{
 		float &cam_pitch = cameras[eacFirstEye]->pitch;
 		const float ldown_pitch = cameras[eacFirstEye]->lim_pitch.y;
-		float delta = angle_difference_signed(ldown_pitch, cam_pitch);
-		if (delta > 0.f)
-			cam_pitch += delta * _min(dt * 10.f, 1.f);
+		float delta2 = angle_difference_signed(ldown_pitch, cam_pitch);
+		if (delta2 > 0.f)
+			cam_pitch += delta2 * _min(dt * 10.f, 1.f);
 	}
 }
 
@@ -110,7 +110,7 @@ float CActor::CameraHeight()
 
 IC float viewport_near(float &w, float &h)
 {
-	w = 2.f * VIEWPORT_NEAR * tan(deg2rad(Device.fFOV) / 2.f);
+	w = 2.f * VIEWPORT_NEAR * tanf(deg2rad(Device.fFOV) / 2.f);
 	h = w * Device.fASPECT;
 	float c = _sqrt(w * w + h * h);
 	return _max(_max(VIEWPORT_NEAR, _max(w, h)), c);
@@ -270,11 +270,11 @@ void CActor::cam_Update(float dt, float fFOV)
 		}
 		else
 		{
-			xr_vector<ISpatial *> ISpatialResult;
-			g_SpatialSpacePhysic->q_box(ISpatialResult, 0, STYPE_PHYSIC, point, Fvector().set(VIEWPORT_NEAR, VIEWPORT_NEAR, VIEWPORT_NEAR));
-			for (u32 o_it = 0; o_it < ISpatialResult.size(); o_it++)
+			xr_vector<ISpatial *> spatialResult;
+			g_SpatialSpacePhysic->q_box(spatialResult, 0, STYPE_PHYSIC, point, Fvector().set(VIEWPORT_NEAR, VIEWPORT_NEAR, VIEWPORT_NEAR));
+			for (u32 o_it = 0; o_it < spatialResult.size(); o_it++)
 			{
-				CPHShell *pCPHS = smart_cast<CPHShell *>(ISpatialResult[o_it]);
+				CPHShell *pCPHS = smart_cast<CPHShell *>(spatialResult[o_it]);
 				if (pCPHS)
 				{
 					_viewport_near = 0.01f;
@@ -283,44 +283,10 @@ void CActor::cam_Update(float dt, float fFOV)
 			}
 		}
 	}
-	/*
-	{
-		CCameraBase* C				= cameras[eacFirstEye];
-		float oobox_size			= 2*VIEWPORT_NEAR;
 
-
-		Fmatrix						_rot;
-		_rot.k						= C->vDirection;
-		_rot.c						= C->vPosition;
-		_rot.i.crossproduct			(C->vNormal,	_rot.k);
-		_rot.j.crossproduct			(_rot.k,		_rot.i);
-
-		
-		Fvector						vbox; 
-		vbox.set					(oobox_size, oobox_size, oobox_size);
-
-
-		Level().debug_renderer().draw_aabb  (C->vPosition, 0.05f, 0.051f, 0.05f, D3DCOLOR_XRGB(0,255,0));
-		Level().debug_renderer().draw_obb  (_rot, Fvector().div(vbox,2.0f), D3DCOLOR_XRGB(255,0,0));
-
-		dMatrix3					d_rot;
-		PHDynamicData::FMXtoDMX		(_rot, d_rot);
-
-		CPHActivationShape			activation_shape;
-		activation_shape.Create		(point, vbox, this);
-
-		dBodySetRotation			(activation_shape.ODEBody(), d_rot);
-
-		CPHCollideValidator::SetDynamicNotCollide(activation_shape);
-		activation_shape.Activate	(vbox,1,1.f,0.0F);
-
-		point.set					(activation_shape.Position());
-		
-		activation_shape.Destroy	();
-	}
-*/
 	C->Update(point, dangle);
 	C->f_fov = fFOV;
+
 	if (eacFirstEye != cam_active)
 	{
 		cameras[eacFirstEye]->Update(point, dangle);

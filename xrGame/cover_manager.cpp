@@ -69,16 +69,20 @@ void CCoverManager::compute_static_cover()
 	clear();
 	xr_delete(m_covers);
 	m_covers = xr_new<CPointQuadTree>(ai().level_graph().header().box(), ai().level_graph().header().cell_size() * .5f, 4 * 65536, 2 * 65536);
-	m_temp.resize(ai().level_graph().header().vertex_count());
+	const u32 vertexCount = ai().level_graph().header().vertex_count();
+	m_temp.resize(vertexCount);
 
-	u32 i, n;
-	for (i = 0, n = ai().level_graph().header().vertex_count(); i < n; ++i)
-		if (ai().level_graph().vertex(i)->cover(0) + ai().level_graph().vertex(i)->cover(1) + ai().level_graph().vertex(i)->cover(2) + ai().level_graph().vertex(i)->cover(3))
+	for (u32 i = 0; i < vertexCount; ++i)
+	{
+		auto vertex = ai().level_graph().vertex(i);
+
+		if (vertex->cover(0) + vertex->cover(1) + vertex->cover(2) + vertex->cover(3))
 			m_temp[i] = edge_vertex(i);
 		else
 			m_temp[i] = false;
+	}
 
-	for (u32 i = 0; i < n; ++i)
+	for (u32 i = 0; i < vertexCount; ++i)
 		if (m_temp[i] && critical_cover(i))
 			m_covers->insert(xr_new<CCoverPoint>(ai().level_graph().vertex_position(ai().level_graph().vertex(i)), i));
 }

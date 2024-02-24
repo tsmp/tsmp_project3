@@ -56,7 +56,7 @@ MotionID CStalkerAnimationManager::global_critical_hit()
 	}
 
 	auto &anims = m_data_storage->m_part_animations.A[eBodyStateStand].m_global.A;
-	int animIdx = object().critical_wound_type() + 6 * (animation_slot - 1);
+	u32 animIdx = object().critical_wound_type() + 6 * (animation_slot - 1);
 	R_ASSERT(animIdx < anims.size());
 
 	return global().select(anims[animIdx].A, &object().critical_wound_weights());

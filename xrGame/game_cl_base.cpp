@@ -148,7 +148,7 @@ void game_cl_GameState::net_import_state(NET_Packet &P)
 {
 	// Generic
 	P.r_clientID(local_svdpnid);
-	P.r_s32(m_type);
+	P.r_u32(m_type);
 
 	u16 ph;
 	P.r_u16(ph);

@@ -44,6 +44,8 @@ u32 game_sv_Deathmatch::GetWarmUpTime() { return g_sv_dm_dwWarmUp_MaxTime; };
 BOOL game_sv_Deathmatch::IsAnomaliesEnabled() { return g_sv_dm_bAnomaliesEnabled; };
 u32 game_sv_Deathmatch::GetAnomaliesTime() { return g_sv_dm_dwAnomalySetLengthTime; };
 
+const u16 InvalidItemIdx = static_cast<u16>(-1);
+
 game_sv_Deathmatch::game_sv_Deathmatch()
 	: pure_relcase(&game_sv_Deathmatch::net_Relcase)
 {
@@ -726,7 +728,7 @@ void game_sv_Deathmatch::assign_RP(CSE_Abstract *E, game_PlayerState *ps_who)
 
 bool game_sv_Deathmatch::IsBuyableItem(LPCSTR ItemName)
 {
-	if (m_strWeaponsData->GetItemIdx(ItemName) == u32(-1))
+	if (m_strWeaponsData->GetItemIdx(ItemName) == InvalidItemIdx)
 		return false;
 
 	return true;
@@ -737,7 +739,7 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState *ps, PIItem pItem, xr_vector
 	if (!pItem || !pItemsToDelete)
 		return;
 
-	if (m_strWeaponsData->GetItemIdx(pItem->object().cNameSect()) == u32(-1))
+	if (m_strWeaponsData->GetItemIdx(pItem->object().cNameSect()) == InvalidItemIdx)
 		return;
 
 	bool found = false;
@@ -746,7 +748,7 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState *ps, PIItem pItem, xr_vector
 	{
 		const PresetItem &item = ItemsDesired[it];
 
-		if (item.GetItemID() != u16(m_strWeaponsData->GetItemIdx(pItem->object().cNameSect())))
+		if (item.GetItemID() != m_strWeaponsData->GetItemIdx(pItem->object().cNameSect()))
 			continue;
 
 		found = true;
@@ -757,7 +759,7 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState *ps, PIItem pItem, xr_vector
 				break;
 		}
 
-		//----- Check for Addon Changes ---------------------
+		// Check for Addon Changes
 		if(CWeapon *pWeapon = smart_cast<CWeapon*>(pItem))
 		{
 			u8 OldAddons = pWeapon->GetAddonsState();
@@ -866,9 +868,9 @@ void game_sv_Deathmatch::OnPlayerBuyFinished(ClientID const &id_who, NET_Packet 
 
 		for (; IDI != EDI; ++IDI)
 		{
-			NET_Packet P;
-			u_EventGen(P, GE_DESTROY, *IDI);
-			Level().Send(P, net_flags(TRUE, TRUE));
+			NET_Packet packet;
+			u_EventGen(packet, GE_DESTROY, *IDI);
+			Level().Send(packet, net_flags(TRUE, TRUE));
 		}
 	}
 
@@ -1788,10 +1790,12 @@ BOOL game_sv_Deathmatch::Is_Anomaly_InLists(CSE_Abstract *E)
 			return TRUE;
 	}
 
-	ANOMALIES_it It = std::find(m_AnomaliesPermanent.begin(), m_AnomaliesPermanent.end(), E->name_replace());
+	{
+		ANOMALIES_it It = std::find(m_AnomaliesPermanent.begin(), m_AnomaliesPermanent.end(), E->name_replace());
 
-	if (It != m_AnomaliesPermanent.end())	
-		return TRUE;	
+		if (It != m_AnomaliesPermanent.end())
+			return TRUE;
+	}
 
 	for (u32 j = 0; j < m_AnomalySetsList.size(); j++)
 	{

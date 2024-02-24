@@ -51,25 +51,23 @@ TEMPLATE_SPECIALIZATION
 IC bool CGameVertexPathManager::is_accessible(const _index_type &vertex_id) const
 {
 	if (!inherited::is_accessible(vertex_id))
-		return (false);
+		return false;
 
 	if (!m_start_is_accessible)
-		return (true);
+		return true;
 
-	typedef _Parameters::VERTEX_TYPES::const_iterator const_iterator;
 #ifdef DEBUG
 	if (m_evaluator->m_vertex_types->empty())
-	{
 		Msg("! warning : empty vertex types");
-	}
 #endif
-	const_iterator I = m_evaluator->m_vertex_types->begin();
-	const_iterator E = m_evaluator->m_vertex_types->end();
-	for (; I != E; ++I)
-		if (graph->mask((*I).tMask, graph->vertex(vertex_id)->vertex_type()))
-			return (true);
 
-	return (false);
+	auto &vertexTypes = *m_evaluator->m_vertex_types;
+
+	for (const auto &type: vertexTypes)
+		if (graph->mask(type.tMask, graph->vertex(vertex_id)->vertex_type()))
+			return true;
+
+	return false;
 }
 
 #undef TEMPLATE_SPECIALIZATION

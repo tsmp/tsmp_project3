@@ -76,7 +76,7 @@ void game_sv_Freeplay::LoadSettings()
 			if (const char* ch = item.second.c_str())
 				count = pSettings->r_u32(freeplayPersistentItemsSection, item.first.c_str());
 
-			for (int i = 0; i < count; i++)
+			for (u32 i = 0; i < count; i++)
 				m_PersistentItems.push_back(item.first.c_str());
 		}
 

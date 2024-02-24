@@ -155,7 +155,7 @@ void CCar::OnChangeLookout(bool enabled)
 	}
 
 	auto& ownerInv = ownerAct->inventory();
-	ownerInv.SetSlotsBlocked(INV_STATE_BLOCK_ALL, !enabled);
+	ownerInv.SetSlotsBlocked(static_cast<u16>(INV_STATE_BLOCK_ALL), !enabled);
 
 	if (!enabled)
 		ownerInv.SetActiveSlot(NO_ACTIVE_SLOT);

@@ -177,19 +177,19 @@ bool CUIScrollBar::OnKeyboardHold(int dik)
 {
 	if (dik == MOUSE_1 && (last_hold_time + 100) < Device.dwTimeContinual)
 	{
-		Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
+		Fvector2 cursorPos = GetUICursor()->GetCursorPosition();
 		Frect dec_rect;
 		Frect inc_rect;
 
 		m_DecButton->GetAbsoluteRect(dec_rect);
 		m_IncButton->GetAbsoluteRect(inc_rect);
-		if (dec_rect.in(cursor_pos))
+		if (dec_rect.in(cursorPos))
 		{
 			TryScrollDec();
 			last_hold_time = Device.dwTimeContinual;
 			return true;
 		}
-		else if (inc_rect.in(cursor_pos))
+		else if (inc_rect.in(cursorPos))
 		{
 			TryScrollInc();
 			last_hold_time = Device.dwTimeContinual;

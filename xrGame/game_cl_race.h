@@ -7,10 +7,10 @@ class CStringTable;
 class game_cl_Race : public game_cl_mp
 {
 	typedef game_cl_mp inherited;
-	CUIGameRace* m_game_ui;
-	u32 m_ReinforcementTime;
-	u16 m_WinnerId;
-	bool m_WinnerMessageSet;
+	CUIGameRace* m_game_ui{ nullptr };
+	u32 m_ReinforcementTime{ static_cast<u32>(-1) };
+	u16 m_WinnerId{ static_cast<u16>(-1) };
+	bool m_WinnerMessageSet{ false };
 
 	void LoadTeamBaseParticles();
 	void UpdateRaceStart();

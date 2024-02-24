@@ -440,11 +440,9 @@ char *game_cl_ArtefactHunt::getTeamSection(int Team)
 	case 2:	
 		return "artefacthunt_team2";
 		break;
-
-	default:
-		NODEFAULT;
 	}
 
+	R_ASSERT(0);
 	return nullptr;
 }
 

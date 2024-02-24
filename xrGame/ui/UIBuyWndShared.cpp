@@ -73,7 +73,7 @@ const u8 CItemMgr::GetItemSlotIdx(const shared_str &sect_name) const
 	return it->second.slot_idx;
 }
 
-const u32 CItemMgr::GetItemIdx(const shared_str &sect_name) const
+const u16 CItemMgr::GetItemIdx(const shared_str &sect_name) const
 {
 	COST_MAP_CIT it = m_items.find(sect_name);
 
@@ -82,10 +82,10 @@ const u32 CItemMgr::GetItemIdx(const shared_str &sect_name) const
 #ifdef DEBUG
 		Msg("item not found in registry [%s]", sect_name.c_str());
 #endif
-		return u32(-1);
+		return static_cast<u16>(-1);
 	}
 
-	return u32(std::distance(m_items.begin(), it));
+	return static_cast<u16>(std::distance(m_items.begin(), it));
 }
 
 void CItemMgr::Dump() const

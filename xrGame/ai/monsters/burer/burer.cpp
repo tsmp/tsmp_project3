@@ -268,10 +268,10 @@ void CBurer::UpdateGraviObject()
 		if (!obj || !obj->m_pPhysicsShell)
 			continue;
 
-		Fvector dir;
-		dir.sub(obj->Position(), m_gravi_object.cur_pos);
-		dir.normalize();
-		obj->m_pPhysicsShell->applyImpulse(dir, m_gravi_impulse_to_objects * obj->m_pPhysicsShell->getMass());
+		Fvector direction;
+		direction.sub(obj->Position(), m_gravi_object.cur_pos);
+		direction.normalize();
+		obj->m_pPhysicsShell->applyImpulse(direction, m_gravi_impulse_to_objects * obj->m_pPhysicsShell->getMass());
 	}
 
 	// играть звук

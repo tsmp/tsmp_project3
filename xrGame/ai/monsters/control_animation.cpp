@@ -126,7 +126,7 @@ void CControlAnimation::play_part(SAnimationPart &part, PlayCallback callback)
 	// initialize synchronization of prev and current animation
 	float pos = -1.f;
 	if (part.blend && !part.blend->stop_at_end)
-		pos = fmod(part.blend->timeCurrent, part.blend->timeTotal) / part.blend->timeTotal;
+		pos = fmodf(part.blend->timeCurrent, part.blend->timeTotal) / part.blend->timeTotal;
 #ifdef DEBUG
 	//IKinematicsAnimated* K = m_skeleton_animated;
 	//if(currentAnim != part.motion.val)

@@ -44,7 +44,7 @@ IC void CGameLocationSelector::reinit(const CGameGraph *graph)
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CGameLocationSelector::select_location(const _vertex_id_type start_vertex_id, _vertex_id_type &dest_vertex_id)
+IC void CGameLocationSelector::select_location(const _vertex_id_type start_vertex_id, _vertex_id_type &dest_vrtx_id)
 {
 	switch (m_selection_type)
 	{
@@ -59,8 +59,8 @@ IC void CGameLocationSelector::select_location(const _vertex_id_type start_verte
 	case eSelectionTypeRandomBranching:
 	{
 		if (m_graph)
-			select_random_location(start_vertex_id, dest_vertex_id);
-		m_failed = m_failed && (start_vertex_id == dest_vertex_id);
+			select_random_location(start_vertex_id, dest_vrtx_id);
+		m_failed = m_failed && (start_vertex_id == dest_vrtx_id);
 		break;
 	}
 	default:
@@ -69,7 +69,7 @@ IC void CGameLocationSelector::select_location(const _vertex_id_type start_verte
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CGameLocationSelector::select_random_location(const _vertex_id_type start_vertex_id, _vertex_id_type &dest_vertex_id)
+IC void CGameLocationSelector::select_random_location(const _vertex_id_type start_vertex_id, _vertex_id_type &dest_vrtx_id)
 {
 	VERIFY(m_graph);
 	VERIFY(m_graph->valid_vertex_id(start_vertex_id));
@@ -110,9 +110,9 @@ IC void CGameLocationSelector::select_random_location(const _vertex_id_type star
 	if (!branch_factor)
 	{
 		if ((start_vertex_id != m_previous_vertex_id) && accessible(m_previous_vertex_id))
-			dest_vertex_id = m_previous_vertex_id;
+			dest_vrtx_id = m_previous_vertex_id;
 		else
-			dest_vertex_id = start_vertex_id;
+			dest_vrtx_id = start_vertex_id;
 	}
 	else
 	{
@@ -146,7 +146,7 @@ IC void CGameLocationSelector::select_random_location(const _vertex_id_type star
 						continue;
 					}
 
-					dest_vertex_id = (*i).vertex_id();
+					dest_vrtx_id = (*i).vertex_id();
 					found = true;
 					break;
 				}

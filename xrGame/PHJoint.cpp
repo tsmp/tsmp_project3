@@ -1369,10 +1369,10 @@ void CPHJoint::GetAxisDirDynamic(int num, Fvector &axis)
 	axis.set(result[0], result[1], result[2]);
 }
 
-void CPHJoint::GetAnchorDynamic(Fvector &anchor)
+void CPHJoint::GetAnchorDynamic(Fvector &anchorV)
 {
-
 	dVector3 result;
+
 	switch (eType)
 	{
 	case hinge:
@@ -1388,7 +1388,8 @@ void CPHJoint::GetAnchorDynamic(Fvector &anchor)
 	case slider:
 		R_ASSERT2(false, "position of slider joint is undefinite");
 	}
-	anchor.set(result[0], result[1], result[2]);
+
+	anchorV.set(result[0], result[1], result[2]);
 }
 
 CPHJoint::SPHAxis::SPHAxis()

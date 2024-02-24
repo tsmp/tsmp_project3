@@ -126,13 +126,13 @@ void CALifeGraphRegistry::detach(CSE_Abstract &object, CSE_ALifeInventoryItem *i
 		add(smart_cast<CSE_ALifeDynamicObject *>(item), game_vertex_id);
 	else
 	{
-		CSE_ALifeDynamicObject *object = smart_cast<CSE_ALifeDynamicObject *>(item);
-		VERIFY(object);
-		object->m_tGraphID = game_vertex_id;
-		level().add(object);
+		auto dynamicObj = smart_cast<CSE_ALifeDynamicObject*>(item);
+		VERIFY(dynamicObj);
+		dynamicObj->m_tGraphID = game_vertex_id;
+		level().add(dynamicObj);
 	}
 
-	CSE_ALifeDynamicObject *dynamic_object = smart_cast<CSE_ALifeDynamicObject *>(&object);
+	CSE_ALifeDynamicObject *dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(&object);
 	R_ASSERT2(!alife_query || dynamic_object, "Cannot detach an item from non-alife object");
 
 	VERIFY(alife_query || !smart_cast<CSE_ALifeDynamicObject *>(&object) || (ai().game_graph().vertex(smart_cast<CSE_ALifeDynamicObject *>(&object)->m_tGraphID)->level_id() == level().level_id()));

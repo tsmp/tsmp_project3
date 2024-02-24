@@ -37,8 +37,9 @@ BOOL CLevel::Load_GameSpecific_Before()
 
 BOOL CLevel::Load_GameSpecific_After()
 {
-	// loading static particles
+	// Loading static particles
 	string_path fn_game;
+
 	if (FS.exist(fn_game, "$level$", "level.ps_static"))
 	{
 		IReader *F = FS.r_open(fn_game);
@@ -46,7 +47,7 @@ BOOL CLevel::Load_GameSpecific_After()
 		u32 chunk = 0;
 		string256 ref_name;
 		Fmatrix transform;
-		Fvector zero_vel = {0.f, 0.f, 0.f};
+
 		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk, OBJ))
 		{
 			OBJ->r_stringZ(ref_name, sizeof(ref_name));
@@ -57,23 +58,25 @@ BOOL CLevel::Load_GameSpecific_After()
 			pStaticParticles->Play();
 			m_StaticParticles.push_back(pStaticParticles);
 		}
+
 		FS.r_close(F);
 	}
 
 	if (!g_dedicated_server)
 	{
-		// loading static sounds
+		// Loading static sounds
 		VERIFY(m_level_sound_manager);
 		m_level_sound_manager->Load();
 
-		// loading sound environment
+		// Loading sound environment
 		if (FS.exist(fn_game, "$level$", "level.snd_env"))
 		{
 			IReader *F = FS.r_open(fn_game);
 			::Sound->set_geometry_env(F);
 			FS.r_close(F);
 		}
-		// loading SOM
+
+		// Loading SOM
 		if (FS.exist(fn_game, "$level$", "level.som"))
 		{
 			IReader *F = FS.r_open(fn_game);
@@ -81,22 +84,24 @@ BOOL CLevel::Load_GameSpecific_After()
 			FS.r_close(F);
 		}
 
-		// loading random (around player) sounds
+		// Loading random (around player) sounds
 		if (pSettings->section_exist("sounds_random"))
 		{
 			CInifile::Sect &S = pSettings->r_section("sounds_random");
 			Sounds_Random.reserve(S.Data.size());
+
 			for (CInifile::SectCIt I = S.Data.begin(); S.Data.end() != I; ++I)
 			{
 				Sounds_Random.push_back(ref_sound());
 				Sound->create(Sounds_Random.back(), *I->first, st_Effect, sg_SourceType);
 			}
+
 			Sounds_Random_dwNextTime = Device.TimerAsync() + 50000;
 			Sounds_Random_Enabled = FALSE;
 		}
 	}
 
-	// loading scripts
+	// Loading scripts
 	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 
 	if (pLevel->section_exist("level_scripts") && pLevel->line_exist("level_scripts", "script"))

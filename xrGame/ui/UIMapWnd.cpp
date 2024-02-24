@@ -430,9 +430,9 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 {
 	if (inherited::OnMouse(x, y, mouse_action))
 		return true;
-	Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
+	Fvector2 cursorPos = GetUICursor()->GetCursorPosition();
 
-	if (GlobalMap() && !GlobalMap()->Locked() && ActiveMapRect().in(cursor_pos))
+	if (GlobalMap() && !GlobalMap()->Locked() && ActiveMapRect().in(cursorPos))
 	{
 		switch (mouse_action)
 		{
@@ -445,40 +445,8 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 				return true;
 			}
 			break;
-			/*
-		case WINDOW_LBUTTON_DOWN:
-			if (	((mouse_action==WINDOW_LBUTTON_DOWN)&&(m_flags.is_any(lmZoomIn+lmZoomOut))) || 
-					(mouse_action==WINDOW_MOUSE_WHEEL_DOWN) ||
-					(mouse_action==WINDOW_MOUSE_WHEEL_UP)	
-				)
-			{
-				CUIGlobalMap* gm				= GlobalMap();
-				if(m_flags.test(lmZoomIn))		SetZoom(GetZoom()*1.5f);
-				else							SetZoom(GetZoom()/1.5f);
-				m_tgtCenter						= cursor_pos;
-				Fvector2 _p;					gm->GetAbsolutePos(_p);
-				m_tgtCenter.sub					(_p);
-				m_tgtCenter.div					(gm->GetCurrentZoom());
-				ResetActionPlanner				();
-				m_hint->SetOwner				(NULL);
-				return							true;
-			}
-		break;
-
-		case WINDOW_MOUSE_WHEEL_UP:
-			m_UIMainScrollV->TryScrollDec		();
-			m_hint->SetOwner					(NULL);
-			return								true;
-		break;
-
-		case WINDOW_MOUSE_WHEEL_DOWN:
-			m_UIMainScrollV->TryScrollInc		();
-			m_hint->SetOwner					(NULL);
-			return								true;
-		break;
-*/
 		}
-	};
+	}
 
 	if (((mouse_action == WINDOW_LBUTTON_DOWN) && (m_flags.is_any(lmZoomIn + lmZoomOut))) ||
 		(mouse_action == WINDOW_MOUSE_WHEEL_DOWN) ||
@@ -504,7 +472,7 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 
 		if (!fsimilar(_prev_zoom, GetZoom()))
 		{
-			m_tgtCenter = cursor_pos;
+			m_tgtCenter = cursorPos;
 			Fvector2 _p;
 			gm->GetAbsolutePos(_p);
 			m_tgtCenter.sub(_p);

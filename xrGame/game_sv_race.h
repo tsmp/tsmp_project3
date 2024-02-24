@@ -11,12 +11,12 @@ class game_sv_Race : public game_sv_mp
 	std::vector<std::string> m_AvailableSkins;
 	CRandom m_CarRandom;
 	CRandom m_CarVisualRandom;
-	u32 m_WinnerFinishTime;
-	u16 m_WinnerId;
-	u8 m_CurrentRpoint;
-	u8 m_CurrentRoundCar;
-	u8 m_MaxPlayers;
-	u8 m_CurrentRoad;
+	u32 m_WinnerFinishTime{ 0 };
+	u16 m_WinnerId{ static_cast<u16>(-1) };
+	u8 m_CurrentRpoint{ 0 };
+	u8 m_CurrentRoundCar{ static_cast<u8>(-1) };
+	u8 m_MaxPlayers{ 4 };
+	u8 m_CurrentRoad{ static_cast<u8>(-1) };
 
 public:
 

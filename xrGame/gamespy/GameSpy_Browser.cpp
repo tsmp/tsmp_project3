@@ -401,7 +401,7 @@ void CGameSpy_Browser::ReadServerInfo(ServerInfo *pServerInfo, void *pServer)
 	pServerInfo->m_GameType = (u8)xrGS_SBServerGetIntValue(pServer, m_pQR2->xrGS_RegisteredKey(GAMETYPE_NAME_KEY), 0);
 
 	if (!pServerInfo->m_GameType)
-		pServerInfo->m_GameType = GetGameTypeByName(pServerInfo->m_ServerGameType);
+		pServerInfo->m_GameType = xr_narrow_cast<u8>(GetGameTypeByName(pServerInfo->m_ServerGameType));
 
 	sprintf_s(pServerInfo->m_ServerVersion, "%s", xrGS_SBServerGetStringValue(pServer, m_pQR2->xrGS_RegisteredKey(GAMEVER_KEY), "--"));
 

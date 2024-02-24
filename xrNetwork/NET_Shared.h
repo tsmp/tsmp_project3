@@ -52,13 +52,13 @@ public:
 
 	void Update(DPN_CONNECTION_INFO &CI);
 
-	IC u32 getPing() { return ci_last.dwRoundTripLatencyMS; }
-	IC u32 getBPS() { return ci_last.dwThroughputBPS; }
-	IC u32 getPeakBPS() { return ci_last.dwPeakThroughputBPS; }
-	IC u32 getDroppedCount() { return ci_last.dwPacketsDropped; }
-	IC u32 getRetriedCount() { return ci_last.dwPacketsRetried; }
-	IC u32 getMPS_Receive() { return mps_recive; }
-	IC u32 getMPS_Send() { return mps_send; }
+	IC u32 getPing() const { return ci_last.dwRoundTripLatencyMS; }
+	IC u32 getBPS() const { return ci_last.dwThroughputBPS; }
+	IC u32 getPeakBPS() const { return ci_last.dwPeakThroughputBPS; }
+	IC u32 getDroppedCount() const { return ci_last.dwPacketsDropped; }
+	IC u32 getRetriedCount() const { return ci_last.dwPacketsRetried; }
+	IC u32 getMPS_Receive() const { return mps_recive; }
+	IC u32 getMPS_Send() const { return mps_send; }
 
 	IC void Clear()
 	{

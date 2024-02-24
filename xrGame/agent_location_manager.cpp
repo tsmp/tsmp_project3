@@ -47,63 +47,50 @@ struct CRemoveOldDangerCover
 	}
 };
 
-struct CDangerLocationPredicate
-{
-	Fvector m_position;
-
-	IC CDangerLocationPredicate(const Fvector &position)
-	{
-		m_position = position;
-	}
-
-	IC bool operator()(const CAgentLocationManager::CDangerLocationPtr &location) const
-	{
-		return (*location == m_position);
-	}
-};
-
 IC CAgentLocationManager::CDangerLocationPtr CAgentLocationManager::location(const Fvector &position)
 {
-	LOCATIONS::iterator I = std::find_if(m_danger_locations.begin(), m_danger_locations.end(), CDangerLocationPredicate(position));
-	if (I != m_danger_locations.end())
-		return (*I);
-	return (0);
+	auto it = std::find_if(m_danger_locations.begin(), m_danger_locations.end(), [&](const CDangerLocationPtr& location)
+	{
+		return *location == position;
+	});
+
+	if (it != m_danger_locations.end())
+		return *it;
+
+	return nullptr;
 }
 
 bool CAgentLocationManager::suitable(CAI_Stalker *object, const CCoverPoint *location, bool use_enemy_info) const
 {
-	CAgentMemberManager::const_iterator I = this->object().member().members().begin();
-	CAgentMemberManager::const_iterator E = this->object().member().members().end();
-	for (; I != E; ++I)
+	const auto &members = this->object().member().members();
+
+	for (const CMemberOrder* member: members)
 	{
-		if ((*I)->object().ID() == object->ID())
+		if (member->object().ID() == object->ID())
 			continue;
 
-		//		if ((*I)->object().Position().distance_to_sqr(location->position()) <= _sqr(5.f))
-		//			return					(false);
-
-		if (!(*I)->cover())
+		if (!member->cover())
 			continue;
 
 		// check if member cover is too close
-		if ((*I)->cover()->m_position.distance_to_sqr(location->position()) <= _sqr(5.f))
+		if (member->cover()->m_position.distance_to_sqr(location->position()) <= _sqr(5.f))
 			// so member cover is too close
-			//			if ((*I)->object().Position().distance_to_sqr(location->position()) <= object->Position().distance_to_sqr(location->position()))
+			//			if (member->object().Position().distance_to_sqr(location->position()) <= object->Position().distance_to_sqr(location->position()))
 			// check if member to its cover is more close than we to our cover
-			if ((*I)->object().Position().distance_to_sqr((*I)->cover()->m_position) <= object->Position().distance_to_sqr(location->position()) + 2.f)
-				return (false);
+			if (member->object().Position().distance_to_sqr(member->cover()->m_position) <= object->Position().distance_to_sqr(location->position()) + 2.f)
+				return false;
 	}
 
 	if (use_enemy_info)
 	{
-		CAgentEnemyManager::ENEMIES::const_iterator I = this->object().enemy().enemies().begin();
-		CAgentEnemyManager::ENEMIES::const_iterator E = this->object().enemy().enemies().end();
-		for (; I != E; ++I)
-			if ((*I).m_enemy_position.distance_to_sqr(location->position()) < _sqr(MIN_SUITABLE_ENEMY_DISTANCE))
-				return (false);
+		const auto &enemies = this->object().enemy().enemies();
+
+		for (const auto &enemy: enemies)
+			if (enemy.m_enemy_position.distance_to_sqr(location->position()) < _sqr(MIN_SUITABLE_ENEMY_DISTANCE))
+				return false;
 	}
 
-	return (true);
+	return true;
 }
 
 void CAgentLocationManager::make_suitable(CAI_Stalker *object, const CCoverPoint *location) const

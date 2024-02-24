@@ -282,7 +282,7 @@ bool CUICustomEdit::KeyPressed(int dik)
 		int num = 0;
 		bool found = false;
 		for (int i = 0; i < 33; i++)
-			if (dik == DIKS[i])
+			if (static_cast<u32>(dik) == DIKS[i])
 			{
 				num = i;
 				found = true;

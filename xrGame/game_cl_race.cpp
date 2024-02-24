@@ -22,7 +22,7 @@ constexpr u32 COLOR_PLAYER_NAME = 0xff40ff40;
 const Fvector NameIndicatorPosition = { 0.f, 0.3f,0.f };
 const char* LocationOtherPlayer = "mp_friend_location";
 
-game_cl_Race::game_cl_Race() : m_game_ui(nullptr), m_WinnerId(static_cast<u16>(-1)), m_ReinforcementTime(-1), m_WinnerMessageSet(false)
+game_cl_Race::game_cl_Race()
 {
 	LoadSounds();
 

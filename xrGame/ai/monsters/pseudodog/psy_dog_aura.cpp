@@ -46,10 +46,6 @@ BOOL CPPEffectorPsyDogAura::update()
 	return TRUE;
 }
 
-//////////////////////////////////////////////////////////////////////////
-//
-//////////////////////////////////////////////////////////////////////////
-
 void CPsyDogAura::reinit()
 {
 	m_time_actor_saw_phantom = 0;
@@ -66,34 +62,36 @@ void CPsyDogAura::update_schedule()
 
 	m_time_phantom_saw_actor = 0;
 
-	// check memory of actor and check memory of phantoms
-	CVisualMemoryManager::VISIBLES::const_iterator I = m_actor->memory().visual().objects().begin();
-	CVisualMemoryManager::VISIBLES::const_iterator E = m_actor->memory().visual().objects().end();
-	for (; I != E; ++I)
+	// Check memory of actor and check memory of phantoms
+	const auto &visibleObjects = m_actor->memory().visual().objects();
+
+	for (const auto visibleObj: visibleObjects)
 	{
-		const CGameObject *obj = (*I).m_object;
-		if (smart_cast<const CPsyDogPhantom *>(obj))
+		const CGameObject *obj = visibleObj.m_object;
+
+		if (smart_cast<const CPsyDogPhantom*>(obj))
 		{
 			if (m_actor->memory().visual().visible_now(obj))
 				m_time_actor_saw_phantom = time();
 		}
 	}
 
-	// check memory and enemy manager of phantoms whether they see actor
-	xr_vector<CPsyDogPhantom *>::iterator it = m_object->m_storage.begin();
-	for (; it != m_object->m_storage.end(); ++it)
+	// Check memory and enemy manager of phantoms whether they see actor
+	const auto &phantoms = m_object->m_storage;
+
+	for(CPsyDogPhantom* phantom: phantoms)
 	{
-		if ((*it)->EnemyMan.get_enemy() == m_actor)
+		if (phantom->EnemyMan.get_enemy() == m_actor)
 			m_time_phantom_saw_actor = time();
 		else
 		{
-			ENEMIES_MAP::const_iterator I = (*it)->EnemyMemory.get_memory().begin();
-			ENEMIES_MAP::const_iterator E = (*it)->EnemyMemory.get_memory().end();
-			for (; I != E; ++I)
+			const auto &phantomEnemies = phantom->EnemyMemory.get_memory();
+
+			for(auto &[entity, monsterEnemy]: phantomEnemies)
 			{
-				if (I->first == m_actor)
+				if (entity == m_actor)
 				{
-					m_time_phantom_saw_actor = I->second.time;
+					m_time_phantom_saw_actor = monsterEnemy.time;
 					break;
 				}
 			}
@@ -103,10 +101,11 @@ void CPsyDogAura::update_schedule()
 			break;
 	}
 
-	bool need_be_active = (m_time_actor_saw_phantom + 2000 > time()) || (m_time_phantom_saw_actor != 0);
+	bool needToBeActive = (m_time_actor_saw_phantom + 2000 > time()) || (m_time_phantom_saw_actor != 0);
+
 	if (active())
 	{
-		if (!need_be_active)
+		if (!needToBeActive)
 		{
 			m_effector->switch_off();
 			m_effector = 0;
@@ -114,9 +113,9 @@ void CPsyDogAura::update_schedule()
 	}
 	else
 	{
-		if (need_be_active)
+		if (needToBeActive)
 		{
-			// create effector
+			// Create effector
 			m_effector = xr_new<CPPEffectorPsyDogAura>(m_state, 5000);
 			Actor()->Cameras().AddPPEffector(m_effector);
 		}

@@ -73,9 +73,9 @@ void CUIEditKeyBind::Init(float x, float y, float width, float height)
 	InitTexture("ui_options_string");
 }
 
-void CUIEditKeyBind::InitTexture(LPCSTR texture, bool bHorizontal)
+void CUIEditKeyBind::InitTexture(LPCSTR texture, bool horizontal)
 {
-	CUILabel::InitTexture(texture, bHorizontal);
+	CUILabel::InitTexture(texture, horizontal);
 }
 
 void CUIEditKeyBind::OnFocusLost()

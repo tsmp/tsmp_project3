@@ -153,15 +153,14 @@ void CMonsterEnemyManager::update()
 	m_time_updated = time();
 }
 
-void CMonsterEnemyManager::force_enemy(const CEntityAlive *enemy)
+void CMonsterEnemyManager::force_enemy(const CEntityAlive *enemyToForce)
 {
-	this->enemy = enemy;
+	enemy = enemyToForce;
 	position = enemy->Position();
 	vertex = enemy->ai_location().level_vertex_id();
 	time_last_seen = time();
 
 	forced = true;
-
 	update();
 }
 
@@ -203,9 +202,9 @@ void CMonsterEnemyManager::reinit()
 	m_time_start_see_enemy = 0;
 }
 
-void CMonsterEnemyManager::add_enemy(const CEntityAlive *enemy)
+void CMonsterEnemyManager::add_enemy(const CEntityAlive *enemyToAdd)
 {
-	monster->EnemyMemory.add_enemy(enemy);
+	monster->EnemyMemory.add_enemy(enemyToAdd);
 }
 
 bool CMonsterEnemyManager::see_enemy_now()

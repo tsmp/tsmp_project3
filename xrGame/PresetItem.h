@@ -3,8 +3,8 @@
 struct PresetItem
 {
 private:
-	u8 Addons;
-	u16 ItemID;
+	u8 AddonFlags;
+	u16 ItemIdx;
 
 public:	
 	PresetItem(u8 Addons, u16 Item) { set(Addons, Item); };
@@ -12,38 +12,38 @@ public:
 
 	bool operator==(const PresetItem &other)
 	{
-		return Addons == other.Addons && ItemID == other.ItemID;
+		return AddonFlags == other.AddonFlags && ItemIdx == other.ItemIdx;
 	}
 
 	void set(u8 addons, u16 Item)
 	{
-		Addons = addons;
-		ItemID = Item;
+		AddonFlags = addons;
+		ItemIdx = Item;
 	}
 
 	void SetAddons(u8 addons)
 	{
-		Addons = addons;
+		AddonFlags = addons;
 	}
 
 	void SetItemID(u16 item)
 	{
-		ItemID = item;
+		ItemIdx = item;
 	}
 
 	u8 GetAddons() const
 	{
-		return Addons;
+		return AddonFlags;
 	}
 
 	u16 GetItemID() const
 	{
-		return ItemID;
+		return ItemIdx;
 	}
 
 	bool IsValid() const
 	{
-		return Addons != static_cast<u8>(-1) && ItemID != static_cast<u16>(-1);
+		return AddonFlags != static_cast<u8>(-1) && ItemIdx != static_cast<u16>(-1);
 	}
 
 	void Serialize(NET_Packet &p) const;

@@ -20,13 +20,6 @@ game_sv_Race::game_sv_Race()
 {
 	m_phase = GAME_PHASE_NONE;
 	m_type = GAME_RACE;
-	m_WinnerId = u16(-1);
-	m_CurrentRpoint = 0;
-	m_WinnerFinishTime = 0;
-	m_CurrentRoundCar = u8(-1);
-	m_MaxPlayers = 4;
-	m_CurrentRoad = -1;
-
 	m_CarRandom.seed(static_cast<s32>(time(nullptr)));
 	m_CarVisualRandom.seed(static_cast<s32>(time(nullptr)));
 	LoadRaceSettings();
@@ -48,7 +41,7 @@ void game_sv_Race::LoadRaceSettings()
 	CInifile* settings = xr_new<CInifile>(temp);
 
 	if (settings->line_exist("settings", "max_players"))
-		m_MaxPlayers = settings->r_s32("settings", "max_players");
+		m_MaxPlayers = settings->r_u8("settings", "max_players");
 
 	if (settings->section_exist("player_visuals"))
 	{
@@ -310,7 +303,7 @@ void game_sv_Race::OnRoundStart()
 	inherited::OnRoundStart();
 	m_WinnerId = u16(-1);
 	m_CurrentRpoint = 0;
-	m_CurrentRoundCar = m_CarRandom.randI(static_cast<int>(m_AvailableCars.size()));
+	m_CurrentRoundCar = static_cast<u8>(m_CarRandom.randI(static_cast<s32>(m_AvailableCars.size())));
 	switch_Phase(GAME_PHASE_RACE_START);
 
 	// Respawn all players

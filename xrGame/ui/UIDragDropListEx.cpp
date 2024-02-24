@@ -742,10 +742,10 @@ void CUICellContainer::Draw()
 				const Fvector2 &p = pts[k];
 				const Fvector2 &uv = uvs[k];
 
-				float x = iFloor(rect_offset.x + p.x * (f_len.x)) - 0.5f;
-				float y = iFloor(rect_offset.y + p.y * (f_len.y)) - 0.5f;
+				float x2 = iFloor(rect_offset.x + p.x * (f_len.x)) - 0.5f;
+				float y2 = iFloor(rect_offset.y + p.y * (f_len.y)) - 0.5f;
 
-				UIRender->PushPoint(x, y, 0, 0xFFFFFFFF, tp.x + uv.x, tp.y + uv.y);
+				UIRender->PushPoint(x2, y2, 0, 0xFFFFFFFF, tp.x + uv.x, tp.y + uv.y);
 			}
 		}
 	}

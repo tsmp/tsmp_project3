@@ -30,15 +30,18 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(const T &restriction, const F
 
 	float min_dist_sqr = flt_max;
 	u32 selected = u32(-1);
-	xr_vector<u32>::const_iterator I = restriction->accessible_neighbour_border(restriction, out_restriction).begin();
-	xr_vector<u32>::const_iterator E = restriction->accessible_neighbour_border(restriction, out_restriction).end();
-	for (; I != E; ++I)
+
 	{
-		float distance_sqr = ai().level_graph().vertex_position(*I).distance_to_sqr(position);
-		if (distance_sqr < min_dist_sqr)
+		xr_vector<u32>::const_iterator I = restriction->accessible_neighbour_border(restriction, out_restriction).begin();
+		xr_vector<u32>::const_iterator E = restriction->accessible_neighbour_border(restriction, out_restriction).end();
+		for (; I != E; ++I)
 		{
-			min_dist_sqr = distance_sqr;
-			selected = *I;
+			float distance_sqr = ai().level_graph().vertex_position(*I).distance_to_sqr(position);
+			if (distance_sqr < min_dist_sqr)
+			{
+				min_dist_sqr = distance_sqr;
+				selected = *I;
+			}
 		}
 	}
 
@@ -46,7 +49,7 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(const T &restriction, const F
 	{
 		Msg("! can not get accessible nearest vertex");
 		Msg("vertex_id[%d], object[%s], position[%f][%f][%f]", selected, *name(), VPUSH(position));
-		return -1;
+		return static_cast<u32>(-1);
 	}
 
 	{
@@ -78,8 +81,9 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(const T &restriction, const F
 
 	bool selectedVertexIdValid = ai().level_graph().valid_vertex_id(selected);
 	VERIFY(selectedVertexIdValid);
+
 	if (!selectedVertexIdValid)
-		return -1;
+		return static_cast<u32>(-1);
 
 	{
 		Fvector center = ai().level_graph().vertex_position(selected);
@@ -132,8 +136,9 @@ IC u32 CSpaceRestrictionBridge::accessible_nearest(const T &restriction, const F
 
 	selectedVertexIdValid = ai().level_graph().valid_vertex_id(selected);
 	VERIFY(selectedVertexIdValid);
+
 	if (!selectedVertexIdValid)
-		return -1;
+		return static_cast<u32>(-1);
 
 	return selected;
 }

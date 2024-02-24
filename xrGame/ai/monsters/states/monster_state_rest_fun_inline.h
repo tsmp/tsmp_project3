@@ -32,11 +32,13 @@ void CStateMonsterRestFunAbstract::execute()
 	Fvector point;
 	float dist;
 
-	Fvector dir;
-	dir.sub(object->CorpseMan.get_corpse_position(), object->Position());
-	dist = dir.magnitude();
-	dir.normalize();
-	point.mad(object->CorpseMan.get_corpse_position(), dir, 2.0f);
+	{
+		Fvector dir;
+		dir.sub(object->CorpseMan.get_corpse_position(), object->Position());
+		dist = dir.magnitude();
+		dir.normalize();
+		point.mad(object->CorpseMan.get_corpse_position(), dir, 2.0f);
+	}
 
 	object->set_action(ACT_RUN);
 	object->path().set_target_point(point);
@@ -62,12 +64,11 @@ void CStateMonsterRestFunAbstract::execute()
 			dir.getHP(h, p);
 			dir.setHP(h, p + 5 * PI / 180);
 			dir.normalize();
+			const float impulse = IMPULSE_TO_CORPSE * target->m_pPhysicsShell->getMass() / target->m_pPhysicsShell->Elements().size();
 
 			// выполнить бросок
 			for (u32 i = 0; i < target->m_pPhysicsShell->Elements().size(); i++)
-			{
-				target->m_pPhysicsShell->Elements()[i]->applyImpulse(dir, IMPULSE_TO_CORPSE * target->m_pPhysicsShell->getMass() / target->m_pPhysicsShell->Elements().size());
-			}
+				target->m_pPhysicsShell->Elements()[i]->applyImpulse(dir, impulse);
 
 			time_last_hit = Device.dwTimeGlobal;
 		}

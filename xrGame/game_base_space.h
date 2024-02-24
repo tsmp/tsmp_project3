@@ -1,6 +1,6 @@
 #pragma once
 
-enum EGameTypes
+enum EGameTypes: u32
 {
 	GAME_ANY = 0,
 	GAME_SINGLE = 1,

@@ -46,7 +46,7 @@ public:
 	struct
 	{
 		u32 m_LastCheckMinute{ 0 };
-		u32 m_UsageCount{ 0 };
+		int m_UsageCount{ 0 };
 		u32 m_BlockedUntil{ 0 };
 	} m_SpeechMessages;
 

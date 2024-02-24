@@ -539,9 +539,9 @@ void CCar::InterpolateStates(const float &factor)
 	const auto &vec1 = m_Update1->StateVec;
 	const auto &vec2 = m_Update2->StateVec;
 
-	u32 elementsCnt = static_cast<u32>(vec1.size());
+	u16 elementsCnt = static_cast<u16>(vec1.size());
 
-	for (u32 i = 0; i < elementsCnt; i++)
+	for (u16 i = 0; i < elementsCnt; i++)
 	{
 		SPHNetState newState = vec2[i];
 
@@ -676,7 +676,7 @@ void CCar::net_Export(NET_Packet &P)
 	{
 		P.w_u16(PHGetSyncItemsNumber());
 
-		for (int i = 0; i < PHGetSyncItemsNumber(); i++)
+		for (u16 i = 0; i < PHGetSyncItemsNumber(); i++)
 		{
 			auto item = PHGetSyncItem(i);
 
@@ -1257,9 +1257,9 @@ void CCar::Init()
 				i->second.CDamagableHealthItem::Init(float(atof(*item.second)), 2);
 			else
 			{
-				xr_map<u16, SDoor>::iterator i = m_doors.find(index);
-				R_ASSERT3(i != m_doors.end(), "only wheel and doors bones allowed for damage defs", *item.first);
-				i->second.CDamagableHealthItem::Init(float(atof(*item.second)), 1);
+				auto it = m_doors.find(index);
+				R_ASSERT3(it != m_doors.end(), "only wheel and doors bones allowed for damage defs", *item.first);
+				it->second.CDamagableHealthItem::Init(float(atof(*item.second)), 1);
 			}
 		}
 	}
@@ -2006,13 +2006,15 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 		{
 			if (!O || !O->H_Parent() || (this != O->H_Parent()))
 				return;
-			NET_Packet P;
-			u_EventGen(P, GE_OWNERSHIP_REJECT, ID());
-			P.w_u16(u16(O->ID()));
-			u_EventSend(P);
+
+			NET_Packet packet;
+			u_EventGen(packet, GE_OWNERSHIP_REJECT, ID());
+			packet.w_u16(u16(O->ID()));
+			u_EventSend(packet);
 		}
 	}
 	break;
+
 	case GE_OWNERSHIP_REJECT:
 	{
 		P.r_u16(id);

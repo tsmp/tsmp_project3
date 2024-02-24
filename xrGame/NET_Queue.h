@@ -54,16 +54,17 @@ public:
 			P.r(&*data.begin(), size);
 		}
 	}
+
 	void exportt(NET_Packet &P)
 	{
-		u16 ID = M_EVENT;
-		P.w_begin(ID);
+		P.w_begin(M_EVENT);
 		P.w_u32(timestamp);
 		P.w_u16(type);
 		P.w_u16(destination);
 		if (data.size())
 			P.w(&*data.begin(), (u32)data.size());
 	}
+
 	void implication(NET_Packet &P) const
 	{
 		CopyMemory(P.B.data, &*data.begin(), (u32)data.size());

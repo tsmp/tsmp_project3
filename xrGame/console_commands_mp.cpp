@@ -769,7 +769,7 @@ public:
 	{
 		if (g_pGameLevel && Level().Server && OnServer() && Level().Server->game)
 		{
-			u32 curType = Level().Server->game->Type();
+			int curType = static_cast<int>(Level().Server->game->Type());
 
 			for (int k = GAME_DEATHMATCH; game_types[k].name; k++)
 			{

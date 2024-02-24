@@ -174,8 +174,8 @@ void CActor::PickupModeUpdate_COD()
 
 	for (u32 o_it = 0; o_it < ISpatialResult.size(); o_it++)
 	{
-		ISpatial *spatial = ISpatialResult[o_it];
-		CInventoryItem *pIItem = smart_cast<CInventoryItem *>(spatial->dcast_CObject());
+		ISpatial *spatialRes = ISpatialResult[o_it];
+		CInventoryItem *pIItem = smart_cast<CInventoryItem *>(spatialRes->dcast_CObject());
 		if (0 == pIItem)
 			continue;
 		if (pIItem->object().H_Parent() != NULL)
@@ -185,11 +185,11 @@ void CActor::PickupModeUpdate_COD()
 		if (pIItem->object().CLS_ID == CLSID_OBJECT_G_RPG7 || pIItem->object().CLS_ID == CLSID_OBJECT_G_FAKE)
 			continue;
 
-		CGrenade *pGrenade = smart_cast<CGrenade *>(spatial->dcast_CObject());
+		CGrenade *pGrenade = smart_cast<CGrenade*>(spatialRes->dcast_CObject());
 		if (pGrenade && !pGrenade->Useful())
 			continue;
 
-		CMissile *pMissile = smart_cast<CMissile *>(spatial->dcast_CObject());
+		CMissile *pMissile = smart_cast<CMissile*>(spatialRes->dcast_CObject());
 		if (pMissile && !pMissile->Useful())
 			continue;
 
@@ -213,10 +213,10 @@ void CActor::PickupModeUpdate_COD()
 
 	if (pNearestItem)
 	{
-		CFrustum frustum;
-		frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+		CFrustum frustum2;
+		frustum2.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
 
-		if (!CanPickItem(frustum, Device.vCameraPosition, &pNearestItem->object()))
+		if (!CanPickItem(frustum2, Device.vCameraPosition, &pNearestItem->object()))
 			pNearestItem = NULL;
 	}
 

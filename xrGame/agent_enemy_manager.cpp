@@ -248,9 +248,9 @@ void CAgentEnemyManager::assign_enemies()
 		(*I).m_probability *= 1.f - best;
 
 		// recovering sort order
-		for (u32 i = 0, n = m_enemies.size() - 1; i < n; ++i)
-			if (m_enemies[i + 1] < m_enemies[i])
-				std::swap(m_enemies[i], m_enemies[i + 1]);
+		for (u32 j = 0, n = m_enemies.size() - 1; j < n; ++j)
+			if (m_enemies[j + 1] < m_enemies[j])
+				std::swap(m_enemies[j], m_enemies[j + 1]);
 			else
 				break;
 	}

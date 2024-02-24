@@ -209,16 +209,6 @@ void CMovementManager::move_along_path(CPHMovementControl *movement_control, Fve
 		movement_control->DisableCharacter();
 		movement_control->b_exect_position = true;
 	}
-	/*
-	} else { // есть физ. объекты
-
-		movement_control->Calculate				(detail().path(), desirable_speed, detail().m_current_travel_point, precision);
-		movement_control->GetPosition			(dest_position);
-		
-		// проверка на хит
-		apply_collision_hit						(movement_control);
-	}
-		*/
 
 	// установить скорость
 	float real_motion = motion.magnitude() + desirable_dist - dist;
@@ -231,8 +221,8 @@ void CMovementManager::move_along_path(CPHMovementControl *movement_control, Fve
 	{
 		if (!movement_control->PhyssicsOnlyMode())
 		{
-			Fvector velocity = {0.f, 0.f, 0.f};
-			movement_control->SetVelocity(velocity);
+			Fvector zeroVelocity = {0.f, 0.f, 0.f};
+			movement_control->SetVelocity(zeroVelocity);
 			m_speed = 0.f;
 		}
 	}
