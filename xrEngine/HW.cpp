@@ -480,17 +480,17 @@ void CHW::updateWindowProps(HWND m_hWnd)
 		{
 			SetRect(&rcWindowBounds,
 				(DesktopRect.right - DevPP.BackBufferWidth),
-				(DesktopRect.bottom - DevPP.BackBufferHeight) / 2.04f,
-				(DesktopRect.right + DevPP.BackBufferWidth) / 1.5f,
-				(DesktopRect.bottom + DevPP.BackBufferHeight) / 2.04f);
+				static_cast<long>((DesktopRect.bottom - DevPP.BackBufferHeight) / 2.04f),
+				static_cast<long>((DesktopRect.right + DevPP.BackBufferWidth) / 1.5f),
+				static_cast<long>((DesktopRect.bottom + DevPP.BackBufferHeight) / 2.04f));
 		}
 		else if (strstr(Core.Params, "-screen_left"))
 		{
 			SetRect(&rcWindowBounds,
 				0,
-				(DesktopRect.bottom - DevPP.BackBufferHeight) / 2.04f,
+				static_cast<long>((DesktopRect.bottom - DevPP.BackBufferHeight) / 2.04f),
 				DevPP.BackBufferWidth,
-				(DesktopRect.bottom + DevPP.BackBufferHeight) / 2.04f);
+				static_cast<long>((DesktopRect.bottom + DevPP.BackBufferHeight) / 2.04f));
 		}
 		else if (bCenter)
 		{

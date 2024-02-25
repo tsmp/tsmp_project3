@@ -14,12 +14,8 @@ class CSE_Abstract;
 extern float gDedicatedScheduleScale;
 extern ENGINE_API bool g_dedicated_server;
 
-//-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS (30.f)
-//-----------------------------------------------------------------------------------------------------------
-//	CObject
-//-----------------------------------------------------------------------------------------------------------
-#pragma pack(push, 4)
+
 class ENGINE_API CObject : public DLL_Pure,
 						   public ISpatial,
 						   public ISheduled,
@@ -32,6 +28,7 @@ public:
 		u32 dwTime;
 		Fvector vPosition;
 	};
+
 	union ObjectProperties
 	{
 		struct
@@ -109,11 +106,13 @@ public:
 
 	// Geometry xform
 	virtual void Center(Fvector &C) const;
+
 	IC const Fmatrix &XFORM() const
 	{
 		VERIFY(_valid(renderable.xform));
 		return renderable.xform;
 	}
+
 	ICF Fmatrix &XFORM() { return renderable.xform; }
 	virtual void spatial_register();
 	virtual void spatial_unregister();
@@ -167,7 +166,6 @@ public:
 	ICF void setReady(BOOL _ready) { Props.net_Ready = _ready ? 1 : 0; }
 	ICF BOOL getReady() const { return Props.net_Ready; }
 
-	//---------------------------------------------------------------------
 	CObject();
 	virtual ~CObject();
 
@@ -202,5 +200,3 @@ public:
 public:
 	virtual bool register_schedule() const { return true; }
 };
-
-#pragma pack(pop)
