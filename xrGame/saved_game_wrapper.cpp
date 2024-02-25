@@ -97,6 +97,10 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
 		VERIFY(actor);
 
 		m_actor_health = actor->g_Health();
+
+		if(!ai().get_game_graph())
+			ai().SetGameGraph(xr_new<CGameGraph>("all"));
+
 		m_level_id = ai().game_graph().vertex(object->m_tGraphID)->level_id();
 
 		F_entity_Destroy(object);

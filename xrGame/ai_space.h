@@ -46,12 +46,13 @@ private:
 	void patrol_path_storage_raw(IReader &stream);
 	void patrol_path_storage(IReader &stream);
 	void set_alife(CALifeSimulator *alife_simulator);
-	void SetGameGraph(CGameGraph* graph);
 
 public:
 	CAI_Space();
 	virtual ~CAI_Space();
 	void init();
+	void SetGameGraph(CGameGraph* graph);
+
 	IC CGameGraph &game_graph() const;
 	IC CGameGraph *get_game_graph() const;
 	IC CLevelGraph &level_graph() const;
