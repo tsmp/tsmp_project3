@@ -102,7 +102,9 @@ bool CLevel::net_start1()
 		else
 			Server = xr_new<xrGameSpyServer>();
 
-		if (xr_strcmp(p.m_game_type, "single"))
+		const bool canLoadAllSpawn = !xr_strcmp(p.m_game_type, "single") || !xr_strcmp(p.m_game_type, "coop");
+
+		if (!canLoadAllSpawn)
 		{
 			string64 l_name = "";
 			const char *SOpts = *m_caServerOptions;

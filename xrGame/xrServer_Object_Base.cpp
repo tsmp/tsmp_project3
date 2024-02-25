@@ -387,6 +387,7 @@ xr_token game_types[] =
 	{"freeplay",GAME_FREEPLAY},
 	{"race", GAME_RACE},
 	{"carfight", GAME_CARFIGHT},
+	{"coop", GAME_COOP},
 	{0, 0}
 };
 

@@ -4,6 +4,7 @@
 #include "xrServerRespawnManager.h"
 
 extern bool IsGameTypeSingle();
+extern bool IsGameTypeCoop();
 
 #if 1 //def DEBUG
 #define USE_DESIGNER_KEY
@@ -26,7 +27,7 @@ void xrServer::SLS_Default()
 	CSE_ALifeCreatureActor *_actor = 0;
 #endif
 
-	if (!IsGameTypeSingle())
+	if (!IsGameTypeSingle() && !IsGameTypeCoop())
 		m_RespawnerMP.CleanRespawnList();
 
 	string_path fn_spawn;
@@ -50,7 +51,7 @@ void xrServer::SLS_Default()
 
 			if (CSE_Abstract* entity = Process_spawn(P, clientID))
 			{
-				if (!IsGameTypeSingle())
+				if (!IsGameTypeSingle() && !IsGameTypeCoop())
 					m_RespawnerMP.RegisterToRespawn(entity);
 
 #ifdef USE_DESIGNER_KEY
