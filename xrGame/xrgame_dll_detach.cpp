@@ -46,10 +46,10 @@ void init_game_globals()
 {
 	CreateUIGeom();
 	CInfoPortion::InitInternal();
+	CEncyclopediaArticle::InitInternal();
 
 	if (!g_dedicated_server)
-	{		
-		CEncyclopediaArticle::InitInternal();
+	{
 		CPhraseDialog::InitInternal();
 		InventoryUtilities::CreateShaders();
 	}

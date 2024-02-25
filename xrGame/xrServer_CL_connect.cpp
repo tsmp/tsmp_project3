@@ -69,7 +69,7 @@ void xrServer::SendConnectionData(IClient *_CL)
 	for (I = entities.begin(); I != E; ++I)
 		Perform_connect_spawn(I->second, CL, P);
 
-	if (_CL != GetServerClient())
+	if (_CL != GetServerClient() && !IsGameTypeCoop())
 		game->SendPatrolPaths(CL->ID);
 
 	// Send "finished" signal

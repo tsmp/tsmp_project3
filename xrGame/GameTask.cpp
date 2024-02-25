@@ -567,10 +567,13 @@ void SendTask(CActor* actor, const char* type, CGameTask* task, SGameTaskObjecti
 		news_text = translate_string((task->Objective(objective->GetIDX_script() + 1).description).c_str());
 	}
 
-	auto hud = HUD().GetUI()->UIGame();
-	hud->AddCustomStatic("main_task", true);
-	hud->GetCustomStatic("main_task")->wnd()->SetTextST(news_text.c_str());
-	hud->GetCustomStatic("main_task")->m_endTime = static_cast<float>(Device.dwTimeGlobal) / 1000 + 5;
+	if (!g_dedicated_server)
+	{
+		auto hud = HUD().GetUI()->UIGame();
+		hud->AddCustomStatic("main_task", true);
+		hud->GetCustomStatic("main_task")->wnd()->SetTextST(news_text.c_str());
+		hud->GetCustomStatic("main_task")->m_endTime = static_cast<float>(Device.dwTimeGlobal) / 1000 + 5;
+	}
 }
 
 void SGameTaskObjective::ChangeStateCallback()

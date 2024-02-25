@@ -244,7 +244,7 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
 
 	const auto& objectsRegistry = objects().objects();
 
-	if (!IsGameTypeSingle())
+	if (!IsGameTypeSingle() && !IsGameTypeCoop())
 		server().m_RespawnerMP.CleanRespawnList();
 
 	for (auto& idObjectPair : objectsRegistry)
@@ -252,7 +252,7 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
 		CSE_ALifeDynamicObject* entity = idObjectPair.second;
 		entity->on_register();
 
-		if (!IsGameTypeSingle())
+		if (!IsGameTypeSingle() && !IsGameTypeCoop())
 			server().m_RespawnerMP.RegisterToRespawn(entity);
 	}
 

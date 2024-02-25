@@ -10,6 +10,7 @@
 #include "xrServerRespawnManager.h"
 
 extern bool IsGameTypeSingle();
+extern bool IsGameTypeCoop();
 
 xr_string xrServer::ent_name_safe(u16 eid)
 {
@@ -35,7 +36,7 @@ void xrServer::Process_event_destroy(NET_Packet &P, ClientID const &sender, u32 
 		return;
 	}
 
-	if (!IsGameTypeSingle())
+	if (!IsGameTypeSingle() && !IsGameTypeCoop())
 		m_RespawnerMP.MarkReadyForRespawn(destID);
 
 	R_ASSERT(entityToDestroy);

@@ -337,12 +337,10 @@ void CModelPool::DeleteQueue()
 
 void CModelPool::Discard(dxRender_Visual *&V, BOOL b_complete)
 {
-	//
 	REGISTRY_IT it = Registry.find(V);
+
 	if (it != Registry.end())
 	{
-		// Pool - OK
-
 		// Base
 		const shared_str &name = it->second;
 		xr_vector<ModelDef>::iterator I = Models.begin();
@@ -374,9 +372,9 @@ void CModelPool::Discard(dxRender_Visual *&V, BOOL b_complete)
 				}
 			}
 		}
+
 		// Registry
 		xr_delete(V);
-		//.		xr_free			(name);
 		Registry.erase(it);
 	}
 	else
@@ -384,37 +382,43 @@ void CModelPool::Discard(dxRender_Visual *&V, BOOL b_complete)
 		// Registry entry not-found - just special type of visual / particles / etc.
 		xr_delete(V);
 	}
-	V = NULL;
+
+	V = nullptr;
 }
 
-void CModelPool::Prefetch()
+xr_string GetSectionName()
 {
-	Logging(FALSE);
-	// prefetch visuals
-	string256 section;
 	string256 gameTypeName;
 	strcpy(gameTypeName, g_pGamePersistent->m_game_params.m_game_type);
-
-	if (!strcmp(gameTypeName, "hardmatch"))
-		strcpy(gameTypeName, "deathmatch");
-
-	if (!strcmp(gameTypeName, "freeplay"))
-		strcpy(gameTypeName, "deathmatch");
-
-	if (!strcmp(gameTypeName, "race"))
-		strcpy(gameTypeName, "deathmatch");
 
 	if (!strcmp(gameTypeName, "carfight"))
 		strcpy(gameTypeName, "teamdeathmatch");
 
-	strconcat(sizeof(section), section, "prefetch_visuals_", gameTypeName);
-	CInifile::Sect &sect = pSettings->r_section(section);
-	for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
+	if (!strcmp(gameTypeName, "coop"))
+		strcpy(gameTypeName, "single");
+
+	string256 section;
+	const char* SectionNamePrefix = "prefetch_visuals_";
+	strconcat(sizeof(section), section, SectionNamePrefix, gameTypeName);
+
+	if (!pSettings->section_exist(section)) // hack for new gametypes
+		strconcat(sizeof(section), section, SectionNamePrefix, "deathmatch");
+
+	return section;
+}
+
+void CModelPool::Prefetch()
+{
+	// Prefetch visuals
+	Logging(FALSE);
+	auto &sect = pSettings->r_section(GetSectionName().c_str());
+
+	for (const auto &item: sect.Data)
 	{
-		const CInifile::Item &item = *I;
 		dxRender_Visual *V = Create(item.first.c_str());
 		Delete(V, FALSE);
 	}
+
 	Logging(TRUE);
 }
 

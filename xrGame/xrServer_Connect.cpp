@@ -53,6 +53,16 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 #endif
 
 	game->Create(session_name);
+
+	if (IsGameTypeCoop() && strstr(session_name.c_str(), "all/"))
+	{
+		// Replace "all" to level name
+		std::string tmp = session_name.c_str();
+		std::string params(tmp.begin() + xr_strlen("all"), tmp.end());
+		params = level_name(session_name).c_str() + params;
+		return IPureServer::Connect(params.c_str());
+	}
+
 	return IPureServer::Connect(*session_name);
 }
 

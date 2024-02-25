@@ -193,6 +193,14 @@ CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 			return (TEXT2CLSID("CL_CARFI"));
 	}
 
+	if (!xr_strcmp(game_type_name, "coop"))
+	{
+		if (isServer)
+			return (TEXT2CLSID("SV_COOP"));
+		else
+			return (TEXT2CLSID("CL_COOP"));
+	}
+
 	string_path S;
 	FS.update_path(S, "$game_config$", "script.ltx");
 	CInifile* l_tpIniFile = xr_new<CInifile>(S);
