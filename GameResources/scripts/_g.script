@@ -135,7 +135,13 @@ end
 function has_alife_info(info_id)
 	local aa = alife()
 	if aa == nil then
-		return false
+        local act = db.actor
+
+        if act == nil then
+            return false
+        end
+
+        return db.actor:has_info(info_id)
 	end
 	return aa:has_info(0, info_id)
 end
