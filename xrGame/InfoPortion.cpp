@@ -11,6 +11,8 @@
 #include "ui\uixmlinit.h"
 #include "object_broker.h"
 
+extern bool IsGameTypeCoop();
+
 void INFO_DATA::load(IReader &stream)
 {
 	load_data(info_id, stream);
@@ -107,7 +109,7 @@ void CInfoPortion::load_shared(LPCSTR)
 	}
 
 	shared_str needMpSyncinfo = pXML->Read(pNode, "mpsync", 0, "false");
-	info_data()->m_NeedMpSync = needMpSyncinfo == "true";
+	info_data()->m_NeedMpSync = needMpSyncinfo == "true" || IsGameTypeCoop();
 }
 
 void CInfoPortion::InitXmlIdToIndex()

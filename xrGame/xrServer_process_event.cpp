@@ -105,7 +105,8 @@ void xrServer::Process_event(NET_Packet &P, ClientID const &sender)
 			});
 
 			// server
-			actors.push_back(Actor()->ID());
+			if(Actor())
+				actors.push_back(Actor()->ID());
 
 			for (u16 actor : actors)
 			{
