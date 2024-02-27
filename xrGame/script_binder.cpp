@@ -207,7 +207,7 @@ bool CanBind(CGameObject &obj)
 
 	if (OnServer())
 	{
-		if (section == "space_restrictor" || section == "mp_actor" && !READ_IF_EXISTS(pSettings, r_bool, section, "server_bind", false))
+		if (section == "mp_actor" && !READ_IF_EXISTS(pSettings, r_bool, section, "server_bind", false))
 			return false;
 
 		return true;
