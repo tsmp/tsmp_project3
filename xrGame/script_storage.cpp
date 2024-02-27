@@ -141,16 +141,9 @@ void CScriptStorage::reinit()
 
 int CScriptStorage::vscript_log(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker)
 {
-#ifndef USE_DEBUGGER
-	if (tLuaMessageType != ScriptStorage::eLuaMessageTypeMessageShowAlways)
-		return 0;
-#endif
-
 #ifndef NO_XRGAME_SCRIPT_ENGINE
-#ifdef DEBUG
-	if (!psAI_Flags.test(aiLua) && (tLuaMessageType != ScriptStorage::eLuaMessageTypeError))
-		return (0);
-#endif
+	if (!psAI_Flags.test(aiLua) && tLuaMessageType != ScriptStorage::eLuaMessageTypeError && tLuaMessageType != ScriptStorage::eLuaMessageTypeMessageShowAlways)
+		return 0;
 #endif
 
 	LPCSTR S = "", SS = "";
@@ -228,7 +221,7 @@ int CScriptStorage::vscript_log(ScriptStorage::ELuaMessageType tLuaMessageType, 
 #endif // DEBUG
 #endif // DEBUG
 
-	return (l_iResult);
+	return l_iResult;
 }
 
 #ifdef USE_DEBUGGER
