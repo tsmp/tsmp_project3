@@ -1519,7 +1519,7 @@ bool CWeapon::unlimited_ammo()
 	if (!m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited))
 		return false;
 
-	if (GameID() == GAME_SINGLE)
+	if (IsGameTypeSingle() || IsGameTypeCoop())
 		return psActorFlags.test(AF_UNLIMITEDAMMO);
 
 	if (GameID() == GAME_ARTEFACTHUNT || GameID() == GAME_FREEPLAY)
@@ -1563,7 +1563,7 @@ float CWeapon::Weight()
 }
 void CWeapon::Hide()
 {
-	if (IsGameTypeSingle())
+	if (IsGameTypeSingle() || IsGameTypeCoop())
 		SwitchState(eHiding);
 	else
 		SwitchState(eHidden);
