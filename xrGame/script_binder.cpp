@@ -212,6 +212,10 @@ bool CanBind(CGameObject &obj)
 
 		return true;
 	}
+
+	if (section == "m_trader")
+		return true;
+
 	if (section == "space_restrictor")
 		return true;
 
