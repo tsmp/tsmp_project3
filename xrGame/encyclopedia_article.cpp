@@ -52,6 +52,9 @@ void CEncyclopediaArticle::Load(shared_str id)
 
 void CEncyclopediaArticle::load_shared(LPCSTR)
 {
+	if (g_dedicated_server)
+		return;
+
 	const ITEM_DATA &item_data = *id_to_index::GetById(m_ArticleId);
 
 	CUIXml *pXML = item_data._xml;

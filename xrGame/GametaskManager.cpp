@@ -174,8 +174,11 @@ void CGameTaskManager::SetTaskState(CGameTask *t, u16 objective_num, ETaskState 
 	if (!objective_num && eTaskStateCompleted == state || eTaskStateFail == state)
 		t->m_FinishTime = Level().GetGameTime();
 
-	if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())
-		pGameUI->PdaMenu->PdaContentsChanged(pda_section::quests);	
+	if(!g_dedicated_server)
+	{
+		if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())
+			pGameUI->PdaMenu->PdaContentsChanged(pda_section::quests);
+	}
 }
 
 void CGameTaskManager::SetTaskState(const TASK_ID &id, u16 objective_num, ETaskState state)
