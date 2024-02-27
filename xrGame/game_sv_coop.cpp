@@ -17,11 +17,6 @@ game_sv_Coop::~game_sv_Coop() {}
 void game_sv_Coop::Create(shared_str& options)
 {
 	inherited::Create(options);
-
-	TeamStruct NewTeam;
-	NewTeam.aSkins.push_back("stalker_killer_antigas");
-	TeamList.push_back(NewTeam);
-
 	switch_Phase(GAME_PHASE_PENDING);
 }
 
@@ -121,5 +116,12 @@ shared_str game_sv_Coop::level_name(const shared_str& server_options) const
 {
 	if (!ai().get_alife())
 		return (inherited::level_name(server_options));
+
 	return (alife().level_name());
+}
+
+void game_sv_Coop::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
+{
+	if (auto visual = smart_cast<CSE_Visual*>(E))
+		visual->set_visual("actors\\hero\\stalker_novice.ogf");
 }

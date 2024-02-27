@@ -5,6 +5,9 @@ class game_sv_Coop : public game_sv_mp
 {
 	using inherited = game_sv_mp;
 
+protected:
+	virtual void SetSkin(CSE_Abstract* E, u16 Team, u16 ID) override;
+
 public:
 
 	game_sv_Coop();
