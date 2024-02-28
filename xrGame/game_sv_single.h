@@ -24,12 +24,8 @@ public:
 
 	virtual void SetEnvironmentGameTimeFactor(const float fTimeFactor) {};
 
-	virtual bool change_level(NET_Packet &net_packet, ClientID const &sender);
-	virtual void save_game(NET_Packet &net_packet, ClientID const &sender);
-	virtual bool load_game(NET_Packet &net_packet, ClientID const &sender);
 	virtual void switch_distance(NET_Packet &net_packet, ClientID const &sender);
 	virtual BOOL CanHaveFriendlyFire() { return FALSE; }
 	virtual void sls_default();
 	virtual shared_str level_name(const shared_str &server_options) const;
-	void restart_simulator(LPCSTR saved_game_name);
 };

@@ -161,9 +161,10 @@ public:
 	virtual void net_Export_GameTime(NET_Packet &P);							// update GameTime only for remote clients
 
 	virtual bool change_level(NET_Packet &net_packet, ClientID const &sender);
-	virtual void save_game(NET_Packet& net_packet, ClientID const& sender) {}
+	virtual void save_game(NET_Packet& net_packet, ClientID const& sender);
 	virtual bool load_game(NET_Packet &net_packet, ClientID const &sender);
 	virtual void switch_distance(NET_Packet& net_packet, ClientID const& sender) {}
+	void restart_simulator(LPCSTR saved_game_name);
 
 	void SendPatrolPaths(const ClientID& idTo);
 	void AddDelayedEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender);

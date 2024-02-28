@@ -20,6 +20,7 @@
 #include "game_sv_mp_vote_flags.h"
 #include "PresetItem.h"
 #include "string_table.h"
+#include "ai_object_location.h"
 
 u32 g_dwMaxCorpses = 10;
 
@@ -404,6 +405,12 @@ void game_sv_mp::SpawnPlayer(ClientID const &id, LPCSTR N, u16 holderId)
 
 	if (pA)
 	{
+		if (Actor())
+		{
+			pA->m_tNodeID = Actor()->ai_location().level_vertex_id();
+			pA->m_tGraphID = Actor()->ai_location().game_vertex_id();
+		}
+
 		pA->m_holderID = holderId;
 		pA->s_team = u8(ps_who->team);
 		assign_RP(pA, ps_who);

@@ -277,6 +277,7 @@ enum
 	M_SPAWN_UPDATE = (1 << 6),			 // + update packet
 	M_SPAWN_TIME = (1 << 7),			 // + spawn time
 	M_SPAWN_DENIED = (1 << 8),			 // don't spawn entity with this flag
+	M_SPAWN_NO_CLDATA = (1 << 9),		 // don't include client data (wrote in net_Save)
 
 	M_SPAWN_OBJECT_FORCEDWORD = u32(-1)
 };
