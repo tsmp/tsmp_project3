@@ -445,9 +445,9 @@ public:
 			return;
 		}
 #endif
-		if (!IsGameTypeSingle())
+		if (!IsGameTypeSingle() && !IsGameTypeCoop())
 		{
-			Msg("for single-mode only");
+			Msg("for single or coop game only");
 			return;
 		}
 		if (!g_actor || !Actor()->g_Alive())
@@ -458,13 +458,13 @@ public:
 
 		string_path S, S1;
 		S[0] = 0;
-		//.		sscanf					(args ,"%s",S);
 		strcpy_s(S, args);
 
 #ifdef DEBUG
 		CTimer timer;
 		timer.Start();
 #endif
+
 		if (!xr_strlen(S))
 		{
 			strconcat(sizeof(S), S, Core.UserName, "_", "quicksave");
@@ -488,26 +488,31 @@ public:
 			net_packet.w_u8(1);
 			Level().Send(net_packet, net_flags(TRUE));
 		}
+
 #ifdef DEBUG
 		Msg("Game save overhead  : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
 #endif
-		SDrawStaticStruct *_s = HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
-		_s->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
-		string_path save_name;
-		strconcat(sizeof(save_name), save_name, *CStringTable().translate("st_game_saved"), ": ", S);
-		_s->wnd()->SetText(save_name);
 
-		strcat(S, ".dds");
-		FS.update_path(S1, "$game_saves$", S);
+		if (!g_dedicated_server)
+		{
+			auto customStatic = HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
+			customStatic->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
+			string_path save_name;
+			strconcat(sizeof(save_name), save_name, *CStringTable().translate("st_game_saved"), ": ", S);
+			customStatic->wnd()->SetText(save_name);
 
-#ifdef DEBUG
-		timer.Start();
-#endif
-		MainMenu()->Screenshot(IRender_interface::SM_FOR_GAMESAVE, S1);
+			strcat(S, ".dds");
+			FS.update_path(S1, "$game_saves$", S);
 
 #ifdef DEBUG
-		Msg("Screenshot overhead : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
+			timer.Start();
 #endif
+			MainMenu()->Screenshot(IRender_interface::SM_FOR_GAMESAVE, S1);
+
+#ifdef DEBUG
+			Msg("Screenshot overhead : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
+#endif
+		}
 	}
 };
 

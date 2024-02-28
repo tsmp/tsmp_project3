@@ -3,10 +3,6 @@
 #include "alife_graph_registry.h"
 #include "alife_time_manager.h"
 #include "../xrNetwork/net_utils.h"
-#include "object_broker.h"
-#include "gamepersistent.h"
-#include "xrServer.h"
-#include "xrApplication.h"
 
 game_sv_Single::game_sv_Single()
 {
@@ -43,30 +39,6 @@ void game_sv_Single::SetGameTimeFactor(const float fTimeFactor)
 	return inherited::SetGameTimeFactor(fTimeFactor);
 }
 
-bool game_sv_Single::change_level(NET_Packet &net_packet, ClientID const &sender)
-{
-	if (ai().get_alife())
-		return alife().change_level(net_packet);
-
-	return true;
-}
-
-void game_sv_Single::save_game(NET_Packet &net_packet, ClientID const &sender)
-{
-	if (ai().get_alife())
-		alife().save(net_packet);
-}
-
-bool game_sv_Single::load_game(NET_Packet &net_packet, ClientID const &sender)
-{
-	if (!ai().get_alife())
-		return inherited::load_game(net_packet, sender);
-
-	shared_str game_name;
-	net_packet.r_stringZ(game_name);
-	return (alife().load_game(*game_name, true));
-}
-
 void game_sv_Single::switch_distance(NET_Packet &net_packet, ClientID const &sender)
 {
 	if (ai().get_alife())
@@ -84,21 +56,4 @@ shared_str game_sv_Single::level_name(const shared_str &server_options) const
 		return inherited::level_name(server_options);
 
 	return alife().level_name();
-}
-
-void game_sv_Single::restart_simulator(LPCSTR saved_game_name)
-{
-	shared_str &options = *alife().server_command_line();
-
-	delete_data(m_alife_simulator);
-	server().clear_ids();
-
-	strcpy(g_pGamePersistent->m_game_params.m_game_or_spawn, saved_game_name);
-	strcpy(g_pGamePersistent->m_game_params.m_new_or_load, "load");
-
-	pApp->LoadBegin();
-	m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
-	g_pGamePersistent->LoadTitle("st_client_synchronising");
-	Device.PreCache(30);
-	pApp->LoadEnd();
 }
