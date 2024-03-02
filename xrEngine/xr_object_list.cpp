@@ -398,28 +398,38 @@ void CObjectList::relcase_unregister(int *ID)
 	m_relcase_callbacks.pop_back();
 }
 
-void dump_list(xr_vector<CObject *> &v, LPCSTR reason)
+void DumpObjectList(xr_vector<CObject*> &list, LPCSTR listName)
 {
-	xr_vector<CObject *>::iterator it = v.begin();
-	xr_vector<CObject *>::iterator it_e = v.end();
-	Msg("----------------dump_list [%s]", reason);
-	for (; it != it_e; ++it)
-		Msg("%x - name [%s] ID[%d] parent[%s] getDestroy()=[%s]",
-			(*it),
-			(*it)->cName().c_str(),
-			(*it)->ID(),
-			((*it)->H_Parent()) ? (*it)->H_Parent()->cName().c_str() : "",
-			((*it)->getDestroy()) ? "yes" : "no");
+	Msg("----------------dump_list [%s]", listName);
+
+	auto BoolToStr = [](BOOL value) -> LPCSTR
+	{
+		if (value)
+			return "yes";
+		else
+			return "no";
+	};
+
+	for (CObject* it : list)
+	{
+		Msg("%x - name [%s] ID[%d] parent[%s] destroy=[%s] local=[%s]",
+			it,
+			it->cName().c_str(),
+			it->ID(),
+			it->H_Parent() ? it->H_Parent()->cName().c_str() : "",
+			BoolToStr(it->getDestroy()),
+			BoolToStr(it->getLocal()));
+	}
 }
 
 bool CObjectList::dump_all_objects()
 {
-	dump_list(destroy_queue, "destroy_queue");
-	dump_list(objects_active, "objects_active");
-	dump_list(objects_sleeping, "objects_sleeping");
+	DumpObjectList(destroy_queue, "destroy_queue");
+	DumpObjectList(objects_active, "objects_active");
+	DumpObjectList(objects_sleeping, "objects_sleeping");
 
-	dump_list(crows_0, "crows_0");
-	dump_list(crows_1, "crows_1");
+	DumpObjectList(crows_0, "crows_0");
+	DumpObjectList(crows_1, "crows_1");
 	return false;
 }
 
