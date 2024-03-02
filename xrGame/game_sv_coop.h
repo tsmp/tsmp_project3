@@ -23,5 +23,6 @@ public:
 	virtual void OnPlayerConnectFinished(const ClientID& id_who) override;
 	virtual void OnPlayerDisconnect(const ClientID&, LPSTR Name, u16 GameID) override;
 
+	virtual bool AssignOwnershipToConnectingClient(CSE_Abstract* E, xrClientData* CL) override;
 	virtual shared_str level_name(const shared_str& server_options) const override;
 };

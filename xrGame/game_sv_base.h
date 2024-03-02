@@ -179,6 +179,7 @@ public:
 	virtual shared_str level_name(const shared_str &server_options) const;
 	virtual void on_death(CSE_Abstract *e_dest, CSE_Abstract *e_src);
 
+	virtual bool AssignOwnershipToConnectingClient(CSE_Abstract* E, xrClientData* CL);
 	virtual void DumpOnlineStatistic(){};
 
 	virtual bool custom_sls_default()

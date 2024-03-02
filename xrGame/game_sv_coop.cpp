@@ -60,7 +60,9 @@ void game_sv_Coop::OnPlayerConnect(const ClientID& id_who)
 void game_sv_Coop::OnPlayerConnectFinished(const ClientID& id_who)
 {
 	xrClientData* xrCData = m_server->ID_to_client(id_who);
-	SpawnPlayer(id_who, "spectator");
+
+	if(!xrCData->owner)
+		SpawnPlayer(id_who, "spectator");
 
 	if (xrCData)
 	{
@@ -124,4 +126,14 @@ void game_sv_Coop::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
 {
 	if (auto visual = smart_cast<CSE_Visual*>(E))
 		visual->set_visual("actors\\hero\\stalker_novice.ogf");
+}
+
+bool game_sv_Coop::AssignOwnershipToConnectingClient(CSE_Abstract* E, xrClientData* CL)
+{
+	auto act = smart_cast<CSE_ALifeCreatureActor*>(E);
+
+	if (!act || act->owner != server().GetServerClient())
+		return false;
+
+	return CL->name == act->name_replace();
 }
