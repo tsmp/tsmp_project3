@@ -1280,6 +1280,11 @@ void game_sv_GameState::OnRender()
 BOOL game_sv_GameState::IsVotingEnabled() { return g_sv_base_iVotingEnabled != 0; };
 BOOL game_sv_GameState::IsVotingEnabled(u16 flag) { return (g_sv_base_iVotingEnabled & flag) != 0; };
 
+bool game_sv_GameState::AssignOwnershipToConnectingClient(CSE_Abstract* E, xrClientData* CL)
+{
+	return !E->owner;
+}
+
 #include "patrol_path_storage.h"
 
 void game_sv_GameState::SendPatrolPaths(const ClientID &clTo)

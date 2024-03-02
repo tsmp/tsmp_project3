@@ -33,7 +33,7 @@ void xrServer::Perform_connect_spawn(CSE_Abstract *E, xrClientData *CL, NET_Pack
 	if(CL != GetServerClient())
 		E->s_flags.set(M_SPAWN_NO_CLDATA, TRUE);
 
-	if (!E->owner)
+	if (game->AssignOwnershipToConnectingClient(E, CL))
 	{
 		// PROCESS NAME; Name this entity
 		if (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
