@@ -482,7 +482,7 @@ BOOL CActor::net_Spawn(CSE_Abstract *DC)
 	if (OnServer())	
 		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);	
 
-	if (TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
+	if (TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER) && !g_actor)
 		g_actor = this;
 
 	VERIFY(m_pActorEffector == NULL);
