@@ -39,10 +39,6 @@ bool task_prio_pred(const SGameTaskKey &k1, const SGameTaskKey &k2)
 CGameTaskManager::CGameTaskManager()
 {
 	m_gametasks = xr_new<CGameTaskWrapper>();
-	m_flags.zero();
-	m_flags.set(eChanged, TRUE);
-	if (g_active_task_id.size())
-		SetActiveTask(g_active_task_id, g_active_task_objective_id);
 }
 
 CGameTaskManager::~CGameTaskManager()
@@ -53,6 +49,11 @@ CGameTaskManager::~CGameTaskManager()
 void CGameTaskManager::initialize(u16 id)
 {
 	m_gametasks->registry().init(id); // actor's id
+
+	m_flags.zero();
+	m_flags.set(eChanged, TRUE);
+	if (g_active_task_id.size())
+		SetActiveTask(g_active_task_id, g_active_task_objective_id);
 }
 
 GameTasks &CGameTaskManager::GameTasks()

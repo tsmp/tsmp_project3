@@ -315,6 +315,11 @@ void CLevel::ClientReceive()
 		}
 		break;
 
+		case M_TASKS_SYNC:
+			if (game)
+				Game().OnTasksSync(P);
+			break;
+
 		case M_CHANGE_LEVEL_GAME:
 		{
 			Msg("- M_CHANGE_LEVEL_GAME Received");
