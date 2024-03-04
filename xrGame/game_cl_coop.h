@@ -17,4 +17,5 @@ public:
 	virtual CUIGameCustom* createGameUI();
 	virtual void shedule_Update(u32 dt);
 	virtual void OnTasksSync(NET_Packet* P) override;
+	virtual void OnPortionsSync(NET_Packet* P) override;
 };

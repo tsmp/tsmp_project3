@@ -4,6 +4,7 @@
 #include "UIGameSP.h"
 #include "Actor.h"
 #include "GametaskManager.h"
+#include "alife_registry_wrappers.h"
 
 extern shared_str g_active_task_id;
 extern u16 g_active_task_objective_id;
@@ -58,4 +59,28 @@ void game_cl_Coop::OnTasksSync(NET_Packet* packet)
 		packet->r_u16(g_active_task_objective_id);
 		Actor()->GameTaskManager().initialize(Actor()->ID());
 	}
+}
+
+void game_cl_Coop::OnPortionsSync(NET_Packet* packet)
+{
+	auto& infoportions = Actor()->m_known_info_registry->registry().objects();
+
+	shared_str portionID;
+	packet->r_stringZ(portionID);
+	u64 time = packet->r_u64();
+
+	auto it = std::find_if(infoportions.begin(), infoportions.end(), [&portionID](const INFO_DATA& data)
+	{
+		return portionID == data.info_id;
+	});
+
+	if (it != infoportions.end())
+	{
+		it->receive_time = time;
+		return;
+	}
+
+	auto &newPortion = infoportions.emplace_back();
+	newPortion.info_id = portionID;
+	newPortion.receive_time = time;
 }

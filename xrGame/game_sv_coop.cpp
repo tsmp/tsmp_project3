@@ -5,6 +5,7 @@
 #include "ai_space.h"
 #include "Actor.h"
 #include "GametaskManager.h"
+#include "alife_registry_wrappers.h"
 
 ENGINE_API bool g_dedicated_server;
 extern shared_str g_active_task_id;
@@ -68,7 +69,10 @@ void game_sv_Coop::OnPlayerConnectFinished(const ClientID& id_who)
 	if (!xrCData->owner)
 		SpawnPlayer(id_who, "spectator");
 	else
+	{
+		SendInfoPortions(id_who);
 		SendTasks(id_who);
+	}
 
 	if (xrCData)
 	{
@@ -168,4 +172,18 @@ void game_sv_Coop::SendTasks(const ClientID& target)
 	packet.w_stringZ(g_active_task_id);
 	packet.w_u16(g_active_task_objective_id);
 	server().SendTo(target, packet);
+}
+
+void game_sv_Coop::SendInfoPortions(const ClientID& target)
+{
+	auto &infoportions = Actor()->m_known_info_registry->registry().objects();
+
+	for (auto &portion: infoportions)
+	{
+		NET_Packet packet;
+		packet.w_begin(M_INFOPORTIONS_SYNC);
+		packet.w_stringZ(portion.info_id);
+		packet.w_u64(portion.receive_time);
+		server().SendTo(target, packet);
+	}
 }

@@ -27,4 +27,5 @@ public:
 	virtual shared_str level_name(const shared_str& server_options) const override;
 
 	void SendTasks(const ClientID& target);
+	void SendInfoPortions(const ClientID& target);
 };
