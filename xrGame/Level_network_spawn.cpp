@@ -74,6 +74,7 @@ extern Flags32 psAI_Flags;
 extern float debug_on_frame_gather_stats_frequency;
 #include "ai_debug.h"
 #endif // DEBUG
+#include "clsid_game.h"
 
 void CLevel::g_sv_Spawn(CSE_Abstract *E)
 {
@@ -125,17 +126,23 @@ void CLevel::g_sv_Spawn(CSE_Abstract *E)
 
 		client_spawn_manager().callback(O);
 
-		if ((E->s_flags.is(M_SPAWN_OBJECT_LOCAL)) && (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)))
+		if (E->s_flags.is(M_SPAWN_OBJECT_LOCAL) && E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
 		{
-			if (CurrentEntity() != NULL)
+			bool curEntityActor = false;
+
+			if (CurrentEntity())
 			{
-				CGameObject *pGO = smart_cast<CGameObject *>(CurrentEntity());
-				if (pGO)
+				if (CGameObject* pGO = smart_cast<CGameObject*>(CurrentEntity()))
 					pGO->On_B_NotCurrentEntity();
+
+				curEntityActor = CurrentEntity()->CLS_ID == CLSID_OBJECT_ACTOR;
 			}
 
-			SetEntity(O);
-			SetControlEntity(O);
+			if (!(curEntityActor && O->CLS_ID == CLSID_OBJECT_ACTOR && IsGameTypeCoop())) // actor to actor switch is impossible in coop
+			{
+				SetEntity(O);
+				SetControlEntity(O);
+			}
 		}
 
 		if (0xffff != E->ID_Parent)
