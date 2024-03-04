@@ -3,8 +3,12 @@
 #include "xrserver_objects_alife_monsters.h"
 #include "xrServer.h"
 #include "ai_space.h"
+#include "Actor.h"
+#include "GametaskManager.h"
 
 ENGINE_API bool g_dedicated_server;
+extern shared_str g_active_task_id;
+extern u16 g_active_task_objective_id;
 
 game_sv_Coop::game_sv_Coop()
 {
@@ -61,8 +65,10 @@ void game_sv_Coop::OnPlayerConnectFinished(const ClientID& id_who)
 {
 	xrClientData* xrCData = m_server->ID_to_client(id_who);
 
-	if(!xrCData->owner)
+	if (!xrCData->owner)
 		SpawnPlayer(id_who, "spectator");
+	else
+		SendTasks(id_who);
 
 	if (xrCData)
 	{
@@ -136,4 +142,30 @@ bool game_sv_Coop::AssignOwnershipToConnectingClient(CSE_Abstract* E, xrClientDa
 		return false;
 
 	return CL->name == act->name_replace();
+}
+
+void game_sv_Coop::SendTasks(const ClientID& target)
+{
+	auto& tasks = Actor()->GameTaskManager().GameTasks();
+
+	for (auto& task : tasks)
+	{
+		CMemoryWriter taskSerialized;
+		task.save(taskSerialized);
+
+		NET_Packet packet;
+		packet.w_begin(M_TASKS_SYNC);
+		packet.w_u8(1); // task data
+		packet.w_stringZ(task.task_id);
+		packet.w_u32(taskSerialized.size());
+		packet.w(taskSerialized.pointer(), taskSerialized.size());
+		server().SendTo(target, packet);
+	}
+
+	NET_Packet packet;
+	packet.w_begin(M_TASKS_SYNC);
+	packet.w_u8(0);
+	packet.w_stringZ(g_active_task_id);
+	packet.w_u16(g_active_task_objective_id);
+	server().SendTo(target, packet);
 }

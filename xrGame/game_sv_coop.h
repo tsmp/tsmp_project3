@@ -25,4 +25,6 @@ public:
 
 	virtual bool AssignOwnershipToConnectingClient(CSE_Abstract* E, xrClientData* CL) override;
 	virtual shared_str level_name(const shared_str& server_options) const override;
+
+	void SendTasks(const ClientID& target);
 };

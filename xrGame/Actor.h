@@ -24,7 +24,6 @@ class CActorCondition;
 class CCustomOutfit;
 class CKnownContactsRegistryWrapper;
 class CEncyclopediaRegistryWrapper;
-class CGameTaskRegistryWrapper;
 class CGameNewsRegistryWrapper;
 class CCharacterPhysicsSupport;
 // refs
