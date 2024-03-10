@@ -75,11 +75,6 @@ void game_cl_Deathmatch::OnBuyMenu_Ok()
 	pPlayer->u_EventSend(P);
 }
 
-void game_cl_Deathmatch::OnBuyMenu_DefaultItems()
-{
-	SetBuyMenuItems(&PlayerDefItems, TRUE);
-}
-
 void game_cl_Deathmatch::SetBuyMenuItems(PRESET_ITEMS *pItems, BOOL OnlyPreset)
 {
 	if(!local_player || pCurBuyMenu->IsShown())

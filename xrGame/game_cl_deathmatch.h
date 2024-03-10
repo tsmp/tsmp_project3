@@ -96,7 +96,6 @@ public:
 	virtual void OnMapInfoAccept();
 	virtual void OnSkinMenuBack();
 	virtual void OnBuyMenu_Ok();
-	virtual void OnBuyMenu_DefaultItems();
 	virtual void OnSkinMenu_Ok();
 	virtual void OnSkinMenu_Cancel();
 
