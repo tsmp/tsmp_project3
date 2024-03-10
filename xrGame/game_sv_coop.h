@@ -28,4 +28,5 @@ public:
 
 	void SendTasks(const ClientID& target);
 	void SendInfoPortions(const ClientID& target);
+	void SpawnDefaultItemsForPlayer(u16 actorId);
 };
