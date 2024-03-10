@@ -116,11 +116,12 @@ void game_sv_Coop::OnPlayerReady(const ClientID& id)
 		if (!(ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)))
 			return;
 
-		xrClientData* xrSCData = (xrClientData*)m_server->GetServerClient();
+		xrClientData* xrSCData = static_cast<xrClientData*>(m_server->GetServerClient());
 		CSE_Abstract* pOwner = xrCData->owner;
 
 		RespawnPlayer(id, false);
 		pOwner = xrCData->owner;
+		SpawnDefaultItemsForPlayer(pOwner->ID);
 	}
 }
 
@@ -186,4 +187,20 @@ void game_sv_Coop::SendInfoPortions(const ClientID& target)
 		packet.w_u64(portion.receive_time);
 		server().SendTo(target, packet);
 	}
+}
+
+void game_sv_Coop::SpawnDefaultItemsForPlayer(u16 actorId)
+{
+	static const LPCSTR itemsToSpawn[] =
+	{
+		"wpn_binoc",
+		"detector_simple",
+		"novice_outfit",
+		"device_torch",
+		"device_pda",
+		"wpn_knife"
+	};
+
+	for (LPCSTR itemSection : itemsToSpawn)
+		SpawnWeapon4Actor(actorId, itemSection, 0);
 }
