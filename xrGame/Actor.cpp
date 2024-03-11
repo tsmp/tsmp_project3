@@ -784,10 +784,9 @@ void CActor::Die(CObject *who)
 		m_BloodSnd.stop();
 	}
 
-	if (IsGameTypeSingle())
-	{
+	if (IsGameTypeSingle() || IsGameTypeCoop())
 		start_tutorial("game_over");
-	}
+
 	xr_delete(m_sndShockEffector);
 }
 
