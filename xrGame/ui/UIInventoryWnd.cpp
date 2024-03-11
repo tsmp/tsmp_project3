@@ -87,7 +87,7 @@ void CUIInventoryWnd::Init()
 	AttachChild(&UIProgressBack);
 	xml_init.InitStatic(uiXml, "progress_background", 0, &UIProgressBack);
 
-	if (GameID() != GAME_SINGLE)
+	if (!IsGameTypeSingle() && !IsGameTypeCoop())
 	{
 		AttachChild(&UIProgressBack_rank);
 		xml_init.InitStatic(uiXml, "progress_back_rank", 0, &UIProgressBack_rank);
@@ -117,7 +117,7 @@ void CUIInventoryWnd::Init()
 	//Элементы автоматического добавления
 	xml_init.InitAutoStatic(uiXml, "auto_static", this);
 
-	if (GameID() != GAME_SINGLE)
+	if (!IsGameTypeSingle() && !IsGameTypeCoop())
 	{
 		UIRankFrame = xr_new<CUIStatic>();
 		UIRankFrame->SetAutoDelete(true);
@@ -272,19 +272,19 @@ void CUIInventoryWnd::Update()
 		CInventoryOwner *pOurInvOwner = smart_cast<CInventoryOwner *>(pEntityAlive);
 		u32 _money = 0;
 
-		if (GameID() != GAME_SINGLE)
+		if (IsGameTypeSingle())
+			_money = pOurInvOwner->get_money();
+		else
 		{
-			game_PlayerState *ps = Game().GetPlayerByGameID(pEntityAlive->ID());
-			if (ps)
+			if (game_PlayerState* ps = Game().GetPlayerByGameID(pEntityAlive->ID()))
 			{
-				UIProgressBarRank.SetProgressPos(ps->experience_D * 100);
+				if(!IsGameTypeCoop())
+					UIProgressBarRank.SetProgressPos(ps->experience_D * 100);
+
 				_money = ps->money_for_round;
 			}
 		}
-		else
-		{
-			_money = pOurInvOwner->get_money();
-		}
+
 		// update money
 		string64 sMoney;
 		sprintf_s(sMoney, "%d RU", _money);
@@ -305,7 +305,7 @@ void CUIInventoryWnd::Show()
 	InitInventory();
 	inherited::Show();
 
-	if (!IsGameTypeSingle())
+	if (!IsGameTypeSingle() && !IsGameTypeCoop())
 	{
 		CActor *pActor = smart_cast<CActor *>(Level().CurrentEntity());
 		if (!pActor)
@@ -355,7 +355,7 @@ void CUIInventoryWnd::Hide()
 		m_iCurrentActiveSlot = NO_ACTIVE_SLOT;
 	}
 
-	if (!IsGameTypeSingle())
+	if (!IsGameTypeSingle() && !IsGameTypeCoop())
 	{
 		if (!pActor)
 			return;
