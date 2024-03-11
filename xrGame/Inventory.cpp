@@ -629,7 +629,9 @@ bool CInventory::Action(s32 cmd, u32 flags)
 	case kWPN_5:
 	case kWPN_6:
 	{
-		if (cmd == kWPN_6 && !IsGameTypeSingle())
+		const bool singleOrCoop = IsGameTypeSingle() || IsGameTypeCoop();
+
+		if (cmd == kWPN_6 && !singleOrCoop)
 			return false;
 
 		if (flags & CMD_START)
@@ -637,16 +639,14 @@ bool CInventory::Action(s32 cmd, u32 flags)
 			if ((int)m_iActiveSlot == cmd - kWPN_1 &&
 				m_slots[m_iActiveSlot].m_pIItem)
 			{
-				if (IsGameTypeSingle())
+				if (singleOrCoop)
 					b_send_event = Activate(NO_ACTIVE_SLOT);
 				else
-				{
 					ActivateNextItemInActiveSlot();
-				}
 			}
 			else
 			{
-				if ((int)m_iActiveSlot == cmd - kWPN_1 && !IsGameTypeSingle())
+				if ((int)m_iActiveSlot == cmd - kWPN_1 && !singleOrCoop)
 					break;
 
 				b_send_event = Activate(cmd - kWPN_1, eKeyAction);
@@ -659,7 +659,7 @@ bool CInventory::Action(s32 cmd, u32 flags)
 		if (flags & CMD_START)
 		{
 			if ((int)m_iActiveSlot == ARTEFACT_SLOT &&
-				m_slots[m_iActiveSlot].m_pIItem && IsGameTypeSingle())
+				m_slots[m_iActiveSlot].m_pIItem && (IsGameTypeSingle() || IsGameTypeCoop()))
 			{
 				b_send_event = Activate(NO_ACTIVE_SLOT);
 			}
