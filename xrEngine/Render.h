@@ -129,7 +129,7 @@ public:
 	virtual void set_noise_fps(float f) = 0;
 	virtual void set_color_base(u32 f) = 0;
 	virtual void set_color_gray(u32 f) = 0;
-	virtual void set_color_add(u32 f) = 0;
+	virtual void set_color_add(const Fvector& f) = 0;
 	virtual u32 get_width() = 0;
 	virtual u32 get_height() = 0;
 	virtual void DoAsyncScreenshot() = 0;
@@ -169,6 +169,9 @@ public:
 public:
 	// feature level
 	virtual GenerationLevel get_generation() = 0;
+
+	virtual bool is_sun_static() = 0;
+	virtual DWORD get_dx_level() = 0;
 
 	// Loading / Unloading
 	virtual void create() = 0;

@@ -342,7 +342,9 @@ void CCameraManager::ApplyDevice(float _viewport_near)
 		T->set_noise_fps(pp_affected.noise.fps);
 		T->set_color_base(pp_affected.color_base);
 		T->set_color_gray(pp_affected.color_gray);
-		T->set_color_add(pp_affected.color_add);
+#pragma TODO("ќ„≈Ќ№  ќ—“џЋ№Ќџ… ¬ј–»јЌ“, но чтобы сделать по нормальному надо перенести некоторые структуры")
+		static_assert(sizeof(Fvector) == sizeof(SPPInfo::SColor));
+		T->set_color_add(reinterpret_cast<const Fvector&>(pp_affected.color_add));
 	}
 }
 
@@ -358,7 +360,8 @@ void CCameraManager::ResetPP()
 	T->set_noise_fps(pp_identity.noise.fps);
 	T->set_color_base(pp_identity.color_base);
 	T->set_color_gray(pp_identity.color_gray);
-	T->set_color_add(pp_identity.color_add);
+#pragma TODO("ќ„≈Ќ№  ќ—“џЋ№Ќџ… ¬ј–»јЌ“, но чтобы сделать по нормальному надо перенести некоторые структуры")
+	T->set_color_add(reinterpret_cast<const Fvector&>(pp_identity.color_add));
 }
 
 void CCameraManager::Dump()
