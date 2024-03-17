@@ -593,8 +593,6 @@
     <ClCompile Include="..\xrRender\blenders\Blender.cpp" />
     <ClCompile Include="..\xrRender\blenders\Blender_Palette.cpp" />
     <ClCompile Include="..\xrRender\blenders\Blender_Recorder.cpp" />
-    <ClCompile Include="..\xrRender\blenders\Blender_Recorder_R2.cpp" />
-    <ClCompile Include="..\xrRender\blenders\Blender_Recorder_StandartBinding.cpp" />
     <ClCompile Include="..\xrRender\blenders\tss_def.cpp" />
     <ClCompile Include="..\xrRender\Blender_BmmD.cpp" />
     <ClCompile Include="..\xrRender\Blender_detail_still.cpp" />
@@ -603,6 +601,8 @@
     <ClCompile Include="..\xrRender\Blender_Lm(EbB).cpp" />
     <ClCompile Include="..\xrRender\Blender_Model_EbB.cpp" />
     <ClCompile Include="..\xrRender\Blender_Particle.cpp" />
+    <ClCompile Include="..\xrRender\Blender_Recorder_R2.cpp" />
+    <ClCompile Include="..\xrRender\Blender_Recorder_StandartBinding.cpp" />
     <ClCompile Include="..\xrRender\Blender_Screen_SET.cpp" />
     <ClCompile Include="..\xrRender\Blender_tree.cpp" />
     <ClCompile Include="..\xrRender\D3DUtils.cpp" />

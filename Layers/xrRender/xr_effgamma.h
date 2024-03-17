@@ -39,8 +39,14 @@ public:
 		Balance.set(cBalance);
 	}
 
-	void GenLUT(D3DGAMMARAMP &G);
+	void	Update();
 
-	void Update();
+private:
+
+#ifdef	USE_DX10
+	void	GenLUT(const DXGI_GAMMA_CONTROL_CAPABILITIES& GC, DXGI_GAMMA_CONTROL& G);
+#else	//	USE_DX10
+	void	GenLUT(D3DGAMMARAMP& G);
+#endif	//	USE_DX10
 };
 

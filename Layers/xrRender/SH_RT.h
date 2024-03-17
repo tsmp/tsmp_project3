@@ -1,35 +1,39 @@
 #pragma once
 
-class CRT : public xr_resource_named
-{
+class CRT : public xr_resource_named {
 public:
-	IDirect3DTexture9 *pSurface;
-	IDirect3DSurface9 *pRT;
-	ref_texture pTexture;
-
-	u32 dwWidth;
-	u32 dwHeight;
-	D3DFORMAT fmt;
-
-	u64 _order;
-
 	CRT();
 	~CRT();
 
-	void create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f);
-	void destroy();
-	void reset_begin();
-	void reset_end();
-	IC BOOL valid() { return !!pTexture; }
+	void	create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1);
+	void	destroy();
+	void	reset_begin();
+	void	reset_end();
+	IC BOOL	valid() { return !!pTexture; }
+
+public:
+	ID3DTexture2D* pSurface;
+	ID3DRenderTargetView* pRT;
+#ifdef	USE_DX10
+	ID3DDepthStencilView* pZRT;
+#endif	//	USE_DX10
+	ref_texture				pTexture;
+
+	u32						dwWidth;
+	u32						dwHeight;
+	D3DFORMAT				fmt;
+
+	u64						_order;
 };
 
 struct resptrcode_crt : public resptr_base<CRT>
 {
-	void create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f);
+	void create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1);
 	void destroy() { _set(NULL); }
 };
 typedef resptr_core<CRT, resptrcode_crt> ref_rt;
-
+/*	//	DX10 cut
+//////////////////////////////////////////////////////////////////////////
 class CRTC : public xr_resource_named
 {
 public:
@@ -58,3 +62,4 @@ struct resptrcode_crtc : public resptr_base<CRTC>
 	void destroy() { _set(NULL); }
 };
 typedef resptr_core<CRTC, resptrcode_crtc> ref_rtc;
+*/

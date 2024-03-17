@@ -21,8 +21,6 @@ public:
 	virtual void setContrast(float fGamma);
 	virtual void updateGamma();
 
-	void gammaGenLUT(D3DGAMMARAMP &G) {m_Gamma.GenLUT(G);}
-
 	// Destroy
 	virtual void OnDeviceDestroy(BOOL bKeepTextures);
 	virtual void ValidateHW();

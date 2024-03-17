@@ -3,18 +3,33 @@
 
 #pragma warning(disable : 4995)
 #include <d3dx9.h>
-
-#pragma comment(lib, "d3dx9.lib")
-#include "render.h"
+#pragma comment( lib, "d3dx9.lib"		)
+#include "../../xrEngine/render.h"
+#pragma warning(default:4995)
 
 #pragma warning(default : 4995)
 
 #include "ResourceManager.h"
-#include "blenders\tss.h"
-#include "..\Layers\xrRender\blenders\blender.h"
-#include "..\Layers\xrRender\blenders\blender_recorder.h"
+#include "tss.h"
+#include "blenders\blender.h"
+#include "blenders\blender_recorder.h"
 
 void fix_texture_name(LPSTR fn);
+
+void simplify_texture(string_path& fn)
+{
+	if (strstr(Core.Params, "-game_designer"))
+	{
+		if (strstr(fn, "$user")) return;
+		if (strstr(fn, "ui\\")) return;
+		if (strstr(fn, "lmap#")) return;
+		if (strstr(fn, "act\\")) return;
+		if (strstr(fn, "fx\\")) return;
+		if (strstr(fn, "glow\\")) return;
+		if (strstr(fn, "map\\")) return;
+		strcpy_s(fn, "ed\\ed_not_existing_texture");
+	}
+}
 
 template <class T>
 BOOL reclaim(xr_vector<T *> &vec, const T *ptr)
@@ -175,6 +190,8 @@ SVS *CResourceManager::_CreateVS(LPCSTR _name)
 		strcat(name, "_1");
 	if (2 == ::Render->m_skinning)
 		strcat(name, "_2");
+	if (3 == ::Render->m_skinning)	strcat(name, "_3");
+	if (4 == ::Render->m_skinning)	strcat(name, "_4");
 	LPSTR N = LPSTR(name);
 	map_VS::iterator I = m_vs.find(N);
 	if (I != m_vs.end())
@@ -466,6 +483,9 @@ void CResourceManager::_DeleteRT(const CRT *RT)
 	}
 	Msg("! ERROR: Failed to find render-target '%s'", *RT->cName);
 }
+
+//	DX10 cut 
+/*
 //--------------------------------------------------------------------------------------------------------------
 CRTC *CResourceManager::_CreateRTC(LPCSTR Name, u32 size, D3DFORMAT f)
 {
@@ -499,6 +519,7 @@ void CResourceManager::_DeleteRTC(const CRTC *RT)
 	}
 	Msg("! ERROR: Failed to find render-target '%s'", *RT->cName);
 }
+*/
 //--------------------------------------------------------------------------------------------------------------
 void CResourceManager::DBG_VerifyGeoms()
 {
@@ -568,6 +589,11 @@ CTexture *CResourceManager::_CreateTexture(LPCSTR _Name)
 	string_path Name;
 	strcpy_s(Name, _Name); //. andy if (strext(Name)) *strext(Name)=0;
 	fix_texture_name(Name);
+
+#ifdef	DEBUG
+	simplify_texture(Name);
+#endif	//	DEBUG
+
 	// ***** first pass - search already loaded texture
 	LPSTR N = LPSTR(Name);
 	map_TextureIt I = m_textures.find(N);

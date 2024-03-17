@@ -75,6 +75,11 @@ IC bool cmp_vs_mat(mapMatrixVS::TNode *N1, mapMatrixVS::TNode *N2) { return (N1-
 IC bool cmp_ps_nrm(mapNormalPS::TNode *N1, mapNormalPS::TNode *N2) { return (N1->val.ssa > N2->val.ssa); }
 IC bool cmp_ps_mat(mapMatrixPS::TNode *N1, mapMatrixPS::TNode *N2) { return (N1->val.ssa > N2->val.ssa); }
 
+#ifdef	USE_DX10
+IC bool cmp_gs_nrm(mapNormalGS::TNode* N1, mapNormalGS::TNode* N2) { return (N1->val.ssa > N2->val.ssa); }
+IC bool cmp_gs_mat(mapMatrixGS::TNode* N1, mapMatrixGS::TNode* N2) { return (N1->val.ssa > N2->val.ssa); }
+#endif	//	USE_DX10
+
 IC bool cmp_cs_nrm(mapNormalCS::TNode *N1, mapNormalCS::TNode *N2) { return (N1->val.ssa > N2->val.ssa); }
 IC bool cmp_cs_mat(mapMatrixCS::TNode *N1, mapMatrixCS::TNode *N2) { return (N1->val.ssa > N2->val.ssa); }
 

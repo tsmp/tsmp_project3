@@ -287,6 +287,7 @@ public:
 	virtual void Calculate();
 	virtual void Render();
 	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0);
+	virtual void Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer);
 	virtual void OnFrame();
 
 	// Render mode
@@ -301,6 +302,8 @@ public:
 	// Constructor/destructor/loader
 	CRender();
 	virtual ~CRender();
+protected:
+		virtual	void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
 };
 
 extern CRender RImplementation;
