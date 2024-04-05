@@ -16,17 +16,14 @@ class CPatrolPoint;
 class CALifeSmartTerrainTask
 {
 private:
-#ifdef DEBUG
 	shared_str m_patrol_path_name;
 	u32 m_patrol_point_index;
-#endif
-	const CPatrolPoint *m_patrol_point;
 
-#ifdef DEBUG
+	const CPatrolPoint* m_patrol_point{ nullptr };
+
 private:
 	IC const shared_str &patrol_path_name() const;
 	IC const u32 &patrol_point_index() const;
-#endif
 
 private:
 	void setup_patrol_point(const shared_str &patrol_path_name, const u32 &patrol_point_index);
