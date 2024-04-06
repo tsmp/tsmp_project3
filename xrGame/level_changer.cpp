@@ -20,11 +20,10 @@
 #include "HudManager.h"
 #include "UIGameSP.h"
 
-xr_vector<CLevelChanger *> g_lchangers;
+#include "patrol_path.h"
+#include "patrol_path_storage.h"
 
-CLevelChanger::~CLevelChanger()
-{
-}
+xr_vector<CLevelChanger *> g_lchangers;
 
 void CLevelChanger::Center(Fvector &C) const
 {
@@ -39,7 +38,8 @@ float CLevelChanger::Radius() const
 void CLevelChanger::net_Destroy()
 {
 	inherited ::net_Destroy();
-	xr_vector<CLevelChanger *>::iterator it = std::find(g_lchangers.begin(), g_lchangers.end(), this);
+	auto it = std::find(g_lchangers.begin(), g_lchangers.end(), this);
+
 	if (it != g_lchangers.end())
 		g_lchangers.erase(it);
 }
@@ -60,6 +60,7 @@ BOOL CLevelChanger::net_Spawn(CSE_Abstract *DC)
 	m_angles = l_tpALifeLevelChanger->m_tAngles;
 
 	m_bSilentMode = !!l_tpALifeLevelChanger->m_bSilentMode;
+
 	if (ai().get_level_graph())
 	{
 		//. this information should be computed in xrAI
@@ -72,6 +73,7 @@ BOOL CLevelChanger::net_Spawn(CSE_Abstract *DC)
 	for (u32 i = 0; i < l_tpALifeLevelChanger->shapes.size(); ++i)
 	{
 		CSE_Shape::shape_def &S = l_tpALifeLevelChanger->shapes[i];
+
 		switch (S.type)
 		{
 		case 0:
@@ -95,13 +97,17 @@ BOOL CLevelChanger::net_Spawn(CSE_Abstract *DC)
 		XFORM().transform_tiny(P, CFORM()->getSphere().P);
 		setEnabled(TRUE);
 	}
+
 	g_lchangers.push_back(this);
-	return (bOk);
+	return bOk;
 }
 
 void CLevelChanger::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
+
+	if (g_dedicated_server)
+		return;
 
 	const Fsphere &s = CFORM()->getSphere();
 	Fvector P;
@@ -110,12 +116,12 @@ void CLevelChanger::shedule_Update(u32 dt)
 
 	update_actor_invitation();
 }
-#include "patrol_path.h"
-#include "patrol_path_storage.h"
+
 void CLevelChanger::feel_touch_new(CObject *tpObject)
 {
 	CActor *l_tpActor = smart_cast<CActor *>(tpObject);
 	VERIFY(l_tpActor);
+
 	if (!l_tpActor->g_Alive())
 		return;
 
@@ -130,10 +136,11 @@ void CLevelChanger::feel_touch_new(CObject *tpObject)
 		Level().Send(p, net_flags(TRUE));
 		return;
 	}
+
 	Fvector p, r;
 	bool b = get_reject_pos(p, r);
-	CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
-	if (pGameSP)
+
+	if (CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame()))
 		pGameSP->ChangeLevel(m_game_vertex_id, m_level_vertex_id, m_position, m_angles, p, r, b);
 
 	m_entrance_time = Device.fTimeGlobal;
@@ -143,9 +150,6 @@ bool CLevelChanger::get_reject_pos(Fvector &p, Fvector &r)
 {
 	p.set(0, 0, 0);
 	r.set(0, 0, 0);
-	//--		db.actor:set_actor_position(patrol("t_way"):point(0))
-	//--		local dir = patrol("t_look"):point(0):sub(patrol("t_way"):point(0))
-	//--		db.actor:set_actor_direction(-dir:getH())
 
 	if (m_ini_file && m_ini_file->section_exist("pt_move_if_reject"))
 	{
@@ -163,33 +167,30 @@ bool CLevelChanger::get_reject_pos(Fvector &p, Fvector &r)
 		tmp.getHP(r.y, r.x);
 		return true;
 	}
+
 	return false;
 }
 
 BOOL CLevelChanger::feel_touch_contact(CObject *object)
 {
-	return (((CCF_Shape *)CFORM())->Contact(object)) && smart_cast<CActor *>(object);
+	return (((CCF_Shape*)CFORM())->Contact(object)) && smart_cast<CActor*>(object);
 }
 
 void CLevelChanger::update_actor_invitation()
 {
 	if (m_bSilentMode)
 		return;
-	xr_vector<CObject *>::iterator it = feel_touch.begin();
-	xr_vector<CObject *>::iterator it_e = feel_touch.end();
 
-	for (; it != it_e; ++it)
+	for (CObject* it : feel_touch)
 	{
-		CActor *l_tpActor = smart_cast<CActor *>(*it);
-		VERIFY(l_tpActor);
-
 		if (m_entrance_time + 5.0f < Device.fTimeGlobal)
 		{
-			CUIGameSP *pGameSP = smart_cast<CUIGameSP *>(HUD().GetUI()->UIGame());
 			Fvector p, r;
 			bool b = get_reject_pos(p, r);
-			if (pGameSP)
+
+			if (CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame()))
 				pGameSP->ChangeLevel(m_game_vertex_id, m_level_vertex_id, m_position, m_angles, p, r, b);
+
 			m_entrance_time = Device.fTimeGlobal;
 		}
 	}

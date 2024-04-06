@@ -659,6 +659,9 @@ game_sv_GameState::~game_sv_GameState()
 
 bool game_sv_GameState::change_level(NET_Packet &net_packet, ClientID const &sender)
 {
+	if (ai().get_alife())
+		return alife().change_level(net_packet);
+
 	return true;
 }
 

@@ -28,7 +28,7 @@ private:
 	bool get_reject_pos(Fvector &p, Fvector &r);
 
 public:
-	virtual ~CLevelChanger();
+	virtual ~CLevelChanger() = default;
 	virtual BOOL net_Spawn(CSE_Abstract *DC);
 	virtual void net_Destroy();
 	virtual void Center(Fvector &C) const;
