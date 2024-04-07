@@ -49,9 +49,9 @@ void game_PlayerState::script_register(lua_State* L)
 			 .def("headshots", &BaseType::headshots)
 			 .def("maxkillstreak", &BaseType::maxkillstreak)
 			 .def("afcount", &BaseType::afcount)
-			 
+
 			 .def_readwrite("m_Stats", &BaseType::m_Stats)
-			 
+
 			 .def_readwrite("pItemList", &BaseType::pItemList)
 			 .def_readwrite("LastBuyAcount", &BaseType::LastBuyAcount)
 			 .def("testFlag", &BaseType::testFlag)
@@ -62,7 +62,7 @@ void game_PlayerState::script_register(lua_State* L)
 			 .def("clear", &BaseType::clear, &WrapType::clear_static)
 			 .def("net_Export", &BaseType::net_Export, &WrapType::net_Export_static)
 			 .def("net_Import", &BaseType::net_Import, &WrapType::net_Import_static),
-			 
+
 			 class_<CollectedStatistic>("CollectedStatistic")
 			 .def(constructor<>())
 			 .def_readwrite("m_iRivalKills", &CollectedStatistic::m_iRivalKills)
