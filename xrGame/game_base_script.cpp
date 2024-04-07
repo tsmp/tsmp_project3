@@ -42,13 +42,6 @@ void game_PlayerState::script_register(lua_State *L)
 			 .def_readwrite("rank", &BaseType::rank)
 			 .def_readwrite("DeathTime", &BaseType::DeathTime)
 			 .def_readwrite("m_online_time", &BaseType::m_online_time)
-			 .def("frags", &BaseType::frags)
-			 .def("rivalfrags", &BaseType::rivalfrags)
-			 .def("deaths", &BaseType::deaths)
-			 .def("aifrags", &BaseType::aifrags)
-			 .def("headshots", &BaseType::headshots)
-			 .def("maxkillstreak", &BaseType::maxkillstreak)
-			 .def("afcount", &BaseType::afcount)
 
 			 .def_readwrite("m_Stats", &BaseType::m_Stats)
 
@@ -64,13 +57,13 @@ void game_PlayerState::script_register(lua_State *L)
 			 .def("net_Import", &BaseType::net_Import, &WrapType::net_Import_static),
 
 			 class_<CollectedStatistic>("CollectedStatistic")
-			 .def(constructor<>())
-			 .def_readwrite("m_iRivalKills", &CollectedStatistic::m_iRivalKills)
-			 .def_readwrite("m_iAiKills", &CollectedStatistic::m_iAiKills)
-			 .def_readwrite("m_iHeadshots", &CollectedStatistic::m_iHeadshots)
-			 .def_readwrite("m_iDeaths", &CollectedStatistic::m_iDeaths)
-			 .def_readwrite("m_iKillsInRowMax", &CollectedStatistic::m_iKillsInRowMax)
-			 .def_readwrite("af_count", &CollectedStatistic::af_count)
+				.def(constructor<>())
+				.def_readwrite("m_iRivalKills", &CollectedStatistic::m_iRivalKills)
+				.def_readwrite("m_iAiKills", &CollectedStatistic::m_iAiKills)
+				.def_readwrite("m_iHeadshots", &CollectedStatistic::m_iHeadshots)
+				.def_readwrite("m_iDeaths", &CollectedStatistic::m_iDeaths)
+				.def_readwrite("m_iKillsInRowMax", &CollectedStatistic::m_iKillsInRowMax)
+				.def_readwrite("af_count", &CollectedStatistic::af_count)
 		];
 }
 
