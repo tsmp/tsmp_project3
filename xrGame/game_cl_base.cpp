@@ -510,3 +510,12 @@ void game_cl_GameState::ReceivePatrolPaths(NET_Packet &P)
 {
 	ai().patrol_paths().NetworkImport(P);
 }
+
+void game_cl_GameState::ForEachClient(luabind::functor<void> functor)
+{
+	Level().Server->ForEachClientDo([&](IClient* client)
+		{
+			functor(static_cast<xrClientData*>(client), this);
+		}
+	);
+}

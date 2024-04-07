@@ -97,6 +97,7 @@ public:
 
 	game_PlayerState *GetPlayerByGameID(u32 GameID);
 	void ForEachPlayer(luabind::functor<void> functor);
+	void ForEachClient(luabind::functor<void> functor);
 	game_PlayerState *GetPlayerByOrderID(u32 id);
 	ClientID GetClientIDByOrderID(u32 id);
 	u32 GetPlayersCount() const { return static_cast<u32>(players.size()); };
