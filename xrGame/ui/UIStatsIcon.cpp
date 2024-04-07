@@ -63,13 +63,13 @@ void CUIStatsIcon::InitTexInfo()
 void CUIStatsIcon::FreeTexInfo()
 {
 	// ranks
-	for (u32 i = 1; i <= GetRanksCount(); i++)
+	for (u32 i = 0; i <= GetRanksCount(); i++)
 	{
 		m_rank_tex_info[i][0].sh->destroy();
 		m_rank_tex_info[i][1].sh->destroy();
 	}
-	m_rank_tex_info[ARTEFACT][0].sh->destroy();
-	m_rank_tex_info[DEATH][0].sh->destroy();
+	m_tex_info[ARTEFACT][0].sh->destroy();
+	m_tex_info[DEATH][0].sh->destroy();
 }
 
 void CUIStatsIcon::SetText(LPCSTR str)
