@@ -327,12 +327,13 @@ void game_cl_GameState::OnGameMessage(NET_Packet &P)
 
 void game_cl_GameState::ForEachPlayer(luabind::functor<void> functor)
 {
-	Level().Server->ForEachClientDo([&](IClient* client)
-		{
-			xrClientData* C = static_cast<xrClientData*>(client);
-			functor(C->ps, this);
-		}
-	);
+	PLAYERS_MAP_IT I = players.begin();
+	PLAYERS_MAP_IT E = players.end();
+
+	for (; I != E; ++I)
+	{
+		functor(I->second, this);
+	};
 }
 
 game_PlayerState *game_cl_GameState::GetPlayerByGameID(u32 GameID)
