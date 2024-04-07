@@ -21,7 +21,7 @@
 CROS_impl::CROS_impl	()
 {
 	approximate.set		( 0,0,0 );
-	dwFrame				= u32(-1);
+	CurrentFrameNumber				= u32(-1);
 	shadow_recv_frame	= u32(-1);
 	shadow_recv_slot	= -1;
 
@@ -176,8 +176,8 @@ inline void CROS_impl::accum_hemi(float* hemi_cube, Fvector3& dir, float scale)
 void	CROS_impl::update	(IRenderable* O)
 {
 	// clip & verify
-	if					(dwFrame==Device.CurrentFrameNumber)			return;
-	dwFrame				= Device.CurrentFrameNumber;
+	if					(CurrentFrameNumber==Device.CurrentFrameNumber)			return;
+	CurrentFrameNumber				= Device.CurrentFrameNumber;
 	if					(0==O)								return;
 	if					(0==O->renderable.visual)			return;
 	VERIFY				(dynamic_cast<CROS_impl*>			(O->renderable_ROS()));
@@ -337,10 +337,10 @@ extern float ps_r2_lt_smooth;
 // hemi & sun: update and smooth
 void	CROS_impl::update_smooth	(IRenderable* O)
 {
-	if (dwFrameSmooth == Device.CurrentFrameNumber)
+	if (CurrentFrameNumberSmooth == Device.CurrentFrameNumber)
 		return;
 
-	dwFrameSmooth			=	Device.CurrentFrameNumber;
+	CurrentFrameNumberSmooth			=	Device.CurrentFrameNumber;
 
 #if RENDER==R_R1
 	if (O && (0==result_count)) 

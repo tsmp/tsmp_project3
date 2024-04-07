@@ -4,7 +4,7 @@
 #include "../xrRender/fbasicvisual.h"
 #include "../../xrEngine/fmesh.h"
 #include "../../xrEngine/xrLevel.h"
-#include "../../xrEngine/x_ray.h"
+#include "../../xrEngine/xrApplication.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrCore/stream_reader.h"
 
@@ -299,7 +299,7 @@ void CRender::LoadSectors(IReader* fs)
 	{
 		CDB::Collector	CL;
 		fs->find_chunk	(fsL_PORTALS);
-		for (i=0; i<count; i++)
+		for (u32 i=0; i<count; i++)
 		{
 			b_portal	P;
 			fs->r		(&P,sizeof(P));

@@ -27,7 +27,7 @@ public:
 public:
 	Fmatrix xform;
 
-	u32 dwFrame;
+	u32 CurrentFrameNumber;
 	u32 dwMode;
 	union
 	{

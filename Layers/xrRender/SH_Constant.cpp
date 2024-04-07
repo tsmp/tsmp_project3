@@ -25,9 +25,9 @@ BOOL	AAA_test		()
 
 void CConstant::Calculate()
 {
-	if (dwFrame == Device.CurrentFrameNumber)
+	if (CurrentFrameNumber == Device.CurrentFrameNumber)
 		return;
-	dwFrame = Device.CurrentFrameNumber;
+	CurrentFrameNumber = Device.CurrentFrameNumber;
 	if (modeProgrammable == dwMode)
 		return;
 

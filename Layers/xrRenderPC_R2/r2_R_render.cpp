@@ -361,11 +361,11 @@ void CRender::Render		()
 		Target->phase_scene_end					();
 	}
 
-	if (g_hud && g_hud->RenderActiveItemUIQuery())
-	{
-		Target->phase_wallmarks();
-		r_dsgraph_render_hud_ui();
-	}
+//	if (g_hud && g_hud->RenderActiveItemUIQuery())
+//	{
+//		Target->phase_wallmarks();
+//		r_dsgraph_render_hud_ui();
+//	}
 
 	// Wall marks
 	if(Wallmarks)	{

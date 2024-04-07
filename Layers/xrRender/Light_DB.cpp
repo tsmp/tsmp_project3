@@ -141,7 +141,7 @@ void	CLight_DB::LoadHemi	()
 						L->set_range		(Ldata.range		);
 						L->set_color		(Ldata.diffuse.x, Ldata.diffuse.y, Ldata.diffuse.z);
 						L->set_active		(true				);
-						L->set_attenuation_params(Ldata.attenuation0, Ldata.attenuation1, Ldata.attenuation2, Ldata.falloff);
+						L->set_attenuation_params(Ldata.attenuation0, Ldata.attenuation1, Ldata.attenuation2, Ldata.falloff());
 						L->spatial.type = STYPE_LIGHTSOURCEHEMI;
 						//				R_ASSERT			(L->spatial.sector	);
 					}
@@ -190,7 +190,7 @@ void			CLight_DB::add_light		(light* L)
 	L->frame_render							=	Device.CurrentFrameNumber;
 	if (RImplementation.o.noshadows)		L->flags.bShadow		= FALSE;
 	if (L->flags.bStatic && !ps_r2_ls_flags.test(R2FLAG_R1LIGHTS))	return;
-	L->export								(package);
+	L->_export								(package);
 }
 #endif
 

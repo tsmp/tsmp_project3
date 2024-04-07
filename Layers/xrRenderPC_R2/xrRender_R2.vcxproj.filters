@@ -567,12 +567,6 @@
     <ClInclude Include="..\xrRender\blenders\Blender_Recorder.h">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrRender\blenders\tss.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\blenders\tss_def.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClInclude>
     <ClInclude Include="..\xrRender\IRenderDetailModel.h">
       <Filter>Refactored\Interfaces</Filter>
     </ClInclude>
@@ -587,6 +581,18 @@
     </ClInclude>
     <ClInclude Include="..\..\xrEngine\cl_intersect.h">
       <Filter>Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\tss.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\tss_def.h">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\R_Backend_hemi.h">
+      <Filter>Refactored\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\R_Backend_tree.h">
+      <Filter>Refactored\Backend</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1028,9 +1034,6 @@
     <ClCompile Include="..\xrRender\blenders\Blender_Recorder.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\blenders\tss_def.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\ETextureParams.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
@@ -1063,6 +1066,15 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\Blender_Recorder_StandartBinding.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\tss_def.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\R_Backend_hemi.cpp">
+      <Filter>Refactored\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\R_Backend_tree.cpp">
+      <Filter>Refactored\Backend</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

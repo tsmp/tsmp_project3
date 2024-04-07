@@ -394,7 +394,7 @@ void CRenderTarget::accum_volumetric(light* L)
 			{
 				Fvector4	&ClipPlane = *(Fvector4*)&ClipFrustum.planes[i].n.x;
 				Fvector4	TransformedPlane;
-				PlaneTransform.transform(TransformedPlane, ClipPlane);
+//				PlaneTransform.transform(TransformedPlane, ClipPlane);
 				TransformedPlane.mul(-1.0f);
 				HW.pDevice->SetClipPlane( i, &TransformedPlane.x);
 			}

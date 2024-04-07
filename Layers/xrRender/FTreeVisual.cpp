@@ -93,19 +93,19 @@ void FTreeVisual::Load(const char *N, IReader *data, u32 dwFlags)
 
 struct FTreeVisual_setup
 {
-	u32 dwFrame;
+	u32 CurrentFrameNumber;
 	float scale;
 	Fvector4 wave;
 	Fvector4 wind;
 
 	FTreeVisual_setup()
 	{
-		dwFrame = 0;
+		CurrentFrameNumber = 0;
 	}
 
 	void calculate()
 	{
-		dwFrame = Device.CurrentFrameNumber;
+		CurrentFrameNumber = Device.CurrentFrameNumber;
 
 		// Calc wind-vector3, scale
 		float tm_rot = PI_MUL_2 * Device.fTimeGlobal / ps_r__Tree_w_rot;
@@ -123,7 +123,7 @@ struct FTreeVisual_setup
 void FTreeVisual::Render(float LOD)
 {
 	static FTreeVisual_setup tvs;
-	if (tvs.dwFrame != Device.CurrentFrameNumber)
+	if (tvs.CurrentFrameNumber != Device.CurrentFrameNumber)
 		tvs.calculate();
 		// setup constants
 #if RENDER == R_R2

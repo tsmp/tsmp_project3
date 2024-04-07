@@ -44,7 +44,7 @@ void CBackend::OnFrameBegin	()
 	if (!g_dedicated_server)
 #endif    
 	{
-		PGO					(Msg("PGO:*****frame[%d]*****",Device.dwFrame));
+		PGO					(Msg("PGO:*****frame[%d]*****",Device.CurrentFrameNumber));
 #ifdef	USE_DX10
 		Invalidate();
 		//	DX9 sets base rt nd base zb by default

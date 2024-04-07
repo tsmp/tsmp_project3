@@ -56,7 +56,7 @@ void	CRenderTarget::u_DBT_disable	()
 
 BOOL CRenderTarget::enable_scissor		(light* L)		// true if intersects near plane
 {
-	// Msg	("%d: %x type(%d), pos(%f,%f,%f)",Device.dwFrame,u32(L),u32(L->flags.type),VPUSH(L->position));
+	// Msg	("%d: %x type(%d), pos(%f,%f,%f)",Device.CurrentFrameNumber,u32(L),u32(L->flags.type),VPUSH(L->position));
 
 	// Near plane intersection
 	BOOL	near_intersect				= FALSE;
