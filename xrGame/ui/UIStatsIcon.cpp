@@ -6,6 +6,9 @@
 #include "../Include/xrRender/UIShader.h"
 
 CUIStatsIcon::TEX_INFO CUIStatsIcon::m_tex_info[MAX_DEF_TEX][2];
+CUIStatsIcon::TEX_INFO CUIStatsIcon::m_rank_tex_info[MAXBYTE][2];
+
+extern u8 GetRanksCount();
 
 CUIStatsIcon::CUIStatsIcon()
 {
@@ -18,19 +21,19 @@ using namespace InventoryUtilities;
 
 void CUIStatsIcon::InitTexInfo()
 {
-	if (m_tex_info[RANK_0][0].sh->inited())
+	if (m_rank_tex_info[0][0].sh->inited())
 		return;
 	// ranks
 	string128 rank_tex;
-	for (int i = RANK_0; i <= RANK_4; i++)
+	for (u32 i = 0; i < GetRanksCount(); i++)
 	{
 		sprintf_s(rank_tex, "ui_hud_status_green_0%d", i + 1);
-		m_tex_info[i][0].sh->create("hud\\default", CUITextureMaster::GetTextureFileName(rank_tex));
-		m_tex_info[i][0].rect = CUITextureMaster::GetTextureRect(rank_tex);
+		m_rank_tex_info[i][0].sh->create("hud\\default", CUITextureMaster::GetTextureFileName(rank_tex));
+		m_rank_tex_info[i][0].rect = CUITextureMaster::GetTextureRect(rank_tex);
 
 		sprintf_s(rank_tex, "ui_hud_status_blue_0%d", i + 1);
-		m_tex_info[i][1].sh->create("hud\\default", CUITextureMaster::GetTextureFileName(rank_tex));
-		m_tex_info[i][1].rect = CUITextureMaster::GetTextureRect(rank_tex);
+		m_rank_tex_info[i][1].sh->create("hud\\default", CUITextureMaster::GetTextureFileName(rank_tex));
+		m_rank_tex_info[i][1].rect = CUITextureMaster::GetTextureRect(rank_tex);
 	}
 
 	// artefact
@@ -60,10 +63,10 @@ void CUIStatsIcon::InitTexInfo()
 void CUIStatsIcon::FreeTexInfo()
 {
 	// ranks
-	for (int i = RANK_0; i <= RANK_4; i++)
+	for (u32 i = 0; i <= GetRanksCount(); i++)
 	{
-		m_tex_info[i][0].sh->destroy();
-		m_tex_info[i][1].sh->destroy();
+		m_rank_tex_info[i][0].sh->destroy();
+		m_rank_tex_info[i][1].sh->destroy();
 	}
 	m_tex_info[ARTEFACT][0].sh->destroy();
 	m_tex_info[DEATH][0].sh->destroy();
@@ -87,8 +90,8 @@ void CUIStatsIcon::SetText(LPCSTR str)
 
 		int rank = atoi(strstr(str, "0")) - 1;
 
-		GetStaticItem()->SetShader(m_tex_info[rank][team].sh);
-		SetOriginalRect(m_tex_info[rank][team].rect);
+		GetStaticItem()->SetShader(m_rank_tex_info[rank][team].sh);
+		SetOriginalRect(m_rank_tex_info[rank][team].rect);
 	}
 	else if (0 == xr_strcmp(str, "death"))
 	{

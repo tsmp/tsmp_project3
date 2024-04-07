@@ -13,12 +13,6 @@ public:
 protected:
 	enum DEF_TEX
 	{
-		RANK_0 = 0,
-		RANK_1,
-		RANK_2,
-		RANK_3,
-		RANK_4,
-		RANK_5,
 		ARTEFACT,
 		DEATH,
 
@@ -33,4 +27,5 @@ protected:
 	static void InitTexInfo();
 	static void FreeTexInfo();
 	static TEX_INFO m_tex_info[MAX_DEF_TEX][2];
+	static TEX_INFO m_rank_tex_info[MAXBYTE][2];
 };
