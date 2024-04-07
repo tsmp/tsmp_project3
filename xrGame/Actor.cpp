@@ -1722,3 +1722,8 @@ CCustomOutfit *CActor::GetOutfit() const
 	PIItem _of = inventory().m_slots[OUTFIT_SLOT].m_pIItem;
 	return _of ? smart_cast<CCustomOutfit *>(_of) : NULL;
 }
+
+u16 CActor::GetLastHittingWeaponID()
+{
+	return m_iLastHittingWeaponID;
+}
