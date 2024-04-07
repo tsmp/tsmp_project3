@@ -10,12 +10,12 @@ struct CWrapperBase : public T, public luabind::wrap_base
 	typedef CWrapperBase<T> self_type;
 
 	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1(net_Export, NET_Packet)
-		DEFINE_LUA_WRAPPER_METHOD_R2P1_V1(net_Import, NET_Packet)
-		DEFINE_LUA_WRAPPER_METHOD_V0(clear)
+	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1(net_Import, NET_Packet)
+	DEFINE_LUA_WRAPPER_METHOD_V0(clear)
 };
 
 #pragma optimize("s", on)
-void game_PlayerState::script_register(lua_State* L)
+void game_PlayerState::script_register(lua_State *L)
 {
 	using namespace luabind;
 
@@ -74,7 +74,7 @@ void game_PlayerState::script_register(lua_State* L)
 		];
 }
 
-void game_GameState::script_register(lua_State* L)
+void game_GameState::script_register(lua_State *L)
 {
 	using namespace luabind;
 
