@@ -81,11 +81,11 @@ void game_GameState::script_register(lua_State* L)
 	module(L)
 		[luabind::class_<game_GameState, DLL_Pure>("game_GameState")
 			 .def(constructor<>())
-			 
+
 			 .def_readwrite("type", &game_GameState::m_type)
 			 .def_readonly("round", &game_GameState::m_round)
 			 .def_readonly("start_time", &game_GameState::m_start_time)
-			 
+
 			 .def("Type", &game_GameState::Type)
 			 .def("Phase", &game_GameState::Phase)
 			 .def("Round", &game_GameState::Round)
