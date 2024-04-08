@@ -106,6 +106,11 @@ bool set_weather_fx(LPCSTR weather_name)
 	return (g_pGamePersistent->Environment().SetWeatherFX(weather_name));
 }
 
+bool start_weather_fx_from_time(LPCSTR weather_name, float time)
+{
+	return			(g_pGamePersistent->Environment().StartWeatherFXFromTime(weather_name, time));
+}
+
 bool is_wfx_playing()
 {
 	return (g_pGamePersistent->Environment().IsWFXPlaying());
@@ -166,7 +171,7 @@ float cover_in_direction(u32 level_vertex_id, const Fvector &direction)
 
 float rain_factor()
 {
-	return (g_pGamePersistent->Environment().CurrentEnv.rain_density);
+	return (g_pGamePersistent->Environment().CurrentEnv->rain_density);
 }
 
 u32 vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distance)
@@ -349,7 +354,7 @@ CEnvironment *environment()
 
 CEnvDescriptor *current_environment(CEnvironment *self)
 {
-	return (&self->CurrentEnv);
+	return (self->CurrentEnv);
 }
 
 extern bool g_bDisableAllInput;
@@ -555,6 +560,7 @@ void CLevel::script_register(lua_State *L)
 
 			def("get_weather", get_weather),
 			def("set_weather", set_weather),
+			def("start_weather_fx_from_time", start_weather_fx_from_time),
 			def("set_weather_fx", set_weather_fx),
 			def("is_wfx_playing", is_wfx_playing),
 

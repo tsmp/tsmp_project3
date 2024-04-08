@@ -14,7 +14,7 @@
 
 #include "../xrGame/object_broker.h"
 
-#define FAR_DIST g_pGamePersistent->Environment().CurrentEnv.far_plane
+#define FAR_DIST g_pGamePersistent->Environment().CurrentEnv->far_plane
 
 //////////////////////////////////////////////////////////////////////////////
 // Globals ///////////////////////////////////////////////////////////////////
@@ -135,9 +135,12 @@ CLensFlare::CLensFlare()
 	m_State = lfsNone;
 	m_StateBlend = 0.f;
 
-	m_ray_cache.verts[0].set(0, 0, 0);
-	m_ray_cache.verts[1].set(0, 0, 0);
-	m_ray_cache.verts[2].set(0, 0, 0);
+	for (int i = 0; i < MAX_RAYS; ++i)
+	{
+		m_ray_cache[i].verts[0].set(0, 0, 0);
+		m_ray_cache[i].verts[1].set(0, 0, 0);
+		m_ray_cache[i].verts[2].set(0, 0, 0);
+	}
 
 	OnDeviceCreate();
 }
@@ -148,15 +151,15 @@ CLensFlare::~CLensFlare()
 	delete_data(m_Palette);
 }
 
-struct STranspParam
-{
-	Fvector P;
-	Fvector D;
-	float f;
-	CLensFlare *parent;
-	float vis;
-	float vis_threshold;
-	STranspParam(CLensFlare *p, const Fvector &_P, const Fvector &_D, float _f, float _vis_threshold) : P(_P), D(_D), f(_f), parent(p), vis(1.f), vis_threshold(_vis_threshold) {}
+struct STranspParam {
+	Fvector				P;
+	Fvector				D;
+	float				f;
+	//CLensFlare*			parent;
+	collide::ray_cache* pray_cache;
+	float				vis;
+	float				vis_threshold;
+	STranspParam(collide::ray_cache* p, const Fvector& _P, const Fvector& _D, float _f, float _vis_threshold) :P(_P), D(_D), f(_f), pray_cache(p), vis(1.f), vis_threshold(_vis_threshold) {}
 };
 
 IC BOOL material_callback(collide::rq_result &result, LPVOID params)
@@ -177,10 +180,10 @@ IC BOOL material_callback(collide::rq_result &result, LPVOID params)
 		if (fis_zero(vis))
 		{
 			Fvector *V = g_pGameLevel->ObjectSpace.GetStaticVerts();
-			fp->parent->m_ray_cache.set(fp->P, fp->D, fp->f, TRUE);
-			fp->parent->m_ray_cache.verts[0].set(V[T->verts[0]]);
-			fp->parent->m_ray_cache.verts[1].set(V[T->verts[1]]);
-			fp->parent->m_ray_cache.verts[2].set(V[T->verts[2]]);
+			fp->pray_cache->set				(fp->P,fp->D,fp->f,TRUE);
+			fp->pray_cache->verts[0].set	(V[T->verts[0]]);
+			fp->pray_cache->verts[1].set	(V[T->verts[1]]);
+			fp->pray_cache->verts[2].set	(V[T->verts[2]]);
 		}
 	}
 	fp->vis *= vis;
@@ -199,7 +202,15 @@ IC void blend_lerp(float &cur, float tgt, float speed, float dt)
 	cur += (diff / diff_a) * mot;
 }
 
-void CLensFlare::OnFrame(int id)
+static Fvector2 RayDeltas[CLensFlare::MAX_RAYS] =
+{
+	{ 0,		0 },
+	{ 1,		0 },
+	{ -1,		0 },
+	{ 0,		-1 },
+	{ 0,		1 },
+};
+void CLensFlare::OnFrame(shared_str id)
 {
 	if (dwFrame == Device.CurrentFrameNumber)
 		return;
@@ -209,14 +220,16 @@ void CLensFlare::OnFrame(int id)
 
 	dwFrame = Device.CurrentFrameNumber;
 
-	vSunDir.mul(g_pGamePersistent->Environment().CurrentEnv.sun_dir, -1);
+	R_ASSERT(_valid(g_pGamePersistent->Environment().CurrentEnv->sun_dir));
+	vSunDir.mul(g_pGamePersistent->Environment().CurrentEnv->sun_dir, -1);
+	R_ASSERT(_valid(vSunDir));
 
 	// color
 	float tf = g_pGamePersistent->Environment().fTimeFactor;
-	Fvector &c = g_pGamePersistent->Environment().CurrentEnv.sun_color;
+	Fvector &c = g_pGamePersistent->Environment().CurrentEnv->sun_color;
 	LightColor.set(c.x, c.y, c.z, 1.f);
 
-	CLensFlareDescriptor *desc = (id == -1) ? 0 : &m_Palette[id];
+	CLensFlareDescriptor* desc = id.size() ? g_pGamePersistent->Environment().add_flare(m_Palette, id) : 0;
 
 	switch (m_State)
 	{
@@ -300,8 +313,89 @@ void CLensFlare::OnFrame(int id)
 	vecX.set(1.0f, 0.0f, 0.0f);
 	matEffCamPos.transform_dir(vecX);
 	vecX.normalize();
-	vecY.crossproduct(vecX, vecDir);
+	R_ASSERT(_valid(vecX));
 
+	vecY.crossproduct(vecX, vecDir);
+	R_ASSERT(_valid(vecY));
+
+	//	Side vectors to bend normal.
+	Fvector vecSx;
+	Fvector vecSy;
+
+	//float fScale = m_Current->m_Source.fRadius * vSunDir.magnitude();
+	//float fScale = m_Current->m_Source.fRadius;
+	//	HACK: it must be read from the weather!
+	float fScale = 0.02f;
+
+	vecSx.mul(vecX, fScale);
+	vecSy.mul(vecY, fScale);
+
+	CObject* o_main = g_pGameLevel->CurrentViewEntity();
+	R_ASSERT(_valid(vSunDir));
+	STranspParam TP(&m_ray_cache[0], Device.vCameraPosition, vSunDir, 1000.f, EPS_L);
+
+	R_ASSERT(_valid(TP.P));
+	R_ASSERT(_valid(TP.D));
+	collide::ray_defs RD(TP.P, TP.D, TP.f, CDB::OPT_CULL, collide::rqtBoth);
+	float	fVisResult = 0.0f;
+
+	for (int i = 0; i < MAX_RAYS; ++i)
+	{
+		TP.D = vSunDir;
+		TP.D.add(Fvector().mul(vecSx, RayDeltas[i].x));
+		TP.D.add(Fvector().mul(vecSy, RayDeltas[i].y));
+		R_ASSERT(_valid(TP.D));
+		TP.pray_cache = &(m_ray_cache[i]);
+		TP.vis = 1.0f;
+		RD.dir = TP.D;
+
+		if (m_ray_cache[i].result && m_ray_cache[i].similar(TP.P, TP.D, TP.f)) {
+			// similar with previous query == 0
+			TP.vis = 0.f;
+		}
+		else {
+			float _u, _v, _range;
+			if (CDB::TestRayTri(TP.P, TP.D, m_ray_cache[i].verts, _u, _v, _range, false) && (_range > 0 && _range < TP.f)) {
+				TP.vis = 0.f;
+			}
+			else {
+				// cache outdated. real query.
+				r_dest.r_clear();
+				if (g_pGameLevel->ObjectSpace.RayQuery(r_dest, RD, material_callback, &TP, NULL, o_main))
+					m_ray_cache[i].result = FALSE;
+			}
+		}
+
+		fVisResult += TP.vis;
+	}
+
+	fVisResult *= (1.0f / MAX_RAYS);
+
+	//blend_lerp(fBlend,TP.vis,BLEND_DEC_SPEED,Device.fTimeDelta);
+	blend_lerp(fBlend, fVisResult, BLEND_DEC_SPEED, Device.fTimeDelta);
+
+	/*
+	CObject*	o_main		= g_pGameLevel->CurrentViewEntity();
+	STranspParam TP			(&m_ray_cache,Device.vCameraPosition,vSunDir,1000.f,EPS_L);
+	collide::ray_defs RD	(TP.P,TP.D,TP.f,CDB::OPT_CULL,collide::rqtBoth);
+	if (m_ray_cache.result&&m_ray_cache.similar(TP.P,TP.D,TP.f)){
+		// similar with previous query == 0
+		TP.vis				= 0.f;
+	}else{
+		float _u,_v,_range;
+		if (CDB::TestRayTri(TP.P,TP.D,m_ray_cache.verts,_u,_v,_range,false)&&(_range>0 && _range<TP.f)){
+			TP.vis			= 0.f;
+		}else{
+			// cache outdated. real query.
+			r_dest.r_clear	();
+			if (g_pGameLevel->ObjectSpace.RayQuery	(r_dest,RD,material_callback,&TP,NULL,o_main))
+				m_ray_cache.result = FALSE			;
+		}
+	}
+	blend_lerp(fBlend,TP.vis,BLEND_DEC_SPEED,Device.fTimeDelta);
+	*/
+
+	/*
 	CObject *o_main = g_pGameLevel->CurrentViewEntity();
 	STranspParam TP(this, Device.vCameraPosition, vSunDir, 1000.f, EPS_L);
 	collide::ray_defs RD(TP.P, TP.D, TP.f, CDB::OPT_CULL, collide::rqtBoth);
@@ -326,6 +420,7 @@ void CLensFlare::OnFrame(int id)
 		}
 	}
 	blend_lerp(fBlend, TP.vis, BLEND_DEC_SPEED, Device.fTimeDelta);
+    */
 
 	clamp(fBlend, 0.0f, 1.0f);
 
@@ -365,17 +460,14 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 	m_pRender->Render(*this, bSun, bFlares, bGradient);
 }
 
-int CLensFlare::AppendDef(CInifile *pIni, LPCSTR sect)
+shared_str CLensFlare::AppendDef(CEnvironment& environment, LPCSTR sect)
 {
-	if (!sect || (0 == sect[0]))
-		return -1;
+	if (!sect || (0 == sect[0])) return "";
 	for (LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)
-		if (0 == xr_strcmp(*it->section, sect))
-			return int(it - m_Palette.begin());
-	m_Palette.push_back(CLensFlareDescriptor());
-	CLensFlareDescriptor &lf = m_Palette.back();
-	lf.load(pIni, sect);
-	return m_Palette.size() - 1;
+		if (0 == xr_strcmp(*(*it)->section, sect)) return sect;
+
+	environment.add_flare(m_Palette, sect);
+	return sect;
 }
 
 void CLensFlare::OnDeviceCreate()
@@ -385,14 +477,14 @@ void CLensFlare::OnDeviceCreate()
 
 	// palette
 	for (LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)
-		it->OnDeviceCreate();
+		(*it)->OnDeviceCreate();
 }
 
 void CLensFlare::OnDeviceDestroy()
 {
 	// palette
 	for (LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)
-		it->OnDeviceDestroy();
+		(*it)->OnDeviceDestroy();
 
 	// VS
 	m_pRender->OnDeviceDestroy();

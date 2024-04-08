@@ -22,6 +22,15 @@ enum EWayType
 	wt_force_dword = u32(-1)
 };
 
+enum EEnvModUsedParams {
+	eViewDist = (1 << 0),
+	eFogColor = (1 << 1),
+	eFogDensity = (1 << 2),
+	eAmbientColor = (1 << 3),
+	eSkyColor = (1 << 4),
+	eHemiColor = (1 << 5)
+};
+
 enum ERPpointType
 { // [0..255]
 	rptActorSpawn = 0,

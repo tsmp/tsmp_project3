@@ -63,12 +63,23 @@ CEnvironment::CEnvironment()
 	PerlinNoise1D->SetOctaves(2);
 	PerlinNoise1D->SetAmplitude(0.66666f);
 
-	// Moved to impl constructor
+	// params
+	p_var_alt = deg2rad(pSettings->r_float("thunderbolt_common", "altitude"));
+    p_var_long = deg2rad(pSettings->r_float("thunderbolt_common", "delta_longitude"));
+    p_min_dist = _min(.95f, pSettings->r_float("thunderbolt_common", "min_dist_factor"));
+    p_tilt = deg2rad(pSettings->r_float("thunderbolt_common", "tilt"));
+    p_second_prop = pSettings->r_float("thunderbolt_common", "second_propability");
+    clamp(p_second_prop, 0.f, 1.f);
+    p_sky_color = pSettings->r_float("thunderbolt_common", "sky_color");
+    p_sun_color = pSettings->r_float("thunderbolt_common", "sun_color");
+    p_fog_color = pSettings->r_float("thunderbolt_common", "fog_color");
 }
 CEnvironment::~CEnvironment()
 {
 	xr_delete(PerlinNoise1D);
 	OnDeviceDestroy();
+
+	destroy_mixer();
 }
 
 void CEnvironment::Invalidate()
@@ -218,8 +229,8 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 
 #ifdef WEATHER_LOGGING
 		Msg("Starting WFX: '%s' - %3.2f sec", *name, wfx_time);
-		for (EnvIt l_it = CurrentWeather->begin(); l_it != CurrentWeather->end(); l_it++)
-			Msg(". Env: '%s' Tm: %3.2f", *(*l_it)->sect_name, (*l_it)->exec_time);
+//		for (EnvIt l_it = CurrentWeather->begin(); l_it != CurrentWeather->end(); l_it++)
+//			Msg(". Env: '%s' Tm: %3.2f", *(*l_it)->sect_name, (*l_it)->exec_time);
 #endif
 	}
 	else
@@ -227,6 +238,18 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 
 		FATAL("! Empty weather effect name");
 	}
+	return true;
+}
+
+bool CEnvironment::StartWeatherFXFromTime(shared_str name, float time)
+{
+	if (!SetWeatherFX(name))
+		return false;
+
+	for (EnvIt it = CurrentWeather->begin(); it != CurrentWeather->end(); it++)
+		(*it)->exec_time = NormalizeTime((*it)->exec_time - wfx_time + time);
+
+	wfx_time = time;
 	return true;
 }
 
@@ -322,18 +345,15 @@ int get_ref_count(IUnknown *ii)
 		return 0;
 }
 
-void CEnvironment::OnFrame()
+void CEnvironment::lerp(float& current_weight)
 {
-	if (!g_pGameLevel)
-		return;
-	
 	if (bWFX && (wfx_time <= 0.f))
 		StopWFX();
 
 	SelectEnvs(fGameTime);
 	VERIFY(Current[0] && Current[1]);
 
-	float current_weight = TimeWeight(fGameTime, Current[0]->exec_time, Current[1]->exec_time);
+	current_weight = TimeWeight(fGameTime, Current[0]->exec_time, Current[1]->exec_time);
 
 	// modifiers
 	CEnvModifier EM;
@@ -343,33 +363,90 @@ void CEnvironment::OnFrame()
 	EM.ambient.set(0, 0, 0);
 	EM.sky_color.set(0, 0, 0);
 	EM.hemi_color.set(0, 0, 0);
+	EM.use_flags.zero();
+
 	Fvector view = Device.vCameraPosition;
 	float mpower = 0;
 	for (xr_vector<CEnvModifier>::iterator mit = Modifiers.begin(); mit != Modifiers.end(); mit++)
 		mpower += EM.sum(*mit, view);
 
 	// final lerp
-	CurrentEnv.lerp(this, *Current[0], *Current[1], current_weight, EM, mpower);
-	if (CurrentEnv.sun_dir.y > 0)
-	{
-		Log("CurrentEnv.sun_dir", CurrentEnv.sun_dir);
-		Log("current_weight", current_weight);
-		Log("mpower", mpower);
+	CurrentEnv->lerp(this, *Current[0], *Current[1], current_weight, EM, mpower);
+}
 
-		Log("Current[0]->sun_dir", Current[0]->sun_dir);
-		Log("Current[1]->sun_dir", Current[1]->sun_dir);
-	}
-	VERIFY2(CurrentEnv.sun_dir.y < 0, "Invalid sun direction settings in lerp");
-		
-	
-	m_pRender->OnFrame(*this);
+void CEnvironment::OnFrame()
+{
+	if (!g_pGameLevel)
+		return;
+
+	float current_weight;
+	lerp(current_weight);
 
 	PerlinNoise1D->SetFrequency(wind_gust_factor * MAX_NOISE_FREQ);
 	wind_strength_factor = clampr(PerlinNoise1D->GetContinious(Device.fTimeGlobal) + 0.5f, 0.f, 1.f);
 
-	int l_id = (current_weight < 0.5f) ? Current[0]->lens_flare_id : Current[1]->lens_flare_id;
+	shared_str l_id = (current_weight < 0.5f) ? Current[0]->lens_flare_id : Current[1]->lens_flare_id;
 	eff_LensFlare->OnFrame(l_id);
-	int t_id = (current_weight < 0.5f) ? Current[0]->tb_id : Current[1]->tb_id;
-	eff_Thunderbolt->OnFrame(t_id, CurrentEnv.bolt_period, CurrentEnv.bolt_duration);
+	shared_str t_id = (current_weight < 0.5f) ? Current[0]->tb_id : Current[1]->tb_id;
+	eff_Thunderbolt->OnFrame(t_id, CurrentEnv->bolt_period, CurrentEnv->bolt_duration);
 	eff_Rain->OnFrame();
+
+	m_pRender->OnFrame(*this);
+}
+
+void CEnvironment::create_mixer()
+{
+	VERIFY(!CurrentEnv);
+	CurrentEnv = new CEnvDescriptorMixer("00:00:00");
+}
+
+void CEnvironment::destroy_mixer()
+{
+	xr_delete(CurrentEnv);
+}
+
+SThunderboltDesc* CEnvironment::thunderbolt_description(/*const*/ CInifile* config, shared_str const& section)
+{
+	SThunderboltDesc* result = new SThunderboltDesc();
+	result->load(config, section);
+	return					(result);
+}
+
+SThunderboltCollection* CEnvironment::thunderbolt_collection(/*const*/ CInifile* pIni, LPCSTR section)
+{
+	SThunderboltCollection* result = new SThunderboltCollection();
+	result->load(pIni, section);
+	return					(result);
+}
+
+SThunderboltCollection* CEnvironment::thunderbolt_collection(xr_vector<SThunderboltCollection*>& collection, shared_str const& id)
+{
+	typedef xr_vector<SThunderboltCollection*>	Container;
+	Container::iterator		i = collection.begin();
+	Container::iterator		e = collection.end();
+	for (; i != e; ++i)
+		if ((*i)->section == id)
+			return			(*i);
+
+	NODEFAULT;
+#ifdef DEBUG
+	return					(0);
+#endif // #ifdef DEBUG
+}
+
+CLensFlareDescriptor* CEnvironment::add_flare(xr_vector<CLensFlareDescriptor*>& collection, shared_str const& id)
+{
+	typedef xr_vector<CLensFlareDescriptor*>	Flares;
+
+	Flares::const_iterator	i = collection.begin();
+	Flares::const_iterator	e = collection.end();
+	for (; i != e; ++i) {
+		if ((*i)->section == id)
+			return			(*i);
+	}
+
+	CLensFlareDescriptor* result = new CLensFlareDescriptor();
+	result->load(pSettings, id.c_str());
+	collection.push_back(result);
+	return					(result);
 }

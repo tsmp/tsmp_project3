@@ -36,14 +36,17 @@ struct SThunderboltDesc
 			fRadius.set(0.f, 0.f);
 		}
 	};
-	SFlare m_GradientTop;
-	SFlare m_GradientCenter;
+	SFlare* m_GradientTop;
+	SFlare* m_GradientCenter;
 	shared_str name;
 	CLAItem *color_anim;
 
 public:
-	SThunderboltDesc(CInifile *pIni, LPCSTR sect);
-	~SThunderboltDesc();	
+	SThunderboltDesc();
+	~SThunderboltDesc();
+	void	load(/*const*/ CInifile* pIni, shared_str const& sect);
+	void	create_top_gradient(/*const*/ CInifile* pIni, shared_str const& sect);
+	void	create_center_gradient(/*const*/ CInifile* pIni, shared_str const& sect);
 };
 
 struct SThunderboltCollection
@@ -53,8 +56,9 @@ struct SThunderboltCollection
 	shared_str section;
 
 public:
-	SThunderboltCollection(CInifile *pIni, LPCSTR sect);
+	SThunderboltCollection();
 	~SThunderboltCollection();
+	void load(/*const*/ CInifile* pIni, LPCSTR sect);
 	SThunderboltDesc *GetRandomDesc()
 	{
 		VERIFY(palette.size() > 0);
@@ -97,24 +101,24 @@ private:
 	BOOL bEnabled;
 
 	// params
-	Fvector2 p_var_alt;
-	float p_var_long;
-	float p_min_dist;
-	float p_tilt;
-	float p_second_prop;
-	float p_sky_color;
-	float p_sun_color;
-	float p_fog_color;
+//	Fvector2 p_var_alt;
+//	float p_var_long;
+//	float p_min_dist;
+//	float p_tilt;
+//	float p_second_prop;
+//	float p_sky_color;
+//	float p_sun_color;
+//	float p_fog_color;
 private:
 	BOOL RayPick(const Fvector &s, const Fvector &d, float &range);
-	void Bolt(int id, float period, float life_time);
+	void Bolt(shared_str id, float period, float life_time);
 
 public:
 	CEffect_Thunderbolt();
 	~CEffect_Thunderbolt();
 
-	void OnFrame(int id, float period, float duration);
+	void OnFrame(shared_str id, float period, float duration);
 	void Render();
 
-	int AppendDef(CInifile *pIni, LPCSTR sect);
+	shared_str AppendDef(CEnvironment& environment, /*const*/ CInifile* pIni, LPCSTR sect);
 };

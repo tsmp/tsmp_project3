@@ -58,18 +58,23 @@ public:
 		section = 0;
 		m_StateBlendUpSpeed = m_StateBlendDnSpeed = 0.1f;
 	}
-	void load(CInifile *pIni, LPCSTR section);
+	void load(/*const*/ CInifile *pIni, LPCSTR section);
 	void OnDeviceCreate();
 	void OnDeviceDestroy();
 };
-DEFINE_VECTOR(CLensFlareDescriptor, LensFlareDescVec, LensFlareDescIt);
+DEFINE_VECTOR(CLensFlareDescriptor*, LensFlareDescVec, LensFlareDescIt);
 
 class ENGINE_API CLensFlare
 {
 	friend class dxLensFlareRender;
-
+public:
+	enum
+	{
+		MAX_RAYS = 5
+	};
 private:
-	collide::rq_results r_dest;
+	collide::rq_results	r_dest;
+	collide::ray_cache	m_ray_cache[MAX_RAYS];
 
 protected:
 	float fBlend;
@@ -88,8 +93,10 @@ protected:
 	FactoryPtr<ILensFlareRender> m_pRender;
 
 	LensFlareDescVec m_Palette;
-	CLensFlareDescriptor *m_Current;
+	CLensFlareDescriptor* m_Current;
 
+//. #ifdef DEBUG
+public:
 	enum LFState
 	{
 		lfsNone,
@@ -97,22 +104,22 @@ protected:
 		lfsHide,
 		lfsShow,
 	};
+//. #endif // DEBUG
+
+protected:
 	LFState m_State;
 	float m_StateBlend;
-
-public:
-	collide::ray_cache m_ray_cache;
 
 public:
 	CLensFlare();
 	virtual ~CLensFlare();
 
-	void OnFrame(int id);
+	void OnFrame(shared_str id);
 	void __fastcall Render(BOOL bSun, BOOL bFlares, BOOL bGradient);
 	void OnDeviceCreate();
 	void OnDeviceDestroy();
 
-	int AppendDef(CInifile *pIni, LPCSTR sect);
+	shared_str AppendDef(CEnvironment& environment, LPCSTR sect);
 
 	void Invalidate() { m_State = lfsNone; }
 };
