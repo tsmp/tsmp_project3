@@ -559,3 +559,8 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
 }
 
 #endif	//	USE_DX10
+
+void DoAsyncScreenshot()
+{
+	RImplementation.Target->DoAsyncScreenshot();
+}

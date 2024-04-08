@@ -467,6 +467,8 @@
     <ClInclude Include="..\..\include\xrRender\UISequenceVideoItem.h" />
     <ClInclude Include="..\..\include\xrRender\UIShader.h" />
     <ClInclude Include="..\..\include\xrRender\WallMarkArray.h" />
+    <ClInclude Include="..\xrRender\Animation.h" />
+    <ClInclude Include="..\xrRender\AnimationKeyCalculate.h" />
     <ClInclude Include="..\xrRender\blenders\Blender.h" />
     <ClInclude Include="..\xrRender\blenders\Blender_CLSID.h" />
     <ClInclude Include="..\xrRender\blenders\Blender_Recorder.h" />
@@ -592,6 +594,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\xrEngine\ai_script_lua_debug.cpp" />
     <ClCompile Include="..\..\xrEngine\ai_script_lua_extension.cpp" />
+    <ClCompile Include="..\xrRender\Animation.cpp" />
     <ClCompile Include="..\xrRender\blenders\Blender.cpp" />
     <ClCompile Include="..\xrRender\blenders\Blender_Palette.cpp" />
     <ClCompile Include="..\xrRender\blenders\Blender_Recorder.cpp" />

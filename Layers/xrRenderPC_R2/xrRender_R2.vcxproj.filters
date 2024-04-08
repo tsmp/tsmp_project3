@@ -594,6 +594,12 @@
     <ClInclude Include="..\xrRender\R_Backend_tree.h">
       <Filter>Refactored\Backend</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrRender\Animation.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\AnimationKeyCalculate.h">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -1075,6 +1081,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\R_Backend_tree.cpp">
       <Filter>Refactored\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\Animation.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
