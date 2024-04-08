@@ -16,8 +16,10 @@ class CGamePersistent : public IGame_Persistent,
 	u32 ambient_effect_next_time;
 	u32 ambient_effect_stop_time;
 
+	bool				m_bPickableDOF;
 	CUISequencer *m_intro;
 	EVENT eQuickLoad;
+	Fvector				m_dof[4];	// 0-dest 1-current 2-from 3-original
 
 	fastdelegate::FastDelegate0<> m_intro_event;
 
@@ -32,6 +34,7 @@ class CGamePersistent : public IGame_Persistent,
 #endif
 
 	void WeathersUpdate();
+	void				UpdateDof();
 
 public:
 	ui_core *m_pUI_core;
@@ -67,6 +70,13 @@ public:
 	virtual void LoadTitle(LPCSTR str);
 
 	virtual bool CanBePaused();
+
+	void		SetPickableEffectorDOF(bool bSet);
+	void		SetEffectorDOF(const Fvector& needed_dof);
+	void		RestoreEffectorDOF();
+
+	virtual void		GetCurrentDof(Fvector3& dof);
+	virtual void		SetBaseDof(const Fvector3& dof);
 };
 
 IC CGamePersistent &GamePersistent() { return *((CGamePersistent *)g_pGamePersistent); }
