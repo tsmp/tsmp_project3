@@ -312,3 +312,13 @@ void CHUDManager::net_Relcase(CObject *object)
 	VERIFY(m_pHUDTarget);
 	m_pHUDTarget->net_Relcase(object);
 }
+
+#pragma TODO("morrazzzz: Лютые затычки для рендера только чтобы собирались. Если делать по нормальному надо g_player_hud тащить из ЗП.")
+bool   CHUDManager::RenderActiveItemUIQuery()
+{
+	return true;
+}
+
+void   CHUDManager::RenderActiveItemUI()
+{
+}
