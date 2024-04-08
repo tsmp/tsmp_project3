@@ -30,7 +30,7 @@ static const float MAX_NOISE_FREQ = 0.03f;
 
 //////////////////////////////////////////////////////////////////////////
 // environment
-CEnvironment::CEnvironment()
+CEnvironment::CEnvironment(): CurrentEnv(0)
 {
 	bNeed_re_create_env = FALSE;
 
