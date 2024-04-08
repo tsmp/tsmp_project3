@@ -18,7 +18,7 @@ public:
 	Fcolor const_float;
 	u32 const_dword;
 
-	u32 CurrentFrameNumber;
+	u32 dwFrame;
 	u32 dwMode;
 	WaveForm _R;
 	WaveForm _G;

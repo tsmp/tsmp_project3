@@ -13,7 +13,7 @@
 #define FADE_SCALE_UP		4096.f
 #define FADE_SCALE_DOWN		1024.f
 #pragma TODO("morrazzzz: restore pointer!!! :)")
-#define MAX_GlowsDist1		float(g_pGamePersistent->Environment().CurrentEnv/*->*/.far_plane) 
+#define MAX_GlowsDist1		float(g_pGamePersistent->Environment().CurrentEnv->far_plane) 
 #define MAX_GlowsDist2		float(MAX_GlowsDist1*MAX_GlowsDist1)
 
 

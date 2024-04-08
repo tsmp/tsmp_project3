@@ -225,7 +225,7 @@ void CRender::Render		()
 		m_project.build_projection	(
 			deg2rad(Device.fFOV/* *Device.fASPECT*/), 
 			Device.fASPECT, VIEWPORT_NEAR, 
-			z_distance * g_pGamePersistent->Environment().CurrentEnv/*->*/.far_plane);
+			z_distance * g_pGamePersistent->Environment().CurrentEnv->far_plane);
 		m_zfill.mul	(m_project,Device.mView);
 		r_pmask										(true,false);	// enable priority "0"
 		set_Recorder								(NULL)		;
@@ -361,7 +361,7 @@ void CRender::Render		()
 		Target->phase_scene_end					();
 	}
 
-//	if (g_hud && g_hud->RenderActiveItemUIQuery())
+	if (g_hud && g_hud->RenderActiveItemUIQuery())
 //	{
 //		Target->phase_wallmarks();
 //		r_dsgraph_render_hud_ui();

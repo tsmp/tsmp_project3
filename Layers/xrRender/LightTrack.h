@@ -39,8 +39,8 @@ public:
 public:
 	// general
 	u32						MODE				;
-	u32						CurrentFrameNumber				;
-	u32						CurrentFrameNumberSmooth		;
+	u32	dwFrame;
+	u32	dwFrameSmooth;
 
 	// 
 	xr_vector<Item>			track				;	// everything what touches
@@ -83,20 +83,20 @@ public:
 	void					update_smooth		(IRenderable*	O=0);
 	
 	ICF	float				get_hemi			()	{
-		if (CurrentFrameNumberSmooth!=Device.CurrentFrameNumber)		update_smooth();
+		if (dwFrameSmooth !=Device.CurrentFrameNumber)		update_smooth();
 		return									hemi_smooth;
 	}
 	ICF	float				get_sun				()	{
-		if (CurrentFrameNumberSmooth!=Device.CurrentFrameNumber)		update_smooth();
+		if (dwFrameSmooth !=Device.CurrentFrameNumber)		update_smooth();
 		return									sun_smooth;
 	}
 	ICF Fvector3&			get_approximate		()	{
-		if (CurrentFrameNumberSmooth!=Device.CurrentFrameNumber)		update_smooth();
+		if (dwFrameSmooth !=Device.CurrentFrameNumber)		update_smooth();
 		return									approximate;
 	}
 
 	const float*			get_hemi_cube		(){
-		if (CurrentFrameNumberSmooth!=Device.CurrentFrameNumber)		update_smooth();
+		if (dwFrameSmooth !=Device.CurrentFrameNumber)		update_smooth();
 		return									hemi_cube_smooth;
 	}
 

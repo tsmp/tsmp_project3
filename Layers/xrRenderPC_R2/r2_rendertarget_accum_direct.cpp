@@ -111,7 +111,7 @@ void CRenderTarget::accum_direct		(u32 sub_phase)
 			static	float	w_shift		= 0;
 			Fmatrix			m_xform;
 			Fvector			direction	= fuckingsun->direction	;
-			float	w_dir				= g_pGamePersistent->Environment().CurrentEnv/*->*/.wind_direction	;
+			float	w_dir				= g_pGamePersistent->Environment().CurrentEnv->wind_direction	;
 			//float	w_speed				= g_pGamePersistent->Environment().CurrentEnv->wind_velocity	;
 			Fvector			normal	;	normal.setHP(w_dir,0);
 							w_shift		+=	0.003f*Device.fTimeDelta;
@@ -453,8 +453,8 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 		return;
 
 	{
-		CEnvDescriptor&	E = /***/g_pGamePersistent->Environment().CurrentEnv;
-		float fValue = 0/*E.m_fSunShaftsIntensity*/;
+		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
+		float fValue = E.m_fSunShaftsIntensity;
 		//	TODO: add multiplication by sun color here
 		if (fValue<0.0001) return;
 	}

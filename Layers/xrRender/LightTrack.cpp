@@ -21,7 +21,7 @@
 CROS_impl::CROS_impl	()
 {
 	approximate.set		( 0,0,0 );
-	CurrentFrameNumber				= u32(-1);
+	dwFrame = u32(-1);
 	shadow_recv_frame	= u32(-1);
 	shadow_recv_slot	= -1;
 
@@ -176,8 +176,8 @@ inline void CROS_impl::accum_hemi(float* hemi_cube, Fvector3& dir, float scale)
 void	CROS_impl::update	(IRenderable* O)
 {
 	// clip & verify
-	if					(CurrentFrameNumber==Device.CurrentFrameNumber)			return;
-	CurrentFrameNumber				= Device.CurrentFrameNumber;
+	if					(dwFrame ==Device.CurrentFrameNumber)			return;
+	dwFrame = Device.CurrentFrameNumber;
 	if					(0==O)								return;
 	if					(0==O->renderable.visual)			return;
 	VERIFY				(dynamic_cast<CROS_impl*>			(O->renderable_ROS()));
@@ -207,7 +207,7 @@ void	CROS_impl::update	(IRenderable* O)
 
 	// Process ambient lighting and approximate average lighting
 	// Process our lights to find average luminescences
-	CEnvDescriptor&	desc	=	/*/.*./*/g_pGamePersistent->Environment().CurrentEnv;
+	CEnvDescriptor&	desc	=	*g_pGamePersistent->Environment().CurrentEnv;
 	Fvector			accum	=	{ desc.ambient.x,		desc.ambient.y,		desc.ambient.z		};
 	Fvector			hemi	=	{ desc.hemi_color.x,	desc.hemi_color.y,	desc.hemi_color.z	};
 	Fvector			sun_	=	{ desc.sun_color.x,		desc.sun_color.y,	desc.sun_color.z	};
@@ -337,10 +337,10 @@ extern float ps_r2_lt_smooth;
 // hemi & sun: update and smooth
 void	CROS_impl::update_smooth	(IRenderable* O)
 {
-	if (CurrentFrameNumberSmooth == Device.CurrentFrameNumber)
+	if (dwFrameSmooth == Device.CurrentFrameNumber)
 		return;
 
-	CurrentFrameNumberSmooth			=	Device.CurrentFrameNumber;
+	dwFrameSmooth =	Device.CurrentFrameNumber;
 
 #if RENDER==R_R1
 	if (O && (0==result_count)) 

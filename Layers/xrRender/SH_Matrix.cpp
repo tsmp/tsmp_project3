@@ -3,9 +3,9 @@
 
 void CMatrix::Calculate()
 {
-	if (CurrentFrameNumber == Device.CurrentFrameNumber)
+	if (dwFrame == Device.CurrentFrameNumber)
 		return;
-	CurrentFrameNumber = Device.CurrentFrameNumber;
+	dwFrame = Device.CurrentFrameNumber;
 
 	// Switch on mode
 	switch (dwMode)

@@ -427,7 +427,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 	Device.mProject.build_projection(
 		deg2rad(psHUD_FOV*Device.fFOV /* *Device.fASPECT*/ ), 
 		Device.fASPECT, VIEWPORT_NEAR, 
-		g_pGamePersistent->Environment().CurrentEnv.far_plane);
+		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mFullTransform.mul	(Device.mProject, Device.mView);
 	RCache.set_xform_project	(Device.mProject);
@@ -438,8 +438,8 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 	mapHUD.clear				();
 
 #if	RENDER==R_R1
-//	if (g_hud && g_hud->RenderActiveItemUIQuery())
-//		r_dsgraph_render_hud_ui						();				// hud ui
+	if (g_hud && g_hud->RenderActiveItemUIQuery())
+		r_dsgraph_render_hud_ui(); // hud ui
 #endif
 	/*
 	if(g_hud && g_hud->RenderActiveItemUIQuery())
@@ -489,7 +489,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	Device.mProject.build_projection(
 		deg2rad(psHUD_FOV*Device.fFOV /* *Device.fASPECT*/ ), 
 		Device.fASPECT, VIEWPORT_NEAR, 
-		g_pGamePersistent->Environment().CurrentEnv.far_plane);
+		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mFullTransform.mul	(Device.mProject, Device.mView);
 	RCache.set_xform_project	(Device.mProject);
@@ -517,7 +517,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 #endif
 
 	rmNear						();
-//	g_hud->RenderActiveItemUI	();
+	g_hud->RenderActiveItemUI	();
 	rmNormal					();
 
 	// Restore projection
@@ -554,7 +554,7 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 	Device.mProject.build_projection(
 		deg2rad(psHUD_FOV*Device.fFOV /* *Device.fASPECT*/ ), 
 		Device.fASPECT, VIEWPORT_NEAR, 
-		g_pGamePersistent->Environment().CurrentEnv/*->*/.far_plane);
+		g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 	Device.mFullTransform.mul	(Device.mProject, Device.mView);
 	RCache.set_xform_project	(Device.mProject);
