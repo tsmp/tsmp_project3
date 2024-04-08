@@ -28,6 +28,7 @@
 #endif // MASTER_GOLD
 
 #include "ai_debug.h"
+#include "hudmanager.h"
 
 #ifdef DEBUG_MEMORY_MANAGER
 static void *ode_alloc(size_t size) { return Memory.mem_alloc(size, "ODE"); }
@@ -251,7 +252,7 @@ void CGamePersistent::WeathersUpdate()
 		if (actor)
 			bIndoor = actor->renderable_ROS()->get_luminocity_hemi() < 0.05f;
 
-		int data_set = (Random.randF() < (1.f - Environment().CurrentEnv.weight)) ? 0 : 1;
+		int data_set = (Random.randF() < (1.f - Environment().CurrentEnv->weight)) ? 0 : 1;
 		CEnvDescriptor *_env = Environment().Current[data_set];
 		VERIFY(_env);
 		CEnvAmbient *env_amb = _env->env_ambient;

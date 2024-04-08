@@ -17,7 +17,7 @@
 
 void CWeaponMounted::BoneCallbackX(CBoneInstance *B)
 {
-	CWeaponMounted *P = static_cast<CWeaponMounted *>(B->Callback_Param);
+	CWeaponMounted *P = static_cast<CWeaponMounted *>(B->callback_param());
 
 	if (P->Owner())
 	{
@@ -29,7 +29,7 @@ void CWeaponMounted::BoneCallbackX(CBoneInstance *B)
 
 void CWeaponMounted::BoneCallbackY(CBoneInstance *B)
 {
-	CWeaponMounted *P = static_cast<CWeaponMounted *>(B->Callback_Param);
+	CWeaponMounted *P = static_cast<CWeaponMounted *>(B->callback_param());
 
 	if (P->Owner())
 	{

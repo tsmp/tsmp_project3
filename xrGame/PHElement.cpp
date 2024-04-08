@@ -778,7 +778,7 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance *B)
 			m_shell->m_object_in_root.invert();
 			m_shell->SetNotActivating();
 		}
-		B->Callback_overwrite = TRUE;
+		B->set_callback_overwrite(TRUE);
 		//VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback returns 0 matrix");
 		VERIFY_RMATRIX(B->mTransform);
 		VERIFY(valid_pos(B->mTransform.c, phBoundaries));
@@ -821,16 +821,16 @@ void CPHElement::BoneGlPos(Fmatrix &m, CBoneInstance *B)
 void CPHElement::GetAnimBonePos(Fmatrix &bp)
 {
 	VERIFY(m_shell->PKinematics());
-	IKinematicsAnimated *ak = m_shell->PKinematics()->dcast_PKinematicsAnimated();
-	VERIFY(ak);	
-	CBoneInstance *BI = &ak->dcast_PKinematics()->LL_GetBoneInstance(m_SelfID);
-	if (!BI->Callback)
+	IKinematics* k = m_shell->PKinematics();
+	VERIFY(k);	
+	CBoneInstance *BI = &k->LL_GetBoneInstance(m_SelfID);
+	if (!BI->callback())
 	{
 		bp.set(BI->mTransform);
 		return;
 	}
 
-	ak->Bone_GetAnimPos(bp, m_SelfID, u8(-1), true);
+	k->Bone_GetAnimPos(bp, m_SelfID, u8(-1), true);
 }
 
 IC bool put_in_range(Fvector &v, float range)
@@ -917,7 +917,7 @@ void CPHElement::SetBoneCallbackOverwrite(bool v)
 {
 	VERIFY(m_shell);
 	VERIFY(m_shell->PKinematics());
-	m_shell->PKinematics()->LL_GetBoneInstance(m_SelfID).Callback_overwrite = v;
+	m_shell->PKinematics()->LL_GetBoneInstance(m_SelfID).set_callback_overwrite(v);
 }
 void CPHElement::BonesCallBack(CBoneInstance *B)
 {
@@ -937,7 +937,7 @@ void CPHElement::BonesCallBack(CBoneInstance *B)
 			m_shell->m_object_in_root.invert();
 			m_shell->SetNotActivating();
 		}
-		B->Callback_overwrite = TRUE;
+		B->set_callback_overwrite(TRUE);
 		//VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback returns 0 matrix");
 		VERIFY_RMATRIX(B->mTransform);
 		VERIFY(valid_pos(B->mTransform.c, phBoundaries));

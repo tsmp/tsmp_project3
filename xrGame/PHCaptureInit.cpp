@@ -24,7 +24,7 @@ CPHCapture::CPHCapture(CPHCharacter *a_character, CPhysicsShellHolder *a_taget_o
 	b_failed = false;
 	b_disabled = false;
 	b_character_feedback = false;
-	e_state = cstPulling;
+	e_state = cstFree;
 
 	if (!a_taget_object ||
 		!a_taget_object->m_pPhysicsShell ||
@@ -97,7 +97,7 @@ CPHCapture::CPHCapture(CPHCharacter *a_character, CPhysicsShellHolder *a_taget_o
 	m_body = NULL;
 	b_failed = false;
 	b_disabled = false;
-	e_state = cstPulling;
+	e_state = cstFree;
 	b_character_feedback = false;
 	m_taget_object = NULL;
 	m_character = NULL;
@@ -185,14 +185,14 @@ CPHCapture::CPHCapture(CPHCharacter *a_character, CPhysicsShellHolder *a_taget_o
 
 	CBoneInstance &tag_bone = K->LL_GetBoneInstance(a_taget_element);
 
-	if (!tag_bone.Callback_Param)
+	if (!tag_bone.callback_param())
 	{
 		m_taget_object = NULL;
 		b_failed = true;
 		return;
 	}
 
-	m_taget_element = (CPhysicsElement *)tag_bone.Callback_Param;
+	m_taget_element = (CPhysicsElement *)tag_bone.callback_param();
 
 	if (!m_taget_element)
 	{
@@ -250,7 +250,7 @@ void CPHCapture::Release()
 {
 	if (b_failed)
 		return;
-	if (e_state == cstReleased)
+	if (e_state == cstReleased || e_state == cstFree)
 		return;
 	if (m_joint)
 	{
@@ -277,7 +277,6 @@ void CPHCapture::Release()
 		m_taget_element->set_DynamicLimits();
 	}
 
-	e_state = cstReleased;
 	b_collide = true;
 	CActor *A = smart_cast<CActor *>(m_character->PhysicsRefObject());
 	if (A)
@@ -285,6 +284,8 @@ void CPHCapture::Release()
 		A->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
 		//.		A->inventory().setSlotsBlocked(false);
 	}
+
+	e_state = cstReleased;
 }
 
 void CPHCapture::Deactivate()
@@ -298,6 +299,7 @@ void CPHCapture::Deactivate()
 	if (m_character)
 		m_character->SetObjectContactCallback(0);
 	CPHUpdateObject::Deactivate();
+	e_state = cstFree;
 	m_character = NULL;
 	m_taget_object = NULL;
 	m_taget_element = NULL;

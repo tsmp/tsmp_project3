@@ -226,7 +226,7 @@ void CBaseMonster::Hit_Psy(CObject *object, float value)
 	u_EventSend(P);
 }
 
-void CBaseMonster::Hit_Wound(const CObject *object, float value, const Fvector &dir, float impulse)
+void CBaseMonster::Hit_Wound(CObject *object, float value, const Fvector &dir, float impulse)
 {
 	NET_Packet P;
 	SHit HS;
@@ -235,7 +235,7 @@ void CBaseMonster::Hit_Wound(const CObject *object, float value, const Fvector &
 	HS.weaponID = (ID());
 	HS.dir = (dir);
 	HS.power = (value);
-	HS.boneID = (smart_cast<const IKinematics*>(object->cVisual())->LL_GetBoneRoot());
+	HS.boneID = (smart_cast<IKinematics*>(object->Visual())->LL_GetBoneRoot());
 	HS.p_in_bone_space = (Fvector().set(0.f, 0.f, 0.f));
 	HS.impulse = (impulse);
 	HS.hit_type = (ALife::eHitTypeWound);

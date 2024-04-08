@@ -14,7 +14,7 @@
 
 void CWeaponStatMgun::BoneCallbackX(CBoneInstance *B)
 {
-	CWeaponStatMgun *P = static_cast<CWeaponStatMgun *>(B->Callback_Param);
+	CWeaponStatMgun *P = static_cast<CWeaponStatMgun *>(B->callback_param());
 	Fmatrix rX;
 	rX.rotateX(P->m_cur_x_rot);
 	B->mTransform.mulB_43(rX);
@@ -22,7 +22,7 @@ void CWeaponStatMgun::BoneCallbackX(CBoneInstance *B)
 
 void CWeaponStatMgun::BoneCallbackY(CBoneInstance *B)
 {
-	CWeaponStatMgun *P = static_cast<CWeaponStatMgun *>(B->Callback_Param);
+	CWeaponStatMgun *P = static_cast<CWeaponStatMgun *>(B->callback_param());
 	Fmatrix rY;
 	rY.rotateY(P->m_cur_y_rot);
 	B->mTransform.mulB_43(rY);

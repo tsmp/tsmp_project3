@@ -631,7 +631,7 @@ void CIKLimb::ApplyContext(SCalculateData &cd)
 
 void CIKLimb::AnimGoal(Fmatrix &gl, IKinematicsAnimated &K)
 {
-	K.Bone_GetAnimPos(gl, m_bones[2], 1 << 0, false);
+	K.dcast_PKinematics()->Bone_GetAnimPos(gl, m_bones[2], 1 << 0, false);
 }
 
 void CIKLimb::SetAnimGoal(SCalculateData &cd)
@@ -689,13 +689,14 @@ void CIKLimb::Collide(SIKCollideData &cld, CGameObject *O, const Fmatrix &foot, 
 				{
 					float dist = l_pick_dist;
 
-					if (K->PickBone(R.O->XFORM(), cld.m_plane.n, dist, pos, pick_v, (u16)R.element))
+					IKinematics::pick_result res;
+					if (K->PickBone(R.O->XFORM(), res, dist, pos, pick_v, (u16)R.element))
 					{
 						cld.collided = true;
-						Fvector point;
-						point.add(pos, Fvector().mul(pick_v, dist));
-						cld.m_plane.n.invert();
-						cld.m_plane.d = -cld.m_plane.n.dotproduct(point);
+						Fvector point; point.add(pos, Fvector().mul(pick_v, res.dist));
+						res.normal.invert();
+						cld.m_plane.d = -res.normal.dotproduct(point);
+						cld.m_plane.n.set(res.normal);
 					}
 				}
 			}
@@ -775,18 +776,18 @@ void CIKLimb::CalculateBones(SCalculateData &cd)
 	K->LL_GetBoneInstance(m_bones[0]).set_callback(bctCustom, BonesCallback0, &cd);
 	K->LL_GetBoneInstance(m_bones[1]).set_callback(bctCustom, BonesCallback1, &cd);
 	K->LL_GetBoneInstance(m_bones[2]).set_callback(bctCustom, BonesCallback2, &cd);
-	K->LL_GetBoneInstance(m_bones[0]).Callback_overwrite = TRUE;
-	K->LL_GetBoneInstance(m_bones[1]).Callback_overwrite = TRUE;
-	K->LL_GetBoneInstance(m_bones[2]).Callback_overwrite = TRUE;
+	K->LL_GetBoneInstance(m_bones[0]).set_callback_overwrite(TRUE);
+	K->LL_GetBoneInstance(m_bones[1]).set_callback_overwrite(TRUE);
+	K->LL_GetBoneInstance(m_bones[2]).set_callback_overwrite(TRUE);
 	CBoneData &BD = K->LL_GetData(m_bones[0]);
 	K->Bone_Calculate(&BD, &K->LL_GetTransform(BD.GetParentID()));
 
 	K->LL_GetBoneInstance(m_bones[0]).set_callback(bctCustom, NULL, NULL);
 	K->LL_GetBoneInstance(m_bones[1]).set_callback(bctCustom, NULL, NULL);
 	K->LL_GetBoneInstance(m_bones[2]).set_callback(bctCustom, NULL, NULL);
-	K->LL_GetBoneInstance(m_bones[0]).Callback_overwrite = FALSE;
-	K->LL_GetBoneInstance(m_bones[1]).Callback_overwrite = FALSE;
-	K->LL_GetBoneInstance(m_bones[2]).Callback_overwrite = FALSE;
+	K->LL_GetBoneInstance(m_bones[0]).set_callback_overwrite(TRUE);
+	K->LL_GetBoneInstance(m_bones[1]).set_callback_overwrite(TRUE);
+	K->LL_GetBoneInstance(m_bones[2]).set_callback_overwrite(TRUE);
 }
 
 void DBG_DrawRotationLimitsY(const Fmatrix &start, float ang, float l, float h)
@@ -844,7 +845,7 @@ IC void CIKLimb::get_start(Fmatrix &start, SCalculateData &D, u16 bone)
 
 void CIKLimb::BonesCallback0(CBoneInstance *B)
 {
-	SCalculateData *D = (SCalculateData *)B->Callback_Param;
+	SCalculateData *D = (SCalculateData *)B->callback_param();
 	VERIFY(D);
 
 	float const *x = D->m_angles;
@@ -868,7 +869,7 @@ void CIKLimb::BonesCallback0(CBoneInstance *B)
 }
 void CIKLimb::BonesCallback1(CBoneInstance *B)
 {
-	SCalculateData *D = (SCalculateData *)B->Callback_Param;
+	SCalculateData *D = (SCalculateData *)B->callback_param();
 
 	float const *x = D->m_angles;
 	Fmatrix bm;
@@ -880,7 +881,7 @@ void CIKLimb::BonesCallback1(CBoneInstance *B)
 }
 void CIKLimb::BonesCallback2(CBoneInstance *B)
 {
-	SCalculateData *D = (SCalculateData *)B->Callback_Param;
+	SCalculateData *D = (SCalculateData *)B->callback_param();
 
 	float const *x = D->m_angles;
 	Fmatrix bm;

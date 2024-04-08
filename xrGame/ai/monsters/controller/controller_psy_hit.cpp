@@ -281,7 +281,7 @@ void CControllerPsyHit::death_glide_end()
 		return;
 
 	if (const CEntityAlive* enemy = GetEnemy())
-		m_object->Hit_Wound(enemy, monster->m_tube_damage, Fvector().set(0.0f, 1.0f, 0.0f), 0.0f);
+		m_object->Hit_Wound(const_cast<CEntityAlive*>(enemy), monster->m_tube_damage, Fvector().set(0.0f, 1.0f, 0.0f), 0.0f);
 }
 
 void CControllerPsyHit::update_frame()

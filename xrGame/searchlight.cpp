@@ -35,7 +35,7 @@ void CProjector::Load(LPCSTR section)
 
 void CProjector::BoneCallbackX(CBoneInstance *B)
 {
-	CProjector *P = static_cast<CProjector *>(B->Callback_Param);
+	CProjector *P = static_cast<CProjector *>(B->callback_param());
 
 	Fmatrix M;
 	M.setHPB(0.0f, P->_current.pitch, 0.0f);
@@ -44,7 +44,7 @@ void CProjector::BoneCallbackX(CBoneInstance *B)
 
 void CProjector::BoneCallbackY(CBoneInstance *B)
 {
-	CProjector *P = static_cast<CProjector *>(B->Callback_Param);
+	CProjector *P = static_cast<CProjector *>(B->callback_param());
 
 	float delta_yaw = angle_difference(P->_start.yaw, P->_current.yaw);
 	if (angle_normalize_signed(P->_start.yaw - P->_current.yaw) > 0)

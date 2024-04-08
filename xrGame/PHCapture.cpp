@@ -31,6 +31,8 @@ void CPHCapture::PhDataUpdate(dReal /**step/**/)
 		return;
 	switch (e_state)
 	{
+	case cstFree:
+		break;
 	case cstPulling:
 		PullingUpdate();
 		break;
@@ -47,7 +49,7 @@ void CPHCapture::PhDataUpdate(dReal /**step/**/)
 
 void CPHCapture::PhTune(dReal /**step/**/)
 {
-	if (b_failed)
+	if (e_state == cstFree)
 		return;
 	//if(!m_taget_object->PPhysicsShell())	{
 	//	b_failed=true;
@@ -258,7 +260,7 @@ void CPHCapture::ReleasedUpdate()
 		return;
 	if (!b_collide)
 	{
-		b_failed = true;
+		e_state = cstFree;
 		m_taget_element->Enable();
 	}
 	b_collide = false;
