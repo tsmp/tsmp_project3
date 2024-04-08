@@ -1,3 +1,5 @@
+#ifndef dxWallMarkArray_included
+#define dxWallMarkArray_included
 #pragma once
 
 #include "..\..\Include\xrRender\WallMarkArray.h"
@@ -13,10 +15,11 @@ public:
 	virtual bool empty();
 	virtual wm_shader GenerateWallmark();
 
-	ref_shader *dxGenerateWallmark();
-
+	ref_shader*	dxGenerateWallmark();
 private:
-	DEFINE_VECTOR(ref_shader, ShaderVec, ShaderIt);
+	DEFINE_VECTOR(ref_shader,ShaderVec,ShaderIt);
 
-	ShaderVec m_CollideMarks;
+	ShaderVec	m_CollideMarks;
 };
+
+#endif	//	WallMarkArray_included

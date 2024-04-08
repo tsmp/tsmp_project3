@@ -1,6 +1,11 @@
+#ifndef	DebugShader_included
+#define	DebugShader_included
 #pragma once
 
 #include "FactoryPtr.h"
 #include "UIShader.h"
 
-using debug_shader = FactoryPtr<IUIShader>;
+typedef FactoryPtr<IUIShader>	debug_shader;
+
+
+#endif	//	DebugShader_included

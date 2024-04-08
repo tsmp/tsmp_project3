@@ -201,19 +201,6 @@ float		ps_r3_dyn_wet_surf_near		= 10.f;				// 10.0f
 float		ps_r3_dyn_wet_surf_far		= 30.f;				// 30.0f
 int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
 
-// detail draw radius
-u32 dm_size = 24;
-u32 dm_cache1_line = 12; // dm_size * 2 / dm_cache1_count
-u32 dm_cache_line = 49; // dm_size + 1 + dm_size
-u32 dm_cache_size = 2401; // dm_cache_line * dm_cache_line
-
-u32 dm_current_size = 24;
-u32 dm_current_cache1_line = 12; // dm_current_size * 2 / dm_cache1_count
-u32 dm_current_cache_line = 49; // dm_current_size + 1 + dm_current_size
-u32 dm_current_cache_size = 2401; //dm_current_cache_line * dm_current_cache_line
-float dm_current_fade = 47.5; // float(2 * dm_current_size) - .5f;
-float dm_fade = 47.5; // float(2 * dm_size) - .5f;
-
 //- Mad Max
 float		ps_r2_gloss_factor			= 3.0f;
 //- Mad Max
