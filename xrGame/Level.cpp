@@ -56,7 +56,7 @@
 #include "physicobject.h"
 #endif
 
-#include "GameMtlLib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "Grenade.h"
 #include "CustomRocket.h"
 #include "Actor.h"

@@ -17,6 +17,11 @@ static const u32 GAMEMTL_CHUNK_INJURIOUS = 0x1006;
 
 CGameMtlLibrary GMLib;
 
+CGameMtlLibrary::CGameMtlLibrary()
+{
+    m_MaterialCount = 0;
+}
+
 void SGameMtl::Load(IReader &fs)
 {
     R_ASSERT(fs.find_chunk(GAMEMTL_CHUNK_MAIN));
@@ -38,11 +43,19 @@ void SGameMtl::Load(IReader &fs)
     fBounceDamageFactor = fs.r_float();
     fVisTransparencyFactor = fs.r_float();
 
+    if (fs.find_chunk(GAMEMTL_CHUNK_FACTORS_MP))
+        fShootFactorMP = fs.r_float();
+    else
+        fShootFactorMP = fShootFactor;
+
     if (fs.find_chunk(GAMEMTL_CHUNK_FLOTATION))
         fFlotationFactor = fs.r_float();
 
     if (fs.find_chunk(GAMEMTL_CHUNK_INJURIOUS))
         fInjuriousSpeed = fs.r_float();
+
+    if (fs.find_chunk(GAMEMTL_CHUNK_DENSITY))
+        fDensityFactor = fs.r_float();
 }
 
 void CGameMtlLibrary::Load()

@@ -139,6 +139,9 @@
     <Filter Include="RenderRef\doug_lea_memory_allocator">
       <UniqueIdentifier>{70a64189-c56c-42cf-b0a1-e33c5cf814b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game API\GameMaterials">
+      <UniqueIdentifier>{2b8605e7-50a9-4443-8d4a-631151e7f976}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="flight.h">
@@ -398,6 +401,9 @@
     </ClInclude>
     <ClInclude Include="Stats.h">
       <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMtlLib.h">
+      <Filter>Game API\GameMaterials</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -670,6 +676,12 @@
     </ClCompile>
     <ClCompile Include="Stats.cpp">
       <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMtlLib_Engine.cpp">
+      <Filter>Game API\GameMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMtlLib.cpp">
+      <Filter>Game API\GameMaterials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

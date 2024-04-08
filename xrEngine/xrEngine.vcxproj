@@ -1130,6 +1130,7 @@
     <ClInclude Include="Fmesh.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="GameFont.h" />
+    <ClInclude Include="GameMtlLib.h" />
     <ClInclude Include="HW.h" />
     <ClInclude Include="HWCaps.h" />
     <ClInclude Include="ICollidable.h" />
@@ -1272,6 +1273,8 @@
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Mixed_Dedciated|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="GameFont.cpp" />
+    <ClCompile Include="GameMtlLib.cpp" />
+    <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="HW.cpp" />
     <ClCompile Include="HWCaps.cpp" />
     <ClCompile Include="ICollidable.cpp" />

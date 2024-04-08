@@ -1442,7 +1442,6 @@
     <ClInclude Include="EffectorShotX.h" />
     <ClInclude Include="EffectorZoomInertion.h" />
     <ClInclude Include="DynamicHeightMap.h" />
-    <ClInclude Include="GameMtlLib.h" />
     <ClInclude Include="GamePersistent.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Level_network_Demo.h" />
@@ -5001,8 +5000,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_without_optimizations|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GameMtlLib.cpp" />
-    <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="GamePersistent.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch_script.h</PrecompiledHeaderFile>

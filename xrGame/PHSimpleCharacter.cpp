@@ -11,7 +11,7 @@
 #include "PhysicsGamePars.h"
 #include "MathUtils.h"
 #include "level.h"
-#include "gamemtllib.h"
+#include "../xrEngine/gamemtllib.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
 #include "..\include\xrRender\Kinematics.h"

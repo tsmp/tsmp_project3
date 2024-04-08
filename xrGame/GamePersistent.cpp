@@ -2,7 +2,7 @@
 #include "gamepersistent.h"
 #include "fmesh.h"
 #include "Console.h"
-#include "gamemtllib.h"
+#include "../xrEngine/gamemtllib.h"
 #include "..\include\xrRender\Kinematics.h"
 #include "profiler.h"
 #include "MainMenu.h"

@@ -2,18 +2,20 @@
 #include "../Include/xrRender/WallMarkArray.h"
 #include "../Include/xrRender/RenderFactory.h"
 
-inline const u32 GAMEMTLPAIR_CHUNK_PAIR = 0x1000;
-inline const u32 GAMEMTLPAIR_CHUNK_BREAKING = 0x1002;
-inline const u32 GAMEMTLPAIR_CHUNK_STEP = 0x1003;
-inline const u32 GAMEMTLPAIR_CHUNK_COLLIDE = 0x1005;
+inline constexpr u32 GAMEMTLPAIR_CHUNK_PAIR = 0x1000;
+inline constexpr u32 GAMEMTLPAIR_CHUNK_BREAKING = 0x1002;
+inline constexpr u32 GAMEMTLPAIR_CHUNK_STEP = 0x1003;
+inline constexpr u32 GAMEMTLPAIR_CHUNK_COLLIDE = 0x1005;
+inline constexpr u32 GAMEMTL_CHUNK_DENSITY = 0x1007;
+inline constexpr u32 GAMEMTL_CHUNK_FACTORS_MP = 0x1008;
 
-inline const u32 GAMEMTL_NONE_ID = static_cast<u32>(-1);
-inline const u16 GAMEMTL_NONE_IDX = static_cast<u16>(-1);
+inline constexpr u32 GAMEMTL_NONE_ID = static_cast<u32>(-1);
+inline constexpr u16 GAMEMTL_NONE_IDX = static_cast<u16>(-1);
 
 using SoundVec = xr_vector<ref_sound>;
 using PSVec = xr_vector<shared_str>;
 
-struct SGameMtl
+struct ENGINE_API SGameMtl
 {
     friend class CGameMtlLibrary;
 
@@ -33,6 +35,7 @@ public:
         flSuppressShadows = (1ul << 10ul),
         flSuppressWallmarks = (1ul << 11ul),
         flActorObstacle = (1ul << 12ul),
+        flNoRicoshet = (1ul << 13ul),
 
         flInjurious = (1ul << 28ul), // flInjurious = fInjuriousSpeed > 0.f
         flShootable = (1ul << 29ul),
@@ -53,9 +56,11 @@ public:
 
     float fFlotationFactor;       // 0.f - 1.f (1.f-полностью проходимый)
     float fShootFactor;           // 0.f - 1.f (1.f-полностью простреливаемый)
+    float fShootFactorMP;			// 0.f - 1.f(1.f-полностью простреливаемый)
     float fBounceDamageFactor;    // 0.f - 100.f
     float fInjuriousSpeed;        // 0.f - ... (0.f-не отбирает здоровье (скорость уменьшения здоровья))
     float fVisTransparencyFactor; // 0.f - 1.f (1.f-полностью прозрачный)
+    float fDensityFactor;
 public:
 
     SGameMtl()
@@ -67,6 +72,7 @@ public:
         // factors
         fFlotationFactor = 1.f;
         fShootFactor = 0.f;
+        fShootFactorMP = 0.f;
         fBounceDamageFactor = 1.f;
         fInjuriousSpeed = 0.f;
         fVisTransparencyFactor = 0.f;
@@ -77,6 +83,7 @@ public:
         fPHSpring = 1.f;
         fPHBounceStartVelocity = 0.f;
         fPHBouncing = 0.1f;
+        fDensityFactor = 0.0f;
     }
 
     void Load(IReader &fs);
@@ -86,7 +93,7 @@ public:
 using GameMtlVec = xr_vector<SGameMtl>;
 using GameMtlIt = GameMtlVec::iterator;
 
-struct SGameMtlPair
+struct ENGINE_API SGameMtlPair
 {
     friend class CGameMtlLibrary;
 
@@ -131,7 +138,7 @@ public:
 
 using GameMtlPairVec = xr_vector<SGameMtlPair>;
 
-class CGameMtlLibrary
+class ENGINE_API CGameMtlLibrary
 {
     GameMtlVec m_Materials;
 
@@ -140,11 +147,7 @@ class CGameMtlLibrary
     GameMtlPairVec m_MaterialPairs;
 
 public:
-    CGameMtlLibrary()
-    {
-        m_MaterialCount = 0;
-    }
-
+    CGameMtlLibrary();
     ~CGameMtlLibrary() = default;
 
     IC void Unload()
@@ -220,4 +223,4 @@ inline void CLONE_MTL_SOUND(ref_sound &resSnd, const SGameMtlPair* mtlPair)
     resSnd.clone(GET_RANDOM(mtlPair->CollideSounds), st_Effect, sg_SourceType);
 }
 
-extern CGameMtlLibrary GMLib;
+extern ENGINE_API CGameMtlLibrary GMLib;

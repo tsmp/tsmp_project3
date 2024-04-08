@@ -19,7 +19,7 @@
 #include "level.h"
 #include "level_bullet_manager.h"
 #include "xrmessages.h"
-#include "gamemtllib.h"
+#include "../xrEngine/gamemtllib.h"
 #include "clsid_game.h"
 
 #ifdef DEBUG

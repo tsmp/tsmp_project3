@@ -9,7 +9,7 @@
 #include "script_engine_space.h"
 #include "level.h"
 #include "game_cl_base.h"
-#include "gamemtllib.h"
+#include "../xrEngine/gamemtllib.h"
 #include "PhysicsCommon.h"
 #include "level_sounds.h"
 #include "GamePersistent.h"
