@@ -99,6 +99,7 @@ luabind::class_<CScriptGameObject> script_register_game_object1(luabind::class_<
 
 		.def("who_hit_name", &CScriptGameObject::WhoHitName)
 		.def("who_hit_section_name", &CScriptGameObject::WhoHitSectionName)
+		.def("last_hit_weapon", &CScriptGameObject::last_hit_weapon)
 
 		.def("rank", &CScriptGameObject::GetRank)
 		.def("command", &CScriptGameObject::AddAction)

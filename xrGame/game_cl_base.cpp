@@ -327,12 +327,8 @@ void game_cl_GameState::OnGameMessage(NET_Packet &P)
 
 void game_cl_GameState::ForEachPlayer(luabind::functor<void> functor)
 {
-	Level().Server->ForEachClientDo([&](IClient* client)
-		{
-			xrClientData* C = static_cast<xrClientData*>(client);
-			functor(C->ps, this);
-		}
-	);
+	for (auto& playerPair : players)
+		functor(playerPair.second, this);
 }
 
 game_PlayerState *game_cl_GameState::GetPlayerByGameID(u32 GameID)
@@ -509,4 +505,13 @@ void game_cl_GameState::reset_ui()
 void game_cl_GameState::ReceivePatrolPaths(NET_Packet &P)
 {
 	ai().patrol_paths().NetworkImport(P);
+}
+
+void game_cl_GameState::ForEachClient(luabind::functor<void> functor)
+{
+	Level().Server->ForEachClientDo([&](IClient* client)
+		{
+			functor(static_cast<xrClientData*>(client), this);
+		}
+	);
 }

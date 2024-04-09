@@ -633,6 +633,7 @@ protected:
 public:
 	void SetWeaponHideState(u32 State, bool bSet);
 	virtual CCustomOutfit *GetOutfit() const;
+	u16 GetLastHittingWeaponID();
 
 private:
 	CActorCondition *m_entity_condition;

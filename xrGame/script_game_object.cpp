@@ -226,6 +226,17 @@ LPCSTR CScriptGameObject::WhoHitSectionName()
 	}
 }
 
+u16 CScriptGameObject::last_hit_weapon()
+{
+	if (CActor* actor = smart_cast<CActor*>(&object()))
+		return actor->GetLastHittingWeaponID();
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call last_hit_weapon method for non-actor object");
+		return NULL;
+	}
+}
+
 bool CScriptGameObject::CheckObjectVisibility(const CScriptGameObject *tpLuaGameObject)
 {
 	CEntityAlive *entity_alive = smart_cast<CEntityAlive *>(&object());
