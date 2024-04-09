@@ -327,13 +327,8 @@ void game_cl_GameState::OnGameMessage(NET_Packet &P)
 
 void game_cl_GameState::ForEachPlayer(luabind::functor<void> functor)
 {
-	PLAYERS_MAP_IT I = players.begin();
-	PLAYERS_MAP_IT E = players.end();
-
-	for (; I != E; ++I)
-	{
-		functor(I->second, this);
-	};
+	for (auto& playerPair : players)
+		functor(playerPair.second, this);
 }
 
 game_PlayerState *game_cl_GameState::GetPlayerByGameID(u32 GameID)
