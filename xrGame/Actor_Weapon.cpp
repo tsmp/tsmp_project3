@@ -117,7 +117,7 @@ void CActor::SetWeaponHideState(u32 State, bool bSet)
 		NET_Packet P;
 		u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, ID());
 		P.w_u32(State);
-		P.w_u8(u8(bSet));
+		P.w_u8(bSet ? 1 : 0);
 		u_EventSend(P);
 	};
 }

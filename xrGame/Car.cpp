@@ -2095,15 +2095,6 @@ u16 CCar::DriverAnimationType()
 	return m_driver_anim_type;
 }
 
-void CCar::OnAfterExplosion()
-{
-}
-
-void CCar::OnBeforeExplosion()
-{
-	setEnabled(FALSE);
-}
-
 void CCar::CarExplode()
 {
 	if (b_exploded)
