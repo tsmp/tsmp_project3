@@ -417,8 +417,27 @@ void CCar::UpdateEx(float fov)
 		OwnerActor()->Cameras().Update(Camera());
 		OwnerActor()->Cameras().ApplyDevice(VIEWPORT_NEAR);
 
-		if (m_InLookout)
-			OwnerActor()->UpdateAnimation();
+		if (m_AllowLookout)
+		{
+			if (m_InLookout)
+				OwnerActor()->UpdateAnimation();
+		}
+		else
+		{
+			if (HasWeapon())
+			{
+				bool v = false;
+				if (CActor* ownerAct = OwnerActor())
+				{
+					u32 idx = ownerAct->inventory().GetActiveSlot();
+					v = idx == KNIFE_SLOT || idx == NO_ACTIVE_SLOT;
+				}
+				else
+					v = false;
+
+				m_car_weapon->Action(CCarWeapon::eWpnActivate, v);
+			}
+		}
 	}
 }
 
@@ -578,7 +597,7 @@ void CCar::NextUpdate()
 	m_Update1 = m_Update2;
 	int deletedCount = 0;
 
-	if (HasWeapon())
+	if (HasWeapon() && !IsMyCar())
 	{
 		if(m_car_weapon->IsActive() != m_Update1->wpnActive)
 			m_car_weapon->Action(CCarWeapon::eWpnActivate, static_cast<u32>(m_Update1->wpnActive));
@@ -630,7 +649,7 @@ void CCar::Interpolate()
 	if (!IsMyCar())
 		InterpolateStates(factor);
 
-	if (m_Update1->wpnActive)
+	if (m_Update1->wpnActive && !IsMyCar())
 		m_car_weapon->SetParam(CCarWeapon::eWpnDesiredPos, m_Update1->enemyPos);
 
 	if (Device.dwTimeGlobal - m_InterpolationStartTime > 20000) // На всякий случай. Не должно интерполировать на одних и тех же данных больше 20 сек.
