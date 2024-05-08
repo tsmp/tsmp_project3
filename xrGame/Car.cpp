@@ -468,8 +468,8 @@ void CCar::VisualUpdate(float fov)
 {
 	if (IsMyCar() || IsGameTypeSingle())
 		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
-	else
-		Interpolate();
+
+	Interpolate();
 
 	Fvector lin_vel;
 	m_pPhysicsShell->get_LinearVel(lin_vel);
@@ -604,11 +604,16 @@ void CCar::NextUpdate()
 
 	m_InterpolationStartTime = Device.dwTimeGlobal;
 	m_Update2 = &m_CarNetUpdates.back();
+	if (m_ReattachInit)
+	{
+		m_ReattachInit = false;
+		m_Update1->TimeStamp = m_Update2->TimeStamp;
+	}
 }
 
 void CCar::Interpolate()
 {
-	if (!getVisible() || !m_pPhysicsShell || m_CarNetUpdates.empty())
+	if (!getVisible() || !m_pPhysicsShell || m_CarNetUpdates.empty() || IsGameTypeSingle())
 		return;	
 
 	if (m_FirstInterpolation)
@@ -622,7 +627,8 @@ void CCar::Interpolate()
 	bool nextUpd = factor >= 1.f;
 
 	clamp(factor, 0.f, 1.f);
-	InterpolateStates(factor);
+	if (!IsMyCar())
+		InterpolateStates(factor);
 
 	if (m_Update1->wpnActive)
 		m_car_weapon->SetParam(CCarWeapon::eWpnDesiredPos, m_Update1->enemyPos);
@@ -636,7 +642,8 @@ void CCar::Interpolate()
 	if (nextUpd)
 		NextUpdate();
 
-	m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+	if (!IsMyCar())
+		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
 }
 
 void CCar::renderable_Render()
@@ -812,13 +819,10 @@ void CCar::net_Import(NET_Packet &P)
 	P.r_vec3(camPos);
 	P.r_vec3(camDir);
 
-	if (!IsMyCar())
-	{
-		Camera()->vPosition = camPos;
-		Camera()->vDirection = camDir;
+	Camera()->vPosition = camPos;
+	Camera()->vDirection = camDir;
 
-		m_CarNetUpdates.push_back(update);
-	}
+	m_CarNetUpdates.push_back(update);
 }
 
 void CCar::OnHUDDraw(CCustomHUD * /**hud/**/)
@@ -972,6 +976,7 @@ bool CCar::attach_Actor(CGameObject *actor)
 
 	processing_activate();
 	ReleaseHandBreak();
+	m_ReattachInit = true;
 	return true;
 }
 
