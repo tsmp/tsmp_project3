@@ -144,37 +144,37 @@ bool CCar::allowWeapon() const
 void CCar::OnChangeLookout(bool enabled)
 {
 	CActor* ownerAct = OwnerActor();
-	
+
 	if (!ownerAct)
 	{
 		m_InLookout = false;
 		return;
 	}
-	
+
 	auto& ownerInv = ownerAct->inventory();
-	
+
 	if (!enabled)
 		ownerInv.SetActiveSlot(NO_ACTIVE_SLOT);
 	else
 	{
 		ownerInv.SetActiveSlot(RIFLE_SLOT);
 		ownerInv.Activate(RIFLE_SLOT);
-	
+
 		if (!ownerInv.ActiveItem())
 		{
 			ownerInv.SetActiveSlot(GRENADE_SLOT);
 			ownerInv.Activate(GRENADE_SLOT);
 		}
-	
+
 		if (!ownerInv.ActiveItem())
 		{
 			m_InLookout = false;
 			return;
 		}
 	}
-	
+
 	m_InLookout = enabled;
-	
+
 	if (enabled)
 	{
 		ownerAct->m_current_torso.invalidate();
