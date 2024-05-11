@@ -428,12 +428,7 @@ void CCar::UpdateEx(float fov)
 			{
 				bool v = false;
 				if (CActor* ownerAct = OwnerActor())
-				{
-					u32 idx = ownerAct->inventory().GetActiveSlot();
-					v = idx == KNIFE_SLOT || idx == NO_ACTIVE_SLOT;
-				}
-				else
-					v = false;
+					v = ownerAct->inventory().GetActiveSlot() == NO_ACTIVE_SLOT;
 
 				m_car_weapon->Action(CCarWeapon::eWpnActivate, v);
 			}
