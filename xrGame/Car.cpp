@@ -482,8 +482,8 @@ void CCar::VisualUpdate(float fov)
 {
 	if (IsMyCar() || IsGameTypeSingle())
 		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
-
-	Interpolate();
+	else
+		Interpolate();
 
 	Fvector lin_vel;
 	m_pPhysicsShell->get_LinearVel(lin_vel);
@@ -592,7 +592,7 @@ void CCar::NextUpdate()
 	m_Update1 = m_Update2;
 	int deletedCount = 0;
 
-	if (HasWeapon() && !IsMyCar())
+	if (HasWeapon())
 	{
 		if(m_car_weapon->IsActive() != m_Update1->wpnActive)
 			m_car_weapon->Action(CCarWeapon::eWpnActivate, static_cast<u32>(m_Update1->wpnActive));
@@ -618,16 +618,11 @@ void CCar::NextUpdate()
 
 	m_InterpolationStartTime = Device.dwTimeGlobal;
 	m_Update2 = &m_CarNetUpdates.back();
-	if (m_ReattachInit)
-	{
-		m_ReattachInit = false;
-		m_Update1->TimeStamp = m_Update2->TimeStamp;
-	}
 }
 
 void CCar::Interpolate()
 {
-	if (!getVisible() || !m_pPhysicsShell || m_CarNetUpdates.empty() || IsGameTypeSingle())
+	if (!getVisible() || !m_pPhysicsShell || m_CarNetUpdates.empty())
 		return;	
 
 	if (m_FirstInterpolation)
@@ -641,10 +636,9 @@ void CCar::Interpolate()
 	bool nextUpd = factor >= 1.f;
 
 	clamp(factor, 0.f, 1.f);
-	if (!IsMyCar())
-		InterpolateStates(factor);
+	InterpolateStates(factor);
 
-	if (m_Update1->wpnActive && !IsMyCar())
+	if (m_Update1->wpnActive)
 		m_car_weapon->SetParam(CCarWeapon::eWpnDesiredPos, m_Update1->enemyPos);
 
 	if (Device.dwTimeGlobal - m_InterpolationStartTime > 20000) // На всякий случай. Не должно интерполировать на одних и тех же данных больше 20 сек.
@@ -656,8 +650,7 @@ void CCar::Interpolate()
 	if (nextUpd)
 		NextUpdate();
 
-	if (!IsMyCar())
-		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+	m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
 }
 
 void CCar::renderable_Render()
@@ -837,9 +830,9 @@ void CCar::net_Import(NET_Packet &P)
 	{
 		Camera()->vPosition = camPos;
 		Camera()->vDirection = camDir;
-	}
 
-	m_CarNetUpdates.push_back(update);
+		m_CarNetUpdates.push_back(update);
+	}
 }
 
 void CCar::OnHUDDraw(CCustomHUD * /**hud/**/)
@@ -993,7 +986,10 @@ bool CCar::attach_Actor(CGameObject *actor)
 
 	processing_activate();
 	ReleaseHandBreak();
-	m_ReattachInit = true;
+
+	m_CarNetUpdates.clear();
+	m_FirstInterpolation = true;
+
 	return true;
 }
 
