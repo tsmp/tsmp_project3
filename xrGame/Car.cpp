@@ -833,8 +833,11 @@ void CCar::net_Import(NET_Packet &P)
 	P.r_vec3(camPos);
 	P.r_vec3(camDir);
 
-	Camera()->vPosition = camPos;
-	Camera()->vDirection = camDir;
+	if (!IsMyCar())
+	{
+		Camera()->vPosition = camPos;
+		Camera()->vDirection = camDir;
+	}
 
 	m_CarNetUpdates.push_back(update);
 }
@@ -2107,6 +2110,20 @@ BOOL CCar::UsedAI_Locations()
 u16 CCar::DriverAnimationType()
 {
 	return m_driver_anim_type;
+}
+
+void CCar::OnAfterExplosion()
+{
+	if (!IsGameTypeSingle())
+		CExplosive::OnAfterExplosion();
+}
+
+void CCar::OnBeforeExplosion()
+{
+	if (IsGameTypeSingle())
+		setEnabled(FALSE);
+	else
+		CExplosive::OnBeforeExplosion();
 }
 
 void CCar::CarExplode()

@@ -593,6 +593,8 @@ public:
 	virtual void OnKeyboardHold(int dik);
 	virtual void vfProcessInputKey(int iCommand, bool bPressed);
 	virtual void OnEvent(NET_Packet &P, u16 type);
+	virtual void OnAfterExplosion();
+	virtual void OnBeforeExplosion();
 	virtual void GetRayExplosionSourcePos(Fvector &pos);
 	virtual void ActivateExplosionBox(const Fvector &size, Fvector &in_out_pos){};
 	virtual void ResetScriptData(void *P = 0);
