@@ -753,20 +753,6 @@ void CCar::net_Import(NET_Packet &P)
 	u16 owner;
 	P.r_u16(owner);
 
-	if (owner != u16(-1))
-	{
-		if (!OwnerActor())
-		{
-			if (auto* act = smart_cast<CActor*>(Level().Objects.net_Find(owner)))
-				act->attach_Vehicle(this);
-		}
-	}
-	else
-	{
-		if(OwnerActor())
-			detach_Actor();
-	}
-
 	if (!IsMyCar())
 	{
 		if(m_InLookout != lookout)
