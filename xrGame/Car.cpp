@@ -2106,16 +2106,10 @@ u16 CCar::DriverAnimationType()
 
 void CCar::OnAfterExplosion()
 {
-	if (!IsGameTypeSingle())
-		CExplosive::OnAfterExplosion();
 }
 
 void CCar::OnBeforeExplosion()
 {
-	if (IsGameTypeSingle())
-		setEnabled(FALSE);
-	else
-		CExplosive::OnBeforeExplosion();
 }
 
 void CCar::CarExplode()
