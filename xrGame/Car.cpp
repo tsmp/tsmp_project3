@@ -901,15 +901,20 @@ void CCar::ApplyDamage(u16 level)
 	}
 }
 
+void CCar::SetOwnerHolderID(u16 id)
+{
+	if (OnServer())
+		if (CSE_Abstract* e = Level().Server->ID_to_entity(Owner()->ID()))
+			if (CSE_ALifeCreatureActor* s_actor = smart_cast<CSE_ALifeCreatureActor*>(e))
+				s_actor->m_holderID = id;
+}
+
 void CCar::detach_Actor()
 {
 	if (!Owner())
 		return;
+	SetOwnerHolderID(0xffff);
 	Owner()->setVisible(1);
-	if (OnServer())
-		if (CSE_Abstract* e = Level().Server->ID_to_entity(Owner()->ID()))
-			if (CSE_ALifeCreatureActor* s_actor = smart_cast<CSE_ALifeCreatureActor*>(e))
-				s_actor->m_holderID = 65535;
 	CHolderCustom::detach_Actor();
 	PPhysicsShell()->remove_ObjectContactCallback(ActorObstacleCallback);
 	NeutralDrive();
@@ -963,10 +968,7 @@ bool CCar::attach_Actor(CGameObject *actor)
 
 	processing_activate();
 	ReleaseHandBreak();
-	if (OnServer())
-		if (CSE_Abstract* e = Level().Server->ID_to_entity(actor->ID()))
-			if (CSE_ALifeCreatureActor* s_actor = smart_cast<CSE_ALifeCreatureActor*>(e))
-				s_actor->m_holderID = ID();
+	SetOwnerHolderID(ID());
 	return true;
 }
 
