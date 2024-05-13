@@ -901,7 +901,7 @@ void CCar::ApplyDamage(u16 level)
 	}
 }
 
-void CCar::SetOwnerHolderID(u16 id)
+void CCar::SetOwnerHolderID(u16 id) // Выставим ID машины в серверном объекте, чтобы применить новым клиентам при подключении
 {
 	if (OnServer())
 		if (CSE_Abstract* e = Level().Server->ID_to_entity(Owner()->ID()))
