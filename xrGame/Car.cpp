@@ -972,6 +972,8 @@ bool CCar::attach_Actor(CGameObject *actor)
 
 	processing_activate();
 	ReleaseHandBreak();
+	m_CarNetUpdates.clear();
+	m_FirstInterpolation = true;
 	return true;
 }
 
