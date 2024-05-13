@@ -146,6 +146,15 @@ void CLevel::g_sv_Spawn(CSE_Abstract *E)
 			GEN.w_u16(u16(O->ID()));
 			cl_Process_Event(E->ID_Parent, GE_OWNERSHIP_TAKE, GEN);
 		}
+		//if (CSE_ALifeCreatureActor* A = smart_cast<CSE_ALifeCreatureActor*>(E))
+		//	if (A->m_holderID != 0xffff)
+		//	{
+		//		NET_Packet GEN;
+		//		GEN.write_start();
+		//		GEN.read_start();
+		//		GEN.w_u32(A->m_holderID);
+		//		cl_Process_Event(O->ID(), GEG_PLAYER_ATTACH_HOLDER, GEN);
+		//	}
 	}
 
 	Game().OnSpawn(O);
