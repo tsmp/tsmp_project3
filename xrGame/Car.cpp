@@ -29,6 +29,7 @@
 #include "PHActivationShape.h"
 #include "CharacterPhysicsSupport.h"
 #include "car_memory.h"
+#include "xrserver_objects_alife_monsters.h"
 
 BONE_P_MAP CCar::bone_map = BONE_P_MAP();
 extern CPHWorld *ph_world;
@@ -753,20 +754,6 @@ void CCar::net_Import(NET_Packet &P)
 	u16 owner;
 	P.r_u16(owner);
 
-	if (owner != u16(-1))
-	{
-		if (!OwnerActor())
-		{
-			if (auto* act = smart_cast<CActor*>(Level().Objects.net_Find(owner)))
-				act->attach_Vehicle(this);
-		}
-	}
-	else
-	{
-		if(OwnerActor())
-			detach_Actor();
-	}
-
 	if (!IsMyCar())
 	{
 		if(m_InLookout != lookout)
@@ -914,10 +901,19 @@ void CCar::ApplyDamage(u16 level)
 	}
 }
 
+void CCar::SetOwnerHolderID(u16 id) // Выставим ID машины в серверном объекте, чтобы применить новым клиентам при подключении
+{
+	if (OnServer())
+		if (CSE_Abstract* e = Level().Server->ID_to_entity(Owner()->ID()))
+			if (CSE_ALifeCreatureActor* s_actor = smart_cast<CSE_ALifeCreatureActor*>(e))
+				s_actor->m_holderID = id;
+}
+
 void CCar::detach_Actor()
 {
 	if (!Owner())
 		return;
+	SetOwnerHolderID(0xffff);
 	Owner()->setVisible(1);
 	CHolderCustom::detach_Actor();
 	PPhysicsShell()->remove_ObjectContactCallback(ActorObstacleCallback);
@@ -972,6 +968,7 @@ bool CCar::attach_Actor(CGameObject *actor)
 
 	processing_activate();
 	ReleaseHandBreak();
+	SetOwnerHolderID(ID());
 	return true;
 }
 

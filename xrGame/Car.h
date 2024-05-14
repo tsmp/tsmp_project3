@@ -627,6 +627,8 @@ public:
 	void StartEngine();
 	void StopEngine();
 
+	void SetOwnerHolderID(u16 id);
+
 protected:
 	virtual void SpawnInitPhysics(CSE_Abstract *D);
 	virtual void net_Save(NET_Packet &P);
