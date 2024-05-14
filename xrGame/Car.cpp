@@ -29,6 +29,7 @@
 #include "PHActivationShape.h"
 #include "CharacterPhysicsSupport.h"
 #include "car_memory.h"
+#include "xrserver_objects_alife_monsters.h"
 
 BONE_P_MAP CCar::bone_map = BONE_P_MAP();
 extern CPHWorld *ph_world;
@@ -70,7 +71,7 @@ CCar::CCar()
 	m_exhaust_particles = "vehiclefx\\exhaust_1";
 	m_car_sound = xr_new<SCarSound>(this);
 
-	//у машины слотов в инвентаре нет
+	//Гі Г¬Г ГёГЁГ­Г» Г±Г«Г®ГІГ®Гў Гў ГЁГ­ГўГҐГ­ГІГ Г°ГҐ Г­ГҐГІ
 	inventory = xr_new<CInventory>();
 	inventory->SetSlotsUseful(false);
 	m_doors_torque_factor = 2.f;
@@ -486,7 +487,7 @@ void CCar::VisualUpdate(float fov)
 		{
 			Owner()->setVisible(true);
 
-			// голова водителя смотрит прямо перед собой
+			// ГЈГ®Г«Г®ГўГ  ГўГ®Г¤ГЁГІГҐГ«Гї Г±Г¬Г®ГІГ°ГЁГІ ГЇГ°ГїГ¬Г® ГЇГҐГ°ГҐГ¤ Г±Г®ГЎГ®Г©
 			OwnerActor()->Orientation().yaw = -0.0236152373;
 			OwnerActor()->Orientation().pitch = -0.0728002042;
 		}
@@ -593,7 +594,7 @@ void CCar::NextUpdate()
 		m_CarNetUpdates.pop_front();
 	}
 
-	// Если пропускаем много апдейтов, то выставим больше 1, чтобы интерполяция быстрее подхватывала апдейты. Если мало, то меньше 1.
+	// Г…Г±Г«ГЁ ГЇГ°Г®ГЇГіГ±ГЄГ ГҐГ¬ Г¬Г­Г®ГЈГ® Г ГЇГ¤ГҐГ©ГІГ®Гў, ГІГ® ГўГ»Г±ГІГ ГўГЁГ¬ ГЎГ®Г«ГјГёГҐ 1, Г·ГІГ®ГЎГ» ГЁГ­ГІГҐГ°ГЇГ®Г«ГїГ¶ГЁГї ГЎГ»Г±ГІГ°ГҐГҐ ГЇГ®Г¤ГµГўГ ГІГ»ГўГ Г«Г  Г ГЇГ¤ГҐГ©ГІГ». Г…Г±Г«ГЁ Г¬Г Г«Г®, ГІГ® Г¬ГҐГ­ГјГёГҐ 1.
 	m_LerpMul = 1.f;
 
 	if (deletedCount > 3)
@@ -627,7 +628,7 @@ void CCar::Interpolate()
 	if (m_Update1->wpnActive)
 		m_car_weapon->SetParam(CCarWeapon::eWpnDesiredPos, m_Update1->enemyPos);
 
-	if (Device.dwTimeGlobal - m_InterpolationStartTime > 20000) // На всякий случай. Не должно интерполировать на одних и тех же данных больше 20 сек.
+	if (Device.dwTimeGlobal - m_InterpolationStartTime > 20000) // ГЌГ  ГўГ±ГїГЄГЁГ© Г±Г«ГіГ·Г Г©. ГЌГҐ Г¤Г®Г«Г¦Г­Г® ГЁГ­ГІГҐГ°ГЇГ®Г«ГЁГ°Г®ГўГ ГІГј Г­Г  Г®Г¤Г­ГЁГµ ГЁ ГІГҐГµ Г¦ГҐ Г¤Г Г­Г­Г»Гµ ГЎГ®Г«ГјГёГҐ 20 Г±ГҐГЄ.
 	{
 		// Msg("! Car lerp: force next update!");
 		nextUpd = true;
@@ -752,20 +753,6 @@ void CCar::net_Import(NET_Packet &P)
 
 	u16 owner;
 	P.r_u16(owner);
-
-	if (owner != u16(-1))
-	{
-		if (!OwnerActor())
-		{
-			if (auto* act = smart_cast<CActor*>(Level().Objects.net_Find(owner)))
-				act->attach_Vehicle(this);
-		}
-	}
-	else
-	{
-		if(OwnerActor())
-			detach_Actor();
-	}
 
 	if (!IsMyCar())
 	{
@@ -914,10 +901,19 @@ void CCar::ApplyDamage(u16 level)
 	}
 }
 
+void CCar::SetOwnerHolderID(u16 id) // Г‚Г»Г±ГІГ ГўГЁГ¬ ID Г¬Г ГёГЁГ­Г» Гў Г±ГҐГ°ГўГҐГ°Г­Г®Г¬ Г®ГЎГєГҐГЄГІГҐ, Г·ГІГ®ГЎГ» ГЇГ°ГЁГ¬ГҐГ­ГЁГІГј Г­Г®ГўГ»Г¬ ГЄГ«ГЁГҐГ­ГІГ Г¬ ГЇГ°ГЁ ГЇГ®Г¤ГЄГ«ГѕГ·ГҐГ­ГЁГЁ
+{
+	if (OnServer())
+		if (CSE_Abstract* e = Level().Server->ID_to_entity(Owner()->ID()))
+			if (CSE_ALifeCreatureActor* s_actor = smart_cast<CSE_ALifeCreatureActor*>(e))
+				s_actor->m_holderID = id;
+}
+
 void CCar::detach_Actor()
 {
 	if (!Owner())
 		return;
+	SetOwnerHolderID(0xffff);
 	Owner()->setVisible(1);
 	CHolderCustom::detach_Actor();
 	PPhysicsShell()->remove_ObjectContactCallback(ActorObstacleCallback);
@@ -974,6 +970,7 @@ bool CCar::attach_Actor(CGameObject *actor)
 	ReleaseHandBreak();
 	m_CarNetUpdates.clear();
 	m_FirstInterpolation = true;
+	SetOwnerHolderID(ID());
 	return true;
 }
 
@@ -1991,7 +1988,7 @@ void CCar::OnEvent(NET_Packet &P, u16 type)
 	inherited::OnEvent(P, type);
 	CExplosive::OnEvent(P, type);
 
-	//обработка сообщений, нужных для работы с багажником машины
+	//Г®ГЎГ°Г ГЎГ®ГІГЄГ  Г±Г®Г®ГЎГ№ГҐГ­ГЁГ©, Г­ГіГ¦Г­Г»Гµ Г¤Г«Гї Г°Г ГЎГ®ГІГ» Г± ГЎГ ГЈГ Г¦Г­ГЁГЄГ®Г¬ Г¬Г ГёГЁГ­Г»
 	u16 id;
 	switch (type)
 	{
@@ -2094,11 +2091,16 @@ u16 CCar::DriverAnimationType()
 
 void CCar::OnAfterExplosion()
 {
+	if (!IsGameTypeSingle())
+		CExplosive::OnAfterExplosion();
 }
 
 void CCar::OnBeforeExplosion()
 {
-	setEnabled(FALSE);
+	if (IsGameTypeSingle())
+		setEnabled(FALSE);
+	else
+		CExplosive::OnBeforeExplosion();
 }
 
 void CCar::CarExplode()
@@ -2295,7 +2297,7 @@ void CCar::Teleport(Fvector outPos)
 
 	Fmatrix F = XFORM();
 	Fvector pos = outPos;
-	pos.y += 2.5; // TSMP: на всякий случай поднимем повыше точку появления
+	pos.y += 2.5; // TSMP: Г­Г  ГўГ±ГїГЄГЁГ© Г±Г«ГіГ·Г Г© ГЇГ®Г¤Г­ГЁГ¬ГҐГ¬ ГЇГ®ГўГ»ГёГҐ ГІГ®Г·ГЄГі ГЇГ®ГїГўГ«ГҐГ­ГЁГї
 	F.c = pos;
 
 	XFORM().set(F);
