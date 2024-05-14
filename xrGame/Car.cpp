@@ -667,11 +667,6 @@ void CCar::net_Export(NET_Packet &P)
 	P.w_u8(u8(m_InLookout));
 	P.w_float(m_DriverHeading);
 	P.w_float(Health());
-
-	if (OwnerActor())
-		P.w_u16(OwnerActor()->ID());
-	else
-		P.w_u16(u16(-1));
 		
 	if (OnClient() || m_CarNetUpdates.empty())
 	{
@@ -750,9 +745,6 @@ void CCar::net_Import(NET_Packet &P)
 	
 	if(!OnServer())
 		SetfHealth(health);
-
-	u16 owner;
-	P.r_u16(owner);
 
 	if (!IsMyCar())
 	{

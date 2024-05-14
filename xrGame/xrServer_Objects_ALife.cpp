@@ -1461,7 +1461,6 @@ void CSE_ALifeCar::UPDATE_Read(NET_Packet &P)
 	P.r_u8(lookout);
 	P.r_float(driverHeading);
 	P.r_float(m_health);
-	P.r_u16(owner);
 
 	StateVec.clear();
 	u16 cnt;
@@ -1495,7 +1494,6 @@ void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
 	P.w_u8(lookout);
 	P.w_float(driverHeading);
 	P.w_float(m_health);
-	P.w_u16(owner);
 
 	u16 cnt = xr_narrow_cast<u16>(StateVec.size());
 	P.w_u16(cnt);
