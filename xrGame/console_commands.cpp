@@ -1550,6 +1550,7 @@ void CCC_RegisterCommands()
 #endif // MASTER_GOLD
 
 	CMD4(CCC_Integer, "mouse_accel", &g_bUseCursorAcceleration, 0, 1);
+	CMD3(CCC_Mask, "log_lua", &psAI_Flags, aiLua); // was ai_dbg_lua
 
 #ifdef DEBUG
 	CMD4(CCC_Integer, "lua_gcstep", &psLUA_GCSTEP, 1, 1000);
@@ -1559,7 +1560,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask, "ai_dbg_frustum", &psAI_Flags, aiFrustum);
 	CMD3(CCC_Mask, "ai_dbg_funcs", &psAI_Flags, aiFuncs);
 	CMD3(CCC_Mask, "ai_dbg_alife", &psAI_Flags, aiALife);
-	CMD3(CCC_Mask, "ai_dbg_lua", &psAI_Flags, aiLua);
+
 	CMD3(CCC_Mask, "ai_dbg_goap", &psAI_Flags, aiGOAP);
 	CMD3(CCC_Mask, "ai_dbg_goap_script", &psAI_Flags, aiGOAPScript);
 	CMD3(CCC_Mask, "ai_dbg_goap_object", &psAI_Flags, aiGOAPObject);

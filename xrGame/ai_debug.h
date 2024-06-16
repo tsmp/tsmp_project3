@@ -15,7 +15,9 @@
 #define aiFrustum (1 << 3)
 #define aiFuncs (1 << 4)
 #define aiALife (1 << 5)
+#endif // DEBUG
 #define aiLua (1 << 6)
+#ifdef DEBUG
 #define aiGOAP (1 << 7)
 #define aiCover (1 << 8)
 #define aiAnimation (1 << 9)
@@ -35,9 +37,10 @@
 #define aiNilObjectAccess (1 << 23)
 #endif // DEBUG
 
+extern Flags32 psAI_Flags;
+
 #ifndef MASTER_GOLD
 #define aiIgnoreActor (1 << 24)
-extern Flags32 psAI_Flags;
 #endif // MASTER_GOLD
 
 #ifdef DEBUG

@@ -57,9 +57,7 @@
 extern int g_AI_inactive_time;
 int g_sv_mp_respawn_npc_after_death = 1;
 
-#ifndef MASTER_GOLD
 Flags32 psAI_Flags = {0};
-#endif // MASTER_GOLD
 
 void CCustomMonster::SAnimState::Create(IKinematicsAnimated *K, LPCSTR base)
 {

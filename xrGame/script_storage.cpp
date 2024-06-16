@@ -139,25 +139,18 @@ void CScriptStorage::reinit()
 		file_header = file_header_old;
 }
 
-int CScriptStorage::vscript_log(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker)
+int CScriptStorage::vscript_log(ScriptStorage::ELuaMessageType luaMsgType, LPCSTR caFormat, va_list marker)
 {
-#ifndef USE_DEBUGGER
-	if (tLuaMessageType != ScriptStorage::eLuaMessageTypeMessageShowAlways)
-		return 0;
-#endif
+	const bool showMsgType = luaMsgType == ScriptStorage::eLuaMessageTypeError || luaMsgType == ScriptStorage::eLuaMessageTypeMessageShowAlways;
 
-#ifndef NO_XRGAME_SCRIPT_ENGINE
-#ifdef DEBUG
-	if (!psAI_Flags.test(aiLua) && (tLuaMessageType != ScriptStorage::eLuaMessageTypeError))
-		return (0);
-#endif
-#endif
+	if (!psAI_Flags.test(aiLua) && !showMsgType)
+		return 0;
 
 	LPCSTR S = "", SS = "";
 	LPSTR S1;
 	string4096 S2;
 
-	switch (tLuaMessageType)
+	switch (luaMsgType)
 	{
 	case ScriptStorage::eLuaMessageTypeInfo:
 	{
