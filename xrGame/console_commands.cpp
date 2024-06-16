@@ -129,6 +129,8 @@ ENGINE_API u32 engine_lua_memory_usage();
 extern u32 game_lua_memory_usage();
 #endif // SEVERAL_ALLOCATORS
 
+int log_script_bindings = 0;
+
 class CCC_MemStats : public IConsole_Command
 {
 public:
@@ -1740,6 +1742,8 @@ void CCC_RegisterCommands()
 	CMD1(CCC_GSCheckForUpdates, "check_for_updates");
 	CMD1(CCC_DumpObjects, "dump_all_objects");
 
+	CMD4(CCC_Integer, "log_script_bindings", &log_script_bindings, 0, 1);
+
 #ifdef DEBUG
 	CMD3(CCC_String, "stalker_death_anim", dbg_stalker_death_anim, 32);
 	CMD4(CCC_Integer, "death_anim_velocity", &b_death_anim_velocity, FALSE, TRUE);
@@ -1749,7 +1753,8 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Integer, "dbg_show_ani_info", &g_ShowAnimationInfo, 0, 1);
 	CMD4(CCC_Integer, "dbg_dump_physics_step", &g_bDebugDumpPhysicsStep, 0, 1);
 #endif
-	*g_last_saved_game = 0;
+
+	*g_last_saved_game = '\0';
 
 	register_mp_console_commands();
 	RegisterCarDbgCommands();

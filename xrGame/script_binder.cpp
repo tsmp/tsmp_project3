@@ -16,6 +16,8 @@
 #include "gameobject.h"
 #include "level.h"
 
+extern int log_script_bindings;
+
 //#define DBG_DISABLE_SCRIPTS
 
 CScriptBinder::CScriptBinder()
@@ -223,13 +225,17 @@ void CScriptBinder::set_object(CScriptBinderObject *object)
 {
 	CGameObject &objToBind = object->m_object->object();
 
-	if(CanBind(objToBind))
+	if (CanBind(objToBind))
 	{
-		Msg("- bind: %s", *objToBind.cName());
+		if (log_script_bindings)
+			Msg("- bind: %s", *objToBind.cName());
+
 		VERIFY2(!m_object, "Cannot bind to the object twice!");
+
 #ifdef _DEBUG
 		Msg("* Core object %s is binded with the script object", smart_cast<CGameObject *>(this) ? *smart_cast<CGameObject *>(this)->cName() : "");
 #endif // _DEBUG
+
 		m_object = object;
 	}
 }
