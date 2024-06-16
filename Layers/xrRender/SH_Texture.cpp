@@ -6,6 +6,7 @@
 #include "dxRenderDeviceRender.h"
 
 ENGINE_API bool g_dedicated_server;
+extern int log_textures_loading;
 
 #define PRIORITY_HIGH 12
 #define PRIORITY_NORMAL 8
@@ -296,27 +297,25 @@ void CTexture::Load()
 
 void CTexture::Unload()
 {
-#ifdef DEBUG
 	string_path msg_buff;
-	sprintf_s(msg_buff, sizeof(msg_buff), "* Unloading texture [%s] pSurface RefCount=", cName.c_str());
-#endif // DEBUG
 
-	//.	if (flags.bLoaded)		Msg		("* Unloaded: %s",cName.c_str());
+	if (log_textures_loading)
+		sprintf_s(msg_buff, sizeof(msg_buff), "* Unloading texture [%s] pSurface RefCount=", cName.c_str());
 
 	flags.bLoaded = FALSE;
+
 	if (!seqDATA.empty())
 	{
 		for (u32 I = 0; I < seqDATA.size(); I++)
-		{
 			_RELEASE(seqDATA[I]);
-		}
+
 		seqDATA.clear();
-		pSurface = 0;
+		pSurface = nullptr;
 	}
 
-#ifdef DEBUG
-	_SHOW_REF(msg_buff, pSurface);
-#endif // DEBUG
+	if(log_textures_loading)
+		_SHOW_REF(msg_buff, pSurface);
+
 	_RELEASE(pSurface);
 
 	xr_delete(pAVI);

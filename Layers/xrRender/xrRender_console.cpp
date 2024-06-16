@@ -195,6 +195,7 @@ float dm_current_fade = 47.5; // float(2 * dm_current_size) - .5f;
 float dm_fade = 47.5; // float(2 * dm_size) - .5f;
 
 int ps_r__detail_radius = 49;
+int log_textures_loading = 0;
 
 #include "Console.h"
 #include "Console_commands.h"
@@ -656,6 +657,8 @@ void xrRender_initconsole()
 
 	CMD4(CCC_Integer, "rs_vb_size", &rsDVB_Size, 32, 16384);
 	CMD4(CCC_Integer, "rs_ib_size", &rsDIB_Size, 32, 4096);
+
+	CMD4(CCC_Integer, "log_textures_loading", &log_textures_loading, 0, 1);
 }
 
 void xrRender_apply_tf()

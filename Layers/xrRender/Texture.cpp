@@ -11,8 +11,7 @@
 
 #include "dxRenderDeviceRender.h"
 
-// #include "std_classes.h"
-// #include "xr_avi.h"
+extern int log_textures_loading;
 
 void fix_texture_name(LPSTR fn)
 {
@@ -319,9 +318,10 @@ _DDS:
 	// Load and get header
 	D3DXIMAGE_INFO IMG;
 	S = FS.r_open(fn);
-#ifdef DEBUG
-	Msg("* Loaded: %s[%d]b", fn, S->length());
-#endif // DEBUG
+
+	if (log_textures_loading)
+		Msg("* Loaded: %s[%d]b", fn, S->length());
+
 	img_size = S->length();
 	R_ASSERT(S);
 	R_CHK2(D3DXGetImageInfoFromFileInMemory(S->pointer(), S->length(), &IMG), fn);
