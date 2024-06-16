@@ -54,7 +54,6 @@ namespace text_editor
 class ENGINE_API CGameFont;
 class ENGINE_API IConsole_Command;
 
-
 //public pureScreenResolutionChanged
 
 class ENGINE_API CConsole : 
@@ -80,16 +79,9 @@ public:
 	using vecTips = xr_vector<shared_str>;
 	using vecTipsEx = xr_vector<TipString>;
 
-	enum
-	{
-		CONSOLE_BUF_SIZE = 1024
-	};
-
-	enum 
-	{ 
-		VIEW_TIPS_COUNT = 14, 
-		MAX_TIPS_COUNT = 220 
-	};
+	const u32 CONSOLE_BUF_SIZE = 1024;
+	const u32 VIEW_TIPS_COUNT = 14;
+	const u32 MAX_TIPS_COUNT = 220;
 
 protected:
 	int scroll_delta;
@@ -117,7 +109,6 @@ private:
 	bool m_HasRaPrefix;
 
 public:
-
 	CConsole();
 	virtual ~CConsole();
 
@@ -155,7 +146,6 @@ public:
 	xr_token *GetXRToken(LPCSTR cmd);
 
 protected:
-
 	text_editor::line_editor* m_editor;
 	text_editor::line_edit_control& ec();
 
@@ -231,6 +221,8 @@ protected:
 
 	void update_tips();
 	void select_for_filter(LPCSTR filter_str, vecTips& in_v, vecTipsEx& out_v);
+
+	friend class ConsoleInput;
 };
 
 ENGINE_API extern CConsole *Console;

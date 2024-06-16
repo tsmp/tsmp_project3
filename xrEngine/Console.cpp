@@ -38,6 +38,21 @@ LPCSTR CConsole::radmin_cmd_name = "ra ";
 char const* const ioc_prompt = ">>> ";
 char const* const ch_cursor = "_";
 
+class ConsoleInput : public text_editor::line_editor
+{
+public:
+	ConsoleInput(u32 strBufferSize) : text_editor::line_editor(strBufferSize)
+	{}
+
+	void IR_OnMouseWheel(int direction) override
+	{
+		if (direction < 0)
+			Console->Next_log();
+		else
+			Console->Prev_log();
+	}
+};
+
 text_editor::line_edit_control& CConsole::ec()
 {
 	return m_editor->control();
@@ -58,7 +73,7 @@ void CConsole::RemoveCommand(IConsole_Command *C)
 
 CConsole::CConsole()
 {
-	m_editor = xr_new<text_editor::line_editor>((u32)CONSOLE_BUF_SIZE);
+	m_editor = xr_new<ConsoleInput>(CONSOLE_BUF_SIZE);
 	m_cmd_history_max = cmd_history_max;
 	m_disable_tips = false;
 	Register_callbacks();
