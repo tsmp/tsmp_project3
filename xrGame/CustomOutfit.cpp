@@ -74,7 +74,10 @@ void CCustomOutfit::Load(LPCSTR section)
 	else
 		m_NightVisionSect = NULL;
 
-	m_full_icon_name = pSettings->r_string(section, "full_icon_name");
+	if (pSettings->line_exist(section, "full_icon_name"))
+		m_full_icon_name = pSettings->r_string(section, "full_icon_name");
+	else
+		m_full_icon_name = NULL;
 }
 
 void CCustomOutfit::Hit(float hit_power, ALife::EHitType hit_type)
