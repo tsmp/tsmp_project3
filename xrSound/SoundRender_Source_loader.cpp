@@ -1,10 +1,9 @@
 #include "stdafx.h"
-#pragma hdrstop
-
 #include <msacm.h>
-
 #include "soundrender_core.h"
 #include "soundrender_source.h"
+
+XRSOUND_API int log_sound_loading = 0;
 
 //	SEEK_SET	0	File beginning
 //	SEEK_CUR	1	Current file pointer position
@@ -153,6 +152,8 @@ void CSoundRender_Source::load(LPCSTR name)
 	fname = N;
 	strconcat(sizeof(fn), fn, N, ".ogg");
 
+	if (log_sound_loading)
+		Msg("* loading snd: %s", fname.c_str());
 
 	if (!FS.exist("$level$", fn))
 		FS.update_path(fn, "$game_sounds$", fn);

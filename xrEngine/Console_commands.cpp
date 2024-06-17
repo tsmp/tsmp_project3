@@ -497,6 +497,7 @@ void CCC_Register()
 	CMD3(CCC_Mask, "snd_efx", &psSoundFlags, ss_EAX);
 	CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 4, 32);
 	CMD4(CCC_Integer, "snd_cache_size", &psSoundCacheSizeMB, 4, 32);
+	CMD4(CCC_Integer, "log_sound_loading", &log_sound_loading, 0, 1);
 
 	// Mouse
 	CMD3(CCC_Mask, "mouse_invert", &psMouseInvert, 1);

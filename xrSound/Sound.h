@@ -28,6 +28,7 @@ XRSOUND_API extern float psSoundOcclusionScale;
 XRSOUND_API extern Flags32 psSoundFlags;
 XRSOUND_API extern int psSoundTargets;
 XRSOUND_API extern int psSoundCacheSizeMB;
+XRSOUND_API extern int log_sound_loading;
 
 class XRSOUND_API ISoundVoiceChat;
 
