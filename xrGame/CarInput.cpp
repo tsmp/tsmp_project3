@@ -138,60 +138,78 @@ void CCar::vfProcessInputKey(int iCommand, bool bPressed)
 
 bool CCar::allowWeapon() const
 {
-	return !m_car_weapon || !m_car_weapon->IsActive();
+	return !m_car_weapon || !m_car_weapon->IsActive() || !m_AllowLookout;
 }
 
 void CCar::OnChangeLookout(bool enabled)
 {
-	if (enabled && !m_AllowLookout)
-		return;
-
-	CActor* ownerAct = OwnerActor();
-
-	if (!ownerAct)
+	if (m_AllowLookout)
 	{
-		m_InLookout = false;
-		return;
-	}
+		CActor* ownerAct = OwnerActor();
 
-	auto& ownerInv = ownerAct->inventory();
-	ownerInv.SetSlotsBlocked(static_cast<u16>(INV_STATE_BLOCK_ALL), !enabled);
-
-	if (!enabled)
-		ownerInv.SetActiveSlot(NO_ACTIVE_SLOT);
-	else
-	{
-		ownerInv.SetActiveSlot(RIFLE_SLOT);
-		ownerInv.Activate(RIFLE_SLOT);
-
-		if (!ownerInv.ActiveItem())
-		{
-			ownerInv.SetActiveSlot(GRENADE_SLOT);
-			ownerInv.Activate(GRENADE_SLOT);
-		}
-
-		if (!ownerInv.ActiveItem())
+		if (!ownerAct)
 		{
 			m_InLookout = false;
 			return;
 		}
-	}
 
-	m_InLookout = enabled;
+		auto& ownerInv = ownerAct->inventory();
 
-	if (enabled)
-	{
-		ownerAct->m_current_torso.invalidate();
-		ownerAct->m_current_legs.invalidate();
-		ownerAct->UpdateAnimation(); // play idle standing anim
+		if (!enabled)
+			ownerInv.SetActiveSlot(NO_ACTIVE_SLOT);
+		else
+		{
+			ownerInv.SetActiveSlot(RIFLE_SLOT);
+			ownerInv.Activate(RIFLE_SLOT);
+
+			if (!ownerInv.ActiveItem())
+			{
+				ownerInv.SetActiveSlot(GRENADE_SLOT);
+				ownerInv.Activate(GRENADE_SLOT);
+			}
+
+			if (!ownerInv.ActiveItem())
+			{
+				m_InLookout = false;
+				return;
+			}
+		}
+
+		m_InLookout = enabled;
+
+		if (enabled)
+		{
+			ownerAct->m_current_torso.invalidate();
+			ownerAct->m_current_legs.invalidate();
+			ownerAct->UpdateAnimation(); // play idle standing anim
+		}
+		else
+			ownerAct->steer_Vehicle(0.f); // play siting drive anim
 	}
-	else
-		ownerAct->steer_Vehicle(0.f); // play siting drive anim
 }
 
 void CCar::OnWeaponChange(int cmd)
 {
-	OnChangeLookout(cmd != 1);
+	if (m_AllowLookout)
+		OnChangeLookout(cmd != 1);
+	else
+	{
+		if (cmd == 2)
+		if (CActor* ownerAct = OwnerActor())
+		{
+			auto& ownerInv = ownerAct->inventory();
+			m_InLookout = ownerInv.GetActiveSlot() == 1;
+			if (m_InLookout)
+			{
+				ownerInv.Activate(NO_ACTIVE_SLOT);
+			}
+			else
+			{
+				ownerInv.Activate(PISTOL_SLOT);
+			}
+		}
+	}
+
 	m_car_weapon->Action(CCarWeapon::eWpnActivate, !m_InLookout);
 }
 
