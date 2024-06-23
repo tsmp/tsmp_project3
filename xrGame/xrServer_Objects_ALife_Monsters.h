@@ -402,6 +402,11 @@ u16 motionIdx;
 std::deque<u32> m_SoundTypes;
 std::deque<u32> m_SoundDelays;
 
+void UPDATE_Write_Original(NET_Packet& tNetPacket);
+void UPDATE_Read_Original(NET_Packet& tNetPacket);
+void UPDATE_Write_MP(NET_Packet& tNetPacket);
+void UPDATE_Read_MP(NET_Packet& tNetPacket);
+
 CSE_ALifeMonsterBase(LPCSTR caSection); // constructor for variable initialization
 virtual ~CSE_ALifeMonsterBase();
 virtual void load(NET_Packet &tNetPacket);

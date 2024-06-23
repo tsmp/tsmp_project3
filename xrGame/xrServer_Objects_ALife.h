@@ -488,6 +488,11 @@ virtual bool can_save() const;
 virtual bool used_ai_locations() const;
 virtual CSE_Motion *__stdcall motion();
 
+void UPDATE_Write_Original(NET_Packet& tNetPacket);
+void UPDATE_Read_Original(NET_Packet& tNetPacket);
+void UPDATE_Write_MP(NET_Packet& tNetPacket);
+void UPDATE_Read_MP(NET_Packet& tNetPacket);
+
 ClientID CallerClID;
 SPHNetState State;
 virtual BOOL Net_Relevant() { return true; }
@@ -534,6 +539,11 @@ Fvector enemyPos;
 
 Fvector camPos;
 Fvector camDir;
+
+void UPDATE_Write_Original(NET_Packet& tNetPacket);
+void UPDATE_Read_Original(NET_Packet& tNetPacket);
+void UPDATE_Write_MP(NET_Packet& tNetPacket);
+void UPDATE_Read_MP(NET_Packet& tNetPacket);
 
 protected:
 virtual void data_load(NET_Packet &tNetPacket);

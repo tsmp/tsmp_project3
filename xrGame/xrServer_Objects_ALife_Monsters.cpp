@@ -1682,10 +1682,23 @@ void CSE_ALifeMonsterBase::STATE_Write(NET_Packet &tNetPacket)
 
 void CSE_ALifeMonsterBase::UPDATE_Read(NET_Packet &tNetPacket)
 {
+	if (IsGameTypeSingle())
+		UPDATE_Read_Original(tNetPacket);
+	else
+		UPDATE_Read_MP(tNetPacket);
+}
+
+void CSE_ALifeMonsterBase::UPDATE_Read_Original(NET_Packet& tNetPacket)
+{
+	inherited1::UPDATE_Read(tNetPacket);
+	inherited2::UPDATE_Read(tNetPacket);
+}
+
+void CSE_ALifeMonsterBase::UPDATE_Read_MP(NET_Packet& tNetPacket)
+{
 	if (CSE_Abstract::firstUpdate)
 	{
-		inherited1::UPDATE_Read(tNetPacket);
-		inherited2::UPDATE_Read(tNetPacket);
+		UPDATE_Read_Original(tNetPacket);
 		CSE_Abstract::firstUpdate = false;
 		return;
 	}
@@ -1718,6 +1731,20 @@ void CSE_ALifeMonsterBase::UPDATE_Read(NET_Packet &tNetPacket)
 }
 
 void CSE_ALifeMonsterBase::UPDATE_Write(NET_Packet &tNetPacket)
+{
+	if (IsGameTypeSingle() || useSingleUpdateWrite)
+		UPDATE_Write_Original(tNetPacket);
+	else
+		UPDATE_Write_MP(tNetPacket);
+}
+
+void CSE_ALifeMonsterBase::UPDATE_Write_Original(NET_Packet& tNetPacket)
+{
+	inherited1::UPDATE_Write(tNetPacket);
+	inherited2::UPDATE_Write(tNetPacket);
+}
+
+void CSE_ALifeMonsterBase::UPDATE_Write_MP(NET_Packet& tNetPacket)
 {
 	tNetPacket.w_u8(phSyncFlag);
 
@@ -1911,7 +1938,7 @@ BOOL CSE_ALifeHumanStalker::Net_Relevant()
 
 void CSE_ALifeHumanStalker::UPDATE_Write(NET_Packet &tNetPacket)
 {
-	if (IsGameTypeSingle())
+	if (IsGameTypeSingle() || useSingleUpdateWrite)
 		UPDATE_Write_Original(tNetPacket);
 	else
 		UPDATE_Write_MP(tNetPacket);

@@ -24,6 +24,8 @@ LPCSTR GAME_CONFIG = "game.ltx";
 #include "render.h"
 #endif
 
+extern bool IsGameTypeSingle();
+
 bool SortStringsByAlphabetPred(const shared_str &s1, const shared_str &s2)
 {
 	R_ASSERT(s1.size());
@@ -1360,10 +1362,25 @@ void CSE_ALifeHelicopter::STATE_Write(NET_Packet &tNetPacket)
 	tNetPacket.w_stringZ(engine_sound);
 }
 
-void CSE_ALifeHelicopter::UPDATE_Read(NET_Packet &P)
+void CSE_ALifeHelicopter::UPDATE_Read(NET_Packet &tNetPacket)
+{
+	if (IsGameTypeSingle())
+		UPDATE_Read_Original(tNetPacket);
+	else
+		UPDATE_Read_MP(tNetPacket);
+}
+
+void CSE_ALifeHelicopter::UPDATE_Read_Original(NET_Packet& tNetPacket)
+{
+	inherited1::UPDATE_Read(tNetPacket);
+	inherited3::UPDATE_Read(tNetPacket);
+}
+
+void CSE_ALifeHelicopter::UPDATE_Read_MP(NET_Packet& P)
 {
 	if (firstUpdate)
 	{
+		UPDATE_Read_Original(P);
 		firstUpdate = false;
 		return;
 	}
@@ -1376,7 +1393,21 @@ void CSE_ALifeHelicopter::UPDATE_Read(NET_Packet &P)
 	P.r_float_q8(State.quaternion.w, -1.0, 1.0);
 }
 
-void CSE_ALifeHelicopter::UPDATE_Write(NET_Packet &P)
+void CSE_ALifeHelicopter::UPDATE_Write(NET_Packet& tNetPacket)
+{
+	if (IsGameTypeSingle() || useSingleUpdateWrite)
+		UPDATE_Write_Original(tNetPacket);
+	else
+		UPDATE_Write_MP(tNetPacket);
+}
+
+void CSE_ALifeHelicopter::UPDATE_Write_Original(NET_Packet& tNetPacket)
+{
+	inherited1::UPDATE_Write(tNetPacket);
+	inherited3::UPDATE_Write(tNetPacket);
+}
+
+void CSE_ALifeHelicopter::UPDATE_Write_MP(NET_Packet& P)
 {
 	P.w_vec3(State.position);
 
@@ -1448,10 +1479,25 @@ void CSE_ALifeCar::STATE_Write(NET_Packet &tNetPacket)
 	tNetPacket.w_float(health);
 }
 
-void CSE_ALifeCar::UPDATE_Read(NET_Packet &P)
+void CSE_ALifeCar::UPDATE_Read(NET_Packet& tNetPacket)
+{
+	if (IsGameTypeSingle())
+		UPDATE_Read_Original(tNetPacket);
+	else
+		UPDATE_Read_MP(tNetPacket);
+}
+
+void CSE_ALifeCar::UPDATE_Read_Original(NET_Packet& tNetPacket)
+{
+	inherited1::UPDATE_Read(tNetPacket);
+	inherited2::UPDATE_Read(tNetPacket);
+}
+
+void CSE_ALifeCar::UPDATE_Read_MP(NET_Packet& P)
 {
 	if (firstUpdate)
 	{
+		UPDATE_Read_Original(P);
 		firstUpdate = false;
 		return;
 	}
@@ -1487,7 +1533,21 @@ void CSE_ALifeCar::UPDATE_Read(NET_Packet &P)
 	P.r_vec3(camDir);
 }
 
-void CSE_ALifeCar::UPDATE_Write(NET_Packet &P)
+void CSE_ALifeCar::UPDATE_Write(NET_Packet& tNetPacket)
+{
+	if (IsGameTypeSingle() || useSingleUpdateWrite)
+		UPDATE_Write_Original(tNetPacket);
+	else
+		UPDATE_Write_MP(tNetPacket);
+}
+
+void CSE_ALifeCar::UPDATE_Write_Original(NET_Packet& tNetPacket)
+{
+	inherited1::UPDATE_Write(tNetPacket);
+	inherited2::UPDATE_Write(tNetPacket);
+}
+
+void CSE_ALifeCar::UPDATE_Write_MP(NET_Packet& P)
 {
 	P.w_u8(engine);
 	P.w_u8(light);
