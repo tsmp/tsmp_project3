@@ -33,10 +33,8 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 	strcpy(options, strchr(*session_name, '/') + 1);
 
 	LPCSTR gameType = g_pGamePersistent->m_game_params.m_game_type;
-	game = nullptr;	
-
 	CLASS_ID clsid = game_GameState::getCLASS_ID(gameType, true);
-	game = smart_cast<game_sv_GameState *>(NEW_INSTANCE(clsid));
+	game = smart_cast<game_sv_GameState*>(NEW_INSTANCE(clsid));
 
 	// Options
 	if (!game)
@@ -56,40 +54,39 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 	return IPureServer::Connect(*session_name);
 }
 
-IClient *xrServer::new_client(SClientConnectData *cl_data)
+IClient *xrServer::new_client(SClientConnectData *clConData)
 {
-	IClient *CL = client_Find_Get(cl_data->clientID);
+	IClient *CL = client_Find_Get(clConData->clientID);
 	VERIFY(CL);
 
 	// copy entity
-	CL->ID = cl_data->clientID;
-	CL->process_id = cl_data->process_id;
-	
-	string64 new_name;
-	strcpy_s(new_name, cl_data->name);
-	new_name[63] = '\0';
-	Msg("- Connecting player - %s", new_name);
+	CL->ID = clConData->clientID;
+	CL->process_id = clConData->process_id;
 
-	int nameLength = xr_strlen(new_name);
+	string64 newName;
+	strcpy_s(newName, clConData->name);
+	newName[sizeof(newName) - 1] = '\0';
+	Msg("- Connecting player - %s, ip: %s", newName, CL->m_cAddress.to_string().c_str());
 	
-	for (int i = 0; i < nameLength; i++)
+	for (u32 i = 0, len = xr_strlen(newName); i < len; i++)
 	{
-		if (new_name[i] == '%')
+		if (newName[i] == '%')
 		{
-			new_name[i] = '_';
+			newName[i] = '_';
 			Msg("! WARNING: player tried to use %% in nickname!");
 		}
 	}
 
-	CL->name._set(new_name);
+	CL->name._set(newName);
 
-	if (!HasProtected() && game->NewPlayerName_Exists(CL, new_name))
+	if (!HasProtected() && game->NewPlayerName_Exists(CL, newName))
 	{
-		game->NewPlayerName_Generate(CL, new_name);
-		game->NewPlayerName_Replace(CL, new_name);
+		game->NewPlayerName_Generate(CL, newName);
+		game->NewPlayerName_Replace(CL, newName);
 	}
-	CL->name._set(new_name);
-	CL->pass._set(cl_data->pass);
+
+	CL->name._set(newName);
+	CL->pass._set(clConData->pass);
 
 	NET_Packet P;
 	P.B.count = 0;
