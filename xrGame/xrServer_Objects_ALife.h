@@ -494,7 +494,7 @@ void UPDATE_Write_MP(NET_Packet& tNetPacket);
 void UPDATE_Read_MP(NET_Packet& tNetPacket);
 
 ClientID CallerClID;
-SPHNetState State;
+SPHNetState State{ 0 };
 virtual BOOL Net_Relevant() { return true; }
 virtual CSE_Abstract *cast_abstract() { return this; }
 

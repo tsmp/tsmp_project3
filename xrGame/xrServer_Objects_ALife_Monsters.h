@@ -489,9 +489,9 @@ void UPDATE_Read_MP(NET_Packet& tNetPacket);
 void UPDATE_Write_Sounds(NET_Packet& tNetPacket);
 void UPDATE_Read_Sounds(NET_Packet& tNetPacket);
 
-float f_health;
-float f_head_dir_pitch;
-float f_head_dir_yaw;
+float f_health = 1.f;
+float f_head_dir_pitch = 0.f;
+float f_head_dir_yaw = 0.f;
 
 net_physics_state physics_state;
 u8 phSyncFlag = 0;
