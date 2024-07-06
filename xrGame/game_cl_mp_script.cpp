@@ -110,7 +110,8 @@ void game_cl_mp::script_register(lua_State *L)
 			class_<xrClientData>("xrClientData")
 			.def(constructor<>())
 			.def_readwrite("UID", &xrClientData::UID)
-			.def_readwrite("ps", &xrClientData::ps),
+			.def_readwrite("ps", &xrClientData::ps)
+			.def("GetIP", &xrClientData::GetIP),
 
 		 class_<game_cl_mp, game_cl_GameState>("game_cl_mp")];
 }
