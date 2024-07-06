@@ -653,7 +653,13 @@ int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 	}
 	__except(EXCEPTION_EXECUTE_HANDLER)
 	{
-		lua_pushstring(L, "[luabind::detail::class_rep::function_dispatcher] Caught unhandled exception!");
+		string_class function_name("[luabind::detail::class_rep::function_dispatcher] Caught unhandled exception! (");
+		function_name += rep->crep->name();
+		function_name += ":";
+		function_name += rep->name;
+		function_name += ")";
+
+		lua_pushstring(L, function_name.c_str());
 	}
 	lua_error(L);
 	return 0; // will never be reached
