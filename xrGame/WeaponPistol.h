@@ -11,6 +11,7 @@ public:
 
 	virtual void Load(LPCSTR section);
 
+	virtual void PlayReloadSound();
 	virtual void switch2_Reload();
 
 	virtual void OnShot();
@@ -31,7 +32,9 @@ protected:
 	virtual bool AllowFireWhileWorking() { return true; }
 
 	HUD_SOUND sndClose;
+	HUD_SOUND sndEmptyReload;
 	ESoundTypes m_eSoundClose;
+	ESoundTypes m_eSoundEmptyReload;
 	struct WWPMotions
 	{
 		MotionSVec mhud_show_empty;
