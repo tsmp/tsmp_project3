@@ -24,6 +24,7 @@ protected:
 	HUD_SOUND sndShot;
 	HUD_SOUND sndEmptyClick;
 	HUD_SOUND sndReload;
+	HUD_SOUND sndEmptyReload;
 	//звук текущего выстрела
 	HUD_SOUND *m_pSndShotCurrent;
 
@@ -39,6 +40,7 @@ protected:
 	ESoundTypes m_eSoundShot;
 	ESoundTypes m_eSoundEmptyClick;
 	ESoundTypes m_eSoundReload;
+	ESoundTypes m_eSoundEmptyReload;
 	struct SWMmotions
 	{
 		MotionSVec mhud_idle;
