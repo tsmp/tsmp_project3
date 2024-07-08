@@ -42,6 +42,7 @@ void game_PlayerState::script_register(lua_State *L)
 			 .def_readwrite("rank", &BaseType::rank)
 			 .def_readwrite("DeathTime", &BaseType::DeathTime)
 			 .def_readwrite("m_online_time", &BaseType::m_online_time)
+			 .def_readwrite("m_bPayForSpawn", &BaseType::m_bPayForSpawn)
 
 			 .def_readwrite("m_Stats", &BaseType::m_Stats)
 
