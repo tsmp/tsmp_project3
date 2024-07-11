@@ -520,11 +520,7 @@ void CWeaponMagazined::state_Fire(float dt)
 		++m_iShotNum;
 
 		OnShot();
-		static int i = 0;
-		if (i || m_iShotNum > m_iShootEffectorStart)
-			FireTrace(p1, d);
-		else
-			FireTrace(m_vStartPos, m_vStartDir);
+		FireTrace(p1, d);
 	}
 
 	if (m_iShotNum == m_iQueueSize)
@@ -558,7 +554,8 @@ void CWeaponMagazined::OnShot()
 	PlaySound(*m_pSndShotCurrent, get_LastFP());
 
 	// Camera
-	AddShotEffector();
+	if (m_iShotNum > m_iShootEffectorStart)
+		AddShotEffector();
 
 	// Animation
 	PlayAnimShoot();
