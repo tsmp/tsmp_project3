@@ -527,6 +527,23 @@ u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID const &sender) // Non-Zer
 	case M_FILE_TRANSFER:	
 		m_file_transfers->on_message(&P, sender);
 		break;
+
+	case M_CHANGE_LEVEL:
+		game->change_level(P, sender);
+		SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
+		DEBUG_VERIFY(verify_entities());
+		break;
+
+	case M_LOAD_GAME:
+		game->load_game(P, sender);
+		SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
+		DEBUG_VERIFY(verify_entities());
+		break;
+
+	case M_SAVE_GAME:
+		game->save_game(P, sender);
+		DEBUG_VERIFY(verify_entities());
+		break;
 	}
 
 	DEBUG_VERIFY(verify_entities());
@@ -643,23 +660,9 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 	break;
 
 	case M_CHANGE_LEVEL:
-	{
-		if (game->change_level(P, sender))
-			SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
-
-		DEBUG_VERIFY(verify_entities());
-	}
-	break;
-
-	case M_SAVE_GAME:
-		game->save_game(P, sender);
-		DEBUG_VERIFY(verify_entities());
-		break;
-
 	case M_LOAD_GAME:
-		game->load_game(P, sender);
-		SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
-		DEBUG_VERIFY(verify_entities());
+	case M_SAVE_GAME:
+		AddDelayedPacket(P, sender);
 		break;
 
 	case M_RELOAD_GAME:
