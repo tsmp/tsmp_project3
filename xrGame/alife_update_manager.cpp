@@ -147,24 +147,41 @@ void CALifeUpdateManager::init_ef_storage() const
 
 class ChangeLevelHelper
 {
-	GameGraph::_GRAPH_ID safe_graph_vertex_id;
-	u32 safe_level_vertex_id;
-	Fvector safe_position;
-	Fvector safe_angles;
-	SRotation safe_torso;
+	struct SourceObjectData
+	{
+		GameGraph::_GRAPH_ID GraphVertexId{ GameGraph::_GRAPH_ID(-1) };
+		u32 LevelVertexId{ u32(-1) };
+		Fvector Position{ flt_max, flt_max, flt_max };
+		Fvector Angles{ flt_max, flt_max, flt_max };
+		SRotation Torso;
+	};
 
-	GameGraph::_GRAPH_ID holder_safe_graph_vertex_id = GameGraph::_GRAPH_ID(-1);
-	u32 holder_safe_level_vertex_id = u32(-1);
-	Fvector holder_safe_position = Fvector().set(flt_max, flt_max, flt_max);
-	Fvector holder_safe_angles = Fvector().set(flt_max, flt_max, flt_max);
-	CSE_ALifeObject *holder = 0;
+	SourceObjectData m_ActorSourceData; // main actor
+	SourceObjectData m_HolderSourceData; // any holder
 
-	CSE_ALifeCreatureActor* actor = 0;
+	xr_vector<CSE_ALifeCreatureActor*> m_Actors;
+	xr_vector<CSE_ALifeObject*> m_Holders;
+	CSE_ALifeCreatureActor* m_MainActor = nullptr;
 
 public:
 	ChangeLevelHelper()
 	{
-		actor = ai().get_alife()->graph().actor();
+		m_MainActor = ai().alife().graph().actor();
+		const u32 entitiesCnt = Level().Server->GetEntitiesNum();
+
+		for (u32 i = 0; i < entitiesCnt; i++)
+		{
+			if (auto act = smart_cast<CSE_ALifeCreatureActor*>(Level().Server->GetEntity(i)))
+			{
+				m_Actors.push_back(act);
+				CSE_ALifeObject* holder = nullptr;
+
+				if (act->m_holderID != 0xffff)
+					holder = ai().alife().objects().object(act->m_holderID);
+
+				m_Holders.push_back(holder);
+			}
+		}
 	}
 
 	void ExportClientEntitiesToServerEntities()
@@ -174,19 +191,31 @@ public:
 
 	void ReadOriginalActorData()
 	{
-		safe_graph_vertex_id = actor->m_tGraphID;
-		safe_level_vertex_id = actor->m_tNodeID;
-		safe_position = actor->o_Position;
-		safe_angles = actor->o_Angle;
-		safe_torso = actor->o_torso;
+		m_ActorSourceData.GraphVertexId = m_MainActor->m_tGraphID;
+		m_ActorSourceData.LevelVertexId = m_MainActor->m_tNodeID;
+		m_ActorSourceData.Position = m_MainActor->o_Position;
+		m_ActorSourceData.Angles = m_MainActor->o_Angle;
+		m_ActorSourceData.Torso = m_MainActor->o_torso;
 	}
 
 	void ReadPacketData(NET_Packet& net_packet)
 	{
-		net_packet.r(&actor->m_tGraphID, sizeof(actor->m_tGraphID));
-		net_packet.r(&actor->m_tNodeID, sizeof(actor->m_tNodeID));
-		net_packet.r_vec3(actor->o_Position);
-		net_packet.r_vec3(actor->o_Angle);
+		SourceObjectData actorDestData;
+		net_packet.r(&actorDestData.GraphVertexId, sizeof(actorDestData.GraphVertexId));
+		net_packet.r(&actorDestData.LevelVertexId, sizeof(actorDestData.LevelVertexId));
+		net_packet.r_vec3(actorDestData.Position);
+		net_packet.r_vec3(actorDestData.Angles);
+
+		for (auto* actor : m_Actors)
+		{
+			actor->m_tGraphID = actorDestData.GraphVertexId;
+			actor->m_tNodeID = actorDestData.LevelVertexId;
+			actor->o_Position = actorDestData.Position;
+			actor->o_Angle = actorDestData.Angles;
+
+			if (actor == m_MainActor && !IsGameTypeSingle())
+				actor->o_Position.y = actor->o_Position.y - 500; // place him under map
+		}
 	}
 
 	void NetSaveClientObjects()
@@ -196,23 +225,27 @@ public:
 
 	void UpdateActorAndHolderData()
 	{
-		actor->o_torso.yaw = actor->o_Angle.y;
-		actor->o_torso.pitch = actor->o_Angle.x;
-		actor->o_torso.roll = 0.f;
-
-		if (actor->m_holderID != 0xffff)
+		for (u32 i = 0; i < m_Actors.size(); i++)
 		{
-			holder = ai().alife().objects().object(actor->m_holderID);
+			auto actor = m_Actors[i];
+			auto holder = m_Holders[i];
 
-			holder_safe_graph_vertex_id = holder->m_tGraphID;
-			holder_safe_level_vertex_id = holder->m_tNodeID;
-			holder_safe_position = holder->o_Position;
-			holder_safe_angles = holder->o_Angle;
+			actor->o_torso.yaw = actor->o_Angle.y;
+			actor->o_torso.pitch = actor->o_Angle.x;
+			actor->o_torso.roll = 0.f;
 
-			holder->m_tGraphID = actor->m_tGraphID;
-			holder->m_tNodeID = actor->m_tNodeID;
-			holder->o_Position = actor->o_Position;
-			holder->o_Angle = actor->o_Angle;
+			if (actor->m_holderID != 0xffff)
+			{
+				m_HolderSourceData.GraphVertexId = holder->m_tGraphID;
+				m_HolderSourceData.LevelVertexId = holder->m_tNodeID;
+				m_HolderSourceData.Position = holder->o_Position;
+				m_HolderSourceData.Angles = holder->o_Angle;
+
+				holder->m_tGraphID = actor->m_tGraphID;
+				holder->m_tNodeID = actor->m_tNodeID;
+				holder->o_Position = actor->o_Position;
+				holder->o_Angle = actor->o_Angle;
+			}
 		}
 	}
 
@@ -231,19 +264,25 @@ public:
 
 	void RestoreActorAndHolderData()
 	{
-		actor->m_tGraphID = safe_graph_vertex_id;
-		actor->m_tNodeID = safe_level_vertex_id;
-		actor->o_Position = safe_position;
-		actor->o_Angle = safe_angles;
-		actor->o_torso = safe_torso;
-
-		if (actor->m_holderID != 0xffff)
+		for (u32 i = 0; i < m_Actors.size(); i++)
 		{
-			VERIFY(holder);
-			holder->m_tGraphID = holder_safe_graph_vertex_id;
-			holder->m_tNodeID = holder_safe_level_vertex_id;
-			holder->o_Position = holder_safe_position;
-			holder->o_Angle = holder_safe_angles;
+			auto actor = m_Actors[i];
+			auto holder = m_Holders[i];
+
+			actor->m_tGraphID = m_ActorSourceData.GraphVertexId;
+			actor->m_tNodeID = m_ActorSourceData.LevelVertexId;
+			actor->o_Position = m_ActorSourceData.Position;
+			actor->o_Angle = m_ActorSourceData.Angles;
+			actor->o_torso = m_ActorSourceData.Torso;
+
+			if (actor->m_holderID != 0xffff)
+			{
+				VERIFY(holder);
+				holder->m_tGraphID = m_HolderSourceData.GraphVertexId;
+				holder->m_tNodeID = m_HolderSourceData.LevelVertexId;
+				holder->o_Position = m_HolderSourceData.Position;
+				holder->o_Angle = m_HolderSourceData.Angles;
+			}
 		}
 	}
 };
