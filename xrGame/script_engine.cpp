@@ -238,6 +238,14 @@ void CScriptEngine::load_common_scripts()
 			}
 		}
 	}
+	if (l_tpIniFile->line_exist("common", "direct_message_func"))
+	{
+		script_network_enabled = true;
+		luabind::functor<void> functor;
+		LPCSTR str = l_tpIniFile->r_string("common", "direct_message_func");
+		R_ASSERT2(ai().script_engine().functor(str, functor), "failed to get client to server function");
+		strcpy(direct_message_str, str);
+	}
 
 	xr_delete(l_tpIniFile);
 }

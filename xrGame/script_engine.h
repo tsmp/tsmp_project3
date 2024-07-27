@@ -94,6 +94,9 @@ public:
 #endif
 	void collect_all_garbage();
 
+	bool script_network_enabled = false;
+	string128 direct_message_str;
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptEngine)
