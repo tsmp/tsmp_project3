@@ -380,8 +380,8 @@ void CLevel::ClientReceive()
 				luabind::functor<void> functor;
 				if (ai().script_engine().functor(ai().script_engine().direct_message_str, functor))
 				{
-					u32 receiver = P->r_u32();
-					functor(P, receiver);
+					P->r_u32();
+					functor(P, P->r_u32());
 				}
 			}
 		}

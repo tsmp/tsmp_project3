@@ -769,7 +769,10 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 		Level().Server->ForEachClientDo([&](IClient* client)
 			{
 				if (client->UID == receiver)
+				{
+					P.w_u32(CL->UID);
 					SendTo(client->ID, P, net_flags(TRUE, TRUE));
+				}
 			}
 		);
 	}
