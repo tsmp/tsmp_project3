@@ -70,42 +70,54 @@ float CAI_Stalker::GetWeaponAccuracy() const
 {
 	float base = PI / 180.f;
 
-	//вли€ние ранга на меткость
+	// ¬ли€ние ранга на меткость
 	base *= m_fRankDisperison;
+
+	if (OnClient())
+		return base * m_disp_stand_stand;
 
 	if (!movement().path_completed())
 	{
 		if (movement().movement_type() == eMovementTypeWalk)
+		{
 			if (movement().body_state() == eBodyStateStand)
-				return (base * m_disp_walk_stand);
+				return base * m_disp_walk_stand;
 			else
-				return (base * m_disp_walk_crouch);
+				return base * m_disp_walk_crouch;
+		}
 		else if (movement().movement_type() == eMovementTypeRun)
+		{
 			if (movement().body_state() == eBodyStateStand)
-				return (base * m_disp_run_stand);
+				return base * m_disp_run_stand;
 			else
-				return (base * m_disp_run_crouch);
+				return base * m_disp_run_crouch;
+		}
 	}
 
 	if (movement().body_state() == eBodyStateStand)
+	{
 		if (zoom_state())
-			return (base * m_disp_stand_stand);
+			return base * m_disp_stand_stand;
 		else
-			return (base * m_disp_stand_stand_zoom);
-	else if (zoom_state())
-		return (base * m_disp_stand_crouch);
+			return base * m_disp_stand_stand_zoom;
+	}
 	else
-		return (base * m_disp_stand_crouch_zoom);
+	{
+		if (zoom_state())
+			return base * m_disp_stand_crouch;
+		else
+			return base * m_disp_stand_crouch_zoom;
+	}
 }
 
 void CAI_Stalker::g_fireParams(const CHudItem *pHudItem, Fvector &P, Fvector &D)
 {
-	//.	VERIFY				(inventory().ActiveItem());
 	if (!inventory().ActiveItem())
 	{
 #ifdef DEBUG
 		Msg("! CAI_Stalker::g_fireParams() : VERIFY(inventory().ActiveItem())");
 #endif // DEBUG
+
 		P = Position();
 		D = Fvector().set(0.f, 0.f, 1.f);
 		return;
