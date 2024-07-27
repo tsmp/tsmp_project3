@@ -375,11 +375,14 @@ void CLevel::ClientReceive()
 
 		case M_DIRECT_MESSAGE:
 		{
-			luabind::functor<void> functor;
-			if (ai().script_engine().functor(ai().script_engine().direct_message_str, functor))
+			if (ai().script_engine().script_network_enabled)
 			{
-				u32 receiver = P->r_u32();
-				functor(P, receiver);
+				luabind::functor<void> functor;
+				if (ai().script_engine().functor(ai().script_engine().direct_message_str, functor))
+				{
+					u32 receiver = P->r_u32();
+					functor(P, receiver);
+				}
 			}
 		}
 		break;
