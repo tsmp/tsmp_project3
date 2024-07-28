@@ -597,7 +597,7 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 	
 		u32 ClientPing = CL->stats.getPing();
 		P.w_seek(P.r_tell() + 2, &ClientPing, 4);
-			
+		
 		if (SV_Client)
 			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
 
