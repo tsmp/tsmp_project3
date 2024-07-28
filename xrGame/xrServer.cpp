@@ -594,10 +594,10 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 
 		if (!CL->net_PassUpdates)
 			break;
-
+	
 		u32 ClientPing = CL->stats.getPing();
 		P.w_seek(P.r_tell() + 2, &ClientPing, 4);
-
+			
 		if (SV_Client)
 			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
 
@@ -759,7 +759,7 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 		AddDelayedPacket(P, sender);
 		break;
 
-	case M_VOICE_MESSAGE:
+	case M_VOICE_MESSAGE:	
 		OnVoiceMessage(P, sender);
 		break;
 
