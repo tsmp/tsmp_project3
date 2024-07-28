@@ -243,7 +243,7 @@ void CScriptEngine::load_common_scripts()
 		script_network_enabled = true;
 		luabind::functor<void> functor;
 		LPCSTR str = l_tpIniFile->r_string("common", "direct_message_func");
-		R_ASSERT2(ai().script_engine().functor(str, functor), "failed to get client to server function");
+		R_ASSERT2(ai().script_engine().functor(str, functor), "failed to get direct message function");
 		strcpy(direct_message_str, str);
 	}
 
