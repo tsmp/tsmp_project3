@@ -13,6 +13,9 @@
 #include "saved_game_wrapper.h"
 #include "level_graph.h"
 #include "clsid_game.h"
+#include "script_engine.h"
+#include "pch_script.h"
+#include <stream_reader.h>
 
 void CLevel::ClientReceive()
 {
@@ -368,6 +371,21 @@ void CLevel::ClientReceive()
 		{
 			if (game && GameID() != GAME_SINGLE)
 				Game().m_WeaponUsageStatistic->OnUpdateRespond(P);
+		}
+		break;
+
+		case M_DIRECT_MESSAGE:
+		{
+			if (ai().script_engine().script_network_enabled)
+			{
+				luabind::functor<void> functor;
+				if (ai().script_engine().functor(ai().script_engine().direct_message_str, functor))
+				{
+					u32 A;
+					CopyMemory(&A, &P->B.count-4, 4);
+					functor(P, A);
+				}
+			}
 		}
 		break;
 		}

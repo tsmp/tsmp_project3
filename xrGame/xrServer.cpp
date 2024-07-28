@@ -762,6 +762,20 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 	case M_VOICE_MESSAGE:	
 		OnVoiceMessage(P, sender);
 		break;
+
+	case M_DIRECT_MESSAGE:
+	{
+		u32 receiver = P.r_u32();
+		P.w_u32(CL->UID);
+		Level().Server->ForEachClientDo([&](IClient* client)
+			{
+				if (receiver == 65535 || client->UID == receiver)
+					SendTo(client->ID, P, net_flags(TRUE, TRUE));
+			}
+		);
+	}
+	break;
+
 	}
 
 	DEBUG_VERIFY(verify_entities());
