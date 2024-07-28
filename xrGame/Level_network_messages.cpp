@@ -15,6 +15,7 @@
 #include "clsid_game.h"
 #include "script_engine.h"
 #include "pch_script.h"
+#include <stream_reader.h>
 
 void CLevel::ClientReceive()
 {
@@ -380,8 +381,9 @@ void CLevel::ClientReceive()
 				luabind::functor<void> functor;
 				if (ai().script_engine().functor(ai().script_engine().direct_message_str, functor))
 				{
-					P->r_u32();
-					functor(P, P->r_u32());
+					u32 A;
+					CopyMemory(&A, &P->B.count-4, 4);
+					functor(P, A);
 				}
 			}
 		}
