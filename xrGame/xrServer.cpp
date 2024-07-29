@@ -548,6 +548,16 @@ u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID const &sender) // Non-Zer
 	case M_REQUEST_SAVED_GAMES:
 		game->OnPlayerRequestSavedGames(sender);
 		break;
+
+	case M_CL_SAVE_GAME_COMMAND:
+		if (IsGameTypeCoop())
+		{
+			shared_str cmd;
+			P.r_stringZ(cmd);
+			Msg("* received cmd [%s] from client [%s]", cmd.c_str(), CL->name.c_str());
+			Console->Execute(cmd.c_str());
+		}
+		break;
 	}
 
 	DEBUG_VERIFY(verify_entities());
@@ -713,6 +723,10 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 		break;
 
 	case M_REQUEST_SAVED_GAMES:
+		AddDelayedPacket(P, sender);
+		break;
+
+	case M_CL_SAVE_GAME_COMMAND:
 		AddDelayedPacket(P, sender);
 		break;
 

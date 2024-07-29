@@ -188,21 +188,23 @@ void CLevel::IR_OnKeyboardPress(int key)
 	if (game && Game().IR_OnKeyboardPress(key))
 		return;
 
-	if (_curr == kQUICK_SAVE && IsGameTypeSingle())
+	if (_curr == kQUICK_SAVE && (IsGameTypeSingle() || IsGameTypeCoop()))
 	{
 		Console->Execute("save");
 		return;
 	}
-	if (_curr == kQUICK_LOAD && IsGameTypeSingle())
+	if (_curr == kQUICK_LOAD && (IsGameTypeSingle() || IsGameTypeCoop()))
 	{
 #ifdef DEBUG
 		FS.get_path("$game_config$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
 		FS.get_path("$game_scripts$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
 		FS.rescan_pathes();
 #endif // DEBUG
+
 		string_path saved_game, command;
 		strconcat(sizeof(saved_game), saved_game, Core.UserName, "_", "quicksave");
-		if (!CSavedGameWrapper::valid_saved_game(saved_game))
+
+		if (!CSavedGameWrapper::valid_saved_game(saved_game) && !IsGameTypeCoop())
 			return;
 
 		strconcat(sizeof(command), command, "load ", saved_game);
