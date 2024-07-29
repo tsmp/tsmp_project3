@@ -19,6 +19,7 @@ public:
 	virtual void OnTasksSync(NET_Packet* P) override;
 	virtual void OnPortionsSync(NET_Packet* P) override;
 	virtual void OnSavedGamesSync(NET_Packet* P) override;
+	virtual void OnGameSavedNotify(NET_Packet* P) override;
 
 	xr_vector<CSavedGameWrapper> m_SavedGames;
 	bool m_ActualSavedGames{ false };

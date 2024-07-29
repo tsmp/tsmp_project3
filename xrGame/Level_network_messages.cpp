@@ -330,6 +330,11 @@ void CLevel::ClientReceive()
 				Game().OnSavedGamesSync(P);
 			break;
 
+		case M_CL_GAME_SAVED_NOTIFY:
+			if (game)
+				Game().OnGameSavedNotify(P);
+			break;
+
 		case M_CHANGE_LEVEL_GAME:
 		{
 			Msg("- M_CHANGE_LEVEL_GAME Received");

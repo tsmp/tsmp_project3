@@ -512,6 +512,14 @@ public:
 		Msg("Game save overhead  : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
 #endif
 
+		if (IsGameTypeCoop())
+		{
+			NET_Packet packet;
+			packet.w_begin(M_CL_GAME_SAVED_NOTIFY);
+			packet.w_stringZ(S);
+			Level().Server->SendBroadcast(BroadcastCID, packet, net_flags(TRUE, TRUE));
+		}
+
 		if (!g_dedicated_server)
 		{
 			auto customStatic = HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);

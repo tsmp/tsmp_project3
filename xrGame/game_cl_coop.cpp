@@ -5,6 +5,9 @@
 #include "Actor.h"
 #include "GametaskManager.h"
 #include "alife_registry_wrappers.h"
+#include "string_table.h"
+#include "HUDManager.h"
+#include "ui/UIStatic.h"
 
 extern shared_str g_active_task_id;
 extern u16 g_active_task_objective_id;
@@ -121,5 +124,20 @@ void game_cl_Coop::OnSavedGamesSync(NET_Packet* P)
 
 		m_SavedGames.emplace_back(fileName.c_str(), levelName.c_str(), gameTime, FormatDate(modifiedDate));
 		m_ActualSavedGames = !!P->r_u8();
+	}
+}
+
+void game_cl_Coop::OnGameSavedNotify(NET_Packet* P)
+{
+	if (!g_dedicated_server)
+	{
+		shared_str saveName;
+		P->r_stringZ(saveName);
+
+		auto customStatic = HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
+		customStatic->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
+		string_path save_name;
+		strconcat(sizeof(save_name), save_name, *CStringTable().translate("st_game_saved"), ": ", saveName.c_str());
+		customStatic->wnd()->SetText(save_name);
 	}
 }
