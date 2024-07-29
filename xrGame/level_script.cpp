@@ -40,6 +40,13 @@ bool is_dedicated()
 	return g_dedicated_server;
 }
 
+void CoopRequestSavedGames()
+{
+	NET_Packet net_packet;
+	net_packet.w_begin(M_REQUEST_SAVED_GAMES);
+	Level().Send(net_packet, net_flags(TRUE));
+}
+
 #ifdef DEBUG
 void check_object(CScriptGameObject *object)
 {
@@ -635,9 +642,11 @@ void CLevel::script_register(lua_State *L)
 	module(L)
 		[def("command_line", &command_line),
 		def("IsGameTypeSingle", &IsGameTypeSingle),
+		def("IsGameTypeCoop", &IsGameTypeCoop),
 		def("is_dedicated", &is_dedicated),
 		def("on_server", OnServer),
-		def("on_client", OnClient)];
+		def("on_client", OnClient),
+		def("CoopRequestSavedGames", CoopRequestSavedGames)];
 
 	module(L, "relation_registry")
 		[def("community_goodwill", &g_community_goodwill),

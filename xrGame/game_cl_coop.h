@@ -1,5 +1,6 @@
 #pragma once
 #include "game_cl_mp.h"
+#include "saved_game_wrapper.h"
 
 class CUIGameCustom;
 
@@ -10,7 +11,6 @@ private:
 	CUIGameCustom* m_game_ui;
 
 public:
-
 	game_cl_Coop();
 	virtual ~game_cl_Coop();
 
@@ -18,4 +18,8 @@ public:
 	virtual void shedule_Update(u32 dt);
 	virtual void OnTasksSync(NET_Packet* P) override;
 	virtual void OnPortionsSync(NET_Packet* P) override;
+	virtual void OnSavedGamesSync(NET_Packet* P) override;
+
+	xr_vector<CSavedGameWrapper> m_SavedGames;
+	bool m_ActualSavedGames{ false };
 };

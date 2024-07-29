@@ -26,6 +26,8 @@ public:
 	virtual bool AssignOwnershipToConnectingClient(CSE_Abstract* E, xrClientData* CL) override;
 	virtual shared_str level_name(const shared_str& server_options) const override;
 
+	virtual void OnPlayerRequestSavedGames(ClientID const& sender) override;
+
 	void SendTasks(const ClientID& target);
 	void SendInfoPortions(const ClientID& target);
 	void SpawnDefaultItemsForPlayer(u16 actorId);

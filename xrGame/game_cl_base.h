@@ -117,6 +117,7 @@ public:
 	virtual	void OnVoiceMessage(NET_Packet* P) {};
 	virtual void OnTasksSync(NET_Packet* P) {};
 	virtual void OnPortionsSync(NET_Packet* P) {};
+	virtual void OnSavedGamesSync(NET_Packet* P) {};
 
 	virtual bool IsVotingEnabled() { return m_u16VotingEnabled != 0; };
 	virtual bool IsVotingEnabled(u16 flag) { return (m_u16VotingEnabled & flag) != 0; };

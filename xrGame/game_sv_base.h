@@ -153,6 +153,8 @@ public:
 	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet &P){}; //игрок получил Hit
 	virtual void OnPlayerHitCreature(game_PlayerState* psHitter, CSE_Abstract* pWeaponA) {}
 
+	virtual void OnPlayerRequestSavedGames(ClientID const& sender) {};
+
 	// Main
 	virtual void Create(shared_str &options);
 	virtual void Update();

@@ -100,7 +100,7 @@ void CUIMMShniaga::Init(CUIXml &xml_doc, LPCSTR path)
 	}
 	else
 	{
-		if (GameID() == GAME_SINGLE)
+		if (IsGameTypeSingle() || IsGameTypeCoop())
 		{
 			VERIFY(Actor());
 			if (Actor() && !Actor()->g_Alive())

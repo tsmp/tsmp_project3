@@ -6,6 +6,7 @@
 #include "Actor.h"
 #include "GametaskManager.h"
 #include "alife_registry_wrappers.h"
+#include "saved_game_wrapper.h"
 
 ENGINE_API bool g_dedicated_server;
 extern shared_str g_active_task_id;
@@ -203,4 +204,83 @@ void game_sv_Coop::SpawnDefaultItemsForPlayer(u16 actorId)
 
 	for (LPCSTR itemSection : itemsToSpawn)
 		SpawnWeapon4Actor(actorId, itemSection, 0);
+}
+
+void game_sv_Coop::OnPlayerRequestSavedGames(ClientID const& sender)
+{
+	const LPCSTR path = "$game_saves$";
+
+	FS_Path* P = FS.get_path(path);
+	P->m_Flags.set(FS_Path::flNeedRescan, TRUE);
+	FS.m_Flags.set(CLocatorAPI::flNeedCheck, TRUE);
+	FS.rescan_pathes();
+
+	FS_FileSet files;
+	FS.file_list(files, path, FS_ListFiles | FS_RootOnly, "*.sav");
+	FS.m_Flags.set(CLocatorAPI::flNeedCheck, FALSE);
+
+	struct SaveFile
+	{
+		xr_string fileName;
+		xr_string levelName;
+		u64 gameTime;
+		u32 modifiedTime;
+
+		bool operator <(const SaveFile& rhs)
+		{
+			return this->modifiedTime > rhs.modifiedTime;
+		}
+
+		u32 size()
+		{
+			return static_cast<u32>(fileName.size() + 1 + levelName.size() + 1 + sizeof(gameTime) + sizeof(modifiedTime));
+		}
+	};
+
+	xr_vector<SaveFile> saves;
+	saves.reserve(files.size());
+
+	for (auto& file : files)
+	{
+		if (!file.name.empty())
+		{
+			extern LPCSTR CSavedGameWrapper__level_name(const CSavedGameWrapper* self);
+
+			const auto fileName = EFS.ExtractFileName(file.name.c_str());
+			Msg("* reading save %s", fileName.c_str());
+			CSavedGameWrapper wrapper(fileName.c_str());
+			auto &save = saves.emplace_back();
+
+			save.fileName = fileName;
+			save.gameTime = wrapper.game_time();
+			save.levelName = CSavedGameWrapper__level_name(&wrapper);
+			save.modifiedTime = static_cast<u32>(file.time_write);
+		}
+	}
+
+	std::sort(saves.begin(), saves.end());
+
+	NET_Packet responsePacket;
+	responsePacket.w_begin(M_RESPOND_SAVED_GAMES);
+	responsePacket.w_u8(1); // first
+
+	for (u32 i = 0, cnt = saves.size(); i < cnt; i++)
+	{
+		auto it = saves[i];
+
+		if (responsePacket.B.count + it.size() >= NET_PacketSizeLimit)
+		{
+			server().SendTo(sender, responsePacket, net_flags(TRUE, TRUE));
+			responsePacket.w_begin(M_RESPOND_SAVED_GAMES);
+			responsePacket.w_u8(0); // not first
+		}
+
+		responsePacket.w_stringZ(it.fileName.c_str());
+		responsePacket.w_stringZ(it.levelName.c_str());
+		responsePacket.w_u32(it.modifiedTime);
+		responsePacket.w_u64(it.gameTime);
+		responsePacket.w_u8(i + 1 == cnt); // last or not
+	}
+
+	server().SendTo(sender, responsePacket, net_flags(TRUE, TRUE));
 }

@@ -544,6 +544,10 @@ u32 xrServer::OnDelayedMessage(NET_Packet &P, ClientID const &sender) // Non-Zer
 		game->save_game(P, sender);
 		DEBUG_VERIFY(verify_entities());
 		break;
+
+	case M_REQUEST_SAVED_GAMES:
+		game->OnPlayerRequestSavedGames(sender);
+		break;
 	}
 
 	DEBUG_VERIFY(verify_entities());
@@ -706,6 +710,10 @@ u32 xrServer::OnMessage(NET_Packet &P, ClientID const &sender) // Non-Zero means
 
 	case M_UID_RESPOND:
 		game->AddDelayedEvent(P, GAME_EVENT_PLAYER_AUTH_UID, 0, sender);
+		break;
+
+	case M_REQUEST_SAVED_GAMES:
+		AddDelayedPacket(P, sender);
 		break;
 
 	case M_STATISTIC_UPDATE_RESPOND:

@@ -39,7 +39,13 @@ class "load_dialog" (CUIScriptWnd)
 function load_dialog:__init() super()
    self:InitControls()
    self:InitCallBacks()
-   self:FillList()
+   self.coopListFilled = false
+
+   if IsGameTypeCoop() then
+      CoopRequestSavedGames()
+   else
+      self:FillList()
+   end
 end
 
 function load_dialog:__finalize()
@@ -159,14 +165,32 @@ function AddTimeDigit(str, dig)
 end
 
 function file_data(fname)
-	local f = getFS();
-	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly) , fname .. ".sav")
-	local f_cnt = flist:Size()
+	local sg = nil
+
+	if IsGameTypeCoop() then
+		local saves = GetCoopSaves()
+		local cnt = saves:Size()
+
+		for	it = 0, cnt - 1 do
+			local save = saves: GetAt(it)
+			local file_name = save:file_name()
+
+			if file_name == fname then
+				sg = save
+				break
+			end
+		end
+	else
+		local f = getFS();
+		local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly) , fname .. ".sav")
+		local f_cnt = flist:Size()
 	
-	if f_cnt > 0 then
-		local file		=	flist:GetAt(0)
-		local sg = CSavedGameWrapper(fname)
-		
+		if f_cnt > 0 then
+			sg = CSavedGameWrapper(fname)
+		end
+	end
+
+	if sg ~= nil then
 		local y,m,d,h,min,sec,ms = 0,0,0,0,0,0,0
 		y,m,d,h,min,sec,ms = sg:game_time():get(y,m,d,h,min,sec,ms)
 		
@@ -216,7 +240,7 @@ function load_dialog:OnListItemClicked()
 	self.file_caption:SetText	(item_text)
 	self.file_data:SetText		(file_data(item_text))
 	
-	if file_exist(item_text .. ".sav") ~= true then
+	if file_exist(item_text .. ".sav") ~= true and IsGameTypeCoop() ~= true then
 		list_box:RemoveItem(itm_index)
 		return
 	end
@@ -267,7 +291,7 @@ function load_dialog:load_game_internal()
 	local item  = list:GetItem(index)
 	local fname = item.fn:GetText()
 	
-	if (alife() == nil) then
+	if alife() == nil and IsGameTypeCoop() ~= true then
 		console:execute	("disconnect")	
 		console:execute	("start server(" .. fname .. "/single/alife/load) client(localhost)")	
 	else
@@ -290,7 +314,7 @@ function load_dialog:OnButton_load_clicked()
 
 	if (alife() == nil) then
 
-		if valid_saved_game(fname) then
+		if valid_saved_game(fname) or IsGameTypeCoop() then
 			self:load_game_internal()
 		else
 			self.msgbox_id			= 0
@@ -320,6 +344,14 @@ function load_dialog:OnButton_back_clicked()
 end
 
 function load_dialog:OnButton_del_clicked()
+	-- TSMP: TODO, not implemented for coop
+	if IsGameTypeCoop() then
+		self.msgbox_id			= 0
+		self.message_box:Init("message_box_invalid_saved_game")
+		self:GetHolder():start_stop_menu(self.message_box, true)
+		return
+	end
+
 	local list = self:GetListWnd("list_window")	
 
 	if list:GetSize()==0 then return end
@@ -357,5 +389,25 @@ function load_dialog:AddItemToList(file_name, date_time)
 	list_box:AddItem		(_itm)
 end
 
+function load_dialog:Update()
+	CUIScriptWnd.Update(self)
 
+	if IsGameTypeCoop() and self.coopListFilled ~= true then
+		local saves = GetCoopSaves()
+		local cnt = saves:Size()
 
+		if cnt == 0 then
+			return
+		end
+
+		for	it = 0, cnt - 1 do
+			local save = saves: GetAt(it)
+			local file_name = save:file_name()
+			local date_time = save:modified_date()
+
+			self:AddItemToList(file_name, date_time)
+		end
+
+		self.coopListFilled = true
+	end
+end

@@ -84,3 +84,42 @@ void game_cl_Coop::OnPortionsSync(NET_Packet* packet)
 	newPortion.info_id = portionID;
 	newPortion.receive_time = time;
 }
+
+void game_cl_Coop::OnSavedGamesSync(NET_Packet* P)
+{
+	if (P->r_u8())
+		m_SavedGames.clear();
+
+	string64 dateFormatBuf;
+
+	auto FormatDate = [&dateFormatBuf](u32 date) -> LPCSTR
+	{
+		struct tm* newtime;
+		time_t t = date;
+		newtime = localtime(&t);
+
+		sprintf_s(dateFormatBuf, "[%02d:%02d:%4d %02d:%02d]",
+			newtime->tm_mday,
+			newtime->tm_mon + 1,
+			newtime->tm_year + 1900,
+			newtime->tm_hour,
+			newtime->tm_min);
+		return dateFormatBuf;
+	};
+
+	while (!P->r_eof())
+	{
+		shared_str fileName, levelName;
+		P->r_stringZ(fileName);
+		P->r_stringZ(levelName);
+
+		u32 modifiedDate;
+		P->r_u32(modifiedDate);
+
+		u64 gameTime;
+		P->r_u64(gameTime);
+
+		m_SavedGames.emplace_back(fileName.c_str(), levelName.c_str(), gameTime, FormatDate(modifiedDate));
+		m_ActualSavedGames = !!P->r_u8();
+	}
+}
