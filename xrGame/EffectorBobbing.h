@@ -20,10 +20,12 @@ class CEffectorBobbing : public CEffectorCam
 	float m_fAmplitudeRun;
 	float m_fAmplitudeWalk;
 	float m_fAmplitudeLimp;
+	float m_fAmplitudeZoom;
 
 	float m_fSpeedRun;
 	float m_fSpeedWalk;
 	float m_fSpeedLimp;
+	float m_fSpeedZoom;
 
 public:
 	CEffectorBobbing();

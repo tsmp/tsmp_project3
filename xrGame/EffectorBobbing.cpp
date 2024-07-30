@@ -22,10 +22,12 @@ CEffectorBobbing::CEffectorBobbing() : CEffectorCam(eCEBobbing, 10000.f)
 	m_fAmplitudeRun = pSettings->r_float(BOBBING_SECT, "run_amplitude");
 	m_fAmplitudeWalk = pSettings->r_float(BOBBING_SECT, "walk_amplitude");
 	m_fAmplitudeLimp = pSettings->r_float(BOBBING_SECT, "limp_amplitude");
+	m_fAmplitudeZoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_amplitude", m_fAmplitudeWalk);
 
 	m_fSpeedRun = pSettings->r_float(BOBBING_SECT, "run_speed");
 	m_fSpeedWalk = pSettings->r_float(BOBBING_SECT, "walk_speed");
 	m_fSpeedLimp = pSettings->r_float(BOBBING_SECT, "limp_speed");
+	m_fSpeedZoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_speed", m_fSpeedWalk);
 }
 
 CEffectorBobbing::~CEffectorBobbing()
@@ -71,7 +73,12 @@ BOOL CEffectorBobbing::Process(Fvector &p, Fvector &d, Fvector &n, float & /**fF
 
 		float A, ST;
 
-		if (isActorAccelerated(dwMState, m_bZoomMode))
+		if (m_bZoomMode)
+		{
+			A = m_fAmplitudeZoom * k;
+			ST = m_fSpeedZoom * fTime * k;
+		}
+		else if (isActorAccelerated(dwMState, m_bZoomMode))
 		{
 			A = m_fAmplitudeRun * k;
 			ST = m_fSpeedRun * fTime * k;
