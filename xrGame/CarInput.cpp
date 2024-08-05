@@ -138,7 +138,7 @@ void CCar::vfProcessInputKey(int iCommand, bool bPressed)
 
 bool CCar::allowWeapon() const
 {
-	return !m_car_weapon || !m_car_weapon->IsActive() || !m_AllowLookout;
+	return !m_AllowLookout;
 }
 
 void CCar::OnChangeLookout(bool enabled)
