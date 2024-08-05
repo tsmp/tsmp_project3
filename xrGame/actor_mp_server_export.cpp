@@ -33,6 +33,12 @@ void CSE_ActorMP::fill_state(actor_mp_state &state)
 
 void CSE_ActorMP::UPDATE_Write(NET_Packet &packet)
 {
+	if (useSingleUpdateWrite)
+	{
+		inherited::UPDATE_Write(packet);
+		return;
+	}
+
 	if (!m_ready_to_update)
 	{
 		actor_mp_state state;

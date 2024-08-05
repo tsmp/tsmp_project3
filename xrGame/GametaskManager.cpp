@@ -39,10 +39,6 @@ bool task_prio_pred(const SGameTaskKey &k1, const SGameTaskKey &k2)
 CGameTaskManager::CGameTaskManager()
 {
 	m_gametasks = xr_new<CGameTaskWrapper>();
-	m_flags.zero();
-	m_flags.set(eChanged, TRUE);
-	if (g_active_task_id.size())
-		SetActiveTask(g_active_task_id, g_active_task_objective_id);
 }
 
 CGameTaskManager::~CGameTaskManager()
@@ -53,6 +49,11 @@ CGameTaskManager::~CGameTaskManager()
 void CGameTaskManager::initialize(u16 id)
 {
 	m_gametasks->registry().init(id); // actor's id
+
+	m_flags.zero();
+	m_flags.set(eChanged, TRUE);
+	if (g_active_task_id.size())
+		SetActiveTask(g_active_task_id, g_active_task_objective_id);
 }
 
 GameTasks &CGameTaskManager::GameTasks()
@@ -174,8 +175,11 @@ void CGameTaskManager::SetTaskState(CGameTask *t, u16 objective_num, ETaskState 
 	if (!objective_num && eTaskStateCompleted == state || eTaskStateFail == state)
 		t->m_FinishTime = Level().GetGameTime();
 
-	if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())
-		pGameUI->PdaMenu->PdaContentsChanged(pda_section::quests);	
+	if(!g_dedicated_server)
+	{
+		if (CUIGameCustom* pGameUI = HUD().GetUI()->UIGame())
+			pGameUI->PdaMenu->PdaContentsChanged(pda_section::quests);
+	}
 }
 
 void CGameTaskManager::SetTaskState(const TASK_ID &id, u16 objective_num, ETaskState state)

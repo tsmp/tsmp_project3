@@ -2335,6 +2335,12 @@
     <Filter Include="AI\ALife\server_entities\trader_abstract">
       <UniqueIdentifier>{ab4f48d6-4301-4735-8ac9-7ba43eae25d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Server\Games\client\coop">
+      <UniqueIdentifier>{aef41de2-c502-4ed2-ae4b-b01c90fe866a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Server\Games\server\coop">
+      <UniqueIdentifier>{b978f3f3-cce9-40bf-addb-86e49a34f054}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6624,6 +6630,12 @@
     <ClInclude Include="xrServerRespawnManager.h">
       <Filter>Core\Server\RespawnMP</Filter>
     </ClInclude>
+    <ClInclude Include="game_cl_coop.h">
+      <Filter>Core\Server\Games\client\coop</Filter>
+    </ClInclude>
+    <ClInclude Include="game_sv_coop.h">
+      <Filter>Core\Server\Games\server\coop</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9810,6 +9822,12 @@
     </ClCompile>
     <ClCompile Include="xrServerRespawnManager.cpp">
       <Filter>Core\Server\RespawnMP</Filter>
+    </ClCompile>
+    <ClCompile Include="game_cl_coop.cpp">
+      <Filter>Core\Server\Games\client\coop</Filter>
+    </ClCompile>
+    <ClCompile Include="game_sv_coop.cpp">
+      <Filter>Core\Server\Games\server\coop</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

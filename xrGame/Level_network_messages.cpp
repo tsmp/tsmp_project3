@@ -222,6 +222,13 @@ void CLevel::ClientReceive()
 		case M_LOAD_GAME:
 		case M_CHANGE_LEVEL:
 		{
+			if (OnClient())
+			{
+				Engine.Event.Defer("KERNEL:disconnect");
+				Engine.Event.Defer("KERNEL:start", m_caServerOptions.size() ? size_t(xr_strdup(*m_caServerOptions)) : 0, m_caClientOptions.size() ? size_t(xr_strdup(*m_caClientOptions)) : 0);
+				break;
+			}
+
 			if (m_type == M_LOAD_GAME)
 			{
 				string256 saved_name;
@@ -307,6 +314,26 @@ void CLevel::ClientReceive()
 				Game().OnVoiceMessage(P);
 		}
 		break;
+
+		case M_TASKS_SYNC:
+			if (game)
+				Game().OnTasksSync(P);
+			break;
+
+		case M_INFOPORTIONS_SYNC:
+			if (game)
+				Game().OnPortionsSync(P);
+			break;
+
+		case M_RESPOND_SAVED_GAMES:
+			if (game)
+				Game().OnSavedGamesSync(P);
+			break;
+
+		case M_CL_GAME_SAVED_NOTIFY:
+			if (game)
+				Game().OnGameSavedNotify(P);
+			break;
 
 		case M_CHANGE_LEVEL_GAME:
 		{

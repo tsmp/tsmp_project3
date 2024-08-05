@@ -63,6 +63,12 @@ enum
 	M_UID_CHALLENGE,
 	M_UID_RESPOND,
 	M_UID_ASSIGN,
+	M_TASKS_SYNC,
+	M_INFOPORTIONS_SYNC,
+	M_REQUEST_SAVED_GAMES,
+	M_RESPOND_SAVED_GAMES,
+	M_CL_SAVE_GAME_COMMAND,
+	M_CL_GAME_SAVED_NOTIFY,
 	MSG_FORCEDWORD = u32(-1)
 };
 
@@ -277,6 +283,7 @@ enum
 	M_SPAWN_UPDATE = (1 << 6),			 // + update packet
 	M_SPAWN_TIME = (1 << 7),			 // + spawn time
 	M_SPAWN_DENIED = (1 << 8),			 // don't spawn entity with this flag
+	M_SPAWN_NO_CLDATA = (1 << 9),		 // don't include client data (wrote in net_Save)
 
 	M_SPAWN_OBJECT_FORCEDWORD = u32(-1)
 };

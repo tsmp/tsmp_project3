@@ -10,7 +10,7 @@ xr_vector<u16> g_perform_spawn_ids;
 
 void xrServer::Perform_connect_spawn(CSE_Abstract *E, xrClientData *CL, NET_Packet &P)
 {
-	xr_vector<u16>::iterator it = std::find(g_perform_spawn_ids.begin(), g_perform_spawn_ids.end(), E->ID);
+	auto it = std::find(g_perform_spawn_ids.begin(), g_perform_spawn_ids.end(), E->ID);
 	if (it != g_perform_spawn_ids.end())
 		return;
 
@@ -28,9 +28,12 @@ void xrServer::Perform_connect_spawn(CSE_Abstract *E, xrClientData *CL, NET_Pack
 
 	// Process
 	Flags16 save = E->s_flags;
-	//-------------------------------------------------
 	E->s_flags.set(M_SPAWN_UPDATE, TRUE);
-	if (0 == E->owner)
+
+	if(CL != GetServerClient())
+		E->s_flags.set(M_SPAWN_NO_CLDATA, TRUE);
+
+	if (game->AssignOwnershipToConnectingClient(E, CL))
 	{
 		// PROCESS NAME; Name this entity
 		if (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
@@ -50,7 +53,7 @@ void xrServer::Perform_connect_spawn(CSE_Abstract *E, xrClientData *CL, NET_Pack
 		E->Spawn_Write(P, FALSE);
 		E->UPDATE_Write(P);
 	}
-	//-----------------------------------------------------
+
 	E->s_flags = save;
 	SendTo(CL->ID, P, net_flags(TRUE, TRUE));
 	E->net_Processed = TRUE;
@@ -69,7 +72,7 @@ void xrServer::SendConnectionData(IClient *_CL)
 	for (I = entities.begin(); I != E; ++I)
 		Perform_connect_spawn(I->second, CL, P);
 
-	if (_CL != GetServerClient())
+	if (_CL != GetServerClient() && !IsGameTypeCoop())
 		game->SendPatrolPaths(CL->ID);
 
 	// Send "finished" signal

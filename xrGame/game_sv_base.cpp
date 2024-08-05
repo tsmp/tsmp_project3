@@ -20,6 +20,8 @@
 #include "clsid_game.h"
 #include "alife_object_registry.h"
 #include "alife_graph_registry.h"
+#include "IGame_Persistent.h"
+#include "xrApplication.h"
 
 ENGINE_API bool g_dedicated_server;
 
@@ -657,12 +659,43 @@ game_sv_GameState::~game_sv_GameState()
 
 bool game_sv_GameState::change_level(NET_Packet &net_packet, ClientID const &sender)
 {
+	if (ai().get_alife())
+		return alife().change_level(net_packet);
+
 	return true;
 }
 
-bool game_sv_GameState::load_game(NET_Packet &net_packet, ClientID const &sender)
+void game_sv_GameState::save_game(NET_Packet& net_packet, ClientID const& sender)
 {
-	return true;
+	if (ai().get_alife())
+		alife().save(net_packet);
+}
+
+bool game_sv_GameState::load_game(NET_Packet& net_packet, ClientID const& sender)
+{
+	if (!ai().get_alife())
+		return true;
+
+	shared_str game_name;
+	net_packet.r_stringZ(game_name);
+	return (alife().load_game(*game_name, true));
+}
+
+void game_sv_GameState::restart_simulator(LPCSTR saved_game_name)
+{
+	shared_str& options = *alife().server_command_line();
+
+	delete_data(m_alife_simulator);
+	server().clear_ids();
+
+	strcpy(g_pGamePersistent->m_game_params.m_game_or_spawn, saved_game_name);
+	strcpy(g_pGamePersistent->m_game_params.m_new_or_load, "load");
+
+	pApp->LoadBegin();
+	m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
+	g_pGamePersistent->LoadTitle("st_client_synchronising");
+	Device.PreCache(30);
+	pApp->LoadEnd();
 }
 
 void game_sv_GameState::OnCreate(u16 idWho)
@@ -1249,6 +1282,11 @@ void game_sv_GameState::OnRender()
 
 BOOL game_sv_GameState::IsVotingEnabled() { return g_sv_base_iVotingEnabled != 0; };
 BOOL game_sv_GameState::IsVotingEnabled(u16 flag) { return (g_sv_base_iVotingEnabled & flag) != 0; };
+
+bool game_sv_GameState::AssignOwnershipToConnectingClient(CSE_Abstract* E, xrClientData* CL)
+{
+	return !E->owner;
+}
 
 #include "patrol_path_storage.h"
 

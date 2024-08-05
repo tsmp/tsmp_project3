@@ -217,9 +217,9 @@ void CGamePersistent::UpdateGameType()
 	__super::UpdateGameType();
 	m_game_params.m_e_game_type = GetGameTypeByName(m_game_params.m_game_type);
 
-	// На клиенте может остаться GAME_ANY если мы не знаем тип игры еще
+	// На клиенте может остаться GAME_ANY если мы не знаем тип игры еще, но во время коннекта снова сюда попадем когда уже знаем
 	
-	if (SinglePlayerGame)
+	if (IsGameTypeSingle() || m_game_params.m_e_game_type == GAME_COOP)
 		g_current_keygroup = _sp;
 	else
 		g_current_keygroup = _mp;		
@@ -520,9 +520,7 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 		LPSTR saved_name = (LPSTR)(P1);
 
 		Level().remove_objects();
-		game_sv_Single *game = smart_cast<game_sv_Single *>(Level().Server->game);
-		R_ASSERT(game);
-		game->restart_simulator(saved_name);
+		Level().Server->game->restart_simulator(saved_name);
 		xr_free(saved_name);
 		return;
 	}

@@ -21,10 +21,15 @@ public:
 private:
 	_TIME_ID m_game_time;
 	_LEVEL_ID m_level_id;
-	float m_actor_health;
+	float m_actor_health{ 1.f };
 
 public:
+	xr_string m_LevelName;
+	xr_string m_SaveName;
+	xr_string m_ModifiedDate;
+
 	CSavedGameWrapper(LPCSTR saved_game_name);
+	CSavedGameWrapper(LPCSTR saveName, LPCSTR levelName, _TIME_ID gameTime, LPCSTR modifiedDate);
 	static LPCSTR saved_game_full_name(LPCSTR saved_game_name, string_path &result);
 	static bool saved_game_exist(LPCSTR saved_game_name);
 	static bool valid_saved_game(IReader &stream);

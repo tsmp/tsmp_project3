@@ -57,6 +57,11 @@ bool CSavedGameWrapper::valid_saved_game(LPCSTR saved_game_name)
 	return (result);
 }
 
+CSavedGameWrapper::CSavedGameWrapper(LPCSTR saveName, LPCSTR levelName, _TIME_ID gameTime, LPCSTR modifiedDate):
+	m_SaveName(saveName), m_LevelName(levelName), m_game_time(gameTime), m_ModifiedDate(modifiedDate)
+{
+}
+
 CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
 {
 	string_path file_name;
@@ -69,7 +74,6 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
 		FS.r_close(stream);
 		CALifeTimeManager time_manager(alife_section);
 		m_game_time = time_manager.game_time();
-		m_actor_health = 1.f;
 		m_level_id = ai().game_graph().header().levels().begin()->first;
 		return;
 	}

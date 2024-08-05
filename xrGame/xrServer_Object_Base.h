@@ -60,10 +60,10 @@ add_to_type_list(CPureServerObject)
 private:
 	LPSTR s_name_replace;
 
-protected:
+public:
+	bool useSingleUpdateWrite = false;
 	bool firstUpdate = false;
 
-public:
 BOOL net_Ready;
 BOOL net_Processed; // Internal flag for connectivity-graph
 

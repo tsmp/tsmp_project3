@@ -24,6 +24,11 @@ public:
 	virtual void STATE_Write(NET_Packet &packet);
 	virtual BOOL Net_Relevant();
 
+	virtual bool can_switch_offline() const
+	{
+		return false;
+	}
+
 #ifdef XRGAME_EXPORTS
 	virtual void on_death(CSE_Abstract *killer);
 #endif

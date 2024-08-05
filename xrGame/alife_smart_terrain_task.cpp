@@ -13,31 +13,31 @@
 #include "patrol_path.h"
 #include "patrol_point.h"
 
-#ifdef DEBUG
+#pragma TODO("TSMP: вернуть обратно под DEBUG")
+
 #include "level_graph.h"
 #include "game_graph.h"
-#endif
 
 void CALifeSmartTerrainTask::setup_patrol_point(const shared_str &patrol_path_name, const u32 &patrol_point_index)
 {
-	VERIFY(!m_patrol_point);
+	R_ASSERT(!m_patrol_point);
 
 	const CPatrolPath *patrol_path = ai().patrol_paths().path(patrol_path_name);
-	VERIFY(patrol_path);
+	R_ASSERT(patrol_path);
 
 	m_patrol_point = &patrol_path->vertex(patrol_point_index)->data();
-	VERIFY(m_patrol_point);
+	R_ASSERT(m_patrol_point);
 }
 
 GameGraph::_GRAPH_ID CALifeSmartTerrainTask::game_vertex_id() const
 {
-	VERIFY3(ai().game_graph().valid_vertex_id(patrol_point().game_vertex_id()), *m_patrol_path_name, *m_patrol_point->name());
+	R_ASSERT3(ai().game_graph().valid_vertex_id(patrol_point().game_vertex_id()), *m_patrol_path_name, *m_patrol_point->name());
 	return (patrol_point().game_vertex_id());
 }
 
 u32 CALifeSmartTerrainTask::level_vertex_id() const
 {
-	VERIFY3(ai().game_graph().valid_vertex_id(patrol_point().game_vertex_id()), *m_patrol_path_name, *m_patrol_point->name());
+	R_ASSERT3(ai().game_graph().valid_vertex_id(patrol_point().game_vertex_id()), *m_patrol_path_name, *m_patrol_point->name());
 	return (patrol_point().level_vertex_id());
 }
 

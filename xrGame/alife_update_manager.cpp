@@ -145,84 +145,172 @@ void CALifeUpdateManager::init_ef_storage() const
 	ai().ef_storage().alife_evaluation(true);
 }
 
-bool CALifeUpdateManager::change_level(NET_Packet &net_packet)
+class ChangeLevelHelper
+{
+	struct SourceObjectData
+	{
+		GameGraph::_GRAPH_ID GraphVertexId{ GameGraph::_GRAPH_ID(-1) };
+		u32 LevelVertexId{ u32(-1) };
+		Fvector Position{ flt_max, flt_max, flt_max };
+		Fvector Angles{ flt_max, flt_max, flt_max };
+		SRotation Torso;
+	};
+
+	SourceObjectData m_ActorSourceData; // main actor
+	SourceObjectData m_HolderSourceData; // any holder
+
+	xr_vector<CSE_ALifeCreatureActor*> m_Actors;
+	xr_vector<CSE_ALifeObject*> m_Holders;
+	CSE_ALifeCreatureActor* m_MainActor = nullptr;
+
+public:
+	ChangeLevelHelper()
+	{
+		m_MainActor = ai().alife().graph().actor();
+		const u32 entitiesCnt = Level().Server->GetEntitiesNum();
+
+		for (u32 i = 0; i < entitiesCnt; i++)
+		{
+			if (auto act = smart_cast<CSE_ALifeCreatureActor*>(Level().Server->GetEntity(i)))
+			{
+				m_Actors.push_back(act);
+				CSE_ALifeObject* holder = nullptr;
+
+				if (act->m_holderID != 0xffff)
+					holder = ai().alife().objects().object(act->m_holderID);
+
+				m_Holders.push_back(holder);
+			}
+		}
+	}
+
+	void ExportClientEntitiesToServerEntities()
+	{
+		Level().ClientSend();
+	}
+
+	void ReadOriginalActorData()
+	{
+		m_ActorSourceData.GraphVertexId = m_MainActor->m_tGraphID;
+		m_ActorSourceData.LevelVertexId = m_MainActor->m_tNodeID;
+		m_ActorSourceData.Position = m_MainActor->o_Position;
+		m_ActorSourceData.Angles = m_MainActor->o_Angle;
+		m_ActorSourceData.Torso = m_MainActor->o_torso;
+	}
+
+	void ReadPacketData(NET_Packet& net_packet)
+	{
+		SourceObjectData actorDestData;
+		net_packet.r(&actorDestData.GraphVertexId, sizeof(actorDestData.GraphVertexId));
+		net_packet.r(&actorDestData.LevelVertexId, sizeof(actorDestData.LevelVertexId));
+		net_packet.r_vec3(actorDestData.Position);
+		net_packet.r_vec3(actorDestData.Angles);
+
+		for (auto* actor : m_Actors)
+		{
+			actor->m_tGraphID = actorDestData.GraphVertexId;
+			actor->m_tNodeID = actorDestData.LevelVertexId;
+			actor->o_Position = actorDestData.Position;
+			actor->o_Angle = actorDestData.Angles;
+
+			if (actor == m_MainActor && !IsGameTypeSingle())
+				actor->o_Position.y = actor->o_Position.y - 500; // place him under map
+		}
+	}
+
+	void NetSaveClientObjects()
+	{
+		Level().ClientSave();
+	}
+
+	void UpdateActorAndHolderData()
+	{
+		for (u32 i = 0; i < m_Actors.size(); i++)
+		{
+			auto actor = m_Actors[i];
+			auto holder = m_Holders[i];
+
+			actor->o_torso.yaw = actor->o_Angle.y;
+			actor->o_torso.pitch = actor->o_Angle.x;
+			actor->o_torso.roll = 0.f;
+
+			if (actor->m_holderID != 0xffff)
+			{
+				m_HolderSourceData.GraphVertexId = holder->m_tGraphID;
+				m_HolderSourceData.LevelVertexId = holder->m_tNodeID;
+				m_HolderSourceData.Position = holder->o_Position;
+				m_HolderSourceData.Angles = holder->o_Angle;
+
+				holder->m_tGraphID = actor->m_tGraphID;
+				holder->m_tNodeID = actor->m_tNodeID;
+				holder->o_Position = actor->o_Position;
+				holder->o_Angle = actor->o_Angle;
+			}
+		}
+	}
+
+	void SaveGame()
+	{
+		string256 autosaveName;
+		strconcat(sizeof(autosaveName), autosaveName, Core.UserName, "_", "autosave");
+		shared_str* serverCmd = ai().alife().server_command_line();
+		LPCSTR temp0 = strstr(**serverCmd, "/");
+		VERIFY(temp0);
+		string256 temp;
+		*serverCmd = strconcat(sizeof(temp), temp, autosaveName, temp0);
+
+		ai().m_alife_simulator->save(autosaveName);
+	}
+
+	void RestoreActorAndHolderData()
+	{
+		for (u32 i = 0; i < m_Actors.size(); i++)
+		{
+			auto actor = m_Actors[i];
+			auto holder = m_Holders[i];
+
+			actor->m_tGraphID = m_ActorSourceData.GraphVertexId;
+			actor->m_tNodeID = m_ActorSourceData.LevelVertexId;
+			actor->o_Position = m_ActorSourceData.Position;
+			actor->o_Angle = m_ActorSourceData.Angles;
+			actor->o_torso = m_ActorSourceData.Torso;
+
+			if (actor->m_holderID != 0xffff)
+			{
+				VERIFY(holder);
+				holder->m_tGraphID = m_HolderSourceData.GraphVertexId;
+				holder->m_tNodeID = m_HolderSourceData.LevelVertexId;
+				holder->o_Position = m_HolderSourceData.Position;
+				holder->o_Angle = m_HolderSourceData.Angles;
+			}
+		}
+	}
+};
+
+bool CALifeUpdateManager::change_level(NET_Packet& netPacket)
 {
 	if (m_changing_level)
-		return (false);
+		return false;
 
-	//	prepare_objects_for_save		();
+	// prepare_objects_for_save();
 	// we couldn't use prepare_objects_for_save since we need
 	// get updates from client
 	// then change actor server entity
 	// then call client net_Save
 	// then restore actor server entity
-	Level().ClientSend();
+
+	ChangeLevelHelper helper;
+	helper.ExportClientEntitiesToServerEntities();
 
 	m_changing_level = true;
 
-	GameGraph::_GRAPH_ID safe_graph_vertex_id = graph().actor()->m_tGraphID;
-	u32 safe_level_vertex_id = graph().actor()->m_tNodeID;
-	Fvector safe_position = graph().actor()->o_Position;
-	Fvector safe_angles = graph().actor()->o_Angle;
-	SRotation safe_torso = graph().actor()->o_torso;
-
-	GameGraph::_GRAPH_ID holder_safe_graph_vertex_id = GameGraph::_GRAPH_ID(-1);
-	u32 holder_safe_level_vertex_id = u32(-1);
-	Fvector holder_safe_position = Fvector().set(flt_max, flt_max, flt_max);
-	Fvector holder_safe_angles = Fvector().set(flt_max, flt_max, flt_max);
-	CSE_ALifeObject *holder = 0;
-
-	net_packet.r(&graph().actor()->m_tGraphID, sizeof(graph().actor()->m_tGraphID));
-	net_packet.r(&graph().actor()->m_tNodeID, sizeof(graph().actor()->m_tNodeID));
-	net_packet.r_vec3(graph().actor()->o_Position);
-	net_packet.r_vec3(graph().actor()->o_Angle);
-
-	Level().ClientSave();
-
-	graph().actor()->o_torso.yaw = graph().actor()->o_Angle.y;
-	graph().actor()->o_torso.pitch = graph().actor()->o_Angle.x;
-	graph().actor()->o_torso.roll = 0.f;
-
-	if (graph().actor()->m_holderID != 0xffff)
-	{
-		holder = objects().object(graph().actor()->m_holderID);
-
-		holder_safe_graph_vertex_id = holder->m_tGraphID;
-		holder_safe_level_vertex_id = holder->m_tNodeID;
-		holder_safe_position = holder->o_Position;
-		holder_safe_angles = holder->o_Angle;
-
-		holder->m_tGraphID = graph().actor()->m_tGraphID;
-		holder->m_tNodeID = graph().actor()->m_tNodeID;
-		holder->o_Position = graph().actor()->o_Position;
-		holder->o_Angle = graph().actor()->o_Angle;
-	}
-
-	string256 autoave_name;
-	strconcat(sizeof(autoave_name), autoave_name, Core.UserName, "_", "autosave");
-	LPCSTR temp0 = strstr(**m_server_command_line, "/");
-	VERIFY(temp0);
-	string256 temp;
-	*m_server_command_line = strconcat(sizeof(temp), temp, autoave_name, temp0);
-
-	save(autoave_name);
-
-	graph().actor()->m_tGraphID = safe_graph_vertex_id;
-	graph().actor()->m_tNodeID = safe_level_vertex_id;
-	graph().actor()->o_Position = safe_position;
-	graph().actor()->o_Angle = safe_angles;
-	graph().actor()->o_torso = safe_torso;
-
-	if (graph().actor()->m_holderID != 0xffff)
-	{
-		VERIFY(holder);
-		holder->m_tGraphID = holder_safe_graph_vertex_id;
-		holder->m_tNodeID = holder_safe_level_vertex_id;
-		holder->o_Position = holder_safe_position;
-		holder->o_Angle = holder_safe_angles;
-	}
-
-	return (true);
+	helper.ReadOriginalActorData();
+	helper.ReadPacketData(netPacket);
+	helper.NetSaveClientObjects();
+	helper.UpdateActorAndHolderData();
+	helper.SaveGame();
+	helper.RestoreActorAndHolderData();
+	return true;
 }
 
 void CALifeUpdateManager::new_game(LPCSTR save_name)
@@ -244,7 +332,7 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
 
 	const auto& objectsRegistry = objects().objects();
 
-	if (!IsGameTypeSingle())
+	if (!IsGameTypeSingle() && !IsGameTypeCoop())
 		server().m_RespawnerMP.CleanRespawnList();
 
 	for (auto& idObjectPair : objectsRegistry)
@@ -252,7 +340,7 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
 		CSE_ALifeDynamicObject* entity = idObjectPair.second;
 		entity->on_register();
 
-		if (!IsGameTypeSingle())
+		if (!IsGameTypeSingle() && !IsGameTypeCoop())
 			server().m_RespawnerMP.RegisterToRespawn(entity);
 	}
 

@@ -115,6 +115,10 @@ public:
 	virtual void OnWarnMessage(NET_Packet *P){};
 	virtual void OnRadminMessage(u16 type, NET_Packet *P){};
 	virtual	void OnVoiceMessage(NET_Packet* P) {};
+	virtual void OnTasksSync(NET_Packet* P) {};
+	virtual void OnPortionsSync(NET_Packet* P) {};
+	virtual void OnSavedGamesSync(NET_Packet* P) {};
+	virtual void OnGameSavedNotify(NET_Packet* P) {};
 
 	virtual bool IsVotingEnabled() { return m_u16VotingEnabled != 0; };
 	virtual bool IsVotingEnabled(u16 flag) { return (m_u16VotingEnabled & flag) != 0; };

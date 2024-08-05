@@ -430,26 +430,45 @@ bool valid_file_name(LPCSTR file_name)
 	return (true);
 }
 
+void SendCoopSaveCommand(LPCSTR cmd)
+{
+	NET_Packet netPacket;
+	netPacket.w_begin(M_CL_SAVE_GAME_COMMAND);
+	netPacket.w_stringZ(cmd);
+	Level().Send(netPacket, net_flags(TRUE));
+}
+
 #include "UIGameCustom.h"
 #include "HUDManager.h"
+
 class CCC_ALifeSave : public IConsole_Command
 {
 public:
 	CCC_ALifeSave(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
 	virtual void Execute(LPCSTR args)
 	{
-
-#if 0
-		if (!Level().autosave_manager().ready_for_autosave()) {
-			Msg		("! Cannot save the game right now!");
-			return;
-		}
-#endif
-		if (!IsGameTypeSingle())
+		if (!IsGameTypeSingle() && !IsGameTypeCoop())
 		{
-			Msg("for single-mode only");
+			Msg("for single or coop game only");
 			return;
 		}
+
+		if (OnClient() && IsGameTypeCoop())
+		{
+			string_path S2;
+			S2[0] = '\0';
+			strcpy_s(S2, args);
+
+			if (!xr_strlen(S2))
+				strconcat(sizeof(S2), S2, Core.UserName, "_", "quicksave");
+
+			xr_string cmd = "save ";
+			cmd += S2;
+			SendCoopSaveCommand(cmd.c_str());
+			return;
+		}
+
 		if (!g_actor || !Actor()->g_Alive())
 		{
 			Msg("cannot make saved game because actor is dead :(");
@@ -458,13 +477,13 @@ public:
 
 		string_path S, S1;
 		S[0] = 0;
-		//.		sscanf					(args ,"%s",S);
 		strcpy_s(S, args);
 
 #ifdef DEBUG
 		CTimer timer;
 		timer.Start();
 #endif
+
 		if (!xr_strlen(S))
 		{
 			strconcat(sizeof(S), S, Core.UserName, "_", "quicksave");
@@ -488,26 +507,39 @@ public:
 			net_packet.w_u8(1);
 			Level().Send(net_packet, net_flags(TRUE));
 		}
+
 #ifdef DEBUG
 		Msg("Game save overhead  : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
 #endif
-		SDrawStaticStruct *_s = HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
-		_s->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
-		string_path save_name;
-		strconcat(sizeof(save_name), save_name, *CStringTable().translate("st_game_saved"), ": ", S);
-		_s->wnd()->SetText(save_name);
 
-		strcat(S, ".dds");
-		FS.update_path(S1, "$game_saves$", S);
+		if (IsGameTypeCoop())
+		{
+			NET_Packet packet;
+			packet.w_begin(M_CL_GAME_SAVED_NOTIFY);
+			packet.w_stringZ(S);
+			Level().Server->SendBroadcast(BroadcastCID, packet, net_flags(TRUE, TRUE));
+		}
+
+		if (!g_dedicated_server)
+		{
+			auto customStatic = HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
+			customStatic->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
+			string_path save_name;
+			strconcat(sizeof(save_name), save_name, *CStringTable().translate("st_game_saved"), ": ", S);
+			customStatic->wnd()->SetText(save_name);
+
+			strcat(S, ".dds");
+			FS.update_path(S1, "$game_saves$", S);
 
 #ifdef DEBUG
-		timer.Start();
+			timer.Start();
 #endif
-		MainMenu()->Screenshot(IRender_interface::SM_FOR_GAMESAVE, S1);
+			MainMenu()->Screenshot(IRender_interface::SM_FOR_GAMESAVE, S1);
 
 #ifdef DEBUG
-		Msg("Screenshot overhead : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
+			Msg("Screenshot overhead : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
 #endif
+		}
 	}
 };
 
@@ -517,6 +549,14 @@ public:
 	CCC_ALifeLoadFrom(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(LPCSTR args)
 	{
+		if (OnClient() && IsGameTypeCoop())
+		{
+			xr_string cmd = "load ";
+			cmd += args;
+			SendCoopSaveCommand(cmd.c_str());
+			return;
+		}
+
 		if (!ai().get_alife())
 		{
 			Log("! ALife simulator has not been started yet");
@@ -524,9 +564,9 @@ public:
 		}
 
 		string256 saved_game;
-		saved_game[0] = 0;
-		//.		sscanf						(args,"%s",saved_game);
+		saved_game[0] = '\0';
 		strcpy_s(saved_game, args);
+
 		if (!xr_strlen(saved_game))
 		{
 			Log("! Specify file name!");
@@ -544,21 +584,7 @@ public:
 			Msg("! Cannot load saved game %s, version mismatch or saved game is corrupted", saved_game);
 			return;
 		}
-		/*     moved to level_network_messages.cpp
-		CSavedGameWrapper			wrapper(args);
-		if (wrapper.level_id() == ai().level_graph().level_id()) {
-			if (Device.Paused())
-				Device.Pause		(FALSE, TRUE, TRUE, "CCC_ALifeLoadFrom");
 
-			Level().remove_objects	();
-
-			game_sv_Single			*game = smart_cast<game_sv_Single*>(Level().Server->game);
-			R_ASSERT				(game);
-			game->restart_simulator	(saved_game);
-
-			return;
-		}
-*/
 		if (MainMenu()->IsActive())
 			MainMenu()->Activate(false);
 
@@ -585,6 +611,12 @@ public:
 		if (args && *args)
 		{
 			strcpy_s(g_last_saved_game, args);
+			return;
+		}
+
+		if (OnClient() && IsGameTypeCoop())
+		{
+			SendCoopSaveCommand("load_last_save");
 			return;
 		}
 

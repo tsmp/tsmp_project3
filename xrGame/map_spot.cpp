@@ -24,10 +24,11 @@ CMapSpot::~CMapSpot()
 
 void CMapSpot::Load(CUIXml *xml, LPCSTR path)
 {
-	CUIXmlInit::InitStatic(*xml, path, 0, this);
+	if (!g_dedicated_server)
+		CUIXmlInit::InitStatic(*xml, path, 0, this);
+
 	int i = xml->ReadAttribInt(path, 0, "scale", 0);
 	m_bScale = (i == 1);
-
 	m_originSize = GetWndSize();
 }
 

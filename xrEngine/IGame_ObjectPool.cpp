@@ -16,6 +16,9 @@ xr_string GetSectionName()
 	if (!strcmp(gameTypeName, "carfight"))
 		strcpy(gameTypeName, "teamdeathmatch");
 
+	if (!strcmp(gameTypeName, "coop"))
+		strcpy(gameTypeName, "single");
+
 	string256 section;
 	const char* SectionNamePrefix = "prefetch_objects_";
 	strconcat(sizeof(section), section, SectionNamePrefix, gameTypeName);

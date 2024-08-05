@@ -168,7 +168,7 @@ CInifile &CSE_Abstract::spawn_ini()
 
 void CSE_Abstract::Spawn_Write(NET_Packet &tNetPacket, BOOL bLocal)
 {
-	// generic
+	// Generic
 	tNetPacket.w_begin(M_SPAWN);
 	tNetPacket.w_stringZ(s_name);
 	tNetPacket.w_stringZ(s_name_replace ? s_name_replace : "");
@@ -191,31 +191,28 @@ void CSE_Abstract::Spawn_Write(NET_Packet &tNetPacket, BOOL bLocal)
 
 	tNetPacket.w_u16(script_server_object_version());
 
-	//client object custom data serialization SAVE
-	u16 client_data_size = (u16)client_data.size(); //не может быть больше 256 байт
-	tNetPacket.w_u16(client_data_size);
-	//	Msg							("SERVER:saving:save:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
-	if (client_data_size > 0)
+	if (s_flags.flags & M_SPAWN_NO_CLDATA)
+		tNetPacket.w_u16(0);
+	else
 	{
-		tNetPacket.w(&*client_data.begin(), client_data_size);
+		// Client object custom data serialization SAVE
+		u16 client_data_size = (u16)client_data.size(); //не может быть больше 256 байт
+		tNetPacket.w_u16(client_data_size);
+		//	Msg							("SERVER:saving:save:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
+
+		if (client_data_size > 0)
+			tNetPacket.w(&*client_data.begin(), client_data_size);
 	}
 
 	tNetPacket.w(&m_tSpawnID, sizeof(m_tSpawnID));
-	//	tNetPacket.w_float			(m_spawn_probability);
-	//	tNetPacket.w_u32			(m_spawn_flags.get());
-	//	tNetPacket.w_stringZ		(m_spawn_control);
-	//	tNetPacket.w_u32			(m_max_spawn_count);
-	//	tNetPacket.w_u64			(m_min_spawn_interval);
-	//	tNetPacket.w_u64			(m_max_spawn_interval);
 
-	// write specific data
+	// Write specific data
 	u32 position = tNetPacket.w_tell();
 	tNetPacket.w_u16(0);
 	STATE_Write(tNetPacket);
 	u16 size = u16(tNetPacket.w_tell() - position);
 
 	R_ASSERT3((m_tClassID == CLSID_SPECTATOR) || (size > sizeof(size)), "object isn't successfully saved, get your backup :(", name_replace());
-
 	tNetPacket.w_seek(position, &size, sizeof(u16));
 }
 
@@ -387,6 +384,7 @@ xr_token game_types[] =
 	{"freeplay",GAME_FREEPLAY},
 	{"race", GAME_RACE},
 	{"carfight", GAME_CARFIGHT},
+	{"coop", GAME_COOP},
 	{0, 0}
 };
 

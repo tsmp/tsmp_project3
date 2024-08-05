@@ -51,6 +51,17 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 #endif
 
 	game->Create(session_name);
+
+	if (IsGameTypeCoop())
+	{
+		// Replace save name to level name
+		const char* cmdNoSaveName = strstr(session_name.c_str(), "/");
+		R_ASSERT(cmdNoSaveName);
+		std::string params = cmdNoSaveName;
+		params = level_name(session_name).c_str() + params;
+		return IPureServer::Connect(params.c_str());
+	}
+
 	return IPureServer::Connect(*session_name);
 }
 

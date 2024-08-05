@@ -153,6 +153,8 @@ public:
 	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet &P){}; //игрок получил Hit
 	virtual void OnPlayerHitCreature(game_PlayerState* psHitter, CSE_Abstract* pWeaponA) {}
 
+	virtual void OnPlayerRequestSavedGames(ClientID const& sender) {};
+
 	// Main
 	virtual void Create(shared_str &options);
 	virtual void Update();
@@ -161,9 +163,10 @@ public:
 	virtual void net_Export_GameTime(NET_Packet &P);							// update GameTime only for remote clients
 
 	virtual bool change_level(NET_Packet &net_packet, ClientID const &sender);
-	virtual void save_game(NET_Packet& net_packet, ClientID const& sender) {}
+	virtual void save_game(NET_Packet& net_packet, ClientID const& sender);
 	virtual bool load_game(NET_Packet &net_packet, ClientID const &sender);
 	virtual void switch_distance(NET_Packet& net_packet, ClientID const& sender) {}
+	void restart_simulator(LPCSTR saved_game_name);
 
 	void SendPatrolPaths(const ClientID& idTo);
 	void AddDelayedEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID const &sender);
@@ -178,6 +181,7 @@ public:
 	virtual shared_str level_name(const shared_str &server_options) const;
 	virtual void on_death(CSE_Abstract *e_dest, CSE_Abstract *e_src);
 
+	virtual bool AssignOwnershipToConnectingClient(CSE_Abstract* E, xrClientData* CL);
 	virtual void DumpOnlineStatistic(){};
 
 	virtual bool custom_sls_default()
