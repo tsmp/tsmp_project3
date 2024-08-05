@@ -12,6 +12,8 @@
 #include "ui/UIPDAWnd.h"
 #include "encyclopedia_article.h"
 #include "ui/UIEventsWnd.h"
+#include "../xrEngine/DiscordSDK.h"
+#include "string_table.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4995)
@@ -327,6 +329,9 @@ void CGameTaskManager::SetActiveTask(const TASK_ID &id, u16 idx)
 		if (ml)
 			ml->EnablePointer();
 	}
+
+	xr_string TaskNameDiscord_ = CStringTable().translate(o ? o->description : "st_no_active_task").c_str();
+	Discord.SetPhase(TaskNameDiscord_);
 }
 
 SGameTaskObjective *CGameTaskManager::ActiveObjective()

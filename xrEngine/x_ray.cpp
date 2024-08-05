@@ -16,6 +16,7 @@
 #include "..\TSMP3_Build_Config.h"
 #include "Console_commands.h"
 #include "xrApplication.h"
+#include "DiscordSDK.h"
 
 // global variables
 ENGINE_API CApplication* pApp = nullptr;
@@ -317,6 +318,9 @@ void InitializeApplication()
 	ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
 	Device.Create();
 	LALib.OnCreate();
+
+	if (!g_dedicated_server)
+		Discord.InitSDK();
 
 	pApp = xr_new<CApplication>();
 	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);

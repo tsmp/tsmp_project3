@@ -67,6 +67,8 @@ public:
 	virtual void LoadTitle(LPCSTR str);
 
 	virtual bool CanBePaused();
+
+	void SetGameDiscordStatus();
 };
 
 IC CGamePersistent &GamePersistent() { return *((CGamePersistent *)g_pGamePersistent); }

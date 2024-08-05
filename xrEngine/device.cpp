@@ -19,6 +19,7 @@
 #include "xrApplication.h"
 #include "render.h"
 
+#include "DiscordSDK.h"
 #include "..\TSMP3_Build_Config.h"
 
 ENGINE_API CRenderDevice Device;
@@ -99,6 +100,8 @@ void CRenderDevice::End(void)
 // ¬ыполн€ютс€ задачи то в основном то во втором потоке
 ICF void ProcessTasksForMT()
 {
+	Discord.UpdateSDK();
+
 	for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
 		Device.seqParallel[pit]();
 	Device.seqParallel.clear_not_free();
