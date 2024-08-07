@@ -131,16 +131,16 @@ void xrCore::_destroy()
 xr_string ANSIToUTF8(const xr_string& string)
 {
 	wchar_t* wcs{};
-	int Lenght_ = MultiByteToWideChar(1251, 0, string.c_str(), (int)string.size(), wcs, 0);
-	wcs = new wchar_t[Lenght_ + 1];
-	MultiByteToWideChar(1251, 0, string.c_str(), (int)string.size(), wcs, Lenght_);
-	wcs[Lenght_] = L'\0';
+	int length = MultiByteToWideChar(1251, 0, string.c_str(), (int)string.size(), wcs, 0);
+	wcs = new wchar_t[length + 1];
+	MultiByteToWideChar(1251, 0, string.c_str(), (int)string.size(), wcs, length);
+	wcs[length] = L'\0';
 
 	char* u8s = nullptr;
-	Lenght_ = WideCharToMultiByte(CP_UTF8, 0, wcs, (int)std::wcslen(wcs), u8s, 0, nullptr, nullptr);
-	u8s = new char[Lenght_ + 1];
-	WideCharToMultiByte(CP_UTF8, 0, wcs, (int)std::wcslen(wcs), u8s, Lenght_, nullptr, nullptr);
-	u8s[Lenght_] = '\0';
+	length = WideCharToMultiByte(CP_UTF8, 0, wcs, (int)std::wcslen(wcs), u8s, 0, nullptr, nullptr);
+	u8s = new char[length + 1];
+	WideCharToMultiByte(CP_UTF8, 0, wcs, (int)std::wcslen(wcs), u8s, length, nullptr, nullptr);
+	u8s[length] = '\0';
 
 	xr_string result(u8s);
 	delete[] wcs;

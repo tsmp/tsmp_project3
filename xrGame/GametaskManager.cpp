@@ -330,8 +330,8 @@ void CGameTaskManager::SetActiveTask(const TASK_ID &id, u16 idx)
 			ml->EnablePointer();
 	}
 
-	xr_string TaskNameDiscord_ = CStringTable().translate(o ? o->description : "st_no_active_task").c_str();
-	Discord.SetPhase(TaskNameDiscord_);
+	xr_string taskNameDiscord = CStringTable().translate(o ? o->description : "st_no_active_task").c_str();
+	Discord.SetPhase(taskNameDiscord);
 }
 
 SGameTaskObjective *CGameTaskManager::ActiveObjective()

@@ -5,13 +5,13 @@
 
 class ENGINE_API DiscordSDK final
 {
-	xr_string StatusDiscord_;
-	xr_string PhaseDiscord_;
+	xr_string m_StatusDiscord;
+	xr_string m_PhaseDiscord;
 
-	std::atomic_bool NeedUpdateActivity_;
+	std::atomic_bool m_NeedUpdateActivity;
 
-	discord::Activity ActivityDiscord_{};
-	discord::Core* core{};
+	discord::Activity m_ActivityDiscord{};
+	discord::Core* m_DiscordCore{};
 public:
 	DiscordSDK() = default;
 	~DiscordSDK();

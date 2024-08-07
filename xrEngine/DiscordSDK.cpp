@@ -8,64 +8,64 @@ ENGINE_API DiscordSDK Discord;
 
 DiscordSDK::~DiscordSDK()
 {
-	delete core;
+	delete m_DiscordCore;
 }
 
 void DiscordSDK::InitSDK()
 {
-	auto ResultSDK_ = discord::Core::Create(1097182285855457360, DiscordCreateFlags_NoRequireDiscord, &core);
+	auto resultSDK = discord::Core::Create(1097182285855457360, DiscordCreateFlags_NoRequireDiscord, &m_DiscordCore);
 	
-	if (!core)
+	if (!m_DiscordCore)
 	{
-		Msg("! [DISCORD SDK]: Error to init SDK. Code error: [%d]", static_cast<int>(ResultSDK_));
+		Msg("! [DISCORD SDK]: Error to init SDK. Code error: [%d]", static_cast<int>(resultSDK));
 		return;
 	}
 
-	ActivityDiscord_.GetAssets().SetLargeImage("main_image");
+	m_ActivityDiscord.GetAssets().SetLargeImage("main_image");
 
-	ActivityDiscord_.GetAssets().SetSmallImage("main_image_small");
+	m_ActivityDiscord.GetAssets().SetSmallImage("main_image_small");
 
-	ActivityDiscord_.SetInstance(true);
-	ActivityDiscord_.SetType(discord::ActivityType::Playing);
+	m_ActivityDiscord.SetInstance(true);
+	m_ActivityDiscord.SetType(discord::ActivityType::Playing);
 
-	ActivityDiscord_.GetTimestamps().SetStart(time(nullptr));
+	m_ActivityDiscord.GetTimestamps().SetStart(time(nullptr));
 
-	NeedUpdateActivity_ = true; //First update activity discord.
+	m_NeedUpdateActivity = true; //First update activity discord.
 }
 
 void DiscordSDK::UpdateSDK()
 {
-	if (!core)
+	if (!m_DiscordCore)
 		return;
 
-	if (NeedUpdateActivity_)
+	if (m_NeedUpdateActivity)
 		UpdateActivity();
 
-	core->RunCallbacks();
+	m_DiscordCore->RunCallbacks();
 }
 
 void DiscordSDK::UpdateActivity()
 {
-	ActivityDiscord_.SetState(ANSIToUTF8(PhaseDiscord_).c_str());
-	ActivityDiscord_.SetDetails(ANSIToUTF8(StatusDiscord_).c_str());
+	m_ActivityDiscord.SetState(ANSIToUTF8(m_PhaseDiscord).c_str());
+	m_ActivityDiscord.SetDetails(ANSIToUTF8(m_StatusDiscord).c_str());
 
-	core->ActivityManager().UpdateActivity(ActivityDiscord_, [](discord::Result result)
+	m_DiscordCore->ActivityManager().UpdateActivity(m_ActivityDiscord, [](discord::Result result)
 		{
 			if (result != discord::Result::Ok)
 				Msg("! [DISCORD SDK]: Invalid UpdateActivity");
 		});
 
-	NeedUpdateActivity_ = false;
+	m_NeedUpdateActivity = false;
 }
 
 void DiscordSDK::SetPhase(const xr_string& phase)
 {
-	PhaseDiscord_ = phase;
-	NeedUpdateActivity_ = true;
+	m_PhaseDiscord = phase;
+	m_NeedUpdateActivity = true;
 }
 
 void DiscordSDK::SetStatus(const xr_string& status)
 {
-	StatusDiscord_ = status;
-	NeedUpdateActivity_ = true;
+	m_StatusDiscord = status;
+	m_NeedUpdateActivity = true;
 }
