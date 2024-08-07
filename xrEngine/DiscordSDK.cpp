@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#include <discord.h>
 #include "DiscordSDK.h"
 
 #pragma comment(lib, "discord_game_sdk.dll.lib")
@@ -9,6 +9,7 @@ ENGINE_API DiscordSDK Discord;
 DiscordSDK::~DiscordSDK()
 {
 	delete m_DiscordCore;
+	delete m_ActivityDiscord;
 }
 
 void DiscordSDK::InitSDK()
@@ -21,16 +22,15 @@ void DiscordSDK::InitSDK()
 		return;
 	}
 
-	m_ActivityDiscord.GetAssets().SetLargeImage("main_image");
+	m_ActivityDiscord = new discord::Activity();
+	m_ActivityDiscord->GetAssets().SetLargeImage("main_image");
+	m_ActivityDiscord->GetAssets().SetSmallImage("main_image_small");
 
-	m_ActivityDiscord.GetAssets().SetSmallImage("main_image_small");
+	m_ActivityDiscord->SetInstance(true);
+	m_ActivityDiscord->SetType(discord::ActivityType::Playing);
+	m_ActivityDiscord->GetTimestamps().SetStart(time(nullptr));
 
-	m_ActivityDiscord.SetInstance(true);
-	m_ActivityDiscord.SetType(discord::ActivityType::Playing);
-
-	m_ActivityDiscord.GetTimestamps().SetStart(time(nullptr));
-
-	m_NeedUpdateActivity = true; //First update activity discord.
+	m_NeedUpdateActivity = true;
 }
 
 void DiscordSDK::UpdateSDK()
@@ -46,10 +46,10 @@ void DiscordSDK::UpdateSDK()
 
 void DiscordSDK::UpdateActivity()
 {
-	m_ActivityDiscord.SetState(ANSIToUTF8(m_PhaseDiscord).c_str());
-	m_ActivityDiscord.SetDetails(ANSIToUTF8(m_StatusDiscord).c_str());
+	m_ActivityDiscord->SetState(ANSIToUTF8(m_PhaseDiscord).c_str());
+	m_ActivityDiscord->SetDetails(ANSIToUTF8(m_StatusDiscord).c_str());
 
-	m_DiscordCore->ActivityManager().UpdateActivity(m_ActivityDiscord, [](discord::Result result)
+	m_DiscordCore->ActivityManager().UpdateActivity(*m_ActivityDiscord, [](discord::Result result)
 		{
 			if (result != discord::Result::Ok)
 				Msg("! [DISCORD SDK]: Invalid UpdateActivity");

@@ -1,7 +1,11 @@
 #pragma once
-
-#include <discord.h>
 #include <atomic>	
+
+namespace discord
+{
+	class Activity;
+	class Core;
+}
 
 class ENGINE_API DiscordSDK final
 {
@@ -10,16 +14,15 @@ class ENGINE_API DiscordSDK final
 
 	std::atomic_bool m_NeedUpdateActivity;
 
-	discord::Activity m_ActivityDiscord{};
-	discord::Core* m_DiscordCore{};
+	discord::Activity* m_ActivityDiscord = nullptr;
+	discord::Core* m_DiscordCore = nullptr;
+
 public:
 	DiscordSDK() = default;
 	~DiscordSDK();
 
 	void InitSDK();
-
 	void UpdateSDK();
-
 	void UpdateActivity();
 
 	void SetPhase(const xr_string& phase);

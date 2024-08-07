@@ -4,7 +4,12 @@
 #include "event.h"
 #ifdef _WIN32
 #include <Windows.h>
+
+#pragma warning(push)
+#pragma warning(disable : 4005) // DXGI redefinition
 #include <dxgi.h>
+#pragma warning(pop)
+
 #endif
 
 namespace discord {
