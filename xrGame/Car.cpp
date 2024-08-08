@@ -418,8 +418,22 @@ void CCar::UpdateEx(float fov)
 		OwnerActor()->Cameras().Update(Camera());
 		OwnerActor()->Cameras().ApplyDevice(VIEWPORT_NEAR);
 
-		if (m_InLookout)
-			OwnerActor()->UpdateAnimation();
+		if (m_AllowLookout)
+		{
+			if (m_InLookout)
+				OwnerActor()->UpdateAnimation();
+		}
+		else
+		{
+			if (HasWeapon())
+			{
+				bool v = false;
+				if (CActor* ownerAct = OwnerActor())
+					v = ownerAct->inventory().GetActiveSlot() == NO_ACTIVE_SLOT;
+
+				m_car_weapon->Action(CCarWeapon::eWpnActivate, v);
+			}
+		}
 	}
 }
 
