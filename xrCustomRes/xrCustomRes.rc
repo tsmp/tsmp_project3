@@ -71,6 +71,7 @@ IDI_APP_ICON            ICON                    "icon.ico"
 STRINGTABLE
 BEGIN
     IDS_STRING_APPNAME      "Xray engine"
+    IDS_STRING_DISCORD_APP_ID "1270008724953759744"
 END
 
 #endif    // Русский (Россия) resources

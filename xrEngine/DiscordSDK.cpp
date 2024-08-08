@@ -14,7 +14,7 @@ DiscordSDK::~DiscordSDK()
 
 void DiscordSDK::InitSDK()
 {
-	auto resultSDK = discord::Core::Create(1097182285855457360, DiscordCreateFlags_NoRequireDiscord, &m_DiscordCore);
+	auto resultSDK = discord::Core::Create(m_AppID, DiscordCreateFlags_NoRequireDiscord, &m_DiscordCore);
 	
 	if (!m_DiscordCore)
 	{
@@ -50,10 +50,10 @@ void DiscordSDK::UpdateActivity()
 	m_ActivityDiscord->SetDetails(ANSIToUTF8(m_StatusDiscord).c_str());
 
 	m_DiscordCore->ActivityManager().UpdateActivity(*m_ActivityDiscord, [](discord::Result result)
-		{
-			if (result != discord::Result::Ok)
-				Msg("! [DISCORD SDK]: Invalid UpdateActivity");
-		});
+	{
+		if (result != discord::Result::Ok)
+			Msg("! [DISCORD SDK]: Invalid UpdateActivity");
+	});
 
 	m_NeedUpdateActivity = false;
 }

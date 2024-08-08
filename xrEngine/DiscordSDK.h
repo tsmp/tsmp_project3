@@ -11,6 +11,7 @@ class ENGINE_API DiscordSDK final
 {
 	xr_string m_StatusDiscord;
 	xr_string m_PhaseDiscord;
+	s64 m_AppID = 1269977615993667708;
 
 	std::atomic_bool m_NeedUpdateActivity;
 
@@ -25,6 +26,7 @@ public:
 	void UpdateSDK();
 	void UpdateActivity();
 
+	void SetAppID(s64 appId) { m_AppID = appId; }
 	void SetPhase(const xr_string& phase);
 	void SetStatus(const xr_string& status);
 };
