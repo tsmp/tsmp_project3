@@ -786,7 +786,7 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState *ps, PIItem pItem, xr_vector
 				NET_Packet P;
 				u_EventGen(P, GE_ADDON_CHANGE, pWeapon->ID());
 				P.w_u8(NewAddons);
-				u_EventSend(P);
+				SvEventSend(P);
 			}
 		}
 
@@ -1291,7 +1291,7 @@ void game_sv_Deathmatch::Send_EventPack_for_AnomalySet(u32 AnomalySet, u8 Event)
 		EventPack.w(&P.B.data, P.B.count);
 	}
 
-	u_EventSend(EventPack);
+	SvEventSend(EventPack);
 }
 
 void game_sv_Deathmatch::StartAnomalies(int AnomalySet)
@@ -1430,12 +1430,12 @@ BOOL game_sv_Deathmatch::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 					EventPack.w(&PacketTake.B.data, PacketTake.B.count);
 					if ((EventPack.B.count + 100) > NET_PacketSizeLimit)
 					{
-						u_EventSend(EventPack);
+						SvEventSend(EventPack);
 						EventPack.w_begin(M_EVENT_PACK);
 					}
 				}
 				if (EventPack.B.count > 2)
-					u_EventSend(EventPack);
+					SvEventSend(EventPack);
 			}
 
 			//destroy the BAG
@@ -1565,13 +1565,13 @@ void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
 
 			if ((EventPack.B.count + 100) > NET_PacketSizeLimit)
 			{
-				u_EventSend(EventPack);
+				SvEventSend(EventPack);
 				EventPack.w_begin(M_EVENT_PACK);
 			}
 		}
 
 		if (EventPack.B.count > 2)
-			u_EventSend(EventPack);
+			SvEventSend(EventPack);
 	}
 }
 
@@ -1616,7 +1616,7 @@ void game_sv_Deathmatch::OnPlayerConnectFinished(ClientID const &id_who)
 		GenerateGameMessage(P);
 		P.w_u32(GAME_EVENT_PLAYER_CONNECTED);
 		P.w_stringZ(xrCData->name.c_str());
-		u_EventSend(P);
+		SvEventSend(P);
 	}
 
 	Send_Anomaly_States(id_who);
@@ -1852,7 +1852,7 @@ void game_sv_Deathmatch::OnPostCreate(u16 eid_who)
 			NET_Packet P;
 			u_EventGen(P, GE_ZONE_STATE_CHANGE, eid_who);
 			P.w_u8(u8(CCustomZone::eZoneStateDisabled)); //eZoneStateDisabled
-			u_EventSend(P);
+			SvEventSend(P);
 			//-----------------------------------------------------------------------------
 			return;
 		};
@@ -1866,7 +1866,7 @@ void game_sv_Deathmatch::OnPostCreate(u16 eid_who)
 		NET_Packet P;
 		u_EventGen(P, GE_ZONE_STATE_CHANGE, eid_who);
 		P.w_u8(u8(CCustomZone::eZoneStateDisabled)); //eZoneStateDisabled
-		u_EventSend(P);
+		SvEventSend(P);
 	}
 }
 

@@ -144,7 +144,7 @@ void game_sv_mp::OnRoundStart()
 	NET_Packet P;
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_ROUND_STARTED);
-	u_EventSend(P);
+	SvEventSend(P);
 
 	signal_Syncronize();
 	Console->Execute("sv_status");
@@ -166,7 +166,7 @@ void game_sv_mp::OnRoundEnd()
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_ROUND_END);
 	P.w_stringZ(res_str);
-	u_EventSend(P);
+	SvEventSend(P);
 }
 
 void game_sv_mp::KillPlayer(ClientID const &id_who, u16 GameID)
@@ -204,7 +204,7 @@ void game_sv_mp::KillPlayer(ClientID const &id_who, u16 GameID)
 	P.w_u16(PlayerID);
 	P.w_clientID(id_who);
 
-	u_EventSend(P, net_flags(TRUE, TRUE, FALSE, TRUE));
+	SvEventSend(P, net_flags(TRUE, TRUE, FALSE, TRUE));
 
 	if (xrCData)
 		SetPlayersDefItems(xrCData->ps);
@@ -474,7 +474,7 @@ void game_sv_mp::OnPlayerDisconnect(ClientID const &id_who, LPSTR Name, u16 Game
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_PLAYER_DISCONNECTED);
 	P.w_stringZ(Name);
-	u_EventSend(P);
+	SvEventSend(P);
 	KillPlayer(id_who, GameID);
 	AllowDeadBodyRemove(GameID);
 
@@ -780,7 +780,7 @@ void game_sv_mp::OnVoteStart(LPCSTR VoteCommand, ClientID const &sender)
 	Msg("- Player %s started voting [ %s ]", playerName, resVoteCommand);
 	P.w_stringZ(playerName);
 	P.w_u32(u32(g_sv_mp_fVoteTime * 60000));
-	u_EventSend(P);
+	SvEventSend(P);
 };
 
 void game_sv_mp::UpdateVote()
@@ -833,7 +833,7 @@ void game_sv_mp::UpdateVote()
 		GenerateGameMessage(P);
 		P.w_u32(GAME_EVENT_VOTE_END);
 		P.w_stringZ("st_mp_voting_failed");
-		u_EventSend(P);
+		SvEventSend(P);
 		return;
 	};
 
@@ -841,7 +841,7 @@ void game_sv_mp::UpdateVote()
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_VOTE_END);
 	P.w_stringZ("st_mp_voting_succeed");
-	u_EventSend(P);
+	SvEventSend(P);
 
 	if (m_bVotingReal)
 		Console->Execute(m_pVoteCommand.c_str());
@@ -877,7 +877,7 @@ void game_sv_mp::OnVoteStop()
 	NET_Packet P;
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_VOTE_STOP);
-	u_EventSend(P);
+	SvEventSend(P);
 
 	signal_Syncronize();
 }
@@ -893,7 +893,7 @@ void game_sv_mp::OnPlayerEnteredGame(ClientID const &id_who)
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_PLAYER_ENTERED_GAME);
 	P.w_stringZ(xrCData->name.c_str());
-	u_EventSend(P);
+	SvEventSend(P);
 }
 
 void game_sv_mp::ClearPlayerItems(game_PlayerState *ps)
@@ -1681,7 +1681,7 @@ void game_sv_mp::SvSendChatMessage(LPCSTR str)
 	P.w_stringZ("ServerAdmin");
 	P.w_stringZ(str);
 	P.w_s16(0);
-	u_EventSend(P);
+	SvEventSend(P);
 }
 
 void game_sv_mp::SvSendChatMessageCow(LPCSTR str)
@@ -1728,7 +1728,7 @@ void game_sv_mp::SvSendChatMessageCow(LPCSTR str)
 
 	P.w_stringZ(strText.c_str());
 	P.w_s16(0);
-	u_EventSend(P);
+	SvEventSend(P);
 }
 
 void game_sv_mp::Release(u16 gameid)
@@ -1751,7 +1751,7 @@ void game_sv_mp::SetVisual(u16 gameid, LPCSTR visual)
 	P.w_u32(GAME_EVENT_CHANGE_VISUAL);
 	P.w_u16(gameid);
 	P.w_stringZ(visual);
-	u_EventSend(P);
+	SvEventSend(P);
 
 	Level().Server->game->signal_Syncronize();
 }

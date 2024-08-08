@@ -121,7 +121,7 @@ void game_sv_GameState::script_register(lua_State *L)
 
 			 .def("get_option_i", &game_sv_GameState::get_option_i)
 			 //.def("get_option_s", &game_sv_GameState::get_option_s)
-			 .def("u_EventSend", &game_sv_GameState::u_EventSend)
+			 .def("u_EventSend", &game_sv_GameState::SvEventSend)
 
 			 .def("GenerateGameMessage", &game_sv_GameState::GenerateGameMessage)
 			 .def("getRP", &game_sv_GameState::getRP)

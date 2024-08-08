@@ -139,7 +139,9 @@ public:
 	s32 get_option_i(LPCSTR lst, LPCSTR name, s32 def = 0);
 	string64 &get_option_s(LPCSTR lst, LPCSTR name, LPCSTR def = 0);
 	virtual u32 get_alive_count(u32 team);
-	void u_EventSend(NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED);
+
+	// WARNING: this does not send event to xrServer, only broadcast to clients
+	void SvEventSend(NET_Packet &P, u32 dwFlags = DPNSEND_GUARANTEED);
 
 	// Events
 	virtual BOOL OnPreCreate(CSE_Abstract *E) { return TRUE; };

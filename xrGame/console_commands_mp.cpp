@@ -1412,7 +1412,7 @@ public:
 			netP.w_u32(GAME_EVENT_SERVER_STRING_MESSAGE);
 			netP.w_stringZ(args);
 
-			game->u_EventSend(netP);
+			game->SvEventSend(netP);
 		}
 	}
 };

@@ -24,7 +24,7 @@ void SendStatusMessage(const char* msg)
 		netP.w_u32(GAME_EVENT_SERVER_STRING_MESSAGE);
 		netP.w_stringZ(msg);
 
-		svGame->u_EventSend(netP);
+		svGame->SvEventSend(netP);
 	}
 }
 

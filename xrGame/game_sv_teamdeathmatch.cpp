@@ -204,7 +204,7 @@ void game_sv_TeamDeathmatch::OnPlayerConnectFinished(ClientID const &id_who)
 		P.w_u32(GAME_EVENT_PLAYER_JOIN_TEAM);
 		P.w_stringZ(xrCData->name.c_str());
 		P.w_u16(xrCData->ps->team);
-		u_EventSend(P);
+		SvEventSend(P);
 	};
 
 	if (xrCData)
@@ -275,7 +275,7 @@ void game_sv_TeamDeathmatch::OnPlayerChangeTeam(ClientID const &id_who, s16 team
 	P.w_u16(ps_who->GameID);
 	P.w_u16(ps_who->team);
 	P.w_u16(team);
-	u_EventSend(P);
+	SvEventSend(P);
 	SetPlayersDefItems(ps_who);
 }
 

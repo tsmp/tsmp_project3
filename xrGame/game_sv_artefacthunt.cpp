@@ -476,7 +476,7 @@ void game_sv_ArtefactHunt::OnArtefactTaken(u16 playerId)
 	P.w_u32(GAME_EVENT_ARTEFACT_TAKEN);
 	P.w_u16(ps_who->GameID);
 	P.w_u16(ps_who->team);
-	u_EventSend(P);
+	SvEventSend(P);
 
 	if (m_bArtefactWasTakenAlready)
 		return;
@@ -519,7 +519,7 @@ void game_sv_ArtefactHunt::OnArtefactDropped(u16 playerId)
 		P.w_u32(GAME_EVENT_ARTEFACT_DROPPED);
 		P.w_u16(ps_who->GameID);
 		P.w_u16(ps_who->team);
-		u_EventSend(P);
+		SvEventSend(P);
 	}
 
 	Artefact_PrepareForRemove();
@@ -670,7 +670,7 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID const &id_who)
 	P.w_u32(GAME_EVENT_ARTEFACT_ONBASE);
 	P.w_u16(ps->GameID);
 	P.w_u16(ps->team);
-	u_EventSend(P);
+	SvEventSend(P);
 
 	if (CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(ps->GameID)))
 	{
@@ -698,7 +698,7 @@ void game_sv_ArtefactHunt::SpawnArtefact()
 	NET_Packet P;
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_ARTEFACT_SPAWNED);
-	u_EventSend(P);
+	SvEventSend(P);
 
 	m_eAState = ON_FIELD;
 
@@ -720,7 +720,7 @@ void game_sv_ArtefactHunt::RemoveArtefact()
 		GenerateGameMessage(P);
 		P.w_u32(GAME_EVENT_ARTEFACT_DESTROYED);
 		P.w_u16(m_dwArtefactID);
-		u_EventSend(P);		
+		SvEventSend(P);
 		u_EventGen(P, GE_DESTROY, m_dwArtefactID);
 		Level().Send(P, net_flags(TRUE, TRUE));
 	}

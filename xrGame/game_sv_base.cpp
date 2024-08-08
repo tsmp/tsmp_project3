@@ -577,7 +577,7 @@ void game_sv_GameState::GenerateGameMessage(NET_Packet &P)
 	P.w_begin(M_GAMEMESSAGE);
 }
 
-void game_sv_GameState::u_EventSend(NET_Packet &P, u32 dwFlags)
+void game_sv_GameState::SvEventSend(NET_Packet &P, u32 dwFlags)
 {
 	m_server->SendBroadcast(BroadcastCID, P, dwFlags);
 }

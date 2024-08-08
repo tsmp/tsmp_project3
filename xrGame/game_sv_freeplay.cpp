@@ -179,7 +179,7 @@ void game_sv_Freeplay::OnPlayerConnectFinished(ClientID const &id_who)
 		GenerateGameMessage(P);
 		P.w_u32(GAME_EVENT_PLAYER_CONNECTED);
 		P.w_stringZ(xrCData->name.c_str());
-		u_EventSend(P);
+		SvEventSend(P);
 	}
 }
 
