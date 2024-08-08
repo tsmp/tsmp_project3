@@ -16,6 +16,7 @@
 #include "..\TSMP3_Build_Config.h"
 #include "Console_commands.h"
 #include "xrApplication.h"
+#include "DiscordSDK.h"
 
 // global variables
 ENGINE_API CApplication* pApp = nullptr;
@@ -120,6 +121,7 @@ public:
 extern void TryLoadXrCustomResDll();
 extern void TryToChangeLogoImageToCustom(HWND logoWindow);
 extern HICON TryToGetNewAppIcon();
+extern s64 TryToGetDiscordAppID();
 
 namespace Logo
 {
@@ -317,6 +319,14 @@ void InitializeApplication()
 	ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
 	Device.Create();
 	LALib.OnCreate();
+
+	if (!g_dedicated_server)
+	{
+		if (s64 disAppID = TryToGetDiscordAppID())
+			Discord.SetAppID(disAppID);
+
+		Discord.InitSDK();
+	}
 
 	pApp = xr_new<CApplication>();
 	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);

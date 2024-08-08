@@ -38,3 +38,16 @@ HICON TryToGetNewAppIcon()
 
 	return LoadIcon(hCustomRes, MAKEINTRESOURCE(IDI_APP_ICON));
 }
+
+s64 TryToGetDiscordAppID()
+{
+	if (!hCustomRes)
+		return 0;
+
+	char buffer[bufferSize]{'\0'};
+
+	if (!LoadString(hCustomRes, IDS_STRING_DISCORD_APP_ID, buffer, bufferSize) || buffer[0] == '\0')
+		return 0;
+
+	return atoll(buffer);
+}

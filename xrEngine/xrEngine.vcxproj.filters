@@ -139,6 +139,12 @@
     <Filter Include="RenderRef\doug_lea_memory_allocator">
       <UniqueIdentifier>{70a64189-c56c-42cf-b0a1-e33c5cf814b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DiscordSDK">
+      <UniqueIdentifier>{7603725a-1bf7-401c-a811-58c5f901fd9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DiscordSDK\API">
+      <UniqueIdentifier>{28de1f8b-937a-4779-b232-664f53acb3c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="flight.h">
@@ -398,6 +404,60 @@
     </ClInclude>
     <ClInclude Include="Stats.h">
       <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\achievement_manager.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\activity_manager.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\application_manager.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\core.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\discord.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\event.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\ffi.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\image_manager.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\lobby_manager.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\network_manager.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\overlay_manager.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\relationship_manager.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\storage_manager.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\store_manager.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\types.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\user_manager.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Components\DiscordSDK\include\voice_manager.h">
+      <Filter>DiscordSDK\API</Filter>
+    </ClInclude>
+    <ClInclude Include="DiscordSDK.h">
+      <Filter>DiscordSDK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -670,6 +730,51 @@
     </ClCompile>
     <ClCompile Include="Stats.cpp">
       <Filter>RenderRef\Execution &amp; 3D\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\achievement_manager.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\activity_manager.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\application_manager.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\core.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\image_manager.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\lobby_manager.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\network_manager.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\overlay_manager.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\relationship_manager.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\storage_manager.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\store_manager.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\types.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\user_manager.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Components\DiscordSDK\include\voice_manager.cpp">
+      <Filter>DiscordSDK\API</Filter>
+    </ClCompile>
+    <ClCompile Include="DiscordSDK.cpp">
+      <Filter>DiscordSDK</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

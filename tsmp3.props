@@ -12,12 +12,12 @@
   <ItemDefinitionGroup>
     <Link>
       <ImportLibrary>$(SolutionDir)output\libraries_$(platform)_$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\libraries_$(platform)_$(Configuration);$(SolutionDir)Components\DX9SDK\Lib_$(platform);$(SolutionDir)Components\opus\lib_$(platform);$(SolutionDir)Components\UidUtils\Lib_$(platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\libraries_$(platform)_$(Configuration);$(SolutionDir)Components\DX9SDK\Lib_$(platform);$(SolutionDir)Components\opus\lib_$(platform);$(SolutionDir)Components\UidUtils\Lib_$(platform);$(SolutionDir)Components\DiscordSDK\lib\$(platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <ClCompile>
       <PreprocessorDefinitions>_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS;_WINDLL;_SECURE_SCL=0;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)Components\loki;$(SolutionDir)Components\libogg\include\;$(SolutionDir)xrEngine;$(SolutionDir)Components\libtheora\include\;$(SolutionDir)Components\LuaJIT\src;$(SolutionDir)Components\Luabind;$(SolutionDir)xrODE\include;$(SolutionDir)zlib\include;$(SolutionDir)Components\DX9SDK\Include;$(SolutionDir)Components\libvorbis\include;$(SolutionDir)Components\crypto\openssl;$(SolutionDir)xrCore;$(SolutionDir)Components;$(SolutionDir)Components\eax\Include;$(SolutionDir)xrOpenAL\include\AL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Components\loki;$(SolutionDir)Components\libogg\include\;$(SolutionDir)xrEngine;$(SolutionDir)Components\libtheora\include\;$(SolutionDir)Components\LuaJIT\src;$(SolutionDir)Components\Luabind;$(SolutionDir)xrODE\include;$(SolutionDir)zlib\include;$(SolutionDir)Components\DX9SDK\Include;$(SolutionDir)Components\libvorbis\include;$(SolutionDir)Components\crypto\openssl;$(SolutionDir)xrCore;$(SolutionDir)Components;$(SolutionDir)Components\eax\Include;$(SolutionDir)Components\DiscordSDK\include;$(SolutionDir)xrOpenAL\include\AL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>

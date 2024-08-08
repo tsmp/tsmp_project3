@@ -5,6 +5,7 @@
 #define IDB_LOGO_BITMAP                 101
 #define IDS_STRING_APPNAME              102
 #define IDI_APP_ICON                    103
+#define IDS_STRING_DISCORD_APP_ID       103
 
 // Next default values for new objects
 // 

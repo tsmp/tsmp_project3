@@ -7,6 +7,7 @@
 #include "igame_persistent.h"
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
+#include "DiscordSDK.h"
 
 extern pureFrame *g_pNetProcessor;
 
@@ -124,23 +125,6 @@ bool CLevel::net_start_client4()
 				Server->Update();
 			Sleep(5);
 		}
-		/*
-		if(psNET_direct_connect)
-		{
-			ClientReceive(); 
-			if(Server)
-					Server->Update()	;
-			Sleep(5);
-		}else
-
-			while(!game_configured)			
-			{ 
-				ClientReceive(); 
-				if(Server)
-					Server->Update()	;
-				Sleep(5); 
-			}
-*/
 	}
 	return true;
 }
@@ -164,6 +148,21 @@ bool CLevel::net_start_client5()
 	return true;
 }
 
+void SetGameDiscordStatus()
+{
+	if (!g_pGameLevel || g_dedicated_server)
+		return;
+
+	xr_string levelName = "В игре:";
+	levelName += "\t";
+	levelName += CStringTable().translate(Level().name()).c_str();
+
+	Discord.SetStatus(levelName);
+
+	if (!IsGameTypeSingle() && !IsGameTypeCoop())
+		Discord.SetPhase(Game().type_name());
+}
+
 bool CLevel::net_start_client6()
 {
 	if (connected_to_server)
@@ -183,6 +182,7 @@ bool CLevel::net_start_client6()
 		g_pGamePersistent->LoadTitle("st_client_synchronising");
 		Device.PreCache(30);
 		net_start_result_total = TRUE;
+		SetGameDiscordStatus();
 	}
 	else
 	{

@@ -1102,6 +1102,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Components\DiscordSDK\include\achievement_manager.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\activity_manager.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\application_manager.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\core.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\discord.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\event.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\ffi.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\image_manager.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\lobby_manager.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\network_manager.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\overlay_manager.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\relationship_manager.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\storage_manager.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\store_manager.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\types.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\user_manager.h" />
+    <ClInclude Include="..\Components\DiscordSDK\include\voice_manager.h" />
     <ClInclude Include="ai_script_lua_extension.h" />
     <ClInclude Include="ai_script_lua_space.h" />
     <ClInclude Include="ai_script_space.h" />
@@ -1114,6 +1131,7 @@
     <ClInclude Include="CustomHUD.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="device.h" />
+    <ClInclude Include="DiscordSDK.h" />
     <ClInclude Include="doug_lea_memory_allocator.h" />
     <ClInclude Include="Effector.h" />
     <ClInclude Include="EffectorPP.h" />
@@ -1190,6 +1208,20 @@
     <ClInclude Include="flight.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Components\DiscordSDK\include\achievement_manager.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\activity_manager.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\application_manager.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\core.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\image_manager.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\lobby_manager.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\network_manager.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\overlay_manager.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\relationship_manager.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\storage_manager.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\store_manager.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\types.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\user_manager.cpp" />
+    <ClCompile Include="..\Components\DiscordSDK\include\voice_manager.cpp" />
     <ClCompile Include="ai_script_lua_debug.cpp" />
     <ClCompile Include="ai_script_lua_extension.cpp" />
     <ClCompile Include="bone.cpp" />
@@ -1207,6 +1239,7 @@
     <ClCompile Include="Device_Misc.cpp" />
     <ClCompile Include="Device_overdraw.cpp" />
     <ClCompile Include="Device_wndproc.cpp" />
+    <ClCompile Include="DiscordSDK.cpp" />
     <ClCompile Include="doug_lea_memory_allocator.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
