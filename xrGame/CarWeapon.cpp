@@ -153,6 +153,9 @@ void CCarWeapon::ResetBoneCallbacks()
 
 void CCarWeapon::UpdateBarrelDir()
 {
+	if (fis_zero(m_destEnemyDir.x) && fis_zero(m_destEnemyDir.y) && fis_zero(m_destEnemyDir.z))
+		return;
+
 	IKinematics *K = smart_cast<IKinematics *>(m_object->Visual());
 	m_fire_bone_xform = K->LL_GetTransform(m_fire_bone);
 
