@@ -203,8 +203,7 @@ void game_sv_mp::KillPlayer(ClientID const &id_who, u16 GameID)
 	u_EventGen(P, GE_DIE, PlayerID);
 	P.w_u16(PlayerID);
 	P.w_clientID(id_who);
-
-	SvEventSend(P, net_flags(TRUE, TRUE, FALSE, TRUE));
+	Level().Send(P, net_flags(TRUE, TRUE, FALSE, TRUE));
 
 	if (xrCData)
 		SetPlayersDefItems(xrCData->ps);
