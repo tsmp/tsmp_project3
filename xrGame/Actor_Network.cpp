@@ -480,9 +480,11 @@ BOOL CActor::net_Spawn(CSE_Abstract *DC)
 	CSE_ALifeCreatureActor *E = smart_cast<CSE_ALifeCreatureActor*>(e);
 
 	if (OnServer())	
-		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);	
+		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
 
-	if (TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER) && !g_actor)
+	const bool spawnAsActor = !IsGameTypeCoop() || !g_actor;
+
+	if (E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && E->s_flags.test(M_SPAWN_OBJECT_ASPLAYER) && spawnAsActor)
 		g_actor = this;
 
 	VERIFY(m_pActorEffector == NULL);
