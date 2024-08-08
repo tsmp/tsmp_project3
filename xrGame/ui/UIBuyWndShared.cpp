@@ -5,39 +5,35 @@
 extern LPCSTR _list_names[];
 extern u8 GetRanksCount();
 
+void LoadRanksCosts(U32Vec &costs, std::string_view costsView, u32 ranksCount)
+{
+	costs.resize(ranksCount);
+	size_t commaPos = costsView.find(',');
+
+	for (u32 i = 0; i < ranksCount; i++)
+	{
+		if (commaPos == std::string_view::npos)
+			costs[i] = std::stoul(costsView.data());
+		else
+		{
+			auto costStr = costsView.substr(0, commaPos);
+			costs[i] = std::stoul(costStr.data());
+			costsView = costsView.substr(commaPos + 1);
+			commaPos = costsView.find(',');
+		}
+	}
+}
+
 void CItemMgr::Load(const shared_str &sect_cost)
 {
 	CInifile::Sect &sect = pSettings->r_section(sect_cost);
-	const u32 _RANK_COUNT = GetRanksCount();
+	const u32 ranksCount = GetRanksCount();
 
 	for (const auto &it: sect.Data)
 	{
 		_i &val = m_items[it.first];
 		val.slot_idx = u8(-1);
-		val.cost.resize(_RANK_COUNT);
-
-		std::string_view costsView = it.second.c_str();
-		u32 idx = 0;
-
-		while (true)
-		{
-			size_t commaPos = costsView.find(',');
-
-			if (commaPos == std::string_view::npos)
-				break;
-
-			auto costStr = costsView.substr(0, commaPos);
-			val.cost[idx++] = std::stoul(costStr.data());
-			costsView = costsView.substr(commaPos + 1);
-		}
-
-		val.cost[idx++] = std::stoul(costsView.data());
-
-		while (idx < _RANK_COUNT)
-		{
-			val.cost[idx] = val.cost[idx - 1];
-			++idx;
-		}
+		LoadRanksCosts(val.cost, it.second.c_str(), ranksCount);
 	}
 
 	for (u8 i = CUIMpTradeWnd::e_first; i < CUIMpTradeWnd::e_total_lists; ++i)
