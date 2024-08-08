@@ -14,9 +14,10 @@ void CCarUpgrade::OnH_A_Chield()
 {
 	auto act = smart_cast<CActor*>(H_Parent());
 	R_ASSERT(act);
-	auto car = smart_cast<CCar*>(act->Holder());
-	R_ASSERT(car);
-	ApplyUpgrades(car);
+
+	// Может и не быть когда игрок мертв и машина удалилась
+	if (auto car = smart_cast<CCar*>(act->Holder()))
+		ApplyUpgrades(car);
 }
 
 void CCarUpgrade::ReadUpgrades(LPCSTR section)
