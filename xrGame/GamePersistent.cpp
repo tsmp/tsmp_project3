@@ -23,8 +23,6 @@
 #include "xrApplication.h"
 #include "xr_level_controller.h"
 
-#include "../xrEngine/DiscordSDK.h"
-
 #ifndef MASTER_GOLD
 #include "custommonster.h"
 #endif // MASTER_GOLD
@@ -371,9 +369,6 @@ extern CUISequencer *g_tutorial2;
 
 void CGamePersistent::OnFrame()
 {
-	if (IsGameTypeSingle() && Device.dwPrecacheFrame == 5 && m_intro_event.empty())
-		SetGameDiscordStatus();
-
 	if (g_tutorial2)
 	{
 		g_tutorial2->Destroy();
@@ -622,16 +617,4 @@ void CGamePersistent::LoadTitle(LPCSTR str)
 bool CGamePersistent::CanBePaused()
 {
 	return IsGameTypeSingle();
-}
-
-void CGamePersistent::SetGameDiscordStatus()
-{
-	if (!g_pGameLevel)
-		return;
-
-	xr_string levelName = "В игре:";
-	levelName += "\t";
-	levelName += CStringTable().translate(g_pGameLevel->name()).c_str();
-
-	Discord.SetStatus(levelName);
 }
