@@ -548,6 +548,7 @@
     <ClCompile Include="xrMemory_subst_msvc.cpp" />
     <ClCompile Include="xrsharedmem.cpp" />
     <ClCompile Include="xrstring.cpp" />
+    <ClCompile Include="xrThreadingEvent.cpp" />
     <ClCompile Include="Xr_ini.cpp" />
     <ClCompile Include="xr_shared.cpp" />
     <ClCompile Include="xr_trims.cpp" />
@@ -595,6 +596,7 @@
     <ClInclude Include="xrPool.h" />
     <ClInclude Include="xrsharedmem.h" />
     <ClInclude Include="xrstring.h" />
+    <ClInclude Include="xrThreadingEvent.h" />
     <ClInclude Include="xr_ini.h" />
     <ClInclude Include="xr_resource.h" />
     <ClInclude Include="xr_shared.h" />

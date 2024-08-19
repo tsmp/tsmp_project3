@@ -52,6 +52,12 @@
     <Filter Include="Math\Extensions\buffer vector">
       <UniqueIdentifier>{c6b8941b-2166-41ad-80b9-24677addd1a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NewFilter1">
+      <UniqueIdentifier>{15e1a55d-bc54-41a7-b059-05ca577228f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Threading\Events">
+      <UniqueIdentifier>{aba893d9-2b55-4b9a-8970-e9811e086a31}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FTimer.cpp">
@@ -164,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="clipboard\os_clipboard.cpp">
       <Filter>Clipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="xrThreadingEvent.cpp">
+      <Filter>Threading\Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -361,6 +370,9 @@
     </ClInclude>
     <ClInclude Include="NarrowCast.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="xrThreadingEvent.h">
+      <Filter>Threading\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

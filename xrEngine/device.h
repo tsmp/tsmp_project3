@@ -15,6 +15,8 @@
 
 #include "../Include/xrRender/RenderDeviceRender.h"
 
+#include "../xrCore/xrThreadingEvent.h"
+
 // refs
 class ENGINE_API CRenderDevice
 {
@@ -99,9 +101,8 @@ public:
 	float fASPECT;
 
 	CRenderDevice()
-#ifdef PROFILE_CRITICAL_SECTIONS
-		: mt_csEnter(MUTEX_PROFILE_ID(CRenderDevice::mt_csEnter)), mt_csLeave(MUTEX_PROFILE_ID(CRenderDevice::mt_csLeave))
-#endif // PROFILE_CRITICAL_SECTIONS
+		: m_SecondThreadExitEvent("Event Second Thread Exit"), m_SecondThreadFrameDoneEvent("Event Second Thread Frame Done"),
+		m_SecondThreadFrameProcessEvent("Event Second Thread Frame Process")
 	{
 		m_hWnd = NULL;
 		b_is_Active = FALSE;
@@ -142,9 +143,11 @@ public:
 public:
 
 	// Multi-threading
-	xrCriticalSection mt_csEnter;
-	xrCriticalSection mt_csLeave;
 	volatile BOOL mt_bMustExit;
+
+	xrThreadingEvent m_SecondThreadExitEvent;
+	xrThreadingEvent m_SecondThreadFrameDoneEvent;
+	xrThreadingEvent m_SecondThreadFrameProcessEvent;
 
 	ICF void remove_from_seq_parallel(const fastdelegate::FastDelegate0<> &delegate)
 	{

@@ -108,32 +108,22 @@ ICF void ProcessTasksForMT()
 	Device.seqFrameMT.Process(rp_Frame);
 }
 
-volatile u32 mt_Thread_marker = 0x12345678;
-
 void mt_Thread(void *ptr)
 {
 	while (true)
 	{
-		// waiting for Device permission to execute
-		Device.mt_csEnter.Enter();
+		Device.m_SecondThreadFrameProcessEvent.Wait();
 
 		if (Device.mt_bMustExit)
 		{
 			Device.mt_bMustExit = FALSE; // Important!!!
-			Device.mt_csEnter.Leave();	 // Important!!!
+			Device.m_SecondThreadExitEvent.Set();
 			return;
 		}
-		// we has granted permission to execute
-		mt_Thread_marker = Device.CurrentFrameNumber;
 
 		ProcessTasksForMT();
 
-		// now we give control to device - signals that we are ended our work
-		Device.mt_csEnter.Leave();
-		// waits for device signal to continue - to start again
-		Device.mt_csLeave.Enter();
-		// returns sync signal to device
-		Device.mt_csLeave.Leave();
+		Device.m_SecondThreadFrameDoneEvent.Set();
 	}
 }
 
@@ -205,7 +195,6 @@ void CRenderDevice::PrepareToRun()
 
 #ifndef DEDICATED_SERVER
 	// Start all threads
-	mt_csEnter.Enter();
 	mt_bMustExit = FALSE;
 	thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
 #endif
@@ -273,24 +262,11 @@ void CRenderDevice::Run()
 		m_pRender->SetCacheXform(mView, mProject);
 		D3DXMatrixInverse((D3DXMATRIX*)&mInvFullTransform, 0, (D3DXMATRIX*)&mFullTransform);
 
-		// *** Resume threads
-		// Capture end point - thread must run only ONE cycle
-		// Release start point - allow thread to run
-		mt_csLeave.Enter();
-		mt_csEnter.Leave();
-		Sleep(0);
+		m_SecondThreadFrameProcessEvent.Set();
 
 		ProcessRender();
 
-		// *** Suspend threads
-		// Capture startup point
-		// Release end point - allow thread to wait for startup point
-		mt_csEnter.Enter();
-		mt_csLeave.Leave();
-
-		// Ensure, that second thread gets chance to execute anyway
-		if (CurrentFrameNumber != mt_Thread_marker)
-			ProcessTasksForMT();
+		m_SecondThreadFrameDoneEvent.Wait();
 
 		if (!b_is_Active)
 			Sleep(1);
@@ -312,10 +288,8 @@ void CRenderDevice::Run()
 #ifndef DEDICATED_SERVER
 	// Stop Balance-Thread
 	mt_bMustExit = TRUE;
-	mt_csEnter.Leave();
-
-	while (mt_bMustExit)
-		Sleep(0);
+	m_SecondThreadFrameProcessEvent.Set();
+	m_SecondThreadExitEvent.Wait();
 #endif
 }
 
