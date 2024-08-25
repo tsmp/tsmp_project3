@@ -682,25 +682,6 @@ int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 	return 0; // will never be reached
 }
 
-//#include <lua.h>
-//#include <lauxlib.h>
-//#include <lualib.h>
-//
-//const char* get_function_name(lua_State* L, int index) {
-//	// Ensure the stack index is within valid range
-//	if (!lua_isfunction(L, index)) {
-//		return NULL; // Not a function
-//	}
-//
-//	lua_Debug ar;
-//	if (lua_getinfo(L, ">n", &ar)) { // >n means name from the function at index
-//		return ar.name ? ar.name : "unknown";
-//	}
-//
-//	return NULL; // Could not retrieve function information
-//}
-
-
 void luabind::detail::class_rep::add_base_class(const luabind::detail::class_rep::base_info& binfo)
 {
 	// If you hit this assert you are deriving from a type that is not registered
