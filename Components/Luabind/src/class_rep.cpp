@@ -653,80 +653,22 @@ int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 	}
 	__except(EXCEPTION_EXECUTE_HANDLER)
 	{
-		//string_class function_name("[luabind::detail::class_rep::function_dispatcher] Caught unhandled exception! (");
-		//function_name += rep->crep->name();
-		//function_name += ":";
-		//function_name += rep->name;
-		//function_name += ")";
-		//lua_pushstring(L, function_name.c_str());
-
-		//string_class text;
-		//text += "(";
-		//text += lua_tostring(L, 2);
-		//text += ")";
-		//lua_pushstring(L, text.c_str());
-
-		//string_class text;
-		//text += "(";
-		//lua_Debug l_tDebugInfo;
-		//for (int i = 0; lua_getstack(L, i, &l_tDebugInfo); ++i)
-		//{
-		//	lua_getinfo(L, "nSlu", &l_tDebugInfo);
-		//	if (!l_tDebugInfo.name)
-		//	{
-		//		text += i;
-		//		text += ",";
-		//		text += l_tDebugInfo.what;
-		//		text += ",";
-		//		text += l_tDebugInfo.short_src;
-		//		text += ",";
-		//		text += l_tDebugInfo.currentline;
-		//		//script_log(ScriptStorage::eLuaMessageTypeError, "%2d : [%s] %s(%d) : %s", i, l_tDebugInfo.what, l_tDebugInfo.short_src, l_tDebugInfo.currentline, "");
-		//	}
-		//	else if (!xr_strcmp(l_tDebugInfo.what, "C"))
-		//	{
-		//		text += i;
-		//		text += ",";
-		//		text += l_tDebugInfo.name;
-		//		//script_log(ScriptStorage::eLuaMessageTypeError, "%2d : [C  ] %s", i, l_tDebugInfo.name);
-		//	}
-		//	else
-		//	{
-		//		text += i;
-		//		text += ",";
-		//		text += l_tDebugInfo.what;
-		//		text += ",";
-		//		text += l_tDebugInfo.short_src;
-		//		text += ",";
-		//		text += l_tDebugInfo.currentline;
-		//		text += ",";
-		//		text += l_tDebugInfo.name;
-		//		//script_log(ScriptStorage::eLuaMessageTypeError, "%2d : [%s] %s(%d) : %s", i, l_tDebugInfo.what, l_tDebugInfo.short_src, l_tDebugInfo.currentline, l_tDebugInfo.name);
-		//	}
-		//	text += ")(";
-		//}
-		//lua_pushstring(L, text.c_str());
-
-		//string_class text;
-		//text += "(";
-		//text += get_function_name(L, 0);
-		//text += ")";
-		//lua_pushstring(L, text.c_str());
-
-		lua_Debug ar;
-
+		lua_Debug l_tDebugInfo;
 		int level = 1;
-
-		if (lua_getstack(L, level, &ar))
+		std::string function_name = "[luabind::detail::class_rep::function_dispatcher] Caught unhandled exception! (";
+		function_name += rep->crep->name();
+		function_name += ":";
+		function_name += rep->name;
+		function_name += ")(";
+		if (lua_getstack(L, level, &l_tDebugInfo))
 		{
-			lua_getinfo(L, "Sln", &ar);
+			lua_getinfo(L, "Sln", &l_tDebugInfo);
 
-			std::string function_name = "[luabind::detail::class_rep::function_dispatcher] Caught unhandled exception! (";
-			function_name += ar.source ? ar.source : "Unknown Source";
+			function_name += l_tDebugInfo.source ? l_tDebugInfo.source : "Unknown Source";
 			function_name += ":";
-			function_name += ar.name ? ar.name : "Unknown Function";
+			function_name += l_tDebugInfo.name ? l_tDebugInfo.name : "Unknown Function";
 			function_name += ":";
-			function_name += std::to_string(ar.currentline);
+			function_name += std::to_string(l_tDebugInfo.currentline);
 			function_name += ")";
 
 			lua_pushstring(L, function_name.c_str());
