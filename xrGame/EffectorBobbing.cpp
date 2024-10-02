@@ -18,6 +18,7 @@ CEffectorBobbing::CEffectorBobbing() : CEffectorCam(eCEBobbing, 10000.f)
 	fTime = 0;
 	fReminderFactor = 0;
 	is_limping = false;
+	zoom_bobbing_enabled = pSettings->line_exist(BOBBING_SECT, "zoom_amplitude") && pSettings->line_exist(BOBBING_SECT, "zoom_speed");
 
 	m_fAmplitudeRun = pSettings->r_float(BOBBING_SECT, "run_amplitude");
 	m_fAmplitudeWalk = pSettings->r_float(BOBBING_SECT, "walk_amplitude");
@@ -26,6 +27,12 @@ CEffectorBobbing::CEffectorBobbing() : CEffectorCam(eCEBobbing, 10000.f)
 	m_fSpeedRun = pSettings->r_float(BOBBING_SECT, "run_speed");
 	m_fSpeedWalk = pSettings->r_float(BOBBING_SECT, "walk_speed");
 	m_fSpeedLimp = pSettings->r_float(BOBBING_SECT, "limp_speed");
+
+	if (zoom_bobbing_enabled)
+	{
+		m_fAmplitudeZoom = pSettings->r_float(BOBBING_SECT, "zoom_amplitude");
+		m_fSpeedZoom = pSettings->r_float(BOBBING_SECT, "zoom_speed");
+	}
 }
 
 CEffectorBobbing::~CEffectorBobbing()
@@ -71,7 +78,12 @@ BOOL CEffectorBobbing::Process(Fvector &p, Fvector &d, Fvector &n, float & /**fF
 
 		float A, ST;
 
-		if (isActorAccelerated(dwMState, m_bZoomMode))
+		if (zoom_bobbing_enabled && m_bZoomMode)
+		{
+			A = m_fAmplitudeZoom * k;
+			ST = m_fSpeedZoom * fTime * k;
+		}
+		else if (isActorAccelerated(dwMState, m_bZoomMode))
 		{
 			A = m_fAmplitudeRun * k;
 			ST = m_fSpeedRun * fTime * k;
