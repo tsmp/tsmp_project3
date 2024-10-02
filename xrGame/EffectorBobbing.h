@@ -16,6 +16,7 @@ class CEffectorBobbing : public CEffectorCam
 	float fReminderFactor;
 	bool is_limping;
 	bool m_bZoomMode;
+	bool zoom_bobbing_enabled;
 
 	float m_fAmplitudeRun;
 	float m_fAmplitudeWalk;
