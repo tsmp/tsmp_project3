@@ -54,9 +54,8 @@ public:
 	virtual ~xrClientData();
 	virtual void Clear();
 	LPCSTR GetIP() {
-		string4096 str = "";
-		strcpy_s(str, m_cAddress.to_string().c_str());
-		return str;
+		static xr_string str = m_cAddress.to_string();
+		return str.c_str();
 	}
 };
 
