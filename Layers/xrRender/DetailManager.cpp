@@ -384,7 +384,7 @@ void __stdcall CDetailManager::MT_CALC()
 			int s_z = iFloor(EYE.z / dm_slot_size + .5f);
 
 			Device.Statistic->RenderDUMP_DT_Cache.Begin();
-			cache_Update(s_x, s_z, EYE, dm_max_decompress);
+			cache_Update(s_x, s_z, EYE);
 			Device.Statistic->RenderDUMP_DT_Cache.End();
 
 			UpdateVisibleM();
