@@ -71,7 +71,7 @@ void CClientSpawnManager::add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID
 void CClientSpawnManager::remove(REQUESTED_REGISTRY &registry, ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, bool no_warning)
 {
 	REQUESTED_REGISTRY::iterator I = registry.find(requested_id);
-	if (I == registry.end())
+	if (I == registry.end() && !no_warning)
 	{
 		ai().script_engine().script_log(eLuaMessageTypeError, "There is no spawn callback on object with id %d from object with id %d!", requesting_id, requested_id);
 		return;
