@@ -73,8 +73,6 @@ int CScriptEngine::lua_panic(lua_State *L)
 
 void CScriptEngine::lua_error(lua_State *L)
 {
-	print_output(L, "", LUA_ERRRUN);
-
 #if !XRAY_EXCEPTIONS
 	Debug.fatal(DEBUG_INFO, "LUA error: %s", lua_tostring(L, -1));
 #else
