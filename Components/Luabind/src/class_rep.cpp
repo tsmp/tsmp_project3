@@ -653,30 +653,19 @@ int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 	}
 	__except(EXCEPTION_EXECUTE_HANDLER)
 	{
-		lua_Debug l_tDebugInfo;
-		int level = 1;
-		std::string function_name = "[luabind::detail::class_rep::function_dispatcher] Caught unhandled exception! (";
-		function_name += rep->crep->name();
-		function_name += ":";
-		function_name += rep->name;
-		function_name += ")(";
-		if (lua_getstack(L, level, &l_tDebugInfo))
-		{
-			lua_getinfo(L, "Sln", &l_tDebugInfo);
+		lua_Debug debugInfo;
+		std::string exceptionInfo = "[luabind::detail::class_rep::function_dispatcher] Caught unhandled exception! \n";
+		exceptionInfo += make_string("In %s:%s \n", rep->crep->name(), rep->name);
 
-			function_name += l_tDebugInfo.source ? l_tDebugInfo.source : "Unknown Source";
-			function_name += ":";
-			function_name += l_tDebugInfo.name ? l_tDebugInfo.name : "Unknown Function";
-			function_name += ":";
-			function_name += std::to_string(l_tDebugInfo.currentline);
-			function_name += ")";
-
-			lua_pushstring(L, function_name.c_str());
-		}
-		else
+		for (int stackLevel = 0; lua_getstack(L, stackLevel, &debugInfo); ++stackLevel)
 		{
-			lua_pushstring(L, "[luabind::detail::class_rep::function_dispatcher] Caught unhandled exception at unknown location!");
+			lua_getinfo(L, "Sln", &debugInfo);
+			const char* source = debugInfo.source ? debugInfo.source : "Unknown Source";
+			const char* functionName = debugInfo.name ? debugInfo.name : "Unknown Function";
+			exceptionInfo += make_string("%s:%s line %d \n", source, functionName, debugInfo.currentline);
 		}
+
+		lua_pushstring(L, exceptionInfo.c_str());
 	}
 	lua_error(L);
 	return 0; // will never be reached
