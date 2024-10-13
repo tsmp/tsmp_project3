@@ -134,6 +134,8 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 	Msg("- actor: %s received: [%s]", Name(), info_id.c_str());
 #endif
 
+	callback(GameObject::eInventoryInfo)(lua_game_object(), *info_id);
+
 	if (Actor() != this)
 		return true;
 
@@ -142,8 +144,6 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 
 	AddEncyclopediaArticle(&info_portion);
 	AddGameTask(&info_portion);
-
-	callback(GameObject::eInventoryInfo)(lua_game_object(), *info_id);
 
 	if (!HUD().GetUI())
 		return false;

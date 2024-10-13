@@ -205,7 +205,9 @@ void game_sv_mp::script_register(lua_State *L)
 			 .def("release", &game_sv_mp::Release)
 			 .def("set_visual", &game_sv_mp::SetVisual)
 			 .def("GetTeamScore", &game_sv_Deathmatch::GetTeamScore)
-			 .def("SetTeamScore", &game_sv_Deathmatch::SetTeamScore)];
+			 .def("SetTeamScore", &game_sv_Deathmatch::SetTeamScore)
+			 .def("OnPlayerReady", &game_sv_mp::OnPlayerReady)
+			 .def("RespawnPlayer", &game_sv_mp::RespawnPlayer)];
 }
 
 void game_sv_mp_script::script_register(lua_State *L)

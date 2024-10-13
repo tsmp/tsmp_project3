@@ -53,6 +53,10 @@ public:
 	xrClientData();
 	virtual ~xrClientData();
 	virtual void Clear();
+	LPCSTR GetIP() {
+		static xr_string str = m_cAddress.to_string();
+		return str.c_str();
+	}
 };
 
 // main
