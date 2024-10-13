@@ -216,45 +216,49 @@ BOOL CBulletManager::firetrace_callback(collide::rq_result &result, LPVOID param
 
 void CBulletManager::FireShotmark(SBullet *bullet, const Fvector &vDir, const Fvector &vEnd, collide::rq_result &R, u16 target_material, const Fvector &vNormal, bool ShowMark)
 {
+#pragma TODO("morrazzzz: Maybe return if it is dedicated server?")
 	SGameMtlPair *mtl_pair = GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
 	Fvector particle_dir;
 
-	if (R.O)
+	if (!g_dedicated_server)
 	{
+		if (R.O)
+		{
 #pragma TODO("TSMP: Maybe try to port cs code")
-		/*  add_SkeletonWallmark not implemented now...
-		particle_dir = vDir;
-		particle_dir.invert();
+			/*  add_SkeletonWallmark not implemented now...
+			particle_dir = vDir;
+			particle_dir.invert();
 
-		//на текущем актере отметок не ставим
-		if (Level().CurrentEntity() && Level().CurrentEntity()->ID() == R.O->ID())
-			return;
+			//на текущем актере отметок не ставим
+			if (Level().CurrentEntity() && Level().CurrentEntity()->ID() == R.O->ID())
+				return;
 
-		ref_shader *pWallmarkShader = (!mtl_pair || mtl_pair->CollideMarks.empty()) ? NULL : &mtl_pair->CollideMarks[::Random.randI(0, mtl_pair->CollideMarks.size())];
-		;
+			ref_shader *pWallmarkShader = (!mtl_pair || mtl_pair->CollideMarks.empty()) ? NULL : &mtl_pair->CollideMarks[::Random.randI(0, mtl_pair->CollideMarks.size())];
+			;
 
-		if (pWallmarkShader && ShowMark)
-		{
-			//добавить отметку на материале
-			Fvector p;
-			p.mad(bullet->pos, bullet->dir, R.range - 0.01f);
-			::Render->add_SkeletonWallmark(&R.O->renderable.xform,
-										   PKinematics(R.O->Visual()), *pWallmarkShader,
-										   p, bullet->dir, bullet->wallmark_size);
+			if (pWallmarkShader && ShowMark)
+			{
+				//добавить отметку на материале
+				Fvector p;
+				p.mad(bullet->pos, bullet->dir, R.range - 0.01f);
+				::Render->add_SkeletonWallmark(&R.O->renderable.xform,
+											   PKinematics(R.O->Visual()), *pWallmarkShader,
+											   p, bullet->dir, bullet->wallmark_size);
+			}
+			*/
 		}
-		*/
-	}
-	else
-	{
-		//вычислить нормаль к пораженной поверхности
-		particle_dir = vNormal;
-		Fvector *pVerts = Level().ObjectSpace.GetStaticVerts();
-		CDB::TRI *pTri = Level().ObjectSpace.GetStaticTris() + R.element;
-
-		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
+		else
 		{
-			//добавить отметку на материале
-			::Render->add_StaticWallmark(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
+			//вычислить нормаль к пораженной поверхности
+			particle_dir = vNormal;
+			Fvector* pVerts = Level().ObjectSpace.GetStaticVerts();
+			CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + R.element;
+
+			if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
+			{
+				//добавить отметку на материале
+				::Render->add_StaticWallmark(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
+			}
 		}
 	}
 

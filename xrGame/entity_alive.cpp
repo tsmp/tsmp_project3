@@ -192,7 +192,8 @@ void CEntityAlive::shedule_Update(u32 dt)
 	//Обновление партиклов огня
 	UpdateFireParticles();
 	//капли крови
-	UpdateBloodDrops();
+	if (!g_dedicated_server)
+		UpdateBloodDrops();
 	//обновить раны
 	conditions().UpdateWounds();
 
@@ -267,7 +268,7 @@ void CEntityAlive::Hit(SHit *pHDS)
 			StartBloodDrops(pWound);
 	}
 
-	if (HDS.hit_type != ALife::eHitTypeTelepatic)
+	if (HDS.hit_type != ALife::eHitTypeTelepatic && !g_dedicated_server)
 	{
 		//добавить кровь на стены
 		if (!use_simplified_visual())

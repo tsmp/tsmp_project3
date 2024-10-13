@@ -48,23 +48,23 @@ void CRender::level_Load(IReader *fs)
 
 	// Components
 
-	L_Shadows = xr_new<CLightShadows>();
-	L_Projector = xr_new<CLightProjector>();
-	L_DB = xr_new<CLight_DB>();
-	L_Glows = xr_new<CGlowManager>();
-	Wallmarks = xr_new<CWallmarksEngine>();
-	Details = xr_new<CDetailManager>();
-
-	rmFar();
-	rmNormal();
-
-	marker = 0;
-
 	if (!g_dedicated_server)
 	{
+		L_Shadows = xr_new<CLightShadows>();
+		L_Projector = xr_new<CLightProjector>();
+		L_DB = xr_new<CLight_DB>();
+		L_Glows = xr_new<CGlowManager>();
+		Wallmarks = xr_new<CWallmarksEngine>();
+		Details = xr_new<CDetailManager>();
+
+		rmFar();
+		rmNormal();
+
+		marker = 0;
+
 		// VB,IB,SWI
 		g_pGamePersistent->LoadTitle("st_loading_geometry");
-		CStreamReader *geom = FS.rs_open("$level$", "level.geom");
+		CStreamReader* geom = FS.rs_open("$level$", "level.geom");
 		LoadBuffers(geom);
 		LoadSWIs(geom);
 		FS.r_close(geom);
@@ -78,18 +78,18 @@ void CRender::level_Load(IReader *fs)
 		// Details
 		g_pGamePersistent->LoadTitle("st_loading_details");
 		Details->Load();
+
+		// Sectors
+		g_pGamePersistent->LoadTitle("st_loading_sectors_portals");
+		LoadSectors(fs);
+
+		// HOM
+		HOM.Load();
+
+		// Lights
+		//pApp->LoadTitle				("Loading lights...");
+		LoadLights(fs);
 	}
-
-	// Sectors
-	g_pGamePersistent->LoadTitle("st_loading_sectors_portals");
-	LoadSectors(fs);
-
-	// HOM
-	HOM.Load();
-
-	// Lights
-	//pApp->LoadTitle				("Loading lights...");
-	LoadLights(fs);
 
 	// End
 	pApp->LoadEnd();
@@ -103,63 +103,66 @@ void CRender::level_Unload()
 	if (!b_loaded)
 		return;
 
-	u32 I;
-
-	// HOM
-	HOM.Unload();
-
-	//*** Details
-	Details->Unload();
-
-	//*** Sectors
-	// 1.
-	xr_delete(rmPortals);
-	pLastSector = 0;
-	vLastCameraPos.set(flt_max, flt_max, flt_max);
-	uLastLTRACK = 0;
-
-	// 2.
-	for (I = 0; I < Sectors.size(); I++)
-		xr_delete(Sectors[I]);
-	Sectors.clear_and_free();
-	// 3.
-	for (I = 0; I < Portals.size(); I++)
-		xr_delete(Portals[I]);
-	Portals.clear_and_free();
-
-	//*** Lights
-	L_Glows->Unload();
-	L_DB->Unload();
-
-	//*** Visuals
-	for (I = 0; I < Visuals.size(); I++)
+	if (!g_dedicated_server)
 	{
-		Visuals[I]->Release();
-		xr_delete(Visuals[I]);
+		u32 I;
+
+		// HOM
+		HOM.Unload();
+
+		//*** Details
+		Details->Unload();
+
+		//*** Sectors
+		// 1.
+		xr_delete(rmPortals);
+		pLastSector = 0;
+		vLastCameraPos.set(flt_max, flt_max, flt_max);
+		uLastLTRACK = 0;
+
+		// 2.
+		for (I = 0; I < Sectors.size(); I++)
+			xr_delete(Sectors[I]);
+		Sectors.clear_and_free();
+		// 3.
+		for (I = 0; I < Portals.size(); I++)
+			xr_delete(Portals[I]);
+		Portals.clear_and_free();
+
+		//*** Lights
+		L_Glows->Unload();
+		L_DB->Unload();
+
+		//*** Visuals
+		for (I = 0; I < Visuals.size(); I++)
+		{
+			Visuals[I]->Release();
+			xr_delete(Visuals[I]);
+		}
+		Visuals.clear_and_free();
+
+		//*** SWI
+		for (I = 0; I < SWIs.size(); I++)
+			xr_free(SWIs[I].sw);
+		SWIs.clear();
+
+		//*** VB/IB
+		for (I = 0; I < VB.size(); I++)
+			_RELEASE(VB[I]);
+		for (I = 0; I < IB.size(); I++)
+			_RELEASE(IB[I]);
+		DCL.clear_and_free();
+		VB.clear_and_free();
+		IB.clear_and_free();
+
+		//*** Components
+		xr_delete(Details);
+		xr_delete(Wallmarks);
+		xr_delete(L_Glows);
+		xr_delete(L_DB);
+		xr_delete(L_Projector);
+		xr_delete(L_Shadows);
 	}
-	Visuals.clear_and_free();
-
-	//*** SWI
-	for (I = 0; I < SWIs.size(); I++)
-		xr_free(SWIs[I].sw);
-	SWIs.clear();
-
-	//*** VB/IB
-	for (I = 0; I < VB.size(); I++)
-		_RELEASE(VB[I]);
-	for (I = 0; I < IB.size(); I++)
-		_RELEASE(IB[I]);
-	DCL.clear_and_free();
-	VB.clear_and_free();
-	IB.clear_and_free();
-
-	//*** Components
-	xr_delete(Details);
-	xr_delete(Wallmarks);
-	xr_delete(L_Glows);
-	xr_delete(L_DB);
-	xr_delete(L_Projector);
-	xr_delete(L_Shadows);
 
 	//*** Shaders
 	Shaders.clear_and_free();

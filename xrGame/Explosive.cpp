@@ -358,7 +358,8 @@ void CExplosive::Explode()
 
 	//показываем эффекты
 
-	m_wallmark_manager.PlaceWallmarks(pos);
+	if (!g_dedicated_server)
+		m_wallmark_manager.PlaceWallmarks(pos);
 
 	Fvector vel;
 	smart_cast<CPhysicsShellHolder *>(cast_game_object())->PHGetLinearVell(vel);
