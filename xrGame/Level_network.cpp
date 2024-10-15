@@ -74,7 +74,9 @@ void CLevel::remove_objects()
 
 	VERIFY(Render);
 	Render->models_Clear(FALSE);
-	Render->clear_static_wallmarks();
+
+	if (!g_dedicated_server)
+		Render->clear_static_wallmarks();
 
 #ifdef DEBUG
 	if (!g_dedicated_server)

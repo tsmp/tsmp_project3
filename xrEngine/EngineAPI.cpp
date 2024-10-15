@@ -27,16 +27,20 @@ CEngineAPI::CEngineAPI()
 CEngineAPI::~CEngineAPI()
 {
 }
-extern u32 renderer_value; //con cmd
 
-void CEngineAPI::Initialize(void)
+bool NeedLoadingR1 = false;
+
+void CEngineAPI::Initialize()
 {
 	//////////////////////////////////////////////////////////////////////////
 	// render
 	LPCSTR r1_name = "xrRender_R1.dll";
-	LPCSTR r2_name = "xrRender_R2.dll";
 
 #ifndef DEDICATED_SERVER
+	extern u32 renderer_value; //con cmd
+
+	LPCSTR r2_name = "xrRender_R2.dll";
+
 	if (psDeviceFlags.test(rsR2))
 	{
 		// try to initialize R2
@@ -48,7 +52,6 @@ void CEngineAPI::Initialize(void)
 			Msg("...Failed - incompatible hardware.");
 		}
 	}
-#endif
 
 	if (0 == hRender)
 	{
@@ -56,9 +59,17 @@ void CEngineAPI::Initialize(void)
 		psDeviceFlags.set(rsR2, FALSE);
 		renderer_value = 0; //con cmd
 
-		Log("Loading DLL:", r1_name);
+		NeedLoadingR1 = true;
+	}
+#else
+	NeedLoadingR1 = true;
+#endif
+
+	if (NeedLoadingR1)
+	{
+		Msg("Loading DLL: [%s]", r1_name);
 		hRender = LoadLibrary(r1_name);
-		if (0 == hRender)
+		if (!hRender)
 			R_CHK(GetLastError());
 		R_ASSERT(hRender);
 	}

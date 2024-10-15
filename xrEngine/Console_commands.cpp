@@ -28,21 +28,6 @@ void ExcludeRadminIdFromCommandArguments(char* args)
 	}
 }
 
-extern xr_token *vid_mode_token;
-
-xr_token renderer_type_token[] =
-	{
-		{"renderer_r1", 0},
-		{"renderer_r2a", 1},
-		{"renderer_r2", 2},
-		{0, 0}};
-
-xr_token vid_bpp_token[] =
-	{
-		{"16", 16},
-		{"32", 32},
-		{0, 0}};
-
 void IConsole_Command::add_to_LRU(shared_str const& arg)
 {
 	if (arg.size() == 0 || bEmptyArgsHandled)	
@@ -280,39 +265,6 @@ public:
 	}
 };
 
-class CCC_VidMode : public CCC_Token
-{
-	u32 _dummy;
-
-public:
-	CCC_VidMode(LPCSTR N) : CCC_Token(N, &_dummy, NULL) { bEmptyArgsHandled = FALSE; };
-	virtual void Execute(LPCSTR args)
-	{
-		u32 _w, _h;
-		int cnt = sscanf(args, "%dx%d", &_w, &_h);
-
-		if (cnt == 2)
-		{
-			psCurrentVidMode[0] = _w;
-			psCurrentVidMode[1] = _h;
-		}
-		else
-		{
-			Msg("! Wrong video mode [%s]", args);
-			return;
-		}
-	}
-	virtual void Status(TStatus &S)
-	{
-		sprintf_s(S, sizeof(S), "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]);
-	}
-	virtual xr_token *GetToken() { return vid_mode_token; }
-	virtual void Info(TInfo &I)
-	{
-		strcpy_s(I, sizeof(I), "change screen resolution WxH");
-	}
-};
-
 class CCC_SND_Restart : public IConsole_Command
 {
 public:
@@ -323,105 +275,8 @@ public:
 	}
 };
 
-float ps_gamma = 1.f, ps_brightness = 1.f, ps_contrast = 1.f;
-
-class CCC_Gamma : public CCC_Float
-{
-public:
-	CCC_Gamma(LPCSTR N, float *V) : CCC_Float(N, V, 0.5f, 1.5f) {}
-
-	virtual void Execute(LPCSTR args)
-	{
-		CCC_Float::Execute(args);
-		Device.m_pRender->setGamma(ps_gamma);
-		Device.m_pRender->setBrightness(ps_brightness);
-		Device.m_pRender->setContrast(ps_contrast);
-		Device.m_pRender->updateGamma();
-	}
-};
-
-extern INT g_bDR_LM_UsePointsBBox;
-extern INT g_bDR_LM_4Steps;
-extern INT g_iDR_LM_Step;
-extern Fvector g_DR_LM_Min, g_DR_LM_Max;
-
-class CCC_DR_ClearPoint : public IConsole_Command
-{
-public:
-	CCC_DR_ClearPoint(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args)
-	{
-		g_DR_LM_Min.x = 1000000.0f;
-		g_DR_LM_Min.z = 1000000.0f;
-
-		g_DR_LM_Max.x = -1000000.0f;
-		g_DR_LM_Max.z = -1000000.0f;
-
-		Msg("Local BBox (%f, %f) - (%f, %f)", g_DR_LM_Min.x, g_DR_LM_Min.z, g_DR_LM_Max.x, g_DR_LM_Max.z);
-	}
-};
-
-class CCC_DR_TakePoint : public IConsole_Command
-{
-public:
-	CCC_DR_TakePoint(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args)
-	{
-		Fvector CamPos = Device.vCameraPosition;
-
-		if (g_DR_LM_Min.x > CamPos.x)
-			g_DR_LM_Min.x = CamPos.x;
-
-		if (g_DR_LM_Min.z > CamPos.z)
-			g_DR_LM_Min.z = CamPos.z;
-
-		if (g_DR_LM_Max.x < CamPos.x)
-			g_DR_LM_Max.x = CamPos.x;
-
-		if (g_DR_LM_Max.z < CamPos.z)
-			g_DR_LM_Max.z = CamPos.z;
-
-		Msg("Local BBox (%f, %f) - (%f, %f)", g_DR_LM_Min.x, g_DR_LM_Min.z, g_DR_LM_Max.x, g_DR_LM_Max.z);
-	}
-};
-
-class CCC_DR_UsePoints : public CCC_Integer
-{
-public:
-	CCC_DR_UsePoints(LPCSTR N, int *V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max){};
-	virtual void Save(IWriter *F){};
-};
-
 ENGINE_API BOOL r2_sun_static = TRUE;
 ENGINE_API BOOL r2_advanced_pp = FALSE;
-u32 renderer_value = 0;
-
-class CCC_r2 : public CCC_Token
-{
-	typedef CCC_Token inherited;
-
-public:
-	CCC_r2(LPCSTR N) : inherited(N, &renderer_value, renderer_type_token) { renderer_value = 0; };
-
-	virtual void Execute(LPCSTR args)
-	{
-#ifdef DEDICATED_SERVER
-		inherited::Execute("renderer_r1");
-#else
-		inherited::Execute(args);
-#endif // DEDICATED_SERVER
-
-		psDeviceFlags.set(rsR2, (renderer_value > 0));
-		r2_sun_static = (renderer_value != 2);
-		r2_advanced_pp = (renderer_value == 2);
-	}
-
-	virtual void Save(IWriter *F)
-	{
-		if (!strstr(Core.Params, "-r2"))
-			inherited::Save(F);
-	}
-};
 
 XRCORE_API void _dump_open_files(int mode);
 class CCC_DumpOpenFiles : public IConsole_Command
@@ -452,6 +307,7 @@ extern float gDedicatedScheduleScale;
 extern Flags32 psEnvFlags;
 
 void RegisterDebugCommands();
+void RegisterNotDedicatedCommands();
 
 void CCC_Register()
 {
@@ -471,22 +327,12 @@ void CCC_Register()
 	// Render device states
 	CMD4(CCC_Integer, "r__supersample", &ps_r__Supersample, 1, 4);
 
-	CMD3(CCC_Mask, "rs_v_sync", &psDeviceFlags, rsVSync);
-	CMD3(CCC_Mask, "rs_fullscreen", &psDeviceFlags, rsFullscreen);
-	CMD3(CCC_Mask, "rs_refresh_60hz", &psDeviceFlags, rsRefresh60hz);
 	CMD3(CCC_Mask, "rs_stats", &psDeviceFlags, rsStatistic);
 	CMD4(CCC_Float, "rs_vis_distance", &psVisDistance, 0.4f, 1.5f);
 
-	CMD2(CCC_Gamma, "rs_c_gamma", &ps_gamma);
-	CMD2(CCC_Gamma, "rs_c_brightness", &ps_brightness);
-	CMD2(CCC_Gamma, "rs_c_contrast", &ps_contrast);
-
-	// Texture manager
-	CMD4(CCC_Integer, "texture_lod", &psTextureLOD, 0, 4);
 	CMD4(CCC_Integer, "net_dedicated_sleep", &psNET_DedicatedSleep, 0, 64);
 
 	// General video control
-	CMD1(CCC_VidMode, "vid_mode");
 	CMD1(CCC_VID_Reset, "vid_restart");
 
 	// Sound
@@ -499,16 +345,6 @@ void CCC_Register()
 	CMD4(CCC_Integer, "snd_cache_size", &psSoundCacheSizeMB, 4, 32);
 	CMD4(CCC_Integer, "log_sound_loading", &log_sound_loading, 0, 1);
 
-	// Mouse
-	CMD3(CCC_Mask, "mouse_invert", &psMouseInvert, 1);
-	CMD4(CCC_Float, "mouse_sens", &psMouseSens, 0.05f, 0.6f);
-
-	// Camera
-	CMD4(CCC_Float, "cam_inert", &psCamInert, 0.0f, 0.9f);
-	CMD2(CCC_Float, "cam_slide_inert", &psCamSlideInert);
-
-	CMD1(CCC_r2, "renderer");
-
 	CMD4(CCC_Integer, "net_dbg_dump_export_obj", &g_Dump_Export_Obj, 0, 1);
 	CMD4(CCC_Integer, "net_dbg_dump_import_obj", &g_Dump_Import_Obj, 0, 1);
 
@@ -517,20 +353,12 @@ void CCC_Register()
 	psSoundOcclusionScale = pSettings->r_float("sound", "occlusion_scale");
 	clamp(psSoundOcclusionScale, 0.1f, .5f);
 
-	if (strstr(Core.Params, "-designer"))
-	{
-		CMD1(CCC_DR_TakePoint, "demo_record_take_point");
-		CMD1(CCC_DR_ClearPoint, "demo_record_clear_points");
-		CMD4(CCC_DR_UsePoints, "demo_record_use_points", &g_bDR_LM_UsePointsBBox, 0, 1);
-		CMD4(CCC_DR_UsePoints, "demo_record_4step", &g_bDR_LM_4Steps, 0, 1);
-		CMD4(CCC_DR_UsePoints, "demo_record_step", &g_iDR_LM_Step, 0, 3);
-	}
-
 	CMD1(CCC_DumpOpenFiles, "dump_open_files");
 
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicatedServerUpdateRate, 1, 1000);
 	CMD4(CCC_Float, "sv_dedicated_server_schedule_scale", &gDedicatedScheduleScale, 0.01f, 5.f);
-	CMD3(CCC_Mask, "rs_cam_pos", &psDeviceFlags, rsCameraPos);
+
+	RegisterNotDedicatedCommands();
 
 	RegisterDebugCommands();
 }
@@ -538,6 +366,13 @@ void CCC_Register()
 // Debug mode commands
 
 #ifdef DEBUG
+xr_token vid_bpp_token[] =
+{
+	{"16", 16},
+	{"32", 32},
+	{nullptr, 0} 
+};
+
 class CCC_DbgStrCheck : public IConsole_Command
 {
 public:
@@ -668,4 +503,185 @@ void RegisterDebugCommands()
 
 	CMD4(CCC_Integer, "error_line_count", &g_ErrorLineCount, 6, 1024);
 #endif // DEBUG
+}
+
+#ifndef DEDICATED_SERVER
+extern xr_token* vid_mode_token;
+
+xr_token renderer_type_token[] =
+{
+	{"renderer_r1", 0},
+	{"renderer_r2a", 1},
+	{"renderer_r2", 2},
+	{nullptr, 0} 
+};
+
+extern INT g_bDR_LM_UsePointsBBox;
+extern INT g_bDR_LM_4Steps;
+extern INT g_iDR_LM_Step;
+extern Fvector g_DR_LM_Min, g_DR_LM_Max;
+
+class CCC_DR_ClearPoint : public IConsole_Command
+{
+public:
+	CCC_DR_ClearPoint(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual void Execute(LPCSTR args)
+	{
+		g_DR_LM_Min.x = 1000000.0f;
+		g_DR_LM_Min.z = 1000000.0f;
+
+		g_DR_LM_Max.x = -1000000.0f;
+		g_DR_LM_Max.z = -1000000.0f;
+
+		Msg("Local BBox (%f, %f) - (%f, %f)", g_DR_LM_Min.x, g_DR_LM_Min.z, g_DR_LM_Max.x, g_DR_LM_Max.z);
+	}
+};
+
+class CCC_DR_TakePoint : public IConsole_Command
+{
+public:
+	CCC_DR_TakePoint(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual void Execute(LPCSTR args)
+	{
+		Fvector CamPos = Device.vCameraPosition;
+
+		if (g_DR_LM_Min.x > CamPos.x)
+			g_DR_LM_Min.x = CamPos.x;
+
+		if (g_DR_LM_Min.z > CamPos.z)
+			g_DR_LM_Min.z = CamPos.z;
+
+		if (g_DR_LM_Max.x < CamPos.x)
+			g_DR_LM_Max.x = CamPos.x;
+
+		if (g_DR_LM_Max.z < CamPos.z)
+			g_DR_LM_Max.z = CamPos.z;
+
+		Msg("Local BBox (%f, %f) - (%f, %f)", g_DR_LM_Min.x, g_DR_LM_Min.z, g_DR_LM_Max.x, g_DR_LM_Max.z);
+	}
+};
+
+class CCC_DR_UsePoints : public CCC_Integer
+{
+public:
+	CCC_DR_UsePoints(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max) {};
+	virtual void Save(IWriter* F) {};
+};
+
+u32 renderer_value = 0;
+
+class CCC_r2 : public CCC_Token
+{
+	typedef CCC_Token inherited;
+
+public:
+	CCC_r2(LPCSTR N) : inherited(N, &renderer_value, renderer_type_token) { renderer_value = 0; };
+
+	virtual void Execute(LPCSTR args)
+	{
+#ifdef DEDICATED_SERVER
+		inherited::Execute("renderer_r1");
+#else
+		inherited::Execute(args);
+#endif // DEDICATED_SERVER
+
+		psDeviceFlags.set(rsR2, (renderer_value > 0));
+		r2_sun_static = (renderer_value != 2);
+		r2_advanced_pp = (renderer_value == 2);
+	}
+
+	virtual void Save(IWriter* F)
+	{
+		if (!strstr(Core.Params, "-r2"))
+			inherited::Save(F);
+	}
+};
+
+class CCC_VidMode : public CCC_Token
+{
+	u32 _dummy;
+
+public:
+	CCC_VidMode(LPCSTR N) : CCC_Token(N, &_dummy, NULL) { bEmptyArgsHandled = FALSE; };
+	virtual void Execute(LPCSTR args)
+	{
+		u32 _w, _h;
+		int cnt = sscanf(args, "%dx%d", &_w, &_h);
+
+		if (cnt == 2)
+		{
+			psCurrentVidMode[0] = _w;
+			psCurrentVidMode[1] = _h;
+		}
+		else
+		{
+			Msg("! Wrong video mode [%s]", args);
+			return;
+		}
+	}
+	virtual void Status(TStatus& S)
+	{
+		sprintf_s(S, sizeof(S), "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]);
+	}
+	virtual xr_token* GetToken() { return vid_mode_token; }
+	virtual void Info(TInfo& I)
+	{
+		strcpy_s(I, sizeof(I), "change screen resolution WxH");
+	}
+};
+
+float ps_gamma = 1.f, ps_brightness = 1.f, ps_contrast = 1.f;
+
+class CCC_Gamma : public CCC_Float
+{
+public:
+	CCC_Gamma(LPCSTR N, float* V) : CCC_Float(N, V, 0.5f, 1.5f) {}
+
+	virtual void Execute(LPCSTR args)
+	{
+		CCC_Float::Execute(args);
+		Device.m_pRender->setGamma(ps_gamma);
+		Device.m_pRender->setBrightness(ps_brightness);
+		Device.m_pRender->setContrast(ps_contrast);
+		Device.m_pRender->updateGamma();
+	}
+};
+#endif
+
+void RegisterNotDedicatedCommands()
+{
+#ifndef DEDICATED_SERVER
+	CMD3(CCC_Mask, "rs_v_sync", &psDeviceFlags, rsVSync);
+	CMD3(CCC_Mask, "rs_fullscreen", &psDeviceFlags, rsFullscreen);
+	CMD3(CCC_Mask, "rs_refresh_60hz", &psDeviceFlags, rsRefresh60hz);
+	CMD3(CCC_Mask, "rs_cam_pos", &psDeviceFlags, rsCameraPos);
+
+	// Texture manager
+	CMD4(CCC_Integer, "texture_lod", &psTextureLOD, 0, 4);
+
+	// Mouse
+	CMD3(CCC_Mask, "mouse_invert", &psMouseInvert, 1);
+	CMD4(CCC_Float, "mouse_sens", &psMouseSens, 0.05f, 0.6f);
+
+	// Camera
+	CMD4(CCC_Float, "cam_inert", &psCamInert, 0.0f, 0.9f);
+	CMD2(CCC_Float, "cam_slide_inert", &psCamSlideInert);
+
+	if (strstr(Core.Params, "-designer"))
+	{
+		CMD1(CCC_DR_TakePoint, "demo_record_take_point");
+		CMD1(CCC_DR_ClearPoint, "demo_record_clear_points");
+		CMD4(CCC_DR_UsePoints, "demo_record_use_points", &g_bDR_LM_UsePointsBBox, 0, 1);
+		CMD4(CCC_DR_UsePoints, "demo_record_4step", &g_bDR_LM_4Steps, 0, 1);
+		CMD4(CCC_DR_UsePoints, "demo_record_step", &g_iDR_LM_Step, 0, 3);
+	}
+
+	CMD2(CCC_Gamma, "rs_c_gamma", &ps_gamma);
+	CMD2(CCC_Gamma, "rs_c_brightness", &ps_brightness);
+	CMD2(CCC_Gamma, "rs_c_contrast", &ps_contrast);
+
+	CMD1(CCC_r2, "renderer");
+
+	CMD1(CCC_VidMode, "vid_mode");
+#endif
 }

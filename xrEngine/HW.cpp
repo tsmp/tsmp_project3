@@ -97,8 +97,22 @@ void CHW::DestroyD3D()
 //////////////////////////////////////////////////////////////////////
 D3DFORMAT CHW::selectDepthStencil(D3DFORMAT fTarget)
 {
-	// R2 hack
-#pragma todo("R2 need to specify depth format")
+#ifdef DEDICATED_SERVER
+
+#pragma todo("Hack for dedicated. Need refactor HW!!!!")
+	//morrazzzz: INFO: This need refactor HW.
+	//Not worth set through CheckDeviceFormat.
+	// if D3DFMT_D24S8 returning true?
+	// Will be set 24 bits for depth and 8 bits for Stencil!!!
+	// Better set const 16 bits for depth. This min value :(
+	return D3DFMT_D16;
+#else
+#pragma TODO("morrazzzz: check 'info' comment")
+//#pragma todo("R2 need to specify depth format")
+	//morrazzzz: INFO: Strange hack by opinion GSC.
+	// It`s not hack. Maybe hack for missing CheckDeviceFormat?
+	// but 24 bits for Depth and 8 bits for Stencil - its normal. 
+	// Check my comment info. But its not hack!!!!!
 	if (psDeviceFlags.test(rsR2))
 		return D3DFMT_D24S8;
 
@@ -124,6 +138,7 @@ D3DFORMAT CHW::selectDepthStencil(D3DFORMAT fTarget)
 		}
 	}
 	return D3DFMT_UNKNOWN;
+#endif
 }
 
 void CHW::DestroyDevice()
@@ -142,15 +157,18 @@ void CHW::DestroyDevice()
 	_RELEASE(HW.pDevice);
 
 	DestroyD3D();
+#ifndef DEDICATED_SERVER
 	free_vid_mode_list();
+#endif
 }
 void CHW::selectResolution(u32 &dwWidth, u32 &dwHeight, BOOL bWindowed)
 {
-	fill_vid_mode_list(this);
 #ifdef DEDICATED_SERVER
 	dwWidth = 640;
 	dwHeight = 480;
 #else
+	fill_vid_mode_list(this);
+
 	if (bWindowed)
 	{
 		dwWidth = psCurrentVidMode[0];
@@ -267,7 +285,7 @@ void CHW::CreateDevice(HWND m_hWnd)
 		fDepth = selectDepthStencil(fTarget);
 	}
 
-	if ((D3DFMT_UNKNOWN == fTarget) || (D3DFMT_UNKNOWN == fTarget))
+	if (D3DFMT_UNKNOWN == fTarget)
 	{
 		Msg("Failed to initialize graphics hardware.\nPlease try to restart the game.");
 		FlushLog();
@@ -363,7 +381,9 @@ void CHW::CreateDevice(HWND m_hWnd)
 	Msg("*          DDI-level: %2.1f", float(D3DXGetDriverLevel(pDevice)) / 100.f);
 
 	updateWindowProps(m_hWnd);
+#ifndef DEDICATED_SERVER
 	fill_vid_mode_list(this);
+#endif
 }
 
 u32 CHW::selectPresentInterval()

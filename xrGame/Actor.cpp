@@ -333,8 +333,7 @@ void CActor::Load(LPCSTR section)
 	//загрузить параметры смещения firepoint
 	m_vMissileOffset = pSettings->r_fvector3(section, "missile_throw_offset");
 
-#pragma todo("TSMP: не уверен надо ли это выделенному или нет")
-	//if (!g_dedicated_server)	
+	if (!g_dedicated_server)	
 	{
 		LPCSTR hit_snd_sect = pSettings->r_string(section, "hit_sounds");
 
@@ -425,9 +424,8 @@ void CActor::Hit(SHit *pHDS)
 	SHit HDS = *pHDS;
 	if (HDS.hit_type < ALife::eHitTypeBurn || HDS.hit_type >= ALife::eHitTypeMax)
 	{
-		string256 err;
-		sprintf_s(err, "Unknown/unregistered hit type [%d]", HDS.hit_type);
-		R_ASSERT2(0, err);
+		R_ASSERT2(false, make_string("Unknown / unregistered hit type[%d]", HDS.hit_type));
+		return; //morrazzzz: Было не безопасно и для фикса предупреждения.
 	}
 	callback(GameObject::eHit)(
 		lua_game_object(),
