@@ -156,9 +156,7 @@ public:
 	bool save_to(LPCSTR fn);
 };
 
-//------------------------------------------------------------------------------------
 // Read
-//------------------------------------------------------------------------------------
 template <typename implementation_type>
 class IReaderBase
 {
@@ -279,25 +277,51 @@ public:
 
 	IC u32 find_chunk(u32 ID, BOOL *bCompressed = 0)
 	{
-		u32 dwSize, dwType;
+		u32 dwSize = 0, dwType = 0;
+		bool found = false;
 
-		rewind();
-		while (!eof())
+		if (m_LastChunkPos != 0)
 		{
+			impl().seek(m_LastChunkPos);
 			dwType = r_u32();
 			dwSize = r_u32();
-			if ((dwType & (~CFS_CompressMark)) == ID)
-			{
-
-				VERIFY((u32)impl().tell() + dwSize <= (u32)impl().length());
-				if (bCompressed)
-					*bCompressed = dwType & CFS_CompressMark;
-				return dwSize;
-			}
-			else
-				impl().advance(dwSize);
+			found = (dwType & (~CFS_CompressMark)) == ID;
 		}
-		return 0;
+
+		if (!found)
+		{
+			rewind();
+			while (!eof())
+			{
+				dwType = r_u32();
+				dwSize = r_u32();
+				if ((dwType & (~CFS_CompressMark)) == ID)
+				{
+					found = true;
+					break;
+				}
+				else
+					impl().advance(dwSize);
+			}
+
+			if (!found)
+			{
+				m_LastChunkPos = 0;
+				return 0;
+			}
+		}
+
+		VERIFY((u32)impl().tell() + dwSize <= (u32)impl().length());
+		if (bCompressed)
+			*bCompressed = dwType & CFS_CompressMark;
+
+		const int dwPos = impl().tell();
+		if (dwPos + dwSize < (u32)impl().length())
+			m_LastChunkPos = dwPos + dwSize;
+		else
+			m_LastChunkPos = 0;
+
+		return dwSize;
 	}
 
 	IC BOOL r_chunk(u32 ID, void *dest) // чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
@@ -324,6 +348,10 @@ public:
 		else
 			return FALSE;
 	}
+
+private:
+	// Чанки обычно идут последовательно, эффективнее искать новый с места, где нашли прошлый
+	u32 m_LastChunkPos = 0;
 };
 
 class XRCORE_API IReader : public IReaderBase<IReader>
